@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
@@ -148,6 +147,7 @@ const BlogPostPage = () => {
                   category={post.category}
                   authorName={post.author.name}
                   authorRole={post.author.role}
+                  authorAvatar={post.author.avatar}
                   slug={post.slug}
                 />
                 <BlogPostFooter />
