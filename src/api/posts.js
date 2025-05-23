@@ -1,4 +1,5 @@
 
+
 const API_URL = 'https://blog.revhackers.com.br/wp-json/wp/v2/posts?_embed';
 
 export async function getAllPosts() {
@@ -25,8 +26,10 @@ export async function getAllPosts() {
       category: getPostCategory(post),
       author: {
         name: post._embedded?.author?.[0]?.name || "Giulliano Alves",
-        role: "CEO da RevHackers",
-        avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+        role: post._embedded?.author?.[0]?.description || "CEO da RevHackers",
+        avatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || 
+                post._embedded?.author?.[0]?.avatar_urls?.['48'] || 
+                "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
       }
     }));
   } catch (error) {
@@ -66,4 +69,5 @@ function getDefaultImageForCategory(category) {
       return "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1800&auto=format&fit=crop";
   }
 }
+
 
