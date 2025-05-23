@@ -26,7 +26,7 @@ export async function getAllPosts() {
       category: getPostCategory(post),
       author: {
         name: post._embedded?.author?.[0]?.name || "Giulliano Alves",
-        role: post._embedded?.author?.[0]?.description || "CEO da RevHackers",
+        role: getCustomAuthorRole(post._embedded?.author?.[0]?.name),
         avatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || 
                 post._embedded?.author?.[0]?.avatar_urls?.['48'] || 
                 "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
@@ -53,6 +53,20 @@ function getPostCategory(post) {
   return "Blog"; // Categoria padrão se não encontrar
 }
 
+// Função para definir o cargo personalizado com base no nome do autor
+function getCustomAuthorRole(authorName) {
+  if (!authorName) return "CEO da RevHackers";
+  
+  switch(authorName) {
+    case "Luna":
+      return "Analista de marketing e Redatora";
+    case "Giulliano Alves":
+      return "CEO da RevHackers";
+    default:
+      return "Equipe RevHackers";
+  }
+}
+
 // Função para obter uma imagem padrão baseada na categoria
 function getDefaultImageForCategory(category) {
   switch(category) {
@@ -69,5 +83,4 @@ function getDefaultImageForCategory(category) {
       return "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1800&auto=format&fit=crop";
   }
 }
-
 
