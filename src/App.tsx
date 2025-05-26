@@ -26,6 +26,8 @@ import PartnerEnics from "./pages/PartnerEnics";
 import TermosDeUso from "./pages/TermosDeUso";
 import Privacidade from "./pages/Privacidade";
 import SecureBooking from "./pages/SecureBooking";
+import Rei from "./pages/Rei";
+import CadastroParceiro from "./pages/CadastroParceiro";
 
 // Admin Pages
 import Admin from "./pages/Admin";
@@ -63,6 +65,8 @@ const App = () => (
           <Route path="/termos-de-uso" element={<TermosDeUso />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/agenda/giulliano" element={<SecureBooking />} />
+          <Route path="/rei" element={<Rei />} />
+          <Route path="/cadastro-parceiro" element={<CadastroParceiro />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<Admin />} />
