@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Youtube, Instagram, Linkedin, Mail } from 'lucide-react';
 import NewsletterForm from '../shared/NewsletterForm';
@@ -21,7 +20,7 @@ const Footer = () => {
             <div className="lg:col-span-1">
               <div className="mb-6">
                 <img 
-                  src="/lovable-uploads/00aac887-24ac-4c80-a2f3-d4912050bb97.png" 
+                  src="/lovable-uploads/598e264f-f94b-4ef1-a672-c75147e00f3a.jpg" 
                   alt="RevHackers Logo" 
                   className="h-8 w-auto"
                 />
