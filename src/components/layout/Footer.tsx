@@ -14,23 +14,6 @@ const Footer = () => {
   
   return (
     <footer className="bg-black text-white">
-      {/* Privacy Commitment Section */}
-      <div className="border border-revgreen rounded-lg mx-4 lg:mx-8 mb-16 p-6">
-        <div className="flex items-start">
-          <div className="w-6 h-6 rounded-full border-2 border-revgreen flex items-center justify-center mr-4 mt-1 flex-shrink-0">
-            <div className="w-2 h-2 bg-revgreen rounded-full"></div>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-revgreen mb-2">Compromisso com sua Privacidade</h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              O CSV Hack processa todos os seus dados localmente no seu navegador. Não armazenamos, acessamos ou
-              compartilhamos suas informações pessoais ou comerciais. Seus dados CSV permanecem 100% privados e
-              seguros.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="py-16">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
@@ -68,7 +51,6 @@ const Footer = () => {
               <h3 className="text-lg font-semibold mb-6">Navegação</h3>
               <ul className="space-y-3">
                 <li><Link to="/" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Home</Link></li>
-                <li><Link to="/downloads" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Downloads</Link></li>
                 <li><Link to="/cases" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Cases</Link></li>
                 <li><Link to="/quem-somos" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Quem Somos</Link></li>
               </ul>
@@ -80,6 +62,7 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li><Link to="/blog" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Blog</Link></li>
                 <li><Link to="/servicos" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Serviços</Link></li>
+                <li><Link to="/materiais" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Materiais</Link></li>
                 <li><Link to="/comunidade" onClick={scrollToTop} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">Comunidade</Link></li>
               </ul>
             </div>
