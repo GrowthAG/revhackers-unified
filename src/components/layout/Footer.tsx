@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Youtube, Instagram, Linkedin, Mail } from 'lucide-react';
 import NewsletterForm from '../shared/NewsletterForm';
@@ -20,7 +21,7 @@ const Footer = () => {
             <div className="lg:col-span-1">
               <div className="mb-6">
                 <img 
-                  src="/lovable-uploads/598e264f-f94b-4ef1-a672-c75147e00f3a.jpg" 
+                  src="/lovable-uploads/bc8246be-c955-4916-9787-f19bc0f60c57.png" 
                   alt="RevHackers Logo" 
                   className="h-8 w-auto"
                 />
@@ -77,7 +78,7 @@ const Footer = () => {
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className="border-t border-revgreen mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-6 md:mb-0 text-center md:text-left">
               © {currentYear} RevHackers. Todos os direitos reservados.
             </p>
