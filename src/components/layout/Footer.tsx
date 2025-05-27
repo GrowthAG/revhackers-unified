@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Youtube, Instagram, Linkedin, Mail } from 'lucide-react';
 import NewsletterForm from '../shared/NewsletterForm';
@@ -20,7 +19,11 @@ const Footer = () => {
             {/* Logo and company info */}
             <div className="lg:col-span-1">
               <div className="mb-6">
-                <h2 className="text-2xl font-bold tracking-wider">REVHACKERS</h2>
+                <img 
+                  src="/lovable-uploads/598e264f-f94b-4ef1-a672-c75147e00f3a.jpg" 
+                  alt="RevHackers Logo" 
+                  className="h-8 w-auto"
+                />
               </div>
               <p className="text-gray-300 mb-8 text-sm leading-relaxed">
                 Ajudamos empresas a escalarem com inteligência através de automação, estratégia,
