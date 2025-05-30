@@ -56,7 +56,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="adScheduleRestrictions" className="text-white">
-          Tem algum horário que seus anúncios não devem ser veiculados?
+          Existe alguma restrição de horário para seus anúncios serem veiculados? Se sim, qual? (Caso não tenha, apenas responda "Não").
         </Label>
         <Textarea
           id="adScheduleRestrictions"
