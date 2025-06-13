@@ -21,6 +21,7 @@ import Materiais from "./pages/Materiais";
 import MaterialDetalhe from "./pages/MaterialDetalhe";
 import Comunidade from "./pages/Comunidade";
 import Booking from "./pages/Booking";
+import AgendaDiagnosticoPage from "./pages/AgendaDiagnostico";
 import PartnerDetail from "./pages/PartnerDetail";
 import PartnerEnics from "./pages/PartnerEnics";
 import TermosDeUso from "./pages/TermosDeUso";
@@ -62,6 +63,7 @@ const App = () => (
           <Route path="/materiais/:slug" element={<MaterialDetalhe />} />
           <Route path="/comunidade" element={<Comunidade />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/agenda-diagnostico" element={<AgendaDiagnosticoPage />} />
           <Route path="/termos-de-uso" element={<TermosDeUso />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/agenda/giulliano" element={<SecureBooking />} />
