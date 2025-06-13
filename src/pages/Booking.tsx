@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
@@ -97,7 +98,7 @@ const BookingPage = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="bg-black border border-white/10 rounded-xl shadow-xl p-6 md:p-8">
               <h3 className="text-2xl md:text-3xl font-bold text-center mb-6">
-                <span className="bg-gradient-to-r from-revgreen to-revgreen bg-clip-text text-transparent">Selecione</span> a data e horário
+                <span className="text-revgreen">Selecione</span> <span className="text-white">a data e horário</span>
               </h3>
               
               <div className="booking-calendar-wrapper relative bg-black rounded-lg overflow-hidden p-1">
