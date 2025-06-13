@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
@@ -82,7 +83,7 @@ const AgendaDiagnosticoPage = () => {
                 </h3>
               </div>
               
-              <div className="bg-black">
+              <div className="bg-black p-0">
                 <div className="booking-calendar-wrapper relative">
                   <style>{`
                     .booking-calendar-wrapper {
@@ -147,7 +148,9 @@ const AgendaDiagnosticoPage = () => {
                       overflow: 'hidden', 
                       backgroundColor: '#000000',
                       minHeight: '900px',
-                      display: 'block'
+                      display: 'block',
+                      margin: '0',
+                      padding: '0'
                     }} 
                     scrolling="yes" 
                     id="sKnL4ucDKohNmqj1hn6H_1744205651626"
