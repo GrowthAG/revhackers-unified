@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
@@ -77,13 +76,11 @@ const AgendaDiagnosticoPage = () => {
           
           <div className="max-w-6xl mx-auto">
             <Card className="bg-black border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="p-6 md:p-8 border-b border-white/10">
-                <h3 className="text-2xl md:text-3xl font-bold text-center">
+              <div className="p-4 md:p-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-center mb-4">
                   <span className="text-revgreen">Selecione</span> <span className="text-white">a data e horário</span>
                 </h3>
-              </div>
-              
-              <div className="bg-black p-0">
+                
                 <div className="booking-calendar-wrapper relative">
                   <style>{`
                     .booking-calendar-wrapper {
