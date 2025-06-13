@@ -1,8 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
 import { Card } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, Calendar } from 'lucide-react';
 
 const BookingPage = () => {
   const [userData, setUserData] = useState({
@@ -65,6 +66,22 @@ const BookingPage = () => {
     <PageLayout>
       <section className="py-12 bg-black text-white">
         <div className="container-custom">
+          {/* Success Message */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <Alert className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 text-blue-900 shadow-lg">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <AlertDescription className="space-y-2">
+                <div className="font-semibold text-lg">
+                  ✅ Seu material foi enviado com sucesso para o e-mail informado!
+                </div>
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Calendar className="h-4 w-4" />
+                  <span>📅 Aproveite enquanto o conteúdo está fresco: agende agora uma conversa rápida para entender como aplicar isso no seu negócio.</span>
+                </div>
+              </AlertDescription>
+            </Alert>
+          </div>
+
           <div className="text-center max-w-4xl mx-auto mb-8">
             <h1 className="text-5xl font-bold leading-tight mb-4">
               {userData.name ? (
@@ -91,6 +108,26 @@ const BookingPage = () => {
               
               <div className="booking-calendar-wrapper relative bg-black rounded-lg overflow-hidden p-1">
                 <div className="absolute inset-0 bg-revgreen/5 opacity-30"></div>
+                <style>{`
+                  .booking-calendar-wrapper iframe {
+                    filter: invert(0) hue-rotate(0deg) brightness(1.2) contrast(1.1);
+                  }
+                  .booking-calendar-wrapper iframe * {
+                    color: white !important;
+                  }
+                  .booking-calendar-wrapper iframe input,
+                  .booking-calendar-wrapper iframe select,
+                  .booking-calendar-wrapper iframe button {
+                    color: white !important;
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    border-color: rgba(255, 255, 255, 0.3) !important;
+                  }
+                  .booking-calendar-wrapper iframe .calendar-day,
+                  .booking-calendar-wrapper iframe .time-slot {
+                    color: white !important;
+                    background: transparent !important;
+                  }
+                `}</style>
                 <iframe 
                   src={`https://team.growthagency.com.br/widget/booking/sKnL4ucDKohNmqj1hn6H${buildQueryParams()}`}
                   style={{ 
