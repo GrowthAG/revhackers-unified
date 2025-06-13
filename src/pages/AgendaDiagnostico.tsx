@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
@@ -83,18 +82,24 @@ const AgendaDiagnosticoPage = () => {
                 </h3>
               </div>
               
-              <div className="p-4 md:p-6">
-                <div className="booking-calendar-wrapper relative bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden border border-white/10">
+              <div className="bg-black">
+                <div className="booking-calendar-wrapper relative">
                   <style>{`
+                    .booking-calendar-wrapper {
+                      background: #000000 !important;
+                    }
                     .booking-calendar-wrapper iframe {
-                      filter: brightness(1.1) contrast(1.05);
-                      background: transparent !important;
+                      background: #000000 !important;
+                      border: none !important;
+                      outline: none !important;
                     }
                     .booking-calendar-wrapper iframe body {
-                      background: transparent !important;
-                      color: white !important;
+                      background: #000000 !important;
+                      margin: 0 !important;
+                      padding: 0 !important;
                     }
                     .booking-calendar-wrapper iframe * {
+                      background-color: transparent !important;
                       color: white !important;
                       font-family: inherit !important;
                     }
@@ -103,7 +108,7 @@ const AgendaDiagnosticoPage = () => {
                     .booking-calendar-wrapper iframe button {
                       color: white !important;
                       background: rgba(255, 255, 255, 0.05) !important;
-                      border-color: rgba(255, 255, 255, 0.2) !important;
+                      border: 1px solid rgba(255, 255, 255, 0.2) !important;
                       border-radius: 8px !important;
                     }
                     .booking-calendar-wrapper iframe button:hover {
@@ -116,6 +121,7 @@ const AgendaDiagnosticoPage = () => {
                       background: rgba(255, 255, 255, 0.03) !important;
                       border-radius: 6px !important;
                       margin: 2px !important;
+                      border: 1px solid rgba(255, 255, 255, 0.1) !important;
                     }
                     .booking-calendar-wrapper iframe .calendar-day:hover,
                     .booking-calendar-wrapper iframe .time-slot:hover {
@@ -126,6 +132,12 @@ const AgendaDiagnosticoPage = () => {
                       background: #00ff88 !important;
                       color: black !important;
                     }
+                    .booking-calendar-wrapper iframe [style*="background-color: blue"],
+                    .booking-calendar-wrapper iframe [style*="background-color: #0000ff"],
+                    .booking-calendar-wrapper iframe [style*="background: blue"],
+                    .booking-calendar-wrapper iframe [style*="background: #0000ff"] {
+                      background: #000000 !important;
+                    }
                   `}</style>
                   <iframe 
                     src={`https://team.growthagency.com.br/widget/booking/sKnL4ucDKohNmqj1hn6H${buildQueryParams()}`}
@@ -133,13 +145,14 @@ const AgendaDiagnosticoPage = () => {
                       width: '100%', 
                       border: 'none', 
                       overflow: 'hidden', 
-                      backgroundColor: 'transparent',
-                      minHeight: '800px'
+                      backgroundColor: '#000000',
+                      minHeight: '900px',
+                      display: 'block'
                     }} 
                     scrolling="yes" 
                     id="sKnL4ucDKohNmqj1hn6H_1744205651626"
                     title="Agendar diagnóstico"
-                    className="w-full h-auto"
+                    className="w-full"
                   />
                 </div>
               </div>
