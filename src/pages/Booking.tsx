@@ -86,8 +86,8 @@ const BookingPage = () => {
       <section className="py-12 bg-black text-white">
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto mb-8">
-            <h1 className="text-5xl font-bold leading-tight mb-4">
-              📊 <span className="text-white">Agende agora seu </span><span className="text-revgreen">Diagnóstico Gratuito</span>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+              📊 <span className="text-white">Agende seu </span><span className="text-revgreen">Diagnóstico Gratuito</span>
             </h1>
             <p className="text-lg text-white max-w-2xl mx-auto mt-4">
               Converse com um especialista e entenda como melhorar seus resultados 
