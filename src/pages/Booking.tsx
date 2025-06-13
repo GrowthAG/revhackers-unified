@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
 import { Card } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, Calendar } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 
 const BookingPage = () => {
   const [userData, setUserData] = useState({
@@ -64,39 +63,34 @@ const BookingPage = () => {
 
   return (
     <PageLayout>
+      {/* Success Message Section */}
+      <section className="py-6 bg-gradient-to-r from-revgreen/10 to-revgreen/5 border-b border-revgreen/20">
+        <div className="container-custom">
+          <div className="flex items-center justify-center space-x-4 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-revgreen rounded-full">
+              <CheckCircle className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+                ✅ Seu material foi enviado com sucesso para o e-mail informado!
+              </h2>
+              <p className="text-lg text-gray-700">
+                📅 Aproveite enquanto o conteúdo está fresco: agende agora uma conversa rápida para entender como aplicar isso no seu negócio.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-12 bg-black text-white">
         <div className="container-custom">
-          {/* Success Message */}
-          <div className="max-w-4xl mx-auto mb-8">
-            <Alert className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 text-blue-900 shadow-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <AlertDescription className="space-y-2">
-                <div className="font-semibold text-lg">
-                  ✅ Seu material foi enviado com sucesso para o e-mail informado!
-                </div>
-                <div className="flex items-center gap-2 text-blue-800">
-                  <Calendar className="h-4 w-4" />
-                  <span>📅 Aproveite enquanto o conteúdo está fresco: agende agora uma conversa rápida para entender como aplicar isso no seu negócio.</span>
-                </div>
-              </AlertDescription>
-            </Alert>
-          </div>
-
           <div className="text-center max-w-4xl mx-auto mb-8">
             <h1 className="text-5xl font-bold leading-tight mb-4">
-              {userData.name ? (
-                <>
-                  <span className="text-revgreen">{userData.name}</span>, agende sua conversa
-                </>
-              ) : (
-                <>
-                  <span className="text-revgreen">Agende</span> uma conversa com um especialista
-                </>
-              )}
+              📊 <span className="text-revgreen">Agende agora</span> seu Diagnóstico Gratuito
             </h1>
             <p className="text-lg text-white max-w-2xl mx-auto mt-4">
-              Escolha o melhor horário para conversarmos sobre suas necessidades 
-              e discutir soluções sob medida para seu negócio.
+              Converse com um especialista e entenda como melhorar seus resultados 
+              com estratégias personalizadas.
             </p>
           </div>
           
@@ -138,7 +132,7 @@ const BookingPage = () => {
                   }} 
                   scrolling="no" 
                   id="sKnL4ucDKohNmqj1hn6H_1744205651626"
-                  title="Agendar consulta"
+                  title="Agendar diagnóstico"
                   className="min-h-[700px] relative z-10"
                 />
               </div>
