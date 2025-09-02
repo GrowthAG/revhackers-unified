@@ -43,12 +43,20 @@
     --gradient-premium: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
     --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    --gradient-mesh: radial-gradient(ellipse 600px 400px at 50% 0%, hsl(var(--primary) / 0.15), transparent 70%),
+                     radial-gradient(ellipse 400px 300px at 80% 100%, hsl(142 85% 65% / 0.1), transparent 70%),
+                     radial-gradient(ellipse 300px 200px at 20% 100%, hsl(var(--primary) / 0.08), transparent 70%);
+    --gradient-interactive: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 85% 65%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--background) / 0.95) 100%);
 
     /* Apple-inspired Shadows */
     --shadow-soft: 0 4px 20px -2px rgba(0,0,0,0.05);
     --shadow-medium: 0 8px 30px -4px rgba(0,0,0,0.1);
     --shadow-strong: 0 20px 60px -8px rgba(0,0,0,0.15);
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
+    --shadow-float: 0 15px 50px -12px rgba(0,0,0,0.15);
+    --shadow-interactive: 0 8px 32px -8px hsl(var(--primary) / 0.3);
+    --shadow-premium: 0 25px 80px -15px rgba(0,0,0,0.25);
 
     /* Apple-inspired Transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -154,6 +162,69 @@
 
   .section-title {
     @apply text-3xl md:text-5xl font-bold tracking-tight leading-tight;
+  }
+
+  /* Premium Interactive Elements */
+  .interactive-card {
+    @apply relative overflow-hidden rounded-3xl transition-all duration-500 ease-out;
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .interactive-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 rounded-3xl;
+    background: var(--gradient-interactive);
+    z-index: -1;
+  }
+
+  .interactive-card:hover {
+    @apply transform -translate-y-2;
+    box-shadow: var(--shadow-float);
+  }
+
+  .interactive-card:hover::before {
+    @apply opacity-10;
+  }
+
+  .mesh-background {
+    background: var(--gradient-mesh);
+  }
+
+  .glow-effect {
+    position: relative;
+  }
+
+  .glow-effect::after {
+    content: '';
+    @apply absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500;
+    background: var(--gradient-interactive);
+    filter: blur(20px);
+    z-index: -1;
+  }
+
+  .glow-effect:hover::after {
+    @apply opacity-20;
+  }
+
+  .shimmer-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.8s;
+  }
+
+  .shimmer-effect:hover::before {
+    left: 100%;
   }
 
   /* WordPress content styling */

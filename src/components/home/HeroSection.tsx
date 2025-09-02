@@ -9,11 +9,11 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-hidden">
+    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-hidden mesh-background">
       {/* Apple-inspired Background */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-revgreen/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-revgreen/20 rounded-full blur-3xl animate-float glow-effect"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
         
         {/* Glass morphism overlay */}
@@ -27,8 +27,8 @@ const HeroSection = () => {
         <div className="max-w-6xl mx-auto text-center">
           
           {/* Floating badge */}
-          <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8 animate-fadeUp">
-            <Sparkles className="w-4 h-4 mr-2 text-revgreen animate-glow" />
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8 animate-bounce-gentle shimmer-effect">
+            <Sparkles className="w-4 h-4 mr-2 text-revgreen animate-pulse-soft" />
             Confiado por mais de 150 empresas B2B
           </div>
           

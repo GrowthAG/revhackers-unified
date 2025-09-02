@@ -11,6 +11,7 @@ import StatsSection from '@/components/home/StatsSection';
 import QuoteSection from '@/components/home/QuoteSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
+import ROICalculator from '@/components/shared/ROICalculator';
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
       <StatsSection />
       <BenefitsSection />
       <ServicesSection />
+      <ROICalculator />
       <CasesSection />
       <JourneySection />
       <PartnersSection />

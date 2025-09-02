@@ -66,29 +66,29 @@ const ServicesSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {services.slice(0, 4).map((service, index) => (
-            <Card key={index} className="card-premium group animate-scaleIn" style={{ animationDelay: `${index * 0.1}s` }}>
-              <CardHeader className="pb-4">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <service.icon className="h-7 w-7 text-revgreen" />
-                </div>
-                <CardTitle className="text-xl font-bold leading-tight">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <CardDescription className="mb-6 text-gray-600 leading-relaxed">{service.description}</CardDescription>
-                <Link 
-                  to={service.link} 
-                  onClick={scrollToTop} 
-                  className="inline-flex items-center text-sm font-semibold text-revgreen hover:text-green-600 group-hover:translate-x-1 transition-all duration-300"
-                >
-                  Saiba mais
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {services.slice(0, 4).map((service, index) => (
+              <Card key={index} className="interactive-card group animate-slide-in-stagger glow-effect" style={{ '--stagger-delay': `${index * 0.1}s` } as React.CSSProperties}>
+                <CardHeader className="pb-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
+                    <service.icon className="h-7 w-7 text-revgreen" />
+                  </div>
+                  <CardTitle className="text-xl font-bold leading-tight">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CardDescription className="mb-6 text-gray-600 leading-relaxed">{service.description}</CardDescription>
+                  <Link 
+                    to={service.link} 
+                    onClick={scrollToTop} 
+                    className="inline-flex items-center text-sm font-semibold text-revgreen hover:text-green-600 group-hover:translate-x-1 transition-all duration-300"
+                  >
+                    Saiba mais
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         
         <div className="mt-20 text-center animate-fade-up-delayed">
           <Button asChild variant="default" size="lg" className="rounded-full px-12">

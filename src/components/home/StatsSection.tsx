@@ -46,11 +46,11 @@ const StatsSection = () => {
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
-              <Card key={index} className="card-premium p-8 text-center group hover:shadow-2xl animate-scaleIn" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300">
+              <Card key={index} className="interactive-card p-8 text-center group glow-effect animate-slide-in-stagger" style={{ '--stagger-delay': `${index * 0.1}s` } as React.CSSProperties}>
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
                   <IconComponent className="h-8 w-8" />
                 </div>
-                <p className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-revgreen to-green-600 bg-clip-text text-transparent mb-3">
+                <p className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-revgreen to-green-600 bg-clip-text text-transparent mb-3 animate-gradient-shift">
                   {stat.value}
                 </p>
                 <p className="text-xl font-semibold mb-3 text-gray-800">{stat.label}</p>
