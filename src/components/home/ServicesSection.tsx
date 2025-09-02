@@ -57,27 +57,31 @@ const ServicesSection = () => {
   return (
     <section className="section-padding bg-white">
       <div className="container-custom">
-        <div className="max-w-lg mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Soluções de RevOps para seu crescimento B2B
+        <div className="max-w-4xl mx-auto text-center mb-20">
+          <h2 className="section-title mb-6 animate-fadeUp">
+            Soluções de <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">RevOps</span> para seu crescimento B2B
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-xl text-gray-600 animate-fade-in-delayed">
             Criamos o alinhamento entre pessoas, processos e plataformas para gerar resultados consistentes e mensuráveis.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.slice(0, 4).map((service, index) => (
-            <Card key={index} className="card-hover border border-gray-100">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-revgreen/10 flex items-center justify-center mb-4">
-                  <service.icon className="h-6 w-6 text-revgreen" />
+            <Card key={index} className="card-premium group animate-scaleIn" style={{ animationDelay: `${index * 0.1}s` }}>
+              <CardHeader className="pb-4">
+                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <service.icon className="h-7 w-7 text-revgreen" />
                 </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
+                <CardTitle className="text-xl font-bold leading-tight">{service.title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-6">{service.description}</CardDescription>
-                <Link to={service.link} onClick={scrollToTop} className="inline-flex items-center text-sm font-medium text-revgreen hover:text-black">
+              <CardContent className="pt-0">
+                <CardDescription className="mb-6 text-gray-600 leading-relaxed">{service.description}</CardDescription>
+                <Link 
+                  to={service.link} 
+                  onClick={scrollToTop} 
+                  className="inline-flex items-center text-sm font-semibold text-revgreen hover:text-green-600 group-hover:translate-x-1 transition-all duration-300"
+                >
                   Saiba mais
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -86,8 +90,8 @@ const ServicesSection = () => {
           ))}
         </div>
         
-        <div className="mt-16 text-center">
-          <Button asChild variant="default">
+        <div className="mt-20 text-center animate-fade-up-delayed">
+          <Button asChild variant="default" size="lg" className="rounded-full px-12">
             <Link to="/servicos" onClick={scrollToTop}>
               Ver todos os serviços
             </Link>

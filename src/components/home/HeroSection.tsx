@@ -1,5 +1,5 @@
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -9,55 +9,94 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="py-20 md:py-32 bg-gradient-to-br from-black to-gray-900 text-white relative overflow-hidden">
-      {/* Background elements - código matrix effect */}
-      <div className="absolute inset-0 opacity-15 z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5')] bg-center bg-cover opacity-30"></div>
+    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-hidden">
+      {/* Apple-inspired Background */}
+      <div className="absolute inset-0">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-revgreen/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Glass morphism overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"></div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz4KICAgIDwvcGF0dGVybj4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIgLz4KPC9zdmc+')] opacity-30"></div>
       </div>
       
       <div className="container-custom relative z-10">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-center">
-            Aumente sua <span className="text-revgreen">receita recorrente</span> com 
-            integração total entre Marketing, Vendas e CS
+        <div className="max-w-6xl mx-auto text-center">
+          
+          {/* Floating badge */}
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8 animate-fadeUp">
+            <Sparkles className="w-4 h-4 mr-2 text-revgreen animate-glow" />
+            Metodologia comprovada por 150+ empresas B2B
+          </div>
+          
+          {/* Main headline with Apple-style typography */}
+          <h1 className="hero-text mb-8 animate-fade-up-delayed">
+            Aumente sua <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow">receita recorrente</span>
+            <br />
+            com integração total entre 
+            <br />
+            Marketing, Vendas e CS
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-14 text-center leading-relaxed">
+          {/* Subtitle with refined spacing */}
+          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
             Conectamos seus dados, processos e equipes para criar um ecossistema de crescimento B2B 
             através de automações e inteligência de dados.
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-3xl mx-auto">
+          {/* Apple-style CTAs */}
+          <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto animate-slideInRight">
             <Button 
               asChild 
-              className="bg-revgreen text-black font-medium px-8 py-6 rounded-md hover:brightness-110 transition-all shadow-lg"
+              className="btn-primary text-lg h-16 px-12 group"
               size="lg"
             >
-              <Link to="/diagnostico" onClick={scrollToTop}>
+              <Link to="/diagnostico" onClick={scrollToTop} className="flex items-center">
                 Solicitar diagnóstico estratégico
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             
             <Button 
               variant="outline" 
               asChild
-              className="border-revgreen text-white hover:bg-revgreen hover:text-black py-6 px-8"
+              className="btn-glass text-lg h-16 px-12 group"
               size="lg"
             >
-              <Link to="/cases" onClick={scrollToTop} className="flex items-center justify-center">
-                <span>Ver ROI comprovado</span>
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Link to="/cases" onClick={scrollToTop} className="flex items-center">
+                Ver ROI comprovado
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
           
-          <div className="mt-16 text-center">
-            <p className="text-sm text-gray-400 mb-4">
-              +150 empresas SaaS e B2B aceleraram seu crescimento com nossa metodologia
+          {/* Social proof with elegant spacing */}
+          <div className="mt-20 text-center animate-fade-in-delayed">
+            <p className="text-base text-gray-400 mb-6">
+              Empresas que transformaram seu crescimento com nossa metodologia
             </p>
+            
+            {/* Logos carousel - placeholder for now */}
+            <div className="flex justify-center items-center space-x-8 opacity-60">
+              <div className="w-24 h-12 bg-white/10 rounded-lg flex items-center justify-center text-xs font-medium">
+                FMU Virtual
+              </div>
+              <div className="w-24 h-12 bg-white/10 rounded-lg flex items-center justify-center text-xs font-medium">
+                Heineken
+              </div>
+              <div className="w-24 h-12 bg-white/10 rounded-lg flex items-center justify-center text-xs font-medium">
+                TOEFL
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
     </section>
   );
 };
