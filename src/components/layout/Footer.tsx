@@ -19,7 +19,7 @@ const Footer = () => {
                 <img src="/lovable-uploads/bc8246be-c955-4916-9787-f19bc0f60c57.png" alt="RevHackers Logo" className="h-16 w-auto" />
               </div>
               <p className="text-gray-300 mb-8 text-sm leading-relaxed">
-                Ajudamos empresas a escalarem com inteligência através de automação, estratégia,
+                Ajudamos empresas a escalarem através de automação, estratégia,
                 crescimento e inovação.
               </p>
               <div className="flex space-x-4 mb-8">

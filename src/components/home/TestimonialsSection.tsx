@@ -58,7 +58,7 @@ const TestimonialsSection = () => {
             O que nossos clientes dizem
           </h2>
           <p className="text-lg text-gray-600">
-            Empresas que transformaram seus resultados com nossa metodologia
+            Empresas que já transformaram seu crescimento conosco
           </p>
         </div>
         

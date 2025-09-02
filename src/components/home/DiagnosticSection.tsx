@@ -7,7 +7,7 @@ const benefits = [
   "Identificação de lacunas de automação e ineficiências em seu funil de receita",
   "Comparativo de maturidade em RevOps com os líderes do seu segmento",
   "Plano estratégico customizado para integração de sistemas e melhoria de processos",
-  "Cálculo de ROI com aplicação de sistemas integrados e automações",
+  "Cálculo de retorno esperado com aplicação de sistemas integrados e automações",
   "Roteiro técnico e estratégico para implementação estruturada"
 ];
 

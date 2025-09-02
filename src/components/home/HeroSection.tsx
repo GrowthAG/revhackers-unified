@@ -29,7 +29,7 @@ const HeroSection = () => {
           {/* Floating badge */}
           <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8 animate-fadeUp">
             <Sparkles className="w-4 h-4 mr-2 text-revgreen animate-glow" />
-            Metodologia comprovada por 150+ empresas B2B
+            Confiado por mais de 150 empresas B2B
           </div>
           
           {/* Main headline with Apple-style typography */}
@@ -67,7 +67,7 @@ const HeroSection = () => {
               size="lg"
             >
               <Link to="/cases" onClick={scrollToTop} className="flex items-center">
-                Ver ROI comprovado
+                Ver casos de sucesso
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -76,7 +76,7 @@ const HeroSection = () => {
           {/* Social proof with elegant spacing */}
           <div className="mt-20 text-center animate-fade-in-delayed">
             <p className="text-base text-gray-400 mb-6">
-              Empresas que transformaram seu crescimento com nossa metodologia
+              Empresas que já transformaram seu crescimento conosco
             </p>
             
             {/* Logos carousel - placeholder for now */}

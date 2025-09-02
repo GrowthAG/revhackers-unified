@@ -17,8 +17,8 @@ const stats = [
   },
   {
     value: "5x",
-    label: "ROI médio",
-    description: "Retorno sobre investimento no primeiro ano",
+    label: "Retorno médio",
+    description: "Multiplicação dos resultados no primeiro ano",
     icon: Target
   },
   {
@@ -38,7 +38,7 @@ const StatsSection = () => {
             Resultados que <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">entregamos</span>
           </h2>
           <p className="text-xl text-gray-600 animate-fade-in-delayed">
-            Números que comprovam a eficácia da nossa metodologia
+            Números que mostram o impacto real que geramos
           </p>
         </div>
         

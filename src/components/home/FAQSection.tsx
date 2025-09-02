@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     question: "Qual é o investimento médio e o retorno esperado?",
-    answer: "O investimento varia conforme o porte da empresa e a complexidade dos desafios, mas nossos projetos apresentam ROI médio de 5x sobre o investimento no primeiro ano. Trabalhamos com modelos flexíveis e desenvolvemos um plano de negócios detalhado para cada cliente, com projeções claras de impacto em receita, eficiência operacional e redução de custos."
+    answer: "O investimento varia conforme o porte da empresa e a complexidade dos desafios, mas nossos projetos apresentam retorno médio de 5x sobre o investimento no primeiro ano. Trabalhamos com modelos flexíveis e desenvolvemos um plano de negócios detalhado para cada cliente, com projeções claras de impacto em receita, eficiência operacional e redução de custos."
   },
   {
     question: "Vocês trabalham com empresas pequenas ou apenas grandes corporações?",

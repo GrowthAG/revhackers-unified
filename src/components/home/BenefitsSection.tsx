@@ -25,8 +25,8 @@ const benefits = [
   },
   {
     icon: BarChart4,
-    title: "ROI Comprovado",
-    description: "Retorno médio de 5x sobre o investimento em nossas soluções, com cases documentados em diversos segmentos B2B."
+    title: "Resultados Concretos",
+    description: "Retorno médio de 5x sobre o investimento em nossas soluções, com casos de sucesso em diversos segmentos B2B."
   },
   {
     icon: CheckCircle2,
