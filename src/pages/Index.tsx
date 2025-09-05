@@ -11,38 +11,11 @@ import StatsSection from '@/components/home/StatsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
 import ROICalculator from '@/components/shared/ROICalculator';
-import ExitIntentPopup from '@/components/shared/ExitIntentPopup';
-import SocialProofBar from '@/components/shared/SocialProofBar';
-import SocialProofNotifications from '@/components/shared/SocialProofNotifications';
-import TopSocialProof from '@/components/shared/TopSocialProof';
 
 const Index = () => {
   return (
     <PageLayout>
-      <ExitIntentPopup />
-      {/* Social Proof no topo da página - 1 card a cada minuto */}
-      <TopSocialProof />
-      
       <HeroSection />
-      <SocialProofBar />
-      
-      {/* Seção de Atividades Recentes - inline */}
-      <section className="py-8 bg-gray-50/50">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                🔥 Atividades Recentes
-              </h3>
-              <p className="text-sm text-gray-600">
-                Veja quem está aproveitando nossos conteúdos e serviços agora mesmo
-              </p>
-            </div>
-            <SocialProofNotifications position="inline" limit={3} />
-          </div>
-        </div>
-      </section>
-      
       <StatsSection />
       <BenefitsSection />
       <ServicesSection />
