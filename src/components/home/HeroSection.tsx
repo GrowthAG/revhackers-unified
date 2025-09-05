@@ -6,7 +6,7 @@ const HeroSection = () => {
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
-  return <section className="relative min-h-screen md:min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-hidden mesh-background py-12 md:py-12">
+  return <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white overflow-hidden mesh-background py-8 md:py-12">
       {/* Apple-inspired Background */}
       <div className="absolute inset-0">
         {/* Animated gradient orbs - smaller on mobile */}

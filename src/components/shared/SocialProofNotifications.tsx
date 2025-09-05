@@ -65,6 +65,24 @@ const SocialProofNotifications = ({
   const [currentNotifications, setCurrentNotifications] = useState<NotificationData[]>([]);
   const [materials, setMaterials] = useState<WordPressMaterial[]>([]);
   const [nextIndex, setNextIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Verificar se é mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Não renderizar no mobile se não for inline
+  if (isMobile && position !== 'inline') {
+    return null;
+  }
 
   // Fetch materiais do WordPress
   useEffect(() => {
