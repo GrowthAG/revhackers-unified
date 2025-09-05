@@ -36,7 +36,7 @@ const HeroSection = () => {
           <h1 className="hero-text mb-8">
             <span className="inline-block animate-fade-in" style={{ animationDelay: '0.2s' }}>Transforme sua operação</span>
             <br />
-            <span className="inline-block animate-fade-in" style={{ animationDelay: '0.4s' }}>em uma máquina</span>
+            <span className="inline-block animate-fade-in" style={{ animationDelay: '0.4s' }}>em uma máquina de</span>
             <br />
             <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{ animationDelay: '0.6s' }}>de Receita Previsível</span>
           </h1>
