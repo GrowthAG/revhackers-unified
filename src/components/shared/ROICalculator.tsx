@@ -336,7 +336,7 @@ const ROICalculator = () => {
                 <Button 
                   onClick={calculateROI}
                   disabled={isCalculating}
-                  className="w-full btn-primary text-lg h-14 relative overflow-hidden group"
+                  className="w-full btn-primary text-base h-14 relative overflow-hidden group"
                 >
                   {isCalculating ? (
                     <div className="flex items-center">
