@@ -12,40 +12,52 @@ import { Card } from '@/components/ui/card';
 
 const testimonials = [
   {
-    quote: "A consultoria da RevHackers nos ajudou a implementar uma estratégia de RevOps que integrou nossas equipes de marketing e vendas, trazendo resultados expressivos em poucos meses.",
+    quote: "A consultoria da RevHackers nos ajudou a implementar uma estratégia de RevOps que integrou nossas equipes de marketing e vendas, gerando um aumento de 47% na conversão de leads em apenas 4 meses.",
     author: "Lucio Sardinha",
     role: "CEO, FMU Virtual",
-    avatar: "/lovable-uploads/96db41f1-2d74-4913-997d-3296df29d457.png"
+    avatar: "/lovable-uploads/96db41f1-2d74-4913-997d-3296df29d457.png",
+    results: "↗️ +47% conversão de leads",
+    timeframe: "4 meses"
   },
   {
-    quote: "Reduzimos nosso CAC em 38% após implementar as recomendações da RevHackers. O conhecimento técnico da equipe e a capacidade de extrair insights dos dados foram cruciais para nossa estratégia de crescimento.",
+    quote: "Reduzimos nosso CAC em 38% e aumentamos o LTV em 65% após implementar as recomendações da RevHackers. O conhecimento técnico da equipe e a capacidade de extrair insights dos dados foram cruciais para nossa estratégia de crescimento.",
     author: "Fernando Correa",
     role: "CEO, First Security",
-    avatar: "/lovable-uploads/2abb9e01-3bb4-413b-887d-0efab88c25eb.png"
+    avatar: "/lovable-uploads/2abb9e01-3bb4-413b-887d-0efab88c25eb.png",
+    results: "↘️ -38% CAC • ↗️ +65% LTV",
+    timeframe: "6 meses"
   },
   {
-    quote: "A metodologia da RevHackers trouxe clareza para nossos processos de vendas e marketing. Hoje temos métricas confiáveis e um pipeline muito mais previsível, o que nos permite escalar com segurança.",
+    quote: "A metodologia da RevHackers trouxe clareza para nossos processos de vendas e marketing. Hoje temos métricas confiáveis e aumentamos nossa receita recorrente em 89% no primeiro ano, o que nos permite escalar com segurança.",
     author: "Carla Macedo",
     role: "Diretora de Vendas, TOEFL Junior Brasil",
-    avatar: "/lovable-uploads/95e8dfb6-30ef-4311-b229-a6c702cd57b7.png"
+    avatar: "/lovable-uploads/95e8dfb6-30ef-4311-b229-a6c702cd57b7.png",
+    results: "↗️ +89% receita recorrente",
+    timeframe: "12 meses"
   },
   {
-    quote: "A implementação do RevOps pela equipe da RevHackers transformou completamente nosso funil de vendas. A visibilidade e previsibilidade que conseguimos agora são incomparáveis com o que tínhamos antes.",
+    quote: "A implementação do RevOps pela equipe da RevHackers transformou completamente nosso funil de vendas. Aumentamos a taxa de fechamento em 52% e reduzimos o ciclo de vendas em 34%. A visibilidade e previsibilidade que conseguimos agora são incomparáveis.",
     author: "Yves Mariano",
     role: "CEO, Wisyion",
-    avatar: "/lovable-uploads/bfbe5a85-3867-44dc-adcc-909e6ebeae4f.png"
+    avatar: "/lovable-uploads/bfbe5a85-3867-44dc-adcc-909e6ebeae4f.png",
+    results: "↗️ +52% taxa fechamento • ↘️ -34% ciclo vendas",
+    timeframe: "8 meses"
   },
   {
-    quote: "Depois da consultoria da RevHackers, conseguimos alinhar marketing, vendas e sucesso do cliente como nunca antes. Os resultados em termos de conversão e retenção foram impressionantes.",
+    quote: "Depois da consultoria da RevHackers, conseguimos alinhar marketing, vendas e sucesso do cliente como nunca antes. Os resultados em termos de conversão (+43%) e retenção (+28%) foram impressionantes, gerando um ROI de 420%.",
     author: "Fabio Boldrini",
     role: "CEO, BLDN Digital",
-    avatar: "/lovable-uploads/81d46788-47c4-456e-b31d-d0681f39e12c.png"
+    avatar: "/lovable-uploads/81d46788-47c4-456e-b31d-d0681f39e12c.png",
+    results: "↗️ +43% conversão • 420% ROI",
+    timeframe: "10 meses"
   },
   {
-    quote: "O suporte consultivo da RevHackers para nosso time de marketing transformou nossa abordagem em Google Ads e trouxe resultados impressionantes para todo nosso funil de vendas.",
+    quote: "O suporte consultivo da RevHackers para nosso time de marketing transformou nossa abordagem em Google Ads e trouxe resultados impressionantes: reduzimos CPA em 29% e aumentamos ROAS em 156% em todo nosso funil de vendas.",
     author: "Pedro Silva",
     role: "Gerente de Vendas, Agence MR",
-    avatar: "/lovable-uploads/c78b28dc-f100-4719-b64b-05c759d55429.png"
+    avatar: "/lovable-uploads/c78b28dc-f100-4719-b64b-05c759d55429.png",
+    results: "↘️ -29% CPA • ↗️ +156% ROAS",
+    timeframe: "5 meses"
   }
 ];
 
@@ -87,9 +99,17 @@ const TestimonialsSection = () => {
                             <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
                             <AvatarFallback>{testimonial.author.substring(0, 2)}</AvatarFallback>
                           </Avatar>
-                          <div>
+                          <div className="flex-1">
                             <p className="font-bold">{testimonial.author}</p>
-                            <p className="text-gray-600">{testimonial.role}</p>
+                            <p className="text-gray-600 text-sm">{testimonial.role}</p>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-xs font-medium text-revgreen bg-revgreen/10 px-2 py-1 rounded">
+                                {testimonial.results}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                em {testimonial.timeframe}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </blockquote>

@@ -1,28 +1,33 @@
 
 import { Card } from '@/components/ui/card';
 import { TrendingUp, Target, BarChart3, Users } from 'lucide-react';
+import StatsCounter from '@/components/shared/StatsCounter';
 
 const stats = [
   {
-    value: "150+",
+    value: 150,
+    suffix: "+",
     label: "Empresas B2B atendidas",
     description: "Em diversos segmentos e portes",
     icon: Users
   },
   {
-    value: "32%",
+    value: 32,
+    suffix: "%",
     label: "Aumento médio em vendas",
     description: "Nos primeiros 6 meses de implementação",
     icon: TrendingUp
   },
   {
-    value: "5x",
+    value: 5,
+    suffix: "x",
     label: "Retorno médio",
     description: "Multiplicação dos resultados no primeiro ano",
     icon: Target
   },
   {
-    value: "24%",
+    value: 24,
+    suffix: "%",
     label: "Redução média de churn",
     description: "Após implementação de RevOps",
     icon: BarChart3
@@ -51,7 +56,7 @@ const StatsSection = () => {
                   <IconComponent className="h-8 w-8" />
                 </div>
                 <p className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-revgreen to-green-600 bg-clip-text text-transparent mb-3 animate-gradient-shift">
-                  {stat.value}
+                  <StatsCounter end={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="text-xl font-semibold mb-3 text-gray-800">{stat.label}</p>
                 <p className="text-sm text-gray-500 leading-relaxed">{stat.description}</p>
