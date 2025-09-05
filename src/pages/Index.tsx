@@ -11,15 +11,12 @@ import StatsSection from '@/components/home/StatsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
 import ROICalculator from '@/components/shared/ROICalculator';
-import ChatWidget from '@/components/shared/ChatWidget';
-import UrgencyBanner from '@/components/shared/UrgencyBanner';
 import ExitIntentPopup from '@/components/shared/ExitIntentPopup';
 import SocialProofBar from '@/components/shared/SocialProofBar';
 
 const Index = () => {
   return (
     <PageLayout>
-      <UrgencyBanner />
       <ExitIntentPopup />
       <HeroSection />
       <SocialProofBar />
@@ -33,7 +30,6 @@ const Index = () => {
       <TestimonialsSection />
       <FAQSection />
       <ContactFormSection />
-      <ChatWidget />
     </PageLayout>
   );
 };
