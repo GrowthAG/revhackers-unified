@@ -24,12 +24,12 @@ export const blogPosts: BlogPost[] = [
     title: "ChatGPT para Growth: 15 prompts que dobram sua produtividade em marketing",
     slug: "chatgpt-para-growth-15-prompts-produtividade-marketing",
     excerpt: "Descubra os prompts específicos que transformam o ChatGPT em seu assistente de marketing mais poderoso, com templates prontos para usar.",
-    category: "IA & Automação",
+    category: "Automação",
     image: "https://images.unsplash.com/photo-1677442136019-21780ecad995",
     author: {
-      name: "Carlos Mendes",
-      role: "AI Marketing Specialist",
-      avatar: "https://i.pravatar.cc/150?u=carlosmendes"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "https://i.pravatar.cc/150?u=giullianoalves"
     },
     date: "2025-01-15",
     readTime: "12 min",
@@ -40,12 +40,12 @@ export const blogPosts: BlogPost[] = [
     title: "Cold Email em 2025: as 7 estratégias que ainda funcionam",
     slug: "cold-email-2025-7-estrategias-que-funcionam",
     excerpt: "As táticas de cold email que sobreviveram às mudanças de algoritmo e regulamentações, com templates testados em +10k envios.",
-    category: "Growth Tactics",
+    category: "Vendas",
     image: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2",
     author: {
-      name: "Marina Santos",
-      role: "Outbound Specialist",
-      avatar: "https://i.pravatar.cc/150?u=marinasantos"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "https://i.pravatar.cc/150?u=giullianoalves"
     },
     date: "2025-01-12",
     readTime: "10 min",
@@ -56,12 +56,12 @@ export const blogPosts: BlogPost[] = [
     title: "LTV vs CAC: como calcular e otimizar para crescimento sustentável",
     slug: "ltv-vs-cac-calcular-otimizar-crescimento-sustentavel",
     excerpt: "O guia definitivo para entender, calcular e otimizar as métricas mais importantes do seu negócio B2B.",
-    category: "Métricas",
+    category: "Dados",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
     author: {
-      name: "Ricardo Oliveira",
-      role: "Growth Analyst",
-      avatar: "https://i.pravatar.cc/150?u=ricardooliveira"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "https://i.pravatar.cc/150?u=giullianoalves"
     },
     date: "2025-01-10",
     readTime: "15 min",
@@ -72,12 +72,12 @@ export const blogPosts: BlogPost[] = [
     title: "Product-Market Fit: 5 sinais de que você encontrou (e 3 de que não)",
     slug: "product-market-fit-5-sinais-encontrou-3-que-nao",
     excerpt: "Como identificar se seu produto realmente resolve um problema real do mercado, com frameworks práticos de validação.",
-    category: "Estratégia",
+    category: "PLG",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
     author: {
-      name: "Paula Ribeiro",
-      role: "Product Strategy",
-      avatar: "https://i.pravatar.cc/150?u=paularibeiro"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "https://i.pravatar.cc/150?u=giullianoalves"
     },
     date: "2025-01-08",
     readTime: "11 min"
@@ -87,12 +87,12 @@ export const blogPosts: BlogPost[] = [
     title: "LinkedIn Sales Navigator: guia completo para prospecção B2B",
     slug: "linkedin-sales-navigator-guia-completo-prospeccao-b2b",
     excerpt: "Estratégias avançadas para usar o Sales Navigator como máquina de prospecção, com scripts e templates.",
-    category: "Growth Tactics",
+    category: "Vendas",
     image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71",
     author: {
-      name: "Felipe Cardoso",
-      role: "LinkedIn Specialist",
-      avatar: "https://i.pravatar.cc/150?u=felipecardoso"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "https://i.pravatar.cc/150?u=giullianoalves"
     },
     date: "2025-01-05",
     readTime: "13 min"
