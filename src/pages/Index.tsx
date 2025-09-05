@@ -8,7 +8,7 @@ import JourneySection from '@/components/home/JourneySection';
 import BenefitsSection from '@/components/home/BenefitsSection';
 import FAQSection from '@/components/home/FAQSection';
 import StatsSection from '@/components/home/StatsSection';
-import QuoteSection from '@/components/home/QuoteSection';
+
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
 import ROICalculator from '@/components/shared/ROICalculator';
@@ -25,7 +25,7 @@ const Index = () => {
       <JourneySection />
       <PartnersSection />
       <TestimonialsSection />
-      <QuoteSection />
+      
       <FAQSection />
       <ContactFormSection />
     </PageLayout>
