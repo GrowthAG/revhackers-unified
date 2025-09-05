@@ -43,7 +43,7 @@ const HeroSection = () => {
           
           {/* Subtitle with refined spacing */}
           <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
-            Conectamos marketing, vendas e CS em um único sistema<br />para acelerar seu crescimento com inteligência, automações<br />e foco total em resultados.
+            Conectamos marketing, vendas e CS em um único sistema<br />para acelerar seu crescimento com inteligência,<br />automações e foco total em resultados.
           </p>
           
           {/* Apple-style CTAs */}
