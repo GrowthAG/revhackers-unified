@@ -169,23 +169,23 @@ const SocialProofNotifications = ({
               className="animate-slide-in-right animate-fade-in"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
-              <Card className="p-4 bg-white/95 backdrop-blur-sm border-revgreen/20 shadow-lg">
-                <div className="flex items-center space-x-3">
+            <Card className="p-5 bg-white border-2 border-gray-100 shadow-xl">
+                <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-revgreen/10 rounded-full flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-revgreen" />
+                    <div className="w-10 h-10 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-green-700" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      <span className="font-semibold">{notification.name}</span> da{' '}
-                      <span className="text-revgreen">{notification.company}</span>
+                    <p className="text-sm font-bold text-gray-900 truncate mb-1">
+                      <span className="font-bold">{notification.name}</span> da{' '}
+                      <span className="text-green-700 font-semibold">{notification.company}</span>
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-sm text-gray-700 font-medium">
                       {getActionText(notification.action, notification.material)}
                     </p>
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-500 font-medium">
                     {notification.timeAgo}
                   </div>
                 </div>
@@ -216,32 +216,32 @@ const SocialProofNotifications = ({
             className={`${animationClass} transform transition-all duration-500 hover:scale-105`}
             style={{ animationDelay: `${index * 0.3}s` }}
           >
-            <Card className="p-4 bg-white/95 backdrop-blur-sm border-revgreen/20 shadow-xl hover:shadow-2xl transition-shadow duration-500">
-              <div className="flex items-center space-x-3">
+            <Card className="p-5 bg-white border-2 border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500">
+              <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-gradient-to-r from-revgreen/20 to-green-200/20 rounded-full flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-revgreen" />
+                  <div className="w-12 h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-green-700" />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
-                    <span className="font-semibold">{notification.name}</span>
+                  <p className="text-base font-bold text-gray-900 mb-1">
+                    <span className="font-bold">{notification.name}</span>
                   </p>
-                  <p className="text-xs text-revgreen font-medium">
+                  <p className="text-sm text-green-700 font-semibold mb-1">
                     {notification.company}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  <p className="text-sm text-gray-700 font-medium leading-relaxed">
                     {getActionText(notification.action, notification.material)}
                   </p>
                 </div>
-                <div className="flex flex-col items-end space-y-1">
+                <div className="flex flex-col items-end space-y-2">
                   <button
                     onClick={() => removeNotification(notification.id)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-700 transition-colors p-1"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-4 h-4" />
                   </button>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-500 font-medium">
                     {notification.timeAgo}
                   </span>
                 </div>

@@ -145,35 +145,35 @@ const TopSocialProof = () => {
     <div className={`fixed top-24 right-4 z-40 transition-all duration-500 ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
     }`}>
-      <div className="bg-white/95 backdrop-blur-sm border border-revgreen/20 rounded-xl shadow-xl p-4 max-w-sm">
-        <div className="flex items-start space-x-3">
+      <div className="bg-white border-2 border-gray-100 rounded-xl shadow-2xl p-5 max-w-sm">
+        <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <div className="w-10 h-10 bg-gradient-to-r from-revgreen/20 to-green-200/20 rounded-full flex items-center justify-center">
-              <Icon className="w-5 h-5 text-revgreen" />
+            <div className="w-12 h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
+              <Icon className="w-6 h-6 text-green-700" />
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-semibold text-gray-900 truncate">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-base font-bold text-gray-900 truncate">
                 {currentNotification.name}
               </p>
-              <span className="text-xs text-gray-400 ml-2">
+              <span className="text-xs text-gray-500 ml-2 font-medium">
                 {currentNotification.timeAgo}
               </span>
             </div>
-            <p className="text-xs text-revgreen font-medium mb-1">
+            <p className="text-sm text-green-700 font-semibold mb-2">
               {currentNotification.company}
             </p>
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-sm text-gray-700 leading-relaxed font-medium">
               {getActionText(currentNotification.action, currentNotification.material)}
             </p>
           </div>
         </div>
         
         {/* Progress bar showing time remaining */}
-        <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+        <div className="mt-4 w-full bg-gray-100 rounded-full h-2">
           <div 
-            className="bg-revgreen h-1 rounded-full" 
+            className="bg-green-600 h-2 rounded-full" 
             style={{
               width: '100%',
               animation: 'shrinkProgress 20s linear forwards'
