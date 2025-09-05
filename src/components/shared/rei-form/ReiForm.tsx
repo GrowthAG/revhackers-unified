@@ -25,6 +25,7 @@ const ReiForm = () => {
     companyName: '',
     companySite: '',
     sector: '',
+    annualRevenue: '',
     expectedResults: '',
     solution: '',
     hasPlans: '',

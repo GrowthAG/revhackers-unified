@@ -8,6 +8,7 @@ export interface ReiFormData {
   companyName: string;
   companySite: string;
   sector: string;
+  annualRevenue: string;
   
   // Expectativas e produto
   expectedResults: string;
