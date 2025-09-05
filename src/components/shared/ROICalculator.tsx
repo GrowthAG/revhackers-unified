@@ -270,7 +270,7 @@ const ROICalculator = () => {
               Calculadora Interativa
             </div>
             <h2 className="section-title mb-6 animate-fadeUp">
-              Calcule o <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">impacto financeiro</span> da RevOps
+              Calcule o <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">impacto financeiro</span>
             </h2>
             <p className="text-xl text-gray-600 animate-fade-in-delayed max-w-3xl mx-auto">
               Descubra quanto sua empresa pode crescer com nossa metodologia baseada em resultados reais de +150 clientes
