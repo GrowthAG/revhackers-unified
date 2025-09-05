@@ -34,11 +34,7 @@ const HeroSection = () => {
           
           {/* Main headline with Apple-style typography */}
           <h1 className="hero-text mb-8 animate-fade-up-delayed">
-            Aumente sua <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow">receita recorrente</span>
-            <br />
-            com integração total entre 
-            <br />
-            Marketing, Vendas e CS
+            Transforme sua operação em uma <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow">máquina de receita previsível</span>
           </h1>
           
           {/* Subtitle with refined spacing */}
