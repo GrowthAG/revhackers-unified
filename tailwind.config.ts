@@ -218,7 +218,9 @@ export default {
         'shimmer': 'shimmer 2s linear infinite',
         'gradient-shift': 'gradientShift 3s ease-in-out infinite',
         'slide-in-up': 'slideInUp 0.8s ease-out',
-        'slide-in-stagger': 'slideInUp 0.8s ease-out var(--stagger-delay, 0s) both'
+        'slide-in-stagger': 'slideInUp 0.8s ease-out var(--stagger-delay, 0s) both',
+        'slide-in-right': 'slideInRight 0.5s ease-out',
+        'scale-in': 'scaleIn 0.3s ease-out'
 			}
 		}
 	},
