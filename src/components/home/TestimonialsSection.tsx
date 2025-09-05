@@ -103,7 +103,7 @@ const TestimonialsSection = () => {
                             <p className="font-bold">{testimonial.author}</p>
                             <p className="text-gray-600 text-sm">{testimonial.role}</p>
                             <div className="flex items-center justify-between mt-2">
-                              <span className="text-xs font-medium text-revgreen bg-revgreen/10 px-2 py-1 rounded">
+                              <span className="text-xs font-medium text-gray-800 bg-revgreen/20 px-2 py-1 rounded border border-revgreen/30">
                                 {testimonial.results}
                               </span>
                               <span className="text-xs text-gray-500">
