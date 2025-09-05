@@ -35,7 +35,7 @@ const HeroSection = () => {
           <h1 className="hero-text mb-8">
             <span className="inline-block animate-fade-in" style={{
             animationDelay: '0.2s'
-          }}>Transforme sua operação</span>
+          }}>Transforme sua Operação</span>
             <br />
             <span className="inline-block animate-fade-in" style={{
             animationDelay: '0.4s'
