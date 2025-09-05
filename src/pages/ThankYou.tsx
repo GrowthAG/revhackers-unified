@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
@@ -8,7 +9,7 @@ const ThankYou = () => {
   return (
     <PageLayout>
       <div className="min-h-screen bg-white flex items-center justify-center py-16 px-4">
-        <div className="max-w-2xl mx-auto text-center">
+        <Card className="max-w-2xl mx-auto p-12 text-center bg-white border border-gray-200 shadow-lg">
           {/* Success Icon */}
           <div className="flex justify-center mb-8">
             <CheckCircle className="w-20 h-20 text-revgreen animate-bounceGentle" />
@@ -55,7 +56,7 @@ const ThankYou = () => {
               </Link>
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     </PageLayout>
   );
