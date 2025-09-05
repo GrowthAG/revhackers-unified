@@ -7,23 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, BookOpen } from 'lucide-react';
 import { getAllPosts } from '@/api/posts';
 import { getArticleImageBySlug } from '@/components/blog/post/articles/utils/frameworkImages';
+import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 
-// Interface para post do blog
-interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
+// Interface para post do blog (estendendo a estática)
+interface BlogPost extends Omit<StaticBlogPost, 'content'> {
   content: string;
-  date: string;
-  readTime: string;
-  image: string;
-  category: string;
-  author: {
-    name: string;
-    role: string;
-    avatar: string;
-  };
 }
 
 const Blog = () => {
@@ -37,18 +25,29 @@ const Blog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Carregar posts da API do WordPress
+  // Carregar posts da API do WordPress e combinar com posts estáticos
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        const posts = await getAllPosts();
-        setBlogPosts(posts);
+        const apiPosts = await getAllPosts();
+        // Combinar posts estáticos com posts da API, adicionando content padrão aos estáticos
+        const postsWithContent = staticBlogPosts.map(post => ({
+          ...post,
+          content: post.content || ''
+        }));
+        const allPosts = [...postsWithContent, ...apiPosts];
+        setBlogPosts(allPosts);
         setError(null);
       } catch (err) {
-        console.error("Erro ao buscar posts:", err);
-        setError("Não foi possível carregar os artigos. Por favor, tente novamente mais tarde.");
-        setBlogPosts([]);
+        console.error("Erro ao buscar posts da API, usando apenas posts estáticos:", err);
+        // Se a API falhar, usar apenas os posts estáticos
+        const postsWithContent = staticBlogPosts.map(post => ({
+          ...post,
+          content: post.content || ''
+        }));
+        setBlogPosts(postsWithContent);
+        setError(null);
       } finally {
         setIsLoading(false);
       }
@@ -151,7 +150,7 @@ const Blog = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {displayedPosts.map(post => (
-                  <BlogCard key={post.id} post={post} />
+                  <BlogCard key={post.id} post={post as any} />
                 ))}
               </div>
               
