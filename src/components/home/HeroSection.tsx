@@ -41,10 +41,18 @@ const HeroSection = () => {
             <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{ animationDelay: '0.6s' }}>Receita Previsível</span>
           </h1>
           
-          {/* Subtitle with refined spacing */}
-          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
-            Conectamos marketing, vendas e CS em um único sistema para acelerar seu crescimento com inteligência, automações e foco total em resultados.
-          </p>
+          {/* Subtitle with funnel structure */}
+          <div className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed">
+            <p className="animate-scale-in-delayed" style={{ animationDelay: '0.8s' }}>
+              Conectamos marketing, vendas e CS
+            </p>
+            <p className="animate-scale-in-delayed" style={{ animationDelay: '1.0s' }}>
+              em um único sistema para acelerar
+            </p>
+            <p className="animate-scale-in-delayed" style={{ animationDelay: '1.2s' }}>
+              seu crescimento com resultados previsíveis
+            </p>
+          </div>
           
           {/* Apple-style CTAs */}
           <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto animate-slideInRight">
