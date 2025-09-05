@@ -33,8 +33,9 @@ const HeroSection = () => {
           </div>
           
           {/* Main headline with Apple-style typography */}
-          <h1 className="hero-text mb-8 animate-fade-up-delayed">
-            Transforme sua operação em uma <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow">máquina de receita previsível</span>
+          <h1 className="hero-text mb-8">
+            <span className="inline-block animate-fade-in" style={{ animationDelay: '0.2s' }}>Transforme sua operação em uma</span>{' '}
+            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{ animationDelay: '0.4s' }}>máquina de receita previsível</span>
           </h1>
           
           {/* Subtitle with refined spacing */}
