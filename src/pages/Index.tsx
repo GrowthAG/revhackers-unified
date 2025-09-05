@@ -14,12 +14,15 @@ import ROICalculator from '@/components/shared/ROICalculator';
 import ExitIntentPopup from '@/components/shared/ExitIntentPopup';
 import SocialProofBar from '@/components/shared/SocialProofBar';
 import SocialProofNotifications from '@/components/shared/SocialProofNotifications';
+import TopSocialProof from '@/components/shared/TopSocialProof';
 
 const Index = () => {
   return (
     <PageLayout>
       <ExitIntentPopup />
-      <SocialProofNotifications position="bottom-right" limit={4} />
+      {/* Social Proof no topo da página - 1 card a cada minuto */}
+      <TopSocialProof />
+      
       <HeroSection />
       <SocialProofBar />
       
@@ -35,7 +38,7 @@ const Index = () => {
                 Veja quem está aproveitando nossos conteúdos e serviços agora mesmo
               </p>
             </div>
-            <SocialProofNotifications position="inline" limit={5} />
+            <SocialProofNotifications position="inline" limit={3} />
           </div>
         </div>
       </section>

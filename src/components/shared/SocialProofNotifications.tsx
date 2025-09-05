@@ -19,18 +19,18 @@ interface WordPressMaterial {
 }
 
 const mockNames = [
-  { name: 'Carlos Silva', company: 'TechCorp' },
-  { name: 'Ana Santos', company: 'InnovaTech' },
-  { name: 'Roberto Mendes', company: 'Growth Solutions' },
-  { name: 'Mariana Costa', company: 'DigitalFlow' },
-  { name: 'Pedro Oliveira', company: 'ScaleUp Ventures' },
-  { name: 'Julia Ferreira', company: 'B2B Masters' },
-  { name: 'Fernando Lima', company: 'Revenue Labs' },
-  { name: 'Camila Rocha', company: 'Marketing Pro' },
-  { name: 'Rafael Santos', company: 'SalesForce Pro' },
-  { name: 'Luciana Pereira', company: 'ConversionHub' },
-  { name: 'Bruno Costa', company: 'GrowthLab' },
-  { name: 'Patrícia Lima', company: 'Scale Solutions' }
+  { name: 'Carlos Silva', company: 'Heineken' },
+  { name: 'Ana Santos', company: 'FMU Virtual' },
+  { name: 'Roberto Mendes', company: 'TOEFL' },
+  { name: 'Mariana Costa', company: 'Placlux' },
+  { name: 'Pedro Oliveira', company: 'Enics' },
+  { name: 'Julia Ferreira', company: 'Security First' },
+  { name: 'Fernando Lima', company: 'Datavoxx' },
+  { name: 'Camila Rocha', company: 'Agence MR' },
+  { name: 'Rafael Santos', company: 'Emagrecentro' },
+  { name: 'Luciana Pereira', company: 'Anhembi Morumbi' },
+  { name: 'Bruno Costa', company: 'BLDN Digital' },
+  { name: 'Patrícia Lima', company: 'Funnels Brasil' }
 ];
 
 const getActionText = (action: string, material?: string) => {
@@ -129,13 +129,13 @@ const SocialProofNotifications = ({
       setNextIndex(prev => prev + 1);
     };
 
-    // Primeira notificação após 5 segundos (mais lento)
-    const initialTimer = setTimeout(addNotification, 5000);
+    // Primeira notificação após 10 segundos (mais lento)
+    const initialTimer = setTimeout(addNotification, 10000);
 
-    // Novas notificações a cada 20-35 segundos (bem mais lento)
+    // Novas notificações a cada 60 segundos (1 minuto)
     const interval = setInterval(() => {
       addNotification();
-    }, Math.random() * 15000 + 20000); // 20-35 segundos
+    }, 60000); // 60 segundos
 
     return () => {
       clearTimeout(initialTimer);
@@ -147,12 +147,12 @@ const SocialProofNotifications = ({
     setCurrentNotifications(prev => prev.filter(notif => notif.id !== id));
   };
 
-  // Auto-remove notifications after 18 seconds (mais tempo de visualização)
+  // Auto-remove notifications after 25 seconds (mais tempo de visualização)
   useEffect(() => {
     currentNotifications.forEach(notification => {
       const timer = setTimeout(() => {
         removeNotification(notification.id);
-      }, 18000);
+      }, 25000);
 
       return () => clearTimeout(timer);
     });
@@ -198,7 +198,7 @@ const SocialProofNotifications = ({
   }
 
   const positionClasses = {
-    'top-right': 'fixed top-20 right-4 z-50',
+    'top-right': 'fixed top-24 right-4 z-40',
     'bottom-right': 'fixed bottom-4 right-4 z-50'
   };
 

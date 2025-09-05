@@ -195,6 +195,11 @@ export default {
             opacity: "1",
             transform: "translateY(0)"
           }
+        },
+
+        'shrinkProgress': {
+          "0%": { width: "100%" },
+          "100%": { width: "0%" }
         }
 			},
 			animation: {
@@ -220,7 +225,8 @@ export default {
         'slide-in-up': 'slideInUp 0.8s ease-out',
         'slide-in-stagger': 'slideInUp 0.8s ease-out var(--stagger-delay, 0s) both',
         'slide-in-right': 'slideInRight 0.5s ease-out',
-        'scale-in': 'scaleIn 0.3s ease-out'
+        'scale-in': 'scaleIn 0.3s ease-out',
+        'shrink-progress': 'shrinkProgress 20s linear forwards'
 			}
 		}
 	},
