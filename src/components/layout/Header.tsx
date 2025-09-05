@@ -18,7 +18,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <header className="w-full bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 fixed top-0 left-0 right-0 z-[60] transition-all duration-300">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
           <Link to="/" className="mr-12 group" onClick={scrollToTop}>
