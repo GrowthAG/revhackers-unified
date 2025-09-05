@@ -36,7 +36,7 @@ const ThankYou = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               asChild 
-              className="bg-[#03fc3b] hover:bg-[#03fc3b]/90 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 group min-w-48"
+              className="bg-[#03fc3b] hover:bg-[#03fc3b]/90 text-black font-semibold px-8 py-3 rounded-lg transition-all duration-300 group min-w-48"
               size="lg"
             >
               <Link to="/" onClick={() => window.scrollTo(0, 0)}>
