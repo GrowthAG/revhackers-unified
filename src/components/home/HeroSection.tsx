@@ -47,23 +47,23 @@ const HeroSection = () => {
           </h1>
           
           {/* Subtitle with refined spacing */}
-          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
-            Conectamos marketing, vendas e CS em um único sistema<br />para acelerar seu crescimento com inteligência,<br />automações e foco total em resultados.
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
+            Conectamos marketing, vendas e CS em um único sistema<br className="hidden sm:block" />para acelerar seu crescimento com inteligência,<br className="hidden sm:block" />automações e foco total em resultados.
           </p>
           
           {/* Apple-style CTAs */}
-          <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-4xl mx-auto animate-slideInRight">
-            <Button asChild className="btn-primary text-lg h-16 px-12 group" size="lg">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 max-w-4xl mx-auto animate-slideInRight">
+            <Button asChild className="btn-primary text-base sm:text-lg h-14 sm:h-16 px-8 sm:px-12 group" size="lg">
               <Link to="/diagnostico" onClick={scrollToTop} className="flex items-center">
                 Solicitar diagnóstico estratégico
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             
-            <Button variant="outline" asChild className="btn-glass text-lg h-16 px-12 group" size="lg">
+            <Button variant="outline" asChild className="btn-glass text-base sm:text-lg h-14 sm:h-16 px-8 sm:px-12 group" size="lg">
               <Link to="/cases" onClick={scrollToTop} className="flex items-center">
                 Ver casos de sucesso
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
