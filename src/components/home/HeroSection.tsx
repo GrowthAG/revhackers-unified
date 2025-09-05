@@ -28,7 +28,7 @@ const HeroSection = () => {
           {/* Floating badge with urgency */}
           <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8 animate-bounce-gentle shimmer-effect">
             <Sparkles className="w-4 h-4 mr-2 text-revgreen animate-pulse-soft" />
-            <StatsCounter end={150} suffix="+ empresas B2B" prefix="Confiado por " />
+            <StatsCounter end={150} suffix=" empresas B2B" prefix="Confiado por +" />
           </div>
           
           {/* Main headline with Apple-style typography */}
