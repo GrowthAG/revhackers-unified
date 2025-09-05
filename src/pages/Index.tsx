@@ -12,22 +12,45 @@ import QuoteSection from '@/components/home/QuoteSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
 import ROICalculator from '@/components/shared/ROICalculator';
+import AnimatedSection from '@/components/shared/AnimatedSection';
 
 const Index = () => {
   return (
     <PageLayout>
       <HeroSection />
-      <StatsSection />
-      <BenefitsSection />
-      <ServicesSection />
-      <ROICalculator />
-      <CasesSection />
-      <JourneySection />
-      <PartnersSection />
-      <TestimonialsSection />
-      <QuoteSection />
-      <FAQSection />
-      <ContactFormSection />
+      <AnimatedSection animation="fade-in-viewport">
+        <StatsSection />
+      </AnimatedSection>
+      <AnimatedSection animation="slide-up-viewport" delay="stagger-1">
+        <BenefitsSection />
+      </AnimatedSection>
+      <AnimatedSection animation="fade-in-viewport" delay="stagger-2">
+        <ServicesSection />
+      </AnimatedSection>
+      <AnimatedSection animation="scale-in-viewport">
+        <ROICalculator />
+      </AnimatedSection>
+      <AnimatedSection animation="slide-up-viewport">
+        <CasesSection />
+      </AnimatedSection>
+      <AnimatedSection animation="fade-in-viewport" delay="stagger-1">
+        <JourneySection />
+      </AnimatedSection>
+      <AnimatedSection animation="slide-up-viewport" delay="stagger-2">
+        <PartnersSection />
+      </AnimatedSection>
+      <AnimatedSection animation="fade-in-viewport">
+        <TestimonialsSection />
+      </AnimatedSection>
+      <AnimatedSection animation="slide-up-viewport" delay="stagger-1">
+        <QuoteSection />
+      </AnimatedSection>
+      <AnimatedSection animation="fade-in-viewport" delay="stagger-2">
+        <FAQSection />
+      </AnimatedSection>
+      <AnimatedSection animation="scale-in-viewport">
+        <ContactFormSection />
+      </AnimatedSection>
     </PageLayout>
   );
 };

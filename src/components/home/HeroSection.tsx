@@ -2,8 +2,11 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useParallax } from '@/hooks/useInViewAnimation';
 
 const HeroSection = () => {
+  const { ref: parallaxRef, offset } = useParallax(0.3);
+  
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
@@ -32,8 +35,14 @@ const HeroSection = () => {
             Confiado por mais de 150 empresas B2B
           </div>
           
-          {/* Main headline with Apple-style typography */}
-          <h1 className="hero-text mb-8">
+          {/* Main headline with Apple-style typography and subtle parallax */}
+          <h1 
+            ref={parallaxRef}
+            className="hero-text mb-8 parallax-subtle"
+            style={{ 
+              '--parallax-offset': `${offset}px`
+            } as React.CSSProperties}
+          >
             <span className="inline-block animate-fade-in" style={{ animationDelay: '0.2s' }}>Transforme sua operação</span>
             <br />
             <span className="inline-block animate-fade-in" style={{ animationDelay: '0.4s' }}>em uma máquina</span>
