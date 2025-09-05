@@ -58,7 +58,11 @@ const ReiForm = () => {
     marketingMaterials: '',
     kpis: '',
     limitations: '',
-    approvalProcess: ''
+    approvalProcess: '',
+    sdrCount: '',
+    closerCount: '',
+    currentCrm: '',
+    currentMarketingTool: ''
   });
 
   const sections = [

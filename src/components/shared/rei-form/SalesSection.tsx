@@ -93,6 +93,58 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           placeholder="Estratégias testadas e resultados..."
         />
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="sdrCount" className="text-white">Quantos SDRs no time? *</Label>
+          <Input
+            id="sdrCount"
+            value={formData.sdrCount}
+            onChange={(e) => onChange('sdrCount', e.target.value)}
+            placeholder="Ex: 2, 5, 10..."
+            className="bg-gray-900 border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="closerCount" className="text-white">Quantos closers no time? *</Label>
+          <Input
+            id="closerCount"
+            value={formData.closerCount}
+            onChange={(e) => onChange('closerCount', e.target.value)}
+            placeholder="Ex: 1, 3, 5..."
+            className="bg-gray-900 border-gray-700 text-white"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="currentCrm" className="text-white">Qual seu CRM atual? *</Label>
+          <Input
+            id="currentCrm"
+            value={formData.currentCrm}
+            onChange={(e) => onChange('currentCrm', e.target.value)}
+            placeholder="Ex: HubSpot, Pipedrive, Salesforce..."
+            className="bg-gray-900 border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="currentMarketingTool" className="text-white">Qual sua ferramenta de marketing? *</Label>
+          <Input
+            id="currentMarketingTool"
+            value={formData.currentMarketingTool}
+            onChange={(e) => onChange('currentMarketingTool', e.target.value)}
+            placeholder="Ex: RD Station, HubSpot, Mailchimp..."
+            className="bg-gray-900 border-gray-700 text-white"
+            required
+          />
+        </div>
+      </div>
     </div>
   );
 };

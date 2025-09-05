@@ -49,6 +49,12 @@ export interface ReiFormData {
   decisionFactors: string;
   growthStrategies: string;
   
+  // Equipe de vendas
+  sdrCount: string;
+  closerCount: string;
+  currentCrm: string;
+  currentMarketingTool: string;
+  
   // Recursos e processos
   marketingMaterials: string;
   kpis: string;
