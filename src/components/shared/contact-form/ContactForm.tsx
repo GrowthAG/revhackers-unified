@@ -103,9 +103,9 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
         role: '',
       });
       
-      // Redirect to booking page
+      // Redirect to thank you page
       setTimeout(() => {
-        navigate('/booking');
+        navigate('/obrigado');
       }, 1500);
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -117,9 +117,9 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
         description: "Redirecionando para agendamento...",
       });
       
-      // Redirect to booking page despite webhook error
+      // Redirect to thank you page despite webhook error
       setTimeout(() => {
-        navigate('/booking');
+        navigate('/obrigado');
       }, 1500);
     } finally {
       setIsSubmitting(false);
