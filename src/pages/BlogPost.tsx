@@ -9,6 +9,7 @@ import TableOfContents from '@/components/blog/post/TableOfContents';
 import { getArticleImageBySlug } from '@/components/blog/post/articles/utils/frameworkImages';
 import { getAllPosts } from '@/api/posts';
 import { Button } from '@/components/ui/button';
+import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 
 // Interface matches the WordPress API structure in RelatedPosts.tsx
 interface Author {
@@ -17,17 +18,8 @@ interface Author {
   avatar: string;
 }
 
-interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
+interface BlogPost extends Omit<StaticBlogPost, 'content'> {
   content: string;
-  date: string;
-  readTime: string;
-  image: string;
-  category: string;
-  author: Author;
 }
 
 const BlogPostPage = () => {
@@ -38,18 +30,29 @@ const BlogPostPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Load posts from WordPress API
+  // Load posts from WordPress API and combine with static posts
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        const fetchedPosts = await getAllPosts();
-        setPosts(fetchedPosts);
+        const apiPosts = await getAllPosts();
+        // Combine static posts with API posts, adding content field to static posts
+        const postsWithContent = staticBlogPosts.map(post => ({
+          ...post,
+          content: post.content || ''
+        }));
+        const allPosts = [...postsWithContent, ...apiPosts];
+        setPosts(allPosts);
         setError(null);
       } catch (err) {
-        console.error("Erro ao carregar posts:", err);
-        setError("Não foi possível carregar o artigo. Por favor, tente novamente mais tarde.");
-        setPosts([]);
+        console.error("Erro ao carregar posts da API, usando apenas posts estáticos:", err);
+        // If API fails, use only static posts
+        const postsWithContent = staticBlogPosts.map(post => ({
+          ...post,
+          content: post.content || ''
+        }));
+        setPosts(postsWithContent);
+        setError(null);
       } finally {
         setIsLoading(false);
       }
