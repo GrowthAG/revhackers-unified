@@ -6,6 +6,7 @@ import ChatGPTGrowthArticle from './articles/ChatGPTGrowthArticle';
 import ColdEmailArticle from './articles/ColdEmailArticle';
 import LTVCACArticle from './articles/LTVCACArticle';
 import ProductMarketFitArticle from './articles/ProductMarketFitArticle';
+import LinkedInNavigatorArticle from './articles/LinkedInNavigatorArticle';
 
 interface BlogPostContentProps {
   content: string;
@@ -23,7 +24,8 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
     'chatgpt-para-growth-15-prompts-produtividade-marketing': ChatGPTGrowthArticle,
     'cold-email-2025-7-estrategias-que-funcionam': ColdEmailArticle,
     'ltv-vs-cac-calcular-otimizar-crescimento-sustentavel': LTVCACArticle,
-    'product-market-fit-5-sinais-encontrou-3-que-nao': ProductMarketFitArticle
+    'product-market-fit-5-sinais-encontrou-3-que-nao': ProductMarketFitArticle,
+    'linkedin-sales-navigator-guia-completo-prospeccao-b2b': LinkedInNavigatorArticle
   };
 
   // Check if there's a custom component for this slug
