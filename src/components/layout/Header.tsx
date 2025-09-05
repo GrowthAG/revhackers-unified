@@ -29,13 +29,13 @@ const Header = () => {
             />
           </Link>
           
-          <nav className="hidden md:flex space-x-2">
+          <nav className="hidden md:flex space-x-1">
             <Link to="/" className="nav-link" onClick={scrollToTop}>Home</Link>
             <Link to="/servicos" className="nav-link" onClick={scrollToTop}>Serviços</Link>
             <Link to="/cases" className="nav-link" onClick={scrollToTop}>Cases</Link>
             <Link to="/materiais" className="nav-link" onClick={scrollToTop}>Materiais</Link>
             <Link to="/comunidade" className="nav-link" onClick={scrollToTop}>Comunidade</Link>
-            <Link to="/quem-somos" className="nav-link" onClick={scrollToTop}>Quem Somos</Link>
+            <Link to="/quem-somos" className="nav-link whitespace-nowrap" onClick={scrollToTop}>Quem Somos</Link>
             <Link to="/blog" className="nav-link" onClick={scrollToTop}>Blog</Link>
           </nav>
         </div>
