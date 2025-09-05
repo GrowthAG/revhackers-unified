@@ -21,11 +21,11 @@ const Header = () => {
     <header className="w-full bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 fixed top-0 left-0 right-0 z-[60] transition-all duration-300">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
-          <Link to="/" className="mr-12 group" onClick={scrollToTop}>
+          <Link to="/" className="mr-8 group" onClick={scrollToTop}>
             <img 
               src="/lovable-uploads/00aac887-24ac-4c80-a2f3-d4912050bb97.png" 
               alt="RevHackers Logo" 
-              className={`${isMobile ? 'h-12' : 'h-16'} w-auto transition-all duration-300 group-hover:scale-105`} 
+              className={`${isMobile ? 'h-10' : 'h-12'} w-auto transition-all duration-300 group-hover:scale-105`} 
             />
           </Link>
           
