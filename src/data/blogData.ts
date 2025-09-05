@@ -105,9 +105,9 @@ export const blogPosts: BlogPost[] = [
     category: "PLG",
     image: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67fe3e8f11cc71d2ba4dbe53.png",
     author: {
-      name: "Rafael Silva",
-      role: "Especialista em Digital Branding",
-      avatar: "https://i.pravatar.cc/150?u=rafaelsilva"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-04-10",
     readTime: "10 min",
@@ -121,9 +121,9 @@ export const blogPosts: BlogPost[] = [
     category: "PLG",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     author: {
-      name: "Ana Mendes",
-      role: "Head de Crescimento",
-      avatar: "https://i.pravatar.cc/150?u=ana"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-20",
     readTime: "8 min",
@@ -137,9 +137,9 @@ export const blogPosts: BlogPost[] = [
     category: "CRO",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     author: {
-      name: "Ricardo Torres",
-      role: "Especialista em CRO",
-      avatar: "https://i.pravatar.cc/150?u=ricardo"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-15",
     readTime: "6 min"
@@ -152,9 +152,9 @@ export const blogPosts: BlogPost[] = [
     category: "ABM",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     author: {
-      name: "Juliana Costa",
-      role: "Estrategista de Marketing B2B",
-      avatar: "https://i.pravatar.cc/150?u=juliana"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-10",
     readTime: "7 min",
@@ -168,9 +168,9 @@ export const blogPosts: BlogPost[] = [
     category: "Automação",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
     author: {
-      name: "Pedro Almeida",
-      role: "Marketing Operations",
-      avatar: "https://i.pravatar.cc/150?u=pedro"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-05",
     readTime: "9 min"
@@ -183,9 +183,9 @@ export const blogPosts: BlogPost[] = [
     category: "PLG",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     author: {
-      name: "Ana Mendes",
-      role: "Head de Crescimento",
-      avatar: "https://i.pravatar.cc/150?u=ana"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-28",
     readTime: "7 min"
@@ -198,9 +198,9 @@ export const blogPosts: BlogPost[] = [
     category: "Vendas",
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22",
     author: {
-      name: "Lucas Ferreira",
-      role: "Sales Enablement",
-      avatar: "https://i.pravatar.cc/150?u=lucas"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-20",
     readTime: "8 min",
@@ -214,9 +214,9 @@ export const blogPosts: BlogPost[] = [
     category: "Dados",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
     author: {
-      name: "Carla Soares",
-      role: "Data Analyst",
-      avatar: "https://i.pravatar.cc/150?u=carla"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-15",
     readTime: "10 min"
@@ -229,9 +229,9 @@ export const blogPosts: BlogPost[] = [
     category: "Vendas",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     author: {
-      name: "Rafael Costa",
-      role: "Sales Director",
-      avatar: "https://i.pravatar.cc/150?u=rafael"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-10",
     readTime: "12 min"
@@ -244,9 +244,9 @@ export const blogPosts: BlogPost[] = [
     category: "PLG",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     author: {
-      name: "Mariana Silva",
-      role: "Marketing Director",
-      avatar: "https://i.pravatar.cc/150?u=mariana"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-05",
     readTime: "9 min"
@@ -259,9 +259,9 @@ export const blogPosts: BlogPost[] = [
     category: "MarTech",
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22",
     author: {
-      name: "Gabriel Dias",
-      role: "Growth Hacker",
-      avatar: "https://i.pravatar.cc/150?u=gabriel"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-28",
     readTime: "7 min"
@@ -274,9 +274,9 @@ export const blogPosts: BlogPost[] = [
     category: "MarTech",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
     author: {
-      name: "Ana Mendes",
-      role: "Head de Crescimento",
-      avatar: "https://i.pravatar.cc/150?u=ana"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-20",
     readTime: "8 min"
@@ -289,9 +289,9 @@ export const blogPosts: BlogPost[] = [
     category: "Dados",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     author: {
-      name: "Rodrigo Alves",
-      role: "Co-founder & CEO",
-      avatar: "https://i.pravatar.cc/150?u=rodrigo"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-15",
     readTime: "11 min",
@@ -305,9 +305,9 @@ export const blogPosts: BlogPost[] = [
     category: "MarTech",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
     author: {
-      name: "Fernanda Castro",
-      role: "Marketing Operations",
-      avatar: "https://i.pravatar.cc/150?u=fernanda"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-10",
     readTime: "10 min"
@@ -320,9 +320,9 @@ export const blogPosts: BlogPost[] = [
     category: "PLG",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
     author: {
-      name: "Bruno Martins",
-      role: "Product Marketing",
-      avatar: "https://i.pravatar.cc/150?u=bruno"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-05",
     readTime: "7 min"
@@ -335,9 +335,9 @@ export const blogPosts: BlogPost[] = [
     category: "CRO",
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22",
     author: {
-      name: "Carolina Lima",
-      role: "UX Researcher",
-      avatar: "https://i.pravatar.cc/150?u=carolina"
+      name: "Giulliano Alves",
+      role: "CEO da RevHackers",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-01",
     readTime: "9 min"
