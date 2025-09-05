@@ -40,8 +40,7 @@ const HeroSection = () => {
           
           {/* Subtitle with refined spacing */}
           <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed animate-scale-in-delayed">
-            Conectamos seus dados, processos e equipes para criar um ecossistema de crescimento B2B 
-            através de automações e inteligência de dados.
+            Conectamos marketing, vendas e CS em um único sistema para acelerar seu crescimento com inteligência, automações e foco total em resultados.
           </p>
           
           {/* Apple-style CTAs */}
