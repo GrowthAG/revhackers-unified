@@ -35,7 +35,7 @@ const SocialProofBar = () => {
           
           <div className="flex items-center space-x-2">
             <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-orange-200">
-              ⚡ <StatsCounter end={48} suffix="h" />
+              ⚡ <StatsCounter end={2} suffix="h" />
             </Badge>
             <span className="text-sm text-gray-600">Tempo de resposta</span>
           </div>

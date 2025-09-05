@@ -26,10 +26,10 @@ const stats = [
     icon: Target
   },
   {
-    value: 24,
-    suffix: "%",
-    label: "Redução média de churn",
-    description: "Após implementação de RevOps",
+    value: 2,
+    suffix: "h",
+    label: "Tempo médio de resposta",
+    description: "Para diagnósticos e propostas comerciais",
     icon: BarChart3
   }
 ];
