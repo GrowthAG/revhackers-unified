@@ -358,8 +358,8 @@ const ROICalculator = () => {
               {showContactForm ? (
                 <Card className="interactive-card border-revgreen/20 animate-slide-in-up">
                   <CardHeader>
-                    <CardTitle className="flex items-center text-2xl text-center">
-                      <Lock className="w-6 h-6 mr-3 text-revgreen" />
+                    <CardTitle className="flex flex-col items-center text-2xl text-center space-y-3">
+                      <Lock className="w-8 h-8 text-revgreen" />
                       Preencha seus dados para ver o resultado
                     </CardTitle>
                   </CardHeader>
