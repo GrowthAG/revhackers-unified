@@ -12,75 +12,25 @@ interface NotificationData {
   icon: React.ElementType;
 }
 
-const mockActivities: NotificationData[] = [
-  {
-    id: '1',
-    name: 'Carlos Silva',
-    company: 'TechCorp',
-    action: 'download',
-    material: 'Guia RevOps B2B 2024',
-    timeAgo: '2 min',
-    icon: Download
-  },
-  {
-    id: '2',
-    name: 'Ana Santos',
-    company: 'InnovaTech',
-    action: 'booking',
-    timeAgo: '5 min',
-    icon: Calendar
-  },
-  {
-    id: '3',
-    name: 'Roberto Mendes',
-    company: 'Growth Solutions',
-    action: 'roi_calc',
-    timeAgo: '8 min',
-    icon: TrendingUp
-  },
-  {
-    id: '4',
-    name: 'Mariana Costa',
-    company: 'DigitalFlow',
-    action: 'download',
-    material: 'Checklist de Automação',
-    timeAgo: '12 min',
-    icon: Download
-  },
-  {
-    id: '5',
-    name: 'Pedro Oliveira',
-    company: 'ScaleUp Ventures',
-    action: 'view',
-    material: 'Case Heineken',
-    timeAgo: '15 min',
-    icon: Eye
-  },
-  {
-    id: '6',
-    name: 'Julia Ferreira',
-    company: 'B2B Masters',
-    action: 'download',
-    material: 'Template de ROI',
-    timeAgo: '18 min',
-    icon: Download
-  },
-  {
-    id: '7',
-    name: 'Fernando Lima',
-    company: 'Revenue Labs',
-    action: 'booking',
-    timeAgo: '22 min',
-    icon: Calendar
-  },
-  {
-    id: '8',
-    name: 'Camila Rocha',
-    company: 'Marketing Pro',
-    action: 'roi_calc',
-    timeAgo: '25 min',
-    icon: TrendingUp
-  }
+interface WordPressMaterial {
+  title: { rendered: string };
+  excerpt: { rendered: string };
+  link_material?: string;
+}
+
+const mockNames = [
+  { name: 'Carlos Silva', company: 'TechCorp' },
+  { name: 'Ana Santos', company: 'InnovaTech' },
+  { name: 'Roberto Mendes', company: 'Growth Solutions' },
+  { name: 'Mariana Costa', company: 'DigitalFlow' },
+  { name: 'Pedro Oliveira', company: 'ScaleUp Ventures' },
+  { name: 'Julia Ferreira', company: 'B2B Masters' },
+  { name: 'Fernando Lima', company: 'Revenue Labs' },
+  { name: 'Camila Rocha', company: 'Marketing Pro' },
+  { name: 'Rafael Santos', company: 'SalesForce Pro' },
+  { name: 'Luciana Pereira', company: 'ConversionHub' },
+  { name: 'Bruno Costa', company: 'GrowthLab' },
+  { name: 'Patrícia Lima', company: 'Scale Solutions' }
 ];
 
 const getActionText = (action: string, material?: string) => {
@@ -98,6 +48,11 @@ const getActionText = (action: string, material?: string) => {
   }
 };
 
+const getRandomTimeAgo = () => {
+  const times = ['2 min', '5 min', '8 min', '12 min', '15 min', '18 min', '22 min', '25 min', '28 min', '32 min'];
+  return times[Math.floor(Math.random() * times.length)];
+};
+
 interface SocialProofNotificationsProps {
   position?: 'top-right' | 'bottom-right' | 'inline';
   limit?: number;
@@ -108,15 +63,63 @@ const SocialProofNotifications = ({
   limit = 3 
 }: SocialProofNotificationsProps) => {
   const [currentNotifications, setCurrentNotifications] = useState<NotificationData[]>([]);
+  const [materials, setMaterials] = useState<WordPressMaterial[]>([]);
   const [nextIndex, setNextIndex] = useState(0);
 
+  // Fetch materiais do WordPress
   useEffect(() => {
-    // Função para adicionar nova notificação
-    const addNotification = () => {
-      const newNotification = {
-        ...mockActivities[nextIndex % mockActivities.length],
-        id: `${Date.now()}-${nextIndex}` // ID único
+    const fetchMaterials = async () => {
+      try {
+        const response = await fetch('https://materiais.revhackers.com.br/wp-json/wp/v2/posts?_embed');
+        const data = await response.json();
+        setMaterials(data);
+      } catch (error) {
+        console.error('Erro ao buscar materiais:', error);
+        // Fallback para materiais estáticos
+        setMaterials([
+          { title: { rendered: 'LinkedIn Outreach Revolution' }, excerpt: { rendered: '' } },
+          { title: { rendered: 'Timing Sales Playbook' }, excerpt: { rendered: '' } },
+          { title: { rendered: 'Como Conseguir Telefone e Email de Qualquer Decisor' }, excerpt: { rendered: '' } }
+        ]);
+      }
+    };
+
+    fetchMaterials();
+  }, []);
+
+  useEffect(() => {
+    if (materials.length === 0) return;
+
+    const generateNotification = (): NotificationData => {
+      const randomPerson = mockNames[Math.floor(Math.random() * mockNames.length)];
+      const actions: { action: NotificationData['action'], icon: React.ElementType }[] = [
+        { action: 'download', icon: Download },
+        { action: 'view', icon: Eye },
+        { action: 'booking', icon: Calendar },
+        { action: 'roi_calc', icon: TrendingUp }
+      ];
+      
+      const randomAction = actions[Math.floor(Math.random() * actions.length)];
+      
+      let material = '';
+      if (randomAction.action === 'download' || randomAction.action === 'view') {
+        const randomMaterial = materials[Math.floor(Math.random() * materials.length)];
+        material = randomMaterial.title.rendered;
+      }
+
+      return {
+        id: `${Date.now()}-${Math.random()}`,
+        name: randomPerson.name,
+        company: randomPerson.company,
+        action: randomAction.action,
+        material: material || undefined,
+        timeAgo: getRandomTimeAgo(),
+        icon: randomAction.icon
       };
+    };
+
+    const addNotification = () => {
+      const newNotification = generateNotification();
 
       setCurrentNotifications(prev => {
         const updated = [newNotification, ...prev].slice(0, limit);
@@ -126,30 +129,30 @@ const SocialProofNotifications = ({
       setNextIndex(prev => prev + 1);
     };
 
-    // Adicionar primeira notificação após 2 segundos
-    const initialTimer = setTimeout(addNotification, 2000);
+    // Primeira notificação após 5 segundos (mais lento)
+    const initialTimer = setTimeout(addNotification, 5000);
 
-    // Adicionar novas notificações a cada 8-15 segundos
+    // Novas notificações a cada 20-35 segundos (bem mais lento)
     const interval = setInterval(() => {
       addNotification();
-    }, Math.random() * 7000 + 8000); // 8-15 segundos aleatório
+    }, Math.random() * 15000 + 20000); // 20-35 segundos
 
     return () => {
       clearTimeout(initialTimer);
       clearInterval(interval);
     };
-  }, [nextIndex, limit]);
+  }, [materials, limit, nextIndex]);
 
   const removeNotification = (id: string) => {
     setCurrentNotifications(prev => prev.filter(notif => notif.id !== id));
   };
 
-  // Auto-remove notifications after 12 seconds
+  // Auto-remove notifications after 18 seconds (mais tempo de visualização)
   useEffect(() => {
     currentNotifications.forEach(notification => {
       const timer = setTimeout(() => {
         removeNotification(notification.id);
-      }, 12000);
+      }, 18000);
 
       return () => clearTimeout(timer);
     });
@@ -164,7 +167,7 @@ const SocialProofNotifications = ({
             <div
               key={notification.id}
               className="animate-slide-in-right animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               <Card className="p-4 bg-white/95 backdrop-blur-sm border-revgreen/20 shadow-lg">
                 <div className="flex items-center space-x-3">
@@ -210,10 +213,10 @@ const SocialProofNotifications = ({
         return (
           <div
             key={notification.id}
-            className={`${animationClass} transform transition-all duration-300 hover:scale-105`}
-            style={{ animationDelay: `${index * 0.1}s` }}
+            className={`${animationClass} transform transition-all duration-500 hover:scale-105`}
+            style={{ animationDelay: `${index * 0.3}s` }}
           >
-            <Card className="p-4 bg-white/95 backdrop-blur-sm border-revgreen/20 shadow-xl hover:shadow-2xl transition-shadow">
+            <Card className="p-4 bg-white/95 backdrop-blur-sm border-revgreen/20 shadow-xl hover:shadow-2xl transition-shadow duration-500">
               <div className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
                   <div className="w-10 h-10 bg-gradient-to-r from-revgreen/20 to-green-200/20 rounded-full flex items-center justify-center">
@@ -227,7 +230,7 @@ const SocialProofNotifications = ({
                   <p className="text-xs text-revgreen font-medium">
                     {notification.company}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                     {getActionText(notification.action, notification.material)}
                   </p>
                 </div>
