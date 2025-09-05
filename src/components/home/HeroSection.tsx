@@ -38,7 +38,7 @@ const HeroSection = () => {
             <br />
             <span className="inline-block animate-fade-in" style={{ animationDelay: '0.4s' }}>em uma máquina de</span>
             <br />
-            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{ animationDelay: '0.6s' }}>de Receita Previsível</span>
+            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{ animationDelay: '0.6s' }}>Receita Previsível</span>
           </h1>
           
           {/* Subtitle with refined spacing */}
