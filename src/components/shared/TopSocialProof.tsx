@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Eye, Calendar, TrendingUp } from 'lucide-react';
+import { Download, Eye, Calendar, TrendingUp, X } from 'lucide-react';
 
 interface NotificationData {
   id: string;
@@ -56,6 +56,13 @@ const TopSocialProof = () => {
   const [currentNotification, setCurrentNotification] = useState<NotificationData | null>(null);
   const [materials, setMaterials] = useState<WordPressMaterial[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+
+  const closeNotification = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setCurrentNotification(null);
+    }, 300);
+  };
 
   // Fetch materiais do WordPress
   useEffect(() => {
@@ -142,38 +149,47 @@ const TopSocialProof = () => {
   const Icon = currentNotification.icon;
 
   return (
-    <div className={`fixed top-24 right-4 z-40 transition-all duration-500 ${
-      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+    <div className={`fixed top-20 right-2 md:right-4 z-40 transition-all duration-500 transform ${
+      isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'
     }`}>
-      <div className="bg-white border-2 border-gray-100 rounded-xl shadow-2xl p-5 max-w-sm">
-        <div className="flex items-start space-x-4">
+      <div className="bg-white border-2 border-gray-100 rounded-xl shadow-2xl p-3 md:p-4 max-w-xs md:max-w-sm mx-2 relative">
+        {/* Botão X para fechar */}
+        <button
+          onClick={closeNotification}
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full"
+          aria-label="Fechar notificação"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-start space-x-3 pr-6">
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
-              <Icon className="w-6 h-6 text-green-700" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
+              <Icon className="w-5 h-5 md:w-6 md:h-6 text-green-700" />
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-base font-bold text-gray-900 truncate">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-sm md:text-base font-bold text-gray-900 truncate">
                 {currentNotification.name}
               </p>
-              <span className="text-xs text-gray-500 ml-2 font-medium">
-                {currentNotification.timeAgo}
-              </span>
             </div>
-            <p className="text-sm text-green-700 font-semibold mb-2">
+            <p className="text-xs md:text-sm text-green-700 font-semibold mb-1">
               {currentNotification.company}
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed font-medium">
+            <p className="text-xs md:text-sm text-gray-700 leading-relaxed font-medium">
               {getActionText(currentNotification.action, currentNotification.material)}
+            </p>
+            <p className="text-xs text-gray-500 font-medium mt-2">
+              {currentNotification.timeAgo}
             </p>
           </div>
         </div>
         
         {/* Progress bar showing time remaining */}
-        <div className="mt-4 w-full bg-gray-100 rounded-full h-2">
+        <div className="mt-3 w-full bg-gray-100 rounded-full h-1.5">
           <div 
-            className="bg-green-600 h-2 rounded-full" 
+            className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
             style={{
               width: '100%',
               animation: 'shrinkProgress 20s linear forwards'

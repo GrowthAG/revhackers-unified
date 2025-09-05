@@ -198,12 +198,12 @@ const SocialProofNotifications = ({
   }
 
   const positionClasses = {
-    'top-right': 'fixed top-24 right-4 z-40',
-    'bottom-right': 'fixed bottom-4 right-4 z-50'
+    'top-right': 'fixed top-20 right-2 md:right-4 z-40',
+    'bottom-right': 'fixed bottom-4 right-2 md:right-4 z-50'
   };
 
   return (
-    <div className={`${positionClasses[position]} space-y-3 max-w-sm`}>
+    <div className={`${positionClasses[position]} space-y-3 max-w-xs md:max-w-sm mx-2`}>
       {currentNotifications.map((notification, index) => {
         const Icon = notification.icon;
         const animationClass = position === 'top-right' 
@@ -216,36 +216,36 @@ const SocialProofNotifications = ({
             className={`${animationClass} transform transition-all duration-500 hover:scale-105`}
             style={{ animationDelay: `${index * 0.3}s` }}
           >
-            <Card className="p-5 bg-white border-2 border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-green-700" />
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-base font-bold text-gray-900 mb-1">
-                    <span className="font-bold">{notification.name}</span>
-                  </p>
-                  <p className="text-sm text-green-700 font-semibold mb-1">
-                    {notification.company}
-                  </p>
-                  <p className="text-sm text-gray-700 font-medium leading-relaxed">
-                    {getActionText(notification.action, notification.material)}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end space-y-2">
-                  <button
-                    onClick={() => removeNotification(notification.id)}
-                    className="text-gray-400 hover:text-gray-700 transition-colors p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                  <span className="text-xs text-gray-500 font-medium">
-                    {notification.timeAgo}
-                  </span>
-                </div>
-              </div>
+             <Card className="p-3 md:p-5 bg-white border-2 border-gray-100 shadow-xl hover:shadow-2xl transition-all duration-500">
+               <div className="flex items-center space-x-3 md:space-x-4">
+                 <div className="flex-shrink-0">
+                   <div className="w-10 h-10 md:w-12 md:h-12 bg-green-50 border-2 border-green-200 rounded-full flex items-center justify-center">
+                     <Icon className="w-5 h-5 md:w-6 md:h-6 text-green-700" />
+                   </div>
+                 </div>
+                 <div className="flex-1 min-w-0">
+                   <p className="text-sm md:text-base font-bold text-gray-900 mb-1">
+                     <span className="font-bold">{notification.name}</span>
+                   </p>
+                   <p className="text-xs md:text-sm text-green-700 font-semibold mb-1">
+                     {notification.company}
+                   </p>
+                   <p className="text-xs md:text-sm text-gray-700 font-medium leading-relaxed">
+                     {getActionText(notification.action, notification.material)}
+                   </p>
+                 </div>
+                 <div className="flex flex-col items-end space-y-2">
+                   <button
+                     onClick={() => removeNotification(notification.id)}
+                     className="text-gray-400 hover:text-gray-700 transition-colors p-1 hover:bg-gray-100 rounded-full"
+                   >
+                     <X className="w-3 h-3 md:w-4 md:h-4" />
+                   </button>
+                   <span className="text-xs text-gray-500 font-medium">
+                     {notification.timeAgo}
+                   </span>
+                 </div>
+               </div>
             </Card>
           </div>
         );
