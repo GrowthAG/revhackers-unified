@@ -96,15 +96,15 @@ const TableOfContents = ({ containerRef }: TableOfContentsProps) => {
       )}>
         <nav className="toc-nav">
           <ul className="space-y-2">
-            {headings.map((heading) => (
-              <li 
-                key={heading.id} 
-                className={cn(
-                  "transition-colors",
-                  heading.level === 3 ? "ml-4" : "",
-                  activeId === heading.id ? "text-revgreen font-medium" : "text-gray-600 hover:text-revgreen"
-                )}
-              >
+             {headings.map((heading, index) => (
+               <li 
+                 key={`${heading.id}-${index}`} 
+                 className={cn(
+                   "transition-colors",
+                   heading.level === 3 ? "ml-4" : "",
+                   activeId === heading.id ? "text-revgreen font-medium" : "text-gray-600 hover:text-revgreen"
+                 )}
+               >
                 <a
                   href={`#${heading.id}`}
                   onClick={(e) => {

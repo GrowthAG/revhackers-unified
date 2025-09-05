@@ -75,7 +75,56 @@ export const blogPosts: BlogPost[] = [
     title: "Product-Market Fit: 5 sinais de que você encontrou (e 3 de que não)",
     slug: "product-market-fit-5-sinais-encontrou-3-que-nao",
     excerpt: "Como identificar se seu produto realmente resolve um problema real do mercado, com frameworks práticos de validação.",
-    content: "Conteúdo renderizado via componente customizado",
+    content: `
+      <h2>Por que a Taxa de Conversão Estagna?</h2>
+      <p>A maioria das empresas comete os mesmos erros: foca em tráfego em vez de conversão, testa mudanças cosméticas em vez de fundamentais, e ignora a psicologia por trás das decisões de compra.</p>
+      
+      <h2>7 Técnicas Comprovadas de CRO</h2>
+      
+      <h3>1. Hierarquia Visual Estratégica</h3>
+      <p>Guie o olhar do usuário através de uma sequência lógica: problema → solução → prova → ação. Use contraste, tamanho e posicionamento para criar um fluxo natural.</p>
+      
+      <h3>2. Redução de Friction Points</h3>
+      <p>Identifique e elimine tudo que cria hesitação:</p>
+      <ul>
+        <li>Formulários longos demais</li>
+        <li>Muitas opções de escolha</li>
+        <li>Falta de informações de segurança</li>
+        <li>Processo de checkout confuso</li>
+      </ul>
+      
+      <h3>3. Social Proof Contextual</h3>
+      <p>Use depoimentos específicos para cada etapa do funil. Para visitantes novos: quantidade de usuários. Para usuários considerando: casos de sucesso similares.</p>
+      
+      <h3>4. Urgência Verdadeira</h3>
+      <p>Crie urgência baseada em escassez real, não artificial. Limite de vagas em beta, desconto por tempo limitado com razão genuína.</p>
+      
+      <h3>5. Mobile-First Optimization</h3>
+      <p>67% do tráfego B2B agora é mobile. Otimize primeiro para mobile, depois adapte para desktop.</p>
+      
+      <h3>6. Microcopy Persuasivo</h3>
+      <p>Pequenos textos fazem grande diferença:</p>
+      <ul>
+        <li>"Começar teste grátis" vs "Começar agora"</li>
+        <li>"Sem compromisso" próximo ao botão</li>
+        <li>"Cancele quando quiser" reduz ansiedade</li>
+      </ul>
+      
+      <h3>7. Testing Methodology</h3>
+      <p>Teste uma hipótese por vez, com significância estatística mínima de 95% e amostra suficiente para detectar mudanças de pelo menos 10%.</p>
+      
+      <h2>Framework de Implementação</h2>
+      <ol>
+        <li><strong>Audit atual:</strong> Identifique os maiores pontos de abandono</li>
+        <li><strong>Priorise por impacto:</strong> Foque no que pode gerar mais resultado</li>
+        <li><strong>Teste sistematicamente:</strong> Uma mudança por vez</li>
+        <li><strong>Meça resultados:</strong> Use dados, não opiniões</li>
+      </ol>
+      
+      <blockquote>
+        <p>"CRO não é sobre truques, é sobre entender profundamente seu cliente e remover barreiras da decisão de compra." - Giulliano Alves</p>
+      </blockquote>
+    `,
     category: "PLG",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
     author: {
@@ -91,7 +140,43 @@ export const blogPosts: BlogPost[] = [
     title: "LinkedIn Sales Navigator: guia completo para prospecção B2B",
     slug: "linkedin-sales-navigator-guia-completo-prospeccao-b2b",
     excerpt: "Estratégias avançadas para usar o Sales Navigator como máquina de prospecção, com scripts e templates.",
-    content: "Conteúdo renderizado via componente customizado",
+    content: `
+      <h2>O que é Product-Led Growth (PLG)?</h2>
+      <p>Product-Led Growth é uma estratégia de crescimento onde o produto é o principal canal de aquisição, conversão e expansão de clientes. No PLG, o produto "se vende sozinho" através de uma experiência excepcional do usuário.</p>
+      
+      <h2>Por que PLG funciona no Brasil?</h2>
+      <p>O mercado brasileiro tem características únicas que favorecem estratégias PLG:</p>
+      <ul>
+        <li><strong>Alto ceticismo com vendas tradicionais:</strong> Brasileiros preferem "testar antes de comprar"</li>
+        <li><strong>Busca por value-for-money:</strong> Necessidade de demonstrar valor real antes da compra</li>
+        <li><strong>Crescimento do SaaS nacional:</strong> Mercado mais maduro e receptivo a novas soluções</li>
+      </ul>
+      
+      <h2>Estratégias PLG para Startups Brasileiras</h2>
+      <h3>1. Freemium Estratégico</h3>
+      <p>Ofereça valor suficiente na versão gratuita para demonstrar o potencial do produto, mas crie limitações que naturalmente levem ao upgrade.</p>
+      
+      <h3>2. Trial Orientado por Valor</h3>
+      <p>Em vez de trials por tempo, crie trials baseados em valor entregue (ex: "Primeiro resultado garantido em 7 dias").</p>
+      
+      <h3>3. Onboarding Gamificado</h3>
+      <p>Transforme o processo de onboarding em uma jornada de descoberta de valor, não apenas tutorial de features.</p>
+      
+      <h2>Métricas Essenciais para PLG</h2>
+      <ul>
+        <li><strong>Time to Value (TTV):</strong> Tempo até o primeiro resultado</li>
+        <li><strong>Product Qualified Leads (PQLs):</strong> Leads qualificados pelo uso do produto</li>
+        <li><strong>Activation Rate:</strong> % de usuários que completam ações-chave</li>
+        <li><strong>Expansion Revenue:</strong> Receita de upgrades e expansões</li>
+      </ul>
+      
+      <h2>Cases de Sucesso PLG no Brasil</h2>
+      <p>Empresas como RD Station, Hotmart e PagSeguro cresceram usando princípios PLG adaptados ao mercado brasileiro, focando em educação do mercado e demonstração de valor antes da venda.</p>
+      
+      <blockquote>
+        <p>"PLG não é sobre eliminar vendas, é sobre fazer vendas mais inteligentes e escaláveis." - Giulliano Alves, CEO RevHackers</p>
+      </blockquote>
+    `,
     category: "Vendas",
     image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71",
     author: {
