@@ -1,6 +1,6 @@
 
 import { ReactNode } from 'react';
-import PremiumNavigation from '../shared/PremiumNavigation';
+import Header from './Header';
 import Footer from './Footer';
 
 interface PageLayoutProps {
@@ -10,8 +10,8 @@ interface PageLayoutProps {
 const PageLayout = ({ children }: PageLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
-      <PremiumNavigation />
-      <main className="flex-grow w-full">
+      <Header />
+      <main className="flex-grow pt-20 w-full">
         {children}
       </main>
       <Footer />
