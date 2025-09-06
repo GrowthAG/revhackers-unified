@@ -38,10 +38,10 @@ const PremiumHeroSection = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="mb-8"
             >
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8">
-                <Award className="w-4 h-4 mr-2 text-blue-400" />
-                Consultoria Estratégica Premium
-              </div>
+                <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8">
+                  <Award className="w-4 h-4 mr-2 text-revgreen" />
+                  Consultoria Estratégica Premium
+                </div>
             </motion.div>
 
             <motion.h1
@@ -52,7 +52,7 @@ const PremiumHeroSection = () => {
             >
               Transformamos
               <br />
-              <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-revgreen to-green-400 bg-clip-text text-transparent">
                 Operações
               </span>
               <br />
@@ -111,7 +111,7 @@ const PremiumHeroSection = () => {
                   className="p-8"
                 >
                   <div className="flex items-center space-x-6">
-                    <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
+                    <div className="p-4 bg-gradient-to-br from-revgreen to-green-400 rounded-2xl shadow-lg">
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
                     <div>

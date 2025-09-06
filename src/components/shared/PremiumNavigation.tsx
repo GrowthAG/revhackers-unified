@@ -71,14 +71,14 @@ const PremiumNavigation = () => {
         <nav className="hidden lg:flex items-center space-x-1">
           {navigationItems.map((item) => (
             <Magnetic key={item.name} strength={15}>
-              <Link 
-                to={item.path} 
-                className="relative px-4 py-2 font-medium text-slate-700 hover:text-slate-900 transition-colors group"
-                onClick={scrollToTop}
-              >
-                {item.name}
-                <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-              </Link>
+            <Link 
+              to={item.path}
+              className="relative px-4 py-2 font-medium text-slate-700 hover:text-revgreen transition-colors group"
+              onClick={scrollToTop}
+            >
+              {item.name}
+              <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gradient-to-r from-revgreen to-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+            </Link>
             </Magnetic>
           ))}
         </nav>
@@ -151,7 +151,7 @@ const PremiumNavigation = () => {
                   >
                     <Link 
                       to={item.path} 
-                      className="text-lg font-medium text-slate-700 hover:text-slate-900 transition-colors py-3 block border-b border-slate-100/50" 
+                      className="text-lg font-medium text-slate-700 hover:text-revgreen transition-colors py-3 block border-b border-slate-100/50" 
                       onClick={() => { toggleMenu(); scrollToTop(); }}
                     >
                       {item.name}
