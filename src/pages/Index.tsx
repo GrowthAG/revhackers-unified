@@ -3,7 +3,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import PremiumHero from '@/components/premium/PremiumHero';
 import PremiumStatsSection from '@/components/premium/PremiumStatsSection';
 import PremiumBenefitsSection from '@/components/premium/PremiumBenefitsSection';
-import ServicesSection from '@/components/home/ServicesSection';
+import PremiumServices from '@/components/premium/PremiumServices';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import PartnersSection from '@/components/home/PartnersSection';
 import JourneySection from '@/components/home/JourneySection';
@@ -18,7 +18,7 @@ const Index = () => {
       <PremiumHero />
       <PremiumStatsSection />
       <PremiumBenefitsSection />
-      <ServicesSection />
+      <PremiumServices />
       <ROICalculator />
       <CasesSection />
       <JourneySection />
