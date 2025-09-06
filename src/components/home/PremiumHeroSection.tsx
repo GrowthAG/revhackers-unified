@@ -1,10 +1,9 @@
-import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Target, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import ExecutiveBackground from '@/components/shared/ExecutiveBackground';
-import Three3DElement from '@/components/shared/Three3DElement';
+import SimpleThree3DElement from '@/components/shared/Three3DElement';
 import PremiumFloatingCard from '@/components/shared/PremiumFloatingCard';
 
 const PremiumHeroSection = () => {
@@ -23,11 +22,9 @@ const PremiumHeroSection = () => {
       {/* Executive Background */}
       <ExecutiveBackground />
       
-      {/* 3D Elements */}
+      {/* Floating Elements */}
       <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <Suspense fallback={null}>
-          <Three3DElement />
-        </Suspense>
+        <SimpleThree3DElement />
       </div>
       
       <div className="container-custom relative z-10 w-full pt-32 pb-16">
