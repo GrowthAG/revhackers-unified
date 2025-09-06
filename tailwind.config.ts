@@ -68,12 +68,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-        revgreen: {
-          DEFAULT: '#03FC3B', // Verde atualizado
-          accent: '#03FC3B' // Verde de acento também atualizado
-        },
-        black: '#000000',
-        white: '#FFFFFF',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

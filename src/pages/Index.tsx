@@ -1,6 +1,6 @@
 
 import PageLayout from '@/components/layout/PageLayout';
-import HeroSection from '@/components/home/HeroSection';
+import PremiumHeroSection from '@/components/home/PremiumHeroSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import PartnersSection from '@/components/home/PartnersSection';
@@ -15,7 +15,7 @@ import ROICalculator from '@/components/shared/ROICalculator';
 const Index = () => {
   return (
     <PageLayout>
-      <HeroSection />
+      <PremiumHeroSection />
       <StatsSection />
       <BenefitsSection />
       <ServicesSection />
