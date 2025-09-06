@@ -1,13 +1,13 @@
 
 import PageLayout from '@/components/layout/PageLayout';
-import HeroSection from '@/components/home/HeroSection';
+import PremiumHero from '@/components/premium/PremiumHero';
+import PremiumStatsSection from '@/components/premium/PremiumStatsSection';
+import PremiumBenefitsSection from '@/components/premium/PremiumBenefitsSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import PartnersSection from '@/components/home/PartnersSection';
 import JourneySection from '@/components/home/JourneySection';
-import BenefitsSection from '@/components/home/BenefitsSection';
 import FAQSection from '@/components/home/FAQSection';
-import StatsSection from '@/components/home/StatsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import CasesSection from '@/components/home/CasesSection';
 import ROICalculator from '@/components/shared/ROICalculator';
@@ -15,9 +15,9 @@ import ROICalculator from '@/components/shared/ROICalculator';
 const Index = () => {
   return (
     <PageLayout>
-      <HeroSection />
-      <StatsSection />
-      <BenefitsSection />
+      <PremiumHero />
+      <PremiumStatsSection />
+      <PremiumBenefitsSection />
       <ServicesSection />
       <ROICalculator />
       <CasesSection />

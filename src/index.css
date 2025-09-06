@@ -7,9 +7,18 @@
 
 @layer base {
   :root {
-    /* RevHackers Original Color System */
+    /* RevHackers Official Brand Colors (Extracted from revhackers.com.br) */
+    --brand-primary: 142 100% 49.4%; /* #03FC3B - Official RevHackers Green */
+    --brand-secondary: 0 0% 6%; /* Dark text/backgrounds */
+    --brand-accent: 142 85% 65%; /* Lighter green variation */
+    
+    /* Core System Colors */
     --background: 0 0% 100%;
     --foreground: 0 0% 6%;
+    --bg-soft: 0 0% 98%;
+    --text: 0 0% 6%;
+    --text-invert: 0 0% 100%;
+    --text-muted: 0 0% 45%;
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 6%;
@@ -17,9 +26,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 6%;
 
-    --primary: 142 100% 49.4%;
+    --primary: var(--brand-primary);
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 142 85% 65%;
+    --primary-glow: var(--brand-accent);
 
     --secondary: 0 0% 98%;
     --secondary-foreground: 0 0% 6%;
@@ -28,41 +37,44 @@
     --muted-foreground: 0 0% 40%;
 
     --accent: 0 0% 96%;
-    --accent-foreground: 142 100% 49.4%;
+    --accent-foreground: var(--brand-primary);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 92%;
+    --border: 0 0% 90%;
     --input: 0 0% 96%;
-    --ring: 142 100% 49.4%;
+    --ring: var(--brand-primary);
 
-    --radius: 12px;
+    --radius: 16px;
 
-    /* RevHackers Premium Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
-    --gradient-hero: radial-gradient(circle at 30% 40%, hsl(142 76% 36% / 0.15), transparent 50%), radial-gradient(circle at 80% 20%, hsl(267 84% 81% / 0.15), transparent 50%);
-    --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
-    --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-    --gradient-mesh: conic-gradient(from 0deg at 50% 50%, hsl(142 76% 36% / 0.1) 0deg, transparent 60deg, hsl(267 84% 81% / 0.1) 120deg, transparent 180deg, hsl(142 76% 36% / 0.1) 240deg, transparent 300deg, hsl(267 84% 81% / 0.1) 360deg);
-    --gradient-executive: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 76% 26%) 100%);
-    --gradient-interactive: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 85% 65%) 100%);
+    /* Premium Gradients - Apple/Stripe inspired */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-primary)) 0%, hsl(var(--brand-accent)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 6%) 0%, hsl(0 0% 2%) 100%);
+    --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+    --gradient-depth: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+    --gradient-mesh: radial-gradient(circle at 20% 50%, hsl(var(--brand-primary) / 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, hsl(var(--brand-primary) / 0.05) 0%, transparent 50%);
+    --gradient-button: linear-gradient(135deg, hsl(var(--brand-primary)) 0%, hsl(142 100% 45%) 100%);
+    --gradient-hover: linear-gradient(135deg, hsl(var(--brand-primary)) 0%, hsl(var(--brand-accent)) 100%);
 
-    /* RevHackers Premium Shadows */
-    --shadow-soft: 0 4px 20px -2px rgba(0,0,0,0.05);
-    --shadow-medium: 0 8px 30px -4px rgba(0,0,0,0.1);
-    --shadow-strong: 0 20px 60px -8px rgba(0,0,0,0.15);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
-    --shadow-premium: 0 25px 80px -15px rgba(0,0,0,0.25);
-    --shadow-3d: 0 32px 64px -12px rgba(0,0,0,0.4);
-    --shadow-float: 0 15px 50px -12px rgba(0,0,0,0.15);
-    --shadow-interactive: 0 8px 32px -8px hsl(var(--primary) / 0.3);
+    /* Apple/Stripe Style Shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 40px hsl(var(--brand-primary) / 0.2);
+    --shadow-depth: 0 32px 64px -12px rgba(0, 0, 0, 0.4);
+    --shadow-float: 0 8px 32px -8px rgba(0, 0, 0, 0.15);
+    --shadow-interactive: 0 4px 16px -4px hsl(var(--brand-primary) / 0.3);
 
-    /* Sophisticated Transitions */
-    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --transition-spring: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --transition-elegant: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Premium Transitions - 60fps optimized */
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;

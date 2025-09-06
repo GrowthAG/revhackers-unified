@@ -1,6 +1,6 @@
 
 import { ReactNode } from 'react';
-import Header from './Header';
+import PremiumHeader from './PremiumHeader';
 import Footer from './Footer';
 
 interface PageLayoutProps {
@@ -10,7 +10,7 @@ interface PageLayoutProps {
 const PageLayout = ({ children }: PageLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
-      <Header />
+      <PremiumHeader />
       <main className="flex-grow pt-20 w-full">
         {children}
       </main>
