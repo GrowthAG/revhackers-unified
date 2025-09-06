@@ -5,14 +5,14 @@ import StatsCounter from '@/components/shared/StatsCounter';
 const PremiumStatsSection = () => {
   const stats = [
     {
-      value: 124,
+      value: 149,
       suffix: '+',
       label: 'Empresas B2B atendidas',
       description: 'Em diversos segmentos e portes',
       gradient: 'from-[#03FC3B] to-[#02E635]'
     },
     {
-      value: 26,
+      value: 31,
       suffix: '%',
       label: 'Aumento médio em vendas',
       description: 'Nos primeiros 6 meses de implementação',

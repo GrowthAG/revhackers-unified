@@ -32,13 +32,13 @@ const PremiumBenefitsSection = () => {
     {
       icon: Award,
       title: 'Resultados Concretos',
-      description: 'Transformação comprovada em empresas de diversos segmentos, sempre com foco em ROI e crescimento sustentável.',
+      description: 'Retorno médio de 5x sobre o investimento em nossas soluções, com casos de sucesso em diversos segmentos B2B.',
       gradient: 'from-[#00B220] to-[#00A11C]'
     },
     {
       icon: Clock,
-      title: 'Implementação Ágil',
-      description: 'Processo estruturado que entrega primeiros resultados em 30 dias, com metodologia testada e aprovada.',
+      title: 'Implementação Rápida',
+      description: 'Primeiros resultados visíveis em 30-45 dias, com metodologia estruturada e equipe técnica especializada.',
       gradient: 'from-[#00A11C] to-[#03FC3B]'
     }
   ];

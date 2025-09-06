@@ -15,45 +15,31 @@ const PremiumServices = () => {
   const services = [
     {
       icon: Zap,
-      title: 'Revenue Operations',
-      description: 'Conectamos marketing, vendas e CS em um único sistema otimizado para máxima eficiência e crescimento acelerado.',
-      features: ['Automação de processos', 'Dashboards inteligentes', 'Alinhamento de times'],
+      title: 'Automação de Revenue',
+      description: 'Fluxos inteligentes que conectam marketing, vendas e CS para eliminar tarefas manuais e criar resultados concretos.',
+      features: ['Automação de processos', 'Fluxos inteligentes', 'Integração de times'],
       gradient: 'from-[#03FC3B] to-[#02E635]'
     },
     {
       icon: Target,
-      title: 'Growth Hacking',
-      description: 'Estratégias baseadas em dados para escalar rapidamente, testando e otimizando cada ponto do funil.',
-      features: ['Experimentos A/B', 'Growth loops', 'Métricas de crescimento'],
+      title: 'Revenue Intelligence',
+      description: 'Transforme dados brutos em decisões estratégicas precisas e antecipe comportamentos de compra no cenário B2B.',
+      features: ['Análise preditiva', 'Insights estratégicos', 'Business Intelligence'],
       gradient: 'from-[#02E635] to-[#01D42A]'
     },
     {
       icon: Users,
-      title: 'Customer Success',
-      description: 'Reduzimos churn e aumentamos LTV com estratégias de retenção e expansão de contas.',
-      features: ['Redução de churn', 'Expansão de contas', 'Health scores'],
+      title: 'Revenue Operations',
+      description: 'Alinhamento estratégico entre departamentos com métricas e tecnologias que efetivamente geram crescimento.',
+      features: ['Alinhamento estratégico', 'Métricas unificadas', 'Crescimento sustentável'],
       gradient: 'from-[#01D42A] to-[#01C325]'
     },
     {
       icon: BarChart3,
-      title: 'Data & Analytics',
-      description: 'Transformamos dados em insights acionáveis para decisões mais inteligentes e resultados previsíveis.',
-      features: ['Business Intelligence', 'Relatórios customizados', 'Previsões de vendas'],
+      title: 'Integração de Sistemas',
+      description: 'Conectamos suas ferramentas de CRM, Marketing e CS em um ecossistema tecnológico sem barreiras de dados.',
+      features: ['Integração CRM', 'Unificação de dados', 'Ecossistema integrado'],
       gradient: 'from-[#01C325] to-[#00B220]'
-    },
-    {
-      icon: Rocket,
-      title: 'Automação de Marketing',
-      description: 'Campanhas inteligentes que nutrem leads, qualificam prospects e aceleram o ciclo de vendas.',
-      features: ['Lead scoring', 'Email marketing', 'Campanhas multicanal'],
-      gradient: 'from-[#00B220] to-[#00A11C]'
-    },
-    {
-      icon: Shield,
-      title: 'Consultoria Estratégica',
-      description: 'Diagnóstico completo e estratégia personalizada para alavancar seus resultados a curto e longo prazo.',
-      features: ['Diagnóstico 360°', 'Roadmap estratégico', 'Acompanhamento mensal'],
-      gradient: 'from-[#00A11C] to-[#03FC3B]'
     }
   ];
 
@@ -71,20 +57,20 @@ const PremiumServices = () => {
           
           <Reveal direction="up" delay={0.2}>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Como aceleramos seu crescimento
+              Soluções de RevOps para seu crescimento B2B
             </h2>
           </Reveal>
           
           <Reveal direction="up" delay={0.4}>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Soluções integradas que conectam pessoas, processos e tecnologia 
-              para transformar sua operação em uma máquina de crescimento.
+              Criamos o alinhamento entre pessoas, processos e plataformas 
+              para gerar resultados consistentes e mensuráveis.
             </p>
           </Reveal>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service, index) => (
             <PremiumCard 
               key={index} 

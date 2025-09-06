@@ -78,7 +78,7 @@ const PremiumHero = () => {
             className="inline-flex items-center px-6 py-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-sm font-medium mb-8"
           >
             <Sparkles className="w-4 h-4 mr-2 text-[#03FC3B]" />
-            <StatsCounter end={150} suffix=" empresas B2B" prefix="Confiado por +" />
+            <span>Confiado por +149 empresas B2B</span>
           </motion.div>
         </Reveal>
 
