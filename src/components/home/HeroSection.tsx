@@ -41,7 +41,7 @@ const HeroSection = () => {
             animationDelay: '0.4s'
           }}>em uma Máquina de</span>
             <br />
-            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text animate-glow inline-block animate-scale-in" style={{
+            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text inline-block animate-scale-in" style={{
             animationDelay: '0.6s'
           }}>Vendas Automática</span>
           </h1>
