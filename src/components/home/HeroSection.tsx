@@ -33,17 +33,11 @@ const HeroSection = () => {
           
           {/* Main headline with Apple-style typography - mobile optimized */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] mb-6 md:mb-8">
-            <span className="inline-block animate-fade-in" style={{
-            animationDelay: '0.2s'
-          }}>Transforme sua Operação</span>
+            <span className="inline-block">Transforme sua Operação</span>
             <br />
-            <span className="inline-block animate-fade-in" style={{
-            animationDelay: '0.4s'
-          }}>em uma Máquina de</span>
+            <span className="inline-block">em uma Máquina de</span>
             <br />
-            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text inline-block animate-scale-in" style={{
-            animationDelay: '0.6s'
-          }}>Vendas Automática</span>
+            <span className="text-transparent bg-gradient-to-r from-revgreen to-green-400 bg-clip-text inline-block">Vendas Automática</span>
           </h1>
           
           {/* Subtitle with mobile-first design */}
