@@ -114,7 +114,7 @@ const Cases = () => {
 
       <section className="py-16 bg-white">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-left">
             <h2 className="text-3xl font-bold mb-6">Sua empresa será nosso próximo case?</h2>
             <p className="text-lg text-gray-600 mb-8">
               Entre em contato agora mesmo e descubra como podemos ajudar sua empresa 
