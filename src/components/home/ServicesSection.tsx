@@ -62,7 +62,7 @@ const ServicesSection = () => {
             Pare de perder leads e comece a fechar mais.
           </h2>
           <p className="text-xl text-gray-600 animate-fade-in-delayed">
-            Criamos o alinhamento entre pessoas, processos e plataformas para gerar resultados consistentes e mensuráveis.
+            Nossas soluções de RevOps eliminam silos, otimizam seu funil e transformam caos em conversão.
           </p>
         </div>
         
