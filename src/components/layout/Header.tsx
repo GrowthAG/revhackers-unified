@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -17,7 +18,7 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100/50 fixed top-0 left-0 right-0 z-[60] transition-all duration-500">
+    <header className="w-full bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 fixed top-0 left-0 right-0 z-[60] transition-all duration-300">
       <div className="container-custom flex justify-between items-center py-4">
         <div className="flex items-center">
           <Link to="/" className="mr-8 group" onClick={scrollToTop}>
@@ -40,7 +41,7 @@ const Header = () => {
         </div>
         
         <div className="hidden md:flex items-center space-x-4">
-          <Button asChild variant="default" size="lg" className="rounded-full px-8 bg-revgreen text-black hover:brightness-110">
+          <Button asChild variant="default" size="lg" className="rounded-full px-8">
             <Link to="/diagnostico" onClick={scrollToTop}>
               Solicitar diagnóstico
             </Link>
@@ -55,9 +56,9 @@ const Header = () => {
         </button>
       </div>
       
-      {/* Mobile menu with premium blur */}
+      {/* Mobile menu with Apple-style blur */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white/98 backdrop-blur-xl w-full shadow-2xl border-t border-gray-100/50 animate-fadeIn">
+        <div className="md:hidden bg-white/95 backdrop-blur-xl w-full shadow-xl border-t border-gray-100/50 animate-fadeIn">
           <div className="container-custom py-6 flex flex-col space-y-6">
             <Link 
               to="/" 
@@ -108,7 +109,7 @@ const Header = () => {
             >
               Blog
             </Link>
-            <Button asChild variant="default" size="lg" className="w-full mt-6 rounded-full bg-revgreen text-black hover:brightness-110">
+            <Button asChild variant="default" size="lg" className="w-full mt-6 rounded-full">
               <Link to="/diagnostico" onClick={() => { toggleMenu(); scrollToTop(); }}>
                 Solicitar diagnóstico
               </Link>
