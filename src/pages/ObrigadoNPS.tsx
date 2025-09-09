@@ -65,18 +65,6 @@ const ObrigadoNPS = () => {
                     Voltar ao Início
                   </Link>
                 </Button>
-                
-                <Button asChild variant="outline" className="border-border/30 hover:bg-card/50">
-                  <Link to="/blog">
-                    Ver Blog
-                  </Link>
-                </Button>
-                
-                <Button asChild variant="outline" className="border-border/30 hover:bg-card/50">
-                  <Link to="/cases">
-                    Nossos Cases
-                  </Link>
-                </Button>
               </div>
             </div>
           </Card>
