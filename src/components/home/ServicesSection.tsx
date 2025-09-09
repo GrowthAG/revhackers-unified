@@ -59,7 +59,7 @@ const ServicesSection = () => {
       <div className="container-custom">
         <div className="max-w-4xl mx-auto text-center mb-20">
           <h2 className="section-title mb-6 animate-fadeUp">
-            Pare de perder leads e comece a fechar mais.
+            Pare de perder <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">Leads</span> e comece a fechar mais.
           </h2>
           <p className="text-xl text-gray-600 animate-fade-in-delayed">
             Nossas soluções de RevOps eliminam silos, otimizam seu funil e transformam caos em conversão.
