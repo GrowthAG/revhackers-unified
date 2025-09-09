@@ -30,6 +30,7 @@ import ThankYou from "./pages/ThankYou";
 import SecureBooking from "./pages/SecureBooking";
 import Rei from "./pages/Rei";
 import CadastroParceiro from "./pages/CadastroParceiro";
+import PesquisaNPS from "./pages/PesquisaNPS";
 
 // Admin Pages
 import Admin from "./pages/Admin";
@@ -71,6 +72,7 @@ const App = () => (
           <Route path="/agenda/giulliano" element={<SecureBooking />} />
           <Route path="/rei" element={<Rei />} />
           <Route path="/cadastro-parceiro" element={<CadastroParceiro />} />
+          <Route path="/pesquisa-nps" element={<PesquisaNPS />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<Admin />} />
