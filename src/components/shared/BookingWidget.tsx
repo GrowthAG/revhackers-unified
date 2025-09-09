@@ -60,15 +60,17 @@ const BookingWidget = () => {
     const queryString = params.toString();
     return queryString ? `?${queryString}` : '';
   };
-  return <div className="grid md:grid-cols-2 gap-8">
-      <Card className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all">
-        <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Entre em <span className="text-revgreen">contato</span>
-        </h3>
-        <ContactForm />
-      </Card>
-      
-      
-    </div>;
+  return (
+    <div className="flex justify-center">
+      <div className="w-full max-w-lg">
+        <Card className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all">
+          <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            Entre em <span className="text-revgreen">contato</span>
+          </h3>
+          <ContactForm />
+        </Card>
+      </div>
+    </div>
+  );
 };
 export default BookingWidget;
