@@ -34,7 +34,7 @@ const PesquisaNPS = () => {
             </p>
           </div>
 
-          <Card className="card-premium max-w-4xl mx-auto border-border/20 bg-card/50 backdrop-blur-sm">
+          <Card className="max-w-4xl mx-auto border-border/20 bg-card/50 backdrop-blur-sm rounded-3xl shadow-soft">
             <div className="relative w-full">
               <iframe 
                 src="https://pages.revhackers.com.br/widget/survey/4G2jjpQtGCrUqrSFMj3y" 
