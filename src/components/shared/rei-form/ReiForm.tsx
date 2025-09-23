@@ -168,8 +168,7 @@ const ReiForm = () => {
     setIsSubmitting(true);
     
     try {
-      // TODO: Replace with actual webhook URL
-      const webhookUrl = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/My6mkNJ4Kzb3q5YChOHB';
+      const webhookUrl = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA';
       
       if (!webhookUrl) {
         toast({
