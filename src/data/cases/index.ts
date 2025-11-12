@@ -7,7 +7,6 @@ import { datavoxxCase } from './datavoxx';
 import { emagrecentroCase } from './emagrecentro';
 import { placluxCase } from './placlux';
 import { fmuVirtualCase } from './fmu-virtual';
-import { firstSecurityCase } from './security-first';
 import { funnelsCase } from './funnels';
 
 // Type definition for a case study
@@ -41,7 +40,6 @@ export const casesData: Record<string, CaseStudy> = {
   "emagrecentro": emagrecentroCase,
   "placlux": placluxCase,
   "fmu-virtual": fmuVirtualCase,
-  "first-security": firstSecurityCase,
   "funnels": funnelsCase
 };
 

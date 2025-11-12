@@ -7,7 +7,6 @@ import { enicsData } from './enics';
 import { fmuVirtualData } from './fmu-virtual';
 import { heinekenData } from './heineken';
 import { placluxData } from './placlux';
-import { securityFirstData } from './security-first';
 import { toeflData } from './toefl';
 import { funnelsPartner } from './funnels';
 import { PartnerData } from './types';
@@ -21,7 +20,6 @@ export const partners: Record<string, PartnerData> = {
   'fmu-virtual': fmuVirtualData,
   'heineken': heinekenData,
   'placlux': placluxData,
-  'security-first': securityFirstData,
   'toefl': toeflData,
   'funnels': funnelsPartner,
 };

@@ -21,14 +21,6 @@ const cases = [
     logo: true
   },
   {
-    title: "Security First",
-    category: "Segurança",
-    result: "38% redução no CAC",
-    image: "/lovable-uploads/5a2fe8fb-5913-4c05-a569-59206a388598.png", // Atualizado logo da Security First
-    slug: "first-security",
-    logo: true
-  },
-  {
     title: "TOEFL Junior Brasil",
     category: "Educação",
     result: "Leads B2B para escolas",
