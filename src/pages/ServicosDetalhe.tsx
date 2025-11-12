@@ -170,12 +170,6 @@ const servicosData = {
     ],
     caseStudies: [
       {
-        company: "First Security",
-        result: "38% redução no CAC",
-        image: "/lovable-uploads/c949a25f-b0ab-4e66-981e-a3db0d728850.png",
-        slug: "first-security"
-      },
-      {
         company: "DataVoxx",
         result: "50% redução no tempo de implementação",
         image: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",

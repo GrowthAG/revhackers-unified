@@ -16,8 +16,7 @@ export interface PartnerData {
 }
 
 export type PartnerKey = 
-  | "security-first" 
-  | "anhembi" 
+  | "anhembi"
   | "fmu-virtual" 
   | "toefl" 
   | "datavoxx" 

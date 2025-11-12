@@ -13,12 +13,6 @@ import {
 
 const partners = [
   {
-    name: "Security First",
-    logo: "/lovable-uploads/5a2fe8fb-5913-4c05-a569-59206a388598.png", // Logo atualizado
-    url: "/partners/security-first",
-    slug: "security-first"
-  },
-  {
     name: "TOEFL Junior Brasil",
     logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png", 
     url: "/partners/toefl",

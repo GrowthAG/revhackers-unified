@@ -24,7 +24,6 @@ const mockNames = [
   { name: 'Roberto Mendes', company: 'TOEFL' },
   { name: 'Mariana Costa', company: 'Placlux' },
   { name: 'Pedro Oliveira', company: 'Enics' },
-  { name: 'Julia Ferreira', company: 'Security First' },
   { name: 'Fernando Lima', company: 'Datavoxx' },
   { name: 'Camila Rocha', company: 'Agence MR' },
   { name: 'Rafael Santos', company: 'Emagrecentro' },

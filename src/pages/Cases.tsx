@@ -45,14 +45,6 @@ const caseStudies = [
     image: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
     slug: "datavoxx",
     description: "Desenvolvimento de novo site e implementação de um funil de vendas inbound completo."
-  },
-  {
-    title: "Security First",
-    category: "Segurança",
-    result: "38% redução no CAC",
-    image: "/lovable-uploads/5a2fe8fb-5913-4c05-a569-59206a388598.png",
-    slug: "first-security",
-    description: "Desenvolvimento de estratégia completa de funil de vendas com automações inteligentes e páginas otimizadas para conversão."
   }
 ];
 
