@@ -1,95 +1,64 @@
 
 import { CheckCircle } from 'lucide-react';
 import PageLayout from '@/components/layout/PageLayout';
-import ContactForm from '@/components/shared/ContactForm';
+import DiagnosticWizard from '@/components/diagnostic/DiagnosticWizard';
+import Section from '@/components/ui/Section';
 
 const benefits = [
-  "Análise completa da sua estratégia digital atual",
-  "Identificação de oportunidades de crescimento imediatas",
-  "Benchmarks competitivos do seu segmento",
-  "Recomendações personalizadas baseadas em dados",
-  "Priorização de ações para resultados rápidos",
-  "Sugestões de tecnologias e ferramentas adequadas para seu negócio"
+  "Análise da Estratégia Digital",
+  "Oportunidades de Crescimento",
+  "Benchmarks do Segmento",
+  "Plano de Ação Personalizado",
+  "Tecnologias de Revenue",
+  "Roadmap de Aceleração"
 ];
 
 const DiagnosticoPage = () => {
   return (
     <PageLayout>
-      <section className="pt-28 pb-16 md:pt-40 md:pb-20 bg-gradient-to-br from-white to-gray-50">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                Diagnóstico gratuito de <span className="text-revgreen">crescimento B2B</span>
-              </h1>
-              
-              <p className="text-lg text-gray-700">
-                Descubra exatamente onde estão suas maiores oportunidades de crescimento 
-                com nosso diagnóstico personalizado. Nossa equipe de especialistas analisará 
-                sua operação atual e identificará ações de alto impacto para acelerar seus resultados.
-              </p>
-              
-              <div className="space-y-4">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-revgreen mr-3 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
+      {/* Hero Section */}
+      <Section variant="light" className="relative pt-24 pb-16 md:pt-32 md:pb-24 min-h-[50vh] flex flex-col justify-center items-center overflow-hidden bg-white">
+        {/* Subtle Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none"></div>
+
+        <div className="container-custom relative z-10 text-center">
+          {/* Badge */}
+          <div className="mb-6 flex items-center justify-center animate-fade-in">
+            <span className="text-xs font-semibold text-gray-700 tracking-wide uppercase bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
+              Diagnóstico de Growth
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-[1.05] tracking-tight">
+            Descubra o Score da <br className="hidden md:block" />
+            <span className="text-gray-400">sua Máquina de Vendas</span>
+          </h1>
+
+          {/* Subheadline */}
+          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Responda 15 perguntas estratégicas para mapear o nível de maturidade da sua operação.
+            Receba um relatório imediato com os próximos passos para escala.
+          </p>
+
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="flex items-center gap-2 text-left">
+                <CheckCircle className="w-5 h-5 text-revgreen flex-shrink-0" />
+                <span className="text-sm text-gray-700 font-medium">{benefit}</span>
               </div>
-            </div>
-            
-            <div className="bg-white p-8 rounded-xl shadow-xl">
-              <ContactForm formType="diagnosis" />
-            </div>
+            ))}
           </div>
         </div>
-      </section>
-      
-      <section className="py-20 bg-white">
+      </Section>
+
+      {/* Wizard Section */}
+      <Section variant="light" className="py-16 bg-gray-50">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Como funciona o diagnóstico?
-            </h2>
-            <p className="text-lg text-gray-600">
-              Um processo simples e eficiente para identificar oportunidades de crescimento em seu negócio.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-revgreen/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-revgreen">1</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Preenchimento do formulário</h3>
-              <p className="text-gray-600">
-                Compartilhe informações sobre sua empresa, desafios e objetivos atuais.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-revgreen/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-revgreen">2</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Análise de especialistas</h3>
-              <p className="text-gray-600">
-                Nossa equipe analisa seus dados e estratégias atuais com base em benchmarks do mercado.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-revgreen/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-revgreen">3</span>
-              </div>
-              <h3 className="text-xl font-bold mb-3">Reunião de apresentação</h3>
-              <p className="text-gray-600">
-                Apresentamos o diagnóstico com recomendações práticas e um plano de ação.
-              </p>
-            </div>
-          </div>
+          <DiagnosticWizard />
         </div>
-      </section>
+      </Section>
     </PageLayout>
   );
 };

@@ -1,440 +1,271 @@
 
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, Target, Database, MessageSquare } from 'lucide-react';
+import Section from '@/components/ui/Section';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-// This would normally come from an API or CMS
+// --- DATA SOURCE ---
 const servicosData = {
+  // === NEW SERVICES (High-Level Copywriting) ===
+  "tracao-midia-paga": {
+    number: "01",
+    title: "Tração & Mídia Paga",
+    subtitle: "Chega de métricas de vaidade. Transformamos budget de mídia em pipeline de vendas previsível e qualificado.",
+    icon: TrendingUp,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10", // Neutral but premium
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "Engenharia de Tráfego B2B", description: "Não compramos cliques, compramos intenção. Campanhas desenhadas para atingir decisores no momento de compra." },
+      { title: "Account-Based Ads", description: "Mire nos logotipos que você quer fechar. Campanhas hiper-segmentadas para listas de contas alvo." },
+      { title: "Criativos de Alta Conversão", description: "Ads que não parecem ads. Formatos nativos e copywriting direto que geram curiosidade e clique." },
+      { title: "Tracking & Atribuição", description: "Saiba exatamente qual campanha, anúncio e palavra-chave gerou o contrato fechado." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Auditoria de Contas", description: "Identificamos onde você está queimando dinheiro hoje." },
+      { step: "02", title: "Setup de Rastreamento", description: "Configuramos o tracking server-side para dados 100% confiáveis." },
+      { step: "03", title: "Lançamento de Campanhas", description: "Estruturamos campanhas segregadas por nível de consciência do lead." },
+      { step: "04", title: "Otimização Diária", description: "Ajustes de lances, negativação e testes A/B constantes." }
+    ],
+    results: [
+      { value: "-60%", label: "Custo por Lead Qualificado" },
+      { value: "4x", label: "ROI em 90 dias" },
+      { value: "100%", label: "Rastreabilidade de Dados" }
+    ]
+  },
+  "ecossistema-crm": {
+    number: "02",
+    title: "Ecossistema & CRM",
+    subtitle: "A verdade sobre sua receita está nos dados. Centralize sua operação e elimine os 'pontos cegos' do funil.",
+    icon: Database,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10",
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "Implementação de CRM", description: "Configuração profissional (HubSpot, Salesforce, Pipedrive) alinhada ao seu processo de vendas real." },
+      { title: "Integração Total", description: "Conectamos Marketing, Vendas e CS. Chega de planilhas soltas e dados desencontrados." },
+      { title: "Dashboards de Revenue", description: "Tenha visão em tempo real de CAC, LTV, Churn e Pipeline Velocity." },
+      { title: "Gestão de Pipeline", description: "Processos claros de passagem de bastão (Handoff) para garantir que nenhum lead se perca." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Mapeamento de Processos", description: "Desenhamos o fluxo ideal da sua operação comercial." },
+      { step: "02", title: "Limpeza de Dados", description: "Higienização da base e padronização de campos." },
+      { step: "03", title: "Implementação Técnica", description: "Setup de ferramentas e integrações via API/Webhook." },
+      { step: "04", title: "Playbook de Vendas", description: "Treinamento do time para garantir a adoção do CRM." }
+    ],
+    results: [
+      { value: "360°", label: "Visão do Cliente" },
+      { value: "+40%", label: "Produtividade do Time" },
+      { value: "Zero", label: "Perda de Dados" }
+    ]
+  },
+  "automacao-inteligente": {
+    number: "03",
+    title: "Automação Inteligente + IA",
+    subtitle: "Implementamos Agentes de IA treinados como SDRs de elite. Eles qualificam e conduzem o lead por todo o funil até o momento de compra, eliminando curiosos e permitindo que seu time foque apenas em quem quer comprar.",
+    icon: Zap,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10",
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "Agentes SDR via IA", description: "Desenvolvemos 'funcionários digitais' treinados com metodologias de vendas (Spin Selling, BANT) para atender e qualificar 24/7." },
+      { title: "Filtro de Curiosos", description: "O agente identifica quem é apenas 'curioso' e quem é comprador. Seu time humano só fala com quem tem real intenção de compra." },
+      { title: "Jornada Automatizada", description: "Conduzimos o lead do primeiro clique até o agendamento da reunião ou checkout, resolvendo dúvidas e quebrando objeções no caminho." },
+      { title: "Eficiência Energética", description: "Pare de gastar energia com leads frios. Automatize o topo de funil e foque seus closers no fechamento." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Treinamento do Agente", description: "Alimentamos a IA com seus melhores scripts, objeções e dados do produto." },
+      { step: "02", title: "Setup de Fluxos", description: "Desenhamos o caminho que o lead vai percorrer (WhatsApp/Email)." },
+      { step: "03", title: "Ativação", description: "O agente assume o atendimento inicial instantaneamente." },
+      { step: "04", title: "Handoff ou Venda", description: "Leads quentes são agendados; curiosos são nutridos automaticamente." }
+    ],
+    results: [
+      { value: "Zero", label: "Tempo com Curiosos" },
+      { value: "24/7", label: "SDR Ativo e Treinado" },
+      { value: "+40%", label: "Taxa de Conversão" }
+    ]
+  },
+  "founder-led-growth": {
+    number: "04",
+    title: "Founder-Led Growth",
+    subtitle: "CPF compra de CPF. Transforme a marca pessoal do Fundador no maior canal de aquisição da empresa.",
+    icon: Users,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10",
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "Posicionamento de Autoridade", description: "Definimos sua narrativa única para se destacar no ruído do LinkedIn." },
+      { title: "Content Engine", description: "Produção de conteúdo estratégico que gera demanda, não apenas likes." },
+      { title: "Social Selling", description: "Estratégias para transformar conexões e engajamento em reuniões de vendas." },
+      { title: "Escala de Rede", description: "Crescimento acelerado de conexões com o ICP (Perfil de Cliente Ideal) exato." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Diagnóstico de Perfil", description: "Análise da sua presença digital atual e benchmarks." },
+      { step: "02", title: "Linha Editorial", description: "Definição de temas proprietários e tom de voz." },
+      { step: "03", title: "Produção e Distribuição", description: "Rotina de publicação consistente e otimizada." },
+      { step: "04", title: "Conversão", description: "Scripts e abordagens para levar o engajamento para o CRM." }
+    ],
+    results: [
+      { value: "Top 1%", label: "Autoridade no Nicho" },
+      { value: "+5k", label: "Novos Decisores Conectados" },
+      { value: "High", label: "Ticket de Contratos" }
+    ]
+  },
+
+  // === LEGACY SERVICES (Mapped to keep compatibility if accessed) ===
   "automacao": {
+    number: "03",
     title: "Automação de Revenue",
-    description: "Automatizamos processos comerciais e de marketing para gerar mais resultados com menos esforço.",
-    coverImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998",
-    benefits: [
-      "Redução de tarefas manuais e repetitivas",
-      "Qualificação automática de leads",
-      "Nurturing personalizado de prospects",
-      "Integração entre marketing e vendas",
-      "Otimização contínua baseada em dados"
+    subtitle: "Automatizamos processos comerciais para gerar mais resultados com menos esforço.",
+    icon: Zap,
+    color: "from-gray-500/20 to-gray-900/40",
+    accent: "text-white",
+    heroCta: "/diagnostico",
+    whatWeDo: [
+      { title: "Automação de Processos", description: "Eliminar tarefas manuais e repetitivas." }
     ],
-    features: [
-      {
-        title: "Automação de Processos",
-        description: "Mapeamento e automatização de processos críticos de marketing e vendas para eliminar tarefas manuais e repetitivas."
-      },
-      {
-        title: "Implementação de CRM",
-        description: "Seleção, implementação e customização de CRMs para atender às necessidades específicas do seu negócio."
-      },
-      {
-        title: "Fluxos de Nutrição",
-        description: "Desenvolvimento de fluxos de nutrição de leads personalizados para aumentar a conversão e reduzir o ciclo de vendas."
-      },
-      {
-        title: "Otimização Contínua",
-        description: "Análise constante de resultados e otimização dos fluxos para melhoria contínua do funil de vendas."
-      }
+    howItWorks: [
+      { step: "01", title: "Diagnóstico", description: "Entendemos o cenário atual." }
     ],
-    caseStudies: [
-      {
-        company: "Ambipar",
-        result: "173% de aumento em leads qualificados",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-Ambipar.png",
-        slug: "ambipar"
-      },
-      {
-        company: "NTT DATA",
-        result: "267% aumento em MQLs",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-NTTDATA.png",
-        slug: "ntt-data"
-      }
+    results: [
+      { value: "+173%", label: "Leads Qualificados" }
     ]
   },
-  "revenue-intelligence": {
-    title: "Revenue Intelligence",
-    description: "Análise e insights a partir dos seus dados para melhorar a tomada de decisão em vendas e marketing.",
-    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    benefits: [
-      "Decisões baseadas em dados concretos",
-      "Visualização clara de métricas-chave",
-      "Identificação de tendências e padrões",
-      "Previsibilidade de resultados",
-      "Otimização de estratégias baseada em dados"
-    ],
-    features: [
-      {
-        title: "Integração de Dados",
-        description: "Integração de dados de diversas fontes para criar uma visão unificada do cliente e do funil de vendas."
-      },
-      {
-        title: "Dashboards Personalizados",
-        description: "Criação de dashboards personalizados para acompanhamento de métricas-chave do seu negócio."
-      },
-      {
-        title: "Análise Preditiva",
-        description: "Utilização de técnicas avançadas de análise para identificar tendências e prever resultados futuros."
-      },
-      {
-        title: "Data-Driven Decisions",
-        description: "Implementação de processos de tomada de decisão baseados em dados concretos e não em intuições."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "PetroReconcavo",
-        result: "38% redução no CAC",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-petroreconcavo.png",
-        slug: "petroreconcavo"
-      },
-      {
-        company: "Neoenergia",
-        result: "124% aumento em oportunidades",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-NEOENERGIA.png",
-        slug: "neoenergia"
-      }
-    ]
-  },
-  "revops": {
-    title: "Revenue Operations",
-    description: "Alinhamento entre marketing, vendas e CS para uma gestão integrada do funil de vendas.",
-    coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978",
-    benefits: [
-      "Alinhamento entre equipes de marketing, vendas e CS",
-      "Visão integrada do funil de vendas",
-      "Redução do ciclo de vendas",
-      "Aumento da taxa de conversão",
-      "Crescimento escalável e previsível"
-    ],
-    features: [
-      {
-        title: "Análise de Funil",
-        description: "Análise detalhada do funil de vendas para identificar gargalos e oportunidades de melhoria."
-      },
-      {
-        title: "Alinhamento de Processos",
-        description: "Implementação de processos alinhados entre marketing, vendas e customer success."
-      },
-      {
-        title: "Metodologias Ágeis",
-        description: "Implementação de metodologias ágeis para permitir adaptação rápida às mudanças do mercado."
-      },
-      {
-        title: "Otimização de Ciclo",
-        description: "Otimização do ciclo de vendas para reduzir o tempo entre lead e fechamento de negócio."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "Ambipar",
-        result: "173% de aumento em leads qualificados",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-Ambipar.png",
-        slug: "ambipar"
-      },
-      {
-        company: "NTT DATA",
-        result: "267% aumento em MQLs",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-NTTDATA.png",
-        slug: "ntt-data"
-      }
-    ]
-  },
-  "integracoes": {
-    title: "Integração de Sistemas",
-    description: "Conectamos suas ferramentas de CRM, Marketing e CS em um ecossistema tecnológico sem barreiras de dados.",
-    coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31",
-    benefits: [
-      "Eliminação de silos de informação",
-      "Visão unificada do cliente",
-      "Automação de fluxos entre sistemas",
-      "Redução de erros e inconsistências",
-      "Tomada de decisão baseada em dados completos"
-    ],
-    features: [
-      {
-        title: "Mapeamento de Sistemas",
-        description: "Identificação e mapeamento de todos os sistemas e ferramentas utilizados pela empresa para entender o fluxo de dados."
-      },
-      {
-        title: "Desenvolvimento de APIs",
-        description: "Criação de APIs personalizadas para conectar sistemas que não possuem integrações nativas."
-      },
-      {
-        title: "Implementação de iPaaS",
-        description: "Utilização de plataformas de integração como serviço para criar fluxos de dados automatizados entre sistemas."
-      },
-      {
-        title: "Consultoria Técnica",
-        description: "Suporte especializado para identificar as melhores soluções de integração para o seu ecossistema tecnológico."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "DataVoxx",
-        result: "50% redução no tempo de implementação",
-        image: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
-        slug: "datavoxx"
-      }
-    ]
-  },
-  "customer-success": {
-    title: "Customer Success",
-    description: "Estratégias para maximizar a retenção e expansão da sua base de clientes.",
-    coverImage: "https://images.unsplash.com/photo-1529070538774-1843cb3265df",
-    benefits: [
-      "Aumento da retenção de clientes",
-      "Redução do churn",
-      "Aumento da receita recorrente",
-      "Melhoria na satisfação do cliente",
-      "Identificação de oportunidades de upsell e cross-sell"
-    ],
-    features: [
-      {
-        title: "Implementação de processos de onboarding",
-        description: "Desenvolvimento de processos estruturados para garantir o sucesso do cliente desde o primeiro dia."
-      },
-      {
-        title: "Criação de programas de customer success",
-        description: "Implementação de programas personalizados para diferentes segmentos de clientes."
-      },
-      {
-        title: "Análise de churn e estratégias de retenção",
-        description: "Identificação das causas de churn e desenvolvimento de estratégias para redução."
-      },
-      {
-        title: "Desenvolvimento de estratégias de expansão",
-        description: "Criação de estratégias para identificar e aproveitar oportunidades de upsell e cross-sell."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "Emagrecentro",
-        result: "35% aumento na retenção",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-emagrecentro.png",
-        slug: "emagrecentro"
-      },
-      {
-        company: "FMU Virtual",
-        result: "45% redução no churn",
-        image: "https://revhackers.com.br/wp-content/uploads/2023/04/Logotipo-da-FMU.png",
-        slug: "fmu-virtual"
-      }
-    ]
-  },
-  "abm": {
-    title: "Account Based Marketing",
-    description: "Estratégias personalizadas para conquistar contas estratégicas com abordagem altamente direcionada.",
-    coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    benefits: [
-      "Foco em contas de alto valor",
-      "Personalização de abordagem por conta",
-      "Alinhamento entre marketing e vendas",
-      "Aumento da taxa de conversão",
-      "Redução do ciclo de vendas"
-    ],
-    features: [
-      {
-        title: "Identificação de contas-alvo",
-        description: "Análise e seleção de contas com maior potencial de negócio para sua empresa."
-      },
-      {
-        title: "Desenvolvimento de estratégias personalizadas",
-        description: "Criação de estratégias específicas para cada conta ou segmento de contas."
-      },
-      {
-        title: "Implementação de campanhas multicanal",
-        description: "Desenvolvimento e execução de campanhas integradas em diversos canais."
-      },
-      {
-        title: "Mensuração de resultados e otimização",
-        description: "Acompanhamento constante de resultados e otimização das estratégias."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "ENICS",
-        result: "3 mil ingressos em 30 dias",
-        image: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png",
-        slug: "enics"
-      },
-      {
-        company: "Agence MR",
-        result: "200% aumento em oportunidades",
-        image: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
-        slug: "agence-mr"
-      }
-    ]
-  },
-  "sales-enablement": {
-    title: "Sales Enablement",
-    description: "Capacitação e ferramentas para potencializar o desempenho da sua equipe de vendas.",
-    coverImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4",
-    benefits: [
-      "Aumento da produtividade da equipe de vendas",
-      "Redução do ciclo de vendas",
-      "Melhoria na qualidade das apresentações",
-      "Uniformização do discurso de vendas",
-      "Aumento da taxa de fechamento"
-    ],
-    features: [
-      {
-        title: "Desenvolvimento de materiais de vendas",
-        description: "Criação de apresentações, propostas e outros materiais que apoiam o processo de vendas."
-      },
-      {
-        title: "Treinamento e capacitação de equipes",
-        description: "Programas de treinamento para melhorar habilidades técnicas e comportamentais."
-      },
-      {
-        title: "Implementação de ferramentas de produtividade",
-        description: "Seleção e implementação de ferramentas para aumentar a eficiência da equipe."
-      },
-      {
-        title: "Otimização de processos de vendas",
-        description: "Análise e melhoria contínua dos processos de prospecção, qualificação e fechamento."
-      }
-    ],
-    caseStudies: [
-      {
-        company: "TOEFL Junior Brasil",
-        result: "Leads B2B para escolas",
-        image: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
-        slug: "toefl"
-      },
-      {
-        company: "Funnels",
-        result: "130% aumento em leads qualificados",
-        image: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
-        slug: "funnels"
-      }
-    ]
-  }
 };
 
 const ServicosDetalhe = () => {
   const { slug } = useParams<{ slug: string }>();
-  const serviceData = slug ? servicosData[slug as keyof typeof servicosData] : null;
+  const service = slug ? servicosData[slug as keyof typeof servicosData] : null;
 
-  if (!serviceData) {
+  if (!service) {
     return (
       <PageLayout>
-        <div className="container-custom py-32">
-          <h1 className="text-3xl font-bold">Serviço não encontrado</h1>
-          <p className="mt-4">O serviço que você está procurando não existe ou foi removido.</p>
-          <Button asChild className="mt-8">
-            <a href="/servicos">Voltar para serviços</a>
+        <Section variant="dark" className="py-32 min-h-screen flex flex-col justify-center items-center">
+          <h1 className="text-4xl text-white font-bold mb-4">Serviço não encontrado</h1>
+          <Button asChild className="btn-green-flat">
+            <Link to="/servicos">Voltar para Serviços</Link>
           </Button>
-        </div>
+        </Section>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout>
-      <section className="pt-32 pb-12 bg-gradient-to-br from-black to-gray-900 text-white">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              {serviceData.title}
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              {serviceData.description}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* 1. HERO SECTION - Now with Dynamic Background for "Surprise" */}
+      <Section variant="dark" className="relative pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10 overflow-hidden">
 
-      <section className="py-12">
-        <div className="container-custom">
+        {/* Dynamic Glow Background */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl opacity-40 pointer-events-none bg-gradient-radial ${service.color} blur-[100px] rounded-full`}></div>
+
+        <div className="container-custom text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <img 
-              src={serviceData.coverImage} 
-              alt={serviceData.title} 
-              className="w-full h-auto rounded-xl mb-12 shadow-lg"
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Benefícios</h2>
-                <ul className="space-y-4">
-                  {serviceData.benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-revgreen mr-3 flex-shrink-0" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h2 className="text-2xl font-bold mb-6">Como podemos ajudar</h2>
-                <p className="text-gray-700 mb-6">
-                  Nossa abordagem personalizada para {serviceData.title.toLowerCase()} é adaptada às necessidades específicas do seu negócio, garantindo resultados mensuráveis e escaláveis.
-                </p>
-                <Button asChild size="lg" className="w-full">
-                  <a href="/diagnostico">Solicitar diagnóstico gratuito</a>
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mb-16">
-              <h2 className="text-2xl font-bold mb-6">O que está incluso</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {serviceData.features.map((feature, index) => (
-                  <div key={index} className="bg-white border border-gray-100 p-6 rounded-xl shadow-sm">
-                    <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                    <p className="text-gray-700">{feature.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="mb-16">
-              <h2 className="text-2xl font-bold mb-6">Cases de Sucesso</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {serviceData.caseStudies.map((caseStudy, index) => (
-                  <a href={`/cases/${caseStudy.slug}`} key={index}>
-                    <Card className="overflow-hidden card-hover h-full border-0 shadow-sm">
-                      <div className="h-32 overflow-hidden bg-white flex items-center justify-center p-6">
-                        <img 
-                          src={caseStudy.image} 
-                          alt={caseStudy.company} 
-                          className="w-3/4 h-auto object-contain transition-transform hover:scale-105 duration-500"
-                        />
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-bold mb-2">{caseStudy.company}</h3>
-                        <span className="text-xs px-3 py-1 bg-green-50 text-green-800 rounded-full font-medium">
-                          {caseStudy.result}
-                        </span>
-                        <div className="mt-4 flex items-center text-revgreen font-medium text-sm">
-                          <span>Ver case completo</span>
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </a>
-                ))}
-              </div>
-            </div>
-            
-            <div className="bg-black text-white p-8 md:p-12 rounded-xl">
-              <div className="text-center">
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                  Pronto para transformar seu negócio?
-                </h2>
-                <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                  Entre em contato agora mesmo e descubra como nossa solução de {serviceData.title} 
-                  pode ajudar sua empresa a alcançar resultados extraordinários.
-                </p>
-                <Button asChild size="lg" variant="default">
-                  <a href="/diagnostico">Solicitar diagnóstico gratuito</a>
-                </Button>
-              </div>
+            <span className={`font-mono-tech ${service.accent} text-xl md:text-2xl font-bold mb-6 block`}>
+              {service.number}
+            </span>
+            <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
+              {service.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed mb-12">
+              {service.subtitle}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild className="btn-green-flat h-14 px-8 text-sm shadow-lg shadow-revgreen/10">
+                <Link to={service.heroCta}>Agendar Consultoria</Link>
+              </Button>
+              <Button asChild className="btn-outline-flat h-14 px-8 text-sm bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10">
+                <Link to="/cases">Ver Cases</Link>
+              </Button>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
+
+      {/* 2. O QUE FAZEMOS (What We Do) */}
+      <Section variant="light" className="py-24 bg-white">
+        <div className="container-custom">
+          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-black tracking-tight text-center">
+            O que fazemos
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {service.whatWeDo.map((item, i) => (
+              <Card key={i} className="bg-gray-50 border border-gray-100 shadow-sm hover:border-revgreen transition-all duration-300 h-full group hover:shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-xl font-bold text-black mb-3 group-hover:text-revgreen transition-colors">{item.title}</CardTitle>
+                  <CardDescription className="text-gray-600 font-light leading-relaxed">
+                    {item.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* 3. COMO FUNCIONA (How It Works) */}
+      <Section variant="light" className="py-24 bg-gray-50 border-y border-gray-200">
+        <div className="container-custom">
+          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-black tracking-tight text-center">
+            Como funciona
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+            {/* Connector Line (Desktop only) */}
+            <div className="hidden md:block absolute top-[24px] left-0 w-full h-[2px] bg-gray-200 -z-10" />
+
+            {service.howItWorks.map((step, i) => (
+              <div key={i} className="relative group">
+                {/* Number Bubble */}
+                <div className={`w-12 h-12 bg-white border-2 border-revgreen rounded-full flex items-center justify-center font-mono-tech text-black font-bold mb-6 mx-auto z-10 group-hover:bg-revgreen group-hover:text-white transition-colors shadow-sm`}>
+                  {step.step}
+                </div>
+                <div className="text-center px-4">
+                  <h3 className="text-lg font-bold text-black mb-3">{step.title}</h3>
+                  <p className="text-sm text-gray-500 font-light">{step.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* 4. RESULTADOS (Results) */}
+      <Section variant="dark" className="py-24 bg-black border-t border-white/5">
+        <div className="container-custom">
+          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-white tracking-tight text-center">
+            Resultados Típicos
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {service.results.map((result, i) => (
+              <div key={i} className="p-8 border border-white/10 rounded-sm bg-white/5 text-center hover:bg-white/10 transition-colors group">
+                <div className={`text-4xl md:text-5xl font-bold ${service.accent} mb-4 font-mono-tech group-hover:scale-110 transition-transform duration-300`}>
+                  {result.value}
+                </div>
+                <p className="text-gray-400 font-light uppercase tracking-wider text-sm">
+                  {result.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* 5. CTA FINAL */}
+      <Section variant="light" className="py-24 bg-white">
+        <div className="container-custom text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6 text-black">Pronto para começar?</h2>
+            <p className="text-xl text-gray-500 mb-10 font-light">
+              Agende uma consultoria gratuita e descubra como podemos ajudar sua empresa a escalar.
+            </p>
+            <Button asChild className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-xl">
+              <Link to="/diagnostico">Agendar Consultoria Gratuita</Link>
+            </Button>
+          </div>
+        </div>
+      </Section>
+
     </PageLayout>
   );
 };

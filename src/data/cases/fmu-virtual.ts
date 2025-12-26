@@ -1,16 +1,16 @@
 
 export const fmuVirtualCase = {
-  title: "FMU Virtual",
-  category: "Educação a Distância",
+  title: "FMU: Recorde de Matrículas com Growth Operacional",
+  category: "EAD • Growth Operations",
   logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png",
-  coverImage: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45",
-  challenge: "A FMU Virtual necessitava consolidar sua posição no competitivo mercado de educação a distância, aumentando tanto o volume quanto a qualidade das inscrições.",
-  solution: "Desenvolvemos uma estratégia multifacetada com reestruturação das campanhas de mídia paga, sistema de automação avançado e integração com o time comercial.",
+  coverImage: "https://images.unsplash.com/photo-1523050338392-06ba56759d7b?auto=format&fit=crop&q=80&w=1200",
+  challenge: "A FMU Virtual precisava aumentar o volume de matrículas em um cenário de alta concorrência e alto custo de aquisição (CAC). A operação era fragmentada entre marketing e vendas, sem visibilidade clara da jornada do aluno.",
+  solution: "Reestruturamos toda a estratégia de mídia paga (Google e Meta Ads) integrada a um novo funil de vendas automatizado. Implementamos uma camada de inteligência no CRM e automações de nutrição que garantiram que nenhum lead esfriasse antes da tentativa de fechamento.",
   results: [
-    "Aumento de 67% no volume de matrículas em comparação com o período anterior",
-    "Redução de 32% no custo por lead qualificado através da otimização contínua",
-    "Aumento de 45% na taxa de conversão de leads para matrículas",
-    "Implementação de sistema de BI que permitiu decisões baseadas em dados em tempo real"
+    "Recorde histórico de matrículas no semestre através da integração GTM",
+    "Redução de 32% no custo por lead qualificado através da otimização de canais",
+    "Aumento de 45% na taxa de conversão final com automações no CRM",
+    "Visibilidade de 100% do funil de vendas para tomada de decisão baseada em dados"
   ],
   metrics: [
     {

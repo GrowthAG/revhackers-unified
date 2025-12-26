@@ -3,163 +3,208 @@ import PageLayout from '@/components/layout/PageLayout';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, LineChart, Database, Zap, Bot, Users, Target, BarChart, HeartPulse } from 'lucide-react';
+import { ArrowRight, TrendingUp, Database, Zap, Users } from 'lucide-react';
+import Section from '@/components/ui/Section';
 
 const services = [
   {
-    title: "Automação de Revenue",
-    description: "Automatizamos processos comerciais e de marketing para gerar mais resultados com menos esforço.",
-    icon: Bot,
+    title: "Tração & Mídia Paga",
+    description: "Gestão estratégica de tráfego focada em LTV/CAC e pipelines B2B qualificados.",
+    icon: TrendingUp,
     features: [
-      "Automação de processos de marketing e vendas",
-      "Implementação de CRM e ferramentas de automação",
-      "Criação de fluxos de nutrição e qualificação de leads",
-      "Otimização de processos para redução de CAC"
+      "Gestão Google Ads",
+      "Meta Ads Estratégico",
+      "LinkedIn Ads B2B",
+      "Criação de Criativos"
     ],
-    slug: "automacao"
+    slug: "tracao-midia-paga"
   },
   {
-    title: "Revenue Intelligence",
-    description: "Análise e insights a partir dos seus dados para melhorar a tomada de decisão em vendas e marketing.",
+    title: "Ecossistema & CRM",
+    description: "Integração total de ferramentas. Marketing, Vendas e CS falando a mesma língua.",
     icon: Database,
     features: [
-      "Integração de dados de diversas fontes",
-      "Criação de dashboards para acompanhamento de métricas",
-      "Análise de dados para identificação de padrões",
-      "Implementação de processos baseados em dados"
+      "Implementação GoHighLevel",
+      "Integração de Ferramentas",
+      "Pipeline de Vendas",
+      "Dashboards Executivos"
     ],
-    slug: "revenue-intelligence"
+    slug: "ecossistema-crm"
   },
   {
-    title: "Revenue Operations",
-    description: "Alinhamento entre marketing, vendas e CS para uma gestão integrada do funil de vendas.",
-    icon: LineChart,
+    title: "Automação Inteligente",
+    description: "Workflows que nutrem leads e fecham vendas enquanto você dorme.",
+    icon: Zap,
     features: [
-      "Análise e otimização do funil de vendas",
-      "Alinhamento de processos entre marketing e vendas",
-      "Implementação de metodologias ágeis",
-      "Otimização de processos para redução de ciclo de vendas"
+      "Email Marketing Automático",
+      "WhatsApp Business API",
+      "Workflows Inteligentes",
+      "Follow-up Automático"
     ],
-    slug: "revops"
+    slug: "automacao-inteligente"
   },
   {
-    title: "Customer Success",
-    description: "Estratégias para maximizar a retenção e expansão da sua base de clientes.",
-    icon: HeartPulse,
-    features: [
-      "Implementação de processos de onboarding",
-      "Criação de programas de customer success",
-      "Análise de churn e estratégias de retenção",
-      "Desenvolvimento de estratégias de upsell e cross-sell"
-    ],
-    slug: "customer-success"
-  },
-  {
-    title: "Account Based Marketing",
-    description: "Estratégias personalizadas para conquistar contas estratégicas com abordagem altamente direcionada.",
-    icon: Target,
-    features: [
-      "Identificação de contas-alvo",
-      "Desenvolvimento de estratégias personalizadas",
-      "Implementação de campanhas multicanal",
-      "Mensuração de resultados e otimização"
-    ],
-    slug: "abm"
-  },
-  {
-    title: "Sales Enablement",
-    description: "Capacitação e ferramentas para potencializar o desempenho da sua equipe de vendas.",
+    title: "Founder-Led Growth",
+    description: "Estratégias de marca pessoal para fundadores se tornarem o principal canal de aquisição.",
     icon: Users,
     features: [
-      "Desenvolvimento de materiais de vendas",
-      "Treinamento e capacitação de equipes",
-      "Implementação de ferramentas de produtividade",
-      "Otimização de processos de vendas"
+      "Personal Branding Strategy",
+      "Content Marketing",
+      "LinkedIn Growth",
+      "Speaking & Networking"
     ],
-    slug: "sales-enablement"
+    slug: "founder-led-growth"
   }
 ];
 
 const Servicos = () => {
   return (
     <PageLayout>
-      <section className="pt-32 pb-10 bg-gradient-to-br from-black to-gray-900 text-white relative">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
-            alt="Serviços background" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="container-custom relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Nossos Serviços</h1>
-            <p className="text-xl text-gray-300 mb-8">
+      {/* Hero Section - Industrial Dark */}
+      <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10">
+        <div className="container-custom text-center">
+          <div className="max-w-3xl mx-auto">
+            <span className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4 block">
+              Capabilities
+            </span>
+            <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
+              Nossos Serviços
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed">
               Soluções completas para acelerar o crescimento do seu negócio B2B
-              com estratégias baseadas em dados e tecnologia
+              com estratégias baseadas em dados e tecnologia.
             </p>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-16 bg-gray-50">
+      {/* Methodology Section - The Ecosystem View */}
+      <Section variant="light" className="py-24 bg-white relative overflow-hidden">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <Card key={index} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-revgreen/10 flex items-center justify-center mb-4">
-                    <service.icon className="h-6 w-6 text-revgreen" />
-                  </div>
-                  <CardTitle className="text-xl">{service.title}</CardTitle>
-                  <CardDescription className="mt-2">{service.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 mb-6">
-                    {service.features.map((feature, i) => (
-                      <li key={i} className="flex items-start">
-                        <span className="text-revgreen mr-2 mt-1">•</span>
-                        <span className="text-sm text-gray-600">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Link to={`/servicos/${service.slug}`} className="inline-flex items-center text-sm font-medium text-revgreen hover:text-black">
-                    Ver detalhes
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Section Header */}
+          <div className="max-w-3xl mx-auto text-center mb-20">
+            <h2 className="text-3xl md:text-4xl font-normal text-black mb-6 tracking-tight">
+              O Ecossistema de Receita
+            </h2>
+            <p className="text-xl text-gray-500 font-light leading-relaxed">
+              Não entregamos peças soltas. Construímos uma máquina onde cada pilar
+              alimenta e potencializa o próximo.
+            </p>
           </div>
-        </div>
-      </section>
 
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-black text-white rounded-xl p-8 md:p-12">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                  Não sabe por onde começar?
-                </h2>
-                <p className="text-gray-300">
-                  Solicite um diagnóstico gratuito e descubra quais serviços são mais adequados 
-                  para o momento atual do seu negócio.
-                </p>
-              </div>
-              
-              <div className="flex justify-center">
-                <Button asChild variant="default">
-                  <Link to="/diagnostico">
-                    Solicitar diagnóstico gratuito
+          {/* Timeline / Process Flow */}
+          <div className="relative max-w-4xl mx-auto">
+            {/* Vertical Line (Desktop) */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-gray-200 -z-10 md:-translate-x-1/2"></div>
+
+            <div className="space-y-24">
+              {/* Step 1: Tração */}
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                <div className="md:w-1/2 text-left md:text-right order-2 md:order-1">
+                  <h3 className="text-2xl font-bold text-black mb-2">1. Atração & Demanda</h3>
+                  <p className="text-gray-500 font-light mb-4">
+                    Trazemos o tráfego qualificado certo para dentro de casa.
+                    Sem cliques vazios, apenas decisores com intenção de compra.
+                  </p>
+                  <Link to="/servicos/tracao-midia-paga" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
+                    Tração & Mídia Paga &rarr;
                   </Link>
-                </Button>
+                </div>
+                <div className="relative z-10 w-16 h-16 rounded-full bg-black border-4 border-white flex items-center justify-center shadow-lg order-1 md:order-2 flex-shrink-0">
+                  <TrendingUp className="w-8 h-8 text-revgreen" />
+                </div>
+                <div className="md:w-1/2 order-3 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0">
+                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Top of Funnel</span>
+                </div>
               </div>
+
+              {/* Step 2: Autoridade */}
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                <div className="md:w-1/2 order-3 md:order-1 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0 md:text-right">
+                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Trust Layer</span>
+                </div>
+                <div className="relative z-10 w-16 h-16 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-sm order-1 md:order-2 flex-shrink-0">
+                  <Users className="w-8 h-8 text-black" />
+                </div>
+                <div className="md:w-1/2 order-2 md:order-3">
+                  <h3 className="text-2xl font-bold text-black mb-2">2. Autoridade & Confiança</h3>
+                  <p className="text-gray-500 font-light mb-4">
+                    Transformamos o CPF do fundador em um imã de oportunidades.
+                    Acelera o ciclo de vendas pois "quem confia, compra rápido".
+                  </p>
+                  <Link to="/servicos/founder-led-growth" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
+                    Founder-Led Growth &rarr;
+                  </Link>
+                </div>
+              </div>
+
+              {/* Step 3: Organização */}
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                <div className="md:w-1/2 text-left md:text-right order-2 md:order-1">
+                  <h3 className="text-2xl font-bold text-black mb-2">3. Inteligência de Dados</h3>
+                  <p className="text-gray-500 font-light mb-4">
+                    Organizamos a casa. Centralizamos todos os dados para que Marketing e Vendas
+                    falem a mesma língua e nada se perca.
+                  </p>
+                  <Link to="/servicos/ecossistema-crm" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
+                    Ecossistema & CRM &rarr;
+                  </Link>
+                </div>
+                <div className="relative z-10 w-16 h-16 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-sm order-1 md:order-2 flex-shrink-0">
+                  <Database className="w-8 h-8 text-black" />
+                </div>
+                <div className="md:w-1/2 order-3 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0">
+                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">The Brain</span>
+                </div>
+              </div>
+
+              {/* Step 4: Conversão */}
+              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                <div className="md:w-1/2 order-3 md:order-1 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0 md:text-right">
+                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Conversion Loop</span>
+                </div>
+                <div className="relative z-10 w-16 h-16 rounded-full bg-black border-4 border-white flex items-center justify-center shadow-lg order-1 md:order-2 flex-shrink-0">
+                  <Zap className="w-8 h-8 text-revgreen" />
+                </div>
+                <div className="md:w-1/2 order-2 md:order-3">
+                  <h3 className="text-2xl font-bold text-black mb-2">4. Conversão Automática</h3>
+                  <p className="text-gray-500 font-light mb-4">
+                    A máquina que roda 24/7. Nutrição, follow-up e agendamento
+                    acontecendo enquanto sua equipe foca em fechar contratos.
+                  </p>
+                  <Link to="/servicos/automacao-inteligente" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
+                    Automação Inteligente &rarr;
+                  </Link>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
-      </section>
+      </Section>
+
+      {/* CTA Section - Simple & Clean */}
+      <Section variant="light" className="py-20 bg-gray-50 border-t border-gray-200">
+        <div className="container-custom">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-normal mb-6 text-black tracking-tight">
+              Não sabe por onde começar?
+            </h2>
+            <p className="text-lg text-gray-500 mb-8 font-light max-w-2xl mx-auto">
+              Solicite um diagnóstico gratuito e descubra quais serviços são mais adequados
+              para o momento atual do seu negócio.
+            </p>
+
+            <div className="flex justify-center">
+              <Button asChild className="btn-green-flat h-14">
+                <Link to="/diagnostico">
+                  Solicitar diagnóstico gratuito
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Section>
     </PageLayout>
   );
 };

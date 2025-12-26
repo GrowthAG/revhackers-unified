@@ -11,11 +11,11 @@ const PartnerEnics = () => {
   return (
     <PageLayout>
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-black to-gray-900 text-white relative">
+      <section className="pt-32 pb-16 bg-white text-gray-900 relative">
         <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1511578314322-379afb476865" 
-            alt="ENICS background" 
+          <img
+            src="https://images.unsplash.com/photo-1511578314322-379afb476865"
+            alt="ENICS background"
             className="w-full h-full object-cover"
           />
         </div>
@@ -26,7 +26,7 @@ const PartnerEnics = () => {
                 ENICS
               </h1>
               <p className="text-xl text-gray-300 mb-8">
-                Empresa organizadora de eventos corporativos e educacionais de grande porte, 
+                Empresa organizadora de eventos corporativos e educacionais de grande porte,
                 especializada em experiências imersivas e interativas.
               </p>
               <div className="flex flex-wrap gap-3 mb-8">
@@ -49,9 +49,9 @@ const PartnerEnics = () => {
               </div>
             </div>
             <div className="md:w-1/3 bg-white p-8 rounded-lg shadow-lg">
-              <img 
-                src="/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png" 
-                alt="ENICS" 
+              <img
+                src="/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png"
+                alt="ENICS"
                 className="w-full h-auto object-contain"
               />
             </div>
@@ -64,16 +64,16 @@ const PartnerEnics = () => {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-10 text-center">Nosso trabalho com a ENICS</h2>
-            
+
             <div className="space-y-8">
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-xl font-bold mb-4">O Desafio</h3>
                 <p className="text-gray-700">
-                  A ENICS precisava vender 3.000 ingressos em apenas 30 dias para um grande evento educacional, 
+                  A ENICS precisava vender 3.000 ingressos em apenas 30 dias para um grande evento educacional,
                   enfrentando o desafio de um prazo curto e alta competição no setor.
                 </p>
               </div>
-              
+
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-xl font-bold mb-4">A Solução</h3>
                 <p className="text-gray-700 mb-4">
@@ -98,7 +98,7 @@ const PartnerEnics = () => {
                   </li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-50 p-8 rounded-lg">
                 <h3 className="text-xl font-bold mb-4">Os Resultados</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -121,7 +121,7 @@ const PartnerEnics = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Testimonial */}
             <div className="mt-16 bg-gray-900 text-white p-8 rounded-lg relative">
               <div className="text-6xl text-gray-700 absolute top-4 left-6 opacity-30">"</div>
@@ -132,8 +132,8 @@ const PartnerEnics = () => {
                     <AvatarFallback>CS</AvatarFallback>
                   </Avatar>
                   <p className="text-lg italic">
-                    "A estratégia digital implementada não apenas nos permitiu atingir nossa meta ambiciosa de vendas, 
-                    mas também estabeleceu uma base sólida de dados para nossos próximos eventos, transformando 
+                    "A estratégia digital implementada não apenas nos permitiu atingir nossa meta ambiciosa de vendas,
+                    mas também estabeleceu uma base sólida de dados para nossos próximos eventos, transformando
                     completamente nosso processo de comercialização."
                   </p>
                 </div>
@@ -151,7 +151,7 @@ const PartnerEnics = () => {
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <h2 className="text-3xl font-bold mb-10 text-center">Serviços Relacionados</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="overflow-hidden hover:shadow-lg transition-all">
               <div className="p-6">
@@ -164,7 +164,7 @@ const PartnerEnics = () => {
                 </Link>
               </div>
             </Card>
-            
+
             <Card className="overflow-hidden hover:shadow-lg transition-all">
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-3">Automação de Marketing</h3>
@@ -176,7 +176,7 @@ const PartnerEnics = () => {
                 </Link>
               </div>
             </Card>
-            
+
             <Card className="overflow-hidden hover:shadow-lg transition-all">
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-3">Campanhas de Mídia Paga</h3>
@@ -202,7 +202,7 @@ const PartnerEnics = () => {
             </p>
             <Separator className="mx-auto w-24 bg-revgreen h-1 rounded-full mb-6" />
           </div>
-          
+
           <div className="max-w-2xl mx-auto bg-gray-50 p-8 rounded-xl shadow-lg border border-gray-100">
             <ContactForm formType="contact" />
           </div>

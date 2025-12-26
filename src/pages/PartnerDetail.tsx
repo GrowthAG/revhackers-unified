@@ -13,25 +13,25 @@ import BookingWidget from '@/components/shared/BookingWidget';
 
 const PartnerDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  
+
   // Scroll to top when the component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]); // Re-run when slug changes
-  
+
   if (!slug || !partners[slug]) {
     return <NotFound />;
   }
-  
+
   const partner = partners[slug];
 
   return (
     <PageLayout>
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-black to-gray-900 text-white relative">
+      <section className="pt-32 pb-20 bg-white text-gray-900 relative">
         <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src={partner.coverImage} 
+          <img
+            src={partner.coverImage}
             alt={`${partner.name} background`}
             className="w-full h-full object-cover"
           />
@@ -41,10 +41,10 @@ const PartnerDetail = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             <span>Voltar para todos os parceiros</span>
           </Link>
-          
+
           <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
             <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl w-full md:w-1/3 flex items-center justify-center">
-              <img 
+              <img
                 src={partner.logo}
                 alt={`${partner.name} logo`}
                 className="max-w-[85%] max-h-48 object-contain" // Aumentado de max-h-40 para max-h-48

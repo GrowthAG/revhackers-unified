@@ -1,100 +1,66 @@
-
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from 'lucide-react';
+import PageLayout from '../layout/PageLayout';
 
 interface AdminLayoutProps {
-  children: ReactNode;
-  pageTitle?: string;
+  children: React.ReactNode;
 }
 
-export default function AdminLayout({ children, pageTitle }: AdminLayoutProps) {
-  return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {pageTitle && (
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">{pageTitle}</h1>
-        )}
-        <main>{children}</main>
-      </div>
-    </div>
-  );
-}
-
-type Material = {
-  id: number;
-  title: { rendered: string };
-  acf: {
-    tipo_do_material: string;
-    descricao_resumo: string;
-    arquivo_pdf: string;
-  };
-};
-
-export function MaterialCards() {
-  const [materiais, setMateriais] = useState<Material[]>([]);
+const AdminLayout = ({ children }: AdminLayoutProps) => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    fetch('https://materiais.revhackers.com.br/wp-json/wp/v2/materiais')
-      .then((res) => res.json())
-      .then((data) => setMateriais(data));
-  }, []);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+
+      // Check Profile Role
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error || !profile || (profile.role !== 'super_admin' && profile.role !== 'user')) {
+        console.error("Access denied or profile not found");
+        navigate('/');
+        return;
+      }
+
+      setIsAuthorized(true);
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-white">
+        <Loader2 className="h-10 w-10 animate-spin text-revgreen" />
+      </div>
+    );
+  }
+
+  if (!isAuthorized) return null;
 
   return (
-    <div style={{ display: 'grid', gap: '2rem', padding: '2rem' }}>
-      {materiais.map((material) => (
-        <div
-          key={material.id}
-          style={{
-            border: '1px solid #eee',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            boxShadow: '0 0 8px rgba(0,0,0,0.05)',
-            maxWidth: '400px',
-          }}
-        >
-          <span
-            style={{
-              backgroundColor: '#d4fbe1',
-              color: '#029e54',
-              padding: '4px 12px',
-              borderRadius: '999px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              display: 'inline-block',
-              marginBottom: '0.5rem',
-            }}
-          >
-            {material.acf?.tipo_do_material || 'Material'}
-          </span>
-
-          <h3 style={{ margin: '0 0 0.5rem' }}>
-            {material.title.rendered}
-          </h3>
-
-          <p style={{ fontSize: '0.95rem', color: '#444', marginBottom: '1rem' }}>
-            {material.acf?.descricao_resumo}
-          </p>
-
-          {material.acf?.arquivo_pdf && (
-            <a
-              href={material.acf.arquivo_pdf}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                backgroundColor: '#00ff5b',
-                display: 'inline-block',
-                textAlign: 'center',
-                padding: '0.75rem 1.25rem',
-                color: '#000',
-                fontWeight: 600,
-                borderRadius: '8px',
-                textDecoration: 'none',
-              }}
-            >
-              ⬇ Baixar Material
-            </a>
-          )}
+    <PageLayout>
+      <div className="bg-white min-h-screen py-12">
+        <div className="container-custom">
+          {children}
         </div>
-      ))}
-    </div>
+      </div>
+    </PageLayout>
   );
-}
+};
+
+export default AdminLayout;

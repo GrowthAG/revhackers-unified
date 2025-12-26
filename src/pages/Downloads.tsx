@@ -165,10 +165,10 @@ const Downloads = () => {
 
   return (
     <PageLayout>
-      <section className="pt-32 pb-10 bg-gradient-to-br from-black to-gray-900 text-white relative">
+      <section className="pt-32 pb-10 bg-white text-gray-900 relative">
         <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+          <img
+            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
             alt="Materiais Gratuitos"
             className="w-full h-full object-cover"
           />
@@ -177,7 +177,7 @@ const Downloads = () => {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Materiais Gratuitos</h1>
             <p className="text-xl text-gray-300 mb-8">
-              Baixe nossos conteúdos exclusivos sobre Revenue Operations, 
+              Baixe nossos conteúdos exclusivos sobre Revenue Operations,
               Account Based Marketing e estratégias de crescimento para empresas B2B
             </p>
           </div>
@@ -189,7 +189,7 @@ const Downloads = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {materials.map((material, index) => {
               const materialSlug = getSlugFromTitle(material.title);
-              
+
               return (
                 <Card key={index} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow h-full flex flex-col">
                   <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
@@ -208,17 +208,17 @@ const Downloads = () => {
                   </CardContent>
                   <CardFooter className="bg-gray-50 border-t">
                     <div className="grid grid-cols-2 gap-2 w-full">
-                      <Button 
+                      <Button
                         className="w-full"
-                        variant="outline" 
+                        variant="outline"
                         onClick={() => navigate(`/materiais/${materialSlug}`)}
                       >
                         <ExternalLink className="mr-2 h-4 w-4" />
                         Ver detalhes
                       </Button>
-                      <Button 
+                      <Button
                         className="w-full"
-                        variant="default" 
+                        variant="default"
                         onClick={() => handleDownloadClick(material)}
                       >
                         <Download className="mr-2 h-4 w-4" />
@@ -230,14 +230,14 @@ const Downloads = () => {
               );
             })}
           </div>
-          
+
           {showForm && selectedMaterial && (
             <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 border">
               <h2 className="text-2xl font-bold mb-6">
                 Preencha seus dados para baixar "{selectedMaterial.title}"
               </h2>
-              <DownloadForm 
-                materialId={selectedMaterial.id} 
+              <DownloadForm
+                materialId={selectedMaterial.id}
                 materialType={selectedMaterial.type}
                 onSubmit={handleFormSubmit}
               />
@@ -255,7 +255,7 @@ const Downloads = () => {
                   Precisa de conteúdo personalizado?
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  Entre em contato conosco para solicitar materiais exclusivos 
+                  Entre em contato conosco para solicitar materiais exclusivos
                   ou uma análise personalizada para seu negócio B2B.
                 </p>
                 <Button asChild variant="outline" className="border-revgreen text-revgreen hover:bg-revgreen hover:text-black">
@@ -263,9 +263,9 @@ const Downloads = () => {
                 </Button>
               </div>
               <div className="hidden md:block">
-                <img 
-                  src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-                  alt="Análise personalizada" 
+                <img
+                  src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+                  alt="Análise personalizada"
                   className="w-full h-auto rounded-lg"
                 />
               </div>

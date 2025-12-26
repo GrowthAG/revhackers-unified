@@ -1,0 +1,166 @@
+﻿
+> vite_react_shadcn_ts@0.0.0 lint
+> eslint .
+
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\admin\CaseForm.tsx
+  126:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\admin\MaterialForm.tsx
+   69:8   warning  React Hook useEffect has a missing dependency: 'watch'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  138:25  error    Unexpected any. Specify a different type                                                                  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\admin\PostEditor.tsx
+  115:11  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\admin\PostForm.tsx
+  136:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\blog\post\articles\DiagnosticoFunilArticle.tsx
+  10:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\blog\post\articles\FunilAquisicaoProdutoArticle.tsx
+  123:130  error  Parsing error: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\blog\post\articles\IntegracaoMktVendasArticle.tsx
+  13:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\blog\post\articles\LinkedInNavigatorArticle.tsx
+  110:43  error  Parsing error: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\shared\ExitIntentPopup.tsx
+  14:9  error  'hasShown' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\shared\SocialProofNotifications.tsx
+   87:3  error  React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  107:3  error  React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  168:3  error  React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\shared\download-form\hooks\useDownloadForm.ts
+  59:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\badge.tsx
+  36:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\button.tsx
+  57:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\command.tsx
+  24:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\form.tsx
+  168:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\navigation-menu.tsx
+  119:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\sidebar.tsx
+  760:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\components\ui\toggle.tsx
+  43:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\contexts\AuthContext.tsx
+   11:79  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   12:67  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   13:56  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   14:60  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   68:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   85:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   99:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  114:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  127:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  149:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\integrations\supabase\client.ts
+  12:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\integrations\supabase\types.ts
+  196:0  error  Parsing error: Declaration or statement expected
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\lib\reiScoring.ts
+  30:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\lib\reiSupabaseIntegration.ts
+   21:20   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   25:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:20   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   36:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:46   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:25   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:88   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:25   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:98   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:47   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:33   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  182:46   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:25   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  210:25   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  232:102  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  234:33   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  244:59   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  260:82   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:34   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  281:33   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\AdminPosts.tsx
+   83:31  error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  121:11  error  'errorDetails' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\Blog.tsx
+  191:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\FounderScore.tsx
+  165:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\Materiais.tsx
+  26:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\MaterialDetalhe.tsx
+  16:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\REI-Consulting.tsx
+  139:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\REI-Dev.tsx
+  76:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\REI-Founder.tsx
+  73:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\RevenueScore.tsx
+  147:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\admin\AdminCaseEdit.tsx
+  12:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\admin\AdminMaterialEdit.tsx
+  13:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\admin\AdminMaterials.tsx
+  14:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\admin\AdminPostEdit.tsx
+  12:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\src\pages\admin\AdminPosts.tsx
+  11:40  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  30:13  error  'query' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\Pichau\Downloads\RevHackers Site Novo 2026\revhackers-growth-hub\tailwind.config.ts
+  95:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Ô£û 80 problems (70 errors, 10 warnings)
+  3 errors and 2 warnings potentially fixable with the `--fix` option.
+

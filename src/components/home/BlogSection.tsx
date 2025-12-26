@@ -10,7 +10,7 @@ import { getAllPosts } from '@/api/posts';
 
 // Interface para post do blog
 interface BlogPost {
-  id: number;
+  id: number | string;
   title: string;
   slug: string;
   excerpt: string;
@@ -29,17 +29,17 @@ interface BlogPost {
 const BlogSection = () => {
   const [featuredArticles, setFeaturedArticles] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const posts = await getAllPosts();
-        
+
         // Ordenar posts por data (mais recentes primeiro) e pegar os primeiros 4
-        const sortedPosts = [...posts].sort((a, b) => 
+        const sortedPosts = [...posts].sort((a, b) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
         ).slice(0, 4);
-        
+
         setFeaturedArticles(sortedPosts);
       } catch (error) {
         console.error("Erro ao carregar artigos do blog:", error);
@@ -48,17 +48,17 @@ const BlogSection = () => {
         setLoading(false);
       }
     };
-    
+
     fetchPosts();
   }, []);
-  
+
   // Limpar HTML do título
   const cleanTitle = (htmlTitle: string) => {
     const div = document.createElement('div');
     div.innerHTML = htmlTitle;
     return div.textContent || div.innerText || '';
   };
-  
+
   // Limpar HTML do excerpt
   const cleanExcerpt = (htmlExcerpt: string) => {
     const div = document.createElement('div');
@@ -78,14 +78,14 @@ const BlogSection = () => {
               Conteúdo estratégico e especializado sobre crescimento, tecnologia e dados para empresas B2B.
             </p>
           </div>
-          
+
           <Button
             variant="link"
             asChild
             className="text-base"
           >
-            <Link 
-              to="/blog" 
+            <Link
+              to="/blog"
               className="inline-flex items-center text-revgreen hover:text-black font-medium group"
             >
               Ver todos os artigos
@@ -93,7 +93,7 @@ const BlogSection = () => {
             </Link>
           </Button>
         </div>
-        
+
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="rounded-full border-4 border-gray-200 border-t-revgreen animate-spin h-12 w-12"></div>
@@ -109,18 +109,18 @@ const BlogSection = () => {
               const articleImage = getArticleImageBySlug(article.slug) || article.image;
               const title = cleanTitle(article.title);
               const excerpt = cleanExcerpt(article.excerpt);
-              
+
               return (
                 <Link to={`/blog/${article.slug}`} key={article.id} className="group block h-full">
                   <Card className="overflow-hidden card-hover h-full border-0 shadow-sm hover:shadow-md transition-all duration-300">
                     <div className="h-48 overflow-hidden relative">
-                      <img 
-                        src={articleImage} 
-                        alt={title} 
+                      <img
+                        src={articleImage}
+                        alt={title}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                       />
                       <div className="absolute top-3 left-3">
-                        <span className="text-xs px-3 py-1 bg-green-50 text-green-800 rounded-full font-medium shadow-sm">
+                        <span className="text-[10px] uppercase tracking-widest bg-white/90 backdrop-blur-sm px-3 py-1 text-black font-bold border border-black/10 rounded-sm">
                           {article.category}
                         </span>
                       </div>
@@ -132,7 +132,7 @@ const BlogSection = () => {
                       <p className="text-gray-600 mb-4 line-clamp-2">
                         {excerpt}
                       </p>
-                      
+
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center space-x-3">
                           <Avatar className="h-8 w-8">

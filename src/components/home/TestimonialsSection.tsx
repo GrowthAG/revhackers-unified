@@ -1,135 +1,91 @@
 
 import { Quote } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselItem, 
-  CarouselNext, 
-  CarouselPrevious 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
 } from "@/components/ui/carousel";
-import { Card } from '@/components/ui/card';
+import Section from '@/components/ui/Section';
 
 const testimonials = [
   {
-    quote: "A consultoria da RevHackers nos ajudou a implementar uma estratégia de RevOps que integrou nossas equipes de marketing e vendas, gerando um aumento de 47% na conversão de leads em apenas 4 meses.",
-    author: "Lucio Sardinha",
-    role: "CEO, FMU Virtual",
-    avatar: "/lovable-uploads/96db41f1-2d74-4913-997d-3296df29d457.png",
-    results: "↗️ +47% conversão de leads",
-    timeframe: "4 meses"
-  },
-  {
-    quote: "Reduzimos nosso CAC em 38% e aumentamos o LTV em 65% após implementar as recomendações da RevHackers. O conhecimento técnico da equipe e a capacidade de extrair insights dos dados foram cruciais para nossa estratégia de crescimento.",
-    author: "Fernando Correa",
-    role: "CEO, First Security",
-    avatar: "/lovable-uploads/2abb9e01-3bb4-413b-887d-0efab88c25eb.png",
-    results: "↘️ -38% CAC • ↗️ +65% LTV",
-    timeframe: "6 meses"
-  },
-  {
-    quote: "A metodologia da RevHackers trouxe clareza para nossos processos de vendas e marketing. Hoje temos métricas confiáveis e aumentamos nossa receita recorrente em 89% no primeiro ano, o que nos permite escalar com segurança.",
+    quote: "Aumentamos nossa receita recorrente em 89% no primeiro ano. A metodologia trouxe clareza e métricas confiáveis para o board.",
     author: "Carla Macedo",
-    role: "Diretora de Vendas, TOEFL Junior Brasil",
+    role: "Diretora de Vendas, TOEFL Junior",
     avatar: "/lovable-uploads/95e8dfb6-30ef-4311-b229-a6c702cd57b7.png",
-    results: "↗️ +89% receita recorrente",
-    timeframe: "12 meses"
   },
   {
-    quote: "A implementação do RevOps pela equipe da RevHackers transformou completamente nosso funil de vendas. Aumentamos a taxa de fechamento em 52% e reduzimos o ciclo de vendas em 34%. A visibilidade e previsibilidade que conseguimos agora são incomparáveis.",
-    author: "Yves Mariano",
-    role: "CEO, Wisyion",
-    avatar: "/lovable-uploads/bfbe5a85-3867-44dc-adcc-909e6ebeae4f.png",
-    results: "↗️ +52% taxa fechamento • ↘️ -34% ciclo vendas",
-    timeframe: "8 meses"
-  },
-  {
-    quote: "Depois da consultoria da RevHackers, conseguimos alinhar marketing, vendas e sucesso do cliente como nunca antes. Os resultados em termos de conversão (+43%) e retenção (+28%) foram impressionantes, gerando um ROI de 420%.",
-    author: "Fabio Boldrini",
-    role: "CEO, BLDN Digital",
-    avatar: "/lovable-uploads/81d46788-47c4-456e-b31d-d0681f39e12c.png",
-    results: "↗️ +43% conversão • 420% ROI",
-    timeframe: "10 meses"
-  },
-  {
-    quote: "O suporte consultivo da RevHackers para nosso time de marketing transformou nossa abordagem em Google Ads e trouxe resultados impressionantes: reduzimos CPA em 29% e aumentamos ROAS em 156% em todo nosso funil de vendas.",
+    quote: "Reduzimos CPA em 29% e aumentamos o volume de leads qualificados. O suporte consultivo transformou nossa visão de Growth.",
     author: "Pedro Silva",
-    role: "Gerente de Vendas, Agence MR",
+    role: "Gerente de Marketing, Agence MR",
     avatar: "/lovable-uploads/c78b28dc-f100-4719-b64b-05c759d55429.png",
-    results: "↘️ -29% CPA • ↗️ +156% ROAS",
-    timeframe: "5 meses"
+  },
+  {
+    quote: "O ROI foi claro desde o terceiro mês. Conseguimos alinhar marketing e vendas em um único sistema de verdade.",
+    author: "Fabio Boldrini",
+    role: "CEO, ENICS",
+    avatar: "/lovable-uploads/81d46788-47c4-456e-b31d-d0681f39e12c.png",
   }
 ];
 
 const TestimonialsSection = () => {
   return (
-    <section className="py-24 bg-gray-50">
+    <Section variant="light" className="bg-white border-t border-gray-100 py-32">
       <div className="container-custom">
-        <div className="max-w-2xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            O que nossos clientes dizem
+        {/* Centered Standard Header */}
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <span className="font-mono-tech text-gray-400 text-xs uppercase tracking-widest mb-4 block">
+            Feedback de Líderes
+          </span>
+          <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight mb-6">
+            O Impacto Real
           </h2>
-          <p className="text-lg text-gray-600">
-            Empresas que já transformaram seu crescimento conosco
-          </p>
         </div>
-        
-        <div className="max-w-4xl mx-auto relative px-4 md:px-12">
+
+        <div className="max-w-5xl mx-auto px-4">
           <Carousel
             opts={{
-              align: "start",
+              align: "center",
               loop: true,
             }}
             className="w-full relative"
           >
             <CarouselContent>
               {testimonials.map((testimonial, index) => (
-                <CarouselItem key={index} className="md:basis-1/1 lg:basis-1/1">
-                  <div className="p-1">
-                    <Card className="bg-white rounded-xl shadow-md p-8 md:p-12 relative">
-                      <Quote className="text-revgreen/20 h-16 w-16 absolute top-8 left-8" />
-                      
-                      <blockquote className="relative z-10">
-                        <p className="text-xl md:text-2xl leading-relaxed text-gray-800 mb-8">
-                          "{testimonial.quote}"
-                        </p>
-                        
-                        <div className="flex items-center">
-                          <Avatar className="h-12 w-12 mr-4">
-                            <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
-                            <AvatarFallback>{testimonial.author.substring(0, 2)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <p className="font-bold">{testimonial.author}</p>
-                            <p className="text-gray-600 text-sm">{testimonial.role}</p>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-xs font-medium text-gray-800 bg-revgreen/20 px-2 py-1 rounded border border-revgreen/30">
-                                {testimonial.results}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                em {testimonial.timeframe}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </blockquote>
-                    </Card>
+                <CarouselItem key={index} className="md:basis-1/1">
+                  <div className="py-12 px-4 text-center">
+                    <div className="mb-10 flex justify-center">
+                      <Quote className="text-revgreen h-12 w-12 opacity-100" />
+                    </div>
+
+                    <blockquote className="text-2xl md:text-4xl font-light text-black leading-tight mb-12 max-w-4xl mx-auto tracking-tight">
+                      "{testimonial.quote}"
+                    </blockquote>
+
+                    <div className="flex flex-col items-center">
+                      <Avatar className="h-16 w-16 mb-4 border border-gray-200">
+                        <AvatarImage src={testimonial.avatar} alt={testimonial.author} />
+                        <AvatarFallback>{testimonial.author.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div className="text-black font-bold text-lg uppercase tracking-wider font-mono-tech">{testimonial.author}</div>
+                      <div className="text-gray-500 text-sm mt-1">{testimonial.role}</div>
+                    </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            
-            <div className="absolute top-1/2 -left-2 md:-left-8 z-10 transform -translate-y-1/2">
-              <CarouselPrevious className="bg-white shadow-lg border-0 text-black h-10 w-10 opacity-90 hover:opacity-100" />
-            </div>
-            
-            <div className="absolute top-1/2 -right-2 md:-right-8 z-10 transform -translate-y-1/2">
-              <CarouselNext className="bg-white shadow-lg border-0 text-black h-10 w-10 opacity-90 hover:opacity-100" />
+
+            <div className="flex justify-center gap-4 mt-12">
+              <CarouselPrevious className="static translate-y-0 bg-white border border-black text-black hover:bg-black hover:text-white rounded-sm h-12 w-12 transition-colors" />
+              <CarouselNext className="static translate-y-0 bg-white border border-black text-black hover:bg-black hover:text-white rounded-sm h-12 w-12 transition-colors" />
             </div>
           </Carousel>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

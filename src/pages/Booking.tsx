@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
 import { Card } from '@/components/ui/card';
-import { CheckCircle } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2 } from 'lucide-react';
 
 const BookingPage = () => {
   const [userData, setUserData] = useState({
@@ -12,12 +12,10 @@ const BookingPage = () => {
     phone: '',
     company: '',
   });
-  
+
   useEffect(() => {
-    // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
-    // Load user data from localStorage
+
     const storedData = getFormData();
     if (storedData) {
       const userName = storedData.name || `${storedData.firstName || ''} ${storedData.lastName || ''}`.trim();
@@ -27,20 +25,14 @@ const BookingPage = () => {
         phone: storedData.phone || '',
         company: storedData.company || '',
       });
-      
-      console.log('Retrieved form data for booking:', storedData);
     }
-    
-    // Create a script element for the form embed
+
     const script = document.createElement('script');
     script.src = "https://team.growthagency.com.br/js/form_embed.js";
     script.type = "text/javascript";
     script.async = true;
-    
-    // Add the script to the document
     document.body.appendChild(script);
-    
-    // Clean up function to remove the script when component unmounts
+
     return () => {
       const existingScript = document.querySelector('script[src="https://team.growthagency.com.br/js/form_embed.js"]');
       if (existingScript && document.body.contains(existingScript)) {
@@ -49,139 +41,94 @@ const BookingPage = () => {
     };
   }, []);
 
-  // Build query parameters for the iframe URL
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    
     if (userData.email) params.append('email', userData.email);
     if (userData.name) params.append('name', userData.name);
     if (userData.phone) params.append('phone', userData.phone);
     if (userData.company) params.append('company', userData.company);
-    
     const queryString = params.toString();
     return queryString ? `?${queryString}` : '';
   };
 
   return (
     <PageLayout>
-      {/* Success Message Section */}
-      <section className="py-6 bg-gradient-to-r from-revgreen/10 to-revgreen/5 border-b border-revgreen/20">
-        <div className="container-custom">
-          <div className="flex items-center justify-center space-x-4 text-center">
-            <div className="flex items-center justify-center w-12 h-12 bg-revgreen rounded-full">
-              <CheckCircle className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
-                ✅ Seu material foi enviado com sucesso para o e-mail informado!
-              </h2>
-              <p className="text-lg text-gray-700">
-                📅 Aproveite enquanto o conteúdo está fresco: agende agora uma conversa rápida para entender como aplicar isso no seu negócio.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-20 bg-white min-h-screen relative overflow-hidden flex items-center">
+        {/* Pure White Background - removed grid for ultra minimalism */}
 
-      <section className="py-12 bg-black text-white">
-        <div className="container-custom">
-          <div className="text-center max-w-4xl mx-auto mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-              📊 <span className="text-white">Agende seu </span><span className="text-revgreen">Diagnóstico Gratuito</span>
+        <div className="container-custom relative z-10 w-full max-w-7xl mx-auto">
+          <div className="text-center max-w-4xl mx-auto mb-20 animate-fade-in-up">
+            <h1 className="text-3xl md:text-5xl font-black leading-none mb-6 text-black uppercase tracking-[0.2em]">
+              Agende seu <span className="text-black border-b-4 border-revgreen pb-2">Diagnóstico</span>
             </h1>
-            <p className="text-lg text-white max-w-2xl mx-auto mt-4">
-              Converse com um especialista e entenda como melhorar seus resultados 
-              com estratégias personalizadas.
+            <p className="text-sm md:text-base text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed uppercase tracking-widest">
+              Converse com um especialista e entenda como escalar sua operação.
             </p>
           </div>
-          
-          <div className="max-w-4xl mx-auto">
-            <Card className="bg-black border border-white/10 rounded-xl shadow-xl p-6 md:p-8">
-              <h3 className="text-2xl md:text-3xl font-bold text-center mb-6">
-                <span className="text-revgreen">Selecione</span> <span className="text-white">a data e horário</span>
-              </h3>
-              
-              <div className="booking-calendar-wrapper relative bg-black rounded-lg overflow-hidden p-1">
-                <div className="absolute inset-0 bg-revgreen/5 opacity-30"></div>
-                <style>{`
-                  .booking-calendar-wrapper iframe {
-                    filter: invert(0) hue-rotate(0deg) brightness(1.2) contrast(1.1);
-                  }
-                  .booking-calendar-wrapper iframe * {
-                    color: white !important;
-                  }
-                  .booking-calendar-wrapper iframe input,
-                  .booking-calendar-wrapper iframe select,
-                  .booking-calendar-wrapper iframe button {
-                    color: white !important;
-                    background: rgba(255, 255, 255, 0.1) !important;
-                    border-color: rgba(255, 255, 255, 0.3) !important;
-                  }
-                  .booking-calendar-wrapper iframe .calendar-day,
-                  .booking-calendar-wrapper iframe .time-slot {
-                    color: white !important;
-                    background: transparent !important;
-                  }
-                `}</style>
-                <iframe 
-                  src={`https://team.growthagency.com.br/widget/booking/sKnL4ucDKohNmqj1hn6H${buildQueryParams()}`}
-                  style={{ 
-                    width: '100%', 
-                    border: 'none', 
-                    overflow: 'hidden', 
-                    backgroundColor: 'transparent'
-                  }} 
-                  scrolling="no" 
-                  id="sKnL4ucDKohNmqj1hn6H_1744205651626"
-                  title="Agendar diagnóstico"
-                  className="min-h-[700px] relative z-10"
-                />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            {/* Sidebar - Clean Text Only (No Box) */}
+            <div className="lg:col-span-4 space-y-12 pt-4">
+              <div className="sticky top-24">
+                <h3 className="text-lg font-black text-black mb-12 uppercase tracking-[0.1em] pl-4 border-l-4 border-black">
+                  O que vamos discutir?
+                </h3>
+
+                <div className="space-y-12">
+                  <div className="flex gap-6 items-start group">
+                    <div className="flex-shrink-0 mt-1">
+                      <Clock className="w-5 h-5 text-black" />
+                    </div>
+                    <div>
+                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Sessão Estratégica</h4>
+                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Análise profunda do cenário atual.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-6 items-start group">
+                    <div className="flex-shrink-0 mt-1">
+                      <Calendar className="w-5 h-5 text-black" />
+                    </div>
+                    <div>
+                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Diagnóstico Técnico</h4>
+                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Gargalos em Marketing, Vendas e Dados.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-6 items-start group">
+                    <div className="flex-shrink-0 mt-1">
+                      <CheckCircle2 className="w-5 h-5 text-black" />
+                    </div>
+                    <div>
+                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Plano de Ação</h4>
+                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Frameworks para crescimento.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-      
-      <section className="py-16 bg-black text-white">
-        <div className="container-custom">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">O que discutiremos na nossa sessão</h2>
-            <p className="text-white mb-10 text-lg">
-              Durante nossa reunião, vamos analisar seus sistemas e
-              discutir soluções técnicas personalizadas para seu negócio.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              <Card className="relative bg-black p-6 rounded-xl border border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-revgreen/10 rounded-full"></div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 bg-revgreen rounded-xl flex items-center justify-center text-xl font-bold text-black mb-4 shadow-md">01</div>
-                  <h3 className="font-bold text-xl mb-3 text-white">Diagnóstico Técnico</h3>
-                  <p className="text-white/80">
-                    Análise de suas ferramentas, sistemas e desafios específicos de operação
-                  </p>
-                </div>
-              </Card>
-              
-              <Card className="relative bg-black p-6 rounded-xl border border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-revgreen/10 rounded-full"></div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 bg-revgreen rounded-xl flex items-center justify-center text-xl font-bold text-black mb-4 shadow-md">02</div>
-                  <h3 className="font-bold text-xl mb-3 text-white">Soluções Técnicas</h3>
-                  <p className="text-white/80">
-                    Apresentação das melhores ferramentas e metodologias para seu cenário
-                  </p>
-                </div>
-              </Card>
-              
-              <Card className="relative bg-black p-6 rounded-xl border border-white/10 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-revgreen/10 rounded-full"></div>
-                <div className="relative z-10">
-                  <div className="w-12 h-12 bg-revgreen rounded-xl flex items-center justify-center text-xl font-bold text-black mb-4 shadow-md">03</div>
-                  <h3 className="font-bold text-xl mb-3 text-white">Implementação</h3>
-                  <p className="text-white/80">
-                    Plano detalhado de execução com cronograma e métricas de sucesso
-                  </p>
+            </div>
+
+            {/* Calendar Embed - Floating White Card */}
+            <div className="lg:col-span-8">
+              <Card className="bg-white border-0 shadow-none p-0 overflow-hidden relative min-h-[800px]">
+                {/* Minimal Header Line */}
+                <div className="w-full h-px bg-zinc-200 mb-8"></div>
+
+                <div className="relative w-full h-[850px] md:h-[800px] overflow-hidden bg-white">
+                  <iframe
+                    src={`https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh${buildQueryParams()}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                      overflow: 'hidden',
+                      background: '#ffffff'
+                    }}
+                    scrolling="no"
+                    id="E6Mw5guvWZc7ADFgxnJh_1766631709081"
+                    title="Agendar diagnóstico"
+                    className="relative z-10 w-full h-full"
+                  />
                 </div>
               </Card>
             </div>

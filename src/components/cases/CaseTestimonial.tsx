@@ -8,20 +8,29 @@ interface CaseTestimonialProps {
 
 const CaseTestimonial = ({ caseData }: CaseTestimonialProps) => {
   return (
-    <div className="bg-gray-50 p-8 rounded-xl shadow-sm">
-      <blockquote className="text-2xl md:text-3xl font-medium leading-tight text-gray-800 mb-8 line-clamp-3">
-        "{caseData.quote}"
-      </blockquote>
-      <div className="flex items-center">
-        {caseData.authorImage && (
-          <Avatar className="h-14 w-14 mr-5">
-            <AvatarImage src={caseData.authorImage} alt={caseData.author} />
-            <AvatarFallback>{caseData.author.substring(0, 2)}</AvatarFallback>
-          </Avatar>
+    <div className="py-12 border-y border-gray-100 my-12">
+      <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+        {/* Author Image (if exists) or Initial Avatar - Minimalist */}
+        {caseData.authorImage ? (
+          <div className="shrink-0">
+            <Avatar className="h-20 w-20 border-2 border-white shadow-lg">
+              <AvatarImage src={caseData.authorImage} alt={caseData.author} />
+              <AvatarFallback className="bg-black text-white">{caseData.author.substring(0, 2)}</AvatarFallback>
+            </Avatar>
+          </div>
+        ) : (
+          <div className="shrink-0 h-16 w-1 bg-black hidden md:block"></div>
         )}
-        <div className="flex flex-col">
-          <p className="font-bold text-xl md:text-2xl">{caseData.author}</p>
-          <p className="text-gray-600 text-base md:text-lg">{caseData.role}</p>
+
+        <div className="flex-1">
+          <blockquote className="text-2xl md:text-4xl font-serif italic text-black leading-tight mb-6">
+            "{caseData.quote}"
+          </blockquote>
+
+          <div>
+            <p className="font-bold text-sm uppercase tracking-wider text-black">{caseData.author}</p>
+            <p className="text-gray-500 text-sm">{caseData.role}</p>
+          </div>
         </div>
       </div>
     </div>

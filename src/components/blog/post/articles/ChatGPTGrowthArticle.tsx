@@ -1,9 +1,11 @@
-import { ArrowRight, Copy, CheckCircle, Lightbulb, Target, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
+import { ArrowRight, ShieldCheck, Copy, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import StrategicContext from '../components/StrategicContext';
+import KeyTakeaways from '../components/KeyTakeaways';
 
-const ChatGPTGrowthArticle = () => {
+const ChatGPTGrowthArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, promptName: string) => {
@@ -12,245 +14,281 @@ const ChatGPTGrowthArticle = () => {
     setTimeout(() => setCopiedPrompt(null), 2000);
   };
 
-  const prompts = [
+  const strategies = [
     {
-      category: "Pesquisa de Mercado",
-      prompts: [
-        {
-          name: "Análise de Concorrência",
-          prompt: "Atue como um analista de mercado especializado em [SEU_SETOR]. Analise os 5 principais concorrentes de [SUA_EMPRESA], focando em: 1) Propostas de valor únicas, 2) Estratégias de preços, 3) Canais de marketing utilizados, 4) Pontos fortes e fracos, 5) Oportunidades de diferenciação. Estruture a resposta em formato de tabela comparativa.",
-          use: "Para entender posicionamento competitivo"
-        },
-        {
-          name: "Personas Detalhadas",
-          prompt: "Crie 3 personas detalhadas para [SEU_PRODUTO/SERVIÇO]. Para cada persona, inclua: Demografia, Psicografia, Principais dores, Objetivos profissionais, Canais de comunicação preferidos, Objeções típicas na compra, Jornada de compra. Use dados comportamentais realistas do mercado [SEU_MERCADO].",
-          use: "Para segmentação precisa"
-        }
-      ]
+      title: "O Método 'Persona Embutida'",
+      description: "O ChatGPT é genérico porque você não dá personalidade a ele. Comece sempre definindo QUEM ele é.",
+      example: "Errado: 'Escreva um email'. Certo: 'Atue como um Copywriter Senior especializado em B2B SaaS...'",
+      results: "Outputs 10x mais alinhados com o tom da marca."
     },
     {
-      category: "Criação de Conteúdo",
-      prompts: [
-        {
-          name: "Headlines Irresistíveis",
-          prompt: "Crie 10 headlines para [SEU_PRODUTO] que sigam as fórmulas: 1) Problema + Solução + Resultado, 2) Número + Benefício + Prazo, 3) Como + Resultado + Sem Problema. Foque na dor: [DOR_PRINCIPAL] e no resultado: [RESULTADO_DESEJADO]. Inclua power words e gatilhos emocionais.",
-          use: "Para landing pages e anúncios"
-        },
-        {
-          name: "Scripts de Vídeo",
-          prompt: "Crie um script de vídeo de 60-90 segundos para [PLATAFORMA] sobre [TÓPICO]. Estrutura: Hook (primeiros 3 segundos), Problema (10s), Agitação (15s), Solução (30s), Prova social (15s), CTA claro (10s). Tom: [TOM_DESEJADO]. Inclua indicações visuais e momentos de pausa.",
-          use: "Para redes sociais e ads"
-        }
-      ]
+      title: "Chain of Thought (Cadeia de Pensamento)",
+      description: "Peça para a IA explicar o raciocínio antes de dar a resposta final. Isso reduz alucinações.",
+      example: "'Antes de escrever o post, liste os 3 principais argumentos psicológicos que você vai usar e por quê.'",
+      results: "Lógica blindada e argumentos persuasivos."
     },
     {
-      category: "Email Marketing",
-      prompts: [
-        {
-          name: "Sequência de Nurturing",
-          prompt: "Desenvolva uma sequência de 5 emails para nutrir leads que baixaram [LEAD_MAGNET]. Email 1: Entrega + valor extra, Email 2: Problema comum + história, Email 3: Objeção principal + resposta, Email 4: Prova social + case, Email 5: CTA forte + urgência. Inclua subject lines e timing de envio.",
-          use: "Para automação de leads"
-        },
-        {
-          name: "Cold Email B2B",
-          prompt: "Crie um cold email para [CARGO_ALVO] de empresas [TIPO_EMPRESA] oferecendo [SEU_SERVIÇO]. Use: Linha de assunto personalizada, Primeira linha ultra-relevante, Problema específico do cargo, Solução concisa, CTA de baixo risco, PS com valor adicional. Máximo 100 palavras.",
-          use: "Para prospecção direta"
-        }
-      ]
+      title: "Constraint-Based Prompting",
+      description: "A criatividade floresce com restrições. Limite o output para evitar textos prolixos e robóticos.",
+      example: "'Use frases curtas. Sem advérbios. Máximo de 3 parágrafos. Fale como se estivesse num bar, não numa palestra.'",
+      results: "Textos humanos, diretos e naturais."
     },
     {
-      category: "Otimização de Conversão",
-      prompts: [
-        {
-          name: "Análise de Landing Page",
-          prompt: "Analise esta landing page [URL_OU_DESCRIÇÃO] como especialista em CRO. Avalie: 1) Clareza da proposta, 2) Hierarquia visual, 3) Elementos de confiança, 4) Friction points, 5) CTA effectiveness. Sugira 5 melhorias específicas com impacto estimado na conversão.",
-          use: "Para otimizar páginas"
-        },
-        {
-          name: "Testes A/B",
-          prompt: "Sugira 3 testes A/B para [ELEMENTO] baseados nos princípios de psicologia da persuasão. Para cada teste: Hipótese clara, Variação específica, Métrica principal, Duração estimada, Significância estatística necessária. Foque em mudanças de alto impacto.",
-          use: "Para experimentação"
-        }
-      ]
-    },
-    {
-      category: "Estratégia de Canais",
-      prompts: [
-        {
-          name: "Mix de Canais",
-          prompt: "Recomende o mix ideal de canais de marketing para [SEU_NEGÓCIO] com orçamento de [VALOR]. Considere: CAC por canal, Tempo até ROI, Escalabilidade, Recursos necessários, Sinergia entre canais. Priorize por impacto vs esforço e sugira distribuição percentual do budget.",
-          use: "Para planejamento estratégico"
-        },
-        {
-          name: "Funil de Conversão",
-          prompt: "Desenhe um funil de conversão completo para [SEU_PRODUTO] considerando jornada de [X] dias. Inclua: Touchpoints por etapa, Conteúdo específico, Métricas de conversão realistas, Pontos de abandono típicos, Estratégias de reativação. Calcule CAC e LTV estimados.",
-          use: "Para arquitetura de marketing"
-        }
-      ]
+      title: "Iterative Refinement (O Editor)",
+      description: "Nunca aceite a primeira versão. Use o ChatGPT como editor do seu próprio trabalho.",
+      example: "'Agora atue como um Editor Chefe crítico. Aponte 3 falhas nesse texto e reescreva a versão final corrigindo-as.'",
+      results: "Polimento profissional instantâneo."
     }
   ];
 
+  const templates = [
+    {
+      name: "1. Pesquisa de Dores (Persona)",
+      subject: "Market Research Assistant",
+      body: `Atue como um Especialista em Pesquisa de Mercado.
+
+Crie uma tabela detalhada com as 10 maiores dores, medos e desejos secretos de [Cargo/Persona] na indústria de [Indústria].
+
+Para cada dor, descreva:
+1. O problema superficial (O que eles dizem)
+2. O problema raiz (O que realmente causa)
+3. O impacto emocional (Como se sentem)
+4. Uma ideia de conteúdo para abordar isso.
+
+Contexto: Meu produto ajuda a [Sua Solução].`
+    },
+    {
+      name: "2. Cold Email Generator",
+      subject: "Copywriting B2B",
+      body: `Atue como um Copywriter de Resposta Direta focado em Cold Email.
+
+Escreva 3 variações de um email de prospecção para [Cargo Alvo].
+
+Objetivo: Agendar uma demo de 15 min.
+Problema: [Problema que você resolve].
+Solução: [Sua Solução].
+Prova Social: [Seu Case/Cliente].
+
+Regras:
+- Máximo 75 palavras.
+- Tom conversacional e intrigante (não vendedor).
+- Foco neles, não em nós.
+- Use a estrutura: Gancho -> Problema -> Solução -> CTA Suave.`
+    },
+    {
+      name: "3. Content Repurposing",
+      subject: "Multiplicador de Conteúdo",
+      body: `Atue como um Estrategista de Conteúdo.
+
+Transforme o texto abaixo (transcrição de vídeo) em:
+1. Um post de LinkedIn viral (formato lista, gancho forte).
+2. Uma Thread de Twitter/X (5 tweets).
+3. Um script de Reels de 30 segundos.
+4. Um email de newsletter focado em clique.
+
+Texto Original:
+[Cole seu texto aqui]`
+    },
+    {
+      name: "4. Objeções & Vendas",
+      subject: "Sales Trainer",
+      body: `Atue como um Treinador de Vendas B2B Enterprise.
+
+Eu estou vendendo [Produto] para [Persona]. O preço é [Preço].
+
+O cliente acabou de dizer: "[Objeção Específica]".
+
+Liste 5 maneiras diferentes de contornar essa objeção, usando:
+1. Pergunta Socrática
+2. Reframe de Valor
+3. Case de Sucesso
+4. Comparação de Custo de Inação
+5. Empatia + Pivô
+
+Mantenha o tom consultivo e profissional.`
+    }
+  ];
+
+  const anatomy = [
+    { label: "ROLE", title: "Atue como...", desc: "Defina a 'máscara'. Senior Copywriter, CFO, Consultor McKinsey? Isso define o vocabulário e a profundidade." },
+    { label: "TASK", title: "Execute a...", desc: "O verbo de ação. Escreva, Analise, Resuma, Codifique. Seja específico sobre o entregável." },
+    { label: "CONTEXT", title: "Para o público...", desc: "Quem vai ler? Onde será publicado? Qual o objetivo? Sem contexto, a IA alucina." },
+    { label: "FORMAT", title: "No formato...", desc: "Tabela CSV, Lista de Bullets, Markdown, Texto corrido, Código Python? Defina a estrutura visual." }
+  ];
+
   return (
-    <article className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl">
-            <Lightbulb className="w-6 h-6 text-white" />
+    <article className="w-full mx-auto">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
+
+        <StrategicContext label="Atenção">
+          O ChatGPT não "sabe" nada. Ele prevê a próxima palavra mais provável. Sem direção clara, ele produzirá clichês corporativos vazios. Você precisa ser o diretor.
+        </StrategicContext>
+
+        <KeyTakeaways
+          title="Key Takeaways"
+          items={[
+            { title: "Garbage In, Garbage Out", description: "A qualidade da resposta é 100% proporcional à qualidade do prompt." },
+            { title: "IA é Automação Cognitiva", description: "Use para tarefas repetitivas, pesquisa preliminar e rascunhos. Nunca para o final." },
+            { title: "Framework R.T.C.F.", description: "Role, Task, Context, Format. A fórmula mágica de qualquer prompt." },
+            { title: "Humanização", description: "A IA escreve, o humano edita. O 'toque humano' é o que diferencia o spam da arte." }
+          ]}
+        />
+
+        {/* Intro + Stats */}
+        <div className="mb-16">
+          <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0">O Multiplicador de Produtividade</h2>
+          <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+            Não é sobre substituir o profissional de marketing, é sobre transformá-lo em um exército de um homem só. Prompt Engineering é a habilidade de alto valor da década.
+          </p>
+
+          <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-gray-200 py-8 not-prose">
+            <div className="flex-1">
+              <div className="text-4xl font-bold text-black mb-1">10x</div>
+              <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Velocidade de Criação</div>
+            </div>
+            <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+              <div className="text-4xl font-bold text-black mb-1">Zero</div>
+              <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Bloqueio Criativo</div>
+            </div>
+            <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+              <div className="text-4xl font-bold text-black mb-1">Scale</div>
+              <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Personalização em Massa</div>
+            </div>
           </div>
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            IA & Automação
-          </span>
         </div>
-        
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-          ChatGPT para Growth: 15 prompts que dobram sua produtividade em marketing
-        </h1>
-        
-        <div className="flex items-center gap-6 text-gray-600 mb-8">
-          <span>12 min de leitura</span>
-          <span>•</span>
-          <span>Carlos Mendes</span>
-        </div>
-        
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Transforme o ChatGPT em seu assistente de marketing mais poderoso com estes prompts específicos, 
-          testados em dezenas de campanhas reais e responsáveis por aumentar a produtividade em até 300%.
-        </p>
-      </div>
 
-      {/* Introdução */}
-      <div className="prose prose-lg max-w-none mb-12">
-        <p>
-          Se você ainda usa o ChatGPT apenas para "escrever um texto sobre X", está desperdiçando 90% do potencial 
-          desta ferramenta. Os profissionais de marketing mais eficientes descobriram que a chave não está na IA em si, 
-          mas nos <strong>prompts específicos e estruturados</strong> que você usa.
-        </p>
-        
-        <p>
-          Após testar mais de 200 prompts diferentes em campanhas reais, compilei os 15 que realmente fazem diferença. 
-          Cada um foi refinado através de iterações com clientes reais e resultados mensuráveis.
-        </p>
-      </div>
+        {/* Anatomy - Definition List */}
+        <div className="mb-20">
+          <h2 id="anatomia" className="font-bold text-gray-900 mb-8">Framework Universal de Prompt (R.T.C.F.)</h2>
+          <p className="text-gray-700 mb-8">Antes de digitar qualquer coisa, pense nestes 4 componentes.</p>
 
-      {/* Como usar */}
-      <Card className="mb-12 border-l-4 border-l-green-500">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-green-500" />
-            Como usar estes prompts
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            <li>• <strong>Substitua as variáveis:</strong> Troque [SUAS_VARIÁVEIS] pelas informações específicas</li>
-            <li>• <strong>Itere:</strong> Use a resposta inicial como base e refine com prompts de follow-up</li>
-            <li>• <strong>Contextualize:</strong> Sempre forneça contexto específico sobre seu negócio</li>
-            <li>• <strong>Teste:</strong> Adapte os prompts para sua realidade e teste os resultados</li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Prompts por categoria */}
-      {prompts.map((category, categoryIndex) => (
-        <div key={categoryIndex} className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-green-600" />
-            {category.category}
-          </h2>
-          
-          <div className="space-y-6">
-            {category.prompts.map((item, promptIndex) => (
-              <Card key={promptIndex} className="border border-gray-200 hover:border-green-300 transition-colors">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{item.name}</CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(item.prompt, item.name)}
-                      className="flex items-center gap-2"
-                    >
-                      {copiedPrompt === item.name ? (
-                        <>
-                          <CheckCircle className="w-4 h-4" />
-                          Copiado!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copiar
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-600">{item.use}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-50 p-4 rounded-lg border">
-                    <p className="text-sm font-mono leading-relaxed whitespace-pre-wrap">
-                      {item.prompt}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="not-prose grid gap-6">
+            {anatomy.map((item, i) => (
+              <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-gray-100 p-2 text-center rounded-sm">
+                  {item.label}
+                </span>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h4>
+                  <p className="text-gray-600 leading-relaxed m-0">{item.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      ))}
 
-      {/* Dicas extras */}
-      <Card className="mb-12 bg-gradient-to-r from-green-50 to-blue-50">
-        <CardHeader>
-          <CardTitle className="text-2xl">Dicas para Maximizar Resultados</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold mb-3">Contexto é tudo</h4>
-              <p className="text-sm text-gray-700">
-                Quanto mais específico você for sobre seu negócio, público e objetivos, 
-                melhores serão as respostas do ChatGPT.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Itere e refine</h4>
-              <p className="text-sm text-gray-700">
-                Use prompts de follow-up como "Torne mais específico para empresas SaaS B2B" 
-                ou "Adicione 3 variações dessa headline".
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Combine prompts</h4>
-              <p className="text-sm text-gray-700">
-                Use o output de um prompt como input para outro. Por exemplo, 
-                personas → headlines → emails → landing pages.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Sempre teste</h4>
-              <p className="text-sm text-gray-700">
-                O ChatGPT oferece um excelente ponto de partida, mas sempre 
-                teste e valide com dados reais do seu mercado.
-              </p>
-            </div>
+        {/* Strategies - Numbered List */}
+        <div className="mb-20">
+          <h2 id="estrategias" className="font-bold text-gray-900 mb-10">
+            4 Estratégias de Prompting
+          </h2>
+
+          <div className="space-y-12">
+            {strategies.map((strategy, index) => (
+              <div key={index} className="pl-0">
+                <h3 className="font-bold text-xl text-gray-900 mb-3 mt-0 flex items-baseline gap-3">
+                  <span className="text-revgreen text-base font-normal">0{index + 1}.</span>
+                  {strategy.title}
+                </h3>
+                <p className="text-gray-700 mb-4">{strategy.description}</p>
+
+                <div className="bg-gray-50 border-l-2 border-gray-300 pl-4 py-2 italic text-gray-600 text-base mb-2">
+                  "{strategy.example}"
+                </div>
+
+                <div className="text-sm font-medium text-black mt-2">
+                  <span className="text-gray-500 font-normal mr-2">Resultado:</span>
+                  {strategy.results}
+                </div>
+              </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* CTA */}
-      <div className="bg-black text-white p-8 rounded-2xl text-center">
-        <h3 className="text-2xl font-bold mb-4">
-          Quer mais prompts específicos para seu negócio?
-        </h3>
-        <p className="text-gray-300 mb-6">
-          Nosso diagnóstico gratuito inclui prompts personalizados para sua situação específica, 
-          além de uma análise completa da sua operação de marketing.
-        </p>
-        <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
-          Solicitar Diagnóstico Gratuito
-          <ArrowRight className="ml-2 w-5 h-5" />
-        </Button>
+        {/* Templates Grid - PROMPTS */}
+        <div className="mb-20">
+          <h2 id="templates" className="font-bold text-gray-900 mb-10">Biblioteca de Prompts Prontos</h2>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            {templates.map((template, index) => (
+              <div key={index} className="flex flex-col h-full">
+                <div className="mb-4 border-b border-black pb-2">
+                  <h3 className="font-bold text-lg text-gray-900">{template.name}</h3>
+                  <div className="text-xs text-gray-500 font-mono mt-1">{template.subject}</div>
+                </div>
+                <div className="flex-1 bg-gray-50 p-6 rounded-sm text-sm font-mono text-gray-800 whitespace-pre-wrap leading-relaxed border border-gray-200">
+                  {template.body}
+                </div>
+                <div className="mt-4 text-right">
+                  <button
+                    onClick={() => copyToClipboard(template.body, template.name)}
+                    className="text-xs font-bold uppercase tracking-widest text-gray-900 hover:text-revgreen transition-colors flex items-center gap-2 justify-end bg-white p-2 border border-gray-200 rounded-sm ml-auto"
+                  >
+                    {copiedPrompt === template.name ? (
+                      <>
+                        <CheckCircle className="w-3 h-3" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        Copiar Prompt
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Checklist - Black Box */}
+        <div className="mb-20 bg-neutral-900 text-white p-8 md:p-12">
+          <div className="flex items-center gap-3 mb-8 border-b border-gray-800 pb-4">
+            <ShieldCheck className="w-6 h-6 text-revgreen" />
+            <h2 id="checklist" className="text-xl font-bold text-white m-0">Checklist de Qualidade IA</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-x-12 gap-y-4">
+            {[
+              "O prompt definou uma Persona clara?",
+              "Você forneceu contexto suficiente?",
+              "O formato de saída foi especificado?",
+              "Você checou os fatos (Fact Checking)?",
+              "Você reescreveu a introdução e conclusão?",
+              "Removeu palavras de IA ('Delve', 'Landscape')?",
+              "O tom de voz bate com a marca?",
+              "Você iterou pelo menos 1 vez?"
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-800 last:border-0 text-gray-300">
+                <span className="text-revgreen mt-1">✓</span>
+                <span className="text-sm">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Final */}
+        <div className="text-center py-12 border-t border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Quer implementar IA no seu time?
+          </h3>
+          <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+            Agende um diagnóstico. Ensinamos seu time a criar máquinas de vendas usando IA.
+          </p>
+          <div className="flex justify-center">
+            <Button
+              size="lg"
+              className="bg-black text-white hover:bg-gray-800 font-bold px-10 h-14 rounded-none uppercase tracking-wider text-sm"
+              onClick={onCTAClick}
+            >
+              <span className="flex items-center gap-2">
+                Solicitar Diagnóstico
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </Button>
+          </div>
+        </div>
+
       </div>
     </article>
   );

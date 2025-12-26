@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, X, ArrowRight } from 'lucide-react';
+import { Clock, X, ArrowRight, Flame, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ const UrgencyBanner = () => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         let { hours, minutes, seconds } = prev;
-        
+
         if (seconds > 0) {
           seconds--;
         } else if (minutes > 0) {
@@ -56,15 +56,20 @@ const UrgencyBanner = () => {
       <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg shadow-2xl p-4 animate-slide-down">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Clock className="h-6 w-6 animate-pulse" />
+            <Clock className="h-6 w-6" />
             <div>
-              <p className="font-bold text-sm">⚡ Oferta Limitada - Diagnóstico Gratuito</p>
-              <p className="text-xs opacity-90">
-                Apenas para as próximas 24h • Vagas limitadas
+              <p className="font-bold text-sm flex items-center gap-1">
+                <Flame className="h-4 w-4 text-yellow-300" /> Oferta Limitada - Diagnóstico Gratuito
               </p>
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-orange-400" />
+                <span className="font-bold text-white tracking-wide text-xs md:text-sm">
+                  OFERTA POR TEMPO LIMITADO
+                </span>
+              </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 bg-white/20 rounded-lg px-3 py-1">
               <span className="text-xs font-mono">
@@ -73,7 +78,7 @@ const UrgencyBanner = () => {
                 {String(timeLeft.seconds).padStart(2, '0')}
               </span>
             </div>
-            
+
             <Button
               asChild
               variant="secondary"
@@ -85,7 +90,7 @@ const UrgencyBanner = () => {
                 <ArrowRight className="ml-1 h-3 w-3" />
               </Link>
             </Button>
-            
+
             <button
               onClick={() => setIsVisible(false)}
               className="text-white/80 hover:text-white transition-colors"

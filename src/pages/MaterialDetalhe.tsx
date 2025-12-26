@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { getAllMaterials } from '@/api/materials';
+import { Download, Check } from 'lucide-react';
+import { getAllMaterials } from '@/api/materialsService';
 import DownloadForm from '@/components/shared/download-form';
+import { removeEmojis } from '@/utils/stringUtils';
 import { useToast } from '@/components/ui/use-toast';
+import { materialsData } from '@/data/materialsData';
+
 const MaterialDetalhe = () => {
   const {
     slug
@@ -30,16 +33,23 @@ const MaterialDetalhe = () => {
         const normalizedSlug = slug?.toLowerCase().replace(/[^\w-]+/g, '-');
 
         // Find the material that matches the slug
-        const foundMaterial = materials.find(item => {
+        let foundMaterial = materials.find(item => {
           // Extract a slug from the title
-          const itemTitle = typeof item.title === 'string' ? item.title : item.title?.rendered ? item.title.rendered : '';
+          const itemTitle = (item as any).material_name || (typeof item.title === 'string' ? item.title : (item.title as any)?.rendered ? (item.title as any).rendered : '');
           const itemSlug = itemTitle.toLowerCase().replace(/<[^>]*>/g, '') // Remove HTML tags
-          .replace(/[^\w\s-]/g, '') // Remove special characters
-          .replace(/\s+/g, '-') // Replace spaces with hyphens
-          .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
+            .replace(/[^\w\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
+            .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
 
           return itemSlug === normalizedSlug;
         });
+
+        if (!foundMaterial) {
+          // Fallback to static data
+          console.log("Material not found in API, checking static data...");
+          foundMaterial = materialsData.find(m => m.slug === normalizedSlug) as any;
+        }
+
         if (foundMaterial) {
           setMaterial(foundMaterial);
         } else {
@@ -82,21 +92,22 @@ const MaterialDetalhe = () => {
   const cleanHtml = (html: string) => {
     const div = document.createElement('div');
     div.innerHTML = html;
-    return div.textContent || div.innerText || '';
+    const text = div.textContent || div.innerText || '';
+    return removeEmojis(text);
   };
   if (loading) {
     return <PageLayout>
-        <div className="container-custom pt-32 pb-16 flex justify-center">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Carregando...
-              </span>
-            </div>
-            <p className="mt-2 text-gray-600">Carregando material...</p>
+      <div className="container-custom pt-32 pb-16 flex justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+              Carregando...
+            </span>
           </div>
+          <p className="mt-2 text-gray-600">Carregando material...</p>
         </div>
-      </PageLayout>;
+      </div>
+    </PageLayout>;
   }
   if (!material) {
     return null; // Will redirect in useEffect
@@ -104,45 +115,82 @@ const MaterialDetalhe = () => {
   const title = typeof material.title === 'string' ? material.title : material.title?.rendered || '';
   const description = typeof material.description === 'string' ? material.description : material.description?.rendered || '';
   return <PageLayout>
-      <section className="pt-32 pb-10 bg-gradient-to-br from-black to-gray-900 text-white relative">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <img src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" alt={cleanHtml(title)} className="w-full h-full object-cover" />
-        </div>
-        <div className="container-custom relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <span className="inline-flex mb-4 items-center px-3 py-1 rounded-full text-xs font-medium bg-revgreen/10 text-revgreen">
-              {material.type || 'Material'}
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6" dangerouslySetInnerHTML={{
-            __html: title
-          }} />
-          </div>
-        </div>
-      </section>
+    <section className="pt-40 pb-32 bg-black relative overflow-hidden flex flex-col items-center justify-center min-h-[50vh]">
+      {/* Premium Spotlight Effect */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900/40 via-black to-black pointer-events-none"></div>
 
-      <section className="py-16 bg-white">
-        <div className="container-custom max-w-3xl">
-          <div className="prose prose-lg mx-auto mb-10">
-            <div dangerouslySetInnerHTML={{
-            __html: description
-          }} />
+      <div className="container-custom relative z-10 text-center">
+        <div className="max-w-4xl mx-auto flex flex-col items-center">
+          {/* Tag */}
+          <div className="mb-8 animate-fade-in-up">
+            <span className="text-[10px] md:text-xs font-mono-tech text-revgreen border border-revgreen/20 bg-revgreen/5 rounded-sm px-3 py-1.5 uppercase tracking-[0.2em] backdrop-blur-sm">
+              {material.type && material.type !== 'Material' ? `Material • ${material.type}` : 'Material Gratuito'}
+            </span>
           </div>
-          
-          <div className="flex justify-center">
-            <Button size="lg" onClick={handleDownloadClick} className="mt-8">
-              <Download className="mr-2 h-5 w-5" />
-              Baixar Material
-            </Button>
-          </div>
-          
-          {showForm && <div id="download-form" className="mt-16 mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 border">
-              <h2 className="text-2xl font-bold mb-6">
-                Preencha seus dados para baixar "{cleanHtml(title)}"
-              </h2>
-              <DownloadForm materialId={material.materialId} materialType={material.type || 'Material'} linkMaterial={material.link_material} onSubmit={handleFormSubmit} />
-            </div>}
+
+          <h1
+            className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter leading-none animate-fade-in-up delay-100 text-balance"
+            dangerouslySetInnerHTML={{ __html: removeEmojis(title) }}
+          />
+
+          <p className="text-xl text-gray-400 font-light max-w-2xl mx-auto animate-fade-in-up delay-200">
+            Conteúdo exclusivo para impulsionar suas estratégias.
+          </p>
         </div>
-      </section>
-    </PageLayout>;
+      </div>
+    </section>
+
+    <section className="py-20 bg-white">
+      <div className="container-custom">
+        <div className="max-w-4xl mx-auto">
+          {/* Main Description - Typographically Enhanced */}
+          <div className="prose prose-lg mx-auto mb-16 text-gray-600 font-light leading-relaxed prose-headings:font-bold prose-headings:text-black prose-a:text-revgreen">
+            <div dangerouslySetInnerHTML={{
+              __html: description
+            }} />
+          </div>
+
+          {/* Premium "Floating Card" CTA */}
+          <div className="bg-white rounded-sm shadow-2xl overflow-hidden border border-gray-100 max-w-3xl mx-auto" id="download-form">
+            <div className="p-1 bg-gradient-to-r from-revgreen via-emerald-500 to-teal-500"></div>
+            <div className="p-8 md:p-12">
+              {!showForm ? (
+                <div className="text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-black mb-4 tracking-tight">
+                    Baixe agora este material completo
+                  </h3>
+                  <p className="text-gray-500 mb-10 font-light text-lg">
+                    Acesse o conteúdo detalhado e comece a aplicar as estratégias de Revenue Operations hoje mesmo.
+                  </p>
+
+                  <Button
+                    onClick={handleDownloadClick}
+                    className="w-full md:w-auto bg-revgreen text-black hover:bg-emerald-400 font-bold text-lg px-12 h-14 rounded-sm shadow-lg hover:shadow-revgreen/20 transition-all uppercase tracking-wide"
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    Acessar Material Gratuitamente
+                  </Button>
+
+                  <div className="mt-8 pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-6 text-center text-sm text-gray-400 font-light">
+                    <span>✓ Download Imediato</span>
+                    <span>✓ Conteúdo Prático</span>
+                    <span>✓ 100% Gratuito</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold mb-6 text-center text-black">
+                    Preencha seus dados para baixar "{cleanHtml(title)}"
+                  </h2>
+                  <DownloadForm materialId={material.materialId} materialType={material.type || 'Material'} linkMaterial={material.link_material} onSubmit={handleFormSubmit} />
+                </>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </PageLayout>;
 };
 export default MaterialDetalhe;

@@ -4,15 +4,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Book, BookOpen, BarChart3, PlaySquare, FileSpreadsheet, ExternalLink } from 'lucide-react';
-import DownloadForm from '@/components/shared/download-form';
+import { FileText, Book, BookOpen, BarChart3, PlaySquare, FileSpreadsheet, ExternalLink, Search } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { getAllMaterials } from '@/api/materials';
+import { supabase } from '@/integrations/supabase/client';
+import Section from '@/components/ui/Section';
+import { Input } from '@/components/ui/input';
+import MaterialModal from '@/components/shared/MaterialModal';
+import { removeEmojis } from '@/utils/stringUtils';
+
+import { materialsData } from '@/data/materialsData';
 
 // Icon map for dynamic icon rendering
 const IconMap: Record<string, React.ElementType> = {
   FileText,
-  Book, 
+  Book,
   BookOpen,
   BarChart3,
   PlaySquare,
@@ -20,43 +25,64 @@ const IconMap: Record<string, React.ElementType> = {
 };
 
 const Materiais = () => {
-  const [materials, setMaterials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Todos');
+  const [loading, setLoading] = useState(true);
+  const [apiMaterials, setApiMaterials] = useState<any[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Buscar materiais do Supabase com timeout
   useEffect(() => {
-    window.scrollTo(0, 0);
-    
     const fetchMaterials = async () => {
-      setLoading(true);
       try {
-        const data = await getAllMaterials();
-        setMaterials(data);
-        console.log('Materials data from API:', data);
-      } catch (error) {
-        console.error("Error fetching materials:", error);
-        toast({
-          title: "Erro ao carregar materiais",
-          description: "Não foi possível carregar os materiais. Por favor, tente novamente mais tarde.",
-          variant: "destructive",
-        });
+        // Timeout de 3 segundos
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), 3000)
+        );
+
+        const fetchPromise = supabase
+          .from('materials')
+          .select('*')
+          .eq('published', true)
+          .order('date', { ascending: false });
+
+        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+        if (!error && data) {
+          setApiMaterials(data);
+          console.log('✅ Materiais do Supabase carregados:', data.length);
+        } else {
+          console.log('⚠️ Usando apenas dados estáticos de materiais');
+        }
+      } catch (err) {
+        console.log('⚠️ Erro ao buscar materiais (usando dados estáticos):', err);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchMaterials();
-  }, [toast]);
+  }, []);
+
+  // Merge API data with Static data
+  const apiSlugs = new Set(apiMaterials.map(m => m.slug || m.material_url?.split('/').pop()));
+  const staticItemsToAdd = materialsData.filter(staticItem => !apiSlugs.has(staticItem.slug));
+  const materials = [...apiMaterials, ...staticItemsToAdd];
+
+  // Debug logs
+  console.log('📊 Materiais Debug:', {
+    apiMaterials: apiMaterials.length,
+    staticItemsToAdd: staticItemsToAdd.length,
+    totalMaterials: materials.length,
+    firstMaterial: materials[0]
+  });
 
   const handleDownloadClick = (material: any) => {
     setSelectedMaterial(material);
     setShowForm(true);
-    setTimeout(() => {
-      document.getElementById('download-form')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   };
 
   const handleFormSubmit = () => {
@@ -82,133 +108,165 @@ const Materiais = () => {
       .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
   };
 
+  const categories = ['Todos', ...Array.from(new Set(materials.map(m => m.type).filter(Boolean)))];
+
+  const filteredMaterials = materials.filter(material => {
+    const title = material.title || '';
+    const type = material.type || '';
+
+    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      material.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'Todos' || type === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <PageLayout>
-      <section className="pt-32 pb-10 bg-gradient-to-br from-black to-gray-900 text-white relative">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-            alt="Materiais Gratuitos"
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* 1. Standardized Header (Compact & Clean) */}
+      <div className="bg-black pt-12 pb-6 border-b border-white/10 relative overflow-hidden">
+        {/* Abstract Background Effect */}
+        <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
+
         <div className="container-custom relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Materiais Gratuitos</h1>
-            <p className="text-xl text-gray-300 mb-8">
-              Baixe nossos conteúdos exclusivos sobre Revenue Operations, 
-              Account Based Marketing e estratégias de crescimento para empresas B2B
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+            <div className="max-w-2xl">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white tracking-tight">MATERIAIS RICOS</h1>
+              <p className="text-base text-gray-400 font-light">
+                Baixe nossos conteúdos exclusivos sobre Revenue Operations e Growth.
+              </p>
+            </div>
+
+            <div className="w-full md:w-72 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                type="search"
+                placeholder="Buscar materiais..."
+                className="pl-9 h-10 bg-zinc-900/80 border-white/10 text-white placeholder:text-gray-500 focus:border-revgreen transition-colors rounded-lg text-sm"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map(category => (
+              <button
+                key={category as string}
+                className={`px-3 py-1.5 rounded-sm text-xs font-medium uppercase tracking-wide transition-all duration-300 ${activeCategory === category
+                  ? "bg-revgreen text-black font-bold border border-revgreen"
+                  : "bg-zinc-900 text-gray-400 hover:text-white border border-zinc-800 hover:border-zinc-700"
+                  }`}
+                onClick={() => setActiveCategory(category as string)}
+              >
+                {category as string}
+              </button>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
+      {/* Materials Grid */}
+      <Section variant="dark" className="pt-10 pb-24 bg-black min-h-screen relative">
+        <div className="absolute inset-0 bg-grid-white/[0.03] pointer-events-none" />
+        <div className="container-custom relative z-10">
           {loading ? (
             <div className="flex justify-center items-center min-h-[200px]">
               <div className="text-center">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                  <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                    Carregando...
-                  </span>
-                </div>
-                <p className="mt-2 text-gray-600">Carregando materiais...</p>
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em]" role="status"></div>
+                <p className="mt-4 text-gray-600 font-mono-tech text-sm uppercase">Carregando...</p>
               </div>
             </div>
-          ) : materials.length === 0 ? (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-medium text-gray-800">Nenhum material encontrado</h3>
-              <p className="text-gray-600 mt-2">Estamos atualizando nossa biblioteca. Por favor, volte mais tarde.</p>
+          ) : filteredMaterials.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/30">
+              <h3 className="text-xl font-medium text-white">Nenhum material encontrado</h3>
+              <p className="text-gray-500 mt-2 font-light">Tente ajustar seus termos de busca.</p>
+              <Button variant="link" className="text-revgreen mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
+                Limpar filtros
+              </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {materials.map((material, index) => {
-                const IconComponent = IconMap[material.icon] || FileText;
-                const materialSlug = getSlugFromTitle(material.title);
-                
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredMaterials.map((material, index) => {
+
+                // Use DB Schema fields (Prioritize DB columns)
+                const title = material.title || "Sem título";
+                const type = material.type || "Geral";
+
+                // Map type to icon or default
+                const IconComponent = IconMap[type] || FileText;
+
                 return (
-                  <Card key={index} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <Link to={`/materiais/${materialSlug}`} className="flex-grow">
-                      <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
-                        <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-revgreen/10 text-revgreen">
-                            {material.type}
-                          </span>
-                          <IconComponent className="h-6 w-6 text-revgreen" />
-                        </div>
-                        <CardTitle className="mt-4" dangerouslySetInnerHTML={{ __html: material.title }} />
-                      </CardHeader>
-                      <CardContent className="pt-6">
-                        <CardDescription 
-                          className="text-gray-600 mb-4" 
-                          dangerouslySetInnerHTML={{ 
-                            __html: material.description.substring(0, 150) + (material.description.length > 150 ? '...' : '') 
-                          }} 
-                        />
-                      </CardContent>
-                    </Link>
-                    <CardFooter className="bg-gray-50 border-t">
-                      <Button 
-                        className="w-full"
-                        variant="default" 
-                        onClick={() => navigate(`/materiais/${materialSlug}`)}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Ver detalhes
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                  <div key={index} className="group h-full cursor-pointer" onClick={() => handleDownloadClick(material)}>
+                    <div className="h-full flex flex-col p-8 rounded-sm border border-white/10 bg-zinc-900/30 hover:bg-zinc-900 hover:border-revgreen transition-all duration-300 relative overflow-hidden group hover:shadow-[0_0_30px_rgba(0,255,136,0.05)]">
+
+                      {/* Subtle Top Accent */}
+                      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent group-hover:via-revgreen/50 transition-all duration-500" />
+
+                      <div className="flex justify-between items-start mb-6">
+                        <span className="text-[10px] font-mono-tech uppercase tracking-widest text-revgreen px-2 py-1 bg-revgreen/5 rounded-sm border border-revgreen/10 group-hover:bg-revgreen/10 transition-colors">
+                          {type}
+                        </span>
+                        <IconComponent className="h-5 w-5 text-zinc-700 group-hover:text-revgreen transition-colors duration-300" />
+                      </div>
+
+                      <h3
+                        className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-revgreen transition-colors line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: removeEmojis(title) }}
+                      />
+
+                      <div
+                        className="text-sm text-gray-500 font-light leading-relaxed mb-8 flex-1 line-clamp-4"
+                        dangerouslySetInnerHTML={{
+                          __html: material.description ? (material.description.substring(0, 150) + (material.description.length > 150 ? '...' : '')) : ''
+                        }}
+                      />
+
+                      <div className="mt-auto pt-5 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors flex items-center">
+                          Baixar Agora
+                        </span>
+                        <ExternalLink className="h-3 w-3 text-revgreen opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </div>
           )}
-          
-          {showForm && selectedMaterial && (
-            <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 border">
-              <h2 className="text-2xl font-bold mb-6">
-                Preencha seus dados para baixar "{cleanTitle(selectedMaterial.title)}"
-              </h2>
-              <DownloadForm 
-                materialId={selectedMaterial.materialId} 
-                materialType={selectedMaterial.type}
-                linkMaterial={selectedMaterial.link_material}
-                onSubmit={handleFormSubmit}
-              />
-            </div>
-          )}
-        </div>
-      </section>
 
-      <section className="py-16 bg-white">
+          {/* Modal Implementation */}
+          <MaterialModal
+            isOpen={showForm}
+            onClose={() => setShowForm(false)}
+            material={selectedMaterial}
+            onSuccess={handleFormSubmit}
+          />
+        </div>
+      </Section>
+
+      {/* CTA Footer - Minimalist Flat */}
+      <Section variant="light" className="py-24 bg-white border-t border-gray-100">
         <div className="container-custom">
-          <div className="bg-black text-white rounded-xl p-8 md:p-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                  Precisa de conteúdo personalizado?
-                </h2>
-                <p className="text-gray-300 mb-6">
-                  Entre em contato conosco para solicitar materiais exclusivos 
-                  ou uma análise personalizada para seu negócio B2B.
-                </p>
-                <Button asChild variant="outline" className="border-revgreen text-revgreen hover:bg-revgreen hover:text-black">
-                  <a href="/booking">Agendar conversa</a>
-                </Button>
-              </div>
-              <div className="hidden md:block">
-                <img 
-                  src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-                  alt="Análise personalizada" 
-                  className="w-full h-auto rounded-lg"
-                />
-              </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="max-w-2xl text-center md:text-left">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 tracking-tight leading-tight">
+                Precisa de conteúdo personalizado?
+              </h2>
+              <p className="text-lg text-gray-500 font-light leading-relaxed">
+                Entre em contato conosco para solicitar materiais exclusivos e frameworks sob medida para sua operação.
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <Button asChild size="lg" className="bg-black text-white hover:bg-revgreen hover:text-black font-bold tracking-wide uppercase px-10 h-14 rounded-full text-sm transition-all duration-300 shadow-xl hover:shadow-revgreen/20">
+                <a href="/contact">Agendar Conversa</a>
+              </Button>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
     </PageLayout>
   );
 };
 
 export default Materiais;
+// Re-trigger build

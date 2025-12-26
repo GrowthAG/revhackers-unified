@@ -1,0 +1,195 @@
+import { UseFormReturn } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+
+interface Step5Props {
+    form: UseFormReturn<any>;
+}
+
+const expectativasOptions = [
+    { id: 'oportunidades', label: 'Identificar oportunidades de crescimento' },
+    { id: 'validar', label: 'Validar estratégia atual' },
+    { id: 'novos-canais', label: 'Descobrir novos canais' },
+    { id: 'otimizar-funil', label: 'Otimizar funil de vendas' },
+    { id: 'reduzir-custos', label: 'Reduzir custos de aquisição' },
+    { id: 'previsibilidade', label: 'Aumentar previsibilidade' },
+];
+
+const areasOptions = [
+    { id: 'geracao-demanda', label: 'Geração de demanda' },
+    { id: 'conversao-leads', label: 'Conversão de leads' },
+    { id: 'retencao', label: 'Retenção de clientes' },
+    { id: 'expansao', label: 'Expansão (upsell/cross-sell)' },
+    { id: 'otimizacao-cac', label: 'Otimização de CAC' },
+    { id: 'automacao', label: 'Automação de processos' },
+    { id: 'analise-dados', label: 'Análise de dados' },
+];
+
+export default function Step5Expectativas({ form }: Step5Props) {
+    const expectativasSelecionadas = form.watch('expectativas') || [];
+    const areasSelecionadas = form.watch('areasPrioridade') || [];
+
+    const toggleExpectativa = (expectativaId: string) => {
+        const current = expectativasSelecionadas;
+        const updated = current.includes(expectativaId)
+            ? current.filter((id: string) => id !== expectativaId)
+            : [...current, expectativaId];
+        form.setValue('expectativas', updated);
+    };
+
+    const toggleArea = (areaId: string) => {
+        const current = areasSelecionadas;
+        if (current.includes(areaId)) {
+            form.setValue('areasPrioridade', current.filter((id: string) => id !== areaId));
+        } else if (current.length < 3) {
+            form.setValue('areasPrioridade', [...current, areaId]);
+        }
+    };
+
+    return (
+        <div className="space-y-8">
+            <div>
+                <h2 className="text-3xl font-black text-black mb-3 uppercase tracking-[0.15em]">
+                    Expectativas
+                </h2>
+                <p className="text-zinc-500 text-sm">
+                    Última etapa! Vamos alinhar expectativas
+                </p>
+            </div>
+
+            <div className="space-y-6">
+                {/* Expectativas */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        O que você espera do diagnóstico REI? * (múltipla escolha)
+                    </Label>
+                    <div className="space-y-2 border border-zinc-200 p-4 rounded-sm bg-white">
+                        {expectativasOptions.map((option) => (
+                            <div key={option.id} className="flex items-center space-x-3">
+                                <Checkbox
+                                    id={option.id}
+                                    checked={expectativasSelecionadas.includes(option.id)}
+                                    onCheckedChange={() => toggleExpectativa(option.id)}
+                                />
+                                <label
+                                    htmlFor={option.id}
+                                    className="text-sm text-zinc-700 cursor-pointer"
+                                >
+                                    {option.label}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                    {form.formState.errors.expectativas && (
+                        <p className="text-red-500 text-xs">{form.formState.errors.expectativas.message as string}</p>
+                    )}
+                </div>
+
+                {/* Áreas Prioritárias */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Quais áreas você quer priorizar? * (escolha até 3)
+                    </Label>
+                    <div className="space-y-2 border border-zinc-200 p-4 rounded-sm bg-white">
+                        {areasOptions.map((option) => (
+                            <div key={option.id} className="flex items-center space-x-3">
+                                <Checkbox
+                                    id={option.id}
+                                    checked={areasSelecionadas.includes(option.id)}
+                                    onCheckedChange={() => toggleArea(option.id)}
+                                    disabled={areasSelecionadas.length >= 3 && !areasSelecionadas.includes(option.id)}
+                                />
+                                <label
+                                    htmlFor={option.id}
+                                    className="text-sm text-zinc-700 cursor-pointer"
+                                >
+                                    {option.label}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-xs text-zinc-500">
+                        {areasSelecionadas.length}/3 áreas selecionadas
+                    </p>
+                    {form.formState.errors.areasPrioridade && (
+                        <p className="text-red-500 text-xs">{form.formState.errors.areasPrioridade.message as string}</p>
+                    )}
+                </div>
+
+                {/* Prontidão */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Você está pronto para implementar mudanças? *
+                    </Label>
+                    <Select
+                        onValueChange={(value) => form.setValue('prontidao', value)}
+                        value={form.watch('prontidao')}
+                    >
+                        <SelectTrigger className="bg-white border-zinc-200 h-12">
+                            <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="imediato">Sim, quero começar imediatamente</SelectItem>
+                            <SelectItem value="aprovacao">Sim, mas preciso de aprovação interna</SelectItem>
+                            <SelectItem value="explorando">Estou explorando opções</SelectItem>
+                            <SelectItem value="entender">Apenas quero entender melhor</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {form.formState.errors.prontidao && (
+                        <p className="text-red-500 text-xs">{form.formState.errors.prontidao.message as string}</p>
+                    )}
+                </div>
+
+                {/* Quando Começar */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Quando você gostaria de começar? *
+                    </Label>
+                    <Select
+                        onValueChange={(value) => form.setValue('quandoComecar', value)}
+                        value={form.watch('quandoComecar')}
+                    >
+                        <SelectTrigger className="bg-white border-zinc-200 h-12">
+                            <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="esta-semana">Esta semana</SelectItem>
+                            <SelectItem value="este-mes">Este mês</SelectItem>
+                            <SelectItem value="proximo-trimestre">Próximo trimestre</SelectItem>
+                            <SelectItem value="nao-sei">Ainda não sei</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    {form.formState.errors.quandoComecar && (
+                        <p className="text-red-500 text-xs">{form.formState.errors.quandoComecar.message as string}</p>
+                    )}
+                </div>
+
+                {/* Observações */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Observações ou contexto adicional (opcional)
+                    </Label>
+                    <Textarea
+                        {...form.register('observacoes')}
+                        placeholder="Compartilhe qualquer informação adicional que possa nos ajudar a entender melhor seu contexto..."
+                        className="bg-white border-zinc-200 min-h-[120px] resize-none"
+                    />
+                </div>
+
+                <div className="bg-green-50 border border-green-200 p-4 rounded-sm">
+                    <p className="text-sm text-green-800 font-medium">
+                        🎉 Você está quase lá! Clique em "Gerar Diagnóstico" para finalizar.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}

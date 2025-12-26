@@ -1,109 +1,135 @@
-
-import { ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, ArrowUpRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const cases = [
-  {
-    title: "ENICS",
-    category: "Eventos",
-    result: "3 mil ingressos em 30 dias",
-    image: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png",
-    slug: "enics",
-    logo: true
-  },
-  {
-    title: "Heineken",
-    category: "Bebidas",
-    result: "Materiais em vídeo para parcerias",
-    image: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png",
-    slug: "heineken",
-    logo: true
-  },
-  {
-    title: "TOEFL Junior Brasil",
-    category: "Educação",
-    result: "Leads B2B para escolas",
-    image: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
-    slug: "toefl",
-    logo: true
-  },
-  {
-    title: "DataVoxx",
-    category: "Tecnologia",
-    result: "Novo site e funil inbound",
-    image: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
-    slug: "datavoxx",
-    logo: true
-  },
-  {
-    title: "Funnels",
-    category: "Marketing",
-    result: "Aumento de 130% em leads qualificados",
-    image: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
-    slug: "funnels",
-    logo: true
-  }
-];
+import Section from '@/components/ui/Section';
+import { useState, useEffect } from 'react';
+import { getFeaturedCases, CaseStudy } from '@/api/cases';
 
 const CasesSection = () => {
+  const [cases, setCases] = useState<CaseStudy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCases = async () => {
+      try {
+        const data = await getFeaturedCases();
+        if (data && data.length > 0) {
+          setCases(data);
+        }
+      } catch (error) {
+        console.error("Failed to load featured cases", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCases();
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
 
   return (
-    <section className="section-padding bg-gray-50">
+    <Section variant="dark" className="bg-black relative py-32 border-t border-white/10">
       <div className="container-custom">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-16">
-          <div className="max-w-lg mb-8 md:mb-0">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Cases de sucesso
-            </h2>
-            <p className="text-lg text-gray-600">
-              Empresas de referência que conquistaram resultados extraordinários com nossa metodologia de crescimento orientado a dados.
-            </p>
+        {/* Centered Header - More Objective */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4">Track Record</div>
+          <h2 className="text-4xl md:text-5xl font-medium text-white tracking-tight mb-6">
+            Resultados que Geram Receita
+          </h2>
+          <p className="text-xl text-gray-400 font-light text-balance">
+            Não prometemos, entregamos. Veja como transformamos desafios complexos em máquinas de crescimento.
+          </p>
+        </div>
+
+        {/* Grid Layout 3 Columns (Focused) */}
+        {loading ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <Loader2 className="w-8 h-8 text-revgreen animate-spin" />
           </div>
-          
-          <Link 
-            to="/cases" 
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {cases.map((item, index) => {
+              // Compatibility mapping just in case types are stale
+              const anyItem = item as any;
+              const resultText = anyItem.primary_metric || anyItem.result || 'Resultado';
+              const imageSrc = anyItem.image_url || anyItem.coverImage || anyItem.image || '';
+              const description = anyItem.preview_description || anyItem.description || '';
+
+              return (
+                <Link
+                  to={`/cases/${item.slug}`}
+                  onClick={scrollToTop}
+                  key={item.id || index}
+                  className="group block h-full"
+                >
+                  <div className="bg-zinc-900/30 border border-white/5 rounded-lg overflow-hidden h-full flex flex-col hover:border-white/20 transition-all duration-500 relative">
+
+                    {/* Image/Logo Area - Dark & Minimal */}
+                    <div className="h-64 overflow-hidden relative bg-black/50 p-8 flex items-center justify-center border-b border-white/5">
+                      {anyItem.client_logo ? (
+                        <img
+                          src={anyItem.client_logo}
+                          alt={item.title}
+                          className="w-48 h-auto max-h-32 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 grayscale group-hover:grayscale-0"
+                        />
+                      ) : imageSrc ? (
+                        <img
+                          src={imageSrc}
+                          alt={item.title}
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                        />
+                      ) : (
+                        <div className="text-white text-xl font-bold tracking-tight">{item.title}</div>
+                      )}
+
+                      <div className="absolute top-4 left-4">
+                        <span className="text-[10px] font-mono-tech uppercase tracking-widest text-gray-500 border border-white/10 px-2 py-1 rounded-sm bg-black/50 backdrop-blur-sm">
+                          {(item.case_category || (item as any).category || 'Case').split('•')[0].trim()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content - Minimal text */}
+                    <div className="p-8 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-revgreen transition-colors leading-tight">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-light leading-relaxed line-clamp-3 mb-6">
+                          {description}
+                        </p>
+                      </div>
+
+                      <div className="flex items-end justify-between border-t border-white/5 pt-6 mt-auto">
+                        <div>
+                          <span className="block text-[10px] text-gray-600 uppercase tracking-widest mb-1">Resultado</span>
+                          <span className="text-lg font-medium text-white">{resultText}</span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                          <ArrowUpRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-16 text-center">
+          <Link
+            to="/cases"
             onClick={scrollToTop}
-            className="inline-flex items-center text-revgreen hover:text-black font-medium"
+            className="inline-flex items-center text-white font-bold uppercase tracking-wider hover:text-revgreen transition-colors border-b border-white pb-1 hover:border-revgreen"
           >
-            Ver todos os cases
+            Ver Todos os Cases
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {cases.slice(0, 3).map((item, index) => (
-            <Link to={`/cases/${item.slug}`} onClick={scrollToTop} key={index}>
-              <Card className="overflow-hidden card-hover h-full border-0 shadow-sm">
-                <div className="h-48 overflow-hidden bg-white flex items-center justify-center p-6">
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    className="w-3/4 h-auto max-h-32 object-contain transition-transform hover:scale-105 duration-500"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-500">{item.category}</span>
-                    <span className="text-xs px-3 py-1 bg-green-50 text-green-800 rounded-full font-medium">
-                      {item.result}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold">{item.title}</h3>
-                  <div className="mt-4 flex items-center text-revgreen font-medium text-sm">
-                    <span>Ler estudo completo</span>
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

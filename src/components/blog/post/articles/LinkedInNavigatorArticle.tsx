@@ -1,355 +1,206 @@
-import { Linkedin, Users, Target, Search, MessageSquare, ArrowRight, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const LinkedInNavigatorArticle = () => {
+import { useState } from 'react';
+import { Target, Search, Users, ShieldCheck, CheckCircle2, TrendingUp, AlertTriangle, Filter, Copy, MessageSquare } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import StrategicContext from '../components/StrategicContext';
+import KeyTakeaways from '../components/KeyTakeaways';
+import ConceptDefinition from '../components/ConceptDefinition';
+import RedFlags from '../components/RedFlags';
+import StrategicConclusion from '../components/StrategicConclusion';
+
+const LinkedInNavigatorArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleCopy = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
   const strategies = [
     {
-      title: "Setup Estratégico da Busca",
-      description: "Configure filtros cirúrgicos para encontrar prospects perfeitos",
-      steps: [
-        "Use filtros de cargo + senioridade + tamanho da empresa",
-        "Combine localização geográfica com indústria específica",
-        "Filtre por 'posted on LinkedIn' nas últimas 30 dias (mais ativos)",
-        "Use filtros de conexão (2º e 3º grau) para warm introductions"
-      ]
+      title: "O Filtro Invisível (Intent Signals)",
+      description: "Amadores filtram por cargo. Profissionais filtram por gatilhos de compra.",
+      example: "Filtro: (CMO) + Empresa cresceu >20% em headcount + Postou nos últimos 30 dias + Segue a página da sua empresa.",
+      results: "Lista saiu de 5.000 (fria) para 43 nomes (quente)."
     },
     {
-      title: "Research & Intelligence Gathering",
-      description: "Colete informações específicas antes do primeiro contato",
-      steps: [
-        "Analise posts recentes para identificar dores/prioridades",
-        "Verifique mudanças de cargo recentes (oportunidade de timing)",
-        "Identifique conexões em comum para pedidos de introdução",
-        "Analise empresa: crescimento, funding, expansão, contratações"
-      ]
+      title: "Boolean Search: A Linguagem Secreta",
+      description: "Use operadores lógicos (AND, OR, NOT) para eliminar ruído e achar quem ninguém acha.",
+      example: "'SaaS' AND (Founder OR CEO) AND NOT 'Consultant' AND NOT 'Agency'. Isso limpa os 'solopreneurs' da lista.",
+      results: "Economia de 5h/semana em prospecção manual."
     },
     {
-      title: "Sequência de Conexão + Mensagem",
-      description: "Abordagem em 3 etapas para maximizar resposta",
-      steps: [
-        "1º: Conecte com nota personalizada (140 caracteres max)",
-        "2º: Mensagem de follow-up em 48h (se aceitar conexão)",
-        "3º: Valor adicional após 5 dias (insight, article, intro)"
-      ]
-    },
-    {
-      title: "Advanced Search Tactics",
-      description: "Técnicas para encontrar prospects que seus concorrentes não acham",
-      steps: [
-        "Use Boolean search: (CMO OR 'Chief Marketing') AND SaaS",
-        "Procure por quem mudou de empresa nos últimos 90 dias",
-        "Encontre quem está contratando (via 'We're hiring' posts)",
-        "Use School filter para encontrar alumni networks"
-      ]
+      title: "Account Map e 'Save as Lead'",
+      description: "Não conecte imediatamente. Salve como lead e monitore. O Sales Navigator te avisa quando ele posta.",
+      example: "O lead postou sobre 'Desafios de Recrutamento'. Esse é o seu gancho para conectar (em vez de um pitch genérico).",
+      results: "Taxa de aceite de conexão sobe para 60%."
     }
   ];
 
   const templates = [
     {
-      name: "Connection Request - Pain Point",
-      text: "Oi [Nome], vi que está liderando marketing na [Empresa]. Tenho alguns insights sobre como empresas como [Similar Company] estão escalando [specific challenge]. Vale uma conversa?"
+      name: "Connect Request (Contextual)",
+      subject: "Nota de Conexão",
+      body: `Oi {{first_name}}, vi seu post sobre {{topic}}.
+
+Achei muito interessante o ponto sobre {{specific_point}}.
+
+Estou acompanhando de perto esse mercado. Adoraria conectar.`
     },
     {
-      name: "Connection Request - Mutual Connection",
-      text: "Oi [Nome], [Mutual Connection] me recomendou conectar com você sobre [topic]. Ele mencionou que vocês estão trabalhando em [specific initiative]. Posso ajudar com isso!"
-    },
-    {
-      name: "Follow-up Message - Value First",
-      text: "Oi [Nome], obrigado por aceitar! Vi seu post sobre [recent post topic]. Isso me lembrou de um case da [Company] que resolveu exatamente isso. Posso compartilhar?"
-    },
-    {
-      name: "Follow-up Message - Insight",
-      text: "Oi [Nome], reparei que a [Company] está expandindo o time comercial (+5 vagas). Isso indica crescimento acelerado. Ajudamos a [Similar Company] a escalar de 10 para 50 vendedores sem perder qualidade. Quer ver como?"
+      name: "2nd Message (Value Drop)",
+      subject: "Mensagem pós-aceite",
+      body: `Valeu pela conexão, {{first_name}}!
+
+A propósito, expandindo aquele ponto sobre {{topic}}:
+
+Acabamos de lançar um estudo sobre como empresas de {{industry}} estão resolvendo isso. 
+
+Se fizer sentido, te mando o PDF por aqui (sem compromisso).
+
+Abs,`
     }
   ];
 
-  const tools = [
-    {
-      name: "Sales Navigator vs LinkedIn Premium",
-      comparison: "Navigator tem 3x mais filtros e leads ilimitados",
-      best: "Navigator para prospecção ativa, Premium para networking"
-    },
-    {
-      name: "Chrome Extensions",
-      tools: "Phantom Buster, Meet Alfred, Expandi",
-      warning: "Use com moderação para evitar restrições"
-    },
-    {
-      name: "CRM Integration",
-      systems: "HubSpot, Pipedrive, Salesforce",
-      benefit: "Sync automático de leads e histórico de interações"
-    }
+  const workflow = [
+    "KPI: SSI (Social Selling Index) > 70",
+    "Limite de 25 conexões/dia (Segurança)",
+    "Use 'Saved Searches' para alertas diários",
+    "Integração CRM ativa (Sync de inmails)",
+    "Filtro Spotlight: 'Changed Jobs in past 90 days'"
   ];
 
   return (
-    <article className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl">
-            <Linkedin className="w-6 h-6 text-white" />
-          </div>
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            Vendas
-          </span>
-        </div>
-        
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-          LinkedIn Sales Navigator: guia completo para prospecção B2B
-        </h1>
-        
-        <div className="flex items-center gap-6 text-gray-600 mb-8">
-          <span>13 min de leitura</span>
-          <span>•</span>
-          <span>Giulliano Alves</span>
-        </div>
-        
-        <p className="text-xl text-gray-700 leading-relaxed">
-          O Sales Navigator é uma máquina de prospecção quando usado corretamente. 
-          Aqui está o sistema completo que uso para gerar 50+ leads qualificados por semana.
-        </p>
-      </div>
+    <article className="w-full mx-auto">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
 
-      {/* Estatísticas */}
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <Card className="text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-blue-600 mb-2">78%</div>
-            <div className="text-sm text-gray-600">dos compradores B2B usam LinkedIn para research</div>
-          </CardContent>
-        </Card>
-        <Card className="text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-green-600 mb-2">3x</div>
-            <div className="text-sm text-gray-600">mais efetivo que cold email tradicional</div>
-          </CardContent>
-        </Card>
-        <Card className="text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-purple-600 mb-2">25%</div>
-            <div className="text-sm text-gray-600">taxa de resposta média (vs 2% email)</div>
-          </CardContent>
-        </Card>
-      </div>
+        <StrategicContext label="A Verdade sobre o Sales Nav">
+          <p>
+            O LinkedIn Sales Navigator não é uma "lista telefônica de luxo". Ele é um <strong>radar de comportamento de compra</strong>.
+          </p>
+          <p className="mt-4">
+            A maioria dos vendedores usa o SN apenas para encontrar emails. Isso é subutilizar a ferramenta mais poderosa do B2B. O verdadeiro valor está em identificar <strong>quem está pronto para comprar agora</strong>, baseado em sinais invisíveis na versão gratuita.
+          </p>
+        </StrategicContext>
 
-      <div className="prose prose-lg max-w-none mb-12">
+        <KeyTakeaways
+          title="Key Takeaways (Prospecção Moderna)"
+          items={[
+            { title: "Mire no Movimento", description: "Empresas estagnadas não compram. Use filtros de 'Crescimento de Headcount' e 'Vagas Abertas' para achar quem tem budget." },
+            { title: "Personalização Reativa", description: "Monitore a atividade do lead (posts, mudanças de cargo) e use isso como gancho. Nunca prospecte 'a frio' no LinkedIn." },
+            { title: "Limpe sua Lista", description: "Use operadores booleanos (NOT, AND) para excluir consultores, agências e perfis irrelevantes que sujam seu pipeline." },
+            { title: "Social Selling", description: "O objetivo da conexão não é vender, é iniciar uma conversa. Venda a reunião, não o produto." }
+          ]}
+        />
+
+        <ConceptDefinition
+          concept="Busca Ativa vs Monitoramento Passivo"
+          definition="Amadores fazem buscas ativas todos os dias. Profissionais configuram 'Saved Searches' e deixam o Navigator trabalhar para eles, recebendo alertas diários de novos leads que batem com o critério."
+          amateurView="Passar 2 horas por dia procurando perfis manualmente."
+          proView="Receber uma lista diária de 5 leads novos no email que acabaram de entrar no seu ICP (ex: Novo Diretor de MKT em empresa de Varejo)."
+        />
+
+        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Por que Pagar por isso?</h2>
         <p>
-          LinkedIn Sales Navigator não é apenas "LinkedIn com mais filtros". É uma plataforma de intelligence 
-          que te dá acesso a <strong>800 milhões de perfis profissionais</strong> com dados atualizados em tempo real.
+          A busca gratuita do LinkedIn é limitada comercialmente (limite de visualizações, sem filtros avançados). O Sales Navigator desbloqueia o <strong>Grafo Econômico</strong> completo.
         </p>
-        
         <p>
-          O problema? 90% das pessoas usam como um directory básico. Vou te mostrar como usar como 
-          uma máquina de prospecção que gera pipeline consistente.
+          Se você vende B2B e seu ticket é &gt; R$ 5k, uma única venda paga a licença anual. O ROI é matemático.
         </p>
-      </div>
 
-      {/* 4 Estratégias Principais */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Target className="w-8 h-8 text-blue-600" />
-          4 Estratégias Avançadas de Prospecção
+        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+          <Filter className="w-6 h-6 text-revgreen" />
+          3 Táticas para achar "Ouro"
         </h2>
-        
-        <div className="space-y-8">
+
+        <div className="space-y-12 mb-16">
           {strategies.map((strategy, index) => (
-            <Card key={index} className="border border-blue-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                    {index + 1}
-                  </span>
-                  {strategy.title}
-                </CardTitle>
-                <p className="text-gray-600">{strategy.description}</p>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {strategy.steps.map((step, stepIndex) => (
-                    <li key={stepIndex} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Templates */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <MessageSquare className="w-8 h-8 text-green-600" />
-          Templates que Convertem
-        </h2>
-        
-        <div className="space-y-6">
-          {templates.map((template, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="text-lg">{template.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm italic">"{template.text}"</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
+                {strategy.title}
+              </h3>
+              <p className="text-gray-700 mb-6 font-medium">
+                {strategy.description}
+              </p>
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
+                <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-bold">
+                <Search className="w-4 h-4" />
+                Impacto: {strategy.results}
+              </div>
+            </div>
           ))}
         </div>
 
-        <Alert className="mt-8 border-blue-200 bg-blue-50">
-          <MessageSquare className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Dica de personalização:</strong> Sempre substitua [variáveis] por informações específicas. 
-            Mensagens genéricas têm taxa de resposta 5x menor.
-          </AlertDescription>
-        </Alert>
-      </div>
+        <RedFlags
+          title="Erros que queimam seu perfil (LinkedIn Jail)"
+          flags={[
+            "Enviar mais de 50 conexões por dia (O algoritmo vai te bloquear).",
+            "Usar ferramentas de automação não-oficiais (Chrome Extensions baratas).",
+            "Vender no primeiro, segundo ou terceiro inbox. Pitch só vem depois do rapport.",
+            "Não ter um perfil otimizado (Foto ruim, Headline confusa) - Ninguém aceita conexão de bot."
+          ]}
+        />
 
-      {/* Setup e Ferramentas */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8">Setup & Ferramentas Complementares</h2>
-        
-        <div className="space-y-6">
-          {tools.map((tool, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{tool.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {tool.comparison && (
-                    <p className="text-sm"><strong>Comparação:</strong> {tool.comparison}</p>
-                  )}
-                  {tool.tools && (
-                    <p className="text-sm"><strong>Ferramentas:</strong> {tool.tools}</p>
-                  )}
-                  {tool.systems && (
-                    <p className="text-sm"><strong>Sistemas:</strong> {tool.systems}</p>
-                  )}
-                  {tool.best && (
-                    <p className="text-sm text-green-700"><strong>Melhor uso:</strong> {tool.best}</p>
-                  )}
-                  {tool.warning && (
-                    <p className="text-sm text-orange-700"><strong>Atenção:</strong> {tool.warning}</p>
-                  )}
-                  {tool.benefit && (
-                    <p className="text-sm text-blue-700"><strong>Benefício:</strong> {tool.benefit}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Workflow semanal */}
-      <Card className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardHeader>
-          <CardTitle>Workflow Semanal de Prospecção</CardTitle>
-          <p className="text-gray-600">Sistema para gerar 50+ leads qualificados por semana</p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</div>
-              <div>
-                <strong>Segunda - Research</strong>
-                <p className="text-sm text-gray-600">30 min identificando 100 prospects ideais usando filtros avançados</p>
+        <div className="my-16 bg-zinc-900 text-white p-8 rounded-xl not-prose">
+          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <ShieldCheck className="w-6 h-6 text-revgreen" />
+            Checklist Diário do SDR
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            {workflow.map((item, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 border border-white/10 rounded bg-white/5">
+                <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
+                <span className="text-sm font-medium text-gray-300">{item}</span>
               </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</div>
-              <div>
-                <strong>Terça/Quarta - Outreach</strong>
-                <p className="text-sm text-gray-600">20 connection requests por dia + mensagens personalizadas</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</div>
-              <div>
-                <strong>Quinta/Sexta - Follow-up</strong>
-                <p className="text-sm text-gray-600">Responder conexões aceitas + agendar conversas</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">4</div>
-              <div>
-                <strong>Análise & Otimização</strong>
-                <p className="text-sm text-gray-600">Review semanal: taxa de conexão, resposta e conversão para call</p>
-              </div>
-            </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Métricas para acompanhar */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8">Métricas Essenciais</h2>
-        
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Métricas de Atividade</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li>• <strong>Connection requests enviados:</strong> 100-150/semana</li>
-                <li>• <strong>Taxa de aceitação:</strong> &gt;60%</li>
-                <li>• <strong>Mensagens enviadas:</strong> 50-75/semana</li>
-                <li>• <strong>Taxa de resposta:</strong> &gt;20%</li>
-              </ul>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Métricas de Resultado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li>• <strong>Calls agendadas:</strong> 10-15/semana</li>
-                <li>• <strong>SQLs gerados:</strong> 5-8/semana</li>
-                <li>• <strong>Pipeline criado:</strong> R$ 50k+/mês</li>
-                <li>• <strong>Deals fechados:</strong> 2-4/mês</li>
-              </ul>
-            </CardContent>
-          </Card>
         </div>
-      </div>
 
-      {/* Erros comuns */}
-      <Alert className="mb-12 border-red-200 bg-red-50">
-        <AlertDescription>
-          <strong>5 Erros que Matam sua Performance:</strong>
-          <ul className="mt-2 space-y-1">
-            <li>• Usar a mesma mensagem para todos os prospects</li>
-            <li>• Não pesquisar antes de conectar</li>
-            <li>• Enviar pitch de vendas na primeira mensagem</li>
-            <li>• Não fazer follow-up após conexão aceita</li>
-            <li>• Focar em volume ao invés de qualidade</li>
-          </ul>
-        </AlertDescription>
-      </Alert>
+        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+          <MessageSquare className="w-6 h-6 text-revgreen" />
+          Templates de Conexão (Human-First)
+        </h2>
 
-      {/* CTA */}
-      <div className="bg-black text-white p-8 rounded-2xl text-center">
-        <h3 className="text-2xl font-bold mb-4">
-          Quer implementar esse sistema na sua empresa?
-        </h3>
-        <p className="text-gray-300 mb-6">
-          No nosso diagnóstico gratuito, configuramos sua estratégia de LinkedIn + Sales Navigator 
-          personalizada para seu ICP e objetivos de vendas.
-        </p>
-        <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-          Solicitar Diagnóstico Gratuito
-          <ArrowRight className="ml-2 w-5 h-5" />
-        </Button>
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {templates.map((template, index) => (
+            <Card key={index} className="bg-white border-gray-200 text-gray-800 overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div className="text-xs font-mono text-revgreen uppercase tracking-wider font-bold truncate pr-4">
+                  {template.name}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleCopy(template.body, index)}
+                  className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-white transition-colors"
+                >
+                  {copiedIndex === index ? (
+                    <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
+                  ) : (
+                    <span className="flex items-center gap-1"><Copy className="w-3 h-3" /> Copiar</span>
+                  )}
+                </Button>
+              </div>
+              <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap">
+                {template.body}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <StrategicConclusion
+          title="Pare de caçar no escuro"
+          description="O Sales Navigator é poderoso, mas exige método. Transforme seu LinkedIn em uma fonte previsível de receita."
+          ctaText="Treinamento de Social Selling"
+          onCTAClick={onCTAClick}
+        />
+
       </div>
     </article>
   );

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -33,5 +34,23 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- 1. CORRIGIR DROPDOWN (User Requested Script) -->
+    <script>
+      // Force native appearance availability
+      document.querySelectorAll('select').forEach(select => {
+          select.style.appearance = 'menulist';
+          select.style.cursor = 'pointer';
+      });
+      
+      // Observer to ensure it applies to dynamically loaded elements
+      const observer = new MutationObserver((mutations) => {
+        document.querySelectorAll('select').forEach(select => {
+            select.style.appearance = 'menulist';
+            select.style.cursor = 'pointer';
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    </script>
   </body>
 </html>

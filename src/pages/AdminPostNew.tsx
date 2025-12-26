@@ -1,12 +1,21 @@
-
-import AdminLayout from '@/components/admin/AdminLayout';
+import AdminPageLayout from '@/components/layout/AdminPageLayout';
+import PageLayout from '@/components/layout/PageLayout';
 import PostEditor from '@/components/admin/PostEditor';
 
 const AdminPostNew = () => {
   return (
-    <AdminLayout pageTitle="Novo Post">
-      <PostEditor />
-    </AdminLayout>
+    <PageLayout>
+      <AdminPageLayout
+        title="Novo Artigo"
+        description="Criar novo artigo para o blog"
+        backTo="/admin/posts"
+        backLabel="Voltar aos Artigos"
+      >
+        <div className="max-w-5xl mx-auto">
+          <PostEditor />
+        </div>
+      </AdminPageLayout>
+    </PageLayout>
   );
 };
 

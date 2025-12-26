@@ -12,7 +12,7 @@ const ExitIntentPopup = () => {
 
   useEffect(() => {
     let hasShown = localStorage.getItem('exitIntentShown');
-    
+
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShown && !isVisible) {
         setIsVisible(true);
@@ -32,7 +32,7 @@ const ExitIntentPopup = () => {
     // Here you would normally send the email to your backend
     console.log('Exit intent email:', email);
     setIsSubmitted(true);
-    
+
     setTimeout(() => {
       setIsVisible(false);
     }, 3000);
@@ -101,8 +101,8 @@ const ExitIntentPopup = () => {
                 required
                 className="text-center"
               />
-              
-              <Button type="submit" className="w-full bg-revgreen hover:bg-revgreen/90 text-white">
+
+              <Button type="submit" className="w-full bg-revgreen hover:bg-revgreen/90 text-black">
                 <Gift className="mr-2 h-4 w-4" />
                 Quero o Kit Gratuito
               </Button>
@@ -141,15 +141,15 @@ const ExitIntentPopup = () => {
             <div className="h-16 w-16 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
               <Gift className="h-8 w-8 text-green-600" />
             </div>
-            
+
             <h2 className="text-2xl font-bold mb-4 text-green-800">
               Kit enviado com sucesso! 🎉
             </h2>
-            
+
             <p className="text-gray-600 mb-4">
               Verifique sua caixa de entrada (e spam) nos próximos minutos.
             </p>
-            
+
             <p className="text-sm text-gray-500">
               Prepare-se para transformar seus resultados em RevOps! 🚀
             </p>

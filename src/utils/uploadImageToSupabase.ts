@@ -6,8 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
  * @param file O arquivo selecionado pelo usuário.
  * @returns string | null - A URL pública, ou null em caso de erro.
  */
-export const uploadImageToSupabase = async (file: File) => {
-  const bucket = 'blog-covers';
+export const uploadImageToSupabase = async (file: File, bucketName = 'blog-covers') => {
+  const bucket = bucketName;
   const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
 
   // Upload da imagem

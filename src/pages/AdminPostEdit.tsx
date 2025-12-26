@@ -2,19 +2,21 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
+import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import PostEditor from '@/components/admin/PostEditor';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BlogPost {
-  id: number;
+  id: string | number;
   title: string;
   slug: string;
   excerpt: string;
   content?: string;
   category: string;
-  image: string;
+  image?: string;
+  thumbnail?: string;
   date: string;
   read_time?: string;
 }
@@ -32,7 +34,7 @@ const AdminPostEdit = () => {
         const { data, error } = await supabase
           .from('blog_posts')
           .select('*')
-          .eq('id', Number(id))
+          .eq('id', id)
           .single();
 
         if (error) throw error;
@@ -48,13 +50,13 @@ const AdminPostEdit = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchPost();
   }, [id, navigate]);
 
   if (isLoading) {
     return (
-      <AdminLayout pageTitle="Carregando...">
+      <AdminLayout>
         <div className="flex justify-center items-center h-64">
           <div className="w-8 h-8 border-4 border-revgreen border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -64,7 +66,7 @@ const AdminPostEdit = () => {
 
   if (!post) {
     return (
-      <AdminLayout pageTitle="Post não encontrado">
+      <AdminLayout>
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold mb-4">Post não encontrado</h2>
           <Button onClick={() => navigate('/admin/posts')}>
@@ -76,8 +78,10 @@ const AdminPostEdit = () => {
   }
 
   return (
-    <AdminLayout pageTitle="Editar Post">
-      <PostEditor post={post} isEditing={true} />
+    <AdminLayout>
+      <AdminPageLayout title="Editar Post" backTo="/admin/posts" backLabel="Voltar para a lista">
+        <PostEditor post={post} isEditing={true} />
+      </AdminPageLayout>
     </AdminLayout>
   );
 };

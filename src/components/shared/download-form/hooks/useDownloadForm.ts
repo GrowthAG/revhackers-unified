@@ -15,6 +15,7 @@ export const useDownloadForm = (
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState<DownloadFormData>({
     firstName: '',
     lastName: '',
@@ -64,9 +65,9 @@ export const useDownloadForm = (
         materialLink: linkMaterial || '',
         actionType: 'send_material_email'
       };
-      
+
       console.log('Sending email webhook with data:', emailData);
-      
+
       await fetch(EMAIL_WEBHOOK_URL, {
         method: 'POST',
         headers: {
@@ -81,10 +82,10 @@ export const useDownloadForm = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     const { isValid, errorMessage } = validateForm(formData);
-    
+
     if (!isValid) {
       toast({
         title: "Campos obrigatórios",
@@ -94,9 +95,22 @@ export const useDownloadForm = (
       return;
     }
 
+
+    // Strict Validation Rule: materiallink is MANDATORY
+    if (!linkMaterial) {
+      console.error("CRITICAL ERROR: 'materiallink' (material_url) is missing for this material.");
+      toast({
+        title: "Erro de Configuração",
+        description: "Este material não possui um link de download configurado. Por favor, contate o suporte.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Prepare data for webhook
+
     const webhookData = {
       ...formData,
       formType: 'download',
@@ -109,7 +123,7 @@ export const useDownloadForm = (
 
     console.log('Form submitted with linkMaterial:', linkMaterial);
     console.log('Full webhook data:', webhookData);
-    
+
     try {
       // Save form data to localStorage for use on booking page
       saveFormData({
@@ -122,7 +136,7 @@ export const useDownloadForm = (
         role: formData.role,
         formType: 'download'
       });
-      
+
       // Send data to webhook using standard fetch
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -131,21 +145,26 @@ export const useDownloadForm = (
         },
         body: JSON.stringify(webhookData),
       });
-      
+
       if (!response.ok && response.status !== 0) {
         throw new Error('Failed to submit form data');
       }
-      
+
+
       // Send material by email
       await sendMaterialByEmail(webhookData);
-      
+
       setIsSubmitting(false);
-      onSubmit();
-      
-      // Redirect to booking page after successful download
-      setTimeout(() => {
-        navigate('/booking');
-      }, 1500);
+      setIsSuccess(true);
+
+      // We removed window.open and onSubmit here to show the Success View instead.
+
+      toast({
+        title: "Sucesso!",
+        description: "Seu material está pronto para acesso.",
+        duration: 5000
+      });
+
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
@@ -160,6 +179,7 @@ export const useDownloadForm = (
   return {
     formData,
     isSubmitting,
+    isSuccess,
     handleInputChange,
     handleSelectChange,
     handleRadioChange,

@@ -1,124 +1,202 @@
-
+import { useState, useEffect } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
-import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import ContactForm from '@/components/shared/ContactForm';
-
-const caseStudies = [
-  {
-    title: "ENICS",
-    category: "Eventos",
-    result: "3 mil ingressos em 30 dias",
-    image: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png",
-    slug: "enics",
-    description: "Estratégia integrada de Google Ads, Meta Ads, remarketing e automações para venda de ingressos para o evento."
-  },
-  {
-    title: "Heineken",
-    category: "Bebidas",
-    result: "Materiais em vídeo para parcerias",
-    image: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png",
-    slug: "heineken",
-    description: "Criação de materiais em vídeo para parcerias com bares e restaurantes no interior de São Paulo."
-  },
-  {
-    title: "Agence MR",
-    category: "Tecnologia",
-    result: "Consultoria para Google Ads",
-    image: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
-    slug: "agence-mr",
-    description: "Suporte consultivo para o time de marketing com foco na otimização de campanhas de Google Ads."
-  },
-  {
-    title: "TOEFL Junior Brasil",
-    category: "Educação",
-    result: "Leads B2B para escolas",
-    image: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
-    slug: "toefl",
-    description: "Estratégia para geração de leads B2B de donos de escolas interessados em implementar o sistema TOEFL."
-  },
-  {
-    title: "DataVoxx",
-    category: "Tecnologia",
-    result: "Novo site e funil inbound",
-    image: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
-    slug: "datavoxx",
-    description: "Desenvolvimento de novo site e implementação de um funil de vendas inbound completo."
-  }
-];
+import Section from '@/components/ui/Section';
+import { Search, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 const Cases = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Todos');
+  const [loading, setLoading] = useState(true);
+  const [cases, setCases] = useState<any[]>([]);
+
+  // Buscar cases do Supabase
+  useEffect(() => {
+    const fetchCases = async () => {
+      console.log('🔄 INICIANDO BUSCA DE CASES - ' + new Date().toISOString());
+
+      try {
+        const { data, error } = await supabase
+          .from('cases')
+          .select('*')
+          .eq('published', true)
+          .order('date', { ascending: false });
+
+        console.log('📊 RESULTADO DA BUSCA:');
+        console.log('- Erro:', error);
+        console.log('- Dados recebidos:', data?.length || 0);
+
+        if (data) {
+          console.log('📋 LISTA COMPLETA DE CASES:');
+          data.forEach((c, i) => {
+            console.log(`${i + 1}. ID: ${c.id} | Título: ${c.client_name || c.title} | Categoria: ${c.case_category}`);
+          });
+        }
+
+        if (!error && data) {
+          setCases(data);
+          console.log('✅ CASES SETADOS NO ESTADO:', data.length);
+        } else {
+          console.log('❌ ERRO AO CARREGAR:', error);
+          setCases([]);
+        }
+      } catch (err) {
+        console.log('💥 EXCEÇÃO:', err);
+        setCases([]);
+      } finally {
+        setLoading(false);
+        console.log('🏁 BUSCA FINALIZADA');
+      }
+    };
+
+    fetchCases();
+  }, []);
+
+
+
+  const error = null;
+
+  const categories = ['Todos', ...Array.from(new Set(cases.map(c => c.case_category || 'Geral').filter(Boolean)))];
+
+  const filteredCases = cases.filter(c => {
+    const searchLower = searchQuery.toLowerCase();
+    const title = c.title?.toLowerCase() || '';
+    const desc = c.preview_description?.toLowerCase() || '';
+    const cat = c.case_category?.toLowerCase() || '';
+
+    const matchesSearch = title.includes(searchLower) || desc.includes(searchLower) || cat.includes(searchLower);
+    const matchesCategory = activeCategory === 'Todos' || c.case_category === activeCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <PageLayout>
-      <section className="pt-32 pb-10 bg-gradient-to-br from-black to-gray-900 text-white relative">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src="https://images.unsplash.com/photo-1552664730-d307ca884978" 
-            alt="Cases de sucesso background" 
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* Standardized Header */}
+      <div className="bg-black py-12 md:py-20 border-b border-white/10 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
+
         <div className="container-custom relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Cases de Sucesso</h1>
-            <p className="text-xl text-gray-300 mb-8">
-              Conheça as histórias de empresas que transformaram seus resultados de negócio 
-              com nossas soluções de Revenue Operations
+          <div className="max-w-2xl mx-auto text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight">Cases de Sucesso</h1>
+            <p className="text-lg text-gray-400 font-light">
+              Histórias reais de empresas que transformaram seus resultados.
             </p>
           </div>
-        </div>
-      </section>
 
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {caseStudies.map((caseStudy, index) => (
-              <Link to={`/cases/${caseStudy.slug}`} key={index}>
-                <Card className="overflow-hidden card-hover h-full border-0 shadow-sm">
-                  <div className="h-48 overflow-hidden bg-white flex items-center justify-center p-6">
-                    <img 
-                      src={caseStudy.image} 
-                      alt={caseStudy.title} 
-                      className="w-3/4 h-auto max-h-32 object-contain transition-transform hover:scale-105 duration-500"
-                    />
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-500">{caseStudy.category}</span>
-                      <span className="text-xs px-3 py-1 bg-green-50 text-green-800 rounded-full font-medium">
-                        {caseStudy.result}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">{caseStudy.title}</h3>
-                    <p className="text-gray-600 mb-4">{caseStudy.description}</p>
-                    <div className="mt-4 flex items-center text-revgreen font-medium text-sm">
-                      <span>Ler estudo completo</span>
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+          <div className="max-w-md mx-auto relative mb-12">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Buscar cases..."
+              className="pl-10 pr-4 py-6 bg-zinc-900/80 border-white/10 text-white placeholder:text-gray-600 focus:border-revgreen transition-colors rounded-xl backdrop-blur-sm"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            {categories.map(category => (
+              <button
+                key={category}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === category
+                  ? "bg-revgreen text-black shadow-[0_0_15px_rgba(74,222,128,0.3)] font-bold"
+                  : "bg-zinc-900/50 text-gray-400 hover:bg-zinc-800 hover:text-white border border-white/5 hover:border-white/20"
+                  }`}
+                onClick={() => setActiveCategory(category)}
+              >
+                {category}
+              </button>
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="py-16 bg-white">
+      {/* Cases Grid */}
+      <Section variant="dark" className="py-24 bg-black min-h-screen relative">
+        <div className="absolute inset-0 bg-grid-white/[0.03] pointer-events-none" />
+        <div className="container-custom relative z-10">
+
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="w-8 h-8 text-revgreen animate-spin" />
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/30">
+              <h3 className="text-xl font-medium text-white">Nenhum case encontrado</h3>
+              <Button variant="link" className="text-revgreen mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
+                Limpar filtros
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCases.map((study, index) => (
+                <Link to={`/cases/${study.slug}`} className="group h-full" key={study.id || index}>
+                  <div className={`
+                    bg-white/5 overflow-hidden h-full flex flex-col transition-all duration-300 relative rounded-sm
+                    ${study.featured
+                      ? 'border border-revgreen/30 hover:border-revgreen shadow-[0_0_30px_rgba(0,255,136,0.05)]'
+                      : 'border border-white/10 hover:border-revgreen'
+                    }
+                  `}>
+                    {study.featured && (
+                      <div className="absolute top-4 right-4 z-20">
+                        <span className="bg-revgreen text-black text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wide">Destaque</span>
+                      </div>
+                    )}
+
+                    <div className="h-48 overflow-hidden bg-white flex items-center justify-center p-8 border-b border-white/10 relative">
+                      {study.client_logo ? (
+                        <img src={study.client_logo} alt={study.title} className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="text-gray-300 font-bold text-2xl uppercase">{study.client_name?.substring(0, 2)}</div>
+                      )}
+                    </div>
+
+                    <div className="p-8 flex-1 flex flex-col">
+                      <span className="text-xs font-mono-tech uppercase tracking-wider text-revgreen mb-2">
+                        {study.case_category} {study.industry ? `• ${study.industry}` : ''}
+                      </span>
+                      <h3 className="text-2xl font-bold text-white mb-3">{study.title}</h3>
+                      <p className="text-gray-400 font-light text-sm mb-6 flex-1">
+                        {study.preview_description}
+                      </p>
+                      <div className="pt-4 border-t border-white/10">
+                        <p className="text-sm font-bold text-white group-hover:text-revgreen">
+                          {study.primary_metric}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </Section>
+
+      {/* CTA Section */}
+      <Section variant="light" className="py-20 bg-gray-50 border-t border-gray-200">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-left">
-            <h2 className="text-3xl font-bold mb-6">Sua empresa será nosso próximo case?</h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Entre em contato agora mesmo e descubra como podemos ajudar sua empresa 
-              a obter resultados excepcionais como estes.
-            </p>
-            
-            <div className="mt-8 max-w-xl mx-auto bg-gray-50 p-8 rounded-xl shadow-sm">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center">
+            <div className="flex-1">
+              <h2 className="text-3xl font-normal mb-6 text-black tracking-tight">Sua empresa será nosso próximo case?</h2>
+              <p className="text-lg text-gray-500 mb-8 font-light">
+                Entre em contato agora mesmo e descubra como podemos ajudar sua empresa
+                a obter resultados excepcionais como estes.
+              </p>
+            </div>
+
+            <div className="w-full md:w-auto bg-white p-8 rounded-sm shadow-sm border border-gray-200 flex-1">
               <ContactForm formType="diagnosis" />
             </div>
           </div>
         </div>
-      </section>
+      </Section>
     </PageLayout>
   );
 };

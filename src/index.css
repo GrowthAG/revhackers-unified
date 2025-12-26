@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,266 +6,207 @@
 
 @layer base {
   :root {
-    /* Apple-inspired Color Palette */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 6%;
+    /* Aggressive Editorial Palette */
+    --background: 0 0% 0%;
+    /* Pure Black */
+    --foreground: 0 0% 100%;
+    /* Pure White */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 6%;
+    --primary: 134 98% 50%;
+    /* Signal Green #03FC3B */
+    --primary-foreground: 0 0% 0%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 6%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 100%;
 
-    --primary: 142 100% 49.4%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 142 85% 65%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
 
-    --secondary: 0 0% 98%;
-    --secondary-foreground: 0 0% 6%;
-
-    --muted: 0 0% 97%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: 0 0% 96%;
-    --accent-foreground: 142 100% 49.4%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 92%;
-    --input: 0 0% 96%;
-    --ring: 142 100% 49.4%;
-
-    --radius: 12px;
-
-    /* Apple-inspired Gradients */
-    --gradient-premium: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    --gradient-mesh: radial-gradient(ellipse 600px 400px at 50% 0%, hsl(var(--primary) / 0.15), transparent 70%),
-                     radial-gradient(ellipse 400px 300px at 80% 100%, hsl(142 85% 65% / 0.1), transparent 70%),
-                     radial-gradient(ellipse 300px 200px at 20% 100%, hsl(var(--primary) / 0.08), transparent 70%);
-    --gradient-interactive: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 85% 65%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--background) / 0.95) 100%);
-
-    /* Apple-inspired Shadows */
-    --shadow-soft: 0 4px 20px -2px rgba(0,0,0,0.05);
-    --shadow-medium: 0 8px 30px -4px rgba(0,0,0,0.1);
-    --shadow-strong: 0 20px 60px -8px rgba(0,0,0,0.15);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
-    --shadow-float: 0 15px 50px -12px rgba(0,0,0,0.15);
-    --shadow-interactive: 0 8px 32px -8px hsl(var(--primary) / 0.3);
-    --shadow-premium: 0 25px 80px -15px rgba(0,0,0,0.25);
-
-    /* Apple-inspired Transitions */
-    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 6%;
-    --sidebar-primary: 142 100% 49.4%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 95.9%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 89.8%;
-    --sidebar-ring: 142 100% 49.4%;
+    --radius: 0px;
+    /* 0px - Brutalist/Sharp */
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  html, body {
-    @apply overflow-x-hidden;
-    width: 100%;
-    max-width: 100vw;
-  }
-
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-medium tracking-tight;
+  /* Aggressive Typography - Lighter but Bigger */
+  h1 {
+    @apply font-normal tracking-tight md:tracking-tighter text-balance;
   }
 
-  p, li, span {
-    @apply font-body;
+  h2 {
+    @apply font-normal tracking-tight text-balance text-3xl md:text-4xl lg:text-5xl;
+    /* Reduced from 6xl to 5xl based on user feedback "muito grande" */
+  }
+
+  h3 {
+    @apply font-normal tracking-tight text-balance;
   }
 }
 
 @layer components {
-  /* Apple-inspired Button Styles */
-  .btn-primary {
-    @apply bg-revgreen text-black font-medium px-8 py-4 rounded-2xl shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-[var(--transition-smooth)] hover:scale-105;
-  }
 
-  .btn-glass {
-    @apply bg-white/10 backdrop-blur-xl border border-white/20 text-white font-medium px-8 py-4 rounded-2xl shadow-[var(--shadow-medium)] hover:bg-white/20 transition-[var(--transition-smooth)];
-  }
-  
-  /* Apple-inspired Layout */
-  .section-padding {
-    @apply py-24 md:py-32;
-  }
-
-  .section-padding-sm {
-    @apply py-16 md:py-20;
-  }
-
+  /* Editorial Layouts */
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12;
+    @apply mx-auto px-6 md:px-12 max-w-[1400px] w-full;
   }
 
-  /* Apple-inspired Cards */
-  .card-premium {
-    @apply bg-white rounded-3xl shadow-[var(--shadow-soft)] border border-gray-100/50 transition-[var(--transition-smooth)] hover:shadow-[var(--shadow-medium)] hover:-translate-y-2;
+  /* Aggressive Buttons - Text Only or Outlined */
+  .btn-aggressive {
+    @apply bg-white text-black font-medium h-14 px-10 hover:bg-revgreen transition-colors duration-200 uppercase tracking-widest text-xs border border-transparent;
   }
 
-  .card-glass {
-    @apply bg-white/60 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[var(--shadow-medium)];
+  .btn-green-flat {
+    @apply bg-revgreen text-black font-bold h-14 px-10 hover:bg-white hover:text-black transition-colors duration-200 uppercase tracking-widest text-xs border border-transparent rounded-sm;
   }
 
-  .card-hover {
-    @apply transition-[var(--transition-smooth)] hover:shadow-[var(--shadow-medium)] hover:-translate-y-2;
+  .btn-outline-flat {
+    @apply bg-transparent text-white font-bold h-14 px-10 hover:bg-white hover:text-black transition-colors duration-200 uppercase tracking-widest text-xs border border-white/20 hover:border-white rounded-sm;
   }
 
-  /* Apple-inspired Navigation */
-  .nav-link {
-    @apply relative font-medium text-foreground/80 hover:text-revgreen transition-[var(--transition-smooth)] px-4 py-2 rounded-xl hover:bg-muted;
+  .btn-minimal {
+    @apply bg-transparent text-white font-medium h-14 px-0 hover:text-revgreen transition-colors duration-200 uppercase tracking-widest text-xs flex items-center gap-2 border-b border-white/20 hover:border-revgreen;
   }
 
-  .nav-link-active {
-    @apply text-revgreen bg-muted;
+  /* Utilities */
+  .text-giant {
+    font-size: clamp(3rem, 8vw, 8rem);
+    /* Reduced max size from 10rem to 8rem */
+    line-height: 0.9;
   }
 
-  .nav-link::after {
-    content: '';
-    @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-revgreen transition-[var(--transition-smooth)] transform -translate-x-1/2 rounded-full;
+  .font-mono-tech {
+    font-family: 'JetBrains Mono', monospace;
   }
 
-  .nav-link:hover::after {
-    @apply w-8;
+  /* Premium Subtle Dot Patterns */
+  .bg-dot-light {
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.7;
   }
 
-  /* Apple-inspired Animations */
-  .fade-up {
-    @apply opacity-0 translate-y-8 transition-[var(--transition-smooth)] animate-[fadeUp_0.6s_ease-out_forwards];
+  .bg-dot-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
-  .fade-in-delayed {
-    @apply opacity-0 transition-[var(--transition-smooth)];
-    animation: fadeIn 0.8s ease-out 0.2s forwards;
+  /* Infinite Marquee Animation */
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
   }
 
-  /* Apple-inspired Typography */
-  .hero-text {
-    @apply text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text;
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* === CORREÇÕES OBRIGATÓRIAS (User Requested) === */
+
+/* 2. CORRIGIR CONTRASTE DE TEXTOS */
+/* 2. CORRIGIR CONTRASTE DE TEXTOS */
+.card-text,
+.description,
+p {
+  color: #2d2d2d !important;
+  /* Cinza escuro legível */
+}
+
+/* IMPORTANT: Override back to white for Dark Sections to prevent illegibility */
+.section-dark p,
+.bg-black p,
+.text-white p,
+.text-gray-300,
+.text-gray-400 {
+  color: inherit !important;
+  /* Allows dark themes to work while keeping the global 'p' dark for white sections */
+}
+
+@layer utilities {
+  /* 
+     Temporarily commented out to fix Vite/Tailwind circular dependency error.
+     Explicit classes have been added to components (bg-white text-gray-900) to handle this.
+  */
+  /*
+  .bg-white p,
+  .bg-white h1,
+  .bg-white h2,
+  .bg-white h3,
+  .bg-white h4,
+  .bg-white h5,
+  .bg-white h6,
+  .bg-white li,
+  .bg-white ul,
+  .bg-white ol,
+  .bg-white span,
+  .bg-white div,
+  .bg-white td,
+  .bg-white th,
+  .bg-white blockquote,
+  .bg-white cite,
+  .bg-gray-50 p,
+  .bg-gray-50 h1,
+  .bg-gray-50 h2,
+  .bg-gray-50 h3,
+  .bg-gray-50 h4,
+  .bg-gray-50 h5,
+  .bg-gray-50 h6,
+  .bg-gray-50 li,
+  .bg-gray-50 ul,
+  .bg-gray-50 ol,
+  .bg-gray-50 span,
+  .bg-gray-50 div,
+  .bg-gray-50 td,
+  .bg-gray-50 th,
+  .bg-gray-50 blockquote,
+  .bg-gray-50 cite {
+    color: #2d2d2d !important;
   }
 
-  .section-title {
-    @apply text-3xl md:text-5xl font-bold tracking-tight leading-tight;
+  .bg-white .bg-black,
+  .bg-white .bg-revgreen,
+  .bg-white .text-white,
+  .bg-white .btn-aggressive,
+  .bg-white .btn-green-flat,
+  .bg-gray-50 .bg-black,
+  .bg-gray-50 .bg-revgreen,
+  .bg-gray-50 .text-white {
+    color: initial !important;
   }
 
-  /* Premium Interactive Elements */
-  .interactive-card {
-    @apply relative overflow-hidden rounded-3xl transition-all duration-500 ease-out;
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-soft);
+  .bg-white .bg-black *,
+  .bg-gray-50 .bg-black * {
+    color: white !important;
   }
+  */
+}
 
-  .interactive-card::before {
-    content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-500 rounded-3xl;
-    background: var(--gradient-interactive);
-    z-index: -1;
-  }
+.card-subtitle,
+.secondary-text {
+  color: #4a4a4a !important;
+  /* Cinza médio legível */
+}
 
-  .interactive-card:hover {
-    @apply transform -translate-y-2;
-    box-shadow: var(--shadow-float);
-  }
+/* 3. ALINHAR HEADLINES - Removing restrictive globals to allow component-level control */
+h1,
+h2,
+h3 {
+  /* Default behaviors should be controlled by utility classes */
+}
 
-  .interactive-card:hover::before {
-    @apply opacity-10;
-  }
-
-  .mesh-background {
-    background: var(--gradient-mesh);
-  }
-
-  .glow-effect {
-    position: relative;
-  }
-
-  .glow-effect::after {
-    content: '';
-    @apply absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500;
-    background: var(--gradient-interactive);
-    filter: blur(20px);
-    z-index: -1;
-  }
-
-  .glow-effect:hover::after {
-    @apply opacity-20;
-  }
-
-  .shimmer-effect {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .shimmer-effect::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.8s;
-  }
-
-  .shimmer-effect:hover::before {
-    left: 100%;
-  }
-
-  /* WordPress content styling */
-  .wordpress-content {
-    @apply text-base leading-relaxed;
-  }
-
-  .wordpress-content h2 {
-    @apply text-2xl font-bold mt-8 mb-4;
-  }
-
-  .wordpress-content h3 {
-    @apply text-xl font-bold mt-6 mb-3;
-  }
-
-  .wordpress-content p {
-    @apply mb-4;
-  }
-
-  .wordpress-content ul, .wordpress-content ol {
-    @apply mb-6 pl-5;
-  }
-
-  .wordpress-content li {
-    @apply mb-2;
-  }
-
-  .wordpress-content a {
-    @apply text-revgreen hover:underline;
-  }
-
-  .wordpress-content blockquote {
-    @apply pl-4 border-l-4 border-revgreen italic my-6;
-  }
-
-  .wordpress-content img {
-    @apply rounded-md my-6 mx-auto;
-  }
+/* Native Select Styling */
+select {
+  appearance: menulist !important;
+  cursor: pointer !important;
+  background-color: white !important;
+  color: black !important;
 }

@@ -1,36 +1,39 @@
 
-export const funnelsCase = {
+import { CaseStudy } from "../index";
+
+export const funnelsCase: CaseStudy = {
   title: "Funnels",
-  category: "Marketing",
+  category: "SaaS • Founder-Led Growth",
   logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
-  coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-  challenge: "A Funnels precisava otimizar seu funil de conversão e aumentar a geração de leads qualificados para expandir sua carteira de clientes.",
-  solution: "Desenvolvemos uma estratégia completa de funil de vendas com automações inteligentes, páginas otimizadas para conversão e um sistema de nutrição de leads que acompanha todo o ciclo de compra.",
+  coverImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0",
+  challenge: "O CEO da Funnels tinha um produto excepcional, mas dependia 100% de prospecção fria e anúncios. Sua marca pessoal no LinkedIn era inexistente, desperdiçando a oportunidade de criar autoridade e gerar demanda orgânica qualificada.",
+  solution: "Implementamos uma estratégia completa de Founder-Led Growth. Transformamos o perfil do CEO no principal canal de aquisição da empresa através de: 1) Posicionamento de Autoridade (Conteúdo Técnico e de Liderança); 2) Engenharia Social para conexão com decisores; 3) Funil de Conteúdo para Conversão (Direct Response no LinkedIn).",
   results: [
-    "Aumento de 130% na geração de leads qualificados em 60 dias",
-    "Redução de 40% no custo de aquisição de cliente (CAC)",
-    "Implementação de sistema de automação que reduziu o tempo de resposta em 75%",
-    "Aumento de 45% na taxa de conversão do funil como um todo"
+    "Agenda de vendas lotada apenas com leads orgânicos do LinkedIn",
+    "+130% em leads qualificados (C-Level e Diretores)",
+    "Autoridade estabelecida no nicho de Automação de Vendas",
+    "Zero dependência de anúncios pagos para fechar novos contratos no primeiro trimestre"
   ],
   metrics: [
     {
-      value: "130%",
-      label: "Aumento na geração de leads qualificados"
+      value: "+130%",
+      label: "Leads Qualificados"
     },
     {
-      value: "40%",
-      label: "Redução no custo de aquisição de clientes"
+      value: "100%",
+      label: "Orgânico (LinkedIn)"
     },
     {
-      value: "75%",
-      label: "Redução no tempo de resposta através de automações"
+      value: "Top 1%",
+      label: "Social Selling Index"
     },
     {
-      value: "45%",
-      label: "Aumento na taxa de conversão do funil"
+      value: "24h",
+      label: "Tempo Médio para Reunião"
     }
   ],
-  quote: "A metodologia da RevHackers transformou completamente nossa estratégia de aquisição de clientes. Os resultados superaram nossas expectativas e hoje temos um funil de vendas muito mais eficiente.",
-  author: "Diretor de Marketing",
-  role: "Funnels"
+  quote: "Eu não acreditava que postar no LinkedIn poderia encher minha agenda. A estratégia da RevHackers não só trouxe leads, mas trouxe os leads CERTOS. Hoje fecho contratos de ticket alto com pessoas que já chegam na reunião confiando no meu trabalho.",
+  author: "CEO",
+  role: "Funnels",
+  description: "Estratégia de gerenciamento de receita através de Founder-Led Growth para o CEO, criando conteúdo no LinkedIn para encher a agenda de vendas."
 };

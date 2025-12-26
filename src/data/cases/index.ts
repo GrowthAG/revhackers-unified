@@ -1,4 +1,3 @@
-
 import { enicsCase } from './enics';
 import { heinekenCase } from './heineken';
 import { agenceMrCase } from './agence-mr';
@@ -8,6 +7,10 @@ import { emagrecentroCase } from './emagrecentro';
 import { placluxCase } from './placlux';
 import { fmuVirtualCase } from './fmu-virtual';
 import { funnelsCase } from './funnels';
+import { cruzeiroSulCase } from './cruzeiro-sul';
+import { btDigitalCase } from './bt-digital';
+import { tikpagCase } from './tikpag';
+import { tegraCase } from './tegra';
 
 // Type definition for a case study
 export interface CaseStudy {
@@ -27,6 +30,7 @@ export interface CaseStudy {
   role: string;
   authorImage?: string;
   description?: string;
+  preview_description?: string;
   tags?: string[];
 }
 
@@ -40,7 +44,11 @@ export const casesData: Record<string, CaseStudy> = {
   "emagrecentro": emagrecentroCase,
   "placlux": placluxCase,
   "fmu-virtual": fmuVirtualCase,
-  "funnels": funnelsCase
+  "funnels": funnelsCase,
+  "cruzeiro-sul": cruzeiroSulCase,
+  "bt-digital": btDigitalCase,
+  "tikpag": tikpagCase,
+  "tegra": tegraCase
 };
 
 export type CaseStudyKey = keyof typeof casesData;

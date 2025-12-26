@@ -1,320 +1,214 @@
-import { Mail, Target, TrendingUp, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const ColdEmailArticle = () => {
+import { useState } from 'react';
+import { Mail, Zap, ShieldCheck, CheckCircle2, TrendingUp, AlertTriangle, Fingerprint, Copy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import StrategicContext from '../components/StrategicContext';
+import KeyTakeaways from '../components/KeyTakeaways';
+import ConceptDefinition from '../components/ConceptDefinition';
+import RedFlags from '../components/RedFlags';
+import StrategicConclusion from '../components/StrategicConclusion';
+
+const ColdEmailArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleCopy = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
   const strategies = [
     {
-      title: "Hyper-Personalização Baseada em Gatilhos",
-      description: "Vá além do nome da empresa. Use eventos específicos como contratações, expansões, funding rounds.",
-      example: "Vi que a [Empresa] acabou de abrir 15 vagas para o time comercial. Isso sugere uma expansão agressiva...",
-      results: "32% taxa de resposta vs 3% do cold email genérico"
+      title: "Hyper-Personalização (Trigger-Based)",
+      description: "Esqueça 'Vi seu site e achei legal'. Use gatilhos reais: Vagas abertas, Funding, Notícias de PR.",
+      example: "Observação: 'Vi que abriram vaga para VP de Vendas'. E-mail: 'A chegada do novo VP sugere expansão em Outbound...'",
+      results: "32% taxa de resposta vs 3% da média de mercado."
     },
     {
-      title: "O Método 'Problem Before Solution'",
-      description: "Apresente um problema específico que eles provavelmente não sabem que têm.",
-      example: "A maioria das empresas de [setor] perde 23% dos leads qualificados entre MQL e SQL...",
-      results: "+45% em taxa de abertura"
+      title: "Problem-Agitation-Solution (PAS)",
+      description: "Apresente um problema específico que eles provavelmente têm, agite a dor e mostre o caminho.",
+      example: "'Empresas de SaaS perdem 23% dos leads qualificados na passagem de bastão MKT-Vendas. Isso representa R$ 200k/mês no seu volume...'",
+      results: "+45% em taxa de abertura e curiosidade."
     },
     {
-      title: "Social Proof Específico",
-      description: "Use casos de empresas similares com métricas específicas.",
-      example: "Ajudamos a [Empresa Similar] a reduzir CAC em 34% mantendo a mesma qualidade de leads...",
-      results: "2.8x mais conversões para call"
-    },
-    {
-      title: "O CTA de 'Baixo Risco'",
-      description: "Ofereça algo de valor sem compromisso antes de vender.",
-      example: "Posso enviar o mesmo audit que fiz para [Competitor]? Sem compromisso.",
-      results: "67% mais responses positivas"
-    },
-    {
-      title: "Timing Estratégico",
-      description: "Envie nos momentos certos baseado no comportamento do cargo.",
-      example: "CFOs respondem 3x mais nas quartas às 10h. CMOs preferem sextas às 15h.",
-      results: "28% aumento na taxa de resposta"
-    },
-    {
-      title: "Follow-up com Valor Crescente",
-      description: "Cada follow-up deve adicionar valor, não apenas insistir.",
-      example: "PS: Anexei um mini-audit da sua landing page principal. 3 ajustes rápidos podem aumentar conversão em 15%.",
-      results: "43% dos deals fecham no 4º follow-up"
-    },
-    {
-      title: "O Poder do 'Pattern Interrupt'",
-      description: "Quebre o padrão mental com abordagens inesperadas.",
-      example: "Não quero vender nada hoje. Só quero te mostrar por que seus concorrentes estão crescendo 40% mais rápido.",
-      results: "78% mais opens que subjects tradicionais"
+      title: "O 'Break-Up' Email Estratégico",
+      description: "O último email da cadência não é para chorar, é para qualificar através da retirada.",
+      example: "'Estou assumindo que [Processo X] não é prioridade agora, então vou parar de insistir para não lotar sua caixa. Se mudar de ideia, estou por aqui.'",
+      results: "O email que mais gera 'Ressurreição' de leads (24%)."
     }
   ];
 
   const templates = [
     {
-      name: "The Insight Opener",
-      subject: "{{company}} pode estar perdendo {{percentage}}% dos leads qualificados",
+      name: "The Insight Opener (Para C-Level)",
+      subject: "{{company}} e problemas de escala em {{area}}",
       body: `Oi {{first_name}},
 
-Notei que a {{company}} está investindo pesado em {{channel_observado}}.
+Vi no seu relatório anual que a prioridade para 2025 é {{strategic_goal}}.
 
-A maioria das empresas de {{industry}} que fazem isso cometem um erro que custa caro: não conseguem conectar marketing com vendas de forma eficiente.
+Geralmente, empresas de {{industry}} enfrentam um gargalo invisível quando tentam isso: {{specific_problem}}.
 
-Isso resulta em ~{{percentage}}% dos MQLs virando SQLs de baixa qualidade.
+Ajudamos a {{competitor}} a resolver exatamente isso aplicando o framework {{methodology}}, o que gerou {{result}}.
 
-Posso mostrar exatamente como resolver isso? O mesmo método que usamos na {{similar_company}} ({{result_achieved}}).
+Faz sentido eu enviar um mini-audit (2 min de vídeo) mostrando como isso se aplica à {{company}}?
 
-Quer que eu envie o diagnóstico que fiz da {{company}}?
-
-{{signature}}`
+Abs,
+{{my_name}}`
     },
     {
-      name: "The Case Study Hook",
-      subject: "Como a {{similar_company}} cresceu {{growth_percentage}}% (case study)",
-      body: `{{first_name}},
+      name: "The 'Referral' (Top-Down)",
+      subject: "Quem é o responsável por {{area}}?",
+      body: `Oi {{first_name}},
 
-A {{similar_company}} tinha o mesmo desafio que vocês:
-- {{pain_point_1}}
-- {{pain_point_2}}
-- {{pain_point_3}}
+Estou tentando falar com a pessoa responsável por melhorar a eficiência de {{process}} na {{company}}.
 
-Em 90 dias ajudamos eles a:
-✓ {{result_1}}
-✓ {{result_2}}  
-✓ {{result_3}}
+Poderia me apontar a direção certa?
 
-Quer ver exatamente como fizemos isso?
+Geralmente é o Diretor de Operações ou o próprio CEO.
 
-Posso enviar o case completo + os templates que usamos.
-
-{{signature}}`
+Obrigado pela ajuda,
+{{my_name}}`
     }
   ];
 
+  const deliverabilityChecklist = [
+    "SPF, DKIM e DMARC Configurados (Obrigatório)",
+    "Domínio aquecido (Warmup) por no mínimo 30 dias",
+    "Listas Limpas (Bounce rate abaixo de 2% ou bloqueio)",
+    "CTAs de baixo atrito ('Interesse?' em vez de 'Reunião?')",
+    "Texto simples (Plain Text) > HTML bonitinho"
+  ];
+
   return (
-    <article className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
-            <Mail className="w-6 h-6 text-white" />
-          </div>
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            Growth Tactics
-          </span>
-        </div>
-        
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-          Cold Email em 2025: as 7 estratégias que ainda funcionam
-        </h1>
-        
-        <div className="flex items-center gap-6 text-gray-600 mb-8">
-          <span>10 min de leitura</span>
-          <span>•</span>
-          <span>Marina Santos</span>
-        </div>
-        
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Enquanto 90% dos profissionais lamentam que "cold email morreu", os 10% mais espertos 
-          estão batendo recordes de resposta com estas estratégias contra-intuitivas.
-        </p>
-      </div>
+    <article className="w-full mx-auto">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
 
-      {/* Alerta sobre mudanças */}
-      <Alert className="mb-12 border-orange-200 bg-orange-50">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Atenção:</strong> As regras mudaram drasticamente em 2024. Gmail e Outlook implementaram 
-          filtros de IA mais rigorosos. O que funcionava antes pode te mandar direto para spam hoje.
-        </AlertDescription>
-      </Alert>
+        <StrategicContext label="O Novo Jogo do Outbound">
+          <p>
+            Até 2022, era possível escalar Cold Email apenas aumentando o volume. "Spray and Pray" funcionava. Em 2025m com as novas regras de IA do Google/Outlook e filtros de spam agressivos, volume é suicídio.
+          </p>
+          <p className="mt-4">
+            O jogo mudou de <strong>Quantidade</strong> para <strong>Relevância Extrema</strong>. Se o seu email não parece ter sido escrito 1:1, ele nem chega na caixa de entrada.
+          </p>
+        </StrategicContext>
 
-      {/* Por que ainda funciona */}
-      <div className="prose prose-lg max-w-none mb-12">
-        <h2 className="text-3xl font-bold mb-6">Por que Cold Email ainda é o canal #1 para B2B</h2>
+        <KeyTakeaways
+          title="Key Takeaways (Outbound 2.0)"
+          items={[
+            { title: "Entregabilidade é Rei", description: "Sem configuração técnica perfeita (DKIM/SPF), você é invisível. A reputação do seu domínio é seu ativo mais valioso." },
+            { title: "Personalização Relevante", description: "Personalizar o 'Nome' não conta mais. Você precisa contextualizar o 'Porquê' do contato agora." },
+            { title: "Baixo Atrito (CTA)", description: "Pare de pedir 30 min na agenda. Peça validação do problema ou interesse no tema. Venda a conversa, não o produto." },
+            { title: "Multicanalidade", description: "Cold Email isolado morre. Combine com LinkedIn, Telefone e Social Selling para cercar o lead." }
+          ]}
+        />
+
+        <ConceptDefinition
+          concept="Cold Email vs Spam"
+          definition="Cold Email é uma mensagem comercial enviada para um desconhecido, mas altamente direcionada, pesquisada e focada em resolver uma dor provável daquele cargo/indústria."
+          amateurView="Comprar uma lista de 10.000 emails e enviar a mesma mensagem genérica 'Compre meu serviço' para todos."
+          proView="Selecionar 50 empresas ideais (ICP), pesquisar seus desafios recentes e mandar um email sob medida que agrega valor antes de pedir algo."
+        />
+
+        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Por que Cold Email ainda é a melhor máquina de ROI?</h2>
         <p>
-          Dados de 2024 mostram que cold email ainda gera <strong>ROI 4x maior</strong> que qualquer outro canal 
-          para vendas B2B complexas. O segredo? Não é quantidade, é relevância cirúrgica.
+          Apesar do ruído, o email frio continua gerando um <strong>ROI 4x maior</strong> que mídias pagas para vendas complexas de alto ticket. Por quê? Porque ele é direto, escalável e, se bem feito, cria um relacionamento pessoal com o decisor.
         </p>
-        
-        <div className="grid md:grid-cols-3 gap-6 my-8">
-          <div className="bg-green-50 p-6 rounded-xl text-center">
-            <div className="text-3xl font-bold text-green-600">4,400%</div>
-            <div className="text-sm text-gray-600">ROI médio do email marketing</div>
-          </div>
-          <div className="bg-blue-50 p-6 rounded-xl text-center">
-            <div className="text-3xl font-bold text-blue-600">89%</div>
-            <div className="text-sm text-gray-600">Dos executivos checam email diariamente</div>
-          </div>
-          <div className="bg-purple-50 p-6 rounded-xl text-center">
-            <div className="text-3xl font-bold text-purple-600">23%</div>
-            <div className="text-sm text-gray-600">Taxa de resposta possível (com estratégia certa)</div>
-          </div>
-        </div>
-      </div>
+        <p>
+          Enquanto no anúncio você espera o cliente levantar a mão, no Cold Email você escolhe quem quer atender. É o controle total da sua receita.
+        </p>
 
-      {/* As 7 estratégias */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-          <Target className="w-8 h-8 text-blue-600" />
-          As 7 Estratégias que Funcionam em 2025
+        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+          <Zap className="w-6 h-6 text-revgreen" />
+          3 Estratégias que Sobreviveram a 2025
         </h2>
-        
-        <div className="space-y-8">
+
+        <div className="space-y-12 mb-16">
           {strategies.map((strategy, index) => (
-            <Card key={index} className="border border-gray-200 hover:border-blue-300 transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                    {index + 1}
-                  </span>
-                  {strategy.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 mb-4">{strategy.description}</p>
-                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                  <p className="text-sm font-mono italic">"{strategy.example}"</p>
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="text-sm font-semibold">{strategy.results}</span>
-                </div>
-              </CardContent>
-            </Card>
+            <div key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
+                {strategy.title}
+              </h3>
+              <p className="text-gray-700 mb-6 font-medium">
+                {strategy.description}
+              </p>
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Exemplo Real</h4>
+                <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-bold">
+                <TrendingUp className="w-4 h-4" />
+                Impacto: {strategy.results}
+              </div>
+            </div>
           ))}
         </div>
-      </div>
 
-      {/* Templates testados */}
-      <div className="mb-16">
-        <h2 className="text-3xl font-bold mb-8">Templates Testados (10k+ envios)</h2>
-        
-        <div className="space-y-8">
-          {templates.map((template, index) => (
-            <Card key={index} className="border-l-4 border-l-green-500">
-              <CardHeader>
-                <CardTitle>{template.name}</CardTitle>
-                <p className="text-sm text-gray-600">
-                  <strong>Subject:</strong> {template.subject}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <pre className="text-sm whitespace-pre-wrap font-mono">
-                    {template.body}
-                  </pre>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+        <RedFlags
+          title="Por que seus emails vão para o Spam? (Sinais)"
+          flags={[
+            "Você usa linguagem de promoção ('Oferta', 'Grátis', 'Compre', 'Melhor preço').",
+            "Seu email tem mais HTML/Imagens do que texto (Parece marketing, não conversa).",
+            "Você envia mais de 50 emails por dia da mesma conta sem aquecimento.",
+            "Você coloca links e anexos logo no primeiro email (Gatilho imediato de filtro)."
+          ]}
+        />
 
-      {/* Ferramentas recomendadas */}
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle>Stack de Ferramentas Recomendado</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold mb-3">Prospecção & Dados</h4>
-              <ul className="space-y-2 text-sm">
-                <li>• <strong>Apollo:</strong> Base mais atualizada (2024)</li>
-                <li>• <strong>Clay:</strong> Enriquecimento de dados com IA</li>
-                <li>• <strong>ZoomInfo:</strong> Para empresas enterprise</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3">Envio & Automação</h4>
-              <ul className="space-y-2 text-sm">
-                <li>• <strong>Instantly:</strong> Melhor deliverability em 2024</li>
-                <li>• <strong>Lemlist:</strong> Personalização avançada</li>
-                <li>• <strong>Outreach:</strong> Para times grandes</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Erros fatais */}
-      <Alert className="mb-12 border-red-200 bg-red-50">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Erros que matam sua deliverability:</strong>
-          <ul className="mt-2 space-y-1">
-            <li>• Enviar de domínios novos (warmup mínimo 30 dias)</li>
-            <li>• Usar palavras como "grátis", "desconto", "promoção"</li>
-            <li>• Mais de 50 emails/dia por domínio</li>
-            <li>• Links encurtados ou muitos links</li>
-            <li>• Não personalizar além do nome</li>
-          </ul>
-        </AlertDescription>
-      </Alert>
-
-      {/* Checklist */}
-      <Card className="mb-12 bg-gradient-to-r from-green-50 to-emerald-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="w-6 h-6 text-green-600" />
-            Checklist Antes do Envio
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <div className="my-16 bg-neutral-900 text-white p-8 rounded-xl not-prose">
+          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <ShieldCheck className="w-6 h-6 text-revgreen" />
+            Checklist de Entregabilidade Blindada
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Domínio com warmup de 30+ dias</span>
+            {deliverabilityChecklist.map((item, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 border border-white/10 rounded bg-white/5">
+                <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
+                <span className="text-sm font-medium text-gray-300">{item}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">DKIM, SPF, DMARC configurados</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Personalização específica (não genérica)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Subject line testado</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">CTA claro e específico</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Sequência de follow-up pronta</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Landing page para resposta</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" className="rounded" />
-                <span className="text-sm">Métricas de tracking configuradas</span>
-              </div>
-            </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* CTA */}
-      <div className="bg-black text-white p-8 rounded-2xl text-center">
-        <h3 className="text-2xl font-bold mb-4">
-          Quer implementar essas estratégias na sua empresa?
-        </h3>
-        <p className="text-gray-300 mb-6">
-          Nosso diagnóstico inclui análise da sua estratégia atual de cold email, 
-          templates personalizados e setup completo de deliverability.
-        </p>
-        <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-          Solicitar Diagnóstico Gratuito
-          <ArrowRight className="ml-2 w-5 h-5" />
-        </Button>
+        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+          <Mail className="w-6 h-6 text-revgreen" />
+          Templates Prontos para Uso
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {templates.map((template, index) => (
+            <Card key={index} className="bg-zinc-950 border-zinc-800 text-zinc-300 overflow-hidden shadow-xl">
+              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <div className="text-xs font-mono text-revgreen uppercase tracking-wider font-bold truncate pr-4">
+                  {template.name}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleCopy(template.body, index)}
+                  className="h-7 text-[10px] uppercase font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  {copiedIndex === index ? (
+                    <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
+                  ) : (
+                    <span className="flex items-center gap-1"><Copy className="w-3 h-3" /> Copiar</span>
+                  )}
+                </Button>
+              </div>
+              <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap opacity-90">
+                {template.body}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <StrategicConclusion
+          title="Quer escalar sem cair no Spam?"
+          description="Ajudamos empresas B2B a montar máquinas de prospecção que geram 20+ reuniões qualificadas/mês. Diagnóstico, Setup Técnico e Playbooks."
+          ctaText="Montar minha Máquina de Outbound"
+          onCTAClick={onCTAClick}
+        />
+
       </div>
     </article>
   );
