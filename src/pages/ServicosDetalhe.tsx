@@ -2,7 +2,7 @@
 import { useParams, Link } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, Target, Database, MessageSquare } from 'lucide-react';
+import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, Target, Database, MessageSquare, LayoutTemplate, Cpu } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
@@ -111,6 +111,58 @@ const servicosData = {
       { value: "Top 1%", label: "Autoridade no Nicho" },
       { value: "+5k", label: "Novos Decisores Conectados" },
       { value: "High", label: "Ticket de Contratos" }
+    ]
+  },
+  "web-conversion": {
+    number: "05",
+    title: "Web & Conversion",
+    subtitle: "Transforme seu site em uma máquina de vendas. Design premium, velocidade extrema e arquitetura focada em conversão B2B.",
+    icon: LayoutTemplate,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10",
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "High-Performance Dev", description: "Sites ultra-rápidos (Score 90+) que ranqueiam melhor no Google." },
+      { title: "Conversion Design", description: "Layouts que guiam o olhar do decisor para o botão de 'Agendar Demo'." },
+      { title: "SEO Técnico", description: "Estrutura semântica perfeita para dominar as keywords do seu nicho." },
+      { title: "CMS Headless", description: "Gestão de conteúdo flexível para seu time de marketing voar sem depender de TI." }
+    ],
+    howItWorks: [
+      { step: "01", title: "UX/UI Audit", description: "Análise de fricção e oportunidades de melhoria no fluxo atual." },
+      { step: "02", title: "Wireframe & Copy", description: "Estrutura de persuasão antes de qualquer linha de código." },
+      { step: "03", title: "Desenvolvimento", description: "Stack moderna (Next.js/React) para performance de elite." },
+      { step: "04", title: "Analytics Setup", description: "Tagueamento avançado para medir cada clique e scroll." }
+    ],
+    results: [
+      { value: "+3x", label: "Conversão (Lead)" },
+      { value: "<1s", label: "Carregamento" },
+      { value: "100%", label: "Mobile Optimized" }
+    ]
+  },
+  "ai-operations": {
+    number: "06",
+    title: "AI Operations",
+    subtitle: "Escale sua operação sem escalar o headcount. Agentes de IA que assumem tarefas cognitivas complexas.",
+    icon: Cpu,
+    heroCta: "/diagnostico",
+    color: "from-white/5 to-white/10",
+    accent: "text-revgreen",
+    whatWeDo: [
+      { title: "Support Agents", description: "Atendimento N1 que resolve 80% dos chamados sem humano." },
+      { title: "Pre-Sales AI", description: "Qualificação de leads inbound e agendamento automático de reuniões." },
+      { title: "Content AI", description: "Geração de briefings, posts e artigos baseados na voz da sua marca." },
+      { title: "Internal Ops", description: "Automação de onboarding, contratos e relatórios financeiros." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Mapeamento", description: "Onde seu time gasta mais tempo com tarefas repetitivas?" },
+      { step: "02", title: "Custom Training", description: "Treinamos o modelo com seus dados proprietários (RAG)." },
+      { step: "03", title: "Integração", description: "Conectamos o agente ao seu Slack, CRM e Email." },
+      { step: "04", title: "Supervisão", description: "Human-in-the-loop para garantir qualidade e evolução contínua." }
+    ],
+    results: [
+      { value: "-70%", label: "CAC Operacional" },
+      { value: "24/7", label: "Disponibilidade" },
+      { value: "Zero", label: "Erro Humano" }
     ]
   },
 

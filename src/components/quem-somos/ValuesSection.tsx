@@ -38,14 +38,14 @@ const ValuesSection = () => {
     <section className="py-16 md:py-24 bg-white">
       <div className="container-custom">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tighter text-black uppercase">
             Nossos valores
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-xl text-zinc-500 font-normal tracking-tight">
             Princípios que guiam nossa atuação e nosso compromisso com os clientes
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {values.map((value, index) => (
             <div key={index} className="bg-gray-50 p-8 rounded-lg shadow-sm">

@@ -21,12 +21,12 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     id: 999,
-    title: "IA Generativa no Marketing: Além do Hype",
+    title: "<span>IA Generativa no Marketing</span> Além do Hype",
     slug: "ia-generativa-marketing-alem-do-hype",
     excerpt: "Como utilizar agentes autônomos e LLMs para escalar sua produção de conteúdo sem perder a autenticidade da marca.",
     content: "Conteúdo renderizado via componente customizado",
     category: "Automação",
-    image: "/images/blog-v2/blog_ai_marketing.png",
+    image: "/images/blog-v2/blog_ai_marketing_cover.png",
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
@@ -37,12 +37,12 @@ export const blogPosts: BlogPost[] = [
     featured: true
   }, {
     id: 1001,
-    title: "Estratégia Go-To-Market (GTM): O Guia Definitivo para Escalar",
+    title: "<span>Estratégia Go-To-Market (GTM)</span> O Guia Definitivo para Escalar",
     slug: "estrategia-gtm-go-to-market-para-novos-produtos",
     excerpt: "Introdução: por que GTM virou questão de sobrevivência Em mercados B2B competitivos.",
     content: "Conteúdo renderizado via componente customizado",
     category: "Strategy",
-    image: "/images/blog-v2/blog_gtm_strategy.png",
+    image: "/images/blog-v2/blog_gtm_strategy_cover.png",
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
@@ -53,7 +53,7 @@ export const blogPosts: BlogPost[] = [
     featured: true
   }, {
     id: 1002,
-    title: "Diagnóstico 360°: Como descobrir onde seu funil de vendas está vazando",
+    title: "<span>Diagnóstico 360°</span> Como descobrir onde seu funil vaza",
     slug: "diagnostico-360-descobrir-gargalos-funil",
     excerpt: "O que impede sua empresa de escalar não é falta de lead, nem falta de time. É a eficiência do funil.",
     content: "Conteúdo renderizado via componente customizado",
@@ -68,22 +68,22 @@ export const blogPosts: BlogPost[] = [
     readTime: "5 min"
   }, {
     id: 1003,
-    title: "ABM na prática: como escolher as contas-alvo certas e escalar",
+    title: "<span>ABM na Prática</span> Como escolher as contas-alvo certas",
     slug: "abm-na-pratica-escolher-contas-alvo",
     excerpt: "No universo B2B, especialmente em segmentos como tecnologia, educação corporativa e serviços complexos.",
     content: "Conteúdo renderizado via componente customizado",
     category: "ABM",
-    image: "/images/blog-v2/blog_abm_practical.png",
+    image: "/images/blog-v2/blog_abm_strategy_cover.png",
     author: {
-      name: "Luna",
-      role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      name: "Giulliano Alves",
+      role: "CEO and Founder",
+      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-06-18",
     readTime: "5 min"
   }, {
     id: 1004,
-    title: "Diagnóstico de Funil Comercial: Como Identificar Gargalos",
+    title: "<span>Diagnóstico de Funil Comercial</span> Como Identificar Gargalos",
     slug: "diagnostico-funil-comercial-identificar-gargalos",
     excerpt: "Se sua operação B2B está estagnada, mesmo com investimento em marketing, o problema pode estar na passagem de bastão.",
     content: "Conteúdo renderizado via componente customizado",
@@ -98,12 +98,12 @@ export const blogPosts: BlogPost[] = [
     readTime: "4 min"
   }, {
     id: 501,
-    title: "SaaS Trial Pipeline: O guia definitivo para converter usuários em clientes pagantes",
+    title: "<span>SaaS Trial Pipeline</span> Converta usuários em clientes pagantes",
     slug: "saas-trial-pipeline-optimization",
     excerpt: "Sua taxa de conversão de trial está baixa? Aprenda como mapear e otimizar cada etapa da jornada para transformar signups em receita previsível.",
     content: "Conteúdo renderizado via componente customizado",
     category: "SaaS",
-    image: "/images/blog-v2/blog_saas_pipeline.png",
+    image: "/images/blog-v2/blog_saas_pipeline_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
@@ -115,11 +115,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 301,
-    title: "A Anatomia da Demo Perfeita: Como converter features em contratos",
+    title: "<span>A Anatomia da Demo Perfeita</span> Como converter features em contratos",
     slug: "anatomia-da-demo-perfeita-vendas-b2b",
     excerpt: "Por que seus features não vendem? Pare de fazer tour de produto e comece a vender soluções com este roteiro de 4 atos.",
     category: "Vendas",
-    image: "/images/blog-v2/blog_demo_anatomy.png",
+    image: "/images/blog-v2/blog_demo_perfeita_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
@@ -131,11 +131,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 302,
-    title: "RevOps: O Framework Definitivo de Revenue Operations",
+    title: "<span>RevOps</span> O Framework Definitivo de Revenue Operations",
     slug: "revops-framework-definitivo-revenue-operations",
     excerpt: "Marketing culpa Vendas. Vendas culpa Marketing. RevOps é o fim da guerra civil através da unificação de Dados, Processos e Tecnologia.",
     category: "RevOps",
-    image: "/images/blog-v2/blog_revops_core.png",
+    image: "/images/blog-v2/blog_revops_frame_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
@@ -147,11 +147,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 303,
-    title: "Psicologia de Pricing B2B: Como aumentar o ticket médio",
+    title: "<span>Psicologia de Pricing B2B</span> Como aumentar o ticket médio",
     slug: "psicologia-pricing-b2b-estrategia-precos",
     excerpt: "Seu preço diz quem você é. Como sair da briga por 'barato' e cobrar pelo valor real gerado, usando âncoras e psicologia.",
     category: "Strategy",
-    image: "/images/blog-v2/blog_pricing_psychology.png",
+    image: "/images/blog-v2/blog_pricing_psychology_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
@@ -163,7 +163,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 304,
-    title: "Comissionamento de Vendas: Modelos que incentivam o comportamento certo",
+    title: "<span>Comissionamento de Vendas</span> Modelos que incentivam o comportamento certo",
     slug: "comissionamento-vendas-sdr-closer-modelos",
     excerpt: "Seu plano de comissão pode estar sabotando seu crescimento. O guia definitivo de incentivos alinhados para SDRs e Closers.",
     category: "Management",
@@ -179,7 +179,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 305,
-    title: "O Manual Anti-Churn: Playbooks táticos para salvar contas",
+    title: "<span>O Manual Anti-Churn</span> Playbooks táticos para salvar contas",
     slug: "manual-anti-churn-retencao-clientes-cs",
     excerpt: "Churn não se resolve no cancelamento. Se resolve no onboarding. Descubra onde você está errando e como salvar contas em risco.",
     category: "CS",
@@ -196,7 +196,7 @@ export const blogPosts: BlogPost[] = [
 
   {
     id: 102,
-    title: "A Integração entre Marketing, Vendas e Sucesso do Cliente: O Maior Ativo Estratégico",
+    title: "<span>Integração Mkt, Vendas e CS</span> O Maior Ativo Estratégico",
     slug: "integracao-marketing-vendas-sucesso-cliente",
     excerpt: "O problema não é o tráfego. O problema não é o produto. O verdadeiro gargalo está na falta de conexão entre os seus times.",
     category: "Strategy",
@@ -212,7 +212,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 100,
-    title: "O Funil que Realmente Funciona para Empresas B2B em Crescimento",
+    title: "<span>O Funil B2B Real</span> Pare de gastar e otimize a receita",
     slug: "o-funil-que-realmente-funciona-para-empresas-b2b",
     excerpt: "Se sua operação B2B está estagnada, o problema quase sempre está dentro do funil. Pare de gastar com tráfego e faça uma cirurgia de precisão na sua receita.",
     category: "Growth",
@@ -228,7 +228,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 17,
-    title: "ChatGPT para Growth: 15 prompts que dobram sua produtividade em marketing",
+    title: "<span>ChatGPT para Growth</span> 15 prompts que dobram sua produtividade",
     slug: "chatgpt-para-growth-15-prompts-produtividade-marketing",
     excerpt: "Descubra os prompts específicos que transformam o ChatGPT em seu assistente de marketing mais poderoso, com templates prontos para usar.",
     content: "Conteúdo renderizado via componente customizado",
@@ -245,7 +245,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 18,
-    title: "Cold Email em 2025: as 7 estratégias que ainda funcionam",
+    title: "<span>Cold Email em 2025</span> As 7 estratégias que ainda funcionam",
     slug: "cold-email-2025-7-estrategias-que-funcionam",
     excerpt: "As táticas de cold email que sobreviveram às mudanças de algoritmo e regulamentações, com templates testados em +10k envios.",
     content: "Conteúdo renderizado via componente customizado",
@@ -262,7 +262,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 19,
-    title: "LTV vs CAC: como calcular e otimizar para crescimento sustentável",
+    title: "<span>LTV vs CAC</span> Como calcular e otimizar para crescer",
     slug: "ltv-vs-cac-calcular-otimizar-crescimento-sustentavel",
     excerpt: "O guia definitivo para entender, calcular e otimizar as métricas mais importantes do seu negócio B2B.",
     content: "Conteúdo renderizado via componente customizado",
@@ -279,7 +279,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 20,
-    title: "Product-Market Fit: 5 sinais de que você encontrou (e 3 de que não)",
+    title: "<span>Product-Market Fit</span> 5 sinais de que você encontrou",
     slug: "product-market-fit-5-sinais-encontrou-3-que-nao",
     excerpt: "Como identificar se seu produto realmente resolve um problema real do mercado, com frameworks práticos de validação.",
     content: "Conteúdo renderizado via componente customizado",
@@ -295,7 +295,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 21,
-    title: "LinkedIn Sales Navigator: guia completo para prospecção B2B",
+    title: "<span>LinkedIn Sales Navigator</span> Guia completo para prospecção B2B",
     slug: "linkedin-sales-navigator-guia-completo-prospeccao-b2b",
     excerpt: "Estratégias avançadas para usar o Sales Navigator como máquina de prospecção, com scripts e templates.",
     content: "Conteúdo renderizado via componente customizado",
@@ -311,11 +311,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 16,
-    title: "Polemic Led Growth: O método que transforma seu LinkedIn em uma máquina de oportunidades",
+    title: "<span>Polemic Led Growth</span> LinkedIn como máquina de oportunidades",
     slug: "polemic-led-growth-metodo-linkedin-maquina-oportunidades",
     excerpt: "Descubra como construir autoridade silenciosa e atrair oportunidades de alto valor no LinkedIn sem depender de autopromoção excessiva.",
     category: "PLG",
-    image: "/images/blog-v2/blog_polemic_growth.png",
+    image: "/images/blog-v2/blog_polemic_growth_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
@@ -327,7 +327,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 1,
-    title: "O que é PLG e como aplicar em startups brasileiras",
+    title: "<span>O que é PLG</span> e como aplicar em startups",
     slug: "o-que-e-plg-e-como-aplicar-em-startups-brasileiras",
     excerpt: "Estratégias para usar o produto como motor de crescimento adaptadas à realidade do mercado brasileiro.",
     content: "Conteúdo renderizado via componente customizado",
@@ -344,7 +344,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 2,
-    title: "CRO na prática: como dobrar sua taxa de conversão sem investir mais",
+    title: "<span>CRO na Prática</span> Como dobrar sua taxa de conversão",
     slug: "cro-na-pratica-como-dobrar-sua-taxa-de-conversao",
     excerpt: "Técnicas avançadas de otimização que podem transformar seus resultados sem aumentar seu orçamento.",
     content: "Conteúdo renderizado via componente customizado",
@@ -360,7 +360,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 4,
-    title: "7 automações de marketing que escalam sua operação sem equipe extra",
+    title: "<span>7 Automações de Marketing</span> que escalam sua operação",
     slug: "7-automacoes-de-marketing-que-escalam-sua-operacao",
     excerpt: "Ferramentas e processos para aumentar a produtividade do seu time de marketing sem novas contratações.",
     content: "Conteúdo renderizado via componente customizado",
@@ -376,7 +376,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 5,
-    title: "Como construir um funil de aquisição usando seu próprio produto",
+    title: "<span>Funil de Aquisição</span> usando o produto",
     slug: "como-construir-um-funil-de-aquisicao-usando-seu-proprio-produto",
     excerpt: "Estratégias para transformar seu produto em uma máquina de aquisição de novos usuários.",
     content: "Conteúdo renderizado via componente customizado",
@@ -392,7 +392,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 6,
-    title: "Estratégias de inteligência artificial aplicadas a pré-vendas",
+    title: "<span>Estratégias de AI</span> aplicadas a pré-vendas",
     slug: "estrategias-de-inteligencia-artificial-aplicadas-a-pre-vendas",
     excerpt: "Como usar IA para qualificar leads e aumentar a eficiência do seu time comercial.",
     content: "Conteúdo renderizado via componente customizado",
@@ -409,7 +409,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 7,
-    title: "Diagnóstico de marketing orientado por dados: como interpretar seus números",
+    title: "<span>Diagnóstico de Marketing</span> Orientado por dados",
     slug: "diagnostico-de-marketing-orientado-por-dados",
     excerpt: "Um guia completo para extrair insights acionáveis dos dados da sua operação de marketing.",
     content: "Conteúdo renderizado via componente customizado",
@@ -425,7 +425,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 8,
-    title: "Playbooks de vendas e marketing que escalam resultados em 90 dias",
+    title: "<span>Playbooks de Vendas</span> e marketing que escalam resultados",
     slug: "playbooks-de-vendas-e-marketing-que-escalam-resultados",
     excerpt: "Processos e estratégias prontos para implementar e colher resultados rápidos.",
     content: "Conteúdo renderizado via componente customizado",
@@ -441,7 +441,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 9,
-    title: "Como combinar inbound, outbound e PLG na mesma estratégia",
+    title: "<span>Inbound, Outbound e PLG</span> na mesma estratégia",
     slug: "como-combinar-inbound-outbound-e-plg",
     excerpt: "Criando uma abordagem integrada de aquisição para maximizar seus resultados.",
     content: "Conteúdo renderizado via componente customizado",
@@ -457,7 +457,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 10,
-    title: "Canais de aquisição com ROI imediato para startups early-stage",
+    title: "<span>Canais de Aquisição</span> com ROI imediato",
     slug: "canais-de-aquisicao-com-roi-imediato-para-startups",
     excerpt: "Estratégias de marketing com baixo investimento e alto retorno para empresas em fase inicial.",
     content: "Conteúdo renderizado via componente customizado",
@@ -473,7 +473,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 11,
-    title: "Como estruturar um time de growth com poucos recursos",
+    title: "<span>Time de Growth</span> Como estruturar com poucos recursos",
     slug: "como-estruturar-um-time-de-growth-com-poucos-recursos",
     excerpt: "Formando um time multidisciplinar e eficiente mesmo com orçamento limitado.",
     content: "Conteúdo renderizado via componente customizado",
@@ -489,7 +489,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 12,
-    title: "Análise de dados para fundadores: quais métricas importam de verdade",
+    title: "<span>Análise de Dados</span> Quais métricas importam de verdade",
     slug: "analise-de-dados-para-fundadores-quais-metricas-importam",
     excerpt: "Um guia objetivo sobre os KPIs que realmente fazem diferença no crescimento do seu negócio.",
     content: "Conteúdo renderizado via componente customizado",
@@ -506,7 +506,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 13,
-    title: "Os melhores CRMs e automações para crescimento B2B em 2024",
+    title: "<span>Os Melhores CRMs</span> e automações para crescimento B2B",
     slug: "os-melhores-crms-e-automacoes-para-crescimento-b2b",
     excerpt: "Uma análise comparativa das principais ferramentas para gestão de relacionamento com clientes B2B.",
     content: "Conteúdo renderizado via componente customizado",
@@ -522,7 +522,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 14,
-    title: "SaaS + PLG: como usar seu trial gratuito para gerar pipeline",
+    title: "<span>SaaS + PLG</span> Use seu trial para gerar pipeline",
     slug: "saas-plg-como-usar-seu-trial-gratuito-para-gerar-pipeline",
     excerpt: "Estratégias para converter usuários de trial em clientes pagantes com ativação eficiente.",
     content: "Conteúdo renderizado via componente customizado",
@@ -538,12 +538,12 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 15,
-    title: "Como desenhar uma jornada do usuário que ativa e converte",
+    title: "<span>Jornada do Usuário</span> Como desenhar para ativar e converter",
     slug: "como-desenhar-uma-jornada-do-usuario-que-ativa-e-converte",
     excerpt: "Técnicas para mapear e otimizar a experiência do usuário visando maior retenção e conversão.",
     content: "Conteúdo renderizado via componente customizado",
     category: "PLG",
-    image: "/images/blog-v2/blog_user_journey_map.png",
+    image: "/images/blog-v2/blog_user_journey_cover.png",
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",

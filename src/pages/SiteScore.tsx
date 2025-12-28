@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, CheckCircle2, AlertTriangle, Smartphone, Zap, MousePointerClick, Search, LayoutTemplate } from 'lucide-react';
+import { ArrowRight, Globe, Zap, Search, Layout, CheckCircle2, Smartphone, MousePointerClick, LayoutTemplate } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from '@/hooks/use-toast';
+import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
 import PageLayout from '@/components/layout/PageLayout';
 import Section from '@/components/ui/Section';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Questions centered on "Money Left on the Table"
 const QUESTIONS = [
@@ -66,12 +71,24 @@ const QUESTIONS = [
     }
 ];
 
+type Step = 'questions' | 'lead-capture' | 'results';
+
 const SiteScore = () => {
     const { toast } = useToast();
+    const [step, setStep] = useState<Step>('questions');
     const [currentQ, setCurrentQ] = useState(0);
     const [score, setScore] = useState(0);
-    const [finished, setFinished] = useState(false);
     const [answers, setAnswers] = useState<number[]>([]);
+
+    // Lead Form State
+    const [leadForm, setLeadForm] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        role: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleAnswer = (optionScore: number) => {
         const newScore = score + optionScore;
@@ -81,7 +98,58 @@ const SiteScore = () => {
         if (currentQ < QUESTIONS.length - 1) {
             setTimeout(() => setCurrentQ(prev => prev + 1), 250);
         } else {
-            setFinished(true);
+            setStep('lead-capture');
+        }
+    };
+
+    const handleLeadSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!leadForm.role || !leadForm.company) {
+            toast({
+                variant: "destructive",
+                title: "Campos Obrigatórios",
+                description: "Por favor preencha empresa e cargo."
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
+
+            const result = getResult();
+
+            await submitPublicDiagnostic(
+                { ...leadForm },
+                { individual_answers: answers },
+                score,
+                {
+                    level: result.title,
+                    title: result.headline,
+                    description: result.msg,
+                    action: 'Auditoria',
+                    color: 'revgreen'
+                },
+                WEBHOOK_URL
+            );
+
+            setStep('results');
+            toast({
+                className: "bg-black border border-white/10 text-white",
+                title: "RELATÓRIO AUTORIZADO",
+                description: "Seu diagnóstico de performance foi processado."
+            });
+        } catch (error: any) {
+            console.error('Error sending diagnostic:', error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao processar",
+                description: "Não foi possível processar seu diagnóstico. Tente novamente."
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -115,10 +183,10 @@ const SiteScore = () => {
 
     return (
         <PageLayout>
-            <Section variant="dark" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden">
+            <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
                 <div className="container-custom max-w-5xl mx-auto relative z-10 w-full">
 
-                    {!finished ? (
+                    {step === 'questions' && (
                         <div className="max-w-4xl mx-auto">
 
                             {/* Progress Header */}
@@ -126,16 +194,16 @@ const SiteScore = () => {
                                 <div className="flex justify-between items-end mb-4">
                                     <div className="space-y-1">
                                         <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest">Diagnóstico em Andamento</span>
-                                        <h2 className="text-white text-lg font-medium">Análise de Infraestrutura</h2>
+                                        <h2 className="text-black text-lg font-medium">Análise de Infraestrutura</h2>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-4xl font-bold text-white tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
+                                        <span className="text-4xl font-bold text-black tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
                                         <span className="text-gray-500 text-xs block font-mono-tech uppercase">Concluído</span>
                                     </div>
                                 </div>
-                                <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div className="w-full bg-zinc-100 h-1 rounded-full overflow-hidden">
                                     <motion.div
-                                        className="h-full bg-revgreen shadow-[0_0_15px_rgba(34,197,94,0.5)]"
+                                        className="h-full bg-black shadow-none"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
                                         transition={{ duration: 0.5 }}
@@ -151,7 +219,7 @@ const SiteScore = () => {
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.3 }}
-                                        className="bg-black/40 border border-white/10 rounded-2xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden"
+                                        className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 relative overflow-hidden"
                                     >
                                         {/* Background Detail */}
                                         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
@@ -162,7 +230,7 @@ const SiteScore = () => {
                                             <span className="inline-block text-gray-500 text-xs font-mono-tech mb-4 uppercase tracking-wider">
                                                 Pergunta {QUESTIONS[currentQ].id} de {QUESTIONS.length}
                                             </span>
-                                            <h2 className="text-3xl md:text-4xl font-medium text-white leading-tight">
+                                            <h2 className="text-3xl md:text-4xl font-medium text-black leading-tight">
                                                 {QUESTIONS[currentQ].question}
                                             </h2>
                                         </div>
@@ -172,15 +240,15 @@ const SiteScore = () => {
                                                 <button
                                                     key={idx}
                                                     onClick={() => handleAnswer(opt.score)}
-                                                    className="group flex flex-col items-start p-6 text-left bg-white/5 border border-white/10 rounded-xl hover:border-revgreen hover:bg-revgreen/[0.05] transition-all duration-300 relative overflow-hidden"
+                                                    className="group flex flex-col items-start p-6 text-left bg-gray-50 border border-gray-200 rounded-xl hover:border-revgreen hover:bg-revgreen/[0.05] transition-all duration-300 relative overflow-hidden"
                                                 >
                                                     <div className="absolute top-0 left-0 w-1 h-full bg-revgreen opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                                    <div className="mb-3 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-revgreen/20 transition-colors">
-                                                        <span className="text-xs font-mono-tech text-gray-400 group-hover:text-revgreen ml-[1px]">{String.fromCharCode(65 + idx)}</span>
+                                                    <div className="mb-3 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-revgreen/20 transition-colors">
+                                                        <span className="text-xs font-mono-tech text-gray-500 group-hover:text-revgreen ml-[1px]">{String.fromCharCode(65 + idx)}</span>
                                                     </div>
 
-                                                    <span className="text-base text-gray-300 group-hover:text-white transition-colors">{opt.label}</span>
+                                                    <span className="text-base text-gray-700 group-hover:text-black transition-colors">{opt.label}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -189,8 +257,102 @@ const SiteScore = () => {
                                 </AnimatePresence>
                             </div>
                         </div>
-                    ) : (
-                        /* Dashboard SaaS Result */
+                    )}
+
+                    {/* STEP 2: LEAD CAPTURE */}
+                    {step === 'lead-capture' && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="max-w-md mx-auto"
+                        >
+                            <div className="bg-black/60 border border-white/10 rounded-2xl p-8 backdrop-blur-xl relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-revgreen/50 to-transparent"></div>
+
+                                <div className="text-center mb-10">
+                                    <h2 className="text-2xl font-black text-black mb-2 tracking-tighter uppercase">RELATÓRIO AUTORIZADO</h2>
+                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                                        Identificação obrigatória para acesso aos dados técnicos.
+                                    </p>
+                                </div>
+
+                                <form onSubmit={handleLeadSubmit} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
+                                        <Input
+                                            required
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
+                                            value={leadForm.name}
+                                            onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
+                                            placeholder="NOME E SOBRENOME"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
+                                        <Input
+                                            required
+                                            type="email"
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
+                                            value={leadForm.email}
+                                            onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
+                                            placeholder="EX: NOME@EMPRESA.COM"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA</Label>
+                                        <Input
+                                            required
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
+                                            value={leadForm.company}
+                                            onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
+                                            placeholder="ORGANIZAÇÃO"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">WhatsApp</Label>
+                                            <Input
+                                                required
+                                                type="tel"
+                                                className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                                value={leadForm.phone}
+                                                onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">Cargo</Label>
+                                            <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
+                                                <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 focus:ring-revgreen/50">
+                                                    <SelectValue placeholder="Selecione" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-black border-white/10 text-white">
+                                                    <SelectItem value="vp">VP / C-Level</SelectItem>
+                                                    <SelectItem value="diretor">Diretor(a)</SelectItem>
+                                                    <SelectItem value="gerente">Gerente</SelectItem>
+                                                    <SelectItem value="vendedor">Vendedor(a)</SelectItem>
+                                                    <SelectItem value="analista">Analista</SelectItem>
+                                                    <SelectItem value="growth">Growth / Mkt</SelectItem>
+                                                    <SelectItem value="outros">Outros</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300"
+                                    >
+                                        {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard de Performance'}
+                                    </Button>
+                                </form>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* STEP 3: RESULTS */}
+                    {step === 'results' && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -229,9 +391,11 @@ const SiteScore = () => {
                                         </ResponsiveContainer>
 
                                         {/* Score Center Text */}
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                            <div className="text-6xl md:text-7xl font-bold text-white tracking-tighter">{score}</div>
-                                            <div className="text-sm text-gray-400 font-mono-tech mt-1">TOTAL</div>
+                                        <div className="flex-1 flex items-center justify-center">
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                                <div className="text-8xl font-bold text-white tracking-tighter leading-none">{score}</div>
+                                                <div className="text-xs text-gray-500 font-mono-tech mt-2 tracking-widest uppercase">Pontos</div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -297,4 +461,5 @@ const SiteScore = () => {
         </PageLayout>
     );
 };
+
 export default SiteScore;

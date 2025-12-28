@@ -14,7 +14,33 @@ import AdminPageLayout from "@/components/layout/AdminPageLayout";
 import { uploadImageToSupabase } from "@/utils/uploadImageToSupabase";
 
 const ProfileSettings = () => {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
+    // ...
+
+    // NOVO: Alerta visual para usuário de teste
+    if (user?.id === 'dev-bypass-user') {
+        return (
+            <PageLayout>
+                <AdminPageLayout title="Meu Perfil" description="Acesso Restrito">
+                    <div className="bg-red-50 border border-red-200 text-red-800 p-8 text-center space-y-4">
+                        <h2 className="text-xl font-bold">⚠️ MODO DE DESENVOLVIMENTO (DEV BYPASS)</h2>
+                        <p>Você está usando um usuário simulado que NÃO tem permissão de escrita no banco de dados.</p>
+                        <p className="font-bold">Para salvar fotos ou dados, você precisa fazer login com uma conta real.</p>
+                        <Button
+                            onClick={() => {
+                                localStorage.clear();
+                                window.location.reload();
+                            }}
+                            variant="destructive"
+                            className="mt-4"
+                        >
+                            SAIR E FAZER LOGIN REAL
+                        </Button>
+                    </div>
+                </AdminPageLayout>
+            </PageLayout>
+        );
+    }
     const navigate = useNavigate();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
@@ -80,14 +106,23 @@ const ProfileSettings = () => {
         setUploading(true);
 
         try {
-            const publicUrl = await uploadImageToSupabase(file, "profiles");
+            console.log("Iniciando upload para user:", user?.id);
+            if (!user?.id) throw new Error("Usuário não autenticado.");
+
+            // Passamos user.id para criar estrutura de pasta (ex: user_id/foto.jpg)
+            // Isso satisfaz políticas de RLS que exigem pasta própria
+            const publicUrl = await uploadImageToSupabase(file, "profiles", user.id);
             if (publicUrl) {
                 setFormData((prev) => ({ ...prev, avatar_url: publicUrl }));
                 toast({ title: "Avatar atualizado! Lembre-se de salvar." });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Avatar upload error:", error);
-            toast({ title: "Erro no upload. Verifique se o bucket 'profiles' existe.", variant: "destructive" });
+            toast({
+                title: "Erro no upload",
+                description: error.message || "Verifique o console e se o bucket 'profiles' existe.",
+                variant: "destructive"
+            });
         } finally {
             setUploading(false);
         }

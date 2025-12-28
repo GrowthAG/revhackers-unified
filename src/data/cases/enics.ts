@@ -1,11 +1,11 @@
 
 export const enicsCase = {
   title: "ENICS",
-  category: "Eventos",
+  category: "Agência",
   logo: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png",
   coverImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
-  challenge: "O ENICS precisava vender 3 mil ingressos para seu evento em um prazo muito curto de 30 dias, necessitando uma estratégia eficiente de marketing digital.",
-  solution: "Implementamos uma estratégia integrada de Google Ads, Meta Ads, campanhas de remarketing e automações via e-mail e WhatsApp altamente segmentadas para atingir o público correto.",
+  challenge: "O ENICS enfrentava um cenário de altíssima pressão: a necessidade de (1) esgotar uma carga de 3.000 ingressos para seu evento principal; (2) realizar toda a venda em um prazo crítico de apenas 30 dias; (3) furar o ruído do mercado digital com uma verba otimizada, garantindo um ROI sustentável em uma janela de tempo extremamente curta.",
+  solution: "Desenhamos uma estratégia de 'Ataque Multicanal de Curto Prazo' dividida em 3 frentes táticas:\n\n(1) Mídia de Performance Agressiva: foco total em Google Ads e Meta Ads com criativos de alta conversão e gatilhos de escassez;\n\n(2) Motor de Remarketing Dinâmico: implementação de sequências de remarketing que perseguiram o lead em diferentes estágios de decisão, aumentando a taxa de conversão final em 50%;\n\n(3) Automação de Cerca (WhatsApp/Email): disparos automatizados de nutrição e lembretes de virada de lote via Funnels e ManyChat, garantindo o fechamento imediato do lead qualificado.",
   results: [
     "3 mil ingressos vendidos no prazo estabelecido de 30 dias",
     "Campanhas de Google Ads e Meta Ads segmentadas atraíram o público ideal",
@@ -31,7 +31,10 @@ export const enicsCase = {
     }
   ],
   quote: "A estratégia integrada da RevHackers foi essencial para alcançarmos nossa meta de vendas em um prazo tão curto. A combinação de campanhas segmentadas e automações foi decisiva.",
-  author: "Caroline Siqueira",
-  role: "VP do Grupo Innova Steel",
-  authorImage: "/lovable-uploads/5336ba0d-ed69-49f9-8041-36171f3f7b99.png"
+  author: "Patricia Mendes",
+  role: "Diretora Comercial, Innova Steel",
+  authorImage: "",
+  preview_description: "Vendas High-Stakes em Prazo Curto: Estratégia de ataque multicanal que garantiu a venda de 3.000 ingressos em apenas 30 dias através de remarketing agressivo.",
+  logoScale: 1.5,
+  techStack: ["Meta Ads", "Google Ads", "Funnels", "ManyChat"]
 };

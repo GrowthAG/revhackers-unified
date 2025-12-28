@@ -29,7 +29,7 @@ const QuemSomos = () => {
       <ValuesSection />
 
       {/* Booking Widget Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-24 bg-white border-t border-zinc-100">
         <div className="container-custom">
           <BookingWidget />
         </div>

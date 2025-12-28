@@ -18,7 +18,6 @@ const AdminSync = () => {
     const navigate = useNavigate();
 
     const syncPosts = async () => {
-        setSyncing(true);
         setProgress({ current: 0, total: blogPosts.length, type: 'Artigos' });
 
         let success = 0;
@@ -33,15 +32,17 @@ const AdminSync = () => {
                     title: post.title,
                     slug: post.slug,
                     excerpt: post.excerpt,
+                    content: post.content,
                     category: post.category,
                     image: post.image,
+                    thumbnail: post.image,
                     date: post.date,
-                    read_time: post.readTime,
-                    published: true,
                     featured: post.featured || false,
-                    author_name: post.author.name,
-                    author_role: post.author.role,
-                    author_avatar: post.author.avatar
+                    read_time: post.readTime,
+                    author_name: post.author?.name,
+                    author_role: post.author?.role,
+                    author_avatar: post.author?.avatar,
+                    published: true
                 }, { onConflict: 'slug' });
 
                 if (error) {
@@ -71,19 +72,17 @@ const AdminSync = () => {
 
             try {
                 const { error } = await supabase.from('materials').upsert({
-                    material_name: material.title,
                     title: material.title,
                     slug: material.slug,
                     type: material.type,
-                    material_type: material.material_type,
+                    material_type: material.material_type || material.type,
                     category: material.category,
                     description: material.description,
                     cover_image: material.cover_image,
                     material_url: material.material_url,
-                    link_material: material.link_material,
-                    published: material.published,
-                    is_active: material.is_active,
-                    date: new Date().toISOString()
+                    link_material: material.link_material || material.material_url,
+                    published: material.published ?? true,
+                    is_active: material.is_active ?? true
                 }, { onConflict: 'slug' });
 
                 if (error) {
@@ -102,45 +101,51 @@ const AdminSync = () => {
     };
 
     const syncCases = async () => {
-        const casesArray = Object.values(casesData);
-        setProgress({ current: 0, total: casesArray.length, type: 'Cases' });
+        const entries = Object.entries(casesData);
+        setProgress({ current: 0, total: entries.length, type: 'Cases' });
 
         let success = 0;
         let errors = 0;
 
-        for (let i = 0; i < casesArray.length; i++) {
-            const caseItem = casesArray[i];
-            setProgress({ current: i + 1, total: casesArray.length, type: 'Cases' });
+        for (let i = 0; i < entries.length; i++) {
+            const [slug, caseItem] = entries[i];
+            setProgress({ current: i + 1, total: entries.length, type: 'Cases' });
 
             try {
                 const { error } = await supabase.from('cases').upsert({
                     title: caseItem.title,
-                    slug: caseItem.slug,
-                    company: caseItem.company,
-                    industry: caseItem.industry,
+                    client_name: caseItem.title.split(':')[0] || 'Client',
+                    slug: slug,
                     case_category: caseItem.category,
-                    description: caseItem.description,
+                    preview_description: caseItem.preview_description || caseItem.solution?.substring(0, 160),
                     challenge: caseItem.challenge,
                     solution: caseItem.solution,
-                    results_summary: caseItem.results?.summary || '',
-                    cover_image: caseItem.image,
+                    results: Array.isArray(caseItem.results) ? caseItem.results.join('\n') : caseItem.results,
+                    primary_metric: caseItem.metrics?.[0]?.value || '',
+                    metrics: caseItem.metrics as any,
+                    image_url: caseItem.coverImage,
+                    client_logo: caseItem.logo,
+                    testimonial: caseItem.quote,
+                    testimonial_author: caseItem.author,
+                    testimonial_role: caseItem.role,
+                    testimonial_avatar: caseItem.authorImage,
                     published: true,
-                    date: new Date().toISOString()
-                }, { onConflict: 'slug' });
+                    featured: caseItem.featured || false
+                } as any, { onConflict: 'slug' });
 
                 if (error) {
-                    console.error(`Erro ao sincronizar case ${caseItem.slug}:`, error);
+                    console.error(`Erro ao sincronizar case ${slug}:`, error);
                     errors++;
                 } else {
                     success++;
                 }
             } catch (err) {
-                console.error(`Erro fatal ao sincronizar case ${caseItem.slug}:`, err);
+                console.error(`Erro fatal ao sincronizar case ${slug}:`, err);
                 errors++;
             }
         }
 
-        return { success, errors, total: casesArray.length };
+        return { success, errors, total: entries.length };
     };
 
     const handleSyncAll = async () => {
@@ -187,7 +192,7 @@ const AdminSync = () => {
     };
 
     return (
-        <AdminPageLayout>
+        <AdminPageLayout title="Sincronização de Dados">
             <div className="container-custom py-12">
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8">

@@ -13,8 +13,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
-import { Save, Eye, Image, FileText, Upload, Loader2, ArrowLeft, Trash2 } from 'lucide-react';
+import { Save, Eye, Image, FileText, Upload, Loader2, ArrowLeft, Trash2, Sparkles, Copy, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 
@@ -58,19 +59,20 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
   const [coverImage, setCoverImage] = useState('');
   const [activeTab, setActiveTab] = useState('editor');
   const [customCategory, setCustomCategory] = useState('');
+  const [promptObject, setPromptObject] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [published, setPublished] = useState(false);
   const [readTime, setReadTime] = useState('5 min');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [promptExpanded, setPromptExpanded] = useState(false);
 
   useEffect(() => {
     if (post && isEditing) {
-      setTitle(post.title);
-      setSlug(post.slug);
-      setExcerpt(post.excerpt);
-      setCategory(post.category);
-      setCategory(post.category);
-      setCoverImage(post.thumbnail || post.image || '');
+      setTitle(post.title || '');
+      setSlug(post.slug || '');
+      setExcerpt(post.excerpt || '');
+      setCategory(post.category || '');
+      setCoverImage(post.image || post.thumbnail || '');
       setReadTime(post.read_time || '5 min');
       setContent(post.content || '');
       setPublished(post.published || false);
@@ -91,6 +93,71 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
     }
   }, [content]);
 
+  // Calculate SEO Score (0-100)
+  const calculateSEOScore = (): { score: number; feedback: string[] } => {
+    let score = 0;
+    const feedback: string[] = [];
+
+    // Title (30 points)
+    if (title.length >= 30 && title.length <= 60) {
+      score += 30;
+    } else if (title.length > 0 && title.length < 30) {
+      score += 15;
+      feedback.push('Título muito curto');
+    } else if (title.length > 60 && title.length <= 80) {
+      score += 20;
+      feedback.push('Título um pouco longo');
+    } else if (title.length > 80) {
+      score += 10;
+      feedback.push('Título muito longo para SEO');
+    }
+
+    // Excerpt (20 points)
+    if (excerpt.length >= 120 && excerpt.length <= 160) {
+      score += 20;
+    } else if (excerpt.length > 0 && excerpt.length < 120) {
+      score += 10;
+      feedback.push('Resumo muito curto');
+    } else if (excerpt.length > 160) {
+      score += 5;
+      feedback.push('Resumo muito longo');
+    }
+
+    // Content length (25 points)
+    const wordCount = content.split(/\s+/).filter(w => w).length;
+    if (wordCount >= 800 && wordCount <= 2000) {
+      score += 25;
+    } else if (wordCount >= 500 && wordCount < 800) {
+      score += 15;
+      feedback.push('Artigo um pouco curto');
+    } else if (wordCount > 2000) {
+      score += 20;
+      feedback.push('Artigo muito longo');
+    } else if (wordCount > 0) {
+      score += 5;
+      feedback.push('Artigo muito curto');
+    }
+
+    // Structure (15 points)
+    const hasH2 = content.includes('## ');
+    const hasH3 = content.includes('### ');
+    const hasList = content.includes('- ') || content.includes('1. ');
+
+    if (hasH2) score += 5;
+    else if (content.length > 0) feedback.push('Adicione títulos H2 (##)');
+
+    if (hasH3) score += 5;
+    if (hasList) score += 5;
+    else if (content.length > 0) feedback.push('Adicione listas');
+
+    // Category (10 points)
+    if (category && category !== '') score += 10;
+
+    return { score, feedback };
+  };
+
+  const seoAnalysis = calculateSEOScore();
+
   const handleSave = async () => {
     if (!title || !slug || !excerpt || !category) {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
@@ -102,13 +169,13 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
     const finalCategory = category === 'Outra' ? customCategory : category;
 
     try {
-      const postData = {
+      const postData: any = {
         title,
         slug,
         excerpt,
         content,
         category: finalCategory,
-        thumbnail: coverImage || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1800&auto=format&fit=crop',
+        image: coverImage || null,
         read_time: readTime,
         date: new Date().toISOString(),
         published: published
@@ -118,32 +185,42 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
       if (!isEditing) {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          // @ts-ignore
           postData.author_id = session.user.id;
         }
       }
 
+      console.log('📤 Enviando postData para Supabase:', postData);
+
       if (isEditing && post) {
+        // Prepare update payload - remove fields that shouldn't change or cause issues
+        const { date, ...updateData } = postData; // Optionally keep original date or update 'updated_at' if exists
+
         const { error } = await supabase
           .from('blog_posts')
-          .update(postData)
+          .update(postData) // Send full data including date update
           .eq('id', post.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Erro no Update Supabase:', error);
+          throw error;
+        }
         toast.success('Post atualizado com sucesso!');
       } else {
         const { error } = await supabase
           .from('blog_posts')
           .insert([postData]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Erro no Insert Supabase:', error);
+          throw error;
+        }
         toast.success('Post criado com sucesso!');
       }
 
       navigate('/admin/posts');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao salvar post:', error);
-      toast.error('Erro ao salvar o post. Por favor, tente novamente.');
+      toast.error(`Erro ao salvar post: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setIsSaving(false);
     }
@@ -198,9 +275,15 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
         const imageUrl = await uploadImageToSupabase(file);
         setCoverImage(imageUrl);
         toast.success('Imagem enviada com sucesso!');
-      } catch (err) {
-        toast.error('Erro ao enviar imagem de capa.');
-        console.error(err);
+      } catch (err: any) {
+        console.error('Upload error:', err);
+
+        // Specialized error for RLS/Permissions
+        if (err.message?.includes('violates row-level security') || err.message?.includes('permission denied') || err.message?.includes('Supabase: new row violates')) {
+          toast.error('ERRO DE PERMISSÃO: O banco de dados bloqueou o upload. Execute a migração de políticas de Storage.');
+        } else {
+          toast.error(`Erro no upload: ${err.message || 'Falha desconhecida'}. Tente novamente.`);
+        }
       } finally {
         setIsUploadingImage(false);
       }
@@ -342,27 +425,106 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
         </TabsList>
 
         <TabsContent value="editor" className="space-y-4 focus-visible:outline-none focus-visible:ring-0">
+          {/* SEO Score Widget */}
+          {(title || excerpt || content) && (
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Score SEO</span>
+                    <button
+                      type="button"
+                      className="w-4 h-4 rounded-full bg-gray-200 text-gray-600 hover:bg-black hover:text-white transition-colors flex items-center justify-center text-[10px] font-bold"
+                      title="Análise baseada em: tamanho do título, resumo, conteúdo, estrutura e categoria."
+                    >
+                      ?
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${seoAnalysis.score >= 80 ? 'bg-black' :
+                          seoAnalysis.score >= 60 ? 'bg-gray-600' :
+                            'bg-gray-400'
+                          }`}
+                        style={{ width: `${seoAnalysis.score}%` }}
+                      />
+                    </div>
+                    <span className={`text-2xl font-bold font-mono ${seoAnalysis.score >= 80 ? 'text-black' :
+                      seoAnalysis.score >= 60 ? 'text-gray-600' :
+                        'text-gray-400'
+                      }`}>
+                      {seoAnalysis.score}
+                    </span>
+                  </div>
+                </div>
+                {seoAnalysis.feedback.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    {seoAnalysis.feedback.slice(0, 3).map((item, idx) => (
+                      <span key={idx} className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-1">
-                    Título do Artigo *
-                  </label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <label htmlFor="title" className="block text-sm font-semibold text-gray-700">
+                      Título do Artigo *
+                    </label>
+                    <button
+                      type="button"
+                      className="w-4 h-4 rounded-full bg-gray-200 text-gray-600 hover:bg-black hover:text-white transition-colors flex items-center justify-center text-[10px] font-bold"
+                      title="Use um título claro e direto. Ideal: 30-60 caracteres para SEO."
+                    >
+                      ?
+                    </button>
+                  </div>
                   <Input
                     id="title"
                     value={title}
                     onChange={handleTitleChange}
-                    placeholder="Ex: Anatomia da Demo Perfeita..."
+                    placeholder="Ex: Como Estruturar um Funil de Vendas B2B"
                     className="h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black"
                     required
                   />
+                  {title.length > 0 && (
+                    <div className="flex items-center gap-2 text-xs mt-1">
+                      <span className="font-mono text-gray-400">{title.length} caracteres</span>
+                      <span className="text-gray-300">•</span>
+                      {title.length >= 30 && title.length <= 60 ? (
+                        <span className="text-gray-600">✓ Tamanho ideal para SEO</span>
+                      ) : title.length > 60 && title.length <= 80 ? (
+                        <span className="text-gray-500">⚠ Um pouco longo</span>
+                      ) : title.length > 80 ? (
+                        <span className="text-black font-semibold">✗ Muito longo para SEO</span>
+                      ) : (
+                        <span className="text-gray-400">Pode ser mais descritivo</span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label htmlFor="slug" className="block text-sm font-semibold text-gray-700 mb-1">
-                    URL (Slug) *
-                  </label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <label htmlFor="slug" className="block text-sm font-semibold text-gray-700">
+                      URL (Slug)
+                    </label>
+                    <button
+                      type="button"
+                      className="w-4 h-4 rounded-full bg-gray-200 text-gray-600 hover:bg-black hover:text-white transition-colors flex items-center justify-center text-[10px] font-bold"
+                      title="Gerado automaticamente a partir do título. Apenas letras minúsculas e hífens."
+                    >
+                      ?
+                    </button>
+                  </div>
                   <Input
                     id="slug"
                     value={slug}
@@ -372,15 +534,24 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
                     required
                     disabled={!isEditing}
                   />
-                  <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
-                    AUTO-GERADO A PARTIR DO TÍTULO
+                  <p className="text-xs text-gray-400 mt-1">
+                    ✓ Auto-gerado a partir do título
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">
-                    Categoria Mestra *
-                  </label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <label htmlFor="category" className="block text-sm font-semibold text-gray-700">
+                      Categoria Mestra *
+                    </label>
+                    <button
+                      type="button"
+                      className="w-4 h-4 rounded-full bg-gray-200 text-gray-600 hover:bg-black hover:text-white transition-colors flex items-center justify-center text-[10px] font-bold"
+                      title="Escolha a categoria que melhor representa o conteúdo do artigo."
+                    >
+                      ?
+                    </button>
+                  </div>
                   <Select
                     value={category}
                     onValueChange={handleCategoryChange}
@@ -418,11 +589,35 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
                 >
                   {coverImage ? (
                     <>
-                      <img src={coverImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <p className="text-white font-medium flex items-center gap-2">
-                          <Upload className="w-5 h-5" /> Trocar Capa
-                        </p>
+                      <img
+                        src={coverImage}
+                        alt="Preview"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1800&auto=format&fit=crop';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <div
+                          className="p-3 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-md transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            document.getElementById('image-upload')?.click();
+                          }}
+                        >
+                          <Upload className="w-5 h-5 text-white" />
+                        </div>
+                        <div
+                          className="p-3 bg-red-500/50 hover:bg-red-500 rounded-full backdrop-blur-md transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCoverImage('');
+                            toast.success('Imagem removida');
+                          }}
+                        >
+                          <Trash2 className="w-5 h-5 text-white" />
+                        </div>
                       </div>
                     </>
                   ) : (
@@ -443,46 +638,229 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
                   className="hidden"
                   onChange={handleImageChange}
                 />
+
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-widest">Opção Alternativa (Link Direto)</p>
+                  <Input
+                    value={coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="Cole aqui um link de imagem (https://...)"
+                    className="bg-white border-gray-200 text-xs h-9 focus:border-black transition-colors"
+                  />
+                </div>
+
+                {/* AI Prompt Builder Section - Colapsável */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <Collapsible open={promptExpanded} onOpenChange={setPromptExpanded}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between p-3 hover:bg-gray-50 rounded-lg border border-gray-200"
+                        type="button"
+                      >
+                        <div className="text-left">
+                          <h3 className="text-xs font-bold text-black uppercase tracking-wider">
+                            Gerador de Prompt AI
+                          </h3>
+                          <p className="text-[10px] text-gray-500 normal-case tracking-normal">
+                            Crie prompts padronizados para capas (opcional)
+                          </p>
+                        </div>
+                        {promptExpanded ? (
+                          <ChevronUp className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+
+                    <CollapsibleContent className="mt-3">
+                      <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3">
+                        <div>
+                          <Label className="text-xs font-semibold text-black mb-1.5 block">
+                            Objeto Visual
+                          </Label>
+                          <Input
+                            value={promptObject}
+                            onChange={(e) => setPromptObject(e.target.value)}
+                            placeholder="Ex: Glass Rocket, Shield, Brain..."
+                            className="bg-white border-gray-200 h-9 text-sm focus:border-black"
+                          />
+                          <p className="text-[10px] text-gray-500 mt-1">
+                            Digite em inglês para melhores resultados
+                          </p>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <Label className="text-xs font-semibold text-black">
+                              Prompt Completo
+                            </Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs bg-white border-gray-300 hover:bg-black hover:text-white hover:border-black"
+                              onClick={() => {
+                                const p = `A wide 16:9 cinematic shot of a minimalist 3D glass icon representing ${title || 'TOPIC'}. A sleek, translucent dark glass ${promptObject || '[OBJECT]'} floating in a vast deep black void. Inside the glass, glowing neon green data circuits and flow. Premium glassmorphism, sharp edges, internal light reflection, soft neon green rim lighting. IMPORTANT: The object is SMALL in the frame (approx 30% height), perfectly centered, with massive negative space around it. Identical scale (zoom out) to a minimalist icon. No text. 8k resolution. Pure engineering artifact style.`;
+                                navigator.clipboard.writeText(p);
+                                toast.success('Prompt copiado!');
+                              }}
+                            >
+                              <Copy className="w-3 h-3 mr-1" />
+                              Copiar
+                            </Button>
+                          </div>
+                          <div className="bg-white border border-gray-200 rounded-md p-3 text-[11px] font-mono text-gray-700 leading-relaxed">
+                            A wide 16:9 cinematic shot of a minimalist 3D glass icon representing{' '}
+                            <span className="font-semibold text-black">{title || '[TOPIC]'}</span>.
+                            A sleek, translucent dark glass{' '}
+                            <span className="font-semibold text-black">{promptObject || '[OBJECT]'}</span>{' '}
+                            floating in a vast deep black void.
+                            Inside the glass, glowing neon green data circuits and flow. Premium glassmorphism, sharp edges, internal light reflection, soft neon green rim lighting.
+                            IMPORTANT: The object is SMALL in the frame (approx 30% height), perfectly centered, with massive negative space around it.
+                            Identical scale (zoom out) to a minimalist icon. No text. 8k resolution. Pure engineering artifact style.
+                          </div>
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
               </div>
             </div>
 
-            <div>
-              <label htmlFor="excerpt" className="block text-sm font-semibold text-gray-700 mb-1">
-                Resumo de Impacto (Excerpt) *
-              </label>
+            {/* Resumo de Impacto - Ultra Minimalista */}
+            <div className="p-6 bg-white border border-gray-300 rounded-lg space-y-4">
+              <div className="flex items-start gap-3 pb-3 border-b border-gray-200">
+                <div className="w-6 h-6 bg-black text-white rounded flex items-center justify-center shrink-0 text-xs font-bold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="excerpt" className="block text-sm font-bold text-black mb-1">
+                    Resumo de Impacto (Excerpt)
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    Uma ou duas frases que vendem o clique. Aparece nos cards de preview.
+                  </p>
+                </div>
+              </div>
               <Textarea
                 id="excerpt"
                 value={excerpt}
                 onChange={handleExcerptChange}
-                placeholder="Uma ou duas frases que vendem o clique no artigo..."
-                className="resize-none h-24 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black"
+                placeholder="Ex: Descubra como estruturar demos que convertem 3x mais do que a média do mercado..."
+                className="min-h-[100px] bg-gray-50 border-gray-200 focus:border-black text-gray-900 resize-none"
                 required
               />
+              <div className="flex items-center gap-3 text-xs text-gray-500 pt-2 border-t border-gray-100">
+                <span className="font-semibold text-black">Caracteres:</span>
+                <span className="font-mono">{excerpt.length}/160</span>
+                <span className="text-gray-300">•</span>
+                <span className={excerpt.length > 160 ? 'text-black font-semibold' : 'text-gray-400'}>
+                  {excerpt.length <= 160 ? 'Ideal para SEO' : 'Muito longo'}
+                </span>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label htmlFor="content" className="block text-sm font-semibold text-gray-700">
-                  Corpo do Artigo (Markdown) *
-                </label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-[10px] font-bold uppercase tracking-widest text-revgreen hover:text-revgreen hover:bg-revgreen/5"
-                  onClick={insertV2Template}
-                >
-                  <FileText className="w-3 h-3 mr-1" /> Usar Template V2
-                </Button>
+            {/* Corpo do Artigo - Ultra Minimalista */}
+            <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-4">
+              <div className="flex items-start gap-3 pb-3 border-b border-gray-300">
+                <div className="w-6 h-6 bg-black text-white rounded flex items-center justify-center shrink-0 text-xs font-bold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label htmlFor="content" className="block text-sm font-bold text-black mb-1">
+                        Corpo do Artigo
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        Cole o texto puro. O sistema formatará automaticamente.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs hover:bg-white"
+                      onClick={insertV2Template}
+                    >
+                      <FileText className="w-3 h-3 mr-1" /> Template V2
+                    </Button>
+                  </div>
+                </div>
               </div>
+
               <Textarea
                 id="content"
                 value={content}
                 onChange={handleContentChange}
-                placeholder="Insira o conteúdo aqui..."
-                className="min-h-[400px] font-mono text-sm border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-black"
+                placeholder={`Cole o texto do artigo aqui...
+
+## Título Principal
+
+Parágrafo introdutório com **negrito** e *itálico*.
+
+### Subtítulo
+
+- Item de lista 1
+- Item de lista 2
+
+> Citação importante
+> — Autor
+
+---
+
+Outro parágrafo...`}
+                className="min-h-[500px] font-mono text-sm bg-white border-gray-200 focus:border-black text-gray-900 placeholder:text-gray-400"
                 required
               />
+
+              {/* Grid de Sintaxe - Minimalista */}
+              <div className="p-4 bg-white border border-gray-200 rounded">
+                <p className="text-xs font-bold text-black mb-3">Sintaxe Suportada:</p>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-xs">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">##</code>
+                    <span>Título H2</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">###</code>
+                    <span>Subtítulo H3</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">-</code>
+                    <span>Lista</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">1.</code>
+                    <span>Lista numerada</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">**</code>
+                    <span>Negrito</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">*</code>
+                    <span>Itálico</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">{">"}</code>
+                    <span>Citação</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-black border border-gray-200">---</code>
+                    <span>Divisor</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contador de Palavras */}
+              <div className="flex items-center gap-4 text-xs text-gray-500 pt-3 border-t border-gray-200">
+                <span><strong className="text-black font-mono">{content.split(/\s+/).filter(w => w).length}</strong> palavras</span>
+                <span className="text-gray-300">•</span>
+                <span><strong className="text-black font-mono">{readTime}</strong> de leitura</span>
+              </div>
             </div>
 
             <div className="flex items-center justify-between pt-8 border-t border-gray-100">
@@ -512,7 +890,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
                 )}
               </div>
 
-              <Button onClick={handleSave} disabled={isSaving} className="bg-revgreen text-black hover:bg-emerald-400 min-w-[200px] h-14 text-lg font-black uppercase tracking-tighter shadow-xl hover:shadow-revgreen/20 transition-all">
+              <Button onClick={handleSave} disabled={isSaving} className="bg-revgreen text-black hover:bg-revgreen/90 min-w-[200px] h-14 text-lg font-black uppercase tracking-tighter shadow-xl hover:shadow-revgreen/20 transition-all">
                 <Save className="mr-2 h-6 w-6" />
                 {isSaving ? 'Salvando...' : (isEditing ? 'Salvar Artigo' : 'Criar Artigo')}
               </Button>
@@ -520,49 +898,132 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
           </div>
         </TabsContent>
 
-        <TabsContent value="preview" className="border rounded-md p-6 min-h-[600px] bg-white text-gray-900">
-          {title ? (
-            <div className="prose prose-lg max-w-none">
-              <h1 className="text-3xl font-bold mb-4">{title}</h1>
-              {coverImage && (
-                <div className="mb-6">
-                  <img
-                    src={coverImage}
-                    alt={title}
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
+        <TabsContent value="preview" className="focus-visible:outline-none focus-visible:ring-0">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[800px]">
+            {/* Mock Header for Context */}
+            <div className="bg-zinc-50 border-b border-gray-100 px-8 py-3 flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <span>Modo de Visualização (Live Preview)</span>
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-red-400/30"></div>
+                <div className="w-2 h-2 rounded-full bg-yellow-400/30"></div>
+                <div className="w-2 h-2 rounded-full bg-green-400/30"></div>
+              </div>
+            </div>
+
+            {title ? (
+              <div className="max-w-4xl mx-auto px-8 py-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Meta Header */}
+                <div className="flex items-center gap-4 mb-8">
+                  <span className="bg-revgreen/10 text-revgreen text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-sm border border-revgreen/20">
+                    {category === 'Outra' ? customCategory : category}
+                  </span>
+                  <div className="h-px w-8 bg-zinc-200" />
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                    {readTime} de leitura
+                  </span>
                 </div>
-              )}
-              <div className="mb-6">
-                <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                  {category === 'Outra' ? customCategory : category}
-                </span>
+
+                <h1 className="text-4xl md:text-6xl font-black text-black tracking-tighter mb-8 leading-[1.1]">
+                  {title}<span className="text-revgreen">.</span>
+                </h1>
+
+                <p className="text-xl md:text-2xl text-zinc-500 font-normal tracking-tight mb-12 leading-relaxed border-l-4 border-revgreen pl-6 italic">
+                  {excerpt}
+                </p>
+
+                {coverImage && (
+                  <div className="mb-16 -mx-4 md:-mx-8">
+                    <img
+                      src={coverImage}
+                      alt={title}
+                      className="w-full h-[400px] object-cover rounded-sm shadow-2xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1800&auto=format&fit=crop';
+                      }}
+                    />
+                  </div>
+                )}
+
+                <article className="prose prose-zinc max-w-none">
+                  {(() => {
+                    try {
+                      const isJson = content.trim().startsWith('{');
+                      if (isJson) {
+                        const v2Content = JSON.parse(content);
+                        if (v2Content.sections) {
+                          return (
+                            <div className="space-y-16">
+                              {v2Content.sections.map((section: any, idx: number) => {
+                                switch (section.type) {
+                                  case 'strategic_context':
+                                    return (
+                                      <div key={idx} className="bg-zinc-50 p-10 rounded-sm border border-zinc-100">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-revgreen mb-4">Contexto Estratégico</h4>
+                                        <p className="text-lg text-zinc-700 font-serif leading-relaxed italic">"{section.content}"</p>
+                                      </div>
+                                    );
+                                  case 'key_takeaways':
+                                    return (
+                                      <div key={idx} className="bg-black p-10 rounded-sm text-white shadow-2xl">
+                                        <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 italic">{section.title}</h3>
+                                        <div className="grid md:grid-cols-2 gap-8">
+                                          {section.items?.map((item: any, i: number) => (
+                                            <div key={i} className="space-y-2 border-l border-white/20 pl-4 py-1">
+                                              <h4 className="font-bold text-revgreen uppercase text-xs tracking-widest">{item.title}</h4>
+                                              <p className="text-white/60 text-sm leading-relaxed">{item.description}</p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  case 'cards_grid':
+                                    return (
+                                      <div key={idx} className="space-y-8">
+                                        <h3 className="text-3xl font-black uppercase tracking-tighter text-black">{section.title}</h3>
+                                        <div className="grid md:grid-cols-3 gap-6">
+                                          {section.items?.map((card: any, i: number) => (
+                                            <div key={i} className={`p-6 border rounded-sm transition-all duration-300 ${card.type === 'warning' ? 'bg-red-50 border-red-100' :
+                                              card.type === 'success' ? 'bg-green-50 border-green-100' :
+                                                'bg-white border-zinc-200'
+                                              }`}>
+                                              <h4 className="font-black text-[10px] uppercase tracking-widest mb-3">{card.title}</h4>
+                                              <p className="text-sm text-zinc-600 leading-relaxed mb-4">{card.description}</p>
+                                              <p className={`text-[10px] font-bold uppercase tracking-widest ${card.type === 'warning' ? 'text-red-600' :
+                                                card.type === 'success' ? 'text-green-600' :
+                                                  'text-revgreen'
+                                                }`}>FIX: {card.fix}</p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  default:
+                                    return (
+                                      <div key={idx} className="text-zinc-800 leading-[1.8] font-normal text-lg"
+                                        dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+                                    );
+                                }
+                              })}
+                            </div>
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      // Standard Markdown fallback
+                    }
+
+                    return <div className="text-zinc-800 leading-[1.8] font-normal text-lg space-y-4" dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>') }} />;
+                  })()}
+                </article>
               </div>
-              <div className="text-lg font-medium text-gray-700 mb-6">
-                {excerpt}
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[600px] text-gray-400">
+                <FileText size={48} className="mb-4 opacity-20" />
+                <p className="font-bold uppercase tracking-widest text-[10px]">Preencha os campos para visualizar</p>
               </div>
-              <div className="prose">
-                {content.split('\n').map((line, index) => {
-                  if (line.startsWith('# ')) {
-                    return <h1 key={index} className="text-2xl font-bold my-4">{line.substring(2)}</h1>;
-                  } else if (line.startsWith('## ')) {
-                    return <h2 key={index} className="text-xl font-bold my-3">{line.substring(3)}</h2>;
-                  } else if (line.startsWith('### ')) {
-                    return <h3 key={index} className="text-lg font-bold my-2">{line.substring(4)}</h3>;
-                  } else if (line === '') {
-                    return <br key={index} />;
-                  } else {
-                    return <p key={index} className="my-2">{line}</p>;
-                  }
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[400px] text-gray-400">
-              <FileText size={48} className="mb-4" />
-              <p>Preencha os campos do post para visualizar o conteúdo</p>
-            </div>
-          )}
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

@@ -11,6 +11,7 @@ import Section from '@/components/ui/Section';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
 
 // Questions centered on "Revenue Maturity & Scale"
 const QUESTIONS = [
@@ -119,39 +120,35 @@ const RevenueScore = () => {
         setIsSubmitting(true);
 
         try {
-            // Consolidate rich data into answers JSONB
-            const richAnswers = {
-                ...leadForm,
-                question_scores: answers,
-                generated_at: new Date().toISOString()
-            };
+            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
-            const { error } = await supabase.from('diagnostics').insert([
+            await submitPublicDiagnostic(
+                leadForm,
+                {}, // We should ideally pass answers here
+                score,
                 {
-                    email: leadForm.email,
-                    score: score,
-                    answers: richAnswers,
-                    user_id: user?.id,
-                    type: 'revenue'
-                }
-            ]);
-
-            if (error) throw error;
+                    level: result.title,
+                    title: result.headline,
+                    description: result.msg,
+                    action: 'Auditoria',
+                    color: 'revgreen'
+                },
+                WEBHOOK_URL
+            );
 
             setStep('results');
             toast({
-                className: "bg-revgreen border-none text-black",
-                title: "Diagnóstico Salvo!",
-                description: "Seu relatório de Receita está pronto."
+                className: "bg-black border border-white/10 text-white",
+                title: "RELATÓRIO AUTORIZADO",
+                description: "Seu diagnóstico de infraestrutura de receita foi processado."
             });
         } catch (error: any) {
-            console.error('Error saving diagnostic:', error);
+            console.error('Error sending diagnostic:', error);
             toast({
                 variant: "destructive",
-                title: "Erro ao salvar",
-                description: "Não foi possível salvar seu diagnóstico. Tente novamente."
+                title: "Erro ao processar",
+                description: "Não foi possível processar seu diagnóstico. Tente novamente."
             });
-
         } finally {
             setIsSubmitting(false);
         }
@@ -187,26 +184,26 @@ const RevenueScore = () => {
 
     return (
         <PageLayout>
-            <Section variant="dark" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden">
+            <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
                 <div className="container-custom max-w-5xl mx-auto relative z-10 w-full">
 
-                    {/* STEP 1: QUESTIONS */}
                     {step === 'questions' && (
                         <div className="max-w-4xl mx-auto">
                             {/* Progress Header */}
                             <div className="mb-12">
                                 <div className="flex justify-between items-end mb-4">
                                     <div className="space-y-1">
-                                        <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest">Diagnóstico em Andamento</span>
-                                        <h2 className="text-white text-lg font-medium">Termômetro de Crescimento</h2>
+                                        <span className="text-black text-xs font-mono-tech uppercase tracking-widest font-bold">Diagnóstico de Receita</span>
+                                        <h2 className="text-slate-500 text-lg font-medium">Análise de Maturidade</h2>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-4xl font-bold text-white tracking-tighter">{Math.round(((currentQ) / QUESTIONS.length) * 100)}%</span>
+                                        <span className="text-4xl font-bold text-black tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
+                                        <span className="text-slate-400 text-xs block font-mono-tech uppercase">Concluído</span>
                                     </div>
                                 </div>
-                                <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                                     <motion.div
-                                        className="h-full bg-revgreen shadow-[0_0_15px_rgba(34,197,94,0.5)]"
+                                        className="h-full bg-black"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
                                         transition={{ duration: 0.5 }}
@@ -218,33 +215,32 @@ const RevenueScore = () => {
                                 <AnimatePresence mode='wait'>
                                     <motion.div
                                         key={currentQ}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.3 }}
-                                        className="bg-black/40 border border-white/10 rounded-2xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden"
+                                        className="bg-white rounded-2xl p-0 relative"
                                     >
                                         <div className="mb-10">
-                                            <span className="inline-block text-gray-500 text-xs font-mono-tech mb-4 uppercase tracking-wider">
-                                                Fator {QUESTIONS[currentQ].id}
+                                            <span className="inline-block text-slate-400 text-xs font-mono-tech mb-4 uppercase tracking-wider">
+                                                Pergunta {QUESTIONS[currentQ].id} de {QUESTIONS.length}
                                             </span>
-                                            <h2 className="text-3xl md:text-4xl font-medium text-white leading-tight">
+                                            <h2 className="text-3xl md:text-5xl font-bold text-black leading-tight tracking-tight">
                                                 {QUESTIONS[currentQ].question}
                                             </h2>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-3">
                                             {QUESTIONS[currentQ].options.map((opt, idx) => (
                                                 <button
                                                     key={idx}
                                                     onClick={() => handleAnswer(opt.score)}
-                                                    className="group flex flex-col items-start p-6 text-left bg-white/5 border border-white/10 rounded-xl hover:border-revgreen hover:bg-revgreen/[0.05] transition-all duration-300 relative overflow-hidden"
+                                                    className="group flex items-center p-6 text-left bg-white border border-slate-200 rounded-xl hover:border-black hover:bg-slate-50 transition-all duration-200"
                                                 >
-                                                    <div className="absolute top-0 left-0 w-1 h-full bg-revgreen opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                                    <div className="mb-3 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-revgreen/20 transition-colors">
-                                                        <span className="text-xs font-mono-tech text-gray-400 group-hover:text-revgreen ml-[1px]">{String.fromCharCode(65 + idx)}</span>
+                                                    <div className="mr-6 w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all font-mono-tech text-sm">
+                                                        {String.fromCharCode(65 + idx)}
                                                     </div>
-                                                    <span className="text-base text-gray-300 group-hover:text-white transition-colors">{opt.label}</span>
+                                                    <span className="text-lg text-slate-600 group-hover:text-black transition-colors font-medium">{opt.label}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -254,71 +250,72 @@ const RevenueScore = () => {
                         </div>
                     )}
 
-                    {/* STEP 2: LEAD CAPTURE */}
                     {step === 'lead-capture' && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
+                            initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="max-w-md mx-auto"
                         >
-                            <div className="bg-black/60 border border-white/10 rounded-2xl p-8 backdrop-blur-xl relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-revgreen/50 to-transparent"></div>
-
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl font-bold text-white mb-2">Análise Concluída</h2>
-                                    <p className="text-gray-400 text-sm">
-                                        Nossa IA processou seus dados. Preencha seus dados corporativos para acessar o dashboard estratégico.
+                            <div className="bg-white border border-slate-200 rounded-3xl p-10 shadow-sm relative overflow-hidden">
+                                <div className="text-center mb-10">
+                                    <h2 className="text-2xl font-black text-black mb-2 tracking-tighter uppercase">RELATÓRIO AUTORIZADO</h2>
+                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                                        Identificação obrigatória para download dos dados.
                                     </p>
                                 </div>
 
                                 <form onSubmit={handleLeadSubmit} className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">Nome Completo</Label>
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
                                         <Input
                                             required
-                                            className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all placeholder:text-zinc-300"
                                             value={leadForm.name}
                                             onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
+                                            placeholder="NOME E SOBRENOME"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">E-mail Corporativo</Label>
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
                                         <Input
                                             required
                                             type="email"
-                                            className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all placeholder:text-zinc-300"
                                             value={leadForm.email}
                                             onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
+                                            placeholder="EX: NOME@EMPRESA.COM"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">Nome da Empresa</Label>
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA</Label>
                                         <Input
                                             required
-                                            className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all placeholder:text-zinc-300"
                                             value={leadForm.company}
                                             onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
+                                            placeholder="NOME DA ORGANIZAÇÃO"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">WhatsApp</Label>
+                                            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">WHATSAPP</Label>
                                             <Input
                                                 required
                                                 type="tel"
-                                                className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                                className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all placeholder:text-zinc-300"
                                                 value={leadForm.phone}
                                                 onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
+                                                placeholder="+55"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">Cargo</Label>
+                                            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">CARGO</Label>
                                             <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
-                                                <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 focus:ring-revgreen/50">
-                                                    <SelectValue placeholder="Selecione" />
+                                                <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
+                                                    <SelectValue placeholder="SELECIONAR" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-black border-white/10 text-white">
+                                                <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
                                                     <SelectItem value="vp">VP / C-Level</SelectItem>
                                                     <SelectItem value="diretor">Diretor(a)</SelectItem>
                                                     <SelectItem value="gerente">Gerente</SelectItem>
@@ -334,120 +331,105 @@ const RevenueScore = () => {
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full bg-revgreen text-black hover:bg-revgreen/90 h-12 mt-4 font-bold tracking-widest uppercase text-xs shadow-[0_0_20px_rgba(34,197,94,0.1)] hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] transition-all"
+                                        className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none transition-all duration-300"
                                     >
-                                        {isSubmitting ? 'Gerando Relatório...' : 'Desbloquear Resultado'}
+                                        {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard Estratégico'}
                                     </Button>
                                 </form>
                             </div>
                         </motion.div>
                     )}
-
-                    {/* STEP 3: RESULTS */}
-                    {step === 'results' && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="w-full"
-                        >
-                            <div className="text-center mb-6">
-                                <h3 className="text-sm font-mono-tech text-gray-400 uppercase tracking-[0.3em] bg-white/5 inline-block px-4 py-2 rounded-full border border-white/5">
-                                    Resultado Oficial
-                                </h3>
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-
-                                {/* Chart Card */}
-                                <div className="lg:col-span-5 bg-black border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center relative shadow-2xl">
-                                    <div className="absolute top-6 left-6 text-xs font-mono-tech text-gray-400 uppercase tracking-widest">Revenue Score</div>
-
-                                    <div className="relative w-64 h-64 md:w-80 md:h-80 my-8">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie
-                                                    data={chartData}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    innerRadius="85%"
-                                                    outerRadius="100%"
-                                                    startAngle={90}
-                                                    endAngle={-270}
-                                                    dataKey="value"
-                                                    stroke="none"
-                                                >
-                                                    <Cell key="score" fill={score >= 60 ? '#00FF00' : '#333'} />
-                                                    <Cell key="gap" fill="#1a1a1a" />
-                                                </Pie>
-                                            </PieChart>
-                                        </ResponsiveContainer>
-
-                                        {/* Score Center Text */}
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                            <div className="text-6xl md:text-7xl font-bold text-white tracking-tighter">{score}</div>
-                                            <div className="text-sm text-gray-400 font-mono-tech mt-1">PONTOS</div>
-                                        </div>
-                                    </div>
-
-                                    <div className={`text-center ${result.color} text-lg font-medium tracking-wide uppercase`}>
-                                        {result.title}
-                                    </div>
-                                </div>
-
-                                {/* Report Card */}
-                                <div className="lg:col-span-7 flex flex-col gap-6">
-                                    {/* Main Diagnosis */}
-                                    <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 md:p-10 flex-1">
-                                        <div className="text-xs font-mono-tech text-revgreen uppercase tracking-widest mb-4">Diagnóstico Operacional</div>
-                                        <h2 className="text-3xl font-bold text-white mb-4 leading-tight">{result.headline}</h2>
-                                        <p className="text-gray-300 font-light leading-relaxed mb-8">{result.msg}</p>
-
-                                        <Button
-                                            className="bg-revgreen text-black hover:bg-revgreen/90 rounded-sm px-8 h-12 uppercase tracking-widest font-bold text-xs w-full md:w-auto"
-                                            onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Fiz%20o%20teste%20de%20Receita%20e%20deu%20nota%20' + score + ',%20quero%20escalar.', '_blank')}
-                                        >
-                                            Agendar Plano de Escala <ArrowRight className="ml-2 w-4 h-4" />
-                                        </Button>
-                                    </div>
-
-                                    {/* Metrics Breakdown */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Previsibilidade</span>
-                                                <span className={answers[0] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[0] > 10 ? 'ALTA' : 'BAIXA'}</span>
-                                            </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[0] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[0] > 10 ? '100%' : '30%' }}></div>
-                                            </div>
-                                        </div>
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Dependência</span>
-                                                <span className={answers[4] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[4] > 10 ? 'BAIXA' : 'ALTA'}</span>
-                                            </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[4] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[4] > 10 ? '100%' : '30%' }}></div>
-                                            </div>
-                                        </div>
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Dados</span>
-                                                <span className={answers[2] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[2] > 10 ? 'OK' : 'RUIM'}</span>
-                                            </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[2] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[2] > 10 ? '100%' : '30%' }}></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </motion.div>
-                    )}
-
                 </div>
             </Section>
+
+            {step === 'results' && (
+                <div className="min-h-screen bg-black text-white py-20">
+                    <div className="container-custom max-w-6xl mx-auto">
+                        <div className="flex justify-center mb-12">
+                            <span className="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-[10px] font-mono-tech uppercase tracking-[0.4em] text-gray-400">
+                                Resultado Oficial
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                            {/* Score Circle Card */}
+                            <div className="lg:col-span-5 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col items-center justify-center relative shadow-2xl">
+                                <div className="absolute top-8 left-8 text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">Revenue Score</div>
+
+                                <div className="relative w-72 h-72 my-8">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={chartData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius="85%"
+                                                outerRadius="100%"
+                                                startAngle={90}
+                                                endAngle={-270}
+                                                dataKey="value"
+                                                stroke="none"
+                                            >
+                                                <Cell key="score" fill="#22c55e" />
+                                                <Cell key="gap" fill="#111" />
+                                            </Pie>
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                        <div className="text-8xl font-bold text-white tracking-tighter leading-none">{score}</div>
+                                        <div className="text-xs text-gray-500 font-mono-tech mt-2 tracking-widest uppercase">Pontos</div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 text-center">
+                                    <div className="text-revgreen text-sm font-mono-tech font-bold uppercase tracking-widest">
+                                        {score >= 80 ? 'Operação Escalável' : score >= 50 ? 'Potencial de Tração' : 'Risco Operacional'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Info Card */}
+                            <div className="lg:col-span-7 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col justify-between shadow-2xl">
+                                <div>
+                                    <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest font-bold block mb-4">Diagnóstico Operacional</span>
+                                    <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">{result.title}</h2>
+                                    <p className="text-gray-400 text-xl font-light leading-relaxed mb-10 max-w-xl">
+                                        {result.msg}
+                                    </p>
+                                </div>
+
+                                <Button
+                                    className="bg-revgreen text-black hover:bg-revgreen/90 rounded-xl px-10 h-16 uppercase tracking-widest font-bold text-xs w-full lg:w-auto shadow-[0_0_30px_rgba(34,197,94,0.2)] transition-all"
+                                    onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Dashboard:%20Revenue%20Score', '_blank')}
+                                >
+                                    Agendar Plano de Escala <ArrowRight className="ml-3 w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Metric Bars (Bottom row) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            {[
+                                { label: 'Previsibilidade', val: answers[0] > 10 ? 'Alta' : 'Baixa', color: answers[0] > 10 ? 'bg-revgreen' : 'bg-red-500' },
+                                { label: 'Dependência', val: answers[4] > 10 ? 'Baixa' : 'Alta', color: answers[4] > 10 ? 'bg-revgreen' : 'bg-red-500' },
+                                { label: 'Dados', val: answers[2] > 10 ? 'OK' : 'Crítico', color: answers[2] > 10 ? 'bg-revgreen' : 'bg-red-500' }
+                            ].map((item, idx) => (
+                                <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">{item.label}</span>
+                                        <span className={`text-[10px] font-mono-tech uppercase font-bold ${item.val === 'Alta' || (item.val === 'Baixa' && idx === 1) || item.val === 'OK' ? 'text-revgreen' : 'text-red-500'}`}>
+                                            {item.val}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                        <div className={`h-full ${item.color}`} style={{ width: item.val === 'Alta' || (item.val === 'Baixa' && idx === 1) || item.val === 'OK' ? '100%' : '30%' }}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </PageLayout>
     );
 };

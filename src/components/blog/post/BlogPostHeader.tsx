@@ -59,9 +59,10 @@ const BlogPostHeader = ({
         </span>
       </div>
 
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-8 px-0 text-white text-balance tracking-tight">
-        {cleanTitle()}
-      </h1>
+      <h1
+        className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-8 px-0 text-white text-balance tracking-tight [&>span]:text-revgreen"
+        dangerouslySetInnerHTML={{ __html: post.title }}
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div className="flex items-center space-x-3">

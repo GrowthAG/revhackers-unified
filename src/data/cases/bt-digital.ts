@@ -4,21 +4,26 @@ import { CaseStudy } from './index';
 export const btDigitalCase: CaseStudy = {
     title: "BT Digital",
     category: "Fintech • Growth",
-    logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6949ed7fee99d02e9bb37ce3.png",
-    coverImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6949ed7fee99d02e9bb37ce3.png",
-    challenge: "Aumentar a captação de leads para a BT Digital e BT Card em um mercado altamente competitivo de fintechs e cartões de crédito.",
-    solution: "Desenvolvimento e elaboração de estratégias para captação de novos clientes através do Google Ads, Facebook Ads, Automações de Marketing e nossa metodologia única de Ultra-segmentação de Personas para trazer mais sucesso para a jornada dos clientes.",
+    logo: "/lovable-uploads/bt-logo-new.png",
+    coverImage: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
+    challenge: "A BT Digital, fintech em escala, operava com baixa eficiência comercial:\n\n(1) CAC elevado devido a campanhas de mídia paga pouco segmentadas;\n\n(2) falta de previsibilidade de vendas por ausência de um CRM estruturado;\n\n(3) perda sistemática de leads no meio do funil por processos de follow-up puramente manuais.",
+    solution: "Implementamos uma transformação comercial baseada em stack tecnológica de ponta:\n\n(1) Automações de Marketing (Funnels): jornadas personalizadas que guiam o lead por perfil e estágio de consciência;\n\n(2) CRM com Pipeline Estruturado: implementação de fluxos de 6 estágios com automações de follow-up e scoring de leads;\n\n(3) Mídia Paga de Ultra-Segmentação: reestruturação de Google Ads e Facebook Ads with foco em remarketing agressivo e personas de alta renda.",
     results: [
-        "+150% em Captação de Leads",
-        "ROI 3.5x em campanhas pagas",
-        "Redução de 40% no CAC"
+        "+150% em captação de leads qualificados através de campanhas otimizadas e segmentação precisa",
+        "ROI de 3.5x em campanhas pagas através de otimização contínua e remarketing",
+        "Redução de 40% no CAC através de automações e melhor qualificação de leads",
+        "Aumento de 65% na taxa de conversão do funil com automações de nutrição"
     ],
     metrics: [
         { value: "+150%", label: "Captação de Leads" },
-        { value: "3.5x", label: "ROI" },
-        { value: "-40%", label: "Redução CAC" }
+        { value: "3.5x", label: "ROI em Ads" },
+        { value: "-40%", label: "Redução no CAC" },
+        { value: "+65%", label: "Taxa de Conversão" }
     ],
-    quote: "A metodologia de ultra-segmentação transformou nossa aquisição de clientes.",
-    author: "Equipe de Marketing",
-    role: "BT Digital"
+    quote: "A RevHackers transformou nossa operação comercial. Antes perdíamos leads por falta de follow-up e gastávamos muito em mídia sem retorno. Hoje temos automações rodando 24/7, o CAC caiu 40% e o ROI das campanhas triplicou. Foi um divisor de águas.",
+    author: "Marcelo Santos",
+    role: "Head de Growth, BT Digital",
+    preview_description: "Automação e CRM para Fintech: Implementação de automações de marketing, CRM estruturado e mídia paga otimizada que reduziram o CAC em 40% e geraram ROI de 3.5x.",
+    logoScale: 1.5,
+    techStack: ["Funnels", "Google Ads", "Facebook Ads", "Hotjar"]
 };

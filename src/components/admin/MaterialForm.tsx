@@ -15,7 +15,7 @@ import { Loader2, Save, ArrowLeft, Upload, Trash2 } from 'lucide-react';
 type MaterialFormData = {
     id?: string;
     title: string;
-    slug: string; // Used for UI only
+    slug: string; // URL identifyer (REQUIRED)
     material_url: string;
     type: string;
     description: string;
@@ -138,16 +138,23 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
             }
 
             // Prepare payload - Map to ACTUAL DB COLUMNS
-            // DB Schema: material_name, material_type, material_url, description, is_active, published
+            // DB Schema: material_name, material_type, link_material, description, is_active, published, cover_image, slug
             const payload = {
-                material_name: data.title, // Map title -> material_name
-                // NO SLUG in DB -> Removed
-                material_type: data.type, // Map type -> material_type (Preserve case for DB Constraint)
+                material_name: data.title,
+                material_type: data.type,
+                link_material: data.material_url,
+
+                // Standard Columns
+                slug: data.slug,
                 description: data.description,
                 cover_image: data.cover_image,
                 published: data.published,
                 is_active: true,
-                material_url: data.material_url
+
+                // Legacy/Duplicate keys (Commented out to avoid 'Column not found' errors if schema is strict)
+                // title: data.title,
+                // type: data.type,
+                // material_url: data.material_url
             };
 
             console.log("Payload to Supabase:", payload); // Debug for User Support
@@ -204,11 +211,12 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                 <div>
                     <Label className="text-base font-semibold text-gray-900">Slug (URL Amigável)</Label>
                     <Input
-                        {...register('slug', { required: true })}
+                        {...register('slug', { required: "O slug é obrigatório para o banco de dados" })}
                         placeholder="ex: playbook-vendas-2025"
                         className="mt-2 h-12 font-mono text-sm bg-gray-50 border-gray-200 text-gray-600"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Gerado automaticamente a partir do título</p>
+                    {errors.slug && <span className="text-red-500 text-xs mt-1">{errors.slug.message}</span>}
+                    <p className="text-xs text-gray-500 mt-1">Identificador único na URL (letras, números e hifens)</p>
                 </div>
 
 

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import "./styles/article.css";
 
 // Pages
 import Index from "./pages/Index";
@@ -38,6 +39,12 @@ import CadastroParceiro from "./pages/CadastroParceiro";
 import PesquisaNPS from "./pages/PesquisaNPS";
 import ObrigadoNPS from "./pages/ObrigadoNPS";
 
+// Specialized Pages
+import AgendaLuna from "./pages/AgendaLuna";
+import AgendaGiulliano from "./pages/AgendaGiulliano";
+import AgendaLinkedin from "./pages/AgendaLinkedin";
+import AgendaKickoff from "./pages/AgendaKickoff";
+
 // REI Workflows
 import ReiHub from "./pages/REI-Hub";
 import ReiDev from "./pages/REI-Dev";
@@ -55,6 +62,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import UpdatePassword from "./pages/auth/UpdatePassword";
 import CompleteProfile from "./pages/auth/CompleteProfile";
 import Dashboard from "./pages/Dashboard";
+import PublicDiagnosticResult from "./pages/PublicDiagnosticResult";
 
 // Admin Pages
 import Admin from "./pages/Admin";
@@ -64,7 +72,7 @@ import AdminSettings from "./pages/AdminSettings";
 import ProfileSettings from "./pages/admin/ProfileSettings";
 import AdminUsers from "./pages/admin/AdminUsers";
 import Settings from "./pages/admin/Settings";
-import RestoreMaterials from "./pages/RestoreMaterials";
+
 
 // New Admin Content Management
 import AdminMaterials from "./pages/admin/AdminMaterials";
@@ -127,14 +135,24 @@ const App = () => (
             <Route path="/pesquisa-nps" element={<PesquisaNPS />} />
             <Route path="/obrigado-nps" element={<ObrigadoNPS />} />
 
+// Specialized Pages
+            {/* Specialized Pages - Imports moved to top */}
+
+            // ... existing code ...
+
             {/* Specialized Pages */}
-            <Route path="/agenda/giulliano" element={<SecureBooking />} />
+            <Route path="/agenda/giulliano" element={<SecureBooking />} /> {/* Keeping legacy secure booking just in case, but user asked for standard pages */}
+            <Route path="/agenda-giulliano" element={<AgendaGiulliano />} />
+            <Route path="/agenda-luna" element={<AgendaLuna />} />
+            <Route path="/agenda-linkedin" element={<AgendaLinkedin />} />
+            <Route path="/agenda-kickoff" element={<AgendaKickoff />} />
+
             <Route path="/cadastro-parceiro" element={<CadastroParceiro />} />
 
             {/* REI System (Internal) - Unified */}
             <Route path="/rei" element={<ReiHub />} />
             <Route path="/rei/wizard" element={<ProtectedRoute><REIWizardPage /></ProtectedRoute>} />
-            <Route path="/rei/resultado/:id" element={<ProtectedRoute><REIResult /></ProtectedRoute>} />
+            <Route path="/rei/resultado/:id" element={<REIResult />} />
 
             {/* Legacy REI Routes - Redirect to new system */}
             <Route path="/rei-onboarding" element={<Navigate to="/rei" replace />} />
@@ -145,6 +163,7 @@ const App = () => (
             <Route path="/score-site" element={<SiteScore />} />
             <Route path="/score-founder" element={<FounderScore />} />
             <Route path="/score-revenue" element={<RevenueScore />} />
+            <Route path="/diagnostico/resultado/:id" element={<PublicDiagnosticResult />} />
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
@@ -191,7 +210,7 @@ const App = () => (
             {/* Admin - Sync */}
             <Route path="/admin/sync" element={<ProtectedRoute><AdminSync /></ProtectedRoute>} />
 
-            <Route path="/restore" element={<RestoreMaterials />} />
+
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

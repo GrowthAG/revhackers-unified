@@ -6,17 +6,20 @@ import PageLayout from '@/components/layout/PageLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import MaterialForm from '@/components/admin/MaterialForm';
 import { Loader2 } from 'lucide-react';
+import { toast } from "sonner";
 
 const AdminMaterialEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [material, setMaterial] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchMaterial = async () => {
             if (!id) return;
 
+            console.log('Fetching material:', id);
             const { data, error } = await supabase
                 .from('materials')
                 .select('*')
@@ -24,8 +27,12 @@ const AdminMaterialEdit = () => {
                 .single();
 
             if (error) {
-                navigate('/admin/materials');
+                console.error("Error fetching material:", error);
+                setFetchError(error.message);
+                toast.error(`Erro ao buscar material: ${error.message}`);
+                // navigate('/admin/materials');
             } else {
+                console.log('Material data:', data);
                 setMaterial(data);
             }
             setLoading(false);
@@ -44,24 +51,48 @@ const AdminMaterialEdit = () => {
         );
     }
 
+    if (fetchError) {
+        return (
+            <PageLayout>
+                <AdminPageLayout title="Erro" backTo="/admin/materials" backLabel="Voltar">
+                    <div className="p-8 text-center">
+                        <h2 className="text-xl font-bold text-red-500 mb-2">Falha ao carregar material</h2>
+                        <p className="text-gray-600 mb-4">{fetchError}</p>
+                        <button onClick={() => window.location.reload()} className="underline">Tentar novamente</button>
+                    </div>
+                </AdminPageLayout>
+            </PageLayout>
+        );
+    }
+
     if (!material) return null;
+
+    // Mapping DB columns to Form Interface
+    // DB: material_name, material_type, link_material, slug, etc.
+    // Form: title, type, material_url, etc.
+    const formInitialData = {
+        id: material.id,
+        title: material.material_name || material.title || '',
+        slug: material.slug || '',
+        type: material.material_type || material.type || 'framework',
+        description: material.description || '',
+        cover_image: material.cover_image || '',
+        published: material.published || false,
+        is_active: material.is_active || true,
+        material_url: material.link_material || material.material_url || ''
+    };
 
     return (
         <PageLayout>
             <AdminPageLayout
                 title="Editar Material"
-                description={`Editando: ${material.title}`}
+                description={`Editando: ${formInitialData.title}`}
                 backTo="/admin/materials"
                 backLabel="Voltar aos Materiais"
             >
                 <div className="max-w-5xl mx-auto">
                     <MaterialForm
-                        initialData={{
-                            ...material,
-                            title: material.material_name || material.title,
-                            type: material.material_type || material.type,
-                            material_url: material.material_url || material.slug ? `/materiais/${material.slug}` : ''
-                        }}
+                        initialData={formInitialData}
                         isEditing
                     />
                 </div>

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +36,10 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
             case_category: 'B2B',
             preview_description: '',
             primary_metric: '',
-            testimonial_quote: '',
+            challenge: '',
+            solution: '',
+            results: '',
+            testimonial: '',
             testimonial_author: '',
             testimonial_role: '',
             published: false,
@@ -121,7 +123,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 return;
             }
 
-            const payload = {
+            const payload: any = {
                 title: data.title,
                 slug: data.slug,
                 client_name: data.client_name,
@@ -129,7 +131,10 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 case_category: data.case_category,
                 preview_description: data.preview_description,
                 primary_metric: data.primary_metric,
-                testimonial_quote: data.testimonial_quote,
+                challenge: data.challenge,
+                solution: data.solution,
+                results: data.results,
+                testimonial: data.testimonial,
                 testimonial_author: data.testimonial_author,
                 testimonial_role: data.testimonial_role,
                 published: data.published,
@@ -177,6 +182,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 <h1 className="text-2xl font-bold text-gray-900">{isEditing ? 'Editar Case' : 'Novo Case'}</h1>
             </div>
 
+            {/* Basic Info & Meta */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                     <div>
@@ -186,13 +192,13 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                     </div>
 
                     <div>
-                        <Label className="text-base font-semibold text-gray-900">Slug</Label>
-                        <Input {...register('slug', { required: true })} placeholder="empresa-x" className="bg-gray-50 border-gray-200 text-gray-600 font-mono text-sm" />
+                        <Label className="text-base font-semibold text-gray-900">Slug (URL)</Label>
+                        <Input {...register('slug', { required: true })} placeholder="empresa-x" className="bg-gray-50 border-gray-200 text-gray-600 font-mono text-sm shadow-inner" />
                     </div>
 
                     <div>
-                        <Label className="text-base font-semibold text-gray-900">Título do Case (Headline)</Label>
-                        <Input {...register('title', { required: true })} placeholder="Ex: Como a Empresa X escalou..." className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
+                        <Label className="text-base font-semibold text-gray-900">Título / Headline</Label>
+                        <Input {...register('title', { required: true })} placeholder="Ex: Como a Empresa X escalou..." className="bg-white border-gray-200" />
                     </div>
 
                     <div>
@@ -201,14 +207,16 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                             onValueChange={(value) => setValue('case_category', value)}
                             defaultValue={watch('case_category') || 'B2B'}
                         >
-                            <SelectTrigger className="w-full bg-white border-gray-200 text-gray-900">
-                                <SelectValue placeholder="Selecione a categoria" />
+                            <SelectTrigger className="w-full bg-white border-gray-200">
+                                <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
-                            <SelectContent className="bg-white text-gray-900 border-gray-200 shadow-xl z-50">
-                                <SelectItem value="B2B" className="text-gray-900 hover:bg-gray-50 cursor-pointer">B2B (Serviços)</SelectItem>
-                                <SelectItem value="SaaS" className="text-gray-900 hover:bg-gray-50 cursor-pointer">SaaS</SelectItem>
-                                <SelectItem value="E-commerce" className="text-gray-900 hover:bg-gray-50 cursor-pointer">E-commerce</SelectItem>
-                                <SelectItem value="Infoproduto" className="text-gray-900 hover:bg-gray-50 cursor-pointer">Infoproduto</SelectItem>
+                            <SelectContent className="bg-white z-50">
+                                <SelectItem value="SaaS">SaaS</SelectItem>
+                                <SelectItem value="Fintech">Fintech</SelectItem>
+                                <SelectItem value="Software House">Software House</SelectItem>
+                                <SelectItem value="Educação">Educação</SelectItem>
+                                <SelectItem value="Agência">Agência</SelectItem>
+                                <SelectItem value="B2B (Geral)">B2B (Geral)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -216,69 +224,112 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
 
                 <div className="space-y-4">
                     <Label className="text-base font-semibold text-gray-900">Logo do Cliente</Label>
-                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center min-h-[150px] hover:bg-gray-50 transition-colors relative overflow-hidden bg-gray-50/50">
+                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center min-h-[150px] hover:bg-gray-50 transition-colors relative bg-gray-50/50">
                         {logoPreview ? (
                             <>
                                 <img src={logoPreview} alt="Preview" className="absolute inset-0 w-full h-full object-contain p-4" />
-                                <div className="relative z-10 flex flex-col items-center mt-auto bg-white/90 p-1.5 rounded shadow-sm">
-                                    <Button type="button" variant="secondary" size="sm" onClick={() => document.getElementById('logo-upload')?.click()}>
+                                <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            document.getElementById('logo-upload')?.click();
+                                        }}
+                                        className="h-8 shadow-lg"
+                                    >
                                         Trocar
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setLogoPreview(null);
+                                            setValue('client_logo', '');
+                                            toast({ title: 'Logo removida' });
+                                        }}
+                                        className="h-8 shadow-lg bg-red-500 hover:bg-red-600 border-none"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </>
                         ) : (
                             <div className="text-center">
                                 <Building className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                                <p className="text-sm text-gray-500 mb-2">Logo do Cliente</p>
-                                <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('logo-upload')?.click()} className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50">
-                                    Selecionar
+                                <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('logo-upload')?.click()}>
+                                    Selecionar Logo
                                 </Button>
                             </div>
                         )}
-                        {uploading && <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20"><Loader2 className="animate-spin text-revgreen" /></div>}
+                        {uploading && <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-20"><Loader2 className="animate-spin text-black" /></div>}
                     </div>
-                    <input
-                        id="logo-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleLogoUpload}
-                    />
-                    <input type="hidden" {...register('client_logo')} />
-                </div>
-            </div>
+                    <input id="logo-upload" type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
 
-            <div className="space-y-4 pt-4 border-t border-gray-100">
-                <h3 className="font-semibold text-gray-900">Resultado Principal</h3>
-                <div>
-                    <Label className="text-base font-semibold text-gray-900">Métrica de Destaque (Primary Metric)</Label>
-                    <Input {...register('primary_metric')} placeholder="Ex: +150% em Vendas" className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
-                </div>
-                <div>
-                    <Label className="text-base font-semibold text-gray-900">Resumo do Resultado</Label>
-                    <Textarea {...register('preview_description')} placeholder="Resumo curto para o card..." rows={2} className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
-                </div>
-            </div>
-
-            <div className="space-y-4 pt-4 border-t border-gray-100">
-                <h3 className="font-semibold text-gray-900">Depoimento (Testimonial)</h3>
-                <div>
-                    <Label className="text-base font-semibold text-gray-900">Citação (Quote)</Label>
-                    <Textarea {...register('testimonial_quote')} placeholder="O que o cliente disse..." rows={3} className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <Label className="text-base font-semibold text-gray-900">Autor do Depoimento</Label>
-                        <Input {...register('testimonial_author')} placeholder="Nome da pessoa" className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
-                    </div>
-                    <div>
-                        <Label className="text-base font-semibold text-gray-900">Cargo</Label>
-                        <Input {...register('testimonial_role')} placeholder="Ex: CEO, Founder" className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-black" />
+                        <Label className="text-base font-semibold text-gray-900">Métrica de Destaque (Banner)</Label>
+                        <Input {...register('primary_metric')} placeholder="Ex: +150% em Vendas" className="bg-white border-gray-200" />
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+            {/* Narrative Engine */}
+            <div className="space-y-6 pt-8 border-t border-gray-100">
+                <h3 className="text-lg font-bold text-gray-900 uppercase tracking-tighter flex items-center gap-2">
+                    <div className="w-2 h-2 bg-black"></div>
+                    Narrativa Técnica (Swiss Blueprint)
+                </h3>
+
+                <div className="grid grid-cols-1 gap-6">
+                    <div>
+                        <Label className="text-base font-semibold text-zinc-500 mb-2 block">O Desafio (Challenge)</Label>
+                        <Textarea {...register('challenge')} placeholder="Descreva os problemas enfrentados..." rows={8} className="bg-white border-gray-200 font-serif text-lg leading-relaxed p-6 focus:border-black" />
+                    </div>
+
+                    <div>
+                        <Label className="text-base font-semibold text-zinc-500 mb-2 block">A Estratégia (Solution)</Label>
+                        <Textarea {...register('solution')} placeholder="Descreva a solução implementada..." rows={8} className="bg-white border-gray-200 font-serif text-lg leading-relaxed p-6 focus:border-black" />
+                    </div>
+
+                    <div>
+                        <Label className="text-base font-semibold text-zinc-500 mb-2 block">Resultados (Uma frase por linha)</Label>
+                        <Textarea {...register('results')} placeholder="Resultado 1&#10;Resultado 2&#10;Resultado 3" rows={4} className="bg-white border-gray-200 font-mono text-sm p-4 focus:border-black" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Preview & Testimonial */}
+            <div className="space-y-6 pt-8 border-t border-gray-100 bg-zinc-50/50 p-6 rounded-lg">
+                <h3 className="font-bold text-gray-900 uppercase tracking-tighter text-sm">Preview do Card & Depoimento</h3>
+
+                <div>
+                    <Label className="text-sm font-semibold text-gray-700">Resumo Curto (Preview List)</Label>
+                    <Textarea {...register('preview_description')} placeholder="Aparece no card da lista de cases..." rows={2} className="bg-white border-gray-200 mt-1" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                    <div>
+                        <Label className="text-sm font-semibold text-gray-700">Citação (Testimonial Quote)</Label>
+                        <Textarea {...register('testimonial')} placeholder="Aspas do cliente..." rows={4} className="bg-white border-gray-200 mt-1 italic" />
+                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            <Label className="text-sm font-semibold text-gray-700">Autor</Label>
+                            <Input {...register('testimonial_author')} placeholder="Nome completo" className="bg-white border-gray-200 mt-1" />
+                        </div>
+                        <div>
+                            <Label className="text-sm font-semibold text-gray-700">Cargo / Empresa</Label>
+                            <Input {...register('testimonial_role')} placeholder="Ex: CEO, Innova Steel" className="bg-white border-gray-200 mt-1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between pt-8 border-t border-gray-200">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center space-x-2">
                         <Switch
@@ -286,7 +337,9 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                             checked={watch('published') || false}
                             onCheckedChange={(checked) => setValue('published', checked)}
                         />
-                        <Label htmlFor="published" className="text-gray-700">{watch('published') ? 'Publicado' : 'Rascunho'}</Label>
+                        <Label htmlFor="published" className="text-sm font-medium text-gray-700">
+                            {watch('published') ? 'Publicado' : 'Rascunho'}
+                        </Label>
                     </div>
 
                     {isEditing && (
@@ -294,22 +347,21 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                             type="button"
                             variant="ghost"
                             onClick={handleDelete}
-                            disabled={loading || uploading}
-                            className="text-gray-400 hover:text-red-600 hover:bg-red-50 h-10 px-4 transition-colors"
+                            disabled={loading}
+                            className="text-gray-400 hover:text-red-600 transition-colors h-10"
                         >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Excluir Case
+                            <Trash2 className="mr-2 h-4 w-4" /> Excluir
                         </Button>
                     )}
                 </div>
 
                 <Button
                     type="submit"
-                    className="bg-black text-white hover:bg-zinc-900 min-w-[180px] h-11 text-[11px] font-bold uppercase tracking-[0.25em] transition-all rounded-none shadow-none border border-black"
+                    className="bg-black text-white hover:bg-zinc-800 h-12 px-12 rounded-none text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-xl shadow-zinc-200"
                     disabled={loading || uploading}
                 >
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {isEditing ? 'Salvar Alterações' : 'Criar Case'}
+                    {isEditing ? 'Salvar Alterações' : 'Publicar Case Study'}
                 </Button>
             </div>
         </form>

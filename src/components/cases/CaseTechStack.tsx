@@ -3,10 +3,11 @@ import { Settings, Zap, BarChart3, Globe, Database, Mail } from 'lucide-react';
 
 interface CaseTechStackProps {
     category: string;
+    customTools?: string[];
 }
 
-const CaseTechStack = ({ category }: CaseTechStackProps) => {
-    // Map categories to relevant icons/tools (simulated logic)
+const CaseTechStack = ({ category, customTools }: CaseTechStackProps) => {
+    // Map categories to relevant icons/tools (Fallback logic)
     const getStack = (cat: string) => {
         const defaultStack = [
             { name: "Analytics", icon: BarChart3 },
@@ -33,7 +34,10 @@ const CaseTechStack = ({ category }: CaseTechStackProps) => {
         return defaultStack;
     };
 
-    const stack = getStack(category);
+    // Use custom tools if provided, otherwise fallback to category based logic
+    const displayStack = customTools && customTools.length > 0
+        ? customTools.map(tool => ({ name: tool, icon: tool.toLowerCase().includes('ads') ? Globe : Settings })) // Simple icon mapping fallback
+        : getStack(category);
 
     return (
         <div className="py-10 border-y border-gray-100 bg-gray-50/50 mb-20">
@@ -43,11 +47,11 @@ const CaseTechStack = ({ category }: CaseTechStackProps) => {
                         Tech Stack Utilizado
                     </span>
 
-                    <div className="flex flex-wrap justify-center md:justify-end gap-8 md:gap-12 opacity-60 hover:opacity-100 transition-opacity duration-300">
-                        {stack.map((tool, idx) => (
-                            <div key={idx} className="flex items-center gap-3 transition-transform hover:-translate-y-1 duration-300">
-                                <tool.icon strokeWidth={1.5} className="w-5 h-5 text-gray-800" />
-                                <span className="text-sm font-medium text-gray-600 font-mono-tech">{tool.name}</span>
+                    <div className="flex flex-wrap justify-center md:justify-end gap-8 md:gap-12 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                        {displayStack.map((tool, idx) => (
+                            <div key={idx} className="flex items-center gap-3 transition-transform hover:-translate-y-1 duration-300 bg-white border border-gray-200 px-4 py-2 rounded-full shadow-sm hover:shadow-md">
+                                <tool.icon strokeWidth={1.5} className="w-4 h-4 text-zinc-400" />
+                                <span className="text-xs font-bold uppercase tracking-wider text-zinc-800 font-mono-tech">{tool.name}</span>
                             </div>
                         ))}
                     </div>

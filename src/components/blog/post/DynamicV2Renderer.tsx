@@ -1,4 +1,3 @@
-
 import React from 'react';
 import KeyTakeaways from './components/KeyTakeaways';
 import StrategicContext from './components/StrategicContext';
@@ -7,9 +6,13 @@ import StrategicConclusion from './components/StrategicConclusion';
 import ConceptDefinition from './components/ConceptDefinition';
 import ConversionCards from './components/ConversionCards';
 import EmailTemplates from './components/EmailTemplates';
+import ArticleBlueprint from './components/ArticleBlueprint';
+import ArticleTechStack from './components/ArticleTechStack';
+import ArticleStepsGrid from './components/ArticleStepsGrid';
+import ArticleCTA from './components/ArticleCTA';
 
 interface V2Section {
-    type: 'text' | 'key_takeaways' | 'strategic_context' | 'red_flags' | 'conclusion' | 'concept' | 'html' | 'cards_grid' | 'email_templates';
+    type: 'text' | 'key_takeaways' | 'strategic_context' | 'red_flags' | 'conclusion' | 'concept' | 'html' | 'cards_grid' | 'email_templates' | 'blueprint' | 'tech_stack' | 'steps_grid' | 'cta_box';
     title?: string;
     label?: string;
     content?: string;
@@ -25,6 +28,14 @@ interface V2Section {
     ctaLink?: string;
     description?: string;
     templates?: any[];
+    // For Blueprint
+    number?: string;
+    result?: string;
+    // For Tech Stack & Steps
+    steps?: any[];
+    // For CTA Box
+    primaryBtnText?: string;
+    secondaryBtnText?: string;
 }
 
 interface DynamicV2RendererProps {
@@ -106,6 +117,49 @@ const DynamicV2Renderer = ({ config, onCTAClick }: DynamicV2RendererProps) => {
                                 key={index}
                                 title={section.title}
                                 templates={section.templates || []}
+                            />
+                        );
+
+                    case 'blueprint':
+                        return (
+                            <ArticleBlueprint
+                                key={index}
+                                title={section.title || "Blueprint"}
+                                description={section.description}
+                                number={section.number}
+                                items={section.items || []}
+                                result={section.result}
+                            />
+                        );
+
+                    case 'tech_stack':
+                        return (
+                            <ArticleTechStack
+                                key={index}
+                                title={section.title}
+                                items={section.items || []}
+                            />
+                        );
+
+                    case 'steps_grid':
+                        return (
+                            <ArticleStepsGrid
+                                key={index}
+                                title={section.title || "Passo a Passo"}
+                                steps={section.steps || []}
+                            />
+                        );
+
+                    case 'cta_box':
+                        return (
+                            <ArticleCTA
+                                key={index}
+                                title={section.title}
+                                description={section.description}
+                                primaryBtnText={section.primaryBtnText}
+                                secondaryBtnText={section.secondaryBtnText}
+                                onPrimaryClick={onCTAClick}
+                                onSecondaryClick={onCTAClick} // Can be customized if needed
                             />
                         );
 

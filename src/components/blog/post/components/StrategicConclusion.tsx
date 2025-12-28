@@ -1,16 +1,16 @@
-
 import { useState } from 'react';
-import { ArrowRight, Download } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import LeadMagnetModal from '@/components/shared/LeadMagnetModal';
+import MaterialModal from '@/components/shared/MaterialModal';
+import ArticleCTA from './ArticleCTA';
 
 interface StrategicConclusionProps {
     title?: string;
     description?: string;
     ctaText?: string;
     ctaLink?: string;
-    leadMagnetId?: 'checklist' | 'roi-calculator' | 'template' | 'guide';
+    leadMagnetId?: 'checklist' | 'roi-calculator' | 'template' | 'guide' | 'demo-framework' | 'cold-email-2025' | 'sales-playbook' | 'ltv-cac-calculator' | 'linkedin-revolution' | 'gtm-guide' | 'agent-blueprint';
+    diagnosticPath?: string;
     onCTAClick?: () => void;
 }
 
@@ -20,63 +20,100 @@ const StrategicConclusion = ({
     ctaText = "Agendar Diagnóstico",
     ctaLink = "/agenda-diagnostico",
     leadMagnetId,
+    diagnosticPath,
     onCTAClick
 }: StrategicConclusionProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const handleClick = (e: React.MouseEvent) => {
-        if (leadMagnetId) {
-            e.preventDefault();
-            setIsModalOpen(true);
+    // Mapeamento inteligente de textos baseados no Lead Magnet
+    const getSecondaryBtnText = (magnet?: string) => {
+        switch (magnet) {
+            case 'demo-framework':
+                return 'Baixar Framework da Demo';
+            case 'sales-playbook':
+                return 'Baixar Playbook de Vendas';
+            case 'cold-email-2025':
+                return 'Acessar Templates de Cold Email';
+            case 'ltv-cac-calculator':
+                return 'Baixar Calculadora LTV/CAC';
+            case 'linkedin-revolution':
+                return 'Acessar Guia LinkedIn';
+            case 'gtm-guide':
+                return 'Baixar Guia GTM';
+            case 'agent-blueprint':
+                return 'Baixar Blueprint de Agentes';
+            case 'checklist':
+                return 'Baixar Checklist';
+            case 'template':
+                return 'Acessar Templates';
+            case 'roi-calculator':
+                return 'Calcular ROI';
+            case 'guide':
+                return 'Ler Guia Oficial';
+            default:
+                return undefined;
+        }
+    };
+
+    const getMaterialTitle = (magnet?: string) => {
+        switch (magnet) {
+            case 'demo-framework': return 'Framework da Demo Perfeita';
+            case 'sales-playbook': return 'Playbook de Vendas B2B';
+            case 'cold-email-2025': return 'Templates de Cold Email 2025';
+            case 'ltv-cac-calculator': return 'Calculadora de LTV e CAC';
+            case 'linkedin-revolution': return 'LinkedIn Outreach Revolution';
+            case 'gtm-guide': return 'Guia Prático de Estratégia GTM';
+            case 'agent-blueprint': return 'Blueprint de Agentes Autônomos';
+            case 'checklist': return 'Checklist RevOps';
+            case 'template': return 'Pacote de Templates';
+            case 'roi-calculator': return 'Calculadora ROI';
+            default: return 'Material Rico';
+        }
+    };
+
+    const handlePrimaryClick = () => {
+        if (diagnosticPath) {
+            navigate(diagnosticPath);
+            window.scrollTo(0, 0);
         } else if (onCTAClick) {
-            e.preventDefault();
             onCTAClick();
+        } else {
+            window.location.href = ctaLink;
+        }
+    };
+
+    const handleSecondaryClick = () => {
+        if (leadMagnetId) {
+            setIsModalOpen(true);
         }
     };
 
     return (
-        <div className="mt-16 sm:mt-24 pt-12 border-t border-gray-100">
-            <div className="bg-white rounded-2xl p-8 md:p-12 relative overflow-hidden group text-center md:text-left border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
-                {/* Premium Abstract Decoration */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-revgreen/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="max-w-xl">
-                        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-                            {title}
-                        </h3>
-                        <p className="text-gray-600 text-lg mb-0 leading-relaxed font-light">
-                            {description}
-                        </p>
-                    </div>
-                    <div className="shrink-0">
-                        {leadMagnetId ? (
-                            <Button size="lg" onClick={handleClick} className="bg-revgreen text-black hover:bg-emerald-500 font-bold text-lg px-8 h-14 rounded-sm shadow-lg hover:shadow-revgreen/20 transition-all duration-300">
-                                <Download className="w-5 h-5 mr-2" /> {ctaText}
-                            </Button>
-                        ) : (
-                            <Button
-                                size="lg"
-                                onClick={handleClick}
-                                className="bg-revgreen text-black hover:bg-emerald-500 font-bold text-lg px-8 h-14 rounded-sm shadow-lg hover:shadow-revgreen/20 transition-all duration-300"
-                            >
-                                <span className="flex items-center gap-2">
-                                    {ctaText} <ArrowRight className="w-5 h-5" />
-                                </span>
-                            </Button>
-                        )}
-                    </div>
-                </div>
-            </div>
+        <>
+            <ArticleCTA
+                title={title}
+                description={description}
+                primaryBtnText={ctaText}
+                secondaryBtnText={getSecondaryBtnText(leadMagnetId)}
+                onPrimaryClick={handlePrimaryClick}
+                onSecondaryClick={handleSecondaryClick}
+            />
 
             {leadMagnetId && (
-                <LeadMagnetModal
+                <MaterialModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    magnet={leadMagnetId}
+                    material={{
+                        title: getSecondaryBtnText(leadMagnetId),
+                        material_name: getMaterialTitle(leadMagnetId),
+                        type: "Material Rico",
+                        id: leadMagnetId
+                    }}
+                    onSuccess={() => setIsModalOpen(false)}
                 />
             )}
-        </div>
+        </>
     );
 };
 

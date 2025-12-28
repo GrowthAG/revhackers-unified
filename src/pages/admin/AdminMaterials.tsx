@@ -6,7 +6,8 @@ import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash, FileText, Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
+import { useSoftDelete } from '@/hooks/useSoftDelete';
 import { Database } from "@/integrations/supabase/types";
 import {
     Table,
@@ -39,17 +40,14 @@ const AdminMaterials = () => {
         if (!error) setMaterials(data || []);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Tem certeza que deseja excluir este material?')) return;
+    const softDelete = useSoftDelete('materials');
 
-        const { error } = await supabase.from('materials').update({ published: false }).eq('id', id);
-        if (error) {
-            toast({ title: 'Erro ao excluir', variant: 'destructive' });
-        } else {
-            toast({ title: 'Material excluído' });
+    const handleDelete = async (id: string) => {
+        const success = await softDelete(id);
+        if (success) {
             setMaterials(materials.filter(m => m.id !== id));
         }
-    }
+    };
 
     const filteredMaterials = materials.filter(item =>
         (item.material_name || item.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,11 +105,11 @@ const AdminMaterials = () => {
                                             {material.material_type || material.type}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant="outline" className={`font-bold uppercase tracking-widest text-[9px] rounded-none px-2 py-0.5 border ${material.published || true
+                                            <Badge variant="outline" className={`font-bold uppercase tracking-widest text-[9px] rounded-none px-2 py-0.5 border ${material.published
                                                 ? 'bg-black text-white border-black'
                                                 : 'bg-white text-black border-zinc-200'
                                                 }`}>
-                                                {material.published || true ? 'Publicado' : 'Rascunho'}
+                                                {material.published ? 'Publicado' : 'Rascunho'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-sm text-gray-500 dark:text-gray-400">

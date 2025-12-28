@@ -8,13 +8,7 @@ const Diagnostico360Article = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     return (
         <article className="w-full mx-auto">
             {/* Hero Banner */}
-            <div className="mb-12 rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black">
-                <img
-                    src="/images/blog-v2/blog_diagnostico_360.png"
-                    alt="Diagnóstico 360"
-                    className="w-full h-auto object-cover opacity-90"
-                />
-            </div>
+
 
             <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
 

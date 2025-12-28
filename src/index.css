@@ -29,7 +29,8 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
+    @apply bg-black text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   /* Aggressive Typography - Lighter but Bigger */
@@ -92,6 +93,53 @@
   .bg-dot-dark {
     background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
     background-size: 32px 32px;
+  }
+
+  /* Industrial Masterpiece Utilities */
+  .bg-grain {
+    position: relative;
+  }
+
+  .bg-grain::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.04;
+    z-index: 50;
+    animation: grain 8s steps(10) infinite;
+  }
+
+  @keyframes grain {
+
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+
+    10% {
+      transform: translate(-5%, -10%);
+    }
+
+    30% {
+      transform: translate(-15%, -20%);
+    }
+
+    50% {
+      transform: translate(-5%, -10%);
+    }
+
+    70% {
+      transform: translate(-15%, -20%);
+    }
+
+    90% {
+      transform: translate(-5%, -10%);
+    }
   }
 
   /* Infinite Marquee Animation */

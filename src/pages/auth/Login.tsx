@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Lock, Mail, ArrowRight } from 'lucide-react';
+import PageLayout from '@/components/layout/PageLayout';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,8 +13,18 @@ const Login = () => {
     const [magicLinkLoading, setMagicLinkLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { signInWithPassword, signIn, setDevBypass } = useAuth();
+    const { signInWithPassword, signIn, setDevBypass, user, isRecoveringPassword } = useAuth();
     const navigate = useNavigate();
+
+    // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
+    useEffect(() => {
+        if (user && !isRecoveringPassword) {
+            console.log('🏠 Login: Usuário já autenticado e sem pendências de recuperação, indo para admin');
+            navigate('/admin');
+        } else if (user && isRecoveringPassword) {
+            console.log('🔑 Login: Fluxo de recuperação detectado pelo contexto. Mantendo na página.');
+        }
+    }, [user, navigate, isRecoveringPassword]);
 
     const handleMagicLink = async () => {
         if (!email) {
@@ -57,131 +68,108 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-black font-sans text-white flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-dot-dark opacity-30"></div>
+        <PageLayout>
+            <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white">
+                <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-700">
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-zinc-900"></div>
+                    {/* Header Section */}
+                    <div className="flex flex-col items-center mb-10">
+                        <h1 className="text-2xl font-black tracking-[0.2em] text-black uppercase text-center leading-none mb-4 mt-8">
+                            Acesso Admin
+                        </h1>
+                        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
+                            Entre com suas credenciais corporativas.
+                        </p>
+                    </div>
 
-            <div className="w-full max-w-[480px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
-                {/* Logo RevHackers */}
-                <div className="flex flex-col items-center mb-12">
-                    <Link to="/" className="block mb-8 group">
-                        <img
-                            src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
-                            alt="RevHackers Logo"
-                            className="h-16 w-auto transition-all duration-300 group-hover:opacity-80"
-                        />
-                    </Link>
+                    {/* Conteúdo de Login */}
+                    <div className="bg-white p-2">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {error && (
+                                <div className="text-red-500 text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10">
+                                    {error}
+                                </div>
+                            )}
 
-                    <p className="text-zinc-500 text-[10px] uppercase tracking-[0.3em] font-medium text-center">
-                        Acesso Administrativo
-                    </p>
-                </div>
-
-                {/* Card de Login */}
-                <div className="bg-zinc-900/50 border border-white/10 backdrop-blur-xl p-8 rounded-sm">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 p-4 text-red-400 text-xs font-bold uppercase tracking-widest text-center rounded-sm">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-black pl-1 flex items-center gap-2">
-                                <Mail className="w-3 h-3" />
-                                Email Corporativo
-                            </label>
-                            <Input
-                                type="email"
-                                placeholder="seu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-sm border focus:border-revgreen focus:ring-1 focus:ring-revgreen/20 transition-all text-sm px-4"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center pl-1 pr-1">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-black flex items-center gap-2">
-                                    <Lock className="w-3 h-3" />
-                                    Senha
+                            <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black pl-1 flex items-center gap-2">
+                                    <Mail className="w-3 h-3" />
+                                    Email Corporativo
                                 </label>
-                                <Link
-                                    to="/forgot-password"
-                                    className="text-[9px] uppercase tracking-widest text-zinc-500 hover:text-revgreen transition-colors font-bold"
-                                >
-                                    Recuperar
-                                </Link>
+                                <Input
+                                    type="email"
+                                    placeholder="seu@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="bg-white border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-none border focus:border-black focus:ring-0 transition-all text-sm px-4"
+                                    required
+                                />
                             </div>
-                            <Input
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-sm border focus:border-revgreen focus:ring-1 focus:ring-revgreen/20 transition-all text-sm px-4"
-                                required
-                            />
-                        </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full bg-revgreen text-black hover:bg-revgreen/90 h-12 font-black text-xs tracking-[0.3em] uppercase rounded-sm border-none transition-all mt-4 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <span className="flex items-center justify-center gap-2">
-                                    Acessar Sistema <ArrowRight className="w-4 h-4" />
-                                </span>
-                            )}
-                        </Button>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center pl-1 pr-1">
+                                    <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black flex items-center gap-2">
+                                        <Lock className="w-3 h-3" />
+                                        Senha
+                                    </label>
+                                    <Link
+                                        to="/forgot-password"
+                                        className="text-[9px] uppercase tracking-widest text-zinc-400 hover:text-white transition-colors font-bold"
+                                    >
+                                        Recuperar
+                                    </Link>
+                                </div>
+                                <Input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="bg-white border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-none border focus:border-black focus:ring-0 transition-all text-sm px-4"
+                                    required
+                                />
+                            </div>
 
-                        <div className="relative flex py-4 items-center">
-                            <div className="flex-grow border-t border-white/10"></div>
-                            <span className="flex-shrink-0 mx-4 text-[9px] uppercase tracking-widest text-zinc-600">Ou</span>
-                            <div className="flex-grow border-t border-white/10"></div>
-                        </div>
+                            <Button
+                                type="submit"
+                                className="w-full bg-black text-white hover:bg-zinc-800 h-12 font-black text-xs tracking-[0.3em] uppercase rounded-none border-none transition-all mt-4"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        Entrar <ArrowRight className="w-4 h-4" />
+                                    </span>
+                                )}
+                            </Button>
 
-                        <Button
-                            type="button"
-                            onClick={handleMagicLink}
-                            variant="outline"
-                            className="w-full bg-transparent border-white/20 text-zinc-400 hover:text-white hover:border-revgreen hover:bg-revgreen/10 h-12 font-bold text-[10px] tracking-[0.2em] uppercase rounded-sm transition-all"
-                            disabled={loading || magicLinkLoading}
-                        >
-                            {magicLinkLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <span className="flex items-center justify-center gap-2">
-                                    <Mail className="w-4 h-4" />
-                                    Receber Link de Acesso
-                                </span>
-                            )}
-                        </Button>
-                    </form>
-                </div>
+                            <div className="relative flex py-4 items-center">
+                                <div className="flex-grow border-t border-zinc-200"></div>
+                                <span className="flex-shrink-0 mx-4 text-[9px] uppercase tracking-widest text-zinc-400">Ou</span>
+                                <div className="flex-grow border-t border-zinc-200"></div>
+                            </div>
 
-                {/* Footer */}
-                <div className="mt-8 text-center space-y-4">
-                    <Link
-                        to="/"
-                        className="text-zinc-600 hover:text-revgreen text-[10px] uppercase tracking-[0.2em] transition-colors font-bold inline-flex items-center gap-2 group"
-                    >
-                        <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                        Voltar ao Site
-                    </Link>
-
-                    <p className="text-zinc-700 text-[8px] uppercase tracking-[0.3em]">
-                        © 2024 RevHackers • Growth Hub
-                    </p>
+                            <Button
+                                type="button"
+                                onClick={handleMagicLink}
+                                variant="outline"
+                                className="w-full bg-transparent border-zinc-200 text-zinc-500 hover:text-black hover:border-black h-12 font-bold text-[10px] tracking-[0.2em] uppercase rounded-none transition-all"
+                                disabled={loading || magicLinkLoading}
+                            >
+                                {magicLinkLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <Mail className="w-4 h-4" />
+                                        Receber Link de Acesso
+                                    </span>
+                                )}
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </PageLayout>
     );
 };
 

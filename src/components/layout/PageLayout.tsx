@@ -9,9 +9,9 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children }: PageLayoutProps) => {
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden pb-24">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Header />
-      <main className="flex-grow pt-20 w-full">
+      <main className="flex-grow w-full">
         {children}
       </main>
       <Footer />

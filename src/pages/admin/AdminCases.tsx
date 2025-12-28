@@ -31,11 +31,18 @@ const AdminCases = () => {
     }, []);
 
     const fetchCases = async () => {
+        console.log('🔄 ADMIN CASES: Buscando TODOS os cases (incluindo rascunhos)...');
+
         const { data, error } = await supabase
             .from('cases')
             .select('*')
-            .eq('published', true)
+            //.eq('published', true) // REMOVED: Admin must see drafts
             .order('created_at', { ascending: false });
+
+        console.log('📊 ADMIN CASES: Resultado:', {
+            erro: error?.message,
+            quantos: data?.length
+        });
 
         if (!error) setCases(data || []);
     };

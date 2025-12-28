@@ -1,8 +1,9 @@
-import { ArrowRight, ArrowUpRight, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Loader2, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Section from '@/components/ui/Section';
 import { useState, useEffect } from 'react';
 import { getFeaturedCases, CaseStudy } from '@/api/cases';
+import { motion } from 'framer-motion';
 
 const CasesSection = () => {
   const [cases, setCases] = useState<CaseStudy[]>([]);
@@ -29,105 +30,135 @@ const CasesSection = () => {
   };
 
   return (
-    <Section variant="dark" className="bg-black relative py-32 border-t border-white/10">
-      <div className="container-custom">
-        {/* Centered Header - More Objective */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4">Track Record</div>
-          <h2 className="text-4xl md:text-5xl font-medium text-white tracking-tight mb-6">
-            Resultados que Geram Receita
-          </h2>
-          <p className="text-xl text-gray-400 font-light text-balance">
-            Não prometemos, entregamos. Veja como transformamos desafios complexos em máquinas de crescimento.
-          </p>
+    <Section variant="dark" className="bg-black relative py-40 border-t border-white/10 overflow-hidden">
+      {/* Precision Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+      <div className="container-custom relative z-10">
+        {/* Header - Industrial & Minimal */}
+        <div className="flex flex-col items-center mb-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2 mb-4"
+          >
+            <div className="w-1.5 h-1.5 bg-revgreen rounded-full animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-revgreen">Portfolio de Impacto</span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black text-white tracking-tighter text-center"
+          >
+            Resultados Consolidados<span className="text-revgreen">.</span>
+          </motion.h2>
         </div>
 
-        {/* Grid Layout 3 Columns (Focused) */}
+        {/* Grid Layout - Focused Engineering */}
         {loading ? (
           <div className="flex justify-center items-center h-[400px]">
             <Loader2 className="w-8 h-8 text-revgreen animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 divide-y md:divide-y-0 md:divide-x divide-white/10">
             {cases.map((item, index) => {
-              // Compatibility mapping just in case types are stale
               const anyItem = item as any;
-              const resultText = anyItem.primary_metric || anyItem.result || 'Resultado';
-              const imageSrc = anyItem.image_url || anyItem.coverImage || anyItem.image || '';
-              const description = anyItem.preview_description || anyItem.description || '';
+              const resultMetric = anyItem.primary_metric || "Scale";
+              const description = anyItem.preview_description || "";
 
               return (
-                <Link
-                  to={`/cases/${item.slug}`}
-                  onClick={scrollToTop}
+                <motion.div
                   key={item.id || index}
-                  className="group block h-full"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <div className="bg-zinc-900/30 border border-white/5 rounded-lg overflow-hidden h-full flex flex-col hover:border-white/20 transition-all duration-500 relative">
+                  <Link
+                    to={`/cases/${item.slug}`}
+                    onClick={scrollToTop}
+                    className="group block relative h-full bg-black hover:bg-zinc-900/40 transition-colors duration-700"
+                  >
+                    {/* Index Number - Engineering aesthetic */}
+                    <div className="absolute top-8 left-8 z-20">
+                      <span className="text-[10px] font-mono font-bold text-zinc-700 group-hover:text-revgreen transition-colors">
+                        0{index + 1}
+                      </span>
+                    </div>
 
-                    {/* Image/Logo Area - Dark & Minimal */}
-                    <div className="h-64 overflow-hidden relative bg-black/50 p-8 flex items-center justify-center border-b border-white/5">
-                      {anyItem.client_logo ? (
-                        <img
-                          src={anyItem.client_logo}
-                          alt={item.title}
-                          className="w-48 h-auto max-h-32 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 grayscale group-hover:grayscale-0"
-                        />
-                      ) : imageSrc ? (
-                        <img
-                          src={imageSrc}
-                          alt={item.title}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                        />
-                      ) : (
-                        <div className="text-white text-xl font-bold tracking-tight">{item.title}</div>
-                      )}
+                    {/* Logo Canvas - Ultra Clean */}
+                    <div className="h-72 overflow-hidden relative bg-white flex items-center justify-center p-12">
+                      <motion.img
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        src={anyItem.client_logo || anyItem.logo}
+                        alt={item.title}
+                        className="max-w-[200px] max-h-[90px] w-auto h-auto object-contain grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700"
+                      />
 
-                      <div className="absolute top-4 left-4">
-                        <span className="text-[10px] font-mono-tech uppercase tracking-widest text-gray-500 border border-white/10 px-2 py-1 rounded-sm bg-black/50 backdrop-blur-sm">
-                          {(item.case_category || (item as any).category || 'Case').split('•')[0].trim()}
+                      {/* Floating Category tag */}
+                      <div className="absolute bottom-6 left-8">
+                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-black/40 border border-black/10 px-2 py-0.5">
+                          {anyItem.case_category || 'B2B'}
                         </span>
                       </div>
                     </div>
 
-                    {/* Content - Minimal text */}
-                    <div className="p-8 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-revgreen transition-colors leading-tight">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-gray-500 font-light leading-relaxed line-clamp-3 mb-6">
-                          {description}
-                        </p>
+                    {/* Technical Specs Area */}
+                    <div className="p-10 flex flex-col h-full">
+                      {/* Metric Pill */}
+                      <div className="mb-6 flex items-center gap-2">
+                        <TrendingUp className="w-3 h-3 text-revgreen" />
+                        <span className="text-xl font-black text-white tracking-tighter">
+                          {resultMetric}
+                        </span>
                       </div>
 
-                      <div className="flex items-end justify-between border-t border-white/5 pt-6 mt-auto">
-                        <div>
-                          <span className="block text-[10px] text-gray-600 uppercase tracking-widest mb-1">Resultado</span>
-                          <span className="text-lg font-medium text-white">{resultText}</span>
+                      <h3 className="text-xl font-bold text-white mb-4 leading-tight group-hover:text-revgreen transition-colors">
+                        {item.title}
+                      </h3>
+
+                      <p className="text-[12px] text-zinc-500 font-medium leading-relaxed mb-10 line-clamp-3">
+                        {description}
+                      </p>
+
+                      <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <span className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-white transition-colors">ESTRATÉGIA COMPLETA</span>
+                          <div className="w-0 group-hover:w-8 h-px bg-white transition-all duration-500" />
                         </div>
-                        <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                          <ArrowUpRight className="w-4 h-4" />
-                        </div>
+                        <ArrowUpRight className="w-5 h-5 text-zinc-700 group-hover:text-white group-hover:rotate-45 transition-all mt-[-2px]" />
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
           </div>
         )}
 
-        <div className="mt-16 text-center">
+        {/* Global CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 flex justify-center"
+        >
           <Link
             to="/cases"
             onClick={scrollToTop}
-            className="inline-flex items-center text-white font-bold uppercase tracking-wider hover:text-revgreen transition-colors border-b border-white pb-1 hover:border-revgreen"
+            className="group relative px-12 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[11px] overflow-hidden transition-all hover:pr-16"
           >
-            Ver Todos os Cases
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <span className="relative z-10 flex items-center gap-2">
+              Explorar Portfolio Completo
+              <ArrowUpRight className="w-4 h-4 translate-y-[1px]" />
+            </span>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </Section>
   );

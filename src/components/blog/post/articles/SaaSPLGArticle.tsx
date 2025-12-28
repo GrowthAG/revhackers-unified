@@ -68,13 +68,7 @@ Abs,
     return (
         <article className="w-full mx-auto">
             {/* Hero Banner */}
-            <div className="mb-12 rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black">
-                <img
-                    src="/images/blog-v2/blog_saas_trial_growth.png"
-                    alt="SaaS PLG Growth"
-                    className="w-full h-auto object-cover opacity-90"
-                />
-            </div>
+
 
             <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
 

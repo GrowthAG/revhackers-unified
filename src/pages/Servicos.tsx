@@ -2,206 +2,160 @@
 import PageLayout from '@/components/layout/PageLayout';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, TrendingUp, Database, Zap, Users } from 'lucide-react';
 import Section from '@/components/ui/Section';
+import { ArrowUpRight, Cpu, Database, LayoutTemplate, LineChart, MessageSquareCode, Search, Zap } from 'lucide-react';
 
-const services = [
+const capabilities = [
   {
+    id: "01",
     title: "Tração & Mídia Paga",
-    description: "Gestão estratégica de tráfego focada em LTV/CAC e pipelines B2B qualificados.",
-    icon: TrendingUp,
-    features: [
-      "Gestão Google Ads",
-      "Meta Ads Estratégico",
-      "LinkedIn Ads B2B",
-      "Criação de Criativos"
-    ],
+    description: "Gestão de tráfego de alta precisão. Focada não em cliques, mas em pipeline real e LTV/CAC saudável.",
+    tech: ["Google Ads", "Meta Ads", "LinkedIn B2B"],
+    icon: LineChart,
     slug: "tracao-midia-paga"
   },
   {
+    id: "02",
     title: "Ecossistema & CRM",
-    description: "Integração total de ferramentas. Marketing, Vendas e CS falando a mesma língua.",
+    description: "Engenharia de dados centralizada. Implementação de Hubspot/Salesforce integrada a toda a stack de Revenue.",
+    tech: ["CRM Architecture", "Data Warehousing", "API Integration"],
     icon: Database,
-    features: [
-      "Implementação GoHighLevel",
-      "Integração de Ferramentas",
-      "Pipeline de Vendas",
-      "Dashboards Executivos"
-    ],
     slug: "ecossistema-crm"
   },
   {
+    id: "03",
     title: "Automação Inteligente",
-    description: "Workflows que nutrem leads e fecham vendas enquanto você dorme.",
+    description: "Workflows de nutrição e vendas que rodam 24/7. Elimine o trabalho manual e acelere o ciclo de vendas.",
+    tech: ["n8n / Make", "ActiveCampaign", "Custom Webhooks"],
     icon: Zap,
-    features: [
-      "Email Marketing Automático",
-      "WhatsApp Business API",
-      "Workflows Inteligentes",
-      "Follow-up Automático"
-    ],
     slug: "automacao-inteligente"
   },
   {
+    id: "04",
     title: "Founder-Led Growth",
-    description: "Estratégias de marca pessoal para fundadores se tornarem o principal canal de aquisição.",
-    icon: Users,
-    features: [
-      "Personal Branding Strategy",
-      "Content Marketing",
-      "LinkedIn Growth",
-      "Speaking & Networking"
-    ],
+    description: "Transforme a autoridade técnica dos fundadores no principal canal de aquisição orgânica e confiança.",
+    tech: ["Personal Branding", "LinkedIn Algo", "Ghostwriting"],
+    icon: MessageSquareCode,
     slug: "founder-led-growth"
+  },
+  {
+    id: "05",
+    title: "Web & Conversion",
+    description: "Interfaces de alta performance projetadas para conversão. Velocidade, SEO técnico e UX unificados.",
+    tech: ["Next.js / React", "Vercel", "Headless CMS"],
+    icon: LayoutTemplate,
+    slug: "web-conversion"
+  },
+  {
+    id: "06",
+    title: "AI Operations",
+    description: "Implementação de agentes de IA para pré-vendas e suporte. Reduza o CAC operacional drasticamente.",
+    tech: ["OpenAI API", "Vector Databases", "LangChain"],
+    icon: Cpu,
+    slug: "ai-operations"
   }
 ];
 
 const Servicos = () => {
   return (
     <PageLayout>
-      {/* Hero Section - Industrial Dark */}
-      <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10">
-        <div className="container-custom text-center">
-          <div className="max-w-3xl mx-auto">
-            <span className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4 block">
-              Capabilities
-            </span>
-            <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
-              Nossos Serviços
+      {/* Hero Section - Absolute Black "Capa" Style */}
+      <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 bg-black border-b border-zinc-900">
+        <div className="container-custom relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-6xl md:text-8xl font-black mb-6 text-white tracking-tighter">
+              Serviços<span className="text-revgreen">.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed">
-              Soluções completas para acelerar o crescimento do seu negócio B2B
-              com estratégias baseadas em dados e tecnologia.
+            <p className="text-[10px] md:text-xs text-zinc-500 font-bold tracking-[0.2em] max-w-xl mx-auto leading-relaxed">
+              ECOSSISTEMA DE RECEITA INTEGRADO PARA ESCALAR OPERAÇÕES B2B COMPLEXAS.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* Methodology Section - The Ecosystem View */}
+      {/* Capabilities Matrix - The "Machine" View */}
       <Section variant="light" className="py-24 bg-white relative overflow-hidden">
         <div className="container-custom">
-          {/* Section Header */}
-          <div className="max-w-3xl mx-auto text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-normal text-black mb-6 tracking-tight">
-              O Ecossistema de Receita
-            </h2>
-            <p className="text-xl text-gray-500 font-light leading-relaxed">
-              Não entregamos peças soltas. Construímos uma máquina onde cada pilar
-              alimenta e potencializa o próximo.
+          {/* Section Context */}
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 border-b border-zinc-100 pb-8">
+            <div className="max-w-xl">
+              <span className="font-mono text-xs text-revgreen uppercase tracking-wider mb-2 block">
+                // The Capabilities Matrix
+              </span>
+              <h2 className="text-3xl font-bold text-black tracking-tight text-balance">
+                Engenharia de Crescimento. <br />
+                <span className="text-zinc-400 font-light">Peça por peça.</span>
+              </h2>
+            </div>
+            <p className="text-sm text-zinc-500 max-w-xs leading-relaxed text-right md:text-left">
+              Não vendemos "serviços avulsos". Entregamos infraestrutura de receita compobível.
             </p>
           </div>
 
-          {/* Timeline / Process Flow */}
-          <div className="relative max-w-4xl mx-auto">
-            {/* Vertical Line (Desktop) */}
-            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-gray-200 -z-10 md:-translate-x-1/2"></div>
+          {/* Brutalist Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
+            {capabilities.map((item) => (
+              <div key={item.id} className="group relative bg-white p-8 md:p-12 hover:bg-zinc-50 transition-colors duration-300">
 
-            <div className="space-y-24">
-              {/* Step 1: Tração */}
-              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                <div className="md:w-1/2 text-left md:text-right order-2 md:order-1">
-                  <h3 className="text-2xl font-bold text-black mb-2">1. Atração & Demanda</h3>
-                  <p className="text-gray-500 font-light mb-4">
-                    Trazemos o tráfego qualificado certo para dentro de casa.
-                    Sem cliques vazios, apenas decisores com intenção de compra.
-                  </p>
-                  <Link to="/servicos/tracao-midia-paga" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
-                    Tração & Mídia Paga &rarr;
+                {/* Header Card */}
+                <div className="flex justify-between items-start mb-8">
+                  <span className="font-mono text-4xl md:text-5xl font-light text-zinc-200 group-hover:text-revgreen transition-colors duration-300">
+                    {item.id}
+                  </span>
+                  <div className="p-3 bg-zinc-50 rounded-none border border-zinc-100 group-hover:border-revgreen/20 group-hover:bg-revgreen/5 transition-all">
+                    <item.icon className="w-5 h-5 text-black group-hover:text-revgreen transition-colors" />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <h3 className="text-xl font-bold text-black mb-4 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-zinc-500 leading-relaxed mb-8 h-20">
+                  {item.description}
+                </p>
+
+                {/* Tech Stack Footer */}
+                <div className="pt-6 border-t border-zinc-100">
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {item.tech.map((tech) => (
+                      <span key={tech} className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider bg-zinc-50 px-2 py-1">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Link
+                    to={`/servicos/${item.slug}`}
+                    className="inline-flex items-center text-xs font-bold text-black uppercase tracking-widest group-hover:text-revgreen transition-colors gap-2"
+                  >
+                    Explorar <ArrowUpRight className="w-3 h-3" />
                   </Link>
                 </div>
-                <div className="relative z-10 w-16 h-16 rounded-full bg-black border-4 border-white flex items-center justify-center shadow-lg order-1 md:order-2 flex-shrink-0">
-                  <TrendingUp className="w-8 h-8 text-revgreen" />
-                </div>
-                <div className="md:w-1/2 order-3 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0">
-                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Top of Funnel</span>
-                </div>
-              </div>
 
-              {/* Step 2: Autoridade */}
-              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                <div className="md:w-1/2 order-3 md:order-1 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0 md:text-right">
-                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Trust Layer</span>
-                </div>
-                <div className="relative z-10 w-16 h-16 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-sm order-1 md:order-2 flex-shrink-0">
-                  <Users className="w-8 h-8 text-black" />
-                </div>
-                <div className="md:w-1/2 order-2 md:order-3">
-                  <h3 className="text-2xl font-bold text-black mb-2">2. Autoridade & Confiança</h3>
-                  <p className="text-gray-500 font-light mb-4">
-                    Transformamos o CPF do fundador em um imã de oportunidades.
-                    Acelera o ciclo de vendas pois "quem confia, compra rápido".
-                  </p>
-                  <Link to="/servicos/founder-led-growth" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
-                    Founder-Led Growth &rarr;
-                  </Link>
-                </div>
+                {/* Active Line Indicator */}
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-revgreen group-hover:w-full transition-all duration-500 ease-out" />
               </div>
-
-              {/* Step 3: Organização */}
-              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                <div className="md:w-1/2 text-left md:text-right order-2 md:order-1">
-                  <h3 className="text-2xl font-bold text-black mb-2">3. Inteligência de Dados</h3>
-                  <p className="text-gray-500 font-light mb-4">
-                    Organizamos a casa. Centralizamos todos os dados para que Marketing e Vendas
-                    falem a mesma língua e nada se perca.
-                  </p>
-                  <Link to="/servicos/ecossistema-crm" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
-                    Ecossistema & CRM &rarr;
-                  </Link>
-                </div>
-                <div className="relative z-10 w-16 h-16 rounded-full bg-white border-4 border-gray-100 flex items-center justify-center shadow-sm order-1 md:order-2 flex-shrink-0">
-                  <Database className="w-8 h-8 text-black" />
-                </div>
-                <div className="md:w-1/2 order-3 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0">
-                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">The Brain</span>
-                </div>
-              </div>
-
-              {/* Step 4: Conversão */}
-              <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                <div className="md:w-1/2 order-3 md:order-1 border-l-2 border-gray-100 pl-8 md:border-l-0 md:pl-0 md:text-right">
-                  <span className="text-xs font-mono-tech text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-sm">Conversion Loop</span>
-                </div>
-                <div className="relative z-10 w-16 h-16 rounded-full bg-black border-4 border-white flex items-center justify-center shadow-lg order-1 md:order-2 flex-shrink-0">
-                  <Zap className="w-8 h-8 text-revgreen" />
-                </div>
-                <div className="md:w-1/2 order-2 md:order-3">
-                  <h3 className="text-2xl font-bold text-black mb-2">4. Conversão Automática</h3>
-                  <p className="text-gray-500 font-light mb-4">
-                    A máquina que roda 24/7. Nutrição, follow-up e agendamento
-                    acontecendo enquanto sua equipe foca em fechar contratos.
-                  </p>
-                  <Link to="/servicos/automacao-inteligente" className="text-sm font-bold text-revgreen hover:underline uppercase tracking-wider">
-                    Automação Inteligente &rarr;
-                  </Link>
-                </div>
-              </div>
-
-            </div>
+            ))}
           </div>
         </div>
       </Section>
 
-      {/* CTA Section - Simple & Clean */}
-      <Section variant="light" className="py-20 bg-gray-50 border-t border-gray-200">
+      {/* CTA Section - Minimalist Footer */}
+      <Section variant="light" className="py-32 bg-zinc-50 border-t border-zinc-200">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-normal mb-6 text-black tracking-tight">
-              Não sabe por onde começar?
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-black text-black mb-8 tracking-tighter">
+              Ready to Upgrade?
             </h2>
-            <p className="text-lg text-gray-500 mb-8 font-light max-w-2xl mx-auto">
-              Solicite um diagnóstico gratuito e descubra quais serviços são mais adequados
-              para o momento atual do seu negócio.
+            <p className="text-zinc-500 mb-12 text-lg font-light max-w-xl mx-auto">
+              Seu stack de receita precisa de uma auditoria completa. Vamos encontrar os gargalos.
             </p>
-
-            <div className="flex justify-center">
-              <Button asChild className="btn-green-flat h-14">
-                <Link to="/diagnostico">
-                  Solicitar diagnóstico gratuito
-                </Link>
-              </Button>
-            </div>
+            <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black border-none rounded-none px-8 py-6 text-xs uppercase tracking-[0.2em] font-bold transition-all transform hover:-translate-y-1">
+              <Link to="/diagnostico">
+                Iniciar Diagnóstico Gratuito
+              </Link>
+            </Button>
           </div>
         </div>
       </Section>

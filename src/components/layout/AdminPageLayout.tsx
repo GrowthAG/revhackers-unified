@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { ModeToggle } from '@/components/mode-toggle';
 
 interface AdminPageLayoutProps {
     title: string;
@@ -44,32 +43,33 @@ const AdminPageLayout = ({
     return (
         <div className="min-h-screen bg-white pt-32 pb-20 transition-colors duration-300">
             <div className={`container mx-auto px-4 ${maxWidthClasses[maxWidth]}`}>
-                {/* Header */}
-                <div className="mb-16">
-                    <div className="flex items-center justify-between mb-12">
+                {/* Header - Ultra Minimalist */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-6">
                         {showBackButton ? (
                             <Button
                                 variant="outline"
                                 onClick={() => navigate(backTo)}
-                                className="border-black bg-white text-black hover:bg-black hover:text-white rounded-none shadow-none transition-all text-[10px] font-black uppercase tracking-[0.3em] px-6 h-10"
+                                className="border-gray-200 bg-white text-black hover:bg-gray-50 hover:border-gray-300 rounded-md shadow-none transition-all text-[11px] font-medium px-4 h-9"
                             >
-                                <ArrowLeft className="mr-3 h-3.5 w-3.5 stroke-[3]" /> {backLabel}
+                                <ArrowLeft className="mr-2 h-3.5 w-3.5" /> {backLabel}
                             </Button>
                         ) : <div></div>}
                         <div className="flex items-center gap-3">
-                            <ModeToggle />
                             {actions}
                         </div>
                     </div>
 
-                    <h1 className="text-5xl md:text-6xl font-black text-black mb-6 uppercase tracking-[0.1em] transition-colors">
-                        {title}
-                    </h1>
-                    {description && (
-                        <p className="text-xs text-zinc-400 max-w-2xl uppercase tracking-[0.2em] font-medium leading-loose transition-colors">
-                            {description}
-                        </p>
-                    )}
+                    <div>
+                        <h1 className="text-2xl font-bold text-black mb-1 tracking-tight">
+                            {title}
+                        </h1>
+                        {description && (
+                            <p className="text-sm text-gray-500">
+                                {description}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content */}

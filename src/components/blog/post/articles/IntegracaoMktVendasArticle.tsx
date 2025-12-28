@@ -188,18 +188,18 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     Como Unificar na Prática (RevOps Plays)
                 </h2>
 
-                <div className="space-y-8 mb-16">
+                <div className="space-y-0 mb-16 border border-gray-200 divide-y divide-gray-200">
                     {strategies.map((strategy, index) => (
-                        <div key={index} className="bg-white border border-gray-200 p-6 rounded-xl hover:shadow-sm transition-shadow">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                <CheckCircle2 className="w-5 h-5 text-revgreen" />
+                        <div key={index} className="bg-white p-8 group hover:bg-gray-50 transition-colors">
+                            <h3 className="text-base font-bold text-black mb-3 flex items-center gap-3 uppercase tracking-wider">
+                                <span className="text-revgreen font-mono">0{index + 1}.</span>
                                 {strategy.title}
                             </h3>
-                            <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                            <p className="text-gray-600 mb-6 text-sm leading-relaxed font-light">
                                 {strategy.description}
                             </p>
-                            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
-                                <p className="text-indigo-900 text-xs font-medium italic">"{strategy.example}"</p>
+                            <div className="pl-4 border-l-2 border-revgreen/20">
+                                <p className="text-gray-500 text-xs font-mono italic">"{strategy.example}"</p>
                             </div>
                         </div>
                     ))}
@@ -242,6 +242,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     title="Pare de otimizar silos. Otimize a Receita."
                     description="A Integração não é um projeto de uma vez só. É uma cultura. É garantir que cada lead gerado pelo marketing tenha a melhor experiência de venda e o maior sucesso possível no pós-venda."
                     ctaText="Diagnóstico de Alinhamento (RevOps)"
+                    leadMagnetId="checklist"
                     onCTAClick={onCTAClick}
                 />
 

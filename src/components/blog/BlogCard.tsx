@@ -33,7 +33,11 @@ interface BlogCardProps {
 const BlogCard = ({ post, onClick }: BlogCardProps) => {
   // Obter imagem personalizada se disponível para este artigo
   // Fallback: post.image -> imageMap by slug -> category specific image (deterministic)
-  const articleImage = post.image || getArticleImageBySlug(post.slug) || getFrameworkImage(post.category, post.slug);
+  // [CRITICAL] If from DB, explicitly respect NULL/EMPTY to allow deletion in Admin
+  const isStatic = typeof post.id === 'number' || post.id.toString().startsWith('static-');
+  const articleImage = (post.image && post.image !== '')
+    ? post.image
+    : (isStatic ? (getArticleImageBySlug(post.slug) || getFrameworkImage(post.category, post.slug)) : getFrameworkImage(post.category, post.slug));
 
   // State to handle image loading errors
   const [imgSrc, setImgSrc] = useState(articleImage);
@@ -71,50 +75,58 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
   };
 
   return (
-    <Link to={`/blog/${post.slug}`} className="group block h-full" onClick={onClick}>
-      <div className="flex flex-col h-full bg-white/5 border border-white/10 hover:border-revgreen transition-all duration-300 rounded-sm overflow-hidden group hover:shadow-[0_0_30px_rgba(0,255,136,0.05)]">
-        <div className="h-52 overflow-hidden relative border-b border-white/10">
-          <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-transparent transition-colors duration-500" />
+    <Link
+      to={`/blog/${post.slug || post.id}`}
+      className="group block h-full"
+      onClick={onClick}
+    >
+      <article className="h-full flex flex-col bg-white rounded-sm border border-zinc-200 shadow-sm hover:shadow-2xl hover:border-black transition-all duration-500 overflow-hidden hover:-translate-y-1">
+        <div className="h-52 overflow-hidden relative border-b border-zinc-100 bg-zinc-50">
+          <div className="absolute inset-0 z-10 group-hover:bg-black/5 transition-colors duration-500" />
           <img
             src={imgSrc}
             alt={cleanTitle()}
             onError={handleImageError}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700"
           />
-          <div className="absolute top-4 left-4 z-20">
-            <span className="text-[10px] uppercase tracking-widest px-3 py-1 bg-black/90 backdrop-blur-md text-revgreen border border-revgreen/20 rounded-sm font-bold shadow-sm">
-              {post.category}
-            </span>
-          </div>
         </div>
 
-        <div className="p-8 flex-1 flex flex-col">
-          <h3 className="text-2xl font-bold mb-4 line-clamp-2 text-white group-hover:text-revgreen transition-colors leading-tight">
-            {cleanTitle()}
+        <div className="flex-1 p-6 md:p-8 flex flex-col">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-[10px] font-black uppercase tracking-widest text-black bg-zinc-100 px-2 py-1 rounded-sm border border-zinc-200">
+              {post.category}
+            </span>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              {post.readTime || '5 min'}
+            </span>
+          </div>
+
+          <h3 className="text-xl md:text-2xl font-black text-black mb-4 leading-tight group-hover:text-zinc-600 transition-colors tracking-tighter">
+            {post.title}
           </h3>
-          <p className="text-gray-400 mb-6 line-clamp-3 text-sm font-light leading-relaxed flex-1">
+
+          <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest line-clamp-3 mb-8 flex-1 leading-relaxed">
             {cleanExcerpt()}
           </p>
 
-          <div className="flex items-center justify-between text-xs text-gray-500 pt-6 border-t border-white/10 mt-auto">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center text-gray-400">
-                <CalendarIcon className="h-3 w-3 mr-2 text-revgreen" />
-                <span>{formatDate(post.date)}</span>
-              </div>
-              <div className="flex items-center text-gray-400">
-                <Clock className="h-3 w-3 mr-2 text-revgreen" />
-                <span>{post.readTime}</span>
+          <div className="flex items-center justify-between pt-6 border-t border-zinc-50">
+            <div className="flex items-center gap-3">
+              {post.author?.avatar && (
+                <img
+                  src={post.author.avatar}
+                  alt={post.author.name}
+                  className="w-10 h-10 rounded-full object-cover border border-zinc-200"
+                />
+              )}
+              <div>
+                <p className="text-[10px] font-black text-black uppercase tracking-widest">{post.author?.name || 'Equipe RevHackers'}</p>
+                <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{post.author?.role || 'Estrategista'}</p>
               </div>
             </div>
-
-            <div className="flex items-center group-hover:translate-x-1 transition-transform duration-300">
-              <span className="text-revgreen font-bold uppercase tracking-wide text-[10px] mr-2">Ler Artigo</span>
-              <ArrowRight className="h-3 w-3 text-revgreen" />
-            </div>
+            <ArrowRight className="w-5 h-5 text-zinc-300 group-hover:text-black transition-all group-hover:translate-x-1" />
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 };

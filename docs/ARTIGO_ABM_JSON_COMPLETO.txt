@@ -1,0 +1,173 @@
+# ARTIGO ABM 30 DIAS - FORMATO JSON COM COMPONENTES INTERATIVOS
+
+## 📋 DADOS PARA O ADMIN:
+
+### **TÍTULO:**
+```
+Como Implementar ABM em 30 Dias (Framework Completo)
+```
+
+### **CATEGORIA:**
+```
+RevOps
+```
+
+### **RESUMO (Excerpt):**
+```
+O guia definitivo para lançar sua primeira campanha de Account-Based Marketing. Framework testado em +50 empresas B2B com taxa de sucesso de 87%.
+```
+
+### **OBJETO VISUAL:**
+```
+Glass Target
+```
+
+---
+
+### **CORPO DO ARTIGO (Cole este JSON completo):**
+
+```json
+{
+  "sections": [
+    {
+      "type": "intro",
+      "content": "<h2>Por que 87% das Empresas B2B Falham no ABM</h2><p>A maioria das empresas tenta fazer ABM sem entender o básico: <strong>não é sobre volume, é sobre precisão cirúrgica</strong>.</p><p>Nos últimos 3 anos, implementamos ABM em mais de 50 empresas B2B. Descobrimos que o sucesso não vem de ferramentas caras, mas de um <strong>framework simples e executável</strong>.</p><p>Este artigo é o playbook completo que usamos internamente.</p>"
+    },
+    {
+      "type": "steps",
+      "title": "O Framework de 30 Dias",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Seleção Estratégica (Dia 1-7)",
+          "description": "Use dados de intenção e firmográficos para selecionar as 20 contas com maior propensão de compra. Valide com o time de vendas.",
+          "variant": "light"
+        },
+        {
+          "number": "02",
+          "title": "Intelligence (Dia 8-14)",
+          "description": "Crie dossiês de inteligência para cada conta. Notícias recentes, relatórios anuais, podcasts onde os diretores falaram.",
+          "variant": "dark"
+        },
+        {
+          "number": "03",
+          "title": "Ativação (Dia 15-30)",
+          "description": "Inicie a campanha de Ads e a cadência de prospecção personalizada baseada nos dossiês criados.",
+          "variant": "light"
+        }
+      ]
+    },
+    {
+      "type": "result",
+      "label": "RESULT",
+      "text": "Taxa de abertura de porta de 40% em contas F500."
+    },
+    {
+      "type": "stack",
+      "title": "Stack de ABM Moderno",
+      "categories": [
+        {
+          "name": "Intent Data",
+          "tools": ["6sense", "Bombora"]
+        },
+        {
+          "name": "Ad Targeting",
+          "tools": ["LinkedIn", "Terminus"]
+        },
+        {
+          "name": "Personalization",
+          "tools": ["Mutiny", "Uberflip"]
+        },
+        {
+          "name": "Gifting/Direct Mail",
+          "tools": ["Reachdesk", "Sendoso"]
+        }
+      ]
+    },
+    {
+      "type": "red_flags",
+      "title": "Por que seu ABM vai falhar",
+      "items": [
+        {
+          "title": "Vendas e Marketing desalinhados",
+          "description": "Marketing gera 'leads', vendas ignora"
+        },
+        {
+          "title": "Falta de paciência",
+          "description": "O ciclo de vendas Enterprise é de 6-12 meses, não espere ROI em 30 dias"
+        },
+        {
+          "title": "Conteúdo fraco",
+          "description": "Enviar whitepaper genérico para um CTO é pedir para ser bloqueado"
+        },
+        {
+          "title": "Medir métricas erradas",
+          "description": "Esqueça MQLs. Meça: taxa de engajamento por conta, pipeline gerado, deal size médio"
+        }
+      ]
+    },
+    {
+      "type": "tiers",
+      "title": "Os 3 Níveis de Ataque",
+      "description": "Muitas empresas falham no ABM porque tentam fazer 'personalização artesanal' para 1.000 contas. Isso é insustentável. O segredo é segmentar sua lista em camadas (Tiers) e ajustar o esforço de engenharia para cada uma.",
+      "tiers": [
+        {
+          "name": "Tier 1",
+          "subtitle": "STRATEGIC (1:1)",
+          "highlight": "limitado",
+          "description": "Top 10 contas. Orçamento limitado. Campanha feita do zero exclusivamente para elas."
+        },
+        {
+          "name": "Tier 2",
+          "subtitle": "SCALE (1:FEW)",
+          "description": "Top 50 contas. Segmentadas por indústria. Conteúdo adaptado, não exclusivo."
+        },
+        {
+          "name": "Tier 3",
+          "subtitle": "PROGRAMMATIC (1:MANY)",
+          "description": "Top 500 contas. Personalização via token (Nome/Empresa) e Ads dinâmicos."
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "content": "<h2>Métricas que Importam</h2><p>Esqueça vanity metrics. Foque em:</p><h3>Engajamento por Conta</h3><ul><li>% de contas que visitaram o site</li><li>% de contas que abriram emails</li><li>% de contas que responderam</li></ul><h3>Pipeline</h3><ul><li>Oportunidades geradas (não MQLs)</li><li>Deal size médio (ABM deve ser 2-3x maior)</li><li>Velocidade de fechamento</li></ul><h3>ROI</h3><ul><li>CAC (Customer Acquisition Cost)</li><li>LTV (Lifetime Value)</li><li>Payback period</li></ul><p><strong>Meta realista:</strong> 40% de taxa de engajamento, 20% de conversão para oportunidade, 10% de fechamento.</p>"
+    },
+    {
+      "type": "cta",
+      "title": "Pronto para o próximo nível?",
+      "description": "A RevHackers ajuda empresas B2B a implementar ABM de forma cirúrgica. Diagnóstico gratuito em 48h.",
+      "button_text": "Falar com um Especialista",
+      "button_link": "#"
+    }
+  ]
+}
+```
+
+---
+
+## ✅ COMPONENTES INCLUÍDOS:
+
+1. ✅ **Intro** - Contexto estratégico
+2. ✅ **Steps** - Framework de 30 dias (01, 02, 03)
+3. ✅ **Result Box** - Taxa de abertura 40%
+4. ✅ **Stack** - Ferramentas recomendadas
+5. ✅ **Red Flags** - 4 erros fatais
+6. ✅ **Tiers** - 3 níveis de ataque
+7. ✅ **Content** - Métricas que importam
+8. ✅ **CTA** - Call to action final
+
+---
+
+## 🎨 VISUAL ESPERADO:
+
+- ✅ Steps com números grandes (01, 02, 03)
+- ✅ Caixa preta com "RESULT"
+- ✅ Tabela de stack tecnológica
+- ✅ Lista de red flags com ícones
+- ✅ Cards de tiers (Tier 1, 2, 3)
+- ✅ CTA final com botão verde
+
+---
+
+**Cole este JSON no campo "Corpo do Artigo" e veja a mágica!** 🚀

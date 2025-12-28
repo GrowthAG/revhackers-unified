@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, XCircle, RefreshCw, Database, FileText, Briefcase, Download } from 'lucide-react';
+import { RefreshCw, Terminal, Check, X, ShieldCheck } from 'lucide-react';
 
 const SupabaseDiagnostic = () => {
     const [testing, setTesting] = useState(false);
@@ -68,164 +67,123 @@ const SupabaseDiagnostic = () => {
         setTesting(false);
     };
 
+    const StatusRow = ({ label, status, count, error }: any) => (
+        <div className="flex items-center justify-between py-4 border-b border-white/10 font-mono text-sm hover:bg-white/5 transition-colors px-4">
+            <div className="flex items-center gap-4">
+                <div className={`w-2 h-2 ${status ? 'bg-revgreen' : 'bg-red-500'}`}></div>
+                <span className="uppercase tracking-widest text-zinc-400">{label}</span>
+            </div>
+            <div className="text-right">
+                {error ? (
+                    <span className="text-red-500 font-bold">ERROR: {error}</span>
+                ) : (
+                    <span className="text-white">
+                        <span className="text-zinc-500 mr-2">ENTRIES:</span>
+                        {count !== undefined ? count.toString().padStart(2, '0') : '-'}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <PageLayout>
-            <div className="min-h-screen bg-black text-white py-20">
-                <div className="container-custom max-w-6xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-black mb-4">
-                            🔍 DIAGNÓSTICO SUPABASE
-                        </h1>
-                        <p className="text-gray-400">
-                            Teste a conexão e veja os dados disponíveis
-                        </p>
-                    </div>
-
-                    <div className="mb-8 text-center">
+            <div className="min-h-screen bg-black text-white py-24">
+                <div className="container-custom max-w-4xl mx-auto border-l border-white/10 pl-8 ml-8">
+                    <div className="flex items-start justify-between mb-16">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <Terminal className="w-5 h-5 text-revgreen" />
+                                <span className="font-mono text-xs text-revgreen uppercase tracking-[0.3em]">System Diagnostics</span>
+                            </div>
+                            <h1 className="text-5xl font-black uppercase tracking-tight leading-[0.9]">
+                                Integrity<br />
+                                <span className="text-zinc-600">Check</span>
+                            </h1>
+                        </div>
                         <Button
                             onClick={testConnection}
                             disabled={testing}
-                            className="bg-revgreen text-black hover:bg-revgreen/90 font-bold px-8 py-6 text-lg"
+                            variant="outline"
+                            className="bg-transparent border border-zinc-800 text-white hover:bg-white hover:text-black hover:border-white rounded-none h-12 px-8 font-mono text-xs uppercase tracking-widest transition-all"
                         >
                             {testing ? (
-                                <>
-                                    <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                                    Testando...
-                                </>
+                                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
-                                <>
-                                    <Database className="mr-2 h-5 w-5" />
-                                    Testar Conexão
-                                </>
+                                <ShieldCheck className="mr-2 h-4 w-4" />
                             )}
+                            {testing ? 'Scanning...' : 'Run Diagnostics'}
                         </Button>
                     </div>
 
+                    {!results && !testing && (
+                        <div className="border border-dashed border-zinc-800 p-12 text-center">
+                            <p className="font-mono text-zinc-500 text-sm uppercase tracking-widest">
+                                System Standby. initialize scan to verify integrity.
+                            </p>
+                        </div>
+                    )}
+
                     {results && (
-                        <div className="space-y-6">
-                            {/* Connection Status */}
-                            <Card className="bg-zinc-900 border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        {results.connection ? (
-                                            <CheckCircle2 className="h-6 w-6 text-green-500" />
-                                        ) : (
-                                            <XCircle className="h-6 w-6 text-red-500" />
-                                        )}
-                                        Status da Conexão
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className={results.connection ? 'text-green-500' : 'text-red-500'}>
-                                        {results.connection ? '✅ Conectado ao Supabase' : '❌ Erro de conexão'}
-                                    </p>
-                                    {results.error && (
-                                        <p className="text-red-400 mt-2 text-sm">{results.error}</p>
-                                    )}
-                                </CardContent>
-                            </Card>
+                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            {/* Status Grid */}
+                            <div className="border-t border-white/10">
+                                <div className="flex items-center justify-between py-4 border-b border-white/10 font-mono text-sm px-4 bg-white/5">
+                                    <span className="uppercase tracking-widest text-zinc-400">Database Connection</span>
+                                    <span className={results.connection ? 'text-revgreen font-bold' : 'text-red-500 font-bold'}>
+                                        {results.connection ? '[ ESTABLISHED ]' : '[ FAILED ]'}
+                                    </span>
+                                </div>
 
-                            {/* Blog Posts */}
-                            <Card className="bg-zinc-900 border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <FileText className="h-6 w-6" />
-                                        Blog Posts
-                                    </CardTitle>
-                                    <CardDescription>
-                                        {results.posts.error ? (
-                                            <span className="text-red-400">❌ {results.posts.error}</span>
-                                        ) : (
-                                            <span className="text-green-400">✅ {results.posts.count} posts encontrados</span>
-                                        )}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {results.posts.data.length > 0 && (
-                                        <div className="space-y-2">
-                                            {results.posts.data.map((post: any) => (
-                                                <div key={post.id} className="p-3 bg-black/50 rounded border border-white/5">
-                                                    <p className="font-bold">{post.title}</p>
-                                                    <p className="text-sm text-gray-400">{post.slug}</p>
-                                                </div>
-                                            ))}
+                                <StatusRow
+                                    label="Blog Posts Table"
+                                    status={!results.posts.error}
+                                    count={results.posts.count}
+                                    error={results.posts.error}
+                                />
+                                <StatusRow
+                                    label="Case Studies Table"
+                                    status={!results.cases.error}
+                                    count={results.cases.count}
+                                    error={results.cases.error}
+                                />
+                                <StatusRow
+                                    label="Materials Table"
+                                    status={!results.materials.error}
+                                    count={results.materials.count}
+                                    error={results.materials.error}
+                                />
+                            </div>
+
+                            {/* Raw Data Log */}
+                            <div className="space-y-4">
+                                <h3 className="font-mono text-xs text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                                    <div className="w-1 h-1 bg-zinc-500 rounded-full"></div>
+                                    Live Data Stream (Latest 3)
+                                </h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {['posts', 'cases', 'materials'].map((key) => (
+                                        <div key={key} className="border border-zinc-900 bg-zinc-950/50 p-4">
+                                            <h4 className="font-mono text-[10px] text-revgreen uppercase tracking-widest mb-4 border-b border-zinc-900 pb-2">
+                                                {key}
+                                            </h4>
+                                            <div className="space-y-2">
+                                                {results[key].data.slice(0, 3).map((item: any) => (
+                                                    <div key={item.id} className="font-mono text-[10px] text-zinc-400 truncate hover:text-white transition-colors cursor-default">
+                                                        {'>'} {item.title || item.client_name}
+                                                    </div>
+                                                ))}
+                                                {results[key].data.length === 0 && (
+                                                    <div className="font-mono text-[10px] text-zinc-700 italic">
+                                                        No data found
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-
-                            {/* Cases */}
-                            <Card className="bg-zinc-900 border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Briefcase className="h-6 w-6" />
-                                        Cases
-                                    </CardTitle>
-                                    <CardDescription>
-                                        {results.cases.error ? (
-                                            <span className="text-red-400">❌ {results.cases.error}</span>
-                                        ) : (
-                                            <span className="text-green-400">✅ {results.cases.count} cases encontrados</span>
-                                        )}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {results.cases.data.length > 0 && (
-                                        <div className="space-y-2">
-                                            {results.cases.data.map((caseItem: any) => (
-                                                <div key={caseItem.id} className="p-3 bg-black/50 rounded border border-white/5">
-                                                    <p className="font-bold">{caseItem.title}</p>
-                                                    <p className="text-sm text-gray-400">{caseItem.slug}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-
-                            {/* Materials */}
-                            <Card className="bg-zinc-900 border-white/10">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Download className="h-6 w-6" />
-                                        Materiais
-                                    </CardTitle>
-                                    <CardDescription>
-                                        {results.materials.error ? (
-                                            <span className="text-red-400">❌ {results.materials.error}</span>
-                                        ) : (
-                                            <span className="text-green-400">✅ {results.materials.count} materiais encontrados</span>
-                                        )}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {results.materials.data.length > 0 && (
-                                        <div className="space-y-2">
-                                            {results.materials.data.map((material: any) => (
-                                                <div key={material.id} className="p-3 bg-black/50 rounded border border-white/5">
-                                                    <p className="font-bold">{material.title}</p>
-                                                    <p className="text-sm text-gray-400">{material.slug}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-
-                            {/* Summary */}
-                            <Card className="bg-zinc-900 border-white/10">
-                                <CardHeader>
-                                    <CardTitle>📊 Resumo</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2">
-                                        <p>✅ Conexão: {results.connection ? 'OK' : 'FALHOU'}</p>
-                                        <p>📝 Posts: {results.posts.count} {results.posts.error ? '(com erro)' : ''}</p>
-                                        <p>🏆 Cases: {results.cases.count} {results.cases.error ? '(com erro)' : ''}</p>
-                                        <p>📥 Materiais: {results.materials.count} {results.materials.error ? '(com erro)' : ''}</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

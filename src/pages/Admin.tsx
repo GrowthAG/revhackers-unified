@@ -58,11 +58,11 @@ const Admin = () => {
 
   return (
     <PageLayout>
-      <div className="min-h-screen bg-white py-20">
+      <div className="min-h-screen bg-white py-32">
         <div className="container-custom max-w-7xl mx-auto">
           {/* Header Minimalista Centralizado */}
           <div className="text-center mb-16">
-            <h1 className="text-3xl font-light text-black mb-2 tracking-wide">
+            <h1 className="text-5xl md:text-6xl font-black text-black mb-4 tracking-tighter uppercase">
               Admin Hub
             </h1>
             <p className="text-xs text-zinc-400 font-normal tracking-wide uppercase">

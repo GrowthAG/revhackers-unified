@@ -189,6 +189,7 @@ Abs,
                     title="Pare de Apresentar, Comece a Fechar"
                     description="Seu produto é incrível, mas ninguém compra produto. Eles compram a certeza de que o problema será resolvido. Transforme sua demo nessa certeza."
                     ctaText="Treinar Time de Vendas"
+                    leadMagnetId="demo-framework"
                     onCTAClick={onCTAClick}
                 />
 

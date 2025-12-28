@@ -8,6 +8,7 @@ import KeyTakeaways from '../components/KeyTakeaways';
 import ConceptDefinition from '../components/ConceptDefinition';
 import RedFlags from '../components/RedFlags';
 import StrategicConclusion from '../components/StrategicConclusion';
+import ArticleCTA from '../components/ArticleCTA';
 
 const SaaSTrialPipelineArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -190,8 +191,9 @@ Abs,
 
                 <StrategicConclusion
                     title="Trial não é 'Dê uma olhadinha'"
-                    description="O Trial Gratuito é uma audição de alto risco. O usuário está investindo tempo (que é mais caro que dinheiro) para te testar. Se você não provar valor rápido (Quick Wins) e guiar ele pela mão até o sucesso, ele te demite em silêncio. Trate cada signup como um lead quente que acabou de entrar na sua loja e está pedindo ajuda."
+                    description="O Trial Gratuito é uma audição de alto risco. O usuário está investindo tempo para te testar. Se você não provar valor rápido (Quick Wins), ele te demite em silêncio. Trate cada signup como um lead quente pedindo ajuda."
                     ctaText="Agendar Diagnóstico de Onboarding"
+                    leadMagnetId="checklist"
                     onCTAClick={onCTAClick}
                 />
             </div>

@@ -3,11 +3,21 @@
 // Updated to use the new 3D minimalist glassmorphism icons
 
 const frameworkImages: Record<string, string[]> = {
-  "RevOps": ["/images/blog-v2/blog_revops_core.png"],
-  "ABM": ["/images/blog-v2/blog_abm_practical.png"],
-  "PLG": ["/images/blog-v2/blog_plg_startups.png"],
-  "Estratégia": ["/images/blog-v2/blog_gtm_strategy.png"],
-  "Defaults": ["/images/blog-v2/blog_efficient_funnel.png"]
+  // Geometric Depth (Favorite - 71) for Strategy & RevOps (Solid, Structural)
+  "RevOps": ["/images/blog-v2/bg_geometric.png"],
+  "Estratégia": ["/images/blog-v2/bg_geometric.png"],
+
+  // Liquid Flow for PLG & Growth (Organic, Dynamic)
+  "PLG": ["/images/blog-v2/bg_flow.png"],
+  "Growth": ["/images/blog-v2/bg_flow.png"],
+
+  // Glassmorphism for Tech & Data (Modern, Sharp)
+  "ABM": ["/images/blog-v2/bg_glass.png"],
+  "MarTech": ["/images/blog-v2/bg_glass.png"],
+  "Dados": ["/images/blog-v2/bg_glass.png"],
+
+  // Default fallback
+  "Defaults": ["/images/blog-v2/bg_geometric.png"]
 };
 
 // Helper: Deterministic hash from string

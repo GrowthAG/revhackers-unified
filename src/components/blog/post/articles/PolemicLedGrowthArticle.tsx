@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import StrategicContext from '../components/StrategicContext';
 import KeyTakeaways from '../components/KeyTakeaways';
+import StrategicConclusion from '../components/StrategicConclusion';
 
 const PolemicLedGrowthArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -222,26 +223,14 @@ Concorda?`
         </div>
 
         {/* CTA Final */}
-        <div className="text-center py-12 border-t border-gray-200">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Seu perfil está invisível?
-          </h3>
-          <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-            Pare de postar para o vazio. Agende um diagnóstico gratuito e descubra como ativar sua autoridade.
-          </p>
-          <div className="flex justify-center">
-            <Button
-              size="lg"
-              className="bg-black text-white hover:bg-gray-800 font-bold px-10 h-14 rounded-none uppercase tracking-wider text-sm"
-              onClick={onCTAClick}
-            >
-              <span className="flex items-center gap-2">
-                Solicitar Diagnóstico
-                <ArrowRight className="w-4 h-4" />
-              </span>
-            </Button>
-          </div>
-        </div>
+        <StrategicConclusion
+          title="Seu perfil está invisível?"
+          description="Pare de postar para o vazio. Agende um diagnóstico gratuito e descubra como ativar sua autoridade."
+          ctaText="Diagnóstico de Autoridade"
+          leadMagnetId="template"
+          diagnosticPath="/score-founder"
+          onCTAClick={onCTAClick}
+        />
 
       </div>
     </article>

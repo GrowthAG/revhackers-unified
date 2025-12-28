@@ -39,6 +39,7 @@ import ABMPracticeArticle from './articles/ABMPracticeArticle';
 import DiagnosticoFunilComercialArticle from './articles/DiagnosticoFunilComercialArticle';
 
 import DynamicV2Renderer from './DynamicV2Renderer';
+import { ArticleRenderer } from '../ArticleRenderer';
 
 interface BlogPostContentProps {
   content: string;
@@ -55,10 +56,9 @@ interface ArticleComponentProps {
 }
 
 const BlogPostContent = ({ content, category, authorName, authorRole, authorAvatar, slug, onCTAClick }: BlogPostContentProps) => {
-  // Use slug as secondary key if content is generic or empty
   const articleSlug = slug || '';
 
-  // Try to parse content as Dynamic V2 JSON
+  // Try to parse content as Dynamic V2 JSON (Keep for legacy support or special grids)
   let dynamicV2Config = null;
   if (content && content.trim().startsWith('{')) {
     try {
@@ -66,11 +66,10 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
       if (parsed.v2_template === true) {
         dynamicV2Config = parsed;
       }
-    } catch (e) {
-      // Not a valid JSON or not V2, ignore and render as normal
-    }
+    } catch (e) { }
   }
-  // Map of custom article components
+
+  // Map of custom article components (Keep for specific deep-coded articles)
   const articleComponents: Record<string, React.ComponentType<ArticleComponentProps>> = {
     'polemic-led-growth-metodo-linkedin-maquina-oportunidades': PolemicLedGrowthArticle,
     'chatgpt-para-growth-15-prompts-produtividade-marketing': ChatGPTGrowthArticle,
@@ -101,8 +100,6 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
     'comissionamento-vendas-sdr-closer-modelos': SalesCommissionArticle,
     'manual-anti-churn-retencao-clientes-cs': AntiChurnPlaybookArticle,
     'saas-plg-como-usar-seu-trial-gratuito-para-gerar-pipeline': SaaSPLGArticle,
-
-    // New Mappings
     'ia-generativa-marketing-alem-do-hype': IAGenerativaMarketingArticle,
     'diagnostico-360-descobrir-gargalos-funil': Diagnostico360Article,
     'abm-na-pratica-escolher-contas-alvo': ABMPracticeArticle,
@@ -110,9 +107,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
   };
 
   const CustomArticleComponent = articleSlug ? articleComponents[articleSlug] : null;
-  const isCustomRender = content === "Conteúdo renderizado via componente customizado";
 
-  // Fix author avatar path
   const getFixedAuthorAvatar = (path: string) => {
     if (!path) return "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
     if (path.startsWith('http') || path.startsWith('/')) return path;
@@ -122,33 +117,42 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
   const fixedAvatar = getFixedAuthorAvatar(authorAvatar);
 
   return (
-    <div className="bg-white text-gray-900">
-      {dynamicV2Config ? (
-        <DynamicV2Renderer config={dynamicV2Config} onCTAClick={onCTAClick} />
-      ) : CustomArticleComponent ? (
-        <CustomArticleComponent onCTAClick={onCTAClick} />
-      ) : (
-        <div
-          className="prose prose-lg max-w-none text-gray-900 [&_h1]:hidden"
-          dangerouslySetInnerHTML={{ __html: isCustomRender ? "Este artigo está sendo carregado..." : content }}
-        />
-      )}
+    <div className="bg-white text-gray-900 overflow-hidden antialiased">
+      <div className="max-w-4xl mx-auto">
+        {dynamicV2Config ? (
+          <DynamicV2Renderer config={dynamicV2Config} onCTAClick={onCTAClick} />
+        ) : CustomArticleComponent ? (
+          <CustomArticleComponent onCTAClick={onCTAClick} />
+        ) : (
+          <div className="space-y-6">
+            {/* Use ArticleRenderer for clean, standardized article formatting */}
+            <ArticleRenderer content={content} />
 
-      {/* Author Details Footer */}
-      <div className="mt-20 pt-10 border-t border-gray-100 flex flex-col items-center text-center">
-        <div className="relative mb-4">
-          <div className="absolute -inset-1 bg-gradient-to-r from-revgreen to-emerald-400 rounded-full opacity-70 blur-sm animate-pulse"></div>
-          <img
-            src={fixedAvatar}
-            alt={authorName}
-            className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-          />
+            {/* Contextual CTA */}
+            <div className="article-cta">
+              <h3>Pronto para o próximo nível?</h3>
+              <p>A RevHackers ajuda empresas de tecnologia a estruturarem playbooks de crescimento previsível.</p>
+              <button onClick={onCTAClick} className="article-cta-button">
+                Falar com um Especialista
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Author Footer */}
+        <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-10">
+          <div className="relative shrink-0">
+            <div className="absolute -inset-1 bg-revgreen opacity-20 blur-md rounded-full" />
+            <img src={fixedAvatar} alt={authorName} className="relative w-24 h-24 rounded-full object-cover border-2 border-zinc-100 transition-all duration-700 hover:scale-105" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h4 className="text-2xl font-black text-black tracking-tighter mb-1 uppercase italic">{authorName}</h4>
+            <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-[10px] mb-6">{authorRole}</p>
+            <p className="text-zinc-500 text-sm leading-relaxed font-bold uppercase tracking-widest opacity-60">
+              Especialista em Growth B2B e Revenue Operations. Focado em transformar operações de vendas através de dados e engenharia de processos.
+            </p>
+          </div>
         </div>
-        <h4 className="text-xl font-bold text-gray-900 mb-1">{authorName}</h4>
-        <p className="text-revgreen font-medium uppercase tracking-widest text-xs">{authorRole}</p>
-        <p className="max-w-md mt-4 text-gray-500 text-sm italic">
-          Fundador da RevHackers. Especialista em estratégias de Revenue Operations e Growth B2B para empresas de tecnologia.
-        </p>
       </div>
     </div>
   );

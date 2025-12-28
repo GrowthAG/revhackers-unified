@@ -2,22 +2,24 @@
 import Section from '@/components/ui/Section';
 
 const partners = [
-  { name: "BLDN", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c77062fe4f1854fadf797.svg", keepOriginal: true },
-  { name: "Idee Seguros", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c73dcdda192452a508485.png", keepOriginal: true },
-  { name: "Anhembi Morumbi", logo: "/lovable-uploads/f5e74a47-fc77-4b34-970e-e839080310fd.png" },
-  { name: "Cruzeiro do Sul", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c613573a5e0f8b70a8a2f.png", keepOriginal: true },
-  { name: "FMU", logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png", keepOriginal: true },
-  { name: "Tikpag", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c745adda192dc1f508a8f.webp", keepOriginal: true },
-
-
-  { name: "Emagrecentro", logo: "/lovable-uploads/116d453a-7ffe-43a3-bcc4-aeac34c74bd4.png" },
-  { name: "Tegra", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6949edabadf7e46c01d06087.webp" },
-  { name: "TOEFL Junior Brasil", logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png" },
-  { name: "Placlux", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c76cfe889d38ced51667d.png", keepOriginal: true },
-  { name: "Heineken", logo: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png" },
-
-  { name: "ENICS", logo: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png" },
-  { name: "Funnels", logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png" }
+  { name: "Heineken", logo: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png", isBigger: true },
+  { name: "Lindoya", logo: "/lovable-uploads/lindoya-logo.png", isBigger: true },
+  { name: "FMU", logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png", isBigger: true },
+  { name: "Anhembi Morumbi", logo: "/lovable-uploads/f5e74a47-fc77-4b34-970e-e839080310fd.png", isBigger: true },
+  { name: "Cruzeiro do Sul", logo: "/lovable-uploads/cruzeiro-sul-logo-v3.png", isBigger: true, isExtraWide: true },
+  { name: "Agence", logo: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png", isBigger: true },
+  { name: "BLDN", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c77062fe4f1854fadf797.svg", isBigger: true },
+  { name: "Idee Seguros", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c73dcdda192452a508485.png", isBigger: true },
+  { name: "Wysion", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f321cb62dd3a75de235ca.jpg", isBigger: true },
+  { name: "Bolt", logo: "/lovable-uploads/bolt-logo-new.png", isBigger: true },
+  { name: "Emagrecentro", logo: "/lovable-uploads/emagrecentro-logo-new.png", isBigger: true, isExtraWide: true },
+  { name: "BT", logo: "/lovable-uploads/bt-logo-new.png", isBigger: true },
+  { name: "Tegra", logo: "/lovable-uploads/tegra-logo-new.png", isBigger: true },
+  { name: "Tikpag", logo: "/lovable-uploads/tikpag-logo-final.png", isBigger: true },
+  { name: "Placlux", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c76cfe889d38ced51667d.png", isBigger: true },
+  { name: "Funnels", logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png", isBigger: true },
+  { name: "ENICS", logo: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png", isBigger: true },
+  { name: "TOEFL Junior Brasil", logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png", isBigger: true }
 ];
 
 const PartnersSection = () => {
@@ -40,11 +42,9 @@ const PartnersSection = () => {
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className={`max-h-16 w-full object-contain transition-all duration-300 group-hover:opacity-100 
-                ${partner.keepOriginal ? 'filter-none opacity-100' :
-                    partner.keepBlack ? 'filter brightness-0 opacity-80' :
-                      partner.hasBg ? 'mix-blend-multiply filter grayscale opacity-80 group-hover:filter-none' :
-                        'filter brightness-0 opacity-80 group-hover:filter-none'}`}
+                className={`w-full object-contain transition-all duration-500 
+                ${partner.isBigger ? (partner.isExtraWide ? 'max-h-24 scale-[1.6]' : 'max-h-20 scale-110') : 'max-h-16'}
+                filter grayscale opacity-70 group-hover:filter-none group-hover:opacity-100 group-hover:scale-105`}
               />
             </div>
           ))}

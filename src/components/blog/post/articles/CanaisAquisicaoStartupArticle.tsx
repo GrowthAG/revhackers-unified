@@ -9,6 +9,7 @@ import KeyTakeaways from '../components/KeyTakeaways';
 import ConceptDefinition from '../components/ConceptDefinition';
 import RedFlags from '../components/RedFlags';
 import StrategicConclusion from '../components/StrategicConclusion';
+import ROASCalculator from '../components/ROASCalculator';
 
 const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     const channels = [
@@ -97,6 +98,11 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
                     ))}
                 </div>
 
+                <div className="mb-16">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Calculadora de ROAS (Paid Media)</h3>
+                    <ROASCalculator />
+                </div>
+
                 <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Como Aplicar o Bullseye</h2>
                 <div className="space-y-6 mb-16 not-prose">
                     {frameworkSteps.map((step, index) => (
@@ -125,6 +131,7 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
                     title="A Distribuição Vence o Produto"
                     description="Peter Thiel dizia: 'Vendas curam tudo'. Um produto médio com ótima distribuição vence um produto ótimo com distribuição ruim. Pare de codar novas features e comece a testar novos canais hoje."
                     ctaText="Diagnóstico de Canais de Aquisição"
+                    diagnosticPath="/score-site"
                     onCTAClick={onCTAClick}
                 />
             </div>

@@ -3,10 +3,11 @@ import PageLayout from '@/components/layout/PageLayout';
 import { Link } from 'react-router-dom';
 import ContactForm from '@/components/shared/ContactForm';
 import Section from '@/components/ui/Section';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+
 
 const Cases = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,56 +18,51 @@ const Cases = () => {
   // Buscar cases do Supabase
   useEffect(() => {
     const fetchCases = async () => {
-      console.log('🔄 INICIANDO BUSCA DE CASES - ' + new Date().toISOString());
-
       try {
-        const { data, error } = await supabase
+        // Timeout de 10 segundos (Codex recommendation)
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout de rede')), 10000)
+        );
+
+        const fetchPromise = supabase
           .from('cases')
           .select('*')
           .eq('published', true)
-          .order('date', { ascending: false });
+          .order('created_at', { ascending: false });
 
-        console.log('📊 RESULTADO DA BUSCA:');
-        console.log('- Erro:', error);
-        console.log('- Dados recebidos:', data?.length || 0);
+        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+        if (error) throw error;
 
         if (data) {
-          console.log('📋 LISTA COMPLETA DE CASES:');
-          data.forEach((c, i) => {
-            console.log(`${i + 1}. ID: ${c.id} | Título: ${c.client_name || c.title} | Categoria: ${c.case_category}`);
-          });
-        }
-
-        if (!error && data) {
+          console.log('✅ [DATABASE] Cases carregados:', data.length);
           setCases(data);
-          console.log('✅ CASES SETADOS NO ESTADO:', data.length);
-        } else {
-          console.log('❌ ERRO AO CARREGAR:', error);
-          setCases([]);
         }
-      } catch (err) {
-        console.log('💥 EXCEÇÃO:', err);
-        setCases([]);
+      } catch (err: any) {
+        console.warn('⚠️ [DATABASE] Falha ao buscar cases (offline):', err.message);
       } finally {
         setLoading(false);
-        console.log('🏁 BUSCA FINALIZADA');
       }
     };
 
     fetchCases();
   }, []);
 
-
-
-  const error = null;
-
-  const categories = ['Todos', ...Array.from(new Set(cases.map(c => c.case_category || 'Geral').filter(Boolean)))];
-
-  const filteredCases = cases.filter(c => {
+  // Format Database Cases
+  const filteredCases = cases.map(dbCase => ({
+    ...dbCase,
+    // Ensure all required fields for UI are present
+    client_logo: dbCase.client_logo || '', // Handle potentially missing logo
+    title: dbCase.client_name || dbCase.title, // Handle different field names
+    case_category: dbCase.case_category || 'Geral',
+    preview_description: dbCase.preview_description || dbCase.description || '',
+    image_url: dbCase.image_url || dbCase.cover_image, // Adapter
+    slug: dbCase.slug
+  })).filter(c => {
     const searchLower = searchQuery.toLowerCase();
-    const title = c.title?.toLowerCase() || '';
-    const desc = c.preview_description?.toLowerCase() || '';
-    const cat = c.case_category?.toLowerCase() || '';
+    const title = (c.title || '').toLowerCase();
+    const desc = (c.preview_description || '').toLowerCase();
+    const cat = (c.case_category || '').toLowerCase();
 
     const matchesSearch = title.includes(searchLower) || desc.includes(searchLower) || cat.includes(searchLower);
     const matchesCategory = activeCategory === 'Todos' || c.case_category === activeCategory;
@@ -74,61 +70,70 @@ const Cases = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const categories = ['Todos', ...Array.from(new Set(cases.map(c => c.case_category || 'Geral').filter(Boolean)))];
+
   return (
     <PageLayout>
-      {/* Standardized Header */}
-      <div className="bg-black py-12 md:py-20 border-b border-white/10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
+      {/* 1. Dark Hero Header (Standardized with Blog) */}
+      <section className="bg-black py-24 md:py-32 relative overflow-hidden">
+        {/* Sophisticated Dark Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pointer-events-none" />
 
         <div className="container-custom relative z-10">
-          <div className="max-w-2xl mx-auto text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white tracking-tight">Cases de Sucesso</h1>
-            <p className="text-lg text-gray-400 font-light">
-              Histórias reais de empresas que transformaram seus resultados.
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <h1 className="text-6xl md:text-8xl font-black mb-6 text-white tracking-tighter uppercase">
+              Cases<span className="text-revgreen">.</span>
+            </h1>
+            <p className="text-[10px] md:text-xs text-zinc-500 font-bold tracking-[0.2em] max-w-xl mx-auto leading-relaxed uppercase">
+              Histórias reais de empresas que transformaram seus resultados através de engenharia.
             </p>
           </div>
 
-          <div className="max-w-md mx-auto relative mb-12">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+          <div className="max-w-xl mx-auto relative mb-20">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-zinc-500" />
             <Input
               type="search"
               placeholder="Buscar cases..."
-              className="pl-10 pr-4 py-6 bg-zinc-900/80 border-white/10 text-white placeholder:text-gray-600 focus:border-revgreen transition-colors rounded-xl backdrop-blur-sm"
+              className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-2xl text-xs"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="flex flex-wrap justify-center gap-3">
-            {categories.map(category => (
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 border-t border-zinc-900/50 pt-8 mt-12">
+            {categories.map((category) => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === category
-                  ? "bg-revgreen text-black shadow-[0_0_15px_rgba(74,222,128,0.3)] font-bold"
-                  : "bg-zinc-900/50 text-gray-400 hover:bg-zinc-800 hover:text-white border border-white/5 hover:border-white/20"
-                  }`}
                 onClick={() => setActiveCategory(category)}
+                className={`text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-300 relative py-2 ${activeCategory === category
+                  ? "text-revgreen"
+                  : "text-zinc-500 hover:text-white"
+                  }`}
               >
                 {category}
+                {activeCategory === category && (
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-revgreen" />
+                )}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Cases Grid */}
-      <Section variant="dark" className="py-24 bg-black min-h-screen relative">
-        <div className="absolute inset-0 bg-grid-white/[0.03] pointer-events-none" />
+      <section className="pb-24 bg-white min-h-screen relative">
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
         <div className="container-custom relative z-10">
 
           {loading ? (
             <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-8 h-8 text-revgreen animate-spin" />
+              <Loader2 className="w-8 h-8 text-black animate-spin" />
             </div>
           ) : filteredCases.length === 0 ? (
-            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/30">
-              <h3 className="text-xl font-medium text-white">Nenhum case encontrado</h3>
-              <Button variant="link" className="text-revgreen mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
+            <div className="text-center py-20 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/30">
+              <h3 className="text-xl font-black uppercase tracking-widest text-black">Nenhum case encontrado</h3>
+              <Button variant="link" className="text-black font-bold uppercase tracking-widest text-[10px] mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
                 Limpar filtros
               </Button>
             </div>
@@ -137,38 +142,37 @@ const Cases = () => {
               {filteredCases.map((study, index) => (
                 <Link to={`/cases/${study.slug}`} className="group h-full" key={study.id || index}>
                   <div className={`
-                    bg-white/5 overflow-hidden h-full flex flex-col transition-all duration-300 relative rounded-sm
-                    ${study.featured
-                      ? 'border border-revgreen/30 hover:border-revgreen shadow-[0_0_30px_rgba(0,255,136,0.05)]'
-                      : 'border border-white/10 hover:border-revgreen'
-                    }
+                    bg-white overflow-hidden h-full flex flex-col transition-all duration-500 relative rounded-sm border border-zinc-200 hover:border-black shadow-sm hover:shadow-2xl hover:-translate-y-1
                   `}>
-                    {study.featured && (
-                      <div className="absolute top-4 right-4 z-20">
-                        <span className="bg-revgreen text-black text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wide">Destaque</span>
+                    <div className="h-56 overflow-hidden bg-zinc-50 flex items-center justify-center border-b border-zinc-100 relative transition-all">
+                      <div className="w-full h-full flex items-center justify-center p-10 transition-transform duration-700 group-hover:scale-105">
+                        <img
+                          src={study.client_logo}
+                          alt={study.title}
+                          className="max-w-[180px] max-h-[75px] w-auto h-auto object-contain opacity-90 group-hover:opacity-100 transition-all duration-500"
+                          style={{
+                            transform: study.logoScale ? `scale(${study.logoScale})` : 'scale(1.0)',
+                          }}
+                        />
                       </div>
-                    )}
-
-                    <div className="h-48 overflow-hidden bg-white flex items-center justify-center p-8 border-b border-white/10 relative">
-                      {study.client_logo ? (
-                        <img src={study.client_logo} alt={study.title} className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="text-gray-300 font-bold text-2xl uppercase">{study.client_name?.substring(0, 2)}</div>
-                      )}
                     </div>
 
-                    <div className="p-8 flex-1 flex flex-col">
-                      <span className="text-xs font-mono-tech uppercase tracking-wider text-revgreen mb-2">
-                        {study.case_category} {study.industry ? `• ${study.industry}` : ''}
+                    <div className="p-10 md:p-12 flex-1 flex flex-col bg-white">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6 font-mono-tech">
+                        {study.case_category}
                       </span>
-                      <h3 className="text-2xl font-bold text-white mb-3">{study.title}</h3>
-                      <p className="text-gray-400 font-light text-sm mb-6 flex-1">
+                      <h3 className="text-xl font-bold text-black mb-4 group-hover:text-zinc-500 transition-colors leading-tight">
+                        {study.title}
+                      </h3>
+                      <p className="text-zinc-600 font-normal text-[13px] mb-8 flex-1 line-clamp-3 leading-relaxed">
                         {study.preview_description}
                       </p>
-                      <div className="pt-4 border-t border-white/10">
-                        <p className="text-sm font-bold text-white group-hover:text-revgreen">
-                          {study.primary_metric}
-                        </p>
+
+                      <div className="pt-8 border-t border-zinc-100 flex items-center justify-between group-hover:opacity-100 transition-opacity">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black">
+                          Ver Detalhes
+                        </span>
+                        <ArrowRight className="h-4 w-4 text-black group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </div>
@@ -177,10 +181,10 @@ const Cases = () => {
             </div>
           )}
         </div>
-      </Section>
+      </section>
 
       {/* CTA Section */}
-      <Section variant="light" className="py-20 bg-gray-50 border-t border-gray-200">
+      <section className="py-24 bg-white border-t border-zinc-100">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center">
             <div className="flex-1">
@@ -196,7 +200,7 @@ const Cases = () => {
             </div>
           </div>
         </div>
-      </Section>
+      </section>
     </PageLayout>
   );
 };

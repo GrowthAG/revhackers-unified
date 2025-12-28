@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
@@ -9,6 +10,9 @@ interface AuthContextType {
     userProfile: any | null;
     userRole: "super_admin" | "admin" | "user" | null;
     isLoading: boolean;
+    isProfileLoading: boolean;
+    isRecoveringPassword: boolean;
+    setIsRecoveringPassword: (value: boolean) => void; // NOVO: Para resetar após sucesso
     signIn: (email: string) => Promise<void>; // OTP (Existing)
     signInWithPassword: (email: string, password: string) => Promise<{ error: any }>;
     signUp: (email: string, password: string) => Promise<{ error: any }>;
@@ -26,7 +30,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [userProfile, setUserProfile] = useState<any | null>(null);
     const [userRole, setUserRole] = useState<"super_admin" | "admin" | "user" | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isProfileLoading, setIsProfileLoading] = useState(false);
+    const [isRecoveringPassword, setIsRecoveringPassword] = useState(() => {
+        return window.location.hash.includes('type=recovery') ||
+            window.location.hash.includes('access_token=') ||
+            window.location.pathname === '/reset-password';
+    });
     const { toast } = useToast();
+    const navigate = useNavigate();
 
     const fetchUserRole = async (userId: string) => {
         try {
@@ -51,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err) {
             console.error('Failed to fetch profile:', err);
         } finally {
-            setIsLoading(false);
+            setIsProfileLoading(false);
         }
     };
 
@@ -73,63 +84,114 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        console.log('🔐 Auth State Changed:', {
+        console.log('🔐 [AUTH STATE] Updated:', {
             hasUser: !!user,
-            userEmail: user?.email,
             isLoading,
-            userRole
+            userRole,
+            currentPath: window.location.pathname
         });
+
+        // Safety timeout to prevent infinite loading
+        const safetyTimeout = setTimeout(() => {
+            if (isLoading) {
+                console.warn('⚠️ [AUTH] Loading state trapped for 5s. Forcing ready.');
+                setIsLoading(false);
+            }
+        }, 5000);
+
+        return () => clearTimeout(safetyTimeout);
     }, [user, isLoading, userRole]);
 
     useEffect(() => {
-        console.log('🚀 AuthProvider: Initializing...');
+        console.log('🚀 [AUTH] Provider: Initializing onAuthStateChange listener...');
 
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            console.log('📦 Initial Session:', session ? 'Found' : 'Not found');
+        if (window.location.hash.includes('type=recovery') ||
+            window.location.hash.includes('access_token=') ||
+            window.location.pathname === '/reset-password') {
+            console.log('🔑 [AUTH] Initial recovery state detected via URL');
+            setIsRecoveringPassword(true);
+        }
+
+        // Safe Session Initialization
+        const initSession = async () => {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) {
+                    console.warn('⚠️ [AUTH] Initial session check failed:', error.message);
+                    // Force clean state if session check fails
+                    if (error.message.includes('Invalid Refresh Token')) {
+                        localStorage.removeItem('sb-eqspbruarsdybpfeijnf-auth-token');
+                    }
+                    return;
+                }
+                if (session) {
+                    setSession(session);
+                    setUser(session.user);
+                    // fetchUserRole will be triggered by the listener
+                }
+            } catch (err) {
+                console.error('⚠️ [AUTH] Unexpected initialization error:', err);
+            } finally {
+                setIsLoading(false); // Ensure we stop loading even on error
+            }
+        };
+
+        initSession();
+
+        let mounted = true;
+
+        // Listen for auth changes - Supabase handles sync/initial check via INITIAL_SESSION event
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            if (!mounted) return;
+
+            console.log(`🔄 [AUTH EVENT] ${_event}`, {
+                sessionExists: !!session,
+                userId: session?.user?.id,
+                path: window.location.pathname
+            });
+
+            // Sincronizar estados básicos imediatamente
             setSession(session);
             setUser(session?.user ?? null);
 
-            if (session?.user) {
-                fetchUserRole(session.user.id);
-            } else {
+            // Resiliência contra loop de carregamento
+            if (_event === 'INITIAL_SESSION') {
                 setIsLoading(false);
             }
-        });
 
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            console.log('🔄 Auth State Change Event:', _event, session ? 'Session exists' : 'No session');
-
-            // CORREÇÃO DEFINITIVA: Não processar INITIAL_SESSION se não há sessão
-            // Isso previne limpar o estado quando o usuário já está logado
-            if (_event === 'INITIAL_SESSION' && !session) {
-                console.log('⚠️ Ignorando INITIAL_SESSION sem sessão');
+            if (_event === 'SIGNED_OUT') {
+                setUserProfile(null);
+                setUserRole(null);
                 setIsLoading(false);
+                setIsProfileLoading(false);
                 return;
+            }
+
+            // Lógica de perfil para qualquer evento que traga um usuário
+            if (session?.user && (_event === 'SIGNED_IN' || _event === 'USER_UPDATED' || _event === 'INITIAL_SESSION' || _event === 'TOKEN_REFRESHED')) {
+                setIsProfileLoading(true);
+                // Não dar await aqui para não bloquear o loop de eventos do Supabase
+                fetchUserRole(session.user.id);
             }
 
             if (_event === 'PASSWORD_RECOVERY') {
-                window.location.href = '/reset-password';
-                return;
-            }
+                console.log('🔑 [AUTH] PASSWORD_RECOVERY detected. Locking redirect flow.');
+                setIsRecoveringPassword(true);
 
-            // Só atualizar estado se houver mudança real
-            if (_event !== 'INITIAL_SESSION' || session) {
-                setSession(session);
-                setUser(session?.user ?? null);
-
-                if (session?.user) {
-                    await fetchUserRole(session.user.id);
-                } else {
-                    setUserProfile(null);
-                    setUserRole(null);
-                    setIsLoading(false);
+                if (window.location.pathname !== '/reset-password') {
+                    console.log('🚀 [AUTH] Navigating to /reset-password');
+                    navigate('/reset-password', { replace: true });
                 }
             }
+
+            // Garantir que carregamento inicial termine
+            setIsLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     // Existing OTP Sign In
@@ -195,17 +257,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const resetPassword = async (email: string) => {
         try {
-            // Use localhost em desenvolvimento, produção em prod
-            const redirectUrl = window.location.hostname === 'localhost'
-                ? 'http://localhost:8080/reset-password'
-                : `${window.location.origin}/reset-password`;
+            // Usar o origin atual em vez de localhost fixo
+            const redirectUrl = window.location.origin + '/reset-password';
+
+            console.log('🔐 Reset Password: Enviando para', email);
+            console.log('🔐 Redirect URL:', redirectUrl);
 
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl,
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('🔐 Reset Password: Erro', error);
+                throw error;
+            }
 
+            console.log('✅ Reset Password: Email enviado com sucesso!');
             return { error: null };
         } catch (error: any) {
             console.error("Reset password error:", error.message);
@@ -215,13 +282,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updatePassword = async (password: string) => {
         try {
-            const { error } = await supabase.auth.updateUser({
-                password,
-            });
-            if (error) throw error;
+            console.log('📡 [AUTH] Attempting to update password... Session status:', !!session);
+
+            // Timeout de 20 segundos para atualização de senha
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Tempo limite excedido ao atualizar senha. Verifique sua conexão.')), 20000)
+            );
+
+            const updatePromise = (async () => {
+                const { data, error } = await supabase.auth.updateUser({
+                    password,
+                });
+                if (error) throw error;
+                return { data, error: null };
+            })();
+
+            const result = await Promise.race([updatePromise, timeoutPromise]) as any;
+
+            console.log('✅ [AUTH] Password update call finished:', !!result);
             return { error: null };
         } catch (error: any) {
-            console.error("Update password error:", error.message);
+            console.error("Update password error detailed:", error);
             return { error };
         }
     }
@@ -275,6 +356,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             userProfile,
             userRole,
             isLoading,
+            isProfileLoading,
+            isRecoveringPassword,
+            setIsRecoveringPassword,
             signIn,
             signInWithPassword,
             signUp,

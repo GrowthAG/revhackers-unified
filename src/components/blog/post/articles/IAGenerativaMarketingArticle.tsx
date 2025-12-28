@@ -1,18 +1,13 @@
 import React from 'react';
 import { Brain, Cpu, Database, Layers, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import StrategicConclusion from '../components/StrategicConclusion';
 
 const IAGenerativaMarketingArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     return (
         <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-gray-900 leading-relaxed">
             {/* Hero Banner */}
-            <div className="mb-12 rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black">
-                <img
-                    src="/images/blog-v2/blog_ai_marketing.png"
-                    alt="AI Generative Marketing"
-                    className="w-full h-auto object-cover opacity-90"
-                />
-            </div>
+
 
             {/* Strategic Context */}
             <div className="mb-12 p-8 border-l-2 border-black">
@@ -194,28 +189,17 @@ const IAGenerativaMarketingArticle = ({ onCTAClick }: { onCTAClick?: () => void 
             </section>
 
             {/* Final CTA */}
-            <div className="bg-gray-50 border border-gray-200 p-8 md:p-12 text-center rounded-sm">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900 tracking-tight">Ready to run?</h2>
-                <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto font-light">
-                    Não tente construir agentes sozinho se você não tem um time de engenharia de dados.
-                    Nós já construímos a arquitetura. Plugue sua operação na nossa infraestrutura de Growth AI.
-                </p>
-                <div className="flex flex-col md:flex-row justify-center gap-4">
-                    <Button
-                        className="bg-black text-white px-8 py-6 text-sm uppercase tracking-widest hover:bg-gray-800 rounded-sm font-bold shadow-none transition-all"
-                        onClick={onCTAClick}
-                    >
-                        Agendar Diagnóstico de IA
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="border border-black text-black px-8 py-6 text-sm uppercase tracking-widest hover:bg-black hover:text-white rounded-sm font-bold transition-all"
-                        onClick={onCTAClick}
-                    >
-                        Baixar Blueprint de Agentes
-                    </Button>
-                </div>
-            </div>
+// ... (add import)
+            import StrategicConclusion from '../components/StrategicConclusion';
+
+            // ... (replace CTA)
+            <StrategicConclusion
+                title="Ready to run?"
+                description="Não tente construir agentes sozinho se você não tem um time de engenharia de dados. Nós já construímos a arquitetura. Plugue sua operação na nossa infraestrutura de Growth AI."
+                ctaText="Agendar Diagnóstico de IA"
+                leadMagnetId="agent-blueprint"
+                onCTAClick={onCTAClick}
+            />
 
         </article>
     );

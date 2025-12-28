@@ -157,6 +157,7 @@ Próximos Passos:
                     title="Seja um Cético"
                     description="Torture os dados e eles confessarão qualquer coisa. Seu papel como líder de Growth é questionar os números. 'Isso faz sentido?'. 'A coleta está certa?'. A intuição humana ainda é necessária para validar a lógica da máquina."
                     ctaText="Auditoria de Analytics & Dados"
+                    leadMagnetId="checklist"
                     onCTAClick={onCTAClick}
                 />
             </div>

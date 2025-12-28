@@ -22,19 +22,37 @@ const TableOfContents = ({ containerRef }: TableOfContentsProps) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const generateId = (text: string) => {
+      return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+    };
+
     const elements = containerRef.current.querySelectorAll('h2, h3');
-    const items: TocItem[] = Array.from(elements).map((el) => ({
-      id: el.id,
-      text: el.textContent || '',
-      level: parseInt(el.tagName.substring(1), 10),
-    }));
+    const items: TocItem[] = Array.from(elements).map((el) => {
+      const text = el.textContent || '';
+      if (!el.id) {
+        el.id = generateId(text);
+      }
+      // Add scroll margin to prevent header overlap
+      (el as HTMLElement).style.scrollMarginTop = '120px';
+
+      return {
+        id: el.id,
+        text: text,
+        level: parseInt(el.tagName.substring(1), 10),
+      };
+    });
 
     setHeadings(items);
 
-    if (items.length > 0 && !activeId) {
+    if (items.length > 0) {
       setActiveId(items[0].id);
     }
-  }, [containerRef, activeId]);
+  }, [containerRef]);
 
   useEffect(() => {
     if (headings.length === 0) return;

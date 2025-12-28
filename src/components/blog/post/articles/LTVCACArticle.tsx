@@ -8,6 +8,7 @@ import KeyTakeaways from '../components/KeyTakeaways';
 import ConceptDefinition from '../components/ConceptDefinition';
 import RedFlags from '../components/RedFlags';
 import StrategicConclusion from '../components/StrategicConclusion';
+import LTVCalculator from '../components/LTVCalculator';
 
 const LTVCACArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -98,32 +99,8 @@ LTV / CAC = 1.600 / 200 = 8x.
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Calculando na Prática</h2>
-        <div className="space-y-8 mb-16">
-          {templates.map((template, index) => (
-            <div key={index} className="bg-zinc-900 text-gray-300 p-8 rounded-xl border border-zinc-800 shadow-xl not-prose relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-revgreen/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
-              <div className="flex justify-between items-start mb-6 border-b border-zinc-800 pb-4 relative z-10">
-                <div>
-                  <h3 className="text-white font-bold text-lg flex items-center gap-2">
-                    <Calculator className="w-5 h-5 text-revgreen" />
-                    {template.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">{template.subject}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCopy(template.body, index)}
-                  className="text-revgreen hover:text-revgreen hover:bg-revgreen/10"
-                >
-                  {copiedIndex === index ? "Copiado" : "Copiar"}
-                </Button>
-              </div>
-              <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-emerald-100/90 font-light relative z-10">
-                {template.body}
-              </pre>
-            </div>
-          ))}
+        <div className="mb-16">
+          <LTVCalculator />
         </div>
 
         <div className="my-16 bg-gray-50 p-8 rounded-xl not-prose border border-gray-200">
@@ -152,9 +129,10 @@ LTV / CAC = 1.600 / 200 = 8x.
         </div>
 
         <StrategicConclusion
-          title="Métricas são Bússolas, não Objetivos"
-          description="O objetivo não é ter o melhor LTV:CAC do mundo. O objetivo é construir um negócio sustentável que resolve problemas reais. Use as métricas para não bater o navio, mas não esqueça de olhar para o horizonte (Estratégia)."
-          ctaText="Auditoria de Unit Economics"
+          title="Transforme Métricas em Lucro Real"
+          description="Você já sabe seu LTV e CAC. O próximo passo é otimizar sua máquina de vendas para escalar esses números com previsibilidade. Não deixe dinheiro na mesa."
+          ctaText="Auditoria de Máquina de Vendas"
+          diagnosticPath="/score-revenue"
           onCTAClick={onCTAClick}
         />
       </div>

@@ -15,7 +15,7 @@ async function updateTikPag() {
             case_category: 'Fintech • Mercado Imobiliário',
             title: 'TikPag: O Checkout do Mercado Imobiliário',
             image_url: 'https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c65f6ec583d6e953d557d.jpg',
-            client_logo: 'https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c65f7e4db33ed17ffc229.png',
+            client_logo: '/lovable-uploads/tikpag-logo-final.png',
             preview_description: 'Split de pagamentos automático para imobiliárias e corretores: O fim da bitributação de comissões.',
             challenge: 'Imobiliárias sofriam com a "Bitributação" ao receber o valor cheio da venda para depois repassar a comissão do corretor. Além disso, o processo de cobrança de sinal era lento e manual, fazendo vendas caírem por "esfriamento" do cliente.',
             solution: 'Desenvolvemos uma adquirente (Subadquirente) nichada para o mercado imobiliário. A solução "Split de Pagamentos" divide, no ato do passar do cartão, o que é da Imobiliária e o que é do Corretor. O dinheiro já cai na conta de cada um, resolvendo a bitributação fiscal e agilizando o fechamento de vendas em stands.',

@@ -30,13 +30,13 @@ const DiagnosticoPage = () => {
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-[1.05] tracking-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-6 leading-[1.05] tracking-tight">
             Descubra o Score da <br className="hidden md:block" />
-            <span className="text-gray-400">sua Máquina de Vendas</span>
+            <span className="text-zinc-400 font-light">sua Máquina de Vendas</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-zinc-500 mb-8 max-w-3xl mx-auto leading-relaxed font-light tracking-tight">
             Responda 15 perguntas estratégicas para mapear o nível de maturidade da sua operação.
             Receba um relatório imediato com os próximos passos para escala.
           </p>
@@ -46,7 +46,7 @@ const DiagnosticoPage = () => {
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-center gap-2 text-left">
                 <CheckCircle className="w-5 h-5 text-revgreen flex-shrink-0" />
-                <span className="text-sm text-gray-700 font-medium">{benefit}</span>
+                <span className="text-sm text-black font-semibold uppercase tracking-widest text-[10px]">{benefit}</span>
               </div>
             ))}
           </div>
@@ -54,7 +54,7 @@ const DiagnosticoPage = () => {
       </Section>
 
       {/* Wizard Section */}
-      <Section variant="light" className="py-16 bg-gray-50">
+      <Section variant="light" className="py-16 bg-white border-t border-zinc-100">
         <div className="container-custom">
           <DiagnosticWizard />
         </div>

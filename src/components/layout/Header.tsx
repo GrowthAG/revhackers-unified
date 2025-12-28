@@ -208,7 +208,7 @@ const Header = () => {
           )}
 
           <Button asChild className="bg-revgreen text-black hover:bg-revgreen/90 font-bold rounded-full px-6 transition-all duration-300 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]">
-            <Link to="/booking" onClick={scrollToTop} className="flex items-center gap-2">
+            <Link to="/agenda" onClick={scrollToTop} className="flex items-center gap-2">
               Agendar Call <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>
@@ -269,7 +269,7 @@ const Header = () => {
               </div>
 
               <Button asChild className="w-full bg-revgreen text-black hover:bg-revgreen/90 font-bold rounded-full h-12 text-lg shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                <Link to="/booking" onClick={scrollToTop} className="flex items-center justify-center gap-2">
+                <Link to="/agenda" onClick={scrollToTop} className="flex items-center justify-center gap-2">
                   Agendar Call <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>

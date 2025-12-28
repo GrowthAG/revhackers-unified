@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Pencil, Trash2, Eye, Upload } from 'lucide-react';
+import { Plus, Edit, Trash, Eye, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { blogPosts } from '@/data/blogData';
@@ -35,6 +35,7 @@ interface BlogPost {
 }
 
 const AdminPosts = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [postToDelete, setPostToDelete] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +71,7 @@ const AdminPosts = () => {
         .eq('id', id);
 
       if (error) throw error;
-      
+
       setPosts(posts.filter(post => post.id !== id));
       setPostToDelete(null);
       toast.success('Post excluído com sucesso!');
@@ -83,11 +84,11 @@ const AdminPosts = () => {
   const validatePost = (post: any) => {
     const requiredFields = ['title', 'excerpt', 'category', 'date'];
     const missingFields = requiredFields.filter(field => !post[field]);
-    
+
     if (missingFields.length > 0) {
       throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
     }
-    
+
     return {
       id: post.id,
       title: post.title.trim(),
@@ -111,15 +112,15 @@ const AdminPosts = () => {
       const { data: existingPosts } = await supabase
         .from('blog_posts')
         .select('id, slug');
-      
+
       const existingIds = new Set((existingPosts || []).map(post => post.id));
       const existingSlugs = new Set((existingPosts || []).map(post => post.slug));
-      
+
       let imported = 0;
       let skipped = 0;
       let errors = 0;
       let errorDetails = [];
-      
+
       for (const post of blogPosts) {
         try {
           if (existingIds.has(post.id) || existingSlugs.has(post.slug)) {
@@ -127,13 +128,13 @@ const AdminPosts = () => {
             skipped++;
             continue;
           }
-          
+
           const validatedPost = validatePost(post);
-          
+
           const { error } = await supabase
             .from('blog_posts')
             .insert([validatedPost]);
-            
+
           if (error) {
             console.error(`Error importing post ${post.title}:`, error);
             errors++;
@@ -142,7 +143,7 @@ const AdminPosts = () => {
             imported++;
             console.log(`Successfully imported: ${post.title}`);
           }
-          
+
           await new Promise(resolve => setTimeout(resolve, 300));
         } catch (error) {
           console.error(`Error processing post ${post.title}:`, error);
@@ -150,16 +151,16 @@ const AdminPosts = () => {
           errorDetails.push(`${post.title}: ${error.message}`);
         }
       }
-      
+
       await fetchPosts();
-      
+
       if (errors > 0) {
         console.error('Import errors:', errorDetails);
         toast.error(`Importação concluída com erros. ${imported} posts importados, ${skipped} posts ignorados, ${errors} erros.`);
       } else {
         toast.success(`Importação concluída! ${imported} posts importados, ${skipped} posts ignorados.`);
       }
-      
+
       setShowMigrationDialog(false);
     } catch (error) {
       console.error('Error during migration:', error);
@@ -176,7 +177,7 @@ const AdminPosts = () => {
 
   if (isLoading) {
     return (
-      <AdminLayout pageTitle="Carregando...">
+      <AdminLayout>
         <div className="flex justify-center items-center h-64">
           <div className="w-8 h-8 border-4 border-revgreen border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -185,7 +186,7 @@ const AdminPosts = () => {
   }
 
   return (
-    <AdminLayout pageTitle="Gerenciar Posts">
+    <AdminLayout>
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Posts do Blog</h2>
         <div className="flex gap-2">
@@ -199,14 +200,14 @@ const AdminPosts = () => {
               <AlertDialogHeader>
                 <AlertDialogTitle>Importar Posts Existentes</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Isso importará todos os posts existentes no arquivo blogData.ts para o banco de dados. 
+                  Isso importará todos os posts existentes no arquivo blogData.ts para o banco de dados.
                   Posts existentes com ID ou slug iguais serão ignorados.
                   Essa ação não pode ser desfeita.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={isMigrating}>Cancelar</AlertDialogCancel>
-                <AlertDialogAction 
+                <AlertDialogAction
                   onClick={(e) => {
                     e.preventDefault();
                     migrateExistingPosts();
@@ -241,7 +242,15 @@ const AdminPosts = () => {
           <TableBody>
             {posts.length > 0 ? (
               posts.map((post) => (
-                <TableRow key={post.id}>
+                <TableRow
+                  key={post.id}
+                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    console.log('Navigating to post:', post.id);
+                    window.location.assign(`/admin/posts/edit/${post.id}`);
+                  }}
+                >
+
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.category}</TableCell>
                   <TableCell>{formatDate(post.date)}</TableCell>
@@ -251,28 +260,49 @@ const AdminPosts = () => {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link to={`/blog/${post.slug}`} target="_blank">
-                          <Eye className="h-4 w-4" />
-                        </Link>
+                    <div className="flex items-center justify-end space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-black hover:text-white hover:bg-black transition-colors rounded-none"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(`/blog/${post.slug}`, '_blank');
+                        }}
+                        title="Visualizar"
+                      >
+                        <Eye className="h-4 w-4 stroke-[2.5]" />
                       </Button>
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link to={`/admin/posts/edit/${post.id}`}>
-                          <Pencil className="h-4 w-4" />
-                        </Link>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-black hover:text-white hover:bg-black transition-colors rounded-none"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.assign(`/admin/posts/edit/${post.id}`);
+                        }}
+                        title="Editar"
+                      >
+                        <Edit className="h-4 w-4 stroke-[2.5]" />
                       </Button>
+
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="icon"
-                            onClick={() => setPostToDelete(post.id)}
+                            className="h-8 w-8 text-black hover:text-white hover:bg-red-600 transition-colors rounded-none"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPostToDelete(post.id);
+                            }}
+                            title="Excluir"
                           >
-                            <Trash2 className="h-4 w-4 text-red-500" />
+                            <Trash className="h-4 w-4 stroke-[2.5]" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                           <AlertDialogHeader>
                             <AlertDialogTitle>Excluir Post</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -281,9 +311,12 @@ const AdminPosts = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction 
+                            <AlertDialogAction
                               className="bg-red-500 hover:bg-red-600"
-                              onClick={() => handleDeletePost(post.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePost(post.id);
+                              }}
                             >
                               Excluir
                             </AlertDialogAction>

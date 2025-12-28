@@ -63,31 +63,31 @@ const ExitIntentPopup = () => {
             </div>
 
             {/* Headline */}
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">
-              Espere! Não perca esta oportunidade 🎯
+            <h2 className="text-2xl font-black mb-4 text-black uppercase tracking-tighter">
+              ACESSO TEMPORÁRIO LIBERADO
             </h2>
 
-            <p className="text-gray-600 mb-6">
-              Receba nosso <strong>Kit de RevOps GRATUITO</strong> com:
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-6">
+              RECURSOS TÉCNICOS DISPONÍVEIS:
             </p>
 
             {/* Benefits */}
-            <div className="text-left mb-6 space-y-2">
-              <div className="flex items-center text-sm text-gray-700">
-                <div className="h-2 w-2 bg-revgreen rounded-full mr-3"></div>
-                Checklist de 47 pontos para otimizar seu funil
+            <div className="text-left mb-8 space-y-3">
+              <div className="flex items-center text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
+                <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
+                CHECKLIST DE AUDITORIA (47 PONTOS)
               </div>
-              <div className="flex items-center text-sm text-gray-700">
-                <div className="h-2 w-2 bg-revgreen rounded-full mr-3"></div>
-                Planilha de cálculo de ROI para campanhas B2B
+              <div className="flex items-center text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
+                <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
+                CALCULADORA DE ROI EM TIME REAL
               </div>
-              <div className="flex items-center text-sm text-gray-700">
-                <div className="h-2 w-2 bg-revgreen rounded-full mr-3"></div>
-                Templates de automação de vendas
+              <div className="flex items-center text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
+                <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
+                PLAYBOOKS DE AUTOMAÇÃO DE VENDAS
               </div>
-              <div className="flex items-center text-sm text-gray-700">
-                <div className="h-2 w-2 bg-revgreen rounded-full mr-3"></div>
-                Guia completo de métricas de RevOps
+              <div className="flex items-center text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
+                <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
+                MATRIZ DE MÉTRICAS B2B
               </div>
             </div>
 
@@ -95,27 +95,26 @@ const ExitIntentPopup = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 type="email"
-                placeholder="Seu melhor email"
+                placeholder="E-MAIL CORPORATIVO"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="text-center"
+                className="text-center h-12 rounded-none border-zinc-200 focus:border-black font-bold text-xs"
               />
 
-              <Button type="submit" className="w-full bg-revgreen hover:bg-revgreen/90 text-black">
-                <Gift className="mr-2 h-4 w-4" />
-                Quero o Kit Gratuito
+              <Button type="submit" className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-12 rounded-none font-bold uppercase tracking-widest text-[10px] transition-all duration-300">
+                LIBERAR ARQUIVOS →
               </Button>
             </form>
 
             {/* Trust elements */}
-            <div className="mt-6 space-y-2">
-              <div className="flex items-center justify-center text-xs text-gray-500">
-                <Clock className="h-3 w-3 mr-1" />
-                Material enviado em até 5 minutos
+            <div className="mt-8 space-y-2 border-t border-zinc-100 pt-6">
+              <div className="flex items-center justify-center text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
+                <Clock className="h-3 w-3 mr-2" />
+                LATÊNCIA DE ENTREGA: &lt; 300S
               </div>
-              <p className="text-xs text-gray-400">
-                ✅ Sem spam • ✅ Cancele quando quiser
+              <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.2em]">
+                INFRAESTRUTURA SEGURA • SEM SPAM
               </p>
             </div>
 
@@ -137,21 +136,21 @@ const ExitIntentPopup = () => {
             </div>
           </div>
         ) : (
-          <div className="p-8 text-center">
-            <div className="h-16 w-16 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <Gift className="h-8 w-8 text-green-600" />
+          <div className="p-12 text-center">
+            <div className="h-16 w-16 bg-zinc-50 border border-zinc-100 rounded-none mx-auto mb-8 flex items-center justify-center">
+              <Gift className="h-8 w-8 text-black" />
             </div>
 
-            <h2 className="text-2xl font-bold mb-4 text-green-800">
-              Kit enviado com sucesso! 🎉
+            <h2 className="text-2xl font-black mb-4 text-black uppercase tracking-tighter">
+              DADOS ENVIADOS
             </h2>
 
-            <p className="text-gray-600 mb-4">
-              Verifique sua caixa de entrada (e spam) nos próximos minutos.
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-8">
+              Verifique sua caixa de entrada para o processamento final.
             </p>
 
-            <p className="text-sm text-gray-500">
-              Prepare-se para transformar seus resultados em RevOps! 🚀
+            <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-[0.3em]">
+              SISTEMA DE ENTREGA AUTOMATIZADO
             </p>
           </div>
         )}

@@ -1,10 +1,16 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, RefreshCcw, Share2, BarChart2, Briefcase, Zap, Database } from 'lucide-react';
+import { ArrowRight, BarChart2, Zap, RefreshCcw, Share2, Briefcase, CheckCircle2, Check, Database, Layout } from 'lucide-react';
+import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
-import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import PageLayout from '@/components/layout/PageLayout';
+import Section from '@/components/ui/Section';
+import { useToast } from '@/hooks/use-toast';
+import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
 
 // --- TYPES ---
 type Dimension = 'revenue' | 'process' | 'data' | 'tech';
@@ -12,7 +18,7 @@ type Dimension = 'revenue' | 'process' | 'data' | 'tech';
 interface Option {
     text: string;
     points: number;
-    dimensions: Record<Dimension, number>; // How this answer affects each dimension (0-10)
+    dimensions: Record<Dimension, number>;
 }
 
 interface Question {
@@ -22,7 +28,6 @@ interface Question {
     options: Option[];
 }
 
-// --- QUESTIONS (The "Killer" Logic) ---
 const QUESTIONS: Question[] = [
     {
         id: 1,
@@ -37,7 +42,6 @@ const QUESTIONS: Question[] = [
     {
         id: 2,
         question: "Como sua equipe define quem deve ser abordado (prospectado) hoje?",
-        subtext: "Teste de Inteligência de Dados",
         options: [
             { text: "Feeling / Intuição. Cada um faz sua lista.", points: 0, dimensions: { revenue: 2, process: 1, data: 0, tech: 0 } },
             { text: "Listas frias compradas ou geradas sem filtro profundo.", points: 3, dimensions: { revenue: 4, process: 3, data: 3, tech: 2 } },
@@ -48,7 +52,6 @@ const QUESTIONS: Question[] = [
     {
         id: 3,
         question: "Seu crescimento de receita atual é Linear ou Exponencial?",
-        subtext: "Teste de Alavancagem Tecnológica",
         options: [
             { text: "Linear. Para vender mais, preciso de mais vendedores.", points: 2, dimensions: { revenue: 4, process: 4, data: 2, tech: 1 } },
             { text: "Alavancado. Consigo vender mais mantendo a mesma equipe.", points: 8, dimensions: { revenue: 8, process: 7, data: 6, tech: 9 } },
@@ -58,7 +61,6 @@ const QUESTIONS: Question[] = [
     {
         id: 4,
         question: "Você sabe exatamente quanto custa para adquirir um cliente (CAC) e quanto ele deixa (LTV) por canal?",
-        subtext: "Teste de Domínio Financeiro",
         options: [
             { text: "Não tenho esses números claros.", points: 0, dimensions: { revenue: 0, process: 0, data: 0, tech: 0 } },
             { text: "Sei o geral da empresa, mas não por canal.", points: 5, dimensions: { revenue: 6, process: 4, data: 5, tech: 3 } },
@@ -68,7 +70,6 @@ const QUESTIONS: Question[] = [
     {
         id: 5,
         question: "Suas ferramentas de Marketing e Vendas conversam entre si?",
-        subtext: "Teste de Stack & Integração",
         options: [
             { text: "Não. São silos separados.", points: 0, dimensions: { revenue: 2, process: 0, data: 0, tech: 0 } },
             { text: "Exportamos planilhas de um para o outro manualmente.", points: 3, dimensions: { revenue: 5, process: 3, data: 3, tech: 2 } },
@@ -78,7 +79,6 @@ const QUESTIONS: Question[] = [
     {
         id: 6,
         question: "Você possui um Playbook de Vendas documentado e atualizado?",
-        subtext: "Teste de Gestão de Conhecimento",
         options: [
             { text: "Não. O conhecimento está na cabeça das pessoas.", points: 0, dimensions: { revenue: 3, process: 0, data: 1, tech: 0 } },
             { text: "Temos algo antigo que ninguém lê.", points: 2, dimensions: { revenue: 4, process: 2, data: 2, tech: 1 } },
@@ -88,7 +88,6 @@ const QUESTIONS: Question[] = [
     {
         id: 7,
         question: "Como você lida com Leads que não compram agora?",
-        subtext: "Teste de Revenue Reclaim",
         options: [
             { text: "São descartados/esquecidos ('Lixo').", points: 0, dimensions: { revenue: 1, process: 1, data: 0, tech: 0 } },
             { text: "Recebem e-mails marketing genéricos.", points: 4, dimensions: { revenue: 5, process: 4, data: 3, tech: 4 } },
@@ -97,8 +96,7 @@ const QUESTIONS: Question[] = [
     },
     {
         id: 8,
-        question: "Seu site/landing page é um cartão de visitas ou uma máquina de vendas?",
-        subtext: "Teste de Presença Digital",
+        question: "Seu site é um cartão de visitas ou uma máquina de vendas?",
         options: [
             { text: "Institucional. Só diz quem somos.", points: 2, dimensions: { revenue: 3, process: 2, data: 0, tech: 4 } },
             { text: "Bonito, mas converte pouco.", points: 5, dimensions: { revenue: 5, process: 4, data: 3, tech: 6 } },
@@ -107,284 +105,251 @@ const QUESTIONS: Question[] = [
     }
 ];
 
-// --- RADAR CHART COMPONENT ---
-const RadarChart = ({ scores }: { scores: Record<Dimension, number> }) => {
-    // Normalize scores to 0-100 for display
-    const maxScore = QUESTIONS.length * 2.5; // Approx normalization factor
-
-    // Calculate vertices for the polygon (Diamond shape for 4 axes)
-    // Top: Revenue, Right: Tech, Bottom: Process, Left: Data
-    const center = 150;
-    const scale = 1.2;
-
-    const getPoint = (value: number, angle: number) => {
-        const rad = (angle - 90) * (Math.PI / 180);
-        const dist = (value / 100) * 100 * scale;
-        return `${center + dist * Math.cos(rad)},${center + dist * Math.sin(rad)}`;
-    };
-
-    // Placeholder normalization logic (simplified)
-    const n = (val: number) => Math.min(100, Math.max(10, (val / 80) * 100)); // Rough normalization based on max points
-
-    const pRev = getPoint(n(scores.revenue), 0);   // Top
-    const pTech = getPoint(n(scores.tech), 90);    // Right
-    const pProc = getPoint(n(scores.process), 180); // Bottom
-    const pData = getPoint(n(scores.data), 270);    // Left
-
-    const polyPoints = `${pRev} ${pTech} ${pProc} ${pData}`;
-
-    return (
-        <div className="relative w-full h-[350px] flex items-center justify-center">
-            <svg width="300" height="300" viewBox="0 0 300 300" className="overflow-visible">
-                {/* Background Grid (Web) */}
-                <circle cx="150" cy="150" r="30" fill="none" stroke="#333" strokeDasharray="4 4" />
-                <circle cx="150" cy="150" r="60" fill="none" stroke="#333" strokeDasharray="4 4" />
-                <circle cx="150" cy="150" r="90" fill="none" stroke="#333" strokeDasharray="4 4" />
-                <circle cx="150" cy="150" r="120" fill="none" stroke="#fff" strokeOpacity="0.1" />
-
-                {/* Axes */}
-                <line x1="150" y1="150" x2="150" y2="30" stroke="#333" />
-                <line x1="150" y1="150" x2="270" y2="150" stroke="#333" />
-                <line x1="150" y1="150" x2="150" y2="270" stroke="#333" />
-                <line x1="150" y1="150" x2="30" y2="150" stroke="#333" />
-
-                {/* Labels */}
-                <text x="150" y="20" textAnchor="middle" fill="#00ff99" fontSize="12" fontWeight="bold">RECEITA</text>
-                <text x="280" y="155" textAnchor="start" fill="#00ff99" fontSize="12" fontWeight="bold">TECH</text>
-                <text x="150" y="290" textAnchor="middle" fill="#00ff99" fontSize="12" fontWeight="bold">PROCESSOS</text>
-                <text x="20" y="155" textAnchor="end" fill="#00ff99" fontSize="12" fontWeight="bold">DADOS</text>
-
-                {/* The Data Polygon */}
-                <motion.polygon
-                    points={polyPoints}
-                    fill="rgba(0, 255, 153, 0.2)"
-                    stroke="#00ff99"
-                    strokeWidth="2"
-                    initial={{ scale: 0, opacity: 0, transformOrigin: "center" }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                />
-
-                {/* Dots */}
-                {[0, 90, 180, 270].map((angle, i) => {
-                    const val = [scores.revenue, scores.tech, scores.process, scores.data][i];
-                    const coords = getPoint(n(val), angle).split(',');
-                    return (
-                        <motion.circle
-                            key={i}
-                            cx={coords[0]}
-                            cy={coords[1]}
-                            r="4"
-                            fill="#00ff99"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.8 + (i * 0.1) }}
-                        />
-                    )
-                })}
-
-            </svg>
-        </div>
-    );
-};
-
-
-const GrowthScorePage = () => {
-    const [started, setStarted] = useState(false);
+const GrowthScore = () => {
+    const { toast } = useToast();
     const [currentQ, setCurrentQ] = useState(0);
-    const [completed, setCompleted] = useState(false);
+    const [step, setStep] = useState<'start' | 'questions' | 'lead-capture' | 'results'>('start');
+
+    // Lead Form State
+    const [leadForm, setLeadForm] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        role: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Scores State
     const [scores, setScores] = useState<Record<Dimension, number>>({
-        revenue: 0,
-        process: 0,
-        data: 0,
-        tech: 0
+        revenue: 0, process: 0, data: 0, tech: 0
     });
     const [totalPoints, setTotalPoints] = useState(0);
 
     const handleAnswer = (option: Option) => {
-        // Update accumulated scores
         setScores(prev => ({
             revenue: prev.revenue + option.dimensions.revenue,
             process: prev.process + option.dimensions.process,
             data: prev.data + option.dimensions.data,
             tech: prev.tech + option.dimensions.tech
         }));
-
         setTotalPoints(prev => prev + option.points);
 
         if (currentQ < QUESTIONS.length - 1) {
-            setCurrentQ(prev => prev + 1);
+            setTimeout(() => setCurrentQ(prev => prev + 1), 250);
         } else {
-            setCompleted(true);
+            setStep('lead-capture');
         }
     };
 
-    const maxPossbilePoints = QUESTIONS.reduce((acc, q) => acc + Math.max(...q.options.map(o => o.points)), 0);
+    const maxPossbilePoints = QUESTIONS.reduce((acc, q) => acc + Math.max(...q.options.map(o => o.points)), 0) || 100;
     const percentage = Math.round((totalPoints / maxPossbilePoints) * 100);
 
     const getDiagnosis = (pct: number) => {
-        if (pct < 40) return { title: "Fase de Sobrevivência", color: "text-red-500", msg: "Sua operação é frágil e depende demais de esforço manual. O risco de quebra é alto se o mercado oscilar." };
-        if (pct < 70) return { title: "Fase de Tração Manual", color: "text-yellow-500", msg: "Você cresce, mas com dores. Falta processo e tecnologia para escalar sem contratar um exército." };
-        return { title: "Fase de Escala (Revenue Ops)", color: "text-revgreen", msg: "Sua base é sólida. Você está pronto para injetar capital e tecnologia pesada para dominância de mercado." };
+        if (pct < 40) return { title: "Fase de Sobrevivência", color: "text-red-500", msg: "Sua operação depende demais de esforço manual." };
+        if (pct < 70) return { title: "Fase de Tração Manual", color: "text-yellow-500", msg: "Você cresce, mas com dores e falta de processo." };
+        return { title: "Fase de Escala (Revenue Ops)", color: "text-revgreen", msg: "Sua base é sólida e pronta para escala." };
     };
 
-    const diag = getDiagnosis(percentage);
+    const handleLeadSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!leadForm.role || !leadForm.company) {
+            toast({
+                variant: "destructive",
+                title: "Campos Obrigatórios",
+                description: "Por favor preencha empresa e cargo."
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
+
+            const result = getDiagnosis(percentage);
+
+            await submitPublicDiagnostic(
+                { ...leadForm },
+                { individual_scores: scores, total_points: totalPoints },
+                percentage,
+                {
+                    level: result.title,
+                    title: result.title,
+                    description: result.msg,
+                    action: 'Auditoria',
+                    color: 'revgreen'
+                },
+                WEBHOOK_URL
+            );
+
+            setStep('results');
+            toast({
+                className: "bg-black border border-white/10 text-white",
+                title: "RELATÓRIO AUTORIZADO",
+                description: "Seu diagnóstico de growth foi processado."
+            });
+        } catch (error: any) {
+            console.error('Error sending diagnostic:', error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao processar",
+                description: "Não foi possível processar seu diagnóstico. Tente novamente."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
-        <div className="bg-black min-h-screen text-white font-sans selection:bg-revgreen selection:text-black">
-            <Header />
-
-            <main className="container-custom pt-32 pb-20 min-h-screen flex flex-col justify-center">
-
-                {/* INTRO SCREEN */}
-                {!started && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="max-w-3xl mx-auto text-center"
-                    >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-revgreen/10 border border-revgreen/20 text-revgreen text-xs font-mono-tech mb-8 tracking-widest uppercase">
-                            <Zap className="w-3 h-3" />
-                            <span>Growth Intelligence</span>
-                        </div>
-
-                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">
-                            Descubra seu <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-revgreen to-emerald-600">Growth Score</span>
+        <PageLayout>
+            {step === 'start' && (
+                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
+                    <div className="container-custom max-w-5xl mx-auto text-center">
+                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter text-black">
+                            Growth Strategy Score
                         </h1>
-
-                        <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-                            A maioria das empresas não quebra por falta de vendas, mas por falta de <strong>previsibilidade</strong>.
-                            Responda {QUESTIONS.length} perguntas estratégicas e receba um diagnóstico da sua maturidade de receita.
-                        </p>
-
-                        <Button onClick={() => setStarted(true)} className="btn-primary-pro text-lg px-8 py-6 h-auto">
-                            Iniciar Diagnóstico <ArrowRight className="ml-2" />
+                        <p className="text-xl text-slate-500 mb-12">Avalie a maturidade da sua escala.</p>
+                        <Button onClick={() => setStep('questions')} className="bg-black text-white px-10 h-16 rounded-xl font-bold uppercase tracking-widest text-xs">
+                            Iniciar Diagnóstico <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>
+                    </div>
+                </Section>
+            )}
 
-                        <div className="mt-16 grid grid-cols-3 gap-4 text-center opacity-50 text-sm font-mono-tech text-gray-500">
-                            <div>01. INTEGRIDADE DE DADOS</div>
-                            <div>02. ALAVANCAGEM TECH</div>
-                            <div>03. PROCESSOS DE VENDAS</div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* QUESTIONS SCREEN */}
-                {started && !completed && (
-                    <div className="max-w-2xl mx-auto w-full">
-                        <div className="mb-8 flex justify-between items-end">
-                            <span className="text-revgreen font-mono-tech text-sm">QUESTÃO {currentQ + 1} / {QUESTIONS.length}</span>
-                            <div className="w-32 h-1 bg-white/10 rounded-full overflow-hidden">
-                                <motion.div
-                                    className="h-full bg-revgreen"
-                                    animate={{ width: `${((currentQ + 1) / QUESTIONS.length) * 100}%` }}
-                                />
+            {step === 'questions' && (
+                <Section variant="light" className="min-h-[100dvh] bg-white flex flex-col justify-center">
+                    <div className="container-custom max-w-4xl mx-auto">
+                        <div className="mb-12">
+                            <div className="flex justify-between items-end mb-4 text-black">
+                                <span className="text-xs font-bold uppercase tracking-widest">Growth Score</span>
+                                <span className="text-4xl font-bold tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
+                            </div>
+                            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div className="h-full bg-black transition-all" style={{ width: `${(currentQ / QUESTIONS.length) * 100}%` }} />
                             </div>
                         </div>
 
                         <AnimatePresence mode='wait'>
-                            <motion.div
-                                key={currentQ}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">{QUESTIONS[currentQ].question}</h2>
-                                <p className="text-gray-500 mb-10 font-mono-tech uppercase text-xs tracking-wider flex items-center gap-2">
-                                    <RefreshCcw className="w-3 h-3" /> {QUESTIONS[currentQ].subtext}
-                                </p>
-
-                                <div className="space-y-4">
+                            <motion.div key={currentQ} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                                <h2 className="text-3xl md:text-5xl font-bold text-black mb-10 tracking-tight leading-tight">
+                                    {QUESTIONS[currentQ].question}
+                                </h2>
+                                <div className="grid grid-cols-1 gap-3">
                                     {QUESTIONS[currentQ].options.map((opt, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => handleAnswer(opt)}
-                                            className="w-full text-left p-6 rounded-sm border border-white/10 bg-white/5 hover:bg-white/10 hover:border-revgreen/50 transition-all duration-200 group flex items-start"
-                                        >
-                                            <div className="w-6 h-6 rounded-full border border-white/20 mr-4 mt-1 flex-shrink-0 group-hover:border-revgreen group-hover:bg-revgreen/20 transition-colors flex items-center justify-center">
-                                                <div className="w-2 h-2 rounded-full bg-revgreen opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </div>
-                                            <span className="text-lg text-gray-200 group-hover:text-white">{opt.text}</span>
+                                        <button key={idx} onClick={() => handleAnswer(opt)} className="flex items-center p-6 bg-white border border-slate-200 rounded-xl hover:border-black transition-all text-left">
+                                            <span className="mr-6 w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center font-mono-tech text-sm text-black shrink-0">{String.fromCharCode(65 + idx)}</span>
+                                            <span className="text-lg text-slate-600 font-medium">{opt.text}</span>
                                         </button>
                                     ))}
                                 </div>
                             </motion.div>
                         </AnimatePresence>
                     </div>
-                )}
+                </Section>
+            )}
 
-                {/* RESULTS SCREEN */}
-                {completed && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
-                    >
-                        {/* Left: Score & Text */}
-                        <div>
-                            <div className="inline-block mb-6">
-                                <span className="text-xs font-mono-tech text-gray-500 uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">
-                                    Diagnóstico Finalizado
-                                </span>
-                            </div>
-
-                            <h2 className="text-6xl font-bold mb-2">
-                                <span className={diag.color}>{percentage}</span><span className="text-xl text-gray-600">/100</span>
-                            </h2>
-                            <h3 className={`text-2xl font-bold mb-6 ${diag.color}`}>{diag.title}</h3>
-
-                            <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                                {diag.msg}
-                            </p>
-
-                            <div className="space-y-4">
-                                <div className="p-4 bg-white/5 border-l-2 border-revgreen rounded-r-sm">
-                                    <h4 className="flex items-center font-bold text-white mb-1"><Briefcase className="w-4 h-4 mr-2" /> O que isso significa?</h4>
-                                    <p className="text-sm text-gray-400">Seu score indica o nível de maturidade da sua operação de receita (RevOps).</p>
+            {step === 'lead-capture' && (
+                <Section variant="light" className="min-h-[100dvh] bg-white flex flex-col justify-center">
+                    <div className="container-custom max-w-md mx-auto">
+                        <div className="bg-white border border-slate-200 rounded-3xl p-10 shadow-sm">
+                            <h2 className="text-2xl font-black text-black mb-10 tracking-tighter uppercase text-center">RELATÓRIO AUTORIZADO</h2>
+                            <form onSubmit={handleLeadSubmit} className="space-y-4">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
+                                    <Input
+                                        required
+                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        value={leadForm.name}
+                                        onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
+                                        placeholder="NOME E SOBRENOME"
+                                    />
                                 </div>
-                            </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
+                                    <Input
+                                        required
+                                        type="email"
+                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        value={leadForm.email}
+                                        onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
+                                        placeholder="EX: NOME@EMPRESA.COM"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA</Label>
+                                    <Input
+                                        required
+                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        value={leadForm.company}
+                                        onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
+                                        placeholder="ORGANIZAÇÃO"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">WHATSAPP</Label>
+                                        <Input
+                                            required
+                                            type="tel"
+                                            className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                            value={leadForm.phone}
+                                            onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
+                                            placeholder="+55"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">CARGO</Label>
+                                        <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
+                                            <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
+                                                <SelectValue placeholder="SELECIONAR" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
+                                                <SelectItem value="vp">VP / C-Level</SelectItem>
+                                                <SelectItem value="diretor">Diretor</SelectItem>
+                                                <SelectItem value="gerente">Gerente</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300"
+                                >
+                                    {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard Estratégico'}
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </Section>
+            )}
 
-                            <div className="mt-10 flex gap-4">
-                                <Button asChild className="btn-primary-pro flex-1">
-                                    <Link to="/booking">Agendar Diagnóstico Escala</Link>
-                                </Button>
-                                <Button variant="outline" className="border-white/20 hover:bg-white/10 text-white flex-1">
-                                    <Share2 className="w-4 h-4 mr-2" /> Compartilhar
-                                </Button>
+            {step === 'results' && (
+                <div className="min-h-screen bg-black text-white py-20 flex flex-col items-center">
+                    <div className="container-custom max-w-4xl text-center">
+                        <div className="relative w-64 h-64 mx-auto mb-10">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={[{ value: percentage }, { value: Math.max(0, 100 - percentage) }]} cx="50%" cy="50%" innerRadius="85%" outerRadius="100%" startAngle={90} endAngle={-270} dataKey="value" stroke="none">
+                                        <Cell fill="#22c55e" /><Cell fill="#111" />
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div className="text-7xl font-bold">{percentage}</div>
+                                <div className="text-[10px] uppercase font-mono-tech text-gray-400">Pontos</div>
                             </div>
                         </div>
-
-                        {/* Right: Visualization */}
-                        <div className="relative">
-                            <div className="bg-black/40 border border-white/10 rounded-sm p-8 backdrop-blur-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-20">
-                                    <BarChart2 className="w-24 h-24 text-white" />
-                                </div>
-                                <h4 className="text-center text-sm font-mono-tech text-gray-400 mb-4">RAIO-X DE PERFORMANCE</h4>
-                                <RadarChart scores={scores} />
-
-                                <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-white/10 text-center">
-                                    <div>
-                                        <div className="text-xs text-gray-500 uppercase font-mono-tech mb-1">Processos</div>
-                                        <div className="text-xl font-bold text-white">{scores.process}/80</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-xs text-gray-500 uppercase font-mono-tech mb-1">Tecnologia</div>
-                                        <div className="text-xl font-bold text-white">{scores.tech}/80</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-            </main>
-        </div>
+                        <h2 className="text-5xl font-bold mb-6 uppercase tracking-tighter">{getDiagnosis(percentage).title}</h2>
+                        <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">{getDiagnosis(percentage).msg}</p>
+                        <Button className="bg-revgreen text-black px-10 h-16 rounded-xl font-bold uppercase text-xs shadow-[0_0_30px_rgba(34,197,94,0.2)]" onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Growth Score', '_blank')}>Agendar Auditoria <ArrowRight className="ml-2 w-4 h-4" /></Button>
+                    </div>
+                </div>
+            )}
+        </PageLayout>
     );
 };
 
-export default GrowthScorePage;
+export default GrowthScore;

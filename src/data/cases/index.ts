@@ -2,7 +2,6 @@ import { enicsCase } from './enics';
 import { heinekenCase } from './heineken';
 import { agenceMrCase } from './agence-mr';
 import { toeflCase } from './toefl';
-import { datavoxxCase } from './datavoxx';
 import { emagrecentroCase } from './emagrecentro';
 import { placluxCase } from './placlux';
 import { fmuVirtualCase } from './fmu-virtual';
@@ -11,12 +10,19 @@ import { cruzeiroSulCase } from './cruzeiro-sul';
 import { btDigitalCase } from './bt-digital';
 import { tikpagCase } from './tikpag';
 import { tegraCase } from './tegra';
+import { boltCase } from './bolt';
+import { lindoyaCase } from './lindoya';
+import { wysionCase } from './wysion';
+import { ideeCase } from './idee';
+import { anhembiMorumbiCase } from './anhembi-morumbi';
+import { bldnCase } from './bldn';
 
 // Type definition for a case study
 export interface CaseStudy {
   title: string;
   category: string;
   logo: string;
+  whiteLogo?: string;
   coverImage: string;
   challenge: string;
   solution: string;
@@ -32,23 +38,32 @@ export interface CaseStudy {
   description?: string;
   preview_description?: string;
   tags?: string[];
+  featured?: boolean;
+  isWideLogo?: boolean;
+  logoScale?: number;
+  techStack?: string[];
 }
 
 // Combine all cases into a single object
 export const casesData: Record<string, CaseStudy> = {
-  "enics": enicsCase,
   "heineken": heinekenCase,
-  "agence-mr": agenceMrCase,
-  "toefl": toeflCase,
-  "datavoxx": datavoxxCase,
-  "emagrecentro": emagrecentroCase,
-  "placlux": placluxCase,
+  "lindoya": lindoyaCase,
   "fmu-virtual": fmuVirtualCase,
-  "funnels": funnelsCase,
+  "anhembi-morumbi": anhembiMorumbiCase,
   "cruzeiro-sul": cruzeiroSulCase,
+  "emagrecentro": emagrecentroCase,
+  "toefl": toeflCase,
+  "agence-mr": agenceMrCase,
+  "enics": enicsCase,
+  "placlux": placluxCase,
+  "funnels": funnelsCase,
+  "tegra": tegraCase,
   "bt-digital": btDigitalCase,
   "tikpag": tikpagCase,
-  "tegra": tegraCase
+  "bolt": boltCase,
+  "wysion": wysionCase,
+  "idee": ideeCase,
+  "bldn": bldnCase
 };
 
 export type CaseStudyKey = keyof typeof casesData;

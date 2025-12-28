@@ -7,12 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getArticleImageBySlug } from '@/components/blog/post/articles/utils/frameworkImages';
-import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 
-// Interface para post do blog (estendendo a estática)
-interface BlogPost extends Omit<StaticBlogPost, 'content' | 'id'> {
-  id: string | number;
+
+// Interface para post do blog
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
   content: string;
+  category: string;
+  image?: string;
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+  };
+  date: string;
+  readTime: string;
+  featured?: boolean;
 }
 
 const Blog = () => {
@@ -35,17 +48,27 @@ const Blog = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const { data, error } = await supabase
+        // Timeout de 10 segundos (Codex recommendation)
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout de rede')), 10000)
+        );
+
+        const fetchPromise = supabase
           .from('blog_posts')
           .select('*')
           .eq('published', true)
           .order('date', { ascending: false });
 
-        if (!error && data) {
+        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+        if (error) throw error;
+
+        if (data) {
+          console.log('✅ [BLOG] Posts carregados do banco:', data.length);
           setApiPosts(data);
         }
-      } catch (err) {
-        console.error('Erro ao buscar posts:', err);
+      } catch (err: any) {
+        console.warn('⚠️ [BLOG] Falha ao carregar do banco (usando offline):', err.message);
       } finally {
         setIsLoading(false);
       }
@@ -54,10 +77,9 @@ const Blog = () => {
     fetchPosts();
   }, []);
 
-  // Merge API posts with static posts (memoized)
+  // Format Supabase posts
   const blogPosts = useMemo(() => {
-    // Format API posts
-    const formattedApiPosts: BlogPost[] = apiPosts.map(post => ({
+    return apiPosts.map(post => ({
       id: post.id,
       title: post.title,
       slug: post.slug,
@@ -73,33 +95,9 @@ const Blog = () => {
       date: post.date || post.created_at,
       readTime: post.read_time || '5 min',
       featured: post.featured || false
-    }));
-
-    // Format Static posts
-    const formattedStaticPosts: BlogPost[] = staticBlogPosts.map(p => ({
-      ...p,
-      content: p.content || '',
-      author: {
-        ...p.author,
-        avatar: getFixedAuthorAvatar(p.author.avatar)
-      }
-    }));
-
-    // De-duplicate logic
-    const staticSlugs = new Set(formattedStaticPosts.map(p => p.slug));
-    const staticTitles = new Set(formattedStaticPosts.map(p => p.title.toLowerCase().trim()));
-
-    const uniqueApiPosts = formattedApiPosts.filter(p => {
-      const slugExists = staticSlugs.has(p.slug);
-      const titleExists = staticTitles.has(p.title.toLowerCase().trim());
-      return !slugExists && !titleExists;
-    });
-
-    const allPosts = [...formattedStaticPosts, ...uniqueApiPosts].sort((a, b) =>
+    })).sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-
-    return allPosts;
   }, [apiPosts]);
 
   // Filtrar posts com base na categoria e consulta de pesquisa (memoized)
@@ -169,16 +167,14 @@ const Blog = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <section className="py-24 bg-black min-h-screen relative">
-        <div className="absolute inset-0 bg-grid-white/[0.03] pointer-events-none" />
-        <div className="container-custom relative z-10">
-          {/* Filters are now in BlogHeader */}
-          <div className="pt-8"></div>
+      <section className="py-12 bg-white min-h-screen relative">
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
+        <div className="container-custom relative z-10">
           {isLoading ? (
             <div className="text-center py-20">
-              <div className="mx-auto w-16 h-16 rounded-full border-4 border-gray-700 border-t-revgreen animate-spin mb-4"></div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Carregando artigos...</h3>
+              <div className="mx-auto w-16 h-16 rounded-full border-4 border-zinc-100 border-t-black animate-spin mb-4"></div>
+              <h3 className="text-xl font-black uppercase tracking-widest mb-4 text-black">Carregando artigos...</h3>
             </div>
           ) : filteredPosts.length > 0 ? (
             <>
@@ -196,14 +192,12 @@ const Blog = () => {
                 })}
               </div>
 
-              {/* Loader for infinite scroll */}
               {isLoadingMore && (
                 <div className="py-8 text-center flex justify-center">
                   <div className="w-8 h-8 rounded-full border-4 border-gray-700 border-t-revgreen animate-spin"></div>
                 </div>
               )}
 
-              {/* No more posts indicator */}
               {!hasMorePosts && displayedPosts.length > 0 && (
                 <div className="py-12 text-center text-gray-500 text-sm">
                   Você chegou ao fim da lista.
@@ -211,13 +205,13 @@ const Blog = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-20 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/30">
-              <div className="mx-auto w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10">
-                <BookOpen className="h-8 w-8 text-gray-500" />
+            <div className="text-center py-20 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/30">
+              <div className="mx-auto w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4 border border-black/5">
+                <BookOpen className="h-8 w-8 text-zinc-300" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Nenhum artigo encontrado</h3>
-              <p className="text-gray-400 max-w-md mx-auto">
-                Tente ajustar seus filtros ou termos de busca para encontrar o conteúdo que você procura.
+              <h3 className="text-xl font-black uppercase tracking-widest mb-4 text-black">Nenhum artigo encontrado</h3>
+              <p className="text-zinc-500 max-w-md mx-auto text-xs font-bold uppercase tracking-widest font-bold">
+                Tente ajustar seus filtros ou termos de busca.
               </p>
               <Button
                 variant="link"

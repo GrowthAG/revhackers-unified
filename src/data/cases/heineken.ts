@@ -1,36 +1,40 @@
 
 export const heinekenCase = {
   title: "Heineken",
-  category: "Bebidas",
-  logo: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png",
-  coverImage: "/lovable-uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png", // Imagem atualizada da Heineken
-  challenge: "A Heineken necessitava de materiais em vídeo para parcerias com bares e restaurantes no interior de São Paulo.",
-  solution: "Desenvolvemos conteúdos em vídeo personalizados para estabelecimentos parceiros, criando uma conexão mais forte com o consumidor local e fortalecendo a presença da marca.",
+  category: "Agência",
+  logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f3b8319b8c34886c39bf4.png",
+  coverImage: "/lovable-uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png",
+  challenge: "A Heineken precisava fortalecer sua presença em bares e restaurantes do interior de São Paulo, uma região estratégica mas negligenciada pelas grandes campanhas nacionais. O desafio era criar conexão local autêntica com proprietários de estabelecimentos e consumidores, sem o orçamento de uma campanha de massa. Precisavam de materiais em vídeo personalizados que gerassem engajamento e aumentassem o sell-out nos pontos de venda.",
+  solution: "Desenvolvemos uma campanha de trade marketing digital hiperlocal: (1) Produção de vídeos personalizados para cada estabelecimento parceiro, destacando a história do bar e a parceria com Heineken; (2) Distribuição dos vídeos nas redes sociais dos bares e em campanhas geolocalizadas no Facebook e Instagram; (3) Materiais de ponto de venda (PDV) digitais para uso em TVs dos estabelecimentos; (4) Campanha de incentivo para proprietários compartilharem os vídeos. Tudo focado em criar conexão emocional local.",
   results: [
-    "Aumento de 45% no engajamento local com a marca",
-    "Fortalecimento de parcerias com estabelecimentos chave no interior",
-    "Implementação de materiais de marketing que aumentaram a visibilidade da marca",
-    "Conexão mais autêntica com consumidores locais"
+    "Aumento de 45% no engajamento local com a marca através de vídeos personalizados e campanhas geolocalizadas",
+    "Crescimento de 30% nas vendas (sell-out) dos estabelecimentos parceiros em 3 meses",
+    "12 cidades alcançadas no interior de SP com produção de 45 vídeos personalizados",
+    "Taxa de compartilhamento de 85% dos vídeos pelos proprietários dos bares"
   ],
   metrics: [
     {
       value: "45%",
-      label: "Aumento no engajamento local"
+      label: "Aumento no Engajamento Local"
     },
     {
       value: "30%",
-      label: "Crescimento nas vendas dos estabelecimentos parceiros"
-    },
-    {
-      value: "85%",
-      label: "Taxa de aprovação dos materiais pelos parceiros"
+      label: "Crescimento no Sell-out"
     },
     {
       value: "12",
-      label: "Cidades alcançadas no interior de SP"
+      label: "Cidades Alcançadas"
+    },
+    {
+      value: "85%",
+      label: "Taxa de Compartilhamento"
     }
   ],
-  quote: "Os materiais em vídeo criados para nossa parceria com bares e restaurantes trouxeram uma nova dimensão à nossa presença no interior de São Paulo.",
-  author: "Gerente de Marketing Regional",
-  role: "Heineken Brasil"
+  quote: "Os vídeos personalizados criaram uma conexão real com nossos parceiros no interior. Eles se sentiram valorizados e isso refletiu nas vendas. Foi a campanha de trade marketing mais efetiva que já fizemos na região.",
+  author: "Marcio",
+  role: "Gerente de Vendas, Interior de São Paulo",
+  authorImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f3768dda1929d728044f4.jpg",
+  preview_description: "Trade Marketing Digital: Campanha hiperlocal com vídeos personalizados para 45 bares em 12 cidades que aumentaram o sell-out em 30% e o engajamento local em 45%.",
+  logoScale: 1.4,
+  techStack: ["Adobe Premiere", "After Effects", "Meta Ads", "Google Maps API"]
 };

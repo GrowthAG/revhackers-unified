@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 import MaterialModal from '@/components/shared/MaterialModal';
+import BookingModal from '@/components/shared/BookingModal';
 import { useToast } from '@/hooks/use-toast';
 
 // Interface matches the Supabase structure
@@ -44,8 +45,8 @@ const BlogPostPage = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { toast } = useToast();
 
   // Load posts from Supabase API and combine with static posts
@@ -88,11 +89,42 @@ const BlogPostPage = () => {
           featured: p.featured
         }));
 
-        // De-duplicate by slug: prioritized static content (strategy choice)
-        const staticSlugs = new Set(staticPostsWithContent.map(p => p.slug));
-        const uniqueApiPosts = formattedApiPosts.filter(p => !staticSlugs.has(p.slug));
+        // [CODEX] Merge Strategy: Database > Static (Primary key: slug)
+        // This ensures edits made in the Admin Panel (Supabase) override local static files.
+        // UPDATE: Enrich API posts with Local Metadata (Titles with HTML, Fixed Authors) to ensure Design Consistency
+        // [CODEX] Safe Merge Strategy: "Smart Authority"
+        // 1. Database is the source of truth for EDITS.
+        // 2. Static files are the source of truth for DESIGN (HTML Titles, Curated Images).
+        const enrichedApiPosts = formattedApiPosts.map(apiPost => {
+          const localMatch = staticPostsWithContent.find(local => local.slug === apiPost.slug);
+          if (localMatch) {
+            // DATABASE FIRST: If it's in the DB, it's an intended edit.
+            // We only use static files for things that are NULL in the DB.
+            return {
+              ...apiPost,
+              // If title in DB is just common text, but local has HTML <span>, keep HTML unless DB title is significantly different
+              title: (apiPost.title.length > 5 && !apiPost.title.includes('<span'))
+                ? (apiPost.title === localMatch.title.replace(/<[^>]*>?/gm, "") ? localMatch.title : apiPost.title)
+                : apiPost.title,
 
-        const allPosts = [...staticPostsWithContent, ...uniqueApiPosts];
+              // Priority: DB Image > Local Image > Framework Fallback
+              // If DB image is null, it means it was explicitly cleared in Admin
+              image: apiPost.image === null ? '' : (apiPost.image || localMatch.image),
+
+              // Content: Always DB if not empty
+              content: apiPost.content || localMatch.content,
+
+              // Excerpt: DB First
+              excerpt: apiPost.excerpt || localMatch.excerpt
+            };
+          }
+          return apiPost;
+        });
+
+        const apiSlugs = new Set(enrichedApiPosts.map(p => p.slug));
+        const staticPostsToAdd = staticPostsWithContent.filter(p => !apiSlugs.has(p.slug));
+
+        const allPosts = [...enrichedApiPosts, ...staticPostsToAdd];
         setPosts(allPosts);
         setError(null);
       } catch (err) {
@@ -119,7 +151,16 @@ const BlogPostPage = () => {
   const post = posts.find(post => post.slug === slug);
 
   // Calculate resolved image safely
-  const resolvedImage = post ? (post.image || getArticleImageBySlug(post.slug) || getFrameworkImage(post.category, post.slug)) : '';
+  // If from DB, explicitly respect NULL/EMPTY to allow deletion in Admin
+  const isStatic = post && (typeof post.id === 'number' || post.id.toString().startsWith('static-'));
+  const resolvedImage = post
+    ? (post.image && post.image !== ''
+      ? post.image
+      : (isStatic
+        ? (getArticleImageBySlug(post.slug) || getFrameworkImage(post.category, post.slug))
+        : getFrameworkImage(post.category, post.slug))
+    )
+    : '';
 
   // Update hero image when resolvedImage changes
   useEffect(() => {
@@ -170,8 +211,16 @@ const BlogPostPage = () => {
     );
   }
 
-  const handleCTAClick = () => {
-    setIsModalOpen(true);
+  // Handle Primary CTA (Booking/Consultancy)
+  const handlePrimaryCTAClick = () => {
+    setIsBookingModalOpen(true);
+  };
+
+  // Handle Secondary CTA (Material Download - if handled globally)
+  // Note: StrategicConclusion usually handles secondary CTA locally via LeadMagnetModal, 
+  // but if it bubbles up or if other components trigger it:
+  const handleMaterialDownload = () => {
+    setIsMaterialModalOpen(true);
   };
 
   const handleFormSubmit = () => {
@@ -179,7 +228,7 @@ const BlogPostPage = () => {
       title: "Solicitação recebida!",
       description: "Seus dados foram processados. Redirecionando para agendamento...",
     });
-    setIsModalOpen(false);
+    setIsMaterialModalOpen(false);
     // Redirect to booking with slight delay for toast visibility
     setTimeout(() => {
       navigate('/booking');
@@ -235,7 +284,7 @@ const BlogPostPage = () => {
               src={heroImgSrc}
               alt=""
               onError={handleHeroImageError}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover blur-xl scale-110"
             />
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
@@ -258,20 +307,16 @@ const BlogPostPage = () => {
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight tracking-normal text-balance max-w-6xl mx-auto">
-                {post.title.includes(':') ? (
-                  <>
-                    <span className="block mb-2 text-revgreen">
-                      {post.title.split(':')[0]}
-                    </span>
-                    <span className="block text-gray-100 font-semibold text-3xl md:text-5xl lg:text-6xl mt-4">
-                      {post.title.split(':').slice(1).join(':').trim()}
-                    </span>
-                  </>
-                ) : (
-                  post.title
-                )}
-              </h1>
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 leading-snug tracking-tight text-balance max-w-5xl mx-auto [&>span]:text-revgreen"
+                dangerouslySetInnerHTML={{
+                  __html: post.title.includes('<')
+                    ? post.title
+                    : post.title.includes(':')
+                      ? `<span>${post.title.split(':')[0]}</span>: ${post.title.split(':').slice(1).join(':').trim()}`
+                      : post.title
+                }}
+              />
             </motion.div>
           </header>
 
@@ -340,7 +385,7 @@ const BlogPostPage = () => {
                   authorRole={post.author.role}
                   authorAvatar={post.author.avatar}
                   slug={post.slug}
-                  onCTAClick={handleCTAClick}
+                  onCTAClick={handlePrimaryCTAClick} // Pass Booking Handler for Primary
                 />
               </div>
               <BlogPostFooter />
@@ -349,17 +394,23 @@ const BlogPostPage = () => {
         </div>
       </section>
 
-      {/* Global CTA Modal for all articles */}
+      {/* Global CTA Modal for all articles (Material Download) */}
       <MaterialModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isMaterialModalOpen}
+        onClose={() => setIsMaterialModalOpen(false)}
         material={{
           title: post.title,
           material_name: post.title,
-          type: "Artigo",
+          type: "Contexto", // Changed to generic context as it's secondary
           id: post.slug
         }}
         onSuccess={handleFormSubmit}
+      />
+
+      {/* Global Booking Modal (Diagnosis) */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
       />
     </PageLayout>
   );

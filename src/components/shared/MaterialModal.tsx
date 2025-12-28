@@ -40,10 +40,10 @@ const MaterialModal = ({ isOpen, onClose, material, onSuccess }: MaterialModalPr
             <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-white border border-gray-100 p-12 shadow-none rounded-none">
                 <DialogHeader className="mb-10 text-left space-y-4">
                     <DialogTitle className="text-sm font-bold text-black uppercase tracking-[0.3em] border-b border-black pb-4 w-fit">
-                        Acesso ao Material
+                        {material.type === 'Consultoria' || material.type === 'Diagnóstico' ? 'Solicitação de Diagnóstico' : 'Acesso ao Material'}
                     </DialogTitle>
                     <DialogDescription className="text-zinc-500 text-xs font-normal leading-relaxed uppercase tracking-widest">
-                        Conteúdo Selecionado:
+                        {material.type === 'Consultoria' || material.type === 'Diagnóstico' ? 'Contexto:' : 'Conteúdo Selecionado:'}
                         <span className="font-bold text-black block mt-2 text-sm leading-tight normal-case tracking-normal">
                             {cleanTitle(material.title || material.material_name || 'Material')}
                         </span>

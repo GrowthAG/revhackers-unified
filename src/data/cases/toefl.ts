@@ -4,8 +4,8 @@ export const toeflCase = {
   category: "Educação",
   logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
   coverImage: "https://images.unsplash.com/photo-1503428593586-e225b39bddfe",
-  challenge: "O TOEFL Junior Brasil precisava gerar leads B2B de donos de escolas interessados em implementar o sistema TOEFL em suas instituições.",
-  solution: "Implementamos uma estratégia focada em captar donos de escolas, demonstrando os benefícios da certificação TOEFL para instituições educacionais, através de campanhas segmentadas e conteúdos específicos.",
+  challenge: "O TOEFL Junior Brasil enfrentava o desafio de (1) escalar a captação de leads B2B especificamente no perfil 'Mantenedores e Diretores de Escolas'; (2) demonstrar o valor competitivo da certificação TOEFL em um mercado educacional saturado; (3) acelerar um ciclo de vendas complexo e longo, que envolvia múltiplas tomadas de decisão dentro das instituições.",
+  solution: "Implementamos uma estrutura de Captação B2B de Escolas: (1) LinkedIn Sales Nav Estruturado: prospecção direta de diretores e coordenadores pedagógicos de colégios particulares; (2) Webinars de Autoridade: série de eventos online sobre 'Internacionalização Escolar' como porta de entrada no funil; (3) Funnels: implementação do sistema para gestão de pipeline, automações de follow-u e agendamento de reuniões comerciais; (4) Mídia Paga B2B: campanhas de Google Ads focadas em termos de intenção de currículo bilíngue.",
   results: [
     "Aumento expressivo na captação de leads qualificados de proprietários de escolas",
     "Crescimento de 85% na base de instituições parceiras",
@@ -32,6 +32,9 @@ export const toeflCase = {
   ],
   quote: "A estratégia para captar donos de escolas superou nossas expectativas. Conseguimos expandir significativamente nossa presença no mercado educacional brasileiro e aumentar o reconhecimento da certificação TOEFL entre as instituições de ensino.",
   author: "Carla Macedo",
-  role: "Diretora de Vendas, TOEFL Junior Brasil",
-  authorImage: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png"
+  role: "Gerente de Vendas, TOEFL Junior Brasil",
+  authorImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f306573a5e04c3d3a5b2f.png",
+  preview_description: "B2B Education Sales: Campanha de account-based marketing para donos de escolas que aumentou a base de parceiros em 85% em 6 meses.",
+  logoScale: 1.5,
+  techStack: ["Funnels", "LinkedIn Sales Nav", "Google Ads", "WebinarJam"]
 };

@@ -126,13 +126,12 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
               </p>
             </div>
 
-            {/* Benefits */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-3 text-white">O que você vai receber:</h3>
-              <ul className="space-y-2">
+              <h3 className="text-[10px] font-bold mb-4 text-white uppercase tracking-widest">CONTEÚDO DO MATERIAL:</h3>
+              <ul className="space-y-3">
                 {currentMagnet.benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-center text-sm text-gray-300">
-                    <div className="h-1.5 w-1.5 bg-revgreen rounded-full mr-3 flex-shrink-0 shadow-[0_0_10px_#03FC3B]"></div>
+                  <li key={index} className="flex items-center text-[11px] text-zinc-400 uppercase tracking-widest font-medium">
+                    <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
                     {benefit}
                   </li>
                 ))}
@@ -203,12 +202,12 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
             </form>
 
             {/* Trust elements */}
-            <div className="mt-6 text-center space-y-2">
-              <p className="text-xs text-gray-500">
-                ✅ Material enviado instantaneamente • ✅ Sem spam
+            <div className="mt-8 pt-6 border-t border-white/5 text-center space-y-2">
+              <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.2em]">
+                TRANSFERÊNCIA SEGURA • INFRAESTRUTURA ANTI-SPAM
               </p>
-              <p className="text-xs text-gray-600">
-                Usado por mais de 150 empresas B2B
+              <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-[0.2em]">
+                UTILIZADO POR OPERAÇÕES DE ALTA PERFORMANCE
               </p>
             </div>
           </div>
@@ -218,22 +217,22 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
               <Download className="h-8 w-8 text-revgreen" />
             </div>
 
-            <h2 className="text-2xl font-bold mb-4 text-white">
-              Material enviado! 🎉
+            <h2 className="text-2xl font-black mb-4 text-white uppercase tracking-tighter">
+              MATERIAL ENVIADO
             </h2>
 
-            <p className="text-gray-400 mb-6">
-              Verifique sua caixa de entrada (e pasta de spam) para acessar o material.
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-8">
+              Verifique sua caixa de entrada para acessar os dados solicitados.
             </p>
 
-            <div className="bg-revgreen/5 border border-revgreen/20 rounded-lg p-4 mb-6">
-              <p className="text-sm text-revgreen font-medium">
-                📧 Enviado para: {formData.email}
+            <div className="bg-white/5 border border-white/10 rounded-none p-4 mb-8">
+              <p className="text-[10px] text-revgreen font-bold uppercase tracking-widest">
+                DESTINATÁRIO: {formData.email}
               </p>
             </div>
 
-            <p className="text-sm text-gray-500">
-              Prepare-se para transformar seus resultados! 🚀
+            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-[0.3em]">
+              SISTEMA DE ENTREGA AUTOMATIZADO
             </p>
           </div>
         )}

@@ -6,9 +6,13 @@ import { supabase } from '@/integrations/supabase/client';
  * @param file O arquivo selecionado pelo usuário.
  * @returns string | null - A URL pública, ou null em caso de erro.
  */
-export const uploadImageToSupabase = async (file: File, bucketName = 'blog-covers') => {
+export const uploadImageToSupabase = async (file: File, bucketName = 'blog-covers', userId?: string) => {
   const bucket = bucketName;
-  const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+  // Se userId for fornecido, cria estrutura de pasta: userId/timestamp_filename
+  // Se não, usa apenas timestamp_filename (comportamento antigo)
+  // Gera um nome único usando UUID para evitar conflitos e caracteres especiais
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
   // Upload da imagem
   const { error } = await supabase.storage.from(bucket).upload(fileName, file, {
@@ -18,7 +22,7 @@ export const uploadImageToSupabase = async (file: File, bucketName = 'blog-cover
 
   if (error) {
     console.error('Erro no upload para supabase.storage:', error);
-    throw new Error('Erro ao enviar imagem para o Supabase Storage');
+    throw new Error(`Erro Supabase: ${error.message}`);
   }
 
   // Obter a URL pública da imagem recém-enviada

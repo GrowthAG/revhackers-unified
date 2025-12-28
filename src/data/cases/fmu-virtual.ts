@@ -1,11 +1,11 @@
 
 export const fmuVirtualCase = {
   title: "FMU: Recorde de Matrículas com Growth Operacional",
-  category: "EAD • Growth Operations",
-  logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png",
+  category: "Educação",
+  logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f3cc2dda1922d598087df.jpg",
   coverImage: "https://images.unsplash.com/photo-1523050338392-06ba56759d7b?auto=format&fit=crop&q=80&w=1200",
-  challenge: "A FMU Virtual precisava aumentar o volume de matrículas em um cenário de alta concorrência e alto custo de aquisição (CAC). A operação era fragmentada entre marketing e vendas, sem visibilidade clara da jornada do aluno.",
-  solution: "Reestruturamos toda a estratégia de mídia paga (Google e Meta Ads) integrada a um novo funil de vendas automatizado. Implementamos uma camada de inteligência no CRM e automações de nutrição que garantiram que nenhum lead esfriasse antes da tentativa de fechamento.",
+  challenge: "A FMU Virtual, um dos maiores players de educação do país, enfrentava um desafio crítico de escalabilidade em sua operação de captação de alunos EAD.\n\nO cenário era de (1) alta concorrência no setor educacional, elevando drasticamente o custo por lead (CPL); (2) uma operação fragmentada onde marketing e vendas não compartilhavam dados em tempo real; (3) falta de uma jornada de aluno visível de ponta a ponta, dificultando a atribuição de matrículas e a otimização dos investimentos em mídia.",
+  solution: "Implementamos uma reestruturação completa do Growth Operacional da FMU Virtual focada em 4 pilares:\n\n(1) Mídia de Performance Integrada: otimização granual de Google Ads e Meta Ads com segmentação por cluster de cursos e intenção de busca;\n\n(2) Funil de Vendas Automatizado: estruturação de réguas de nutrição via CRM para garantir que nenhum lead esfriasse no topo do funil;\n\n(3) Camada de Inteligência de Dados: implementação de GA4 e dashboards no PowerBI para visibilidade total da jornada do aluno, do clique à matrícula;\n\n(4) Alinhamento de SLA: criação de processos automatizados de passagem de leads qualificados para o time comercial, reduzindo o tempo de resposta e aumentando o fechamento.",
   results: [
     "Recorde histórico de matrículas no semestre através da integração GTM",
     "Redução de 32% no custo por lead qualificado através da otimização de canais",
@@ -33,5 +33,8 @@ export const fmuVirtualCase = {
   quote: "A estratégia implementada não apenas aumentou nossos números, mas transformou completamente a maneira como abordamos a captação e conversão de alunos para nossos cursos EAD. Os resultados superaram todas as nossas expectativas iniciais.",
   author: "Lucio Sardinha",
   role: "CEO, FMU Virtual",
-  authorImage: "/lovable-uploads/96db41f1-2d74-4913-997d-3296df29d457.png"
+  authorImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f30fb19b8c3802fc30263.png",
+  preview_description: "Educação em Escala: Reestruturação completa do funil de EAD, integrando mídia e CRM para aumentar as matrículas em 67% e obter visibilidade total da jornada.",
+  logoScale: 1.5,
+  techStack: ["Funnels", "Google Analytics 4", "PowerBI", "Meta Ads"]
 };

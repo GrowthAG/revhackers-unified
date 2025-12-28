@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 const NewsletterForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consent, setConsent] = useState(false);
   const { toast } = useToast();
@@ -39,13 +40,14 @@ const NewsletterForm = () => {
     const webhookData = {
       name,
       email,
+      role,
       formType: 'newsletter',
       source: window.location.href,
       timestamp: new Date().toISOString()
     };
 
-    // Updated webhook URL
-    const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a98d7f48-96fb-4433-a10d-4fa22370034f';
+    // Newsletter webhook URL (same as diagnostic form)
+    const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/824c1633-dd07-4343-9ca4-2f25653042f5';
 
     try {
       console.log('Newsletter submission:', webhookData);
@@ -70,6 +72,7 @@ const NewsletterForm = () => {
       // Reset form
       setName('');
       setEmail('');
+      setRole('');
       setConsent(false);
     } catch (error) {
       console.error('Newsletter submission error:', error);
@@ -99,6 +102,14 @@ const NewsletterForm = () => {
           placeholder="Seu e-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 h-auto bg-[#1A1A1A] border-0 rounded-lg text-white placeholder:text-[#999999]"
+        />
+
+        <Input
+          type="text"
+          placeholder="Seu Cargo (Ex: CEO, Gerente)"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
           className="w-full px-3 py-2 h-auto bg-[#1A1A1A] border-0 rounded-lg text-white placeholder:text-[#999999]"
         />
 

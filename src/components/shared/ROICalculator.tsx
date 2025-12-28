@@ -28,32 +28,32 @@ const ROICalculator = () => {
 
   const calculateROI = () => {
     setIsCalculating(true);
-    
+
     // Simular cálculo com delay para UX
     setTimeout(() => {
       // Baseado em dados reais dos nossos casos
       const conversionImprovement = 0.3; // 30% melhoria média
       const operationalEfficiency = 0.25; // 25% eficiência operacional
       const churnReduction = 0.24; // 24% redução de churn
-      
+
       const monthlyRevenue = currentRevenue / 12;
       const improvementFactor = 1 + (conversionImprovement + (conversionRate[0] / 100) * 0.5);
-      
+
       const monthlyIncrease = monthlyRevenue * improvementFactor - monthlyRevenue;
       const yearlyIncrease = monthlyIncrease * 12;
-      
+
       // Investimento estimado baseado no tamanho da equipe
       const estimatedInvestment = teamSize * 8000; // R$ 8k por pessoa/mês em média
       const roi = (yearlyIncrease / estimatedInvestment) * 100;
       const paybackMonths = estimatedInvestment / monthlyIncrease;
-      
+
       setResult({
         monthlyIncrease,
         yearlyIncrease,
         roi,
         paybackMonths
       });
-      
+
       setIsCalculating(false);
       setShowContactForm(true);
     }, 1500);
@@ -130,69 +130,69 @@ const ROICalculator = () => {
     return (
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome completo *</Label>
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO *</Label>
             <Input
               id="name"
               type="text"
-              placeholder="Seu nome"
+              placeholder="NOME E SOBRENOME"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               required
-              className="bg-white border-gray-300"
+              className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
             />
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail *</Label>
+
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO *</Label>
             <Input
               id="email"
               type="email"
-              placeholder="seu@email.com"
+              placeholder="EX: NOME@EMPRESA.COM"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               required
-              className="bg-white border-gray-300"
+              className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="company">Empresa *</Label>
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA *</Label>
             <Input
               id="company"
               type="text"
-              placeholder="Nome da empresa"
+              placeholder="ORGANIZAÇÃO"
               value={formData.company}
               onChange={(e) => handleInputChange('company', e.target.value)}
               required
-              className="bg-white border-gray-300"
+              className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
             />
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="phone">Telefone *</Label>
+
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">WHATSAPP *</Label>
             <Input
               id="phone"
               type="tel"
-              placeholder="(11) 99999-9999"
+              placeholder="+55 (00) 00000-0000"
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
               required
-              className="bg-white border-gray-300"
+              className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="industry">Segmento *</Label>
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">SEGMENTO *</Label>
             <Select value={formData.industry} onValueChange={(value) => handleInputChange('industry', value)} required>
-              <SelectTrigger className="bg-white border-gray-300">
-                <SelectValue placeholder="Selecione o segmento" />
+              <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
+                <SelectValue placeholder="SELECIONAR" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
                 <SelectItem value="technology">Tecnologia</SelectItem>
                 <SelectItem value="finance">Financeiro</SelectItem>
                 <SelectItem value="health">Saúde</SelectItem>
@@ -207,13 +207,13 @@ const ROICalculator = () => {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="role">Cargo *</Label>
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">CARGO *</Label>
             <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)} required>
-              <SelectTrigger className="bg-white border-gray-300">
-                <SelectValue placeholder="Selecione seu cargo" />
+              <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
+                <SelectValue placeholder="SELECIONAR" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
                 <SelectItem value="ceo">CEO/Presidente</SelectItem>
                 <SelectItem value="cto">CTO/Diretor de Tecnologia</SelectItem>
                 <SelectItem value="cmo">CMO/Diretor de Marketing</SelectItem>
@@ -231,23 +231,23 @@ const ROICalculator = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="message">Mensagem</Label>
+        <div className="space-y-1">
+          <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">MENSAGEM ADICIONAL</Label>
           <Textarea
             id="message"
-            placeholder="Conte-nos sobre seus principais desafios..."
+            placeholder="DESCREVA SEUS DESAFIOS ATUAIS..."
             value={formData.message}
             onChange={(e) => handleInputChange('message', e.target.value)}
-            className="bg-white border-gray-300 min-h-[100px]"
+            className="bg-white border-zinc-200 text-black rounded-none focus:border-black min-h-[100px] text-xs font-bold transition-all"
           />
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full bg-revgreen hover:bg-revgreen/90 text-black font-semibold py-3"
+        <Button
+          type="submit"
+          className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-12 rounded-none font-bold uppercase tracking-widest text-[10px] transition-all duration-300"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Enviando...' : 'Ver Resultados do Cálculo'}
+          {isSubmitting ? 'Gerando Relatório...' : 'VER RESULTADOS DO CÁLCULO'}
         </Button>
       </form>
     );
@@ -333,7 +333,7 @@ const ROICalculator = () => {
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   onClick={calculateROI}
                   disabled={isCalculating}
                   className="w-full btn-primary text-base h-14 relative overflow-hidden group"
@@ -366,7 +366,7 @@ const ROICalculator = () => {
                   <CardContent>
                     <div className="text-center mb-6">
                       <p className="text-gray-600">
-                        Seus resultados foram calculados! Para visualizar seu potencial de crescimento, 
+                        Seus resultados foram calculados! Para visualizar seu potencial de crescimento,
                         precisamos de algumas informações para personalizar ainda mais nossa análise.
                       </p>
                     </div>
@@ -375,13 +375,13 @@ const ROICalculator = () => {
                 </Card>
               ) : result && contactFormSubmitted ? (
                 <div className="space-y-6 animate-slide-in-up">
-                  <div className="text-center mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <h3 className="text-lg font-bold text-green-800 mb-2">✅ Obrigado!</h3>
-                    <p className="text-green-700">
-                      Seus dados foram enviados com sucesso. Aqui estão seus resultados personalizados:
+                  <div className="text-center mb-10 p-6 bg-zinc-50 rounded-none border border-zinc-200">
+                    <h3 className="text-lg font-black text-black mb-2 uppercase tracking-tighter">IDENTIFICAÇÃO VALIDADA</h3>
+                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                      Seus resultados personalizados foram liberados.
                     </p>
                   </div>
-                  
+
                   <Card className="interactive-card border-revgreen/20">
                     <CardContent className="pt-6">
                       <div className="flex items-center mb-4">
@@ -421,7 +421,7 @@ const ROICalculator = () => {
                         <p className="text-sm text-gray-600 mt-1">Retorno sobre investimento</p>
                       </CardContent>
                     </Card>
-                    
+
                     <Card className="interactive-card">
                       <CardContent className="pt-6 text-center">
                         <p className="text-2xl font-bold text-blue-600">
@@ -432,14 +432,12 @@ const ROICalculator = () => {
                     </Card>
                   </div>
 
-                  <div className="bg-gradient-to-r from-revgreen/10 to-green-100/50 rounded-2xl p-6 border border-revgreen/20">
-                    <h4 className="font-bold text-lg mb-3 text-revgreen">
-                      💡 Baseado em casos reais
+                  <div className="bg-zinc-50 rounded-none p-8 border border-zinc-200">
+                    <h4 className="font-black text-xs mb-4 text-black uppercase tracking-widest">
+                      PROTOCOLO DE VALIDAÇÃO
                     </h4>
-                    <p className="text-gray-700 text-sm leading-relaxed">
-                      Estes cálculos são baseados na média de resultados de nossos +150 clientes B2B, 
-                      considerando melhorias de 30% em conversão, 25% em eficiência operacional e 24% 
-                      na redução de churn.
+                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                      Este cálculo utiliza o framework REI (Revenue Excellence Initiative) baseado na performance de +150 operações B2B, considerando melhorias incrementais de 30% em conversão e 25% em eficiência operacional.
                     </p>
                   </div>
                 </div>

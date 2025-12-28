@@ -10,12 +10,14 @@ import {
 import { Button } from '@/components/ui/button';
 
 interface BookingModalProps {
+    isOpen?: boolean;
+    onClose?: () => void;
     triggerText?: string;
     className?: string;
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 }
 
-const BookingModal = ({ triggerText = "Agendar Diagnóstico", className, variant = "default" }: BookingModalProps) => {
+const BookingModal = ({ isOpen, onClose, triggerText = "Agendar Diagnóstico", className, variant = "default" }: BookingModalProps) => {
 
     useEffect(() => {
         // Load the embed script dynamically when the component mounts or modal opens
@@ -32,22 +34,44 @@ const BookingModal = ({ triggerText = "Agendar Diagnóstico", className, variant
     }, []);
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant={variant} className={className}>
-                    {triggerText}
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto p-0 bg-white border-0">
-                <DialogHeader className="px-6 py-4 border-b border-gray-100">
-                    <DialogTitle className="text-black font-bold text-xl">Agendar Diagnóstico</DialogTitle>
+        <Dialog open={isOpen} onOpenChange={(open) => {
+            if (!open && onClose) onClose();
+        }}>
+            {!isOpen && onClose === undefined && (
+                <DialogTrigger asChild>
+                    <Button variant={variant} className={className}>
+                        {triggerText}
+                    </Button>
+                </DialogTrigger>
+            )}
+            <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 bg-white border-0 overflow-hidden">
+                <DialogHeader className="px-0 py-0 border-b border-gray-100 bg-black text-white shrink-0 z-10">
+                    <div className="flex items-center justify-between px-6 py-6">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-400 font-mono">PROTOCOLO // ID-9090</span>
+                            <DialogTitle className="text-white font-bold text-sm uppercase tracking-[0.2em] mt-1">
+                                Sessão de Diagnóstico
+                            </DialogTitle>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-revgreen animate-pulse shadow-[0_0_8px_#03FC3B]"></div>
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-revgreen">
+                                Sistema Ativo
+                            </span>
+                        </div>
+                    </div>
+                    {/* Progress Loader Simulation */}
+                    <div className="w-full h-0.5 bg-gray-900 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 h-full bg-revgreen w-1/3 animate-[shimmer_2s_infinite]"></div>
+                    </div>
                 </DialogHeader>
-                <div className="w-full h-full p-4 bg-white">
+                <div className="flex-1 w-full p-0 bg-white overflow-y-auto">
                     <iframe
                         src="https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh"
-                        style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '600px' }}
-                        scrolling="no"
+                        style={{ width: '100%', border: 'none', minHeight: '1100px' }}
+                        scrolling="yes"
                         id="E6Mw5guvWZc7ADFgxnJh_1766095834075"
+                        title="Agendar Diagnóstico"
                     />
                 </div>
             </DialogContent>

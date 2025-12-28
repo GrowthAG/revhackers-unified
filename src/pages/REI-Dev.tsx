@@ -138,9 +138,9 @@ const ReiDevPage = () => {
                 { label: "CONVERSÃO", value: Math.min(100, conversionPotential) },
             ],
             insights: [
-                data.contentStatus.includes("zero") ? "⚠️ Conteúdo é gargalo. Sem copy validada, o design não converte. Prioridade alta." : "✅ Conteúdo pronto acelera o desenvolvimento em 2x.",
-                data.brandGuidelines.includes("Não temos") ? "🎨 Identidade visual fraca passa amadorismo. Recomendamos um Sprint de Branding antes." : "💎 Brandbook existente garante consistência e velocidade.",
-                conversionPotential > 70 ? "🚀 Seu projeto tem alto potencial de conversão instantânea." : "⚠️ Foco excessivo em estética pode prejudicar a conversão. Atenção à UX."
+                data.contentStatus.includes("zero") ? "CRITICAL: A ausência de conteúdo estruturado é o maior gargalo técnico do projeto. Prioridade zero." : "DADO: Estrutura de conteúdo validada. Desenvolvimento acelerado em 2x.",
+                data.brandGuidelines.includes("Não temos") ? "DIAGNÓSTICO: Identidade visual inexistente impacta na percepção de valor. Recomendação de Sprint de Branding." : "ANÁLISE: Ativos de marca integrados garantem consistência técnica na interface.",
+                conversionPotential > 70 ? "RESULTADO: O projeto apresenta alto potencial de conversão baseado nos inputs estratégicos." : "AVISO: Foco estético excessivo identificado. Recomendamos validação de UX para garantir conversão."
             ]
         };
     };

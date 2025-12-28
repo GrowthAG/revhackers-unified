@@ -32,17 +32,21 @@ const MaterialDetalhe = () => {
         // Normalize the slug for comparison
         const normalizedSlug = slug?.toLowerCase().replace(/[^\w-]+/g, '-');
 
-        // Find the material that matches the slug
-        let foundMaterial = materials.find(item => {
-          // Extract a slug from the title
-          const itemTitle = (item as any).material_name || (typeof item.title === 'string' ? item.title : (item.title as any)?.rendered ? (item.title as any).rendered : '');
-          const itemSlug = itemTitle.toLowerCase().replace(/<[^>]*>/g, '') // Remove HTML tags
-            .replace(/[^\w\s-]/g, '') // Remove special characters
-            .replace(/\s+/g, '-') // Replace spaces with hyphens
-            .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
+        // 1. Direct Match (Best Practice) - Check exact slug column in DB
+        let foundMaterial = materials.find(m => m.slug === normalizedSlug);
 
-          return itemSlug === normalizedSlug;
-        });
+        // 2. Legacy Fallback: Match by Title-derived slug (if direct match failed)
+        if (!foundMaterial) {
+          foundMaterial = materials.find(item => {
+            const itemTitle = (item as any).material_name || (typeof item.title === 'string' ? item.title : (item.title as any)?.rendered ? (item.title as any).rendered : '');
+            const itemSlug = itemTitle.toLowerCase().replace(/<[^>]*>/g, '') // Remove HTML tags
+              .replace(/[^\w\s-]/g, '') // Remove special characters
+              .replace(/\s+/g, '-') // Replace spaces with hyphens
+              .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
+
+            return itemSlug === normalizedSlug;
+          });
+        }
 
         if (!foundMaterial) {
           // Fallback to static data
@@ -165,7 +169,7 @@ const MaterialDetalhe = () => {
 
                   <Button
                     onClick={handleDownloadClick}
-                    className="w-full md:w-auto bg-revgreen text-black hover:bg-emerald-400 font-bold text-lg px-12 h-14 rounded-sm shadow-lg hover:shadow-revgreen/20 transition-all uppercase tracking-wide"
+                    className="w-full md:w-auto bg-revgreen text-black hover:bg-revgreen/90 font-bold text-lg px-12 h-14 rounded-sm shadow-lg hover:shadow-revgreen/20 transition-all uppercase tracking-wide"
                   >
                     <Download className="mr-2 h-5 w-5" />
                     Acessar Material Gratuitamente

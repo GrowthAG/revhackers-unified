@@ -5,6 +5,7 @@ import { getFormData } from '@/utils/formStorage';
 import { Card } from '@/components/ui/card';
 import { Calendar, Clock, CheckCircle2 } from 'lucide-react';
 
+
 const BookingPage = () => {
   const [userData, setUserData] = useState({
     name: '',
@@ -53,86 +54,68 @@ const BookingPage = () => {
 
   return (
     <PageLayout>
-      <section className="py-20 bg-white min-h-screen relative overflow-hidden flex items-center">
-        {/* Pure White Background - removed grid for ultra minimalism */}
+      <section className="py-24 bg-white min-h-screen relative flex items-center justify-center">
+        {/* Background Texture - Subtle Noise for White */}
+        <div className="absolute inset-0 opacity-[0.4] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
 
-        <div className="container-custom relative z-10 w-full max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto mb-20 animate-fade-in-up">
-            <h1 className="text-3xl md:text-5xl font-black leading-none mb-6 text-black uppercase tracking-[0.2em]">
-              Agende seu <span className="text-black border-b-4 border-revgreen pb-2">Diagnóstico</span>
+        <div className="container-custom relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center">
+
+          <div className="text-center mb-12 animate-fade-in-up">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-2 h-2 rounded-full bg-revgreen animate-pulse"></div>
+              <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.3em] text-black font-bold">
+                System Ready // Booking Protocol
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl font-bold leading-none mb-6 text-black tracking-tight">
+              Agende seu <span className="text-black border-b-4 border-revgreen pb-1">Diagnóstico</span>
             </h1>
-            <p className="text-sm md:text-base text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed uppercase tracking-widest">
-              Converse com um especialista e entenda como escalar sua operação.
+            <p className="text-sm text-gray-500 max-w-lg mx-auto font-mono uppercase tracking-widest leading-relaxed">
+              Sessão Estratégica de 30 Minutos para Identificação de Gargalos de Receita.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            {/* Sidebar - Clean Text Only (No Box) */}
-            <div className="lg:col-span-4 space-y-12 pt-4">
-              <div className="sticky top-24">
-                <h3 className="text-lg font-black text-black mb-12 uppercase tracking-[0.1em] pl-4 border-l-4 border-black">
-                  O que vamos discutir?
-                </h3>
-
-                <div className="space-y-12">
-                  <div className="flex gap-6 items-start group">
-                    <div className="flex-shrink-0 mt-1">
-                      <Clock className="w-5 h-5 text-black" />
-                    </div>
-                    <div>
-                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Sessão Estratégica</h4>
-                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Análise profunda do cenário atual.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-6 items-start group">
-                    <div className="flex-shrink-0 mt-1">
-                      <Calendar className="w-5 h-5 text-black" />
-                    </div>
-                    <div>
-                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Diagnóstico Técnico</h4>
-                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Gargalos em Marketing, Vendas e Dados.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-6 items-start group">
-                    <div className="flex-shrink-0 mt-1">
-                      <CheckCircle2 className="w-5 h-5 text-black" />
-                    </div>
-                    <div>
-                      <h4 className="text-black font-bold mb-3 uppercase tracking-wider text-xs group-hover:text-revgreen transition-colors">Plano de Ação</h4>
-                      <p className="text-zinc-500 text-[10px] leading-relaxed uppercase tracking-widest">Frameworks para crescimento.</p>
-                    </div>
-                  </div>
-                </div>
+          {/* Calendar Embed - Centralized White Card with Shadow */}
+          <Card className="w-full max-w-4xl bg-white border border-gray-100 rounded-sm shadow-2xl overflow-hidden relative animate-fade-in-up delay-150">
+            {/* Tech Header - Clean White/Gray */}
+            <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-b border-gray-100">
+              <span className="text-[10px] font-mono text-gray-400 uppercase">Secure Connection</span>
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-gray-200"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-200"></div>
+                <div className="w-2 h-2 rounded-full bg-revgreen"></div>
               </div>
             </div>
 
-            {/* Calendar Embed - Floating White Card */}
-            <div className="lg:col-span-8">
-              <Card className="bg-white border-0 shadow-none p-0 overflow-hidden relative min-h-[800px]">
-                {/* Minimal Header Line */}
-                <div className="w-full h-px bg-zinc-200 mb-8"></div>
-
-                <div className="relative w-full h-[850px] md:h-[800px] overflow-hidden bg-white">
-                  <iframe
-                    src={`https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh${buildQueryParams()}`}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                      overflow: 'hidden',
-                      background: '#ffffff'
-                    }}
-                    scrolling="no"
-                    id="E6Mw5guvWZc7ADFgxnJh_1766631709081"
-                    title="Agendar diagnóstico"
-                    className="relative z-10 w-full h-full"
-                  />
-                </div>
-              </Card>
+            <div className="relative w-full h-[850px] overflow-hidden bg-white">
+              <iframe
+                src={`https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh${buildQueryParams()}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  overflow: 'auto',
+                  background: '#ffffff'
+                }}
+                scrolling="yes"
+                id="E6Mw5guvWZc7ADFgxnJh_1766631709081"
+                title="Agendar diagnóstico"
+                className="relative z-10 w-full h-full"
+              />
             </div>
+          </Card>
+
+          {/* Footer Text */}
+          <div className="mt-12 text-center space-y-2 opacity-60">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              RevHackers Growth Architecture © 2025
+            </p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              Secure Data Transmission Included
+            </p>
           </div>
+
         </div>
       </section>
     </PageLayout>

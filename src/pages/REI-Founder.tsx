@@ -18,7 +18,7 @@ const section1Schema = z.object({
     linkedinUrl: z.string().url("URL do LinkedIn inválida").optional().or(z.literal("")),
     currentRole: z.string().min(2, "Cargo atual obrigatório"),
     biography: z.string().min(10, "Conte um pouco da sua história"),
-    superpowers: z.string().min(5, "Quais seus superpoderes?"),
+    superpowers: z.string().min(5, "Quais seus diferenciais estratégicos?"),
 });
 
 const section2Schema = z.object({
@@ -137,9 +137,9 @@ const ReiFounderPage = () => {
                 { label: "UNICIDADE", value: Math.min(100, uniquenessScore) },
             ],
             insights: [
-                consistencyScore < 60 ? "🚨 Sua consistência é o maior gargalo. O algoritmo ignora quem posta pouco." : "✅ Sua cadência de postagem é excelente para tracionar rápido.",
-                data.toneVoice.includes("Polêmico") ? "🔥 Seu tom provocativo vai gerar haters, mas também fãs leais. Use isso." : "🛡️ Seu tom é seguro. Considere adicionar opinões mais fortes (Hot Takes) para se destacar.",
-                data.preferredFormats.includes("Vídeo") ? "🎥 Vídeo é o formato com maior alcance orgânico hoje. Ótima escolha." : "📝 Texto constrói autoridade profunda, mas tem alcance menor. Considere reciclar para vídeo."
+                consistencyScore < 60 ? "CRITICAL: Sua consistência é o maior gargalo. O algoritmo ignora baixa frequência de publicação." : "Sua cadência de postagem está alinhada com as métricas de tração do mercado.",
+                data.toneVoice.includes("Polêmico") ? "ANÁLISE: Seu tom provocativo tende a gerar polarização positiva para autoridade." : "MÉTRICA: Seu tom é conservador. Considere adicionar opiniões mais fortes para aumentar o alcance.",
+                data.preferredFormats.includes("Vídeo") ? "DADO: Vídeo é o formato com maior alcance orgânico atual. Estratégia validada." : "ESTRUTURA: Texto constrói autoridade profunda, mas tem alcance menor. Recomenda-se transposição para vídeo."
             ]
         };
     };
@@ -239,7 +239,7 @@ const ReiFounderPage = () => {
                                             <textarea {...form.register("biography")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-32" placeholder="Resuma quem é você e como chegou aqui..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Seus 'Superpoderes' (Diferenciais) *</label>
+                                            <label className="text-sm font-medium text-gray-300">Seus Diferenciais Estratégicos *</label>
                                             <textarea {...form.register("superpowers")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="O que você faz melhor que 90% das pessoas?" />
                                         </div>
                                     </div>

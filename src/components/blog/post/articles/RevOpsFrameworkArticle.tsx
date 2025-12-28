@@ -176,6 +176,7 @@ REQUISITOS:
                     title="Chega de operar no Escuro"
                     description="Sem RevOps, seu crescimento é sorte. Com RevOps, é engenharia. Vamos construir sua máquina de receita?"
                     ctaText="Diagnóstico de Operação RevOps"
+                    leadMagnetId="checklist"
                     onCTAClick={onCTAClick}
                 />
 

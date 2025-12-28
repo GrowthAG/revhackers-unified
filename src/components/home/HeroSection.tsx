@@ -25,9 +25,10 @@ const HeroSection = () => {
         </div>
 
         {/* Headline - Reduced Size from 8xl/7xl to 6xl/7xl for better balance */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-medium text-white mb-8 leading-[1.0] tracking-tight">
-          Sua Estratégia B2B <br className="hidden md:block" />
-          <span className="text-gray-500">Precisa de Inteligência.</span>
+        <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
+          <span className="whitespace-nowrap block md:inline">Sua Estratégia B2B</span>{" "}
+          <br className="hidden md:block" />
+          <span className="text-zinc-600 whitespace-nowrap block md:inline">Precisa de Inteligência.</span>
         </h1>
 
         {/* Subheadline - Keeping same logic */}

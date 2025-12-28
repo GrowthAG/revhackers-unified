@@ -118,6 +118,7 @@ const GrowthTeamLeanArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                     title="Comece com o que tem"
                     description="Não espere ter budget para contratar o time dos sonhos. Comece criando uma 'Reunião de Growth' semanal com quem já está na empresa. O processo cria a cultura, a cultura atrai os talentos."
                     ctaText="Consultoria de Cultura de Growth"
+                    leadMagnetId="guide"
                     onCTAClick={onCTAClick}
                 />
             </div>
