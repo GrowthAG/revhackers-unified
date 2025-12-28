@@ -7,10 +7,16 @@ import CasesSection from '@/components/home/CasesSection';
 import JourneySection from '@/components/home/JourneySection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
+import SEO from '@/components/shared/SEO';
 
 const Index = () => {
   return (
     <PageLayout>
+      <SEO
+        title="Home"
+        description="A primeira consultoria de Revenue Operations do Brasil focada em Engenharia de Receita. Unificamos Marketing, Vendas e CS para escalar operações B2B."
+        canonical="https://revhackers.com"
+      />
       <HeroSection />
       <PartnersSection />
       <ServicesSection />

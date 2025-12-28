@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
+import ContextualCTA from '@/components/blog/post/ContextualCTA';
 import MaterialModal from '@/components/shared/MaterialModal';
 import BookingModal from '@/components/shared/BookingModal';
 import { useToast } from '@/hooks/use-toast';
@@ -348,12 +349,12 @@ const BlogPostPage = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
             onClick={() => contentRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white hover:text-revgreen transition-colors cursor-pointer group z-50"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 text-white hover:text-revgreen transition-colors cursor-pointer group z-50 pt-16"
           >
-            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-revgreen bg-black/50 px-3 py-1 rounded-full border border-revgreen/20 backdrop-blur-sm shadow-xl">
+            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-revgreen bg-black/80 px-4 py-2 rounded-sm border border-revgreen/20 backdrop-blur-md shadow-2xl hover:bg-revgreen hover:text-black transition-all duration-300">
               Ler Artigo
             </span>
-            <div className="w-px h-16 bg-gradient-to-b from-revgreen to-transparent opacity-50"></div>
+            <div className="w-px h-12 bg-gradient-to-b from-revgreen to-transparent opacity-50 group-hover:h-20 transition-all duration-500"></div>
           </motion.button>
         </div>
       </section>
@@ -387,6 +388,9 @@ const BlogPostPage = () => {
                   slug={post.slug}
                   onCTAClick={handlePrimaryCTAClick} // Pass Booking Handler for Primary
                 />
+
+                {/* Contextual Diagnostic CTA */}
+                <ContextualCTA title={post.title} category={post.category} />
               </div>
               <BlogPostFooter />
             </div>
@@ -412,7 +416,7 @@ const BlogPostPage = () => {
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
       />
-    </PageLayout>
+    </PageLayout >
   );
 };
 

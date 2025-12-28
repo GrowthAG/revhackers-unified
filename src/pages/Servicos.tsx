@@ -59,14 +59,19 @@ const capabilities = [
 const Servicos = () => {
   return (
     <PageLayout>
+      <SEO
+        title="Nossos Serviços | Engenharia de Receita"
+        description="Serviços de consultoria em Revenue Operations, ABM (Account Based Marketing), CRM e Automação de Vendas B2B. Transforme sua operação comercial."
+        canonical="https://revhackers.com/servicos"
+      />
       {/* Hero Section - Absolute Black "Capa" Style */}
       <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 bg-black border-b border-zinc-900">
         <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-6xl md:text-8xl font-black mb-6 text-white tracking-tighter">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-white tracking-tight leading-[1.1]">
               Serviços<span className="text-revgreen">.</span>
             </h1>
-            <p className="text-[10px] md:text-xs text-zinc-500 font-bold tracking-[0.2em] max-w-xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-zinc-500 font-normal tracking-tight leading-relaxed max-w-2xl mx-auto">
               ECOSSISTEMA DE RECEITA INTEGRADO PARA ESCALAR OPERAÇÕES B2B COMPLEXAS.
             </p>
           </div>

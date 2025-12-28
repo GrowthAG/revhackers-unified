@@ -1,5 +1,6 @@
 import { UseFormReturn } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -15,12 +16,12 @@ interface Step2Props {
 export default function Step2Contexto({ form }: Step2Props) {
     return (
         <div className="space-y-8">
-            <div>
-                <h2 className="text-3xl font-black text-black mb-3 uppercase tracking-[0.15em]">
+            <div className="border-b border-black pb-4">
+                <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Contexto do Negócio
                 </h2>
-                <p className="text-zinc-500 text-sm">
-                    Nos ajude a entender melhor sua operação
+                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                    Etapa 02/05
                 </p>
             </div>
 
@@ -38,14 +39,27 @@ export default function Step2Contexto({ form }: Step2Props) {
                             <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="b2b-saas">B2B SaaS</SelectItem>
-                            <SelectItem value="b2b-servicos">B2B Serviços</SelectItem>
-                            <SelectItem value="b2c-ecommerce">B2C E-commerce</SelectItem>
-                            <SelectItem value="b2c-servicos">B2C Serviços</SelectItem>
-                            <SelectItem value="marketplace">Marketplace</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
+                            <SelectItem value="cybersecurity">Cybersegurança / InfoSec</SelectItem>
+                            <SelectItem value="software-house">Software House / Outsourcing</SelectItem>
+                            <SelectItem value="b2b-saas">B2B SaaS (Enterprise & SMB)</SelectItem>
+                            <SelectItem value="b2b-servicos">Serviços B2B High-Ticket</SelectItem>
+                            <SelectItem value="b2b2c">B2B2C / Educação Corporativa</SelectItem>
+                            <SelectItem value="fintech">Fintech / Serviços Financeiros</SelectItem>
+                            <SelectItem value="healthtech">Healthtech / Saúde</SelectItem>
+                            <SelectItem value="agritech">Agritech / Indústria 4.0</SelectItem>
+                            <SelectItem value="startup">Startup / Scale-up Growth</SelectItem>
+                            <SelectItem value="outro">Outro (Especifique)</SelectItem>
                         </SelectContent>
                     </Select>
+                    {form.watch('segmento') === 'outro' && (
+                        <div className="animate-in fade-in slide-in-from-top-2">
+                            <input
+                                {...form.register('segmento_outro')}
+                                placeholder="Qual seu segmento?"
+                                className="w-full h-12 p-3 bg-white border border-zinc-200 focus:border-black outline-none transition-colors rounded-none placeholder:text-zinc-400 text-sm"
+                            />
+                        </div>
+                    )}
                     {form.formState.errors.segmento && (
                         <p className="text-red-500 text-xs">{form.formState.errors.segmento.message as string}</p>
                     )}
@@ -80,21 +94,26 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o ticket médio do produto/serviço? *
                     </Label>
-                    <Select
-                        onValueChange={(value) => form.setValue('ticketMedio', value)}
-                        value={form.watch('ticketMedio')}
-                    >
-                        <SelectTrigger className="bg-white border-zinc-200 h-12">
-                            <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ate-500">Até R$ 500</SelectItem>
-                            <SelectItem value="500-2k">R$ 500 - R$ 2.000</SelectItem>
-                            <SelectItem value="2k-10k">R$ 2.000 - R$ 10.000</SelectItem>
-                            <SelectItem value="10k-50k">R$ 10.000 - R$ 50.000</SelectItem>
-                            <SelectItem value="acima-50k">Acima de R$ 50.000</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">IMPORTANTE:</span> Informe o valor exato para cálculo de ROI.
+                    </p>
+                    <Input
+                        value={form.watch('ticketMedio') || ''}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            if (value === '') {
+                                form.setValue('ticketMedio', '');
+                                return;
+                            }
+                            const formatted = new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                            }).format(Number(value) / 100);
+                            form.setValue('ticketMedio', formatted);
+                        }}
+                        placeholder="R$ 0,00"
+                        className="bg-white border-zinc-200 h-12 placeholder:text-zinc-400 font-mono text-sm"
+                    />
                     {form.formState.errors.ticketMedio && (
                         <p className="text-red-500 text-xs">{form.formState.errors.ticketMedio.message as string}</p>
                     )}
@@ -130,6 +149,9 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual a receita recorrente mensal (MRR)? *
                     </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">DEF:</span> Receita Mensal Recorrente (Soma de Assinaturas).
+                    </p>
                     <Select
                         onValueChange={(value) => form.setValue('mrr', value)}
                         value={form.watch('mrr')}
@@ -181,6 +203,9 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual a taxa de churn mensal atual? *
                     </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">DEF:</span> Percentual de clientes ou receita perdida por cancelamento/mês.
+                    </p>
                     <Select
                         onValueChange={(value) => form.setValue('taxaChurn', value)}
                         value={form.watch('taxaChurn')}

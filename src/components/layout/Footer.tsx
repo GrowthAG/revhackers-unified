@@ -16,67 +16,60 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
 
             {/* Brand Column */}
-            <div className="lg:col-span-1 space-y-6">
-              <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers Logo" className="h-12 w-auto opacity-90" />
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Transformando empresas B2B através de engenharia de receita, automação inteligente e estratégias de crescimento validadas.
+            <div className="lg:col-span-1 space-y-4">
+              <Link to="/" onClick={scrollToTop} className="block w-fit">
+                <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers Logo" className="h-4 w-auto opacity-80 hover:opacity-100 transition-opacity" />
+              </Link>
+              <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">
+                Engenharia de receita e estratégias de crescimento para empresas B2B.
               </p>
-              <div className="flex gap-4">
-                <SocialLink href="https://www.linkedin.com/company/34579614/" icon={<Linkedin size={18} />} />
-                <SocialLink href="https://www.instagram.com/revhackers.com.br/" icon={<Instagram size={18} />} />
-                <SocialLink href="https://www.youtube.com/@RevHackersTV" icon={<Youtube size={18} />} />
-                <SocialLink href="mailto:contato@revhackers.com.br" icon={<Mail size={18} />} />
+              <div className="flex gap-2 pt-2">
+                <SocialLink href="https://www.linkedin.com/company/34579614/" icon={<Linkedin size={14} />} />
+                <SocialLink href="https://www.instagram.com/revhackers.com.br/" icon={<Instagram size={14} />} />
+                <SocialLink href="https://www.youtube.com/@RevHackersTV" icon={<Youtube size={14} />} />
+                <SocialLink href="mailto:contato@revhackers.com.br" icon={<Mail size={14} />} />
               </div>
             </div>
 
             {/* Links Column */}
             <div>
-              <h3 className="font-semibold text-white mb-6">Empresa</h3>
-              <ul className="space-y-4">
+              <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Empresa</h3>
+              <ul className="space-y-2">
                 <FooterLink to="/" onClick={scrollToTop}>Home</FooterLink>
-                <FooterLink to="/quem-somos" onClick={scrollToTop}>Sobre Nós</FooterLink>
-                <FooterLink to="/cases" onClick={scrollToTop}>Cases de Sucesso</FooterLink>
-                <FooterLink to="/carreiras" onClick={scrollToTop}>Carreiras</FooterLink>
+                <FooterLink to="/quem-somos" onClick={scrollToTop}>Sobre</FooterLink>
+                <FooterLink to="/cases" onClick={scrollToTop}>Cases</FooterLink>
               </ul>
             </div>
 
             {/* Resources Column */}
             <div>
-              <h3 className="font-semibold text-white mb-6">Recursos</h3>
-              <ul className="space-y-4">
+              <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Recursos</h3>
+              <ul className="space-y-2">
                 <FooterLink to="/servicos" onClick={scrollToTop}>Serviços</FooterLink>
-                <FooterLink to="/blog" onClick={scrollToTop}>Blog & Artigos</FooterLink>
-                <FooterLink to="/materiais" onClick={scrollToTop}>Materiais Gratuitos</FooterLink>
-                <FooterLink to="/comunidade" onClick={scrollToTop}>Comunidade</FooterLink>
+                <FooterLink to="/blog" onClick={scrollToTop}>Blog</FooterLink>
+                <FooterLink to="/materiais" onClick={scrollToTop}>Materiais</FooterLink>
               </ul>
             </div>
 
             {/* Newsletter Column */}
             <div className="lg:col-span-1">
-              <h3 className="font-semibold text-white mb-6">Fique Atualizado</h3>
-              <p className="text-gray-400 text-sm mb-4">Receba hacks de crescimento semanalmente.</p>
-              <div className="bg-white/5 p-1 rounded-lg border border-white/10">
-                <NewsletterForm />
-              </div>
+              <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Newsletter</h3>
+              <p className="text-zinc-600 text-[10px] mb-4">Growth Hacks semanais direto na sua inbox.</p>
+              <NewsletterForm />
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-sm text-center md:text-left">
+          <div className="border-t border-white/5 mt-20 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-zinc-600 text-[10px] uppercase tracking-wider text-center md:text-left">
               © {currentYear} RevHackers. Todos os direitos reservados.
             </p>
-            <div className="flex gap-6 flex-wrap justify-center">
-              <Link to="/privacidade" onClick={scrollToTop} className="text-gray-500 text-sm hover:text-revgreen transition-colors">Privacidade</Link>
-              <Link to="/termos-de-uso" onClick={scrollToTop} className="text-gray-500 text-sm hover:text-revgreen transition-colors">Termos</Link>
+            <div className="flex gap-8 flex-wrap justify-center">
+              <Link to="/privacidade" onClick={scrollToTop} className="text-zinc-600 text-[10px] uppercase tracking-wider hover:text-white transition-colors">Privacidade</Link>
+              <Link to="/termos-de-uso" onClick={scrollToTop} className="text-zinc-600 text-[10px] uppercase tracking-wider hover:text-white transition-colors">Termos</Link>
             </div>
-            <div className="flex items-center gap-2 text-zinc-500 text-sm font-mono-tech opacity-60 hover:opacity-100 transition-opacity">
-              <span className="text-[10px] uppercase tracking-wider">Powered by</span>
-              <img
-                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
-                alt="REVHACKERS"
-                className="h-4 w-auto grayscale brightness-0 invert"
-              />
+            <div className="flex items-center gap-2 text-zinc-700 text-[10px] font-mono opacity-50 hover:opacity-100 transition-opacity uppercase tracking-widest">
+              <span>System by RevHackers</span>
             </div>
           </div>
         </div>
@@ -87,7 +80,7 @@ const Footer = () => {
 
 const FooterLink = ({ to, children, onClick }: { to: string, children: React.ReactNode, onClick: () => void }) => (
   <li>
-    <Link to={to} onClick={onClick} className="text-gray-400 hover:text-revgreen transition-colors text-sm font-medium block">
+    <Link to={to} onClick={onClick} className="text-zinc-500 hover:text-white transition-colors text-xs font-medium block">
       {children}
     </Link>
   </li>
@@ -98,7 +91,7 @@ const SocialLink = ({ href, icon }: { href: string, icon: React.ReactNode }) => 
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-black hover:bg-revgreen hover:border-revgreen transition-all duration-300"
+    className="w-8 h-8 flex items-center justify-center text-zinc-600 hover:text-white transition-colors duration-300 border border-transparent hover:border-zinc-800"
   >
     {icon}
   </a>

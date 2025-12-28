@@ -10,29 +10,26 @@ const ContactFormSection = () => {
 
           {/* Left Column: Context/Sales Copy */}
           <div>
-            <span className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4 block">
-              Comece Agora
-            </span>
-            <h2 className="text-4xl md:text-6xl font-medium mb-8 text-black tracking-tight">
-              Pronto para <br /> Escalar?
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-black tracking-tight leading-[1.1]">
+              Pronto para Escalar<span className="text-revgreen">?</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8 font-light">
+            <p className="text-lg md:text-xl text-zinc-500 font-normal tracking-tight leading-relaxed mb-12 max-w-xl">
               Solicite um diagnóstico de engenharia de receita. Analisaremos sua stack, seus canais e seus gargalos.
             </p>
 
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white border border-gray-200 flex items-center justify-center font-mono-tech text-revgreen">01</div>
+            <div className="space-y-10">
+              <div className="flex items-start gap-6 group">
+                <span className="text-4xl font-bold text-zinc-200 group-hover:text-revgreen transition-colors duration-300">01</span>
                 <div>
-                  <h4 className="font-bold text-black text-lg">Análise de Dados</h4>
-                  <p className="text-gray-500 text-sm">Mergulhamos no seu CRM e Analytics.</p>
+                  <h4 className="font-bold text-black text-xl mb-1">Análise de Dados</h4>
+                  <p className="text-zinc-500 text-base leading-relaxed">Mergulhamos no seu CRM e Analytics para identificar oportunidades ocultas.</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white border border-gray-200 flex items-center justify-center font-mono-tech text-revgreen">02</div>
+              <div className="flex items-start gap-6 group">
+                <span className="text-4xl font-bold text-zinc-200 group-hover:text-revgreen transition-colors duration-300">02</span>
                 <div>
-                  <h4 className="font-bold text-black text-lg">Roadmap de 90 Dias</h4>
-                  <p className="text-gray-500 text-sm">Entregamos o plano exato de execução.</p>
+                  <h4 className="font-bold text-black text-xl mb-1">Roadmap de 90 Dias</h4>
+                  <p className="text-zinc-500 text-base leading-relaxed">Entregamos o plano exato de execução para dobrar sua eficiência.</p>
                 </div>
               </div>
             </div>

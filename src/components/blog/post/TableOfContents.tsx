@@ -84,35 +84,43 @@ const TableOfContents = ({ containerRef }: TableOfContentsProps) => {
   if (headings.length === 0) return null;
 
   return (
-    <div className="sticky top-32 mb-8 hidden lg:block">
-      <nav className="toc-nav">
-        <ul className="space-y-3 relative border-l border-gray-100 pl-4">
-          {headings.map((heading, index) => (
-            <li
-              key={`${heading.id}-${index}`}
-              className={cn(
-                "transition-all duration-200 text-xs",
-                heading.level === 3 ? "ml-2" : "",
-                activeId === heading.id
-                  ? "text-black font-bold -ml-[17px] pl-[13px] border-l-2 border-revgreen"
-                  : "text-gray-400 hover:text-gray-600"
-              )}
-            >
-              <a
-                href={`#${heading.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById(heading.id)?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
-                }}
-                className="block leading-relaxed break-words"
+    <div className="sticky top-32 mb-8 hidden lg:block pr-8">
+      <nav className="toc-nav relative">
+        {/* Continuous Line */}
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-100 z-0"></div>
+
+        <ul className="space-y-0 relative z-10 w-full">
+          {headings.map((heading, index) => {
+            const isActive = activeId === heading.id;
+            return (
+              <li
+                key={`${heading.id}-${index}`}
+                className={cn(
+                  "relative transition-all duration-300",
+                  heading.level === 3 ? "pl-6" : ""
+                )}
               >
-                {heading.text}
-              </a>
-            </li>
-          ))}
+                <a
+                  href={`#${heading.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById(heading.id)?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className={cn(
+                    "block py-3 pl-6 border-l-2 text-xs leading-relaxed transition-all duration-300",
+                    isActive
+                      ? "border-revgreen font-bold text-black bg-gradient-to-r from-revgreen/5 to-transparent"
+                      : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200"
+                  )}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            )
+          })}
         </ul>
       </nav>
     </div>

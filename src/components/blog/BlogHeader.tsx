@@ -24,10 +24,10 @@ const BlogHeader = ({
 
       <div className="container-custom relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-6xl md:text-8xl font-black mb-6 text-white tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-white tracking-tight leading-[1.1]">
             Blog<span className="text-revgreen">.</span>
           </h1>
-          <p className="text-[10px] md:text-xs text-zinc-500 font-bold tracking-[0.2em] max-w-xl mx-auto leading-relaxed uppercase">
+          <p className="text-lg md:text-xl text-zinc-500 font-normal tracking-tight leading-relaxed max-w-2xl mx-auto">
             Estratégias avançadas de Growth, Revenue Operations e Tecnologia.
           </p>
         </div>
@@ -36,8 +36,8 @@ const BlogHeader = ({
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-zinc-500" />
           <Input
             type="search"
-            placeholder="Buscar artigos..."
-            className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-2xl text-xs"
+            placeholder="BUSCAR ARTIGOS..."
+            className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-2xl text-xs font-bold uppercase tracking-widest"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -47,7 +47,7 @@ const BlogHeader = ({
           {categories.map(category => (
             <button
               key={category}
-              className={`text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-300 relative py-2 ${activeCategory === category
+              className={`text-[10px] uppercase tracking-[0.2em] font-bold font-sans transition-all duration-300 relative py-2 ${activeCategory === category
                 ? "text-revgreen"
                 : "text-zinc-500 hover:text-white"
                 }`}

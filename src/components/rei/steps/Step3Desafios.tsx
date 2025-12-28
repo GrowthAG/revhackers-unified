@@ -36,12 +36,12 @@ export default function Step3Desafios({ form }: Step3Props) {
 
     return (
         <div className="space-y-8">
-            <div>
-                <h2 className="text-3xl font-black text-black mb-3 uppercase tracking-[0.15em]">
+            <div className="border-b border-black pb-4">
+                <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Desafios & Objetivos
                 </h2>
-                <p className="text-zinc-500 text-sm">
-                    Vamos entender suas metas e prioridades
+                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                    Etapa 03/05
                 </p>
             </div>
 
@@ -91,6 +91,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <SelectItem value="3x">3x (triplicar receita)</SelectItem>
                             <SelectItem value="5x">5x ou mais</SelectItem>
                             <SelectItem value="manter">Manter e otimizar</SelectItem>
+                            <SelectItem value="nao-planejado">Não temos meta definida</SelectItem>
                         </SelectContent>
                     </Select>
                     {form.formState.errors.metaCrescimento && (
@@ -142,6 +143,16 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <SelectItem value="longo">Longo prazo (12+ meses)</SelectItem>
                         </SelectContent>
                     </Select>
+                    {(form.watch('prazo') === 'imediato' || form.watch('prazo') === 'curto') && (
+                        <div className="bg-zinc-50 border-l-2 border-black p-3 my-2 animate-in fade-in slide-in-from-top-2">
+                            <p className="text-[10px] uppercase tracking-widest font-black text-black mb-1">
+                                ALINHAMENTO CRÍTICO:
+                            </p>
+                            <p className="text-xs text-zinc-600 leading-relaxed font-medium">
+                                Nós vendemos <span className="text-black font-bold">PROCESSO DE IMPLEMENTAÇÃO</span>, não promessa de resultado. O resultado no curto prazo depende exclusivamente da execução disciplinada do seu time. O sucesso é consequência do processo.
+                            </p>
+                        </div>
+                    )}
                     {form.formState.errors.prazo && (
                         <p className="text-red-500 text-xs">{form.formState.errors.prazo.message as string}</p>
                     )}
@@ -178,6 +189,9 @@ export default function Step3Desafios({ form }: Step3Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o principal gargalo no funil? *
                     </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">DEF:</span> Onde a maioria dos leads/clientes trava ou desiste.
+                    </p>
                     <Select
                         onValueChange={(value) => form.setValue('gargaloFunil', value)}
                         value={form.watch('gargaloFunil')}
@@ -186,13 +200,25 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="topo">Topo (geração de leads)</SelectItem>
-                            <SelectItem value="meio">Meio (qualificação/nutrição)</SelectItem>
-                            <SelectItem value="fundo">Fundo (conversão/fechamento)</SelectItem>
-                            <SelectItem value="pos-venda">Pós-venda (onboarding/ativação)</SelectItem>
-                            <SelectItem value="retencao">Retenção (churn)</SelectItem>
+                            <SelectItem value="topo-volume">Topo: Volume baixo de leads (preciso de mais)</SelectItem>
+                            <SelectItem value="topo-qualidade">Topo: Leads chegam desqualificados (lixo)</SelectItem>
+                            <SelectItem value="meio-followup">Meio: Comercial não consegue falar (sem resposta)</SelectItem>
+                            <SelectItem value="meio-processo">Meio: Leads estagnados no pipeline (não avançam)</SelectItem>
+                            <SelectItem value="fundo-fechamento">Fundo: Taxa de fechamento baixa (perco p/ concorrência)</SelectItem>
+                            <SelectItem value="pos-churn">Pós-venda: Churn alto / Cliente não vê valor</SelectItem>
+                            <SelectItem value="dados-cegueira">Cegueira de Dados: Não sei onde está o problema</SelectItem>
+                            <SelectItem value="outro">Outro (Especifique)</SelectItem>
                         </SelectContent>
                     </Select>
+                    {form.watch('gargaloFunil') === 'outro' && (
+                        <div className="animate-in fade-in slide-in-from-top-2">
+                            <input
+                                {...form.register('gargaloFunil_outro')}
+                                placeholder="Descreva seu gargalo..."
+                                className="w-full h-12 p-3 bg-white border border-zinc-200 focus:border-black outline-none transition-colors rounded-none placeholder:text-zinc-400 text-sm"
+                            />
+                        </div>
+                    )}
                     {form.formState.errors.gargaloFunil && (
                         <p className="text-red-500 text-xs">{form.formState.errors.gargaloFunil.message as string}</p>
                     )}
@@ -200,8 +226,9 @@ export default function Step3Desafios({ form }: Step3Props) {
 
                 {/* PERGUNTAS ABERTAS ESTRATÉGICAS */}
                 <div className="pt-8 border-t border-zinc-200">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-zinc-700 mb-6">
-                        🔧 Contexto Estratégico
+                    <h3 className="text-sm font-black uppercase tracking-wider text-black mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-black rounded-sm"></span>
+                        Contexto Estratégico
                     </h3>
 
                     {/* Gap de Processo */}

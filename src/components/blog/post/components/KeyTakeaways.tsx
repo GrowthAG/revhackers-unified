@@ -21,7 +21,7 @@ const KeyTakeaways = ({ items, title = "Key Takeaways" }: KeyTakeawaysProps) => 
             <div className="grid md:grid-cols-2 gap-x-12 gap-y-8 border-t border-gray-100 pt-6">
                 {items.map((item, index) => (
                     <div key={index} className="flex gap-4 items-start group">
-                        <span className="font-mono text-xs text-gray-400 mt-1">
+                        <span className="text-xs font-bold text-gray-300 mt-1">
                             {String(index + 1).padStart(2, '0')}
                         </span>
                         <div>

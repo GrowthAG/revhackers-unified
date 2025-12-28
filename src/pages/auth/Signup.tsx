@@ -69,9 +69,9 @@ const Signup = () => {
 
                         {success ? (
                             <div className="text-center py-8">
-                                <div className="bg-green-50 border border-green-200 p-6 rounded-none mb-8">
-                                    <h3 className="text-green-800 font-black uppercase tracking-widest text-sm mb-2">Conta criada!</h3>
-                                    <p className="text-green-600 text-xs font-bold uppercase tracking-wider leading-relaxed">
+                                <div className="bg-black border border-zinc-800 p-6 rounded-none mb-8">
+                                    <h3 className="text-white font-black uppercase tracking-widest text-sm mb-2">Conta criada!</h3>
+                                    <p className="text-zinc-400 text-xs font-bold uppercase tracking-wider leading-relaxed">
                                         Verifique seu e-mail para confirmar o cadastro e liberar seu acesso.
                                     </p>
                                 </div>
@@ -84,7 +84,7 @@ const Signup = () => {
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 {error && (
-                                    <div className="bg-red-50 border border-red-200 p-4 text-red-600 text-xs font-bold uppercase tracking-widest text-center rounded-none">
+                                    <div className="bg-zinc-50 border border-black text-black text-xs font-bold uppercase tracking-widest text-center rounded-none p-4">
                                         {error}
                                     </div>
                                 )}

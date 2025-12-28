@@ -94,153 +94,124 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="name" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_01 // Full_Name</Label>
-            <span className="font-mono text-[7px] text-zinc-300">REQ_ALPHA</span>
-          </div>
+          <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Nome Completo</Label>
           <Input
             id="name"
             type="text"
-            placeholder="NOME COMPLETO"
+            placeholder="Ex: João Silva"
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             required
-            className="bg-white border-zinc-200 border-[1.5px] focus:border-black rounded-none h-12 text-black transition-all placeholder:text-zinc-300 placeholder:font-mono placeholder:text-[10px]"
+            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
           />
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="email" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_02 // Identity_Email</Label>
-            <span className="font-mono text-[7px] text-zinc-300">REQ_SECURE</span>
-          </div>
+          <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Email Corporativo</Label>
           <Input
             id="email"
             type="email"
-            placeholder="EX: SEU@EMAIL.COM"
+            placeholder="Ex: nome@empresa.com.br"
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             required
-            className="bg-white border-zinc-200 border-[1.5px] focus:border-black rounded-none h-12 text-black transition-all placeholder:text-zinc-300 placeholder:font-mono placeholder:text-[10px]"
+            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="company" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_03 // Organization</Label>
-            <span className="font-mono text-[7px] text-zinc-300">CORP_ID</span>
-          </div>
+          <Label htmlFor="company" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Empresa</Label>
           <Input
             id="company"
             type="text"
-            placeholder="NOME DA EMPRESA"
+            placeholder="Nome da sua empresa"
             value={formData.company}
             onChange={(e) => handleInputChange('company', e.target.value)}
             required
-            className="bg-white border-zinc-200 border-[1.5px] focus:border-black rounded-none h-12 text-black transition-all placeholder:text-zinc-300 placeholder:font-mono placeholder:text-[10px]"
+            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
           />
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="phone" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_04 // Contact_Phone</Label>
-            <span className="font-mono text-[7px] text-zinc-300">INT_CODE</span>
-          </div>
+          <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Telefone / WhatsApp</Label>
           <Input
             id="phone"
             type="tel"
-            placeholder="+55 (--) ---- ----"
+            placeholder="(11) 99999-9999"
             value={formData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             required
-            className="bg-white border-zinc-200 border-[1.5px] focus:border-black rounded-none h-12 text-black transition-all placeholder:text-zinc-300 placeholder:font-mono placeholder:text-[10px]"
+            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="industry" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_05 // Vertical_Market</Label>
-            <span className="font-mono text-[7px] text-zinc-300">SEL_ONE</span>
-          </div>
+          <Label htmlFor="industry" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Segmento</Label>
           <select
             id="industry"
-            className="flex h-12 w-full rounded-none border-[1.5px] border-zinc-200 bg-white px-3 py-2 text-[11px] font-mono-tech uppercase tracking-widest focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 text-black appearance-none transition-all"
+            className="flex h-12 w-full rounded-none border border-zinc-200 bg-white px-3 py-2 text-sm text-black focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
             value={formData.industry}
             onChange={(e) => handleInputChange('industry', e.target.value)}
             required
             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1rem' }}
           >
-            <option value="" disabled className="text-zinc-300">SELECIONAR SEGMENTO</option>
-            <option value="technology">Tecnologia</option>
-            <option value="finance">Financeiro</option>
-            <option value="health">Saúde</option>
-            <option value="education">Educação</option>
-            <option value="retail">Varejo</option>
+            <option value="" disabled>Selecione seu segmento</option>
+            <option value="technology">Tecnologia / SaaS</option>
+            <option value="finance">Financeiro / Fintech</option>
+            <option value="health">Saúde / Healthtech</option>
+            <option value="education">Educação / Edtech</option>
+            <option value="retail">Varejo / E-commerce</option>
             <option value="manufacturing">Indústria</option>
-            <option value="services">Serviços</option>
-            <option value="real_estate">Imobiliário</option>
+            <option value="services">Serviços B2B</option>
             <option value="consulting">Consultoria</option>
-            <option value="other">Outros</option>
+            <option value="other">Outro</option>
           </select>
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-end">
-            <Label htmlFor="role" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_06 // Functional_Role</Label>
-            <span className="font-mono text-[7px] text-zinc-300">SEL_ONE</span>
-          </div>
+          <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Cargo</Label>
           <select
             id="role"
-            className="flex h-12 w-full rounded-none border-[1.5px] border-zinc-200 bg-white px-3 py-2 text-[11px] font-mono-tech uppercase tracking-widest focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 text-black appearance-none transition-all"
+            className="flex h-12 w-full rounded-none border border-zinc-200 bg-white px-3 py-2 text-sm text-black focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
             value={formData.role}
             onChange={(e) => handleInputChange('role', e.target.value)}
             required
             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1rem' }}
           >
-            <option value="" disabled>SELECIONAR CARGO</option>
-            <option value="ceo">CEO/Presidente</option>
-            <option value="cto">CTO/Diretor de Tecnologia</option>
-            <option value="cmo">CMO/Diretor de Marketing</option>
-            <option value="cfo">CFO/Diretor Financeiro</option>
-            <option value="vp_sales">VP/Diretor de Vendas</option>
-            <option value="vp_marketing">VP/Diretor de Marketing</option>
-            <option value="manager">Gerente</option>
-            <option value="coordinator">Coordenador</option>
-            <option value="analyst">Analista</option>
-            <option value="consultant">Consultor</option>
-            <option value="owner">Proprietário</option>
-            <option value="other">Outros</option>
+            <option value="" disabled>Selecione seu cargo</option>
+            <option value="ceo">C-Level / Fundador</option>
+            <option value="vp">VP / Diretor</option>
+            <option value="manager">Gerente / Coordenador</option>
+            <option value="analyst">Analista / Especialista</option>
+            <option value="other">Outro</option>
           </select>
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between items-end">
-          <Label htmlFor="message" className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Field_07 // Briefing_Notes</Label>
-          <span className="font-mono text-[7px] text-zinc-300">OPT_DATA</span>
-        </div>
+        <Label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Como podemos ajudar?</Label>
         <Textarea
           id="message"
-          placeholder="DESCREVA SEUS DESAFIOS ATUAIS..."
+          placeholder="Descreva brevemente seus desafios atuais..."
           value={formData.message}
           onChange={(e) => handleInputChange('message', e.target.value)}
-          className="bg-white border-zinc-200 border-[1.5px] focus:border-black rounded-none min-h-[120px] text-black transition-all placeholder:text-zinc-300 placeholder:font-mono placeholder:text-[10px]"
+          className="bg-white border-zinc-200 min-h-[120px] text-black focus:border-black rounded-none placeholder:text-zinc-400"
         />
       </div>
 
       <Button
         type="submit"
-        className="w-full bg-black hover:bg-revgreen text-white hover:text-black font-bold h-16 rounded-none transition-all duration-300 border-2 border-transparent hover:border-black uppercase tracking-[0.2em] text-xs"
+        className="w-full bg-black hover:bg-zinc-900 text-white font-bold h-14 rounded-none transition-all uppercase tracking-widest text-xs"
         disabled={isSubmitting}
       >
-        <span className="relative z-10">{isSubmitting ? 'ENGINE_SUBMITTING...' : formType === 'diagnosis' ? 'SOLICITAR DIAGNÓSTICO // AGENDAR' : 'ENVIAR REQUISIÇÃO // SUBMIT'}</span>
+        {isSubmitting ? 'Enviando...' : formType === 'diagnosis' ? 'Agendar Diagnóstico' : 'Solicitar Contato'}
       </Button>
     </form>
   );

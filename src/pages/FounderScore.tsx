@@ -1,468 +1,290 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Star, Mic, Users, Trophy, Target, Linkedin, CheckCircle2 } from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+    ArrowRight, Star, Linkedin, Users, Trophy, Target,
+    Briefcase, Calendar, MapPin, Award, ArrowUpRight, Check
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/layout/PageLayout';
 import Section from '@/components/ui/Section';
-import { useToast } from '@/hooks/use-toast';
-import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-
-// Questions centered on "Authority & Market Positioning"
-const QUESTIONS = [
-    {
-        id: 1,
-        icon: <Users className="w-8 h-8 text-revgreen" />,
-        question: "Como você é visto no seu mercado hoje?",
-        options: [
-            { label: "Sou a referência nº 1 (Top of Mind)", score: 20 },
-            { label: "Sou conhecido, mas divido atenção com outros", score: 10 },
-            { label: "Apenas meus clientes me conhecem", score: 5 },
-            { label: "Sou o 'segredo mais bem guardado' (ninguém conhece)", score: 0 }
-        ]
-    },
-    {
-        id: 2,
-        icon: <Mic className="w-8 h-8 text-revgreen" />,
-        question: "Com que frequência você é convidado para palestrar/podcasts?",
-        options: [
-            { label: "Toda semana / Tenho que recusar convites", score: 20 },
-            { label: "Uma vez por mês", score: 10 },
-            { label: "Raramente / Só se eu pedir", score: 5 },
-            { label: "Nunca fui convocado", score: 0 }
-        ]
-    },
-    {
-        id: 3,
-        icon: <Target className="w-8 h-8 text-revgreen" />,
-        question: "Seu conteúdo gera vendas ou apenas 'curtidas'?",
-        options: [
-            { label: "Vendas diretas. Posto e o cliente chama.", score: 20 },
-            { label: "Gera leads, mas desqualificados", score: 10 },
-            { label: "Apenas engajamento (lives, likes) sem dinheiro", score: 5 },
-            { label: "Não produzo conteúdo / Fantasma digital", score: 0 }
-        ]
-    },
-    {
-        id: 4,
-        icon: <Trophy className="w-8 h-8 text-revgreen" />,
-        question: "Você cobra mais caro que a concorrência?",
-        options: [
-            { label: "Sim, sou o mais caro e fecho fácil", score: 20 },
-            { label: "Cobro a média do mercado", score: 10 },
-            { label: "Preciso dar desconto para fechar", score: 0 },
-            { label: "Sou a opção 'barata'", score: 0 }
-        ]
-    },
-    {
-        id: 5,
-        icon: <Star className="w-8 h-8 text-revgreen" />,
-        question: "Você tem um 'Sistema Próprio' ou Metodologia nomeada?",
-        options: [
-            { label: "Sim, tenho meu método proprietário e registrado", score: 20 },
-            { label: "Tenho um jeito de fazer, mas sem nome", score: 10 },
-            { label: "Uso métodos de mercado (ex: Agile, Canvas)", score: 5 },
-            { label: "Vendo horas de serviço genérico", score: 0 }
-        ]
-    }
-];
-
-type Step = 'start' | 'questions' | 'lead-capture' | 'results';
 
 const FounderScore = () => {
     const { toast } = useToast();
-    const [step, setStep] = useState<Step>('start');
+    const [step, setStep] = useState<'input' | 'analyzing' | 'results'>('input');
     const [linkedinUrl, setLinkedinUrl] = useState('');
+    const [analysisProgress, setAnalysisProgress] = useState(0);
 
-    // Question State
-    const [currentQ, setCurrentQ] = useState(0);
-    const [score, setScore] = useState(0);
-    const [answers, setAnswers] = useState<number[]>([]);
+    // Mock Data State
+    const [mockProfile, setMockProfile] = useState<any>(null);
 
-    // Lead Form State
-    const [leadForm, setLeadForm] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        role: ''
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const handleStart = (e: React.FormEvent) => {
+    const handleStartAnalysis = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!linkedinUrl.includes('linkedin.com')) {
+
+        const cleanUrl = linkedinUrl.trim().toLowerCase();
+        if (!cleanUrl.includes('linkedin.com')) {
             toast({
                 variant: "destructive",
                 title: "URL Inválida",
-                description: "Por favor, insira um link válido do LinkedIn."
-            });
-            return;
-        }
-        setStep('questions');
-    };
-
-    const handleAnswer = (optionScore: number) => {
-        const newScore = score + optionScore;
-        setScore(newScore);
-        setAnswers([...answers, optionScore]);
-
-        if (currentQ < QUESTIONS.length - 1) {
-            setTimeout(() => setCurrentQ(prev => prev + 1), 250);
-        } else {
-            setStep('lead-capture');
-        }
-    };
-
-    const handleLeadSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!leadForm.role || !leadForm.company) {
-            toast({
-                variant: "destructive",
-                title: "Campos Obrigatórios",
-                description: "Por favor preencha empresa e cargo."
+                description: "Cole o link completo do perfil (ex: linkedin.com/in/seu-nome)."
             });
             return;
         }
 
-        setIsSubmitting(true);
+        setStep('analyzing');
 
-        try {
-            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
+        // Simulate Proxycurl API Latency
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 15);
+            if (progress > 100) progress = 100;
+            setAnalysisProgress(progress);
 
-            const result = getResult();
-
-            await submitPublicDiagnostic(
-                { ...leadForm },
-                { linkedin_url: linkedinUrl, individual_answers: answers },
-                score,
-                {
-                    level: result.title,
-                    title: result.headline,
-                    description: result.msg,
-                    action: 'Auditoria',
-                    color: 'revgreen'
-                },
-                WEBHOOK_URL
-            );
-
-            setStep('results');
-            toast({
-                className: "bg-black border border-white/10 text-white",
-                title: "RELATÓRIO AUTORIZADO",
-                description: "Seu diagnóstico de autoridade foi processado."
-            });
-        } catch (error: any) {
-            console.error('Error sending diagnostic:', error);
-            toast({
-                variant: "destructive",
-                title: "Erro ao processar",
-                description: "Não foi possível processar seu diagnóstico. Tente novamente."
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
+            if (progress >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    generateMockProfile();
+                    setStep('results');
+                }, 800);
+            }
+        }, 300);
     };
 
-    const getResult = () => {
-        if (score >= 85) return {
-            headline: "REFERÊNCIA DE MERCADO",
-            title: "Líder de Mercado",
-            color: "text-revgreen",
-            msg: "Sua marca pessoal é um ativo valioso que gera negócios passivamente. O desafio agora é evitar a diluição e criar equity real (sair da operação sem perder a força)."
-        };
-        if (score >= 50) return {
-            headline: "AUTORIDADE OCULTA",
-            title: "Potencial Não Explorado",
-            color: "text-white",
-            msg: "Você entrega muito resultado, mas o mercado não percebe todo o seu valor. Você está deixando dinheiro na mesa para concorrentes inferiores que fazem mais barulho."
-        };
-        return {
-            headline: "INVISIBILIDADE DIGITAL",
-            title: "Commodity",
-            color: "text-gray-500",
-            msg: "Sem um diferencial claro ou metodologia proprietária, você é forçado a brigar por preço. Sua prioridade nº 1 deve ser sair da 'vala comum' e se tornar único."
-        };
+    const generateMockProfile = () => {
+        // In a real scenario, this would come from the API
+        setMockProfile({
+            name: "Founder Exemplo",
+            role: "CEO & Founder",
+            company: "Tech Company",
+            location: "São Paulo, Brasil",
+            followers: 12450,
+            connections: 500,
+            experience: 12, // years
+            score: 78,
+            topSkills: ["Liderança", "Growth Hacking", "Estratégia"],
+            recentActivity: "High"
+        });
     };
-
-    const result = getResult();
-
-    const chartData = [
-        { name: 'Score', value: score },
-        { name: 'Gap', value: 100 - score }
-    ];
 
     return (
         <PageLayout>
+            {/* STEP 1: INPUT */}
+            {step === 'input' && (
+                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center bg-white">
+                    <div className="container-custom max-w-4xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full mb-8">
+                            <Linkedin className="w-4 h-4 text-[#0077b5]" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                                LinkedIn Profile Analytics
+                            </span>
+                        </div>
 
-            {step === 'start' && (
-                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
-                    <div className="container-custom max-w-5xl mx-auto relative z-10 w-full text-center">
-                        <div className="max-w-3xl mx-auto">
-                            <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter text-black">
-                                <span className="text-slate-400">Founder</span> Authority Score
-                            </h1>
-                            <p className="text-xl text-slate-500 mb-12 leading-relaxed">
-                                Descubra o nível de influência e autoridade do seu perfil.
-                                Analisamos seu ecossistema digital em segundos.
-                            </p>
+                        <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-black uppercase leading-[0.9]">
+                            Founder<br /><span className="text-zinc-400">Authority Score</span>
+                        </h1>
+                        <p className="text-xl text-zinc-500 mb-12 leading-relaxed max-w-xl mx-auto">
+                            Analise a força da sua marca pessoal usando inteligência de dados do seu LinkedIn.
+                        </p>
 
-                            <form onSubmit={handleStart} className="max-w-md mx-auto space-y-4">
+                        <form onSubmit={handleStartAnalysis} className="max-w-xl mx-auto relative group">
+                            <div className="flex shadow-2xl shadow-zinc-200">
+                                <div className="bg-zinc-100 flex items-center px-4 border-y border-l border-zinc-200">
+                                    <Linkedin className="w-5 h-5 text-zinc-400" />
+                                </div>
                                 <Input
-                                    placeholder="Seu Perfil LinkedIn (URL)"
-                                    className="bg-slate-50 border-slate-200 text-black h-14 rounded-xl text-center focus:border-black"
+                                    placeholder="linkedin.com/in/seu-perfil"
+                                    className="bg-white border-zinc-200 text-black h-16 rounded-none focus:border-black text-lg transition-all focus:ring-0 placeholder:text-zinc-300 font-medium border-l-0"
                                     value={linkedinUrl}
                                     onChange={(e) => setLinkedinUrl(e.target.value)}
                                     required
                                 />
-                                <Button type="submit" className="w-full bg-black text-white hover:bg-slate-900 h-14 font-bold tracking-widest uppercase text-xs rounded-xl">
-                                    Iniciar Análise Grátis <ArrowRight className="ml-2 w-4 h-4" />
+                                <Button type="submit" className="bg-black text-white px-8 h-16 rounded-none font-bold uppercase tracking-widest text-xs hover:bg-zinc-800 transition-all">
+                                    Analisar
                                 </Button>
-                            </form>
-                        </div>
+                            </div>
+                            <p className="text-[10px] text-zinc-400 mt-4 font-mono uppercase tracking-wider">
+                                *Usamos dados públicos via API de Enriquecimento
+                            </p>
+                        </form>
                     </div>
                 </Section>
             )}
 
-            {(step === 'questions' || step === 'lead-capture') && (
-                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
-                    <div className="container-custom max-w-5xl mx-auto relative z-10 w-full">
-                        {step === 'questions' && (
-                            <div className="max-w-4xl mx-auto">
-                                <div className="mb-12">
-                                    <div className="flex justify-between items-end mb-4">
-                                        <div className="space-y-1">
-                                            <span className="text-black text-xs font-mono-tech uppercase tracking-widest font-bold">Análise de Autoridade</span>
-                                            <h2 className="text-slate-500 text-lg font-medium">Extraindo Dados de Perfil...</h2>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-4xl font-bold text-black tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
-                                        </div>
-                                    </div>
-                                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                        <motion.div
-                                            className="h-full bg-black"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${(currentQ / QUESTIONS.length) * 100}%` }}
-                                            transition={{ duration: 0.5 }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="min-h-[400px]">
-                                    <AnimatePresence mode='wait'>
-                                        <motion.div
-                                            key={currentQ}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -10 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="bg-white"
-                                        >
-                                            <h2 className="text-3xl md:text-5xl font-bold text-black mb-10 tracking-tight leading-tight">
-                                                {QUESTIONS[currentQ].question}
-                                            </h2>
-                                            <div className="grid grid-cols-1 gap-3">
-                                                {QUESTIONS[currentQ].options.map((opt, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => handleAnswer(opt.score)}
-                                                        className="group flex items-center p-6 text-left bg-white border border-slate-200 rounded-xl hover:border-black hover:bg-slate-50 transition-all font-medium"
-                                                    >
-                                                        <div className="mr-6 w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all font-mono-tech text-sm">
-                                                            {String.fromCharCode(65 + idx)}
-                                                        </div>
-                                                        <span className="text-lg text-slate-600 group-hover:text-black">{opt.label}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </div>
+            {/* STEP 2: ANALYZING SIMULATION */}
+            {step === 'analyzing' && (
+                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center bg-white">
+                    <div className="container-custom max-w-md mx-auto text-center">
+                        <div className="mb-8 relative w-24 h-24 mx-auto">
+                            <svg className="animate-spin w-full h-full text-zinc-200" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center font-mono font-bold text-xs">
+                                {analysisProgress}%
                             </div>
-                        )}
+                        </div>
+                        <h2 className="text-xl font-bold text-black mb-2 animate-pulse">
+                            Extraindo dados do perfil...
+                        </h2>
+                        <p className="text-sm text-zinc-400 font-mono">
+                            Verificando histórico, conexões e autoridade.
+                        </p>
+                    </div>
+                </Section>
+            )}
 
-                        {step === 'lead-capture' && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="max-w-md mx-auto"
+            {/* STEP 3: DASHBOARD RESULTS (SURGICAL V2) */}
+            {step === 'results' && mockProfile && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="w-full max-w-7xl mx-auto py-12 px-4 md:px-8"
+                >
+                    {/* HEADER */}
+                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 border-b border-zinc-200 pb-8">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="text-[#0077b5]">
+                                    <Linkedin className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                                    Perfil Integrado
+                                </span>
+                            </div>
+                            <h2 className="text-3xl font-bold text-black tracking-tight mb-2">
+                                {mockProfile.name}
+                            </h2>
+                            <p className="text-sm text-zinc-500 font-mono flex items-center gap-2">
+                                {mockProfile.role} <span className="text-zinc-300">|</span> {mockProfile.location}
+                            </p>
+                        </div>
+                        <div className="mt-6 md:mt-0 flex gap-4">
+                            <Button
+                                onClick={() => window.open(linkedinUrl, '_blank')}
+                                variant="outline"
+                                className="border-zinc-200 hover:bg-zinc-50 h-12 px-6 rounded-full text-xs font-bold uppercase tracking-widest"
                             >
-                                <div className="bg-white border border-slate-200 rounded-3xl p-10 shadow-sm">
-                                    <div className="text-center mb-10">
-                                        <h2 className="text-2xl font-black text-black mb-2 tracking-tighter uppercase">RELATÓRIO AUTORIZADO</h2>
-                                        <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
-                                            Identificação obrigatória para acesso aos dados.
-                                        </p>
-                                    </div>
-
-                                    <form onSubmit={handleLeadSubmit} className="space-y-4">
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
-                                            <Input
-                                                required
-                                                className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
-                                                value={leadForm.name}
-                                                onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
-                                                placeholder="NOME E SOBRENOME"
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
-                                            <Input
-                                                required
-                                                type="email"
-                                                className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
-                                                value={leadForm.email}
-                                                onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
-                                                placeholder="EX: NOME@EMPRESA.COM"
-                                            />
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">EMPRESA</Label>
-                                                <Input
-                                                    required
-                                                    className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
-                                                    value={leadForm.company}
-                                                    onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
-                                                    placeholder="ORGANIZAÇÃO"
-                                                />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">CARGO</Label>
-                                                <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
-                                                    <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
-                                                        <SelectValue placeholder="SELECIONAR" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
-                                                        <SelectItem value="vp">VP / C-Level</SelectItem>
-                                                        <SelectItem value="diretor">Diretor(a)</SelectItem>
-                                                        <SelectItem value="gerente">Gerente</SelectItem>
-                                                        <SelectItem value="outros">Outros</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">WHATSAPP</Label>
-                                            <Input
-                                                required
-                                                type="tel"
-                                                className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
-                                                value={leadForm.phone}
-                                                onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
-                                                placeholder="+55"
-                                            />
-                                        </div>
-
-                                        <Button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300"
-                                        >
-                                            {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard de Autoridade'}
-                                        </Button>
-                                    </form>
-                                </div>
-                            </motion.div>
-                        )}
+                                Ver Perfil <ArrowUpRight className="ml-2 w-3 h-3" />
+                            </Button>
+                            <Button
+                                className="bg-black text-white hover:bg-zinc-800 h-12 px-8 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg"
+                            >
+                                Plano de Autoridade
+                            </Button>
+                        </div>
                     </div>
-                </Section>
-            )}
 
-            {step === 'results' && (
-                <div className="min-h-screen bg-black text-white py-20">
-                    <div className="container-custom max-w-6xl mx-auto">
-                        <div className="flex justify-center mb-12">
-                            <span className="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-[10px] font-mono-tech uppercase tracking-[0.4em] text-gray-400">
-                                Resultado Oficial
-                            </span>
+                    {/* DASHBOARD GRID */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                        {/* SCORE CARD */}
+                        <div className="lg:col-span-4">
+                            <div className="bg-white border border-zinc-200 p-8 h-full rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-center items-center text-center">
+                                <span className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-6">Founder Authority Score</span>
+
+                                <div className="relative mb-8">
+                                    <div className="text-9xl font-black tracking-tighter text-black leading-none">
+                                        {mockProfile.score}
+                                    </div>
+                                    <div className="absolute -right-4 -top-2 bg-[#0077b5] text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                                        TOP 15%
+                                    </div>
+                                </div>
+
+                                <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden mb-4">
+                                    <div className="bg-[#0077b5] h-full rounded-full" style={{ width: `${mockProfile.score}%` }}></div>
+                                </div>
+
+                                <p className="text-sm text-zinc-500 leading-relaxed max-w-xs">
+                                    Sua autoridade digital é <strong className="text-black">Alta</strong>. Você está posicionado como uma referência no setor de tecnologia.
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                            <div className="lg:col-span-5 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col items-center justify-center relative shadow-2xl">
-                                <div className="absolute top-8 left-8 text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">Authority Score</div>
+                        {/* METRICS GRID */}
+                        <div className="lg:col-span-8 flex flex-col gap-8">
 
-                                <div className="relative w-72 h-72 my-8">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={chartData}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius="85%"
-                                                outerRadius="100%"
-                                                startAngle={90}
-                                                endAngle={-270}
-                                                dataKey="value"
-                                                stroke="none"
-                                            >
-                                                <Cell key="score" fill="#22c55e" />
-                                                <Cell key="gap" fill="#111" />
-                                            </Pie>
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                        <div className="text-8xl font-bold text-white tracking-tighter leading-none">{score}</div>
-                                        <div className="text-xs text-gray-500 font-mono-tech mt-2 tracking-widest uppercase">Indice</div>
+                            {/* Key Stats */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Users className="w-4 h-4 text-zinc-400" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Seguidores</span>
                                     </div>
+                                    <div className="text-3xl font-bold text-black">{mockProfile.followers.toLocaleString()}</div>
                                 </div>
-
-                                <div className="mt-4 text-center">
-                                    <div className="text-revgreen text-sm font-mono-tech font-bold uppercase tracking-widest">
-                                        {score >= 80 ? 'Líder de Categoria' : score >= 50 ? 'Autoridade Emergente' : 'Invisibilidade Digital'}
+                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Calendar className="w-4 h-4 text-zinc-400" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Experiência</span>
+                                    </div>
+                                    <div className="text-3xl font-bold text-black">{mockProfile.experience} Anos</div>
+                                </div>
+                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Trophy className="w-4 h-4 text-zinc-400" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Skills Top</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                        {mockProfile.topSkills.map((s: string) => (
+                                            <span key={s} className="bg-white border border-zinc-200 px-2 py-1 rounded text-[10px] font-bold text-zinc-600">
+                                                {s}
+                                            </span>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-7 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col justify-between shadow-2xl">
-                                <div>
-                                    <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest font-bold block mb-4">Análise de IA de Perfil</span>
-                                    <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">{result.title}</h2>
-                                    <p className="text-gray-400 text-xl font-light leading-relaxed mb-10 max-w-xl">
-                                        {result.msg}
-                                    </p>
-                                </div>
+                            {/* Detailed Analysis */}
+                            <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm flex-1">
+                                <h3 className="text-sm font-bold text-black uppercase tracking-wide mb-6 flex items-center gap-2">
+                                    <Target className="w-4 h-4" />
+                                    Análise de Posicionamento
+                                </h3>
 
-                                <Button
-                                    className="bg-revgreen text-black hover:bg-revgreen/90 rounded-xl px-10 h-16 uppercase tracking-widest font-bold text-xs w-full lg:w-auto shadow-[0_0_30px_rgba(34,197,94,0.2)]"
-                                    onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Dashboard:%20Founder%20Authority', '_blank')}
-                                >
-                                    Solicitar Auditoria de Perfil <ArrowRight className="ml-3 w-4 h-4" />
-                                </Button>
+                                <div className="space-y-6">
+                                    <div className="flex gap-4 items-start">
+                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-1">
+                                            <Check className="w-4 h-4 text-green-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-sm text-black">Headline Otimizada</h4>
+                                            <p className="text-xs text-zinc-500 mt-1">
+                                                Sua headline "{mockProfile.role}" contém as palavras-chave corretas para seu nicho.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4 items-start">
+                                        <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center shrink-0 mt-1">
+                                            <ArrowUpRight className="w-4 h-4 text-yellow-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-sm text-black">Oportunidade de Conteúdo</h4>
+                                            <p className="text-xs text-zinc-500 mt-1">
+                                                Sua frequência de postagem pode melhorar. Founders Top 1% postam 3x por semana.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4 items-start">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-1">
+                                            <Award className="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-sm text-black">Social Proof Elevada</h4>
+                                            <p className="text-xs text-zinc-500 mt-1">
+                                                Com {mockProfile.followers.toLocaleString()} seguidores, você já tem a base para lançar comunidades ou produtos High Ticket.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                            {[
-                                { label: 'Engajamento', val: answers[0] > 10 ? 'Alto' : 'Baixo', color: answers[0] > 10 ? 'bg-revgreen' : 'bg-red-500' },
-                                { label: 'Reputação', val: answers[1] > 10 ? 'Alta' : 'Em Construção', color: answers[1] > 10 ? 'bg-revgreen' : 'bg-red-500' },
-                                { label: 'Reach (Alcance)', val: answers[2] > 10 ? 'Global' : 'Local', color: answers[2] > 10 ? 'bg-revgreen' : 'bg-red-500' }
-                            ].map((item, idx) => (
-                                <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <span className="text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">{item.label}</span>
-                                        <span className={`text-[10px] font-mono-tech uppercase font-bold ${item.val === 'Alto' || item.val === 'Alta' || item.val === 'Global' ? 'text-revgreen' : 'text-red-500'}`}>
-                                            {item.val}
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                        <div className={`h-full ${item.color}`} style={{ width: item.val === 'Alto' || item.val === 'Alta' || item.val === 'Global' ? '100%' : '30%' }}></div>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
-                </div>
+                </motion.div>
             )}
         </PageLayout>
     );

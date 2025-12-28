@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { SEOProvider } from './components/shared/SEO.tsx'
 
 
 // Crash Protection: Catch unhandled Supabase auth errors that might cause White Screen
@@ -16,4 +17,8 @@ window.addEventListener('unhandledrejection', (event) => {
     }
 });
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+    <SEOProvider>
+        <App />
+    </SEOProvider>
+);

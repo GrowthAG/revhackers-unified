@@ -156,7 +156,7 @@ const MaterialDetalhe = () => {
 
           {/* Premium "Floating Card" CTA */}
           <div className="bg-white rounded-sm shadow-2xl overflow-hidden border border-gray-100 max-w-3xl mx-auto" id="download-form">
-            <div className="p-1 bg-gradient-to-r from-revgreen via-emerald-500 to-teal-500"></div>
+            <div className="p-1 bg-black border-b border-revgreen"></div>
             <div className="p-8 md:p-12">
               {!showForm ? (
                 <div className="text-center">

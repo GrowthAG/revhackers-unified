@@ -146,8 +146,8 @@ const GrowthScore = () => {
     const percentage = Math.round((totalPoints / maxPossbilePoints) * 100);
 
     const getDiagnosis = (pct: number) => {
-        if (pct < 40) return { title: "Fase de Sobrevivência", color: "text-red-500", msg: "Sua operação depende demais de esforço manual." };
-        if (pct < 70) return { title: "Fase de Tração Manual", color: "text-yellow-500", msg: "Você cresce, mas com dores e falta de processo." };
+        if (pct < 40) return { title: "Fase de Sobrevivência", color: "text-black", msg: "Sua operação depende demais de esforço manual." };
+        if (pct < 70) return { title: "Fase de Tração Manual", color: "text-gray-500", msg: "Você cresce, mas com dores e falta de processo." };
         return { title: "Fase de Escala (Revenue Ops)", color: "text-revgreen", msg: "Sua base é sólida e pronta para escala." };
     };
 
@@ -206,14 +206,29 @@ const GrowthScore = () => {
         <PageLayout>
             {step === 'start' && (
                 <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
-                    <div className="container-custom max-w-5xl mx-auto text-center">
-                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter text-black">
-                            Growth Strategy Score
-                        </h1>
-                        <p className="text-xl text-slate-500 mb-12">Avalie a maturidade da sua escala.</p>
-                        <Button onClick={() => setStep('questions')} className="bg-black text-white px-10 h-16 rounded-xl font-bold uppercase tracking-widest text-xs">
-                            Iniciar Diagnóstico <ArrowRight className="ml-2 w-4 h-4" />
-                        </Button>
+                    {/* Background Grid */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
+
+                    <div className="container-custom max-w-5xl mx-auto text-center relative z-10 w-full">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full mb-8">
+                                <span className="w-2 h-2 rounded-full bg-black animate-pulse"></span>
+                                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                                    Diagnóstico de Growth
+                                </span>
+                            </div>
+
+                            <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-black uppercase leading-[0.9]">
+                                Growth<br /><span className="text-zinc-400">Strategy Score</span>
+                            </h1>
+                            <p className="text-xl text-zinc-500 mb-12 leading-relaxed max-w-2xl mx-auto">
+                                Avalie a maturidade da sua escala e descubra pontos cegos na sua operação.
+                            </p>
+
+                            <Button onClick={() => setStep('questions')} className="w-full md:w-auto bg-black text-white px-12 h-16 rounded-none font-bold tracking-[0.2em] uppercase text-xs transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                Iniciar Diagnóstico <ArrowRight className="ml-2 w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                 </Section>
             )}
@@ -221,26 +236,72 @@ const GrowthScore = () => {
             {step === 'questions' && (
                 <Section variant="light" className="min-h-[100dvh] bg-white flex flex-col justify-center">
                     <div className="container-custom max-w-4xl mx-auto">
-                        <div className="mb-12">
-                            <div className="flex justify-between items-end mb-4 text-black">
-                                <span className="text-xs font-bold uppercase tracking-widest">Growth Score</span>
-                                <span className="text-4xl font-bold tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
+
+                        {/* Surgical Minimalist Header */}
+                        <div className="mb-20">
+                            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
+                                        <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-zinc-500">
+                                            Live Simulation
+                                        </span>
+                                    </div>
+                                    <h1 className="text-3xl md:text-5xl font-bold text-black uppercase tracking-tight leading-none">
+                                        Growth<br />Strategy
+                                    </h1>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-5xl font-light text-black tracking-tighter leading-none">
+                                        {Math.round((currentQ / QUESTIONS.length) * 100)}<span className="text-lg text-zinc-400 font-normal">%</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-black transition-all" style={{ width: `${(currentQ / QUESTIONS.length) * 100}%` }} />
+                            {/* Ultra-thin Progress Line */}
+                            <div className="w-full bg-zinc-100 h-px">
+                                <motion.div
+                                    className="h-full bg-black"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
+                                    transition={{ duration: 0.3, ease: "linear" }}
+                                />
                             </div>
                         </div>
 
                         <AnimatePresence mode='wait'>
-                            <motion.div key={currentQ} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                <h2 className="text-3xl md:text-5xl font-bold text-black mb-10 tracking-tight leading-tight">
-                                    {QUESTIONS[currentQ].question}
-                                </h2>
-                                <div className="grid grid-cols-1 gap-3">
+                            <motion.div
+                                key={currentQ}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="mb-12">
+                                    <span className="block text-[10px] font-mono text-zinc-400 mb-4 uppercase tracking-widest">
+                                        0{QUESTIONS[currentQ].id} / 0{QUESTIONS.length}
+                                    </span>
+                                    <h2 className="text-2xl md:text-4xl font-medium text-black leading-tight">
+                                        {QUESTIONS[currentQ].question}
+                                    </h2>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-px bg-zinc-100 border border-zinc-100">
                                     {QUESTIONS[currentQ].options.map((opt, idx) => (
-                                        <button key={idx} onClick={() => handleAnswer(opt)} className="flex items-center p-6 bg-white border border-slate-200 rounded-xl hover:border-black transition-all text-left">
-                                            <span className="mr-6 w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center font-mono-tech text-sm text-black shrink-0">{String.fromCharCode(65 + idx)}</span>
-                                            <span className="text-lg text-slate-600 font-medium">{opt.text}</span>
+                                        <button
+                                            key={idx}
+                                            onClick={() => handleAnswer(opt)}
+                                            className="group relative flex items-center p-6 md:p-8 text-left bg-white hover:bg-zinc-50 transition-colors duration-200 outline-none"
+                                        >
+                                            <div className="mr-8 w-6 h-6 flex items-center justify-center border border-zinc-200 text-[10px] font-mono text-zinc-400 group-hover:border-black group-hover:text-black transition-colors rounded-none shrink-0">
+                                                {String.fromCharCode(65 + idx)}
+                                            </div>
+
+                                            <span className="text-base text-zinc-600 group-hover:text-black transition-colors leading-relaxed">
+                                                {opt.text}
+                                            </span>
+
+                                            {/* Selection Indicator Line */}
+                                            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300" />
                                         </button>
                                     ))}
                                 </div>
@@ -253,62 +314,74 @@ const GrowthScore = () => {
             {step === 'lead-capture' && (
                 <Section variant="light" className="min-h-[100dvh] bg-white flex flex-col justify-center">
                     <div className="container-custom max-w-md mx-auto">
-                        <div className="bg-white border border-slate-200 rounded-3xl p-10 shadow-sm">
-                            <h2 className="text-2xl font-black text-black mb-10 tracking-tighter uppercase text-center">RELATÓRIO AUTORIZADO</h2>
-                            <form onSubmit={handleLeadSubmit} className="space-y-4">
+                        <div className="bg-white p-0 md:p-8">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-black mb-4 tracking-tight uppercase leading-none">
+                                    Relatório Autorizado
+                                </h2>
+                                <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-[0.2em]">
+                                    Identificação obrigatória
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleLeadSubmit} className="space-y-6">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
+                                    <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Nome Completo</Label>
                                     <Input
                                         required
-                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                         value={leadForm.name}
                                         onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
-                                        placeholder="NOME E SOBRENOME"
+                                        placeholder="Digite seu nome"
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
+                                    <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">E-mail Corporativo</Label>
                                     <Input
                                         required
                                         type="email"
-                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                         value={leadForm.email}
                                         onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
-                                        placeholder="EX: NOME@EMPRESA.COM"
+                                        placeholder="nome@empresa.com"
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA</Label>
+                                    <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Empresa</Label>
                                     <Input
                                         required
-                                        className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                        className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                         value={leadForm.company}
                                         onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
-                                        placeholder="ORGANIZAÇÃO"
+                                        placeholder="Nome da organização"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">WHATSAPP</Label>
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">WhatsApp</Label>
                                         <Input
                                             required
                                             type="tel"
-                                            className="bg-white border-zinc-200 text-black h-12 rounded-none focus:border-black transition-all"
+                                            className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                             value={leadForm.phone}
                                             onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
-                                            placeholder="+55"
+                                            placeholder="(00) 00000-0000"
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">CARGO</Label>
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Cargo</Label>
                                         <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
-                                            <SelectTrigger className="bg-white border-zinc-200 text-black h-12 rounded-none focus:ring-0">
-                                                <SelectValue placeholder="SELECIONAR" />
+                                            <SelectTrigger className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all font-medium">
+                                                <SelectValue placeholder="Selecione" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
                                                 <SelectItem value="vp">VP / C-Level</SelectItem>
                                                 <SelectItem value="diretor">Diretor</SelectItem>
                                                 <SelectItem value="gerente">Gerente</SelectItem>
+                                                <SelectItem value="vendedor">Vendedor(a)</SelectItem>
+                                                <SelectItem value="analista">Analista</SelectItem>
+                                                <SelectItem value="growth">Growth / Mkt</SelectItem>
+                                                <SelectItem value="outros">Outros</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -316,9 +389,9 @@ const GrowthScore = () => {
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300"
+                                    className="w-full bg-black text-white hover:bg-zinc-800 h-14 mt-8 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300 border border-black"
                                 >
-                                    {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard Estratégico'}
+                                    {isSubmitting ? 'Processando...' : 'Liberar Relatório Oficial'}
                                 </Button>
                             </form>
                         </div>
@@ -333,7 +406,7 @@ const GrowthScore = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={[{ value: percentage }, { value: Math.max(0, 100 - percentage) }]} cx="50%" cy="50%" innerRadius="85%" outerRadius="100%" startAngle={90} endAngle={-270} dataKey="value" stroke="none">
-                                        <Cell fill="#22c55e" /><Cell fill="#111" />
+                                        <Cell fill="#03FC3B" /><Cell fill="#222" />
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>

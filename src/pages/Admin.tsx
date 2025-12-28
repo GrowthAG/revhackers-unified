@@ -5,6 +5,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { FileText, Users, Settings, ArrowRight, Loader2, Trophy, Download, LayoutDashboard } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
+import { motion } from 'framer-motion';
 
 const Admin = () => {
   const { user, userProfile, isLoading } = useAuth();
@@ -56,45 +57,92 @@ const Admin = () => {
     }
   ];
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemAnim = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <PageLayout>
-      <div className="min-h-screen bg-white py-32">
-        <div className="container-custom max-w-7xl mx-auto">
-          {/* Header Minimalista Centralizado */}
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-black text-black mb-4 tracking-tighter uppercase">
-              Admin Hub
-            </h1>
-            <p className="text-xs text-zinc-400 font-normal tracking-wide uppercase">
-              Bem-vindo de volta, {firstName}
-            </p>
+      <div className="min-h-screen bg-white pt-40 pb-20 relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
+
+        <div className="container-custom max-w-6xl mx-auto relative z-10">
+
+          {/* Header - Clean & Minimalist */}
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-black/10 pb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black text-black tracking-tighter uppercase leading-none">
+                Admin<span className="text-zinc-400">Hub</span>
+              </h1>
+              <p className="text-zinc-400 text-sm font-medium mt-4 tracking-wide">
+                Central de gerenciamento
+              </p>
+            </div>
+            <div className="flex flex-col items-end mt-6 md:mt-0">
+              <p className="text-right text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400 mb-1">
+                Logado como
+              </p>
+              <p className="text-xl font-bold text-black border-l-2 border-revgreen pl-4">
+                {firstName}
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Grid Layout with Motion */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+          >
             {menuItems.map((item, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="group bg-white border border-zinc-200 hover:border-black transition-all duration-300 cursor-pointer p-8 flex flex-col justify-between h-[240px]"
+                variants={itemAnim}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.98 }}
+                className="group bg-white p-10 md:p-14 relative cursor-pointer border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm"
                 onClick={() => navigate(item.link)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 border border-zinc-200 flex items-center justify-center group-hover:border-black transition-colors">
-                    <item.icon className="h-5 w-5 text-zinc-400 group-hover:text-black transition-colors" />
+                {/* Hover Border Effect replaced by standard border transition for simpler motion compatibility */}
+
+                <div className="flex justify-between items-start mb-12">
+                  <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300">
+                    <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
                   </div>
-                  <ArrowRight className="h-4 w-4 text-zinc-300 group-hover:text-black transition-colors" />
+                  <span className="text-xs font-bold text-zinc-200 group-hover:text-black transition-colors">
+                    0{index + 1}
+                  </span>
                 </div>
 
-                <div>
-                  <h3 className="text-black text-lg font-black uppercase tracking-[0.2em] mb-2 transition-colors">
+                <div className="relative">
+                  <h3 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight mb-3 group-hover:translate-x-1 transition-transform duration-300">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-400 text-[10px] uppercase tracking-[0.25em] font-bold leading-relaxed transition-colors max-w-[240px]">
+                  <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed max-w-xs group-hover:text-zinc-600 transition-colors">
                     {item.description}
                   </p>
+
+                  {/* Action Link visual */}
+                  <div className="absolute top-[2px] right-[-20px] opacity-0 group-hover:opacity-100 group-hover:right-0 transition-all duration-300">
+                    <ArrowRight className="w-5 h-5 text-black" />
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </PageLayout>

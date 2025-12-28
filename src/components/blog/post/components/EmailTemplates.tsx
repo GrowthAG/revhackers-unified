@@ -59,12 +59,12 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
                             </Button>
                         </div>
                         <div className="p-6">
-                            <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                <span className="font-bold text-gray-700 shrink-0">Assunto:</span> {template.subject}
+                            <div className="text-xs text-gray-500 mb-4 border-b border-gray-100 pb-2 flex gap-2">
+                                <span className="font-bold text-gray-700 shrink-0 uppercase tracking-wide text-[10px] mt-0.5">Assunto:</span> {template.subject}
                             </div>
-                            <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-gray-700">
+                            <div className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700 font-normal">
                                 {template.body}
-                            </pre>
+                            </div>
                         </div>
                     </Card>
                 ))}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -28,23 +28,30 @@
 }
 
 @layer base {
+  html {
+    /* Base font size for rem calculations. Default is 16px */
+    font-size: 16px;
+  }
+
   body {
     @apply bg-black text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Aggressive Typography - Lighter but Bigger */
+  /* Standardized Typography System */
+  /* Using rem units implies dependence on root font-size. Tailwind uses rems by default. */
+
   h1 {
-    @apply font-normal tracking-tight md:tracking-tighter text-balance;
+    @apply font-bold tracking-tight md:tracking-tighter text-balance;
+    /* Base style, size should be set by utility classes or specific page context if different */
   }
 
   h2 {
-    @apply font-normal tracking-tight text-balance text-3xl md:text-4xl lg:text-5xl;
-    /* Reduced from 6xl to 5xl based on user feedback "muito grande" */
+    @apply font-bold tracking-tight text-balance text-3xl md:text-5xl lg:text-6xl;
   }
 
   h3 {
-    @apply font-normal tracking-tight text-balance;
+    @apply font-bold tracking-tight text-balance text-2xl md:text-3xl;
   }
 }
 
@@ -80,7 +87,8 @@
   }
 
   .font-mono-tech {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: inherit;
+    /* Neutralized Vibe Code */
   }
 
   /* Premium Subtle Dot Patterns */
@@ -180,62 +188,17 @@ p {
 }
 
 @layer utilities {
+
   /* 
      Temporarily commented out to fix Vite/Tailwind circular dependency error.
      Explicit classes have been added to components (bg-white text-gray-900) to handle this.
   */
-  /*
-  .bg-white p,
-  .bg-white h1,
-  .bg-white h2,
-  .bg-white h3,
-  .bg-white h4,
-  .bg-white h5,
-  .bg-white h6,
-  .bg-white li,
-  .bg-white ul,
-  .bg-white ol,
-  .bg-white span,
-  .bg-white div,
-  .bg-white td,
-  .bg-white th,
-  .bg-white blockquote,
-  .bg-white cite,
-  .bg-gray-50 p,
-  .bg-gray-50 h1,
-  .bg-gray-50 h2,
-  .bg-gray-50 h3,
-  .bg-gray-50 h4,
-  .bg-gray-50 h5,
-  .bg-gray-50 h6,
-  .bg-gray-50 li,
-  .bg-gray-50 ul,
-  .bg-gray-50 ol,
-  .bg-gray-50 span,
-  .bg-gray-50 div,
-  .bg-gray-50 td,
-  .bg-gray-50 th,
-  .bg-gray-50 blockquote,
-  .bg-gray-50 cite {
-    color: #2d2d2d !important;
+  @media (max-width: 640px) {
+    .container-custom {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
   }
-
-  .bg-white .bg-black,
-  .bg-white .bg-revgreen,
-  .bg-white .text-white,
-  .bg-white .btn-aggressive,
-  .bg-white .btn-green-flat,
-  .bg-gray-50 .bg-black,
-  .bg-gray-50 .bg-revgreen,
-  .bg-gray-50 .text-white {
-    color: initial !important;
-  }
-
-  .bg-white .bg-black *,
-  .bg-gray-50 .bg-black * {
-    color: white !important;
-  }
-  */
 }
 
 .card-subtitle,

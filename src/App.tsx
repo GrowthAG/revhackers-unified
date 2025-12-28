@@ -94,6 +94,7 @@ import REIDashboard from "./pages/REIDashboard";
 import REIOnboarding from "./pages/REIOnboarding";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ChatbotManager from "./components/shared/ChatbotManager";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <ScrollToTop />
+          <ChatbotManager />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
@@ -150,13 +152,13 @@ const App = () => (
             <Route path="/cadastro-parceiro" element={<CadastroParceiro />} />
 
             {/* REI System (Internal) - Unified */}
-            <Route path="/rei" element={<ReiHub />} />
+            <Route path="/rei" element={<Navigate to="/rei-hub" replace />} />
             <Route path="/rei/wizard" element={<ProtectedRoute><REIWizardPage /></ProtectedRoute>} />
             <Route path="/rei/resultado/:id" element={<REIResult />} />
 
             {/* Legacy REI Routes - Redirect to new system */}
-            <Route path="/rei-onboarding" element={<Navigate to="/rei" replace />} />
-            <Route path="/rei-dashboard" element={<Navigate to="/rei" replace />} />
+            <Route path="/rei-onboarding" element={<Navigate to="/rei-hub" replace />} />
+            <Route path="/rei-dashboard" element={<Navigate to="/rei-hub" replace />} />
 
             {/* Public Scores (Lead Gen) */}
             <Route path="/score" element={<GrowthScore />} />
@@ -181,7 +183,10 @@ const App = () => (
 
             {/* Admin Management - GROWTHHUB */}
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-            <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+            {/* Removed duplicate AdminSettings, keeping the standard one below if intended, or swapping. 
+               User context implies AdminSettings.tsx might be the better one, but line 187 was active.
+               Let's keep the one that was actively last (Settings). 
+            */}
             <Route path="/admin/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

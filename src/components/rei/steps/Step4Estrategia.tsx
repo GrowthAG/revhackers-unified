@@ -55,12 +55,12 @@ export default function Step4Estrategia({ form }: Step4Props) {
 
     return (
         <div className="space-y-8">
-            <div>
-                <h2 className="text-3xl font-black text-black mb-3 uppercase tracking-[0.15em]">
+            <div className="border-b border-black pb-4">
+                <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Estratégia Atual
                 </h2>
-                <p className="text-zinc-500 text-sm">
-                    Vamos mapear sua operação atual
+                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                    Etapa 04/05
                 </p>
             </div>
 
@@ -111,9 +111,18 @@ export default function Step4Estrategia({ form }: Step4Props) {
                             <SelectItem value="pipedrive">Pipedrive</SelectItem>
                             <SelectItem value="activecampaign">ActiveCampaign</SelectItem>
                             <SelectItem value="nao-utilizo">Não utilizo CRM</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
+                            <SelectItem value="outro">Outro (Qual?)</SelectItem>
                         </SelectContent>
                     </Select>
+                    {form.watch('crm') === 'outro' && (
+                        <div className="animate-in fade-in slide-in-from-top-2">
+                            <input
+                                {...form.register('crm_outro')}
+                                placeholder="Qual CRM você utiliza?"
+                                className="w-full h-12 p-3 bg-white border border-zinc-200 focus:border-black outline-none transition-colors rounded-none placeholder:text-zinc-400 text-sm"
+                            />
+                        </div>
+                    )}
                     {form.formState.errors.crm && (
                         <p className="text-red-500 text-xs">{form.formState.errors.crm.message as string}</p>
                     )}
@@ -201,9 +210,18 @@ export default function Step4Estrategia({ form }: Step4Props) {
                             <SelectItem value="falta-previsibilidade">Falta de previsibilidade</SelectItem>
                             <SelectItem value="churn-alto">Churn alto</SelectItem>
                             <SelectItem value="falta-dados">Falta de dados/métricas</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
+                            <SelectItem value="outro">Outro (Descreva)</SelectItem>
                         </SelectContent>
                     </Select>
+                    {form.watch('gargalo') === 'outro' && (
+                        <div className="animate-in fade-in slide-in-from-top-2">
+                            <input
+                                {...form.register('gargalo_outro')}
+                                placeholder="Qual outro gargalo?"
+                                className="w-full h-12 p-3 bg-white border border-zinc-200 focus:border-black outline-none transition-colors rounded-none placeholder:text-zinc-400 text-sm"
+                            />
+                        </div>
+                    )}
                     {form.formState.errors.gargalo && (
                         <p className="text-red-500 text-xs">{form.formState.errors.gargalo.message as string}</p>
                     )}
@@ -214,6 +232,9 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o CAC (Custo de Aquisição) atual? *
                     </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">DEF:</span> Custo total de Mkt e Vendas dividido pelo nº de novos clientes.
+                    </p>
                     <Select
                         onValueChange={(value) => form.setValue('cacAtual', value)}
                         value={form.watch('cacAtual')}
@@ -239,6 +260,9 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o LTV (Lifetime Value) atual? *
                     </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        <span className="font-bold text-black">DEF:</span> Receita média total que um cliente gera enquanto ativo.
+                    </p>
                     <Select
                         onValueChange={(value) => form.setValue('ltvAtual', value)}
                         value={form.watch('ltvAtual')}

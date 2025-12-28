@@ -19,9 +19,9 @@ interface ArticleBlueprintProps {
 const ArticleBlueprint = ({ title, description, number = "01", items, result }: ArticleBlueprintProps) => {
     return (
         <section className="mb-16 mt-12">
-            <div className="border-t-4 border-black pt-6 mb-8">
-                <span className="text-xs font-mono font-bold text-revgreen uppercase tracking-widest block mb-3">
-                    Blueprint #{number}
+            <div className="border-t border-gray-100 pt-6 mb-8">
+                <span className="text-xs font-bold text-revgreen uppercase tracking-widest block mb-3">
+                    Blueprint {number}
                 </span>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-tight">
                     {title}
@@ -43,10 +43,10 @@ const ArticleBlueprint = ({ title, description, number = "01", items, result }: 
                         )}
                     >
                         <span className={cn(
-                            "font-mono text-xs font-bold uppercase tracking-wider mb-2 md:mb-0 pt-1",
-                            item.isAction ? "text-revgreen" : "text-black group-hover:text-revgreen transition-colors"
+                            "text-xs font-bold uppercase tracking-wider mb-2 md:mb-0 pt-1",
+                            item.isAction ? "text-revgreen" : "text-black/60 group-hover:text-black transition-colors"
                         )}>
-                            [{item.label}]
+                            {item.label}
                         </span>
                         <span className="text-gray-700 leading-relaxed text-base">
                             {item.content}
@@ -57,7 +57,7 @@ const ArticleBlueprint = ({ title, description, number = "01", items, result }: 
 
             {result && (
                 <div className="mt-8 flex items-start gap-4 p-6 bg-black text-white rounded-sm shadow-xl">
-                    <div className="w-16 text-revgreen font-mono text-xs uppercase tracking-widest pt-1 shrink-0">
+                    <div className="w-16 text-revgreen font-bold text-xs uppercase tracking-widest pt-1 shrink-0">
                         Result
                     </div>
                     <p className="text-lg font-medium leading-tight text-white/90">

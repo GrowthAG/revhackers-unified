@@ -69,7 +69,7 @@ const Login = () => {
 
     return (
         <PageLayout>
-            <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white">
+            <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white pt-32">
                 <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-700">
 
                     {/* Header Section */}
@@ -86,7 +86,7 @@ const Login = () => {
                     <div className="bg-white p-2">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {error && (
-                                <div className="text-red-500 text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10">
+                                <div className="text-black text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10 border border-black p-2">
                                     {error}
                                 </div>
                             )}
@@ -101,7 +101,7 @@ const Login = () => {
                                     placeholder="seu@email.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-white border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-none border focus:border-black focus:ring-0 transition-all text-sm px-4"
+                                    className="bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-sm border focus:border-black focus:ring-1 focus:ring-black transition-all text-sm px-4"
                                     required
                                 />
                             </div>
@@ -114,7 +114,7 @@ const Login = () => {
                                     </label>
                                     <Link
                                         to="/forgot-password"
-                                        className="text-[9px] uppercase tracking-widest text-zinc-400 hover:text-white transition-colors font-bold"
+                                        className="text-[9px] uppercase tracking-widest text-zinc-400 hover:text-revgreen transition-colors font-bold"
                                     >
                                         Recuperar
                                     </Link>
@@ -124,14 +124,14 @@ const Login = () => {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-white border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-none border focus:border-black focus:ring-0 transition-all text-sm px-4"
+                                    className="bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-sm border focus:border-black focus:ring-1 focus:ring-black transition-all text-sm px-4"
                                     required
                                 />
                             </div>
 
                             <Button
                                 type="submit"
-                                className="w-full bg-black text-white hover:bg-zinc-800 h-12 font-black text-xs tracking-[0.3em] uppercase rounded-none border-none transition-all mt-4"
+                                className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-12 font-black text-xs tracking-[0.3em] uppercase rounded-sm border-none transition-all mt-4"
                                 disabled={loading}
                             >
                                 {loading ? (

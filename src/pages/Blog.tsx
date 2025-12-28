@@ -3,10 +3,12 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import BlogHeader from '@/components/blog/BlogHeader';
 import BlogCard from '@/components/blog/BlogCard';
+import YouTubeFeed from '@/components/blog/YouTubeFeed';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getArticleImageBySlug } from '@/components/blog/post/articles/utils/frameworkImages';
+
 
 
 // Interface para post do blog
@@ -157,6 +159,7 @@ const Blog = () => {
 
   // Obter todas as categorias únicas
   const categories = ['Todos', ...Array.from(new Set(blogPosts.map(post => post.category)))];
+  const PSI_API_KEY = 'AIzaSyDQmXtGdZZFQcwAzOOwGQOyawcotLG7C_A';
 
   return (
     <PageLayout>
@@ -171,6 +174,9 @@ const Blog = () => {
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
         <div className="container-custom relative z-10">
+
+          <YouTubeFeed apiKey={PSI_API_KEY} query="Revenue Operations Strategy" />
+
           {isLoading ? (
             <div className="text-center py-20">
               <div className="mx-auto w-16 h-16 rounded-full border-4 border-zinc-100 border-t-black animate-spin mb-4"></div>

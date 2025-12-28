@@ -32,17 +32,13 @@ interface BlogCardProps {
 
 const BlogCard = ({ post, onClick }: BlogCardProps) => {
   // Obter imagem personalizada se disponível para este artigo
-  // Fallback: post.image -> imageMap by slug -> category specific image (deterministic)
-  // [CRITICAL] If from DB, explicitly respect NULL/EMPTY to allow deletion in Admin
   const isStatic = typeof post.id === 'number' || post.id.toString().startsWith('static-');
   const articleImage = (post.image && post.image !== '')
     ? post.image
     : (isStatic ? (getArticleImageBySlug(post.slug) || getFrameworkImage(post.category, post.slug)) : getFrameworkImage(post.category, post.slug));
 
-  // State to handle image loading errors
   const [imgSrc, setImgSrc] = useState(articleImage);
 
-  // Update imgSrc if articleImage changes (e.g. during search/filtering)
   useEffect(() => {
     setImgSrc(articleImage);
   }, [articleImage]);
@@ -54,23 +50,9 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
     }
   };
 
-  // Formatar data para português
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('pt-BR', options);
-  };
-
-  // Limpar HTML do excerpt
   const cleanExcerpt = () => {
     const div = document.createElement('div');
     div.innerHTML = post.excerpt || '';
-    return div.textContent || div.innerText || '';
-  };
-
-  // Limpar HTML do título
-  const cleanTitle = () => {
-    const div = document.createElement('div');
-    div.innerHTML = post.title || '';
     return div.textContent || div.innerText || '';
   };
 
@@ -80,50 +62,55 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
       className="group block h-full"
       onClick={onClick}
     >
-      <article className="h-full flex flex-col bg-white rounded-sm border border-zinc-200 shadow-sm hover:shadow-2xl hover:border-black transition-all duration-500 overflow-hidden hover:-translate-y-1">
-        <div className="h-52 overflow-hidden relative border-b border-zinc-100 bg-zinc-50">
-          <div className="absolute inset-0 z-10 group-hover:bg-black/5 transition-colors duration-500" />
+      <article className="h-full flex flex-col bg-white">
+        {/* Image Container - Square/Rectangular Aspect */}
+        <div className="aspect-[16/9] w-full overflow-hidden bg-black relative mb-6">
           <img
             src={imgSrc}
-            alt={cleanTitle()}
+            alt={post.title}
             onError={handleImageError}
-            className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
           />
         </div>
 
-        <div className="flex-1 p-6 md:p-8 flex flex-col">
+        {/* Content Container */}
+        <div className="flex-1 flex flex-col pr-4">
+          {/* Badge & Meta */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-black bg-zinc-100 px-2 py-1 rounded-sm border border-zinc-200">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-black bg-gray-100 px-2 py-1 rounded-none border border-transparent">
               {post.category}
             </span>
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-              {post.readTime || '5 min'}
+            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+              {post.readTime || '5 MIN'}
             </span>
           </div>
 
-          <h3 className="text-xl md:text-2xl font-black text-black mb-4 leading-tight group-hover:text-zinc-600 transition-colors tracking-tighter">
+          {/* Title - Heavy & Tight */}
+          <h3 className="text-xl md:text-2xl font-bold text-black mb-3 leading-tight tracking-tight mt-2">
             {post.title}
           </h3>
 
-          <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest line-clamp-3 mb-8 flex-1 leading-relaxed">
+          {/* Excerpt - Clean & Minimal */}
+          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide line-clamp-3 mb-6 leading-relaxed">
             {cleanExcerpt()}
           </p>
 
-          <div className="flex items-center justify-between pt-6 border-t border-zinc-50">
+          {/* Footer / Author - Ultra clean */}
+          <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100">
             <div className="flex items-center gap-3">
               {post.author?.avatar && (
                 <img
                   src={post.author.avatar}
                   alt={post.author.name}
-                  className="w-10 h-10 rounded-full object-cover border border-zinc-200"
+                  className="w-8 h-8 rounded-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
                 />
               )}
-              <div>
-                <p className="text-[10px] font-black text-black uppercase tracking-widest">{post.author?.name || 'Equipe RevHackers'}</p>
-                <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{post.author?.role || 'Estrategista'}</p>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
+                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{post.author?.role}</span>
               </div>
             </div>
-            <ArrowRight className="w-5 h-5 text-zinc-300 group-hover:text-black transition-all group-hover:translate-x-1" />
+            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-transform group-hover:translate-x-1" />
           </div>
         </div>
       </article>

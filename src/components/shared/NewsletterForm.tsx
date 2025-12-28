@@ -88,62 +88,62 @@ const NewsletterForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="space-y-2">
-        <Input
-          type="text"
-          placeholder="Seu nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full px-3 py-2 h-auto bg-[#1A1A1A] border-0 rounded-lg text-white placeholder:text-[#999999]"
-        />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Input
+            type="text"
+            placeholder="NOME"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-0 py-2 h-8 bg-transparent border-b border-zinc-800 rounded-none text-zinc-300 placeholder:text-zinc-700 text-xs focus-visible:ring-0 focus-visible:border-white transition-colors"
+          />
 
-        <Input
-          type="email"
-          placeholder="Seu e-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 h-auto bg-[#1A1A1A] border-0 rounded-lg text-white placeholder:text-[#999999]"
-        />
+          <Input
+            type="email"
+            placeholder="EMAIL CORPORATIVO"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-0 py-2 h-8 bg-transparent border-b border-zinc-800 rounded-none text-zinc-300 placeholder:text-zinc-700 text-xs focus-visible:ring-0 focus-visible:border-white transition-colors"
+          />
 
-        <Input
-          type="text"
-          placeholder="Seu Cargo (Ex: CEO, Gerente)"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="w-full px-3 py-2 h-auto bg-[#1A1A1A] border-0 rounded-lg text-white placeholder:text-[#999999]"
-        />
+          <Input
+            type="text"
+            placeholder="CARGO"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-0 py-2 h-8 bg-transparent border-b border-zinc-800 rounded-none text-zinc-300 placeholder:text-zinc-700 text-xs focus-visible:ring-0 focus-visible:border-white transition-colors"
+          />
+        </div>
 
-        <Button
-          type="submit"
-          className="w-full h-auto py-2 px-3 bg-[#00FF66] hover:bg-[#00e65c] text-black font-bold text-sm rounded-lg transition-all duration-300 hover:-translate-y-[1px]"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <span className="flex items-center justify-center">
-              <Mail className="mr-2 h-4 w-4" />
-              Processando...
-            </span>
-          ) : (
-            "Inscrever-se"
-          )}
-        </Button>
-
-        <div className="flex items-start mt-1 mb-2">
+        <div className="flex items-start my-3">
           <Checkbox
             id="privacyPolicy"
             checked={consent}
             onCheckedChange={(checked) => setConsent(checked as boolean)}
-            className="h-3 w-3 border-gray-500 rounded"
+            className="h-3 w-3 border-zinc-700 rounded-none data-[state=checked]:bg-white data-[state=checked]:text-black"
           />
           <label
             htmlFor="privacyPolicy"
-            className="ml-2 text-[0.7rem] text-[#888888] cursor-pointer"
+            className="ml-2 text-[10px] uppercase tracking-wide text-zinc-600 cursor-pointer leading-tight"
             onClick={() => setConsent(!consent)}
           >
-            Ao se inscrever, você aceita receber
-            <br />conteúdos da RevHackers.
+            CONFIRMO O RECEBIMENTO DE<br />INTELIGÊNCIA DE MERCADO.
           </label>
         </div>
+
+        <Button
+          type="submit"
+          className="w-full h-8 bg-white hover:bg-zinc-200 text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-none border-0 transition-all"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center justify-center">
+              PROCESSANDO...
+            </span>
+          ) : (
+            "INSCREVER"
+          )}
+        </Button>
       </form>
     </div>
   );

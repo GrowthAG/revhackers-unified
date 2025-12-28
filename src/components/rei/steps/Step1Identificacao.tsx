@@ -17,13 +17,13 @@ export default function Step1Identificacao({ form, onEmailBlur }: Step1Props) {
     };
 
     return (
-        <div className="space-y-8">
-            <div>
-                <h2 className="text-3xl font-black text-black mb-3 uppercase tracking-[0.15em]">
+        <div className="space-y-6">
+            <div className="border-b border-black pb-4">
+                <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Identificação
                 </h2>
-                <p className="text-zinc-500 text-sm">
-                    Digite seu email para começarmos o diagnóstico
+                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                    Etapa 01/05
                 </p>
             </div>
 
@@ -46,9 +46,12 @@ export default function Step1Identificacao({ form, onEmailBlur }: Step1Props) {
                 )}
             </div>
 
-            <div className="bg-zinc-50 border border-zinc-200 p-4 rounded-sm">
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                    💡 <strong>Dica:</strong> Se você já é nosso cliente, seus dados serão preenchidos automaticamente.
+            <div className="bg-zinc-50 border border-zinc-200 p-4 flex items-start gap-3">
+                <div className="mt-0.5">
+                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-black text-white text-[10px] font-bold">i</span>
+                </div>
+                <p className="text-xs text-zinc-500 font-medium leading-relaxed uppercase tracking-wide">
+                    <span className="font-bold text-black">Info:</span> Se você já é membro do hub, seus dados serão sincronizados automaticamente.
                 </p>
             </div>
         </div>

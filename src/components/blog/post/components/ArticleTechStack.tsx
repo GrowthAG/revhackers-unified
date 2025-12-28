@@ -22,7 +22,7 @@ const ArticleTechStack = ({ title = "A Stack Técnica Mínima Viável", items }:
                 {items.map((item, index) => (
                     <div key={index} className="p-4 text-center">
                         <span className="block font-bold text-gray-900 mb-1 text-sm">{item.role}</span>
-                        <span className="text-xs text-gray-500 font-mono">{item.tools}</span>
+                        <span className="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-sm mt-1 inline-block">{item.tools}</span>
                     </div>
                 ))}
             </div>

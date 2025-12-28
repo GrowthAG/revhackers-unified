@@ -168,7 +168,7 @@ const AdminPosts = () => {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-black hover:text-white hover:bg-red-600 transition-colors rounded-none"
+                                                    className="h-8 w-8 text-black hover:text-white hover:bg-black transition-colors rounded-none"
                                                     onClick={(e) => { e.stopPropagation(); handleDelete(post.id); }}
                                                     title="Excluir"
                                                 >

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { saveReiDiagnostic } from '@/api/reiResponses';
 import { REIType } from '@/types/rei';
-import { supabase } from '@/integrations/supabase/client';
 
 // Import dos Steps
 import Step1Identificacao from './steps/Step1Identificacao';
@@ -31,8 +30,9 @@ const wizardSchema = z.object({
 
     // Step 2
     segmento: z.string().min(1, 'Selecione um segmento'),
+    segmento_outro: z.string().optional(),
     tamanho: z.string().min(1, 'Selecione o tamanho'),
-    ticketMedio: z.string().min(1, 'Selecione o ticket médio'),
+    ticketMedio: z.string().min(1, 'Informe o ticket médio'),
     cicloVendas: z.string().min(1, 'Selecione o ciclo de vendas'),
     mrr: z.string().min(1, 'Selecione o MRR'),
     modeloPrecificacao: z.string().min(1, 'Selecione o modelo de precificação'),
@@ -45,16 +45,19 @@ const wizardSchema = z.object({
     prazo: z.string().min(1, 'Selecione um prazo'),
     metricaPrincipal: z.string().min(1, 'Selecione uma métrica'),
     gargaloFunil: z.string().min(1, 'Selecione um gargalo'),
-    processGap: z.string().min(50, 'Por favor, forneça mais detalhes (mínimo 50 caracteres)').max(300),
-    implementationAttempts: z.string().min(50, 'Por favor, forneça mais detalhes (mínimo 50 caracteres)').max(400),
-    executionConstraint: z.string().min(50, 'Por favor, forneça mais detalhes (mínimo 50 caracteres)').max(300),
+    gargaloFunil_outro: z.string().optional(),
+    processGap: z.string().min(10, 'Mínimo 10 caracteres').max(300),
+    implementationAttempts: z.string().min(10, 'Mínimo 10 caracteres').max(400),
+    executionConstraint: z.string().min(10, 'Mínimo 10 caracteres').max(300),
 
     // Step 4
     canaisAquisicao: z.array(z.string()).min(1, 'Selecione pelo menos 1 canal'),
     crm: z.string().min(1, 'Selecione um CRM'),
+    crm_outro: z.string().optional(),
     timeGrowth: z.string().min(1, 'Selecione o tamanho do time'),
     metricas: z.array(z.string()),
     gargalo: z.string().min(1, 'Selecione um gargalo'),
+    gargalo_outro: z.string().optional(),
     cacAtual: z.string().min(1, 'Selecione o CAC'),
     ltvAtual: z.string().min(1, 'Selecione o LTV'),
 
@@ -66,79 +69,42 @@ const wizardSchema = z.object({
     observacoes: z.string().optional(),
 });
 
-const TOTAL_STEPS = 5;
-
-const stepTitles = [
-    'Identificação',
-    'Contexto do Negócio',
-    'Desafios & Objetivos',
-    'Estratégia Atual',
-    'Expectativas'
-];
+type WizardFormData = z.infer<typeof wizardSchema>;
 
 export default function REIWizard({ projectId, type, onComplete }: REIWizardProps) {
     const { toast } = useToast();
-
     const [currentStep, setCurrentStep] = useState(1);
     const [direction, setDirection] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const TOTAL_STEPS = 5;
 
-    const form = useForm({
+    const form = useForm<WizardFormData>({
         resolver: zodResolver(wizardSchema),
-        mode: "onChange",
-        defaultValues: {
-            email: '',
-            desafios: [],
-            canaisAquisicao: [],
-            metricas: [],
-            expectativas: [],
-            areasPrioridade: [],
-            modeloPrecificacao: '',
-            taxaChurn: '',
-            gargaloFunil: '',
-            cacAtual: '',
-            ltvAtual: '',
-            quandoComecar: '',
-        }
+        mode: 'onChange'
     });
 
-    // Auto-preenchimento via email
-    const handleEmailBlur = async (email: string) => {
-        try {
-            const { data, error } = await supabase
-                .from('clientes')
-                .select('*')
-                .eq('email', email)
-                .single();
+    const stepTitles = [
+        'Identificação',
+        'Contexto do Negócio',
+        'Desafios & Objetivos',
+        'Estratégia Atual',
+        'Expectativas'
+    ];
 
-            if (data && !error) {
-                toast({
-                    title: `Bem-vindo de volta, ${data.nome || 'Cliente'}!`,
-                    description: "Seus dados foram identificados.",
-                    className: "bg-black text-white border-none"
-                });
-            }
-        } catch (error) {
-            // Cliente novo, sem problemas
-            console.log('Cliente novo ou não encontrado');
-        }
-    };
-
-    // Validação por step
-    const getFieldsForStep = (step: number): string[] => {
+    const getFieldsForStep = (step: number): (keyof WizardFormData)[] => {
         switch (step) {
             case 1: return ['email'];
-            case 2: return ['segmento', 'tamanho', 'ticketMedio', 'cicloVendas', 'mrr', 'modeloPrecificacao', 'taxaChurn'];
-            case 3: return ['desafios', 'metaCrescimento', 'orcamento', 'prazo', 'metricaPrincipal', 'gargaloFunil', 'processGap', 'implementationAttempts', 'executionConstraint'];
-            case 4: return ['canaisAquisicao', 'crm', 'timeGrowth', 'gargalo', 'cacAtual', 'ltvAtual'];
-            case 5: return ['expectativas', 'areasPrioridade', 'prontidao', 'quandoComecar'];
+            case 2: return ['segmento', 'segmento_outro', 'tamanho', 'ticketMedio', 'cicloVendas', 'mrr', 'modeloPrecificacao', 'taxaChurn'];
+            case 3: return ['desafios', 'metaCrescimento', 'orcamento', 'prazo', 'metricaPrincipal', 'gargaloFunil', 'gargaloFunil_outro', 'processGap', 'implementationAttempts', 'executionConstraint'];
+            case 4: return ['canaisAquisicao', 'crm', 'crm_outro', 'timeGrowth', 'metricas', 'gargalo', 'gargalo_outro', 'cacAtual', 'ltvAtual'];
+            case 5: return ['expectativas', 'areasPrioridade', 'prontidao', 'quandoComecar', 'observacoes'];
             default: return [];
         }
     };
 
     const handleNext = async () => {
-        const fieldsToValidate = getFieldsForStep(currentStep);
-        const isValid = await form.trigger(fieldsToValidate as any);
+        const fields = getFieldsForStep(currentStep);
+        const isValid = await form.trigger(fields);
 
         if (isValid) {
             if (currentStep < TOTAL_STEPS) {
@@ -146,14 +112,13 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 setCurrentStep(prev => prev + 1);
                 window.scrollTo(0, 0);
             } else {
-                // Última etapa - submeter
                 form.handleSubmit(onSubmit)();
             }
         } else {
             toast({
-                title: "Campos obrigatórios",
-                description: "Por favor, preencha todos os campos obrigatórios (*).",
-                variant: "destructive"
+                title: "Atenção",
+                description: "Preencha os campos obrigatórios para continuar.",
+                variant: "destructive",
             });
         }
     };
@@ -164,18 +129,15 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         window.scrollTo(0, 0);
     };
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: WizardFormData) => {
         setIsSubmitting(true);
-
         try {
             const result = await saveReiDiagnostic(projectId, data);
-
             toast({
-                title: "Diagnóstico Salvo!",
-                description: "Seu diagnóstico foi salvo com sucesso.",
-                className: "bg-black text-white border-none"
+                title: "Diagnóstico Gerado",
+                description: "Redirecionando para o resultado...",
+                className: "bg-black text-white border-zinc-800"
             });
-
             if (onComplete) {
                 onComplete(result.id);
             }
@@ -183,11 +145,27 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             console.error('Erro ao salvar:', error);
             toast({
                 title: "Erro",
-                description: "Não foi possível salvar o diagnóstico.",
+                description: "Não foi possível salvar os dados.",
                 variant: "destructive"
             });
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // Placeholder function if needed by child components
+    const handleEmailBlur = () => {
+        // Logic to check existing email if necessary
+    };
+
+    const renderCurrentStep = () => {
+        switch (currentStep) {
+            case 1: return <Step1Identificacao form={form as any} onEmailBlur={handleEmailBlur} />;
+            case 2: return <Step2Contexto form={form as any} />;
+            case 3: return <Step3Desafios form={form as any} />;
+            case 4: return <Step4Estrategia form={form as any} />;
+            case 5: return <Step5Expectativas form={form as any} />;
+            default: return null;
         }
     };
 
@@ -210,33 +188,20 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         })
     };
 
-    // Renderizar step atual
-    const renderCurrentStep = () => {
-        switch (currentStep) {
-            case 1: return <Step1Identificacao form={form} onEmailBlur={handleEmailBlur} />;
-            case 2: return <Step2Contexto form={form} />;
-            case 3: return <Step3Desafios form={form} />;
-            case 4: return <Step4Estrategia form={form} />;
-            case 5: return <Step5Expectativas form={form} />;
-            default: return null;
-        }
-    };
-
     return (
         <div className="max-w-4xl mx-auto">
             {/* Back to Hub */}
             <div className="mb-12 text-center">
-                <Link to="/rei" className="inline-flex items-center text-xs text-zinc-400 hover:text-black mb-8 transition-colors uppercase tracking-wider">
-                    <ArrowLeft className="w-3 h-3 mr-2" /> Voltar para o Hub
+                <Link to="/rei-hub" className="inline-flex items-center text-[10px] text-zinc-400 hover:text-black mb-10 transition-colors uppercase tracking-[0.2em] font-bold">
+                    <ArrowLeft className="w-3 h-3 mr-2" /> Voltar ao Hub
                 </Link>
 
-                {/* Header Minimalista */}
-                <h1 className="text-3xl font-light text-black mb-2 tracking-wide">
-                    REI - Revenue Excellence Initiative
-                </h1>
-                <p className="text-xs text-zinc-400 font-normal tracking-wide uppercase">
-                    Diagnóstico Completo de Crescimento
-                </p>
+                {/* Header Clean */}
+                <div className="flex flex-col items-center">
+                    <h1 className="text-3xl md:text-5xl font-black text-black mb-4 tracking-tighter uppercase leading-none">
+                        Protocolo Diagnóstico
+                    </h1>
+                </div>
 
                 {/* Progress Bar */}
                 <div className="w-full max-w-md mx-auto bg-zinc-200 h-0.5 rounded-full mt-8 overflow-hidden">
@@ -254,7 +219,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             </div>
 
             {/* Questions Card */}
-            <div className="bg-white border border-zinc-200 rounded-sm p-8 md:p-12 relative overflow-hidden">
+            <div className="bg-white border border-zinc-200 rounded-sm p-6 md:p-8 relative overflow-hidden">
                 <AnimatePresence mode='wait' custom={direction}>
                     <motion.div
                         key={currentStep}
@@ -270,12 +235,11 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 </AnimatePresence>
 
                 {/* Navigation */}
-                <div className="flex justify-between items-center mt-12 pt-8 border-t border-zinc-200">
+                <div className="flex justify-between items-center mt-8 pt-6 border-t border-zinc-200">
                     <button
                         onClick={handleBack}
                         disabled={currentStep === 1}
-                        className={`text-sm font-medium text-zinc-500 hover:text-black transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''
-                            }`}
+                        className={`text-sm font-medium text-zinc-500 hover:text-black transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
                     >
                         <ArrowLeft className="w-4 h-4" /> Anterior
                     </button>

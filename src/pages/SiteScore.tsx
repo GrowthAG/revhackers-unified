@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Globe, Zap, Search, Layout, CheckCircle2, Smartphone, MousePointerClick, LayoutTemplate } from 'lucide-react';
+import {
+    ArrowRight, Globe, Zap, Search, Layout, CheckCircle2, Smartphone,
+    MousePointerClick, LayoutTemplate, AlertTriangle, AlertCircle,
+    Gauge, Activity, Timer, Layers, ShieldCheck, Trophy
+} from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +15,7 @@ import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
 import PageLayout from '@/components/layout/PageLayout';
 import Section from '@/components/ui/Section';
 import { useAuth } from '@/contexts/AuthContext';
+import PlacesAutocomplete from '@/components/ui/PlacesAutocomplete';
 
 // Questions centered on "Money Left on the Table"
 const QUESTIONS = [
@@ -71,14 +76,20 @@ const QUESTIONS = [
     }
 ];
 
-type Step = 'questions' | 'lead-capture' | 'results';
+type Step = 'url-input' | 'questions' | 'lead-capture' | 'results';
 
 const SiteScore = () => {
     const { toast } = useToast();
-    const [step, setStep] = useState<Step>('questions');
+    const [step, setStep] = useState<Step>('url-input');
     const [currentQ, setCurrentQ] = useState(0);
     const [score, setScore] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
+
+    // PageSpeed State
+    const [targetUrl, setTargetUrl] = useState('');
+    const [pageSpeedResult, setPageSpeedResult] = useState<any>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const PSI_API_KEY = 'AIzaSyDQmXtGdZZFQcwAzOOwGQOyawcotLG7C_A';
 
     // Lead Form State
     const [leadForm, setLeadForm] = useState({
@@ -89,6 +100,99 @@ const SiteScore = () => {
         role: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const runPageSpeed = async (url: string) => {
+        setIsAnalyzing(true);
+        try {
+            let formattedUrl = url.trim();
+            if (!formattedUrl.startsWith('http')) {
+                formattedUrl = `https://${formattedUrl}`;
+            }
+
+            const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(formattedUrl)}&key=${PSI_API_KEY}&strategy=mobile&category=performance&category=seo&category=accessibility&category=best-practices&locale=pt-BR`;
+
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.error) {
+                console.error("PageSpeed API Error:", data.error);
+                setPageSpeedResult({ error: true });
+            } else {
+                setPageSpeedResult(data);
+            }
+        } catch (error) {
+            console.error("PageSpeed API Fetch Error:", error);
+            setPageSpeedResult({ error: true });
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    // Helper to extract top opportunities
+    const getOpportunities = (data: any) => {
+        if (!data?.lighthouseResult?.audits) return [];
+
+        const audits = data.lighthouseResult.audits;
+        const auditRefs = data.lighthouseResult.categories.performance?.auditRefs || [];
+
+        return auditRefs
+            .filter((ref: any) => ref.group === 'load-opportunities' && audits[ref.id].score !== null && audits[ref.id].score < 0.9)
+            .map((ref: any) => audits[ref.id])
+            .sort((a: any, b: any) => (b.details?.overallSavingsMs || 0) - (a.details?.overallSavingsMs || 0))
+            .slice(0, 4);
+    };
+
+    const getMetrics = (data: any) => {
+        if (!data?.lighthouseResult?.audits) return null;
+        const a = data.lighthouseResult.audits;
+        return {
+            lcp: a['largest-contentful-paint'],
+            cls: a['cumulative-layout-shift'],
+            fcp: a['first-contentful-paint'],
+            tbt: a['total-blocking-time'],
+            si: a['speed-index']
+        };
+    };
+
+    const renderMetricCard = (label: string, metric: any, icon: React.ReactNode) => {
+        if (!metric) return null;
+
+        let color = 'text-green-500';
+        let bg = 'bg-green-500/5 border-green-500/10';
+
+        if (metric.score < 0.5) {
+            color = 'text-red-500';
+            bg = 'bg-red-500/5 border-red-500/10';
+        } else if (metric.score < 0.9) {
+            color = 'text-yellow-500';
+            bg = 'bg-yellow-500/5 border-yellow-500/10';
+        }
+
+        return (
+            <div className={`p-4 rounded-xl border ${bg} flex flex-col justify-between h-32`}>
+                <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500">{label}</span>
+                    <div className={`${color} opacity-80`}>{icon}</div>
+                </div>
+                <div>
+                    <div className={`text-2xl font-black ${color} tracking-tight`}>
+                        {metric.displayValue}
+                    </div>
+                    <div className="text-[10px] text-zinc-400 mt-1 leading-tight line-clamp-2">
+                        {metric.title}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const handleUrlSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!targetUrl) return;
+
+        runPageSpeed(targetUrl);
+        setStep('questions');
+    };
 
     const handleAnswer = (optionScore: number) => {
         const newScore = score + optionScore;
@@ -121,9 +225,25 @@ const SiteScore = () => {
 
             const result = getResult();
 
+            // Prepare payload with PageSpeed data if available
+            const payload = {
+                ...leadForm,
+                site_url: targetUrl,
+                score,
+                individual_answers: answers,
+                level: result.title,
+                result: result,
+                pageSpeed: pageSpeedResult ? {
+                    score: pageSpeedResult.lighthouseResult?.categories?.performance?.score * 100,
+                    lcp: pageSpeedResult.lighthouseResult?.audits['largest-contentful-paint']?.displayValue,
+                    cls: pageSpeedResult.lighthouseResult?.audits['cumulative-layout-shift']?.displayValue,
+                    fcp: pageSpeedResult.lighthouseResult?.audits['first-contentful-paint']?.displayValue,
+                } : 'Not Available'
+            };
+
             await submitPublicDiagnostic(
                 { ...leadForm },
-                { individual_answers: answers },
+                { individual_answers: answers, pageSpeed: payload.pageSpeed },
                 score,
                 {
                     level: result.title,
@@ -186,27 +306,85 @@ const SiteScore = () => {
             <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
                 <div className="container-custom max-w-5xl mx-auto relative z-10 w-full">
 
+                    {/* STEP 1: URL INPUT (Surgical Minimalism) */}
+                    {step === 'url-input' && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="max-w-md mx-auto"
+                        >
+                            <div className="bg-white p-0 md:p-8">
+                                <div className="text-center mb-12">
+                                    <h2 className="text-3xl font-bold text-black mb-4 tracking-tight uppercase leading-none">
+                                        Diagnóstico Técnico
+                                    </h2>
+                                    <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-[0.2em]">
+                                        Insira seu site para análise em tempo real
+                                    </p>
+                                </div>
+
+                                <form onSubmit={handleUrlSubmit} className="space-y-6">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">URL do Site</Label>
+                                        <div className="flex gap-0">
+                                            <div className="flex items-center justify-center bg-zinc-100 border-y border-l border-zinc-200 px-4 text-[10px] font-mono font-bold text-zinc-500">
+                                                HTTPS://
+                                            </div>
+                                            <Input
+                                                required
+                                                className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium flex-1"
+                                                value={targetUrl.replace('https://', '').replace('http://', '')}
+                                                onChange={e => setTargetUrl(e.target.value)}
+                                                placeholder="seusite.com.br"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 mt-8 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300 border border-black"
+                                    >
+                                        Iniciar Análise
+                                    </Button>
+
+                                    <p className="text-center text-[10px] text-zinc-400 font-mono mt-4">
+                                        *A análise rodará em segundo plano enquanto você responde.
+                                    </p>
+                                </form>
+                            </div>
+                        </motion.div>
+                    )}
+
                     {step === 'questions' && (
                         <div className="max-w-4xl mx-auto">
 
-                            {/* Progress Header */}
-                            <div className="mb-12">
-                                <div className="flex justify-between items-end mb-4">
-                                    <div className="space-y-1">
-                                        <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest">Diagnóstico em Andamento</span>
-                                        <h2 className="text-black text-lg font-medium">Análise de Infraestrutura</h2>
+                            {/* Surgical Minimalist Header */}
+                            <div className="mb-20">
+                                <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
+                                            <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-zinc-500">
+                                                Live Diagnostic
+                                            </span>
+                                        </div>
+                                        <h1 className="text-3xl md:text-5xl font-bold text-black uppercase tracking-tight leading-none">
+                                            Análise de<br />Infraestrutura
+                                        </h1>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-4xl font-bold text-black tracking-tighter">{Math.round((currentQ / QUESTIONS.length) * 100)}%</span>
-                                        <span className="text-gray-500 text-xs block font-mono-tech uppercase">Concluído</span>
+                                        <div className="text-5xl font-light text-black tracking-tighter leading-none">
+                                            {Math.round((currentQ / QUESTIONS.length) * 100)}<span className="text-lg text-zinc-400 font-normal">%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="w-full bg-zinc-100 h-1 rounded-full overflow-hidden">
+                                {/* Ultra-thin Progress Line */}
+                                <div className="w-full bg-zinc-100 h-px">
                                     <motion.div
-                                        className="h-full bg-black shadow-none"
+                                        className="h-full bg-black"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
-                                        transition={{ duration: 0.5 }}
+                                        transition={{ duration: 0.3, ease: "linear" }}
                                     />
                                 </div>
                             </div>
@@ -215,118 +393,116 @@ const SiteScore = () => {
                                 <AnimatePresence mode='wait'>
                                     <motion.div
                                         key={currentQ}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
                                         transition={{ duration: 0.3 }}
-                                        className="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 relative overflow-hidden"
                                     >
-                                        {/* Background Detail */}
-                                        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                                            {QUESTIONS[currentQ].icon}
-                                        </div>
-
-                                        <div className="mb-10">
-                                            <span className="inline-block text-gray-500 text-xs font-mono-tech mb-4 uppercase tracking-wider">
-                                                Pergunta {QUESTIONS[currentQ].id} de {QUESTIONS.length}
+                                        <div className="mb-12">
+                                            <span className="block text-[10px] font-mono text-zinc-400 mb-4 uppercase tracking-widest">
+                                                0{QUESTIONS[currentQ].id} / 0{QUESTIONS.length}
                                             </span>
-                                            <h2 className="text-3xl md:text-4xl font-medium text-black leading-tight">
+                                            <h2 className="text-2xl md:text-4xl font-medium text-black leading-tight">
                                                 {QUESTIONS[currentQ].question}
                                             </h2>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-100 border border-zinc-100">
                                             {QUESTIONS[currentQ].options.map((opt, idx) => (
                                                 <button
                                                     key={idx}
                                                     onClick={() => handleAnswer(opt.score)}
-                                                    className="group flex flex-col items-start p-6 text-left bg-gray-50 border border-gray-200 rounded-xl hover:border-revgreen hover:bg-revgreen/[0.05] transition-all duration-300 relative overflow-hidden"
+                                                    className="group relative flex flex-col items-start p-8 text-left bg-white hover:bg-zinc-50 transition-colors duration-200 outline-none"
                                                 >
-                                                    <div className="absolute top-0 left-0 w-1 h-full bg-revgreen opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                                    <div className="mb-3 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-revgreen/20 transition-colors">
-                                                        <span className="text-xs font-mono-tech text-gray-500 group-hover:text-revgreen ml-[1px]">{String.fromCharCode(65 + idx)}</span>
+                                                    <div className="mb-6 w-6 h-6 flex items-center justify-center border border-zinc-200 text-[10px] font-mono text-zinc-400 group-hover:border-black group-hover:text-black transition-colors rounded-none">
+                                                        {String.fromCharCode(65 + idx)}
                                                     </div>
 
-                                                    <span className="text-base text-gray-700 group-hover:text-black transition-colors">{opt.label}</span>
+                                                    <span className="text-sm md:text-base font-normal text-zinc-600 group-hover:text-black transition-colors leading-relaxed">
+                                                        {opt.label}
+                                                    </span>
+
+                                                    {/* Selection Indicator Line */}
+                                                    <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300" />
                                                 </button>
                                             ))}
                                         </div>
-
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
                         </div>
                     )}
 
-                    {/* STEP 2: LEAD CAPTURE */}
+                    {/* STEP 2: LEAD CAPTURE - SURGICAL MINIMALISM */}
                     {step === 'lead-capture' && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
                             className="max-w-md mx-auto"
                         >
-                            <div className="bg-black/60 border border-white/10 rounded-2xl p-8 backdrop-blur-xl relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-revgreen/50 to-transparent"></div>
-
-                                <div className="text-center mb-10">
-                                    <h2 className="text-2xl font-black text-black mb-2 tracking-tighter uppercase">RELATÓRIO AUTORIZADO</h2>
-                                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
-                                        Identificação obrigatória para acesso aos dados técnicos.
+                            <div className="bg-white p-0 md:p-8">
+                                <div className="text-center mb-12">
+                                    <h2 className="text-3xl font-bold text-black mb-4 tracking-tight uppercase leading-none">
+                                        Relatório Autorizado
+                                    </h2>
+                                    <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-[0.2em]">
+                                        Identificação obrigatória
                                     </p>
                                 </div>
 
-                                <form onSubmit={handleLeadSubmit} className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME COMPLETO</Label>
+                                <form onSubmit={handleLeadSubmit} className="space-y-6">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Nome Completo</Label>
                                         <Input
                                             required
-                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
+                                            className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                             value={leadForm.name}
                                             onChange={e => setLeadForm({ ...leadForm, name: e.target.value })}
-                                            placeholder="NOME E SOBRENOME"
+                                            placeholder="Digite seu nome"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">E-MAIL CORPORATIVO</Label>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">E-mail Corporativo</Label>
                                         <Input
                                             required
                                             type="email"
-                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
+                                            className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                             value={leadForm.email}
                                             onChange={e => setLeadForm({ ...leadForm, email: e.target.value })}
-                                            placeholder="EX: NOME@EMPRESA.COM"
+                                            placeholder="nome@empresa.com"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">NOME DA EMPRESA</Label>
-                                        <Input
-                                            required
-                                            className="bg-white border-zinc-200 text-black h-12 focus:border-black rounded-none transition-all"
-                                            value={leadForm.company}
-                                            onChange={e => setLeadForm({ ...leadForm, company: e.target.value })}
-                                            placeholder="ORGANIZAÇÃO"
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Empresa / Localização</Label>
+                                        <PlacesAutocomplete
+                                            apiKey={PSI_API_KEY}
+                                            className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
+                                            defaultValue={leadForm.company}
+                                            onAddressSelect={(address) => setLeadForm({ ...leadForm, company: address.formatted.split(',')[0] })}
+                                            onChange={(val) => setLeadForm({ ...leadForm, company: val })}
+                                            placeholder="Buscar empresa automaticamente..."
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">WhatsApp</Label>
+                                        <div className="space-y-1">
+                                            <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">WhatsApp</Label>
                                             <Input
                                                 required
                                                 type="tel"
-                                                className="bg-white/5 border-white/10 text-white h-11 focus:border-revgreen/50"
+                                                className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium"
                                                 value={leadForm.phone}
                                                 onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })}
+                                                placeholder="(00) 00000-0000"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-[11px] font-mono-tech text-gray-400 uppercase tracking-wider">Cargo</Label>
+                                        <div className="space-y-1">
+                                            <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Cargo</Label>
                                             <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
-                                                <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 focus:ring-revgreen/50">
+                                                <SelectTrigger className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all font-medium">
                                                     <SelectValue placeholder="Selecione" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-black border-white/10 text-white">
+                                                <SelectContent className="bg-white border-zinc-200 text-black rounded-none">
                                                     <SelectItem value="vp">VP / C-Level</SelectItem>
                                                     <SelectItem value="diretor">Diretor(a)</SelectItem>
                                                     <SelectItem value="gerente">Gerente</SelectItem>
@@ -342,119 +518,177 @@ const SiteScore = () => {
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-14 mt-6 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300"
+                                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 mt-8 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300 border border-black"
                                     >
-                                        {isSubmitting ? 'Gerando Relatório...' : 'Baixar Dashboard de Performance'}
+                                        {isSubmitting ? 'Processando...' : 'Liberar Relatório Oficial'}
                                     </Button>
                                 </form>
                             </div>
                         </motion.div>
                     )}
 
-                    {/* STEP 3: RESULTS */}
+                    {/* STEP 3: RESULTS - SURGICAL DASHBOARD */}
                     {step === 'results' && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="w-full"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="w-full max-w-7xl mx-auto py-12"
                         >
-                            <div className="text-center mb-6">
-                                <h3 className="text-sm font-mono-tech text-gray-400 uppercase tracking-[0.3em] bg-white/5 inline-block px-4 py-2 rounded-full border border-white/5">
-                                    Resultado da Análise
-                                </h3>
+                            {/* HEADER */}
+                            <div className="flex flex-col md:flex-row items-center justify-between mb-12 border-b border-zinc-200 pb-8">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className={`w-2 h-2 rounded-full ${isAnalyzing ? 'bg-yellow-400 animate-pulse' : 'bg-green-500'}`}></div>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                                            {isAnalyzing ? 'Diagnóstico em Andamento' : 'Diagnóstico Finalizado'}
+                                        </span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-black tracking-tight mb-2">
+                                        Relatório de Performance
+                                    </h2>
+                                    <p className="text-sm text-zinc-500 font-mono">
+                                        {targetUrl.replace(/https?:\/\//, '').replace(/\/$/, '')}
+                                    </p>
+                                </div>
+                                <div className="mt-6 md:mt-0">
+                                    <Button
+                                        onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Quero%20falar%20com%20um%20especialista%20sobre%20meu%20site', '_blank')}
+                                        className="bg-revgreen text-black hover:bg-revgreen/90 font-bold text-xs uppercase tracking-widest h-12 px-8 rounded-full shadow-lg hover:shadow-xl transition-all"
+                                    >
+                                        Falar com Especialista
+                                    </Button>
+                                </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                            {/* MAIN DASHBOARD GRID */}
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                                {/* Chart Card */}
-                                <div className="lg:col-span-5 bg-black border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center relative shadow-2xl">
-                                    <div className="absolute top-6 left-6 text-xs font-mono-tech text-gray-400 uppercase tracking-widest">Performance Score</div>
-
-                                    <div className="relative w-64 h-64 md:w-80 md:h-80 my-8">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie
-                                                    data={chartData}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    innerRadius="85%"
-                                                    outerRadius="100%"
-                                                    startAngle={90}
-                                                    endAngle={-270}
-                                                    dataKey="value"
-                                                    stroke="none"
-                                                >
-                                                    <Cell key="score" fill={score >= 60 ? '#00FF00' : '#333'} /> {/* Hardcoded bright green for max visibility */}
-                                                    <Cell key="gap" fill="#1a1a1a" />
-                                                </Pie>
-                                            </PieChart>
-                                        </ResponsiveContainer>
-
-                                        {/* Score Center Text */}
-                                        <div className="flex-1 flex items-center justify-center">
-                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                                <div className="text-8xl font-bold text-white tracking-tighter leading-none">{score}</div>
-                                                <div className="text-xs text-gray-500 font-mono-tech mt-2 tracking-widest uppercase">Pontos</div>
-                                            </div>
+                                {/* 1. SCORE CARD (3 Cols) */}
+                                <div className="lg:col-span-3">
+                                    <div className="bg-white border border-zinc-200 p-8 h-full flex flex-col items-center justify-center text-center relative overflow-hidden rounded-2xl shadow-sm">
+                                        <div className="mb-6">
+                                            <Globe className="w-6 h-6 text-zinc-400 mx-auto mb-2" />
+                                            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500">Google PageSpeed</h3>
                                         </div>
-                                    </div>
 
-                                    <div className={`text-center ${result.color} text-lg font-medium tracking-wide uppercase`}>
-                                        {result.title}
-                                    </div>
-                                </div>
+                                        {isAnalyzing ? (
+                                            <div className="animate-spin w-16 h-16 border-4 border-zinc-100 border-t-black rounded-full" />
+                                        ) : (
+                                            <div className="relative">
+                                                <span className={`text-8xl font-black tracking-tighter leading-none ${!pageSpeedResult?.lighthouseResult ? 'text-zinc-200' :
+                                                    (pageSpeedResult.lighthouseResult.categories.performance.score * 100) >= 90 ? 'text-green-500' :
+                                                        (pageSpeedResult.lighthouseResult.categories.performance.score * 100) >= 50 ? 'text-yellow-500' : 'text-red-500'
+                                                    }`}>
+                                                    {pageSpeedResult?.lighthouseResult ? Math.round(pageSpeedResult.lighthouseResult.categories.performance.score * 100) : '-'}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                {/* Report Card */}
-                                <div className="lg:col-span-7 flex flex-col gap-6">
-                                    {/* Main Diagnosis */}
-                                    <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 md:p-10 flex-1">
-                                        <div className="text-xs font-mono-tech text-revgreen uppercase tracking-widest mb-4">Relatório Executivo</div>
-                                        <h2 className="text-3xl font-bold text-white mb-4 leading-tight">{result.headline}</h2>
-                                        <p className="text-gray-300 font-light leading-relaxed mb-8">{result.msg}</p>
-
-                                        <Button
-                                            className="bg-revgreen text-black hover:bg-revgreen/90 rounded-sm px-8 h-12 uppercase tracking-widest font-bold text-xs w-full md:w-auto"
-                                            onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Score:%20' + score, '_blank')}
-                                        >
-                                            Solicitar Correção Técnica <ArrowRight className="ml-2 w-4 h-4" />
-                                        </Button>
-                                    </div>
-
-                                    {/* Metrics Breakdown */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Mobile</span>
-                                                <span className={answers[0] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[0] > 10 ? 'OK' : 'ERR'}</span>
+                                        <div className="mt-8 pt-8 border-t border-zinc-100 w-full">
+                                            <div className="flex justify-between items-center text-xs">
+                                                <span className="text-zinc-500">Score Estratégico</span>
+                                                <span className="font-bold text-black">{score}/100</span>
                                             </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[0] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[0] > 10 ? '100%' : '30%' }}></div>
-                                            </div>
-                                        </div>
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Speed</span>
-                                                <span className={answers[1] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[1] > 10 ? 'OK' : 'ERR'}</span>
-                                            </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[1] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[1] > 10 ? '100%' : '30%' }}></div>
-                                            </div>
-                                        </div>
-                                        <div className="bg-[#0A0A0A] border border-white/5 rounded-xl p-5">
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-xs text-gray-400 font-mono-tech uppercase">Offer</span>
-                                                <span className={answers[2] > 10 ? "text-revgreen text-xs" : "text-gray-500 text-xs"}>{answers[2] > 10 ? 'OK' : 'ERR'}</span>
-                                            </div>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                                <div className={`h-full ${answers[2] > 10 ? 'bg-revgreen' : 'bg-red-900'}`} style={{ width: answers[2] > 10 ? '100%' : '30%' }}></div>
+                                            <div className="w-full bg-zinc-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                                                <div className="bg-black h-full rounded-full" style={{ width: `${score}%` }}></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* 2. METRICS & DETAILS (9 Cols) */}
+                                <div className="lg:col-span-9 flex flex-col gap-8">
+
+                                    {/* Core Vitals Row */}
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {[
+                                            { id: 'LCP', label: 'Carregamento', key: 'lcp', Icon: Timer },
+                                            { id: 'TBT', label: 'Interatividade', key: 'tbt', Icon: MousePointerClick },
+                                            { id: 'CLS', label: 'Estabilidade', key: 'cls', Icon: Layout },
+                                            { id: 'Speed Index', label: 'Velocidade', key: 'si', Icon: Gauge },
+                                        ].map((metric) => {
+                                            const val = pageSpeedResult ? getMetrics(pageSpeedResult)?.[metric.key] : null;
+                                            const Icon = metric.Icon;
+
+                                            return (
+                                                <div key={metric.id} className="bg-white border border-zinc-200 p-6 rounded-xl shadow-sm hover:border-black/20 transition-colors">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Icon className="w-4 h-4 text-zinc-400" />
+                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{metric.id}</span>
+                                                    </div>
+                                                    <div className="text-2xl font-bold text-black font-mono">
+                                                        {val?.displayValue || '-'}
+                                                    </div>
+                                                    <div className="text-[10px] text-zinc-400 mt-1 truncate">
+                                                        {metric.label}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+
+                                    {/* Actionable Insights Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                                        {/* Priorities List */}
+                                        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="text-sm font-bold text-black uppercase tracking-wide flex items-center gap-2">
+                                                    <AlertTriangle className="w-4 h-4 text-red-500" />
+                                                    Correções Críticas
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 max-h-[300px]">
+                                                {pageSpeedResult?.lighthouseResult && getOpportunities(pageSpeedResult).length > 0 ? (
+                                                    getOpportunities(pageSpeedResult).slice(0, 5).map((opp: any, idx: number) => (
+                                                        <div key={idx} className="p-4 bg-zinc-50 rounded-lg border border-zinc-100 flex justify-between items-start group hover:bg-zinc-100 transition-colors">
+                                                            <div>
+                                                                <h4 className="font-bold text-xs text-black mb-1">{opp.title}</h4>
+                                                                <p className="text-[10px] text-zinc-500 line-clamp-1">{opp.description?.split('[')[0]}</p>
+                                                            </div>
+                                                            <span className="bg-white px-2 py-1 rounded border border-zinc-200 text-[10px] font-mono font-bold text-red-600 whitespace-nowrap ml-2">
+                                                                -{Math.round((opp.details?.overallSavingsMs || 0) / 100) / 10}s
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="h-full flex items-center justify-center text-center text-zinc-400 text-xs p-8 border border-dashed border-zinc-200 rounded-lg">
+                                                        {isAnalyzing ? 'Identificando gargalos de performance...' : 'Nenhum problema crítico encontrado.'}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Overall Health & Strategy */}
+                                        <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-8 flex flex-col justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-black mb-2">Diagnóstico Final</h3>
+                                                <p className="text-sm text-zinc-500 leading-relaxed mb-6">
+                                                    {result.msg}
+                                                </p>
+
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-zinc-200">
+                                                        <span className="text-xs font-bold uppercase text-zinc-500">SEO Técnico</span>
+                                                        <span className="font-mono text-sm font-bold">{pageSpeedResult && pageSpeedResult.lighthouseResult ? Math.round(pageSpeedResult.lighthouseResult.categories.seo.score * 100) : 0}%</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-zinc-200">
+                                                        <span className="text-xs font-bold uppercase text-zinc-500">Acessibilidade</span>
+                                                        <span className="font-mono text-sm font-bold">{pageSpeedResult && pageSpeedResult.lighthouseResult ? Math.round(pageSpeedResult.lighthouseResult.categories.accessibility.score * 100) : 0}%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Button className="w-full mt-6 bg-black text-white hover:bg-zinc-800 rounded-lg h-12 text-xs font-bold uppercase tracking-widest shadow-lg transition-all" onClick={() => window.open('https://revhackers.com/agendar', '_blank')}>
+                                                Receber Plano de Ação
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     )}
+
 
                 </div>
             </Section>

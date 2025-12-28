@@ -25,10 +25,10 @@ const HeroSection = () => {
         </div>
 
         {/* Headline - Reduced Size from 8xl/7xl to 6xl/7xl for better balance */}
-        <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
-          <span className="whitespace-nowrap block md:inline">Sua Estratégia B2B</span>{" "}
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-[1.1] tracking-tight">
+          <span className="block md:inline">Sua Estratégia B2B</span>{" "}
           <br className="hidden md:block" />
-          <span className="text-zinc-600 whitespace-nowrap block md:inline">Precisa de Inteligência.</span>
+          <span className="text-zinc-500 block md:inline">Precisa de Inteligência.</span>
         </h1>
 
         {/* Subheadline - Keeping same logic */}
@@ -56,21 +56,16 @@ const HeroSection = () => {
           </Link>
         </div>
 
-        {/* Tech Decorator / Pillars - Centered Bar */}
-        <div className="w-full border-t border-white/10 pt-8 mt-4">
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-xs md:text-sm font-mono-tech text-gray-500 uppercase tracking-wider">
-            <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default">
-              <span className="text-revgreen">•</span> Geração de Demanda B2B
-            </div>
-            <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default">
-              <span className="text-revgreen">•</span> Automação & CRM
-            </div>
-            <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default">
-              <span className="text-revgreen">•</span> CRO & Analytics
-            </div>
-            <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default">
-              <span className="text-revgreen">•</span> Revenue Operations
-            </div>
+        {/* Expertise Pillars - Minimalist */}
+        <div className="w-full mt-16 pt-8 border-t border-white/5">
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-xs font-medium text-zinc-500 tracking-wide">
+            <span>Geração de Demanda</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>Automação & CRM</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>CRO & Analytics</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>RevOps</span>
           </div>
         </div>
 
