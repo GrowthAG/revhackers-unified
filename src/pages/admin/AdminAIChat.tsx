@@ -211,37 +211,12 @@ const AdminAIChat = () => {
                 });
             }
 
-            const tone = tones.find(t => t.id === selectedTone);
-            const toneInstruction = tone && tone.id !== 'normal' ? `\n\n[Modo: ${tone.label}]\nDiretriz de Tom: ${tone.prompt}` : "";
-
-            const allAgents = [...agents, ...AGENTS];
-            const agentConfig = allAgents.find(a => a.id === selectedAgentId);
-            const effectiveAgentConfig = agentConfig || (selectedAgentId === 'default' ? { name: 'Assistente', prompt: 'Você é um assistente útil.' } : null);
-
-            let knowledgeContext = "";
-            if (selectedAgentId !== 'default') {
-                try {
-                    const { data: searchData } = await supabase.functions.invoke('agent-documents', {
-                        body: { action: 'search', agentId: selectedAgentId, query: userMsg.content }
-                    });
-                    if (searchData?.success && searchData.matches?.length > 0) {
-                        knowledgeContext = "\n\n[CONTEXTO PRIVADO DO AGENTE]\n" +
-                            searchData.matches.map((m: any) => `[Referência: ${m.filename}]\nConteúdo: ${m.content}`).join('\n---\n');
-                    }
-                } catch (err) { console.error('RAG Error:', err); }
-            }
-
+            // --- SECURITY UPDATE: Send only ID, backend handles the rest ---
             const { data: chatData, error: chatError } = await supabase.functions.invoke('agent-chat', {
                 body: {
-                    agent: {
-                        name: effectiveAgentConfig?.name || 'Agente Desconhecido',
-                        model: selectedModel,
-                        personality: (effectiveAgentConfig?.prompt || '') + toneInstruction,
-                        goal: 'Ajudar o usuário',
-                        knowledgeContext: knowledgeContext,
-                        activeKnowledgeFilenames: agentKnowledgeFilenames
-                    },
-                    messages: newMessages
+                    agentId: selectedAgentId || 'default', // Pass ID
+                    messages: newMessages,
+                    sessionId: sessionId
                 }
             });
 
@@ -274,11 +249,7 @@ const AdminAIChat = () => {
         try {
             const { data, error } = await supabase.functions.invoke('agent-chat', {
                 body: {
-                    agent: {
-                        name: 'Linguista',
-                        model: 'gpt-4o',
-                        personality: 'Analise o tom e estilo do texto e retorne uma instrução de sistema concisa.',
-                    },
+                    agentId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Linguista System Agent
                     messages: [{ role: 'user', content: `Analise:\n\n"${newToneTranscript}"` }]
                 }
             });
