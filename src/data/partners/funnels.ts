@@ -4,7 +4,7 @@ import { PartnerData } from './types';
 export const funnelsPartner: PartnerData = {
   name: "Funnels",
   description: "Especializada em construção de funis de vendas otimizados para empresas B2B.",
-  logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
+  logo: "/uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
   coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
   category: "Marketing",
   tags: ["Marketing Digital", "Funil de Vendas", "B2B", "Conversão"],

@@ -7,14 +7,14 @@ import ProfileSettings from './ProfileSettings';
 const Settings = () => {
     return (
         <PageLayout>
-            <Section variant="light" className="py-20 bg-white min-h-screen">
+            <Section variant="light" className="pt-32 pb-20 bg-white min-h-screen">
                 <div className="container-custom max-w-7xl">
                     {/* Header */}
                     <div className="mb-12">
                         <h1 className="text-4xl md:text-5xl font-black text-black mb-2 uppercase tracking-[0.2em]">
                             Sistema
                         </h1>
-                        <p className="text-zinc-500 text-xs uppercase tracking-[0.3em] font-bold">
+                        <p className="text-zinc-400 text-xs uppercase tracking-[0.3em] font-bold">
                             Usuários & Configurações
                         </p>
                     </div>

@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const datavoxxData: PartnerData = {
   name: "DataVoxx",
-  logo: "/lovable-uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
+  logo: "/uploads/b068bd61-d02d-4f35-a869-afd72751cf62.png",
   coverImage: "https://images.unsplash.com/photo-1551434678-e076c223a692",
   category: "Análise de Dados",
   description: "Empresa especializada em soluções de Business Intelligence e análise avançada de dados para médias e grandes empresas.",

@@ -126,7 +126,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/score-founder" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
-                      <Users className="w-4 h-4 text-revgreen" /> Founder Authority
+                      <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -143,6 +143,8 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              <div className="w-px h-3 bg-white/10 mx-1"></div>
+              <NavLink to="/quem-somos">Quem Somos</NavLink>
               <div className="w-px h-3 bg-white/10 mx-1"></div>
               <NavLink to="/servicos">Serviços</NavLink>
               <div className="w-px h-3 bg-white/10 mx-1"></div>
@@ -183,7 +185,6 @@ const Header = () => {
                     <Lock className="w-4 h-4" /> Admin Hub
                   </Link>
                 </DropdownMenuItem>
-
                 <DropdownMenuItem asChild>
                   <Link to="/admin/settings" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm">
                     <Settings className="w-4 h-4" /> Configurações
@@ -220,7 +221,7 @@ const Header = () => {
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-      </div >
+      </div>
 
       {/* Mobile menu */}
       {
@@ -245,7 +246,7 @@ const Header = () => {
                     <Activity className="w-4 h-4 text-revgreen" /> Site / Conversão
                   </Link>
                   <Link to="/score-founder" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-gray-300 hover:text-revgreen">
-                    <Users className="w-4 h-4 text-revgreen" /> Founder Authority
+                    <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
                   </Link>
                   <Link to="/score-revenue" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-gray-300 hover:text-revgreen">
                     <TrendingUp className="w-4 h-4 text-revgreen" /> Máquina de Vendas
@@ -253,6 +254,7 @@ const Header = () => {
                 </div>
               </div>
 
+              <MobileNavLink to="/quem-somos" onClick={scrollToTop}>Quem Somos</MobileNavLink>
               <MobileNavLink to="/servicos" onClick={scrollToTop}>Serviços</MobileNavLink>
               <MobileNavLink to="/cases" onClick={scrollToTop}>Cases</MobileNavLink>
               <MobileNavLink to="/materiais" onClick={scrollToTop}>Materiais</MobileNavLink>
@@ -277,14 +279,14 @@ const Header = () => {
           </div>
         )
       }
-    </header >
+    </header>
   );
 };
 
 const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => (
   <Link
     to={to}
-    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-all duration-200"
+    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-all duration-200 whitespace-nowrap"
     onClick={() => window.scrollTo(0, 0)}
   >
     {children}

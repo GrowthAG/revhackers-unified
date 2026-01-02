@@ -50,7 +50,7 @@ const PartnerEnics = () => {
             </div>
             <div className="md:w-1/3 bg-white p-8 rounded-lg shadow-lg">
               <img
-                src="/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png"
+                src="/uploads/a05718ad-1822-4102-909a-7e86af151e98.png"
                 alt="ENICS"
                 className="w-full h-auto object-contain"
               />
@@ -128,7 +128,7 @@ const PartnerEnics = () => {
               <blockquote className="relative z-10">
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start mb-6">
                   <Avatar className="h-20 w-20">
-                    <AvatarImage src="/lovable-uploads/5336ba0d-ed69-49f9-8041-36171f3f7b99.png" alt="Caroline Siqueira" />
+                    <AvatarImage src="/uploads/5336ba0d-ed69-49f9-8041-36171f3f7b99.png" alt="Caroline Siqueira" />
                     <AvatarFallback>CS</AvatarFallback>
                   </Avatar>
                   <p className="text-lg italic">

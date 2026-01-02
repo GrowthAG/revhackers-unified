@@ -1,22 +1,92 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useReiProjects } from '@/hooks/useReiProjects';
 import { deleteReiProject } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import {
+    Loader2,
+    Plus,
+    Pencil,
+    Trash2,
+    Search,
+    ChevronLeft,
+    ChevronRight,
+    Zap
+} from 'lucide-react';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import PageLayout from '@/components/layout/PageLayout';
+import AdminPageLayout from '@/components/layout/AdminPageLayout';
+import { Input } from '@/components/ui/input';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AdminREIProjects = () => {
-    const [statusFilter, setStatusFilter] = useState<'active' | 'pending' | 'overdue' | null>(null);
-    const { projects, loading, error, refetch } = useReiProjects({ filterByStatus: statusFilter });
+    const { projects, loading, error, refetch } = useReiProjects();
     const { toast } = useToast();
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const navigate = useNavigate();
+
+    const filteredProjects = projects?.filter(p =>
+        p.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.client_company || "").toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedIds(filteredProjects.map(p => p.id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOne = (id: string, checked: boolean) => {
+        if (checked) {
+            setSelectedIds(prev => [...prev, id]);
+        } else {
+            setSelectedIds(prev => prev.filter(item => item !== id));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+
+        if (!window.confirm(`Tem certeza que deseja excluir ${selectedIds.length} projetos? Esta ação é irreversível.`)) {
+            return;
+        }
+
+        setDeleting('bulk');
+        try {
+            await Promise.all(selectedIds.map(id => deleteReiProject(id)));
+            toast({
+                title: 'Projetos excluídos',
+                description: `${selectedIds.length} projetos foram removidos com sucesso.`,
+            });
+            setSelectedIds([]);
+            refetch();
+        } catch (error) {
+            toast({
+                title: 'Erro na exclusão',
+                description: 'Alguns projetos não puderam ser excluídos.',
+                variant: 'destructive',
+            });
+        } finally {
+            setDeleting(null);
+        }
+    };
 
     const handleDelete = async (id: string, clientName: string) => {
-        if (!window.confirm(`Tem certeza que deseja deletar o projeto de ${clientName}? Isso também deletará todo o histórico de diagnósticos.`)) {
+        if (!window.confirm(`Tem certeza que deseja excluir o projeto de ${clientName}?`)) {
             return;
         }
 
@@ -24,222 +94,168 @@ const AdminREIProjects = () => {
         try {
             await deleteReiProject(id);
             toast({
-                title: 'Projeto deletado',
-                description: `Projeto de ${clientName} foi removido com sucesso.`
+                title: 'Projeto excluído com sucesso',
+                description: `O projeto de ${clientName} foi removido.`,
             });
             refetch();
         } catch (error) {
             toast({
-                title: 'Erro ao deletar',
-                description: 'Não foi possível deletar o projeto. Tente novamente.',
-                variant: 'destructive'
+                title: 'Erro ao excluir projeto',
+                description: 'Ocorreu um erro ao tentar excluir o projeto.',
+                variant: 'destructive',
             });
         } finally {
             setDeleting(null);
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'active':
-                return (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-green-500/10 text-green-500 text-xs font-bold uppercase tracking-wider">
-                        <CheckCircle className="w-3 h-3" />
-                        Ativo
-                    </span>
-                );
-            case 'pending':
-                return (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-yellow-500/10 text-yellow-500 text-xs font-bold uppercase tracking-wider">
-                        <Clock className="w-3 h-3" />
-                        Pendente
-                    </span>
-                );
-            case 'overdue':
-                return (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm bg-red-500/10 text-red-500 text-xs font-bold uppercase tracking-wider">
-                        <AlertCircle className="w-3 h-3" />
-                        Atrasado
-                    </span>
-                );
-            default:
-                return null;
-        }
-    };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-revgreen" />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <Card className="bg-zinc-900 border-zinc-800 p-8 max-w-md">
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-center mb-2">Erro ao Carregar</h2>
-                    <p className="text-zinc-400 text-center text-sm mb-4">
-                        Não foi possível carregar os projetos REI.
-                    </p>
-                    <Button onClick={refetch} className="w-full btn-primary">
-                        Tentar Novamente
-                    </Button>
-                </Card>
-            </div>
-        );
-    }
 
     return (
-        <div className="min-h-screen bg-black text-white py-12 px-4">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-black uppercase tracking-wider mb-2">
-                            Projetos REI
-                        </h1>
-                        <p className="text-zinc-500 text-sm uppercase tracking-wider">
-                            Gerenciar diagnósticos trimestrais
-                        </p>
-                    </div>
-                    <Button asChild className="btn-green-flat">
-                        <Link to="/admin/rei/novo">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Novo Projeto
-                        </Link>
-                    </Button>
-                </div>
-
-                {/* Filtros */}
-                <div className="flex gap-2 mb-6">
-                    <Button
-                        variant={statusFilter === null ? 'default' : 'outline'}
-                        onClick={() => setStatusFilter(null)}
-                        className={statusFilter === null ? 'btn-green-flat' : 'btn-outline-flat'}
-                    >
-                        Todos ({projects.length})
-                    </Button>
-                    <Button
-                        variant={statusFilter === 'active' ? 'default' : 'outline'}
-                        onClick={() => setStatusFilter('active')}
-                        className={statusFilter === 'active' ? 'btn-green-flat' : 'btn-outline-flat'}
-                    >
-                        Ativos
-                    </Button>
-                    <Button
-                        variant={statusFilter === 'pending' ? 'default' : 'outline'}
-                        onClick={() => setStatusFilter('pending')}
-                        className={statusFilter === 'pending' ? 'btn-green-flat' : 'btn-outline-flat'}
-                    >
-                        Pendentes
-                    </Button>
-                    <Button
-                        variant={statusFilter === 'overdue' ? 'default' : 'outline'}
-                        onClick={() => setStatusFilter('overdue')}
-                        className={statusFilter === 'overdue' ? 'btn-green-flat' : 'btn-outline-flat'}
-                    >
-                        Atrasados
-                    </Button>
-                </div>
-
-                {/* Lista de Projetos */}
-                {projects.length === 0 ? (
-                    <Card className="bg-zinc-900 border-zinc-800 p-12 text-center">
-                        <AlertCircle className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-                        <h3 className="text-lg font-bold mb-2">Nenhum projeto encontrado</h3>
-                        <p className="text-zinc-500 text-sm mb-6">
-                            {statusFilter
-                                ? `Não há projetos com status "${statusFilter}".`
-                                : 'Comece criando um novo projeto REI.'}
-                        </p>
-                        <Button asChild className="btn-primary">
-                            <Link to="/admin/rei/novo">
-                                <Plus className="w-4 h-4 mr-2" />
-                                Criar Primeiro Projeto
-                            </Link>
-                        </Button>
-                    </Card>
-                ) : (
-                    <div className="grid gap-4">
-                        {projects.map((project) => (
-                            <Card
-                                key={project.id}
-                                className="bg-zinc-900 border-zinc-800 p-6 hover:border-revgreen/50 transition-colors"
+        <PageLayout>
+            <AdminPageLayout
+                title="Gestão de Onboarding Orquestrado"
+                description="Controle a jornada de 90 dias, diagnósticos REI e cronogramas estratégicos."
+                backTo="/admin"
+                backLabel="Voltar ao Hub"
+                actions={
+                    <div className="flex items-center gap-2">
+                        {selectedIds.length > 0 && (
+                            <Button
+                                onClick={handleBulkDelete}
+                                disabled={deleting === 'bulk'}
+                                variant="destructive"
+                                className="bg-red-600 hover:bg-red-700 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest mr-2"
                             >
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <h3 className="text-lg font-bold">{project.client_name}</h3>
-                                            {getStatusBadge(project.status)}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                            <div>
-                                                <p className="text-zinc-500 uppercase tracking-wider text-xs mb-1">
-                                                    Cliente
-                                                </p>
-                                                <p className="text-white">{project.client_email}</p>
-                                                {project.client_company && (
-                                                    <p className="text-zinc-400 text-xs">{project.client_company}</p>
-                                                )}
-                                            </div>
-
-                                            <div>
-                                                <p className="text-zinc-500 uppercase tracking-wider text-xs mb-1">
-                                                    Analista
-                                                </p>
-                                                <p className="text-white">{project.analyst_email}</p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-zinc-500 uppercase tracking-wider text-xs mb-1">
-                                                    Próximo REI
-                                                </p>
-                                                <p className="text-white">
-                                                    {format(new Date(project.next_rei_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                                                </p>
-                                                <p className="text-zinc-400 text-xs">
-                                                    {project.quarter} {project.year}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2 ml-4">
-                                        <Button
-                                            asChild
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-zinc-400 hover:text-revgreen hover:bg-revgreen/10"
-                                        >
-                                            <Link to={`/admin/rei/${project.id}`}>
-                                                <Pencil className="w-4 h-4" />
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleDelete(project.id, project.client_name)}
-                                            disabled={deleting === project.id}
-                                            className="text-zinc-400 hover:text-red-500 hover:bg-red-500/10"
-                                        >
-                                            {deleting === project.id ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                                <Trash2 className="w-4 h-4" />
-                                            )}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
+                                {deleting === 'bulk' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                Excluir ({selectedIds.length})
+                            </Button>
+                        )}
+                        <Button onClick={() => navigate('/admin/rei/novo')} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest">
+                            <Plus className="mr-2 h-4 w-4" /> Novo Projeto
+                        </Button>
                     </div>
-                )}
-            </div>
-        </div>
+                }
+            >
+                <div className="space-y-6">
+                    {/* Search and Filter */}
+                    <div className="flex items-center gap-4 bg-white border border-zinc-200 p-1">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                            <Input
+                                placeholder="Buscar projeto por cliente ou empresa..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 h-10 border-0 focus-visible:ring-0 rounded-none text-sm placeholder:text-zinc-400"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Table */}
+                    <div className="bg-white border border-zinc-200">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 transition-none">
+                                    <TableHead className="w-[50px] pl-6 py-4">
+                                        <Checkbox
+                                            checked={filteredProjects.length > 0 && selectedIds.length === filteredProjects.length}
+                                            onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                                        />
+                                    </TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Cliente</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Empresa</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Status</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Período</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4 text-right pr-6">Ações</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="h-32 text-center">
+                                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-zinc-400" />
+                                        </TableCell>
+                                    </TableRow>
+                                ) : filteredProjects && filteredProjects.length > 0 ? (
+                                    filteredProjects.map((project) => (
+                                        <TableRow
+                                            key={project.id}
+                                            className={`hover:bg-zinc-50/50 transition-all border-zinc-100 cursor-pointer ${selectedIds.includes(project.id) ? 'bg-zinc-50' : ''}`}
+                                            onClick={() => navigate(`/admin/jornada/${project.id}`)}
+                                        >
+                                            <TableCell className="pl-6 py-4" onClick={(e) => e.stopPropagation()}>
+                                                <Checkbox
+                                                    checked={selectedIds.includes(project.id)}
+                                                    onCheckedChange={(checked) => handleSelectOne(project.id, !!checked)}
+                                                />
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{project.client_name}</div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_company || '-'}</div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <span className={`text-[9px] font-black uppercase tracking-widest ${project.status === 'completed' ? 'text-revgreen' :
+                                                        project.status === 'pending' ? 'text-red-500' :
+                                                            project.status === 'active' || project.status === 'in_progress' ? 'text-blue-500' :
+                                                                'text-zinc-400'
+                                                    }`}>
+                                                    {project.status === 'completed' ? 'CONCLUÍDO' :
+                                                        project.status === 'pending' ? 'PENDENTE' :
+                                                            project.status === 'active' || project.status === 'in_progress' ? 'EM ANDAMENTO' : 'EM PAUSA'}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest">
+                                                    Q{project.quarter} / {project.year}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6 py-4" onClick={(e) => e.stopPropagation()}>
+                                                <div className="flex justify-end gap-1">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => navigate(`/admin/jornada/${project.id}`)}
+                                                        className="h-8 w-8 text-zinc-400 hover:text-revgreen hover:bg-zinc-50 rounded-none transition-all"
+                                                        title="Gerenciar Jornada"
+                                                    >
+                                                        <Zap className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => navigate(`/admin/rei/${project.id}`)}
+                                                        className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-50 rounded-none transition-all"
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleDelete(project.id, project.client_name)}
+                                                        className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-zinc-50 rounded-none transition-all"
+                                                        disabled={!!deleting}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="h-32 text-center text-zinc-400 text-xs uppercase tracking-widest">
+                                            Nenhum projeto encontrado.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+            </AdminPageLayout>
+        </PageLayout>
     );
 };
 

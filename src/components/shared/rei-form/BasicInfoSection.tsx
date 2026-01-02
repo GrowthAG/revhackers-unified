@@ -49,17 +49,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="whatsapp" className="text-white">WhatsApp *</Label>
-          <Input
-            id="whatsapp"
-            value={formData.whatsapp}
-            onChange={(e) => onChange('whatsapp', e.target.value)}
-            placeholder="(11) 99999-9999"
-            className="bg-gray-900 border-gray-700 text-white"
-            required
-          />
-        </div>
+
 
         <div className="space-y-2">
           <Label htmlFor="companyName" className="text-white">Nome da Empresa *</Label>

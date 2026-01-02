@@ -1,21 +1,14 @@
-import PageLayout from '@/components/layout/PageLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import CaseForm from '@/components/admin/CaseForm';
 
 const AdminCaseNew = () => {
     return (
-        <PageLayout>
-            <AdminPageLayout
-                title="Novo Case de Sucesso"
-                description="Adicione um novo case de sucesso."
-                backTo="/admin/cases"
-                backLabel="Voltar aos Cases"
-            >
-                <div className="max-w-5xl mx-auto">
-                    <CaseForm />
-                </div>
-            </AdminPageLayout>
-        </PageLayout>
+        <AdminLayout>
+            <div className="h-full">
+                <CaseForm />
+            </div>
+        </AdminLayout>
     );
 };
 

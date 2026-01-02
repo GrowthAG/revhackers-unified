@@ -4,15 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useToast } from '@/hooks/use-toast';
 import { saveFormData } from '@/utils/formStorage';
 import { useNavigate } from 'react-router-dom';
 
 interface ContactFormProps {
   formType?: 'diagnosis' | 'contact' | 'material';
+  variant?: 'light' | 'dark';
 }
 
-const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
+const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,11 +101,17 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const inputStyles = variant === 'dark'
+    ? "bg-black/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-revgreen focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium"
+    : "bg-white border-zinc-200 text-black placeholder:text-zinc-300 focus:border-black focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium";
+
+  const labelStyles = "text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Nome Completo</Label>
+          <Label htmlFor="name" className={labelStyles}>Nome Completo</Label>
           <Input
             id="name"
             type="text"
@@ -105,12 +119,12 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             required
-            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
+            className={`${inputStyles} h-12 rounded-none transition-all`}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Email Corporativo</Label>
+          <Label htmlFor="email" className={labelStyles}>Email Corporativo</Label>
           <Input
             id="email"
             type="email"
@@ -118,14 +132,14 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             required
-            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
+            className={`${inputStyles} h-12 rounded-none transition-all`}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="company" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Empresa</Label>
+          <Label htmlFor="company" className={labelStyles}>Empresa</Label>
           <Input
             id="company"
             type="text"
@@ -133,12 +147,12 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
             value={formData.company}
             onChange={(e) => handleInputChange('company', e.target.value)}
             required
-            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
+            className={`${inputStyles} h-12 rounded-none transition-all`}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Telefone / WhatsApp</Label>
+          <Label htmlFor="phone" className={labelStyles}>Telefone / WhatsApp</Label>
           <Input
             id="phone"
             type="tel"
@@ -146,75 +160,73 @@ const ContactForm = ({ formType = 'contact' }: ContactFormProps) => {
             value={formData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             required
-            className="bg-white border-zinc-200 h-12 text-black focus:border-black rounded-none placeholder:text-zinc-400"
+            className={`${inputStyles} h-12 rounded-none transition-all`}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="industry" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Segmento</Label>
-          <select
-            id="industry"
-            className="flex h-12 w-full rounded-none border border-zinc-200 bg-white px-3 py-2 text-sm text-black focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
-            value={formData.industry}
-            onChange={(e) => handleInputChange('industry', e.target.value)}
-            required
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1rem' }}
-          >
-            <option value="" disabled>Selecione seu segmento</option>
-            <option value="technology">Tecnologia / SaaS</option>
-            <option value="finance">Financeiro / Fintech</option>
-            <option value="health">Saúde / Healthtech</option>
-            <option value="education">Educação / Edtech</option>
-            <option value="retail">Varejo / E-commerce</option>
-            <option value="manufacturing">Indústria</option>
-            <option value="services">Serviços B2B</option>
-            <option value="consulting">Consultoria</option>
-            <option value="other">Outro</option>
-          </select>
+          <Label className={labelStyles}>Segmento</Label>
+          <Select onValueChange={(value) => handleInputChange('industry', value)}>
+            <SelectTrigger className={`flex h-12 w-full items-center justify-between rounded-none px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50 ${inputStyles}`}>
+              <SelectValue placeholder="Selecione seu segmento" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-zinc-200">
+              <SelectItem value="technology">Tecnologia / SaaS</SelectItem>
+              <SelectItem value="finance">Financeiro / Fintech</SelectItem>
+              <SelectItem value="health">Saúde / Healthtech</SelectItem>
+              <SelectItem value="education">Educação / Edtech</SelectItem>
+              <SelectItem value="retail">Varejo / E-commerce</SelectItem>
+              <SelectItem value="manufacturing">Indústria</SelectItem>
+              <SelectItem value="services">Serviços B2B</SelectItem>
+              <SelectItem value="consulting">Consultoria</SelectItem>
+              <SelectItem value="other">Outro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="role" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Cargo</Label>
-          <select
-            id="role"
-            className="flex h-12 w-full rounded-none border border-zinc-200 bg-white px-3 py-2 text-sm text-black focus-visible:outline-none focus:border-black disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
-            value={formData.role}
-            onChange={(e) => handleInputChange('role', e.target.value)}
-            required
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1rem' }}
-          >
-            <option value="" disabled>Selecione seu cargo</option>
-            <option value="ceo">C-Level / Fundador</option>
-            <option value="vp">VP / Diretor</option>
-            <option value="manager">Gerente / Coordenador</option>
-            <option value="analyst">Analista / Especialista</option>
-            <option value="other">Outro</option>
-          </select>
+          <Label className={labelStyles}>Cargo</Label>
+          <Select onValueChange={(value) => handleInputChange('role', value)}>
+            <SelectTrigger className={`flex h-12 w-full items-center justify-between rounded-none px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50 ${inputStyles}`}>
+              <SelectValue placeholder="Selecione seu cargo" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-zinc-200">
+              <SelectItem value="ceo">C-Level / Fundador</SelectItem>
+              <SelectItem value="vp">VP / Diretor</SelectItem>
+              <SelectItem value="manager">Gerente / Coordenador</SelectItem>
+              <SelectItem value="analyst">Analista / Especialista</SelectItem>
+              <SelectItem value="other">Outro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-zinc-700">Como podemos ajudar?</Label>
+        <Label htmlFor="message" className={labelStyles}>Como podemos ajudar?</Label>
         <Textarea
           id="message"
           placeholder="Descreva brevemente seus desafios atuais..."
           value={formData.message}
           onChange={(e) => handleInputChange('message', e.target.value)}
-          className="bg-white border-zinc-200 min-h-[120px] text-black focus:border-black rounded-none placeholder:text-zinc-400"
+          className={`${inputStyles} min-h-[120px] rounded-none py-3`}
         />
       </div>
 
       <Button
         type="submit"
-        className="w-full bg-black hover:bg-zinc-900 text-white font-bold h-14 rounded-none transition-all uppercase tracking-widest text-xs"
+        className={`w-full font-black h-14 rounded-none transition-all uppercase tracking-[0.2em] text-[10px] shadow-none ${variant === 'dark'
+          ? "bg-revgreen text-black hover:bg-revgreen/90"
+          : "bg-black text-white hover:bg-zinc-900 border border-black"
+          }`}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Enviando...' : formType === 'diagnosis' ? 'Agendar Diagnóstico' : 'Solicitar Contato'}
+        {isSubmitting ? 'Enviando...' : formType === 'diagnosis' ? 'Agendar Diagnóstico' : 'Solicitar Aprovação'}
       </Button>
     </form>
   );
 };
 
 export default ContactForm;
+

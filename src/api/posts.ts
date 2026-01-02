@@ -33,7 +33,7 @@ export const getAllPosts = async (): Promise<BlogPostWithAuthor[]> => {
         author: {
             name: post.author_name || "Equipe RevHackers",
             role: post.author_role || "Expert",
-            avatar: post.author_avatar || "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+            avatar: post.author_avatar || "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
         }
     }));
 };
@@ -60,7 +60,7 @@ export const getPostBySlug = async (slug: string): Promise<BlogPostWithAuthor | 
         author: {
             name: data.author_name || "Equipe RevHackers",
             role: data.author_role || "Expert",
-            avatar: data.author_avatar || "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+            avatar: data.author_avatar || "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
         }
     };
 };

@@ -7,10 +7,10 @@
 @layer base {
   :root {
     /* Aggressive Editorial Palette */
-    --background: 0 0% 0%;
-    /* Pure Black */
-    --foreground: 0 0% 100%;
+    --background: 0 0% 100%;
     /* Pure White */
+    --foreground: 0 0% 0%;
+    /* Pure Black */
 
     --primary: 134 98% 50%;
     /* Signal Green #03FC3B */
@@ -34,7 +34,7 @@
   }
 
   body {
-    @apply bg-black text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
+    @apply bg-white text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -180,9 +180,7 @@ p {
 /* IMPORTANT: Override back to white for Dark Sections to prevent illegibility */
 .section-dark p,
 .bg-black p,
-.text-white p,
-.text-gray-300,
-.text-gray-400 {
+.text-white p {
   color: inherit !important;
   /* Allows dark themes to work while keeping the global 'p' dark for white sections */
 }

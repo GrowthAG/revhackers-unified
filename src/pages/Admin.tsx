@@ -1,152 +1,200 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import PageLayout from '@/components/layout/PageLayout';
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FileText, Users, Settings, ArrowRight, Loader2, Trophy, Download, LayoutDashboard } from "lucide-react";
-import { supabase } from '@/integrations/supabase/client';
-import { motion } from 'framer-motion';
+import AdminLayout from '@/components/layout/AdminLayout';
+import { useReiProjects } from '@/hooks/useReiProjects';
+import {
+  LayoutDashboard,
+  ArrowUpRight,
+  Plus,
+  Folder,
+  Clock,
+  CheckCircle2,
+  Loader2,
+  MoreHorizontal
+} from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 const Admin = () => {
-  const { user, userProfile, isLoading } = useAuth();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
+  const { projects, loading } = useReiProjects();
   const [firstName, setFirstName] = useState<string>('');
 
   useEffect(() => {
     if (userProfile?.full_name) {
-      const first = userProfile.full_name.split(' ')[0];
-      setFirstName(first);
+      setFirstName(userProfile.full_name.split(' ')[0]);
     } else if (user?.email) {
-      const emailName = user.email.split('@')[0];
-      setFirstName(emailName);
+      setFirstName(user.email.split('@')[0]);
     }
   }, [user, userProfile]);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-300" />
+      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center">
+        <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
       </div>
     );
   }
 
-  const menuItems = [
-    {
-      title: "Blog Posts",
-      description: "Gerencie artigos, categorias e autores do blog.",
-      icon: FileText,
-      link: "/admin/posts",
-    },
-    {
-      title: "Materiais Ricos",
-      description: "Ebooks, planilhas e whitepapers para download.",
-      icon: Download,
-      link: "/admin/materials",
-    },
-    {
-      title: "Cases de Sucesso",
-      description: "Histórias de clientes e resultados alcançados.",
-      icon: Trophy,
-      link: "/admin/cases",
-    },
-    {
-      title: "REI",
-      description: "Revenue Intelligence Hub",
-      icon: LayoutDashboard,
-      link: "/rei-hub",
-    }
-  ];
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemAnim = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  // Metrics
+  const activeProjects = projects?.filter(p => p.status === 'active').length || 0;
+  const completedProjects = projects?.filter(p => p.status === 'completed').length || 0;
+  const pendingProjects = projects?.filter(p => p.status === 'pending').length || 0;
+  const totalProjects = projects?.length || 0;
+  const operationalProjects = projects?.filter(p => p.status !== 'completed' && p.status !== 'archived') || [];
 
   return (
-    <PageLayout>
-      <div className="min-h-screen bg-white pt-40 pb-20 relative overflow-hidden">
-        {/* Decorative Background Elements */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
+    <AdminLayout>
+      <div className="min-h-screen bg-[#F5F5F7] font-sans selection:bg-zinc-200">
+        <div className="max-w-[1600px] mx-auto p-6 lg:p-12 space-y-12">
 
-        <div className="container-custom max-w-6xl mx-auto relative z-10">
-
-          {/* Header - Clean & Minimalist */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-black/10 pb-8">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black text-black tracking-tighter uppercase leading-none">
-                Admin<span className="text-zinc-400">Hub</span>
+          {/* Header */}
+          <header className="flex items-end justify-between">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+                Dashboard
               </h1>
-              <p className="text-zinc-400 text-sm font-medium mt-4 tracking-wide">
-                Central de gerenciamento
+              <p className="text-[13px] text-zinc-500 font-medium">
+                Visão geral da operação e projetos ativos.
               </p>
             </div>
-            <div className="flex flex-col items-end mt-6 md:mt-0">
-              <p className="text-right text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400 mb-1">
-                Logado como
-              </p>
-              <p className="text-xl font-bold text-black border-l-2 border-revgreen pl-4">
-                {firstName}
-              </p>
-            </div>
+            <Button
+              onClick={() => navigate('/admin/rei/novo')}
+              className="bg-zinc-900 hover:bg-black text-white h-9 px-4 text-[12px] font-medium rounded-lg shadow-sm transition-all"
+            >
+              <Plus className="w-3.5 h-3.5 mr-2" />
+              Novo Projeto
+            </Button>
+          </header>
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <MetricCard
+              label="Projetos Totais"
+              value={totalProjects}
+              icon={Folder}
+            />
+            <MetricCard
+              label="Em Execução"
+              value={activeProjects}
+              icon={Clock}
+              highlight
+            />
+            <MetricCard
+              label="Kickoff / Setup"
+              value={pendingProjects}
+              icon={ArrowUpRight}
+            />
+            <MetricCard
+              label="Concluídos"
+              value={completedProjects}
+              icon={CheckCircle2}
+            />
           </div>
 
-          {/* Grid Layout with Motion */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
-          >
-            {menuItems.map((item, index) => (
-              <motion.div
-                key={index}
-                variants={itemAnim}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.98 }}
-                className="group bg-white p-10 md:p-14 relative cursor-pointer border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm"
-                onClick={() => navigate(item.link)}
-              >
-                {/* Hover Border Effect replaced by standard border transition for simpler motion compatibility */}
+          {/* Main Content Area */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-[13px] font-semibold text-zinc-900 uppercase tracking-wider">
+                Projetos Recentes
+              </h2>
+            </div>
 
-                <div className="flex justify-between items-start mb-12">
-                  <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300">
-                    <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <span className="text-xs font-bold text-zinc-200 group-hover:text-black transition-colors">
-                    0{index + 1}
-                  </span>
+            {operationalProjects.length > 0 ? (
+              <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] border border-zinc-200/60 overflow-hidden">
+                <div className="grid grid-cols-1 divide-y divide-zinc-100">
+                  {operationalProjects.map((project) => (
+                    <ProjectRow key={project.id} project={project} navigate={navigate} />
+                  ))}
                 </div>
+              </div>
+            ) : (
+              <EmptyState navigate={navigate} />
+            )}
+          </div>
 
-                <div className="relative">
-                  <h3 className="text-2xl md:text-3xl font-black text-black uppercase tracking-tight mb-3 group-hover:translate-x-1 transition-transform duration-300">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed max-w-xs group-hover:text-zinc-600 transition-colors">
-                    {item.description}
-                  </p>
-
-                  {/* Action Link visual */}
-                  <div className="absolute top-[2px] right-[-20px] opacity-0 group-hover:opacity-100 group-hover:right-0 transition-all duration-300">
-                    <ArrowRight className="w-5 h-5 text-black" />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </div>
-    </PageLayout>
+    </AdminLayout>
   );
 };
+
+// --- Subcomponents ---
+
+const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
+  <div className="bg-white p-5 rounded-xl border border-zinc-200/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between h-32 group hover:border-zinc-300/80 transition-all">
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{label}</span>
+      <Icon className={`w-4 h-4 ${highlight ? 'text-zinc-900' : 'text-zinc-300'}`} />
+    </div>
+    <div className="flex items-baseline gap-2">
+      <span className="text-3xl font-semibold tracking-tight text-zinc-900">{value}</span>
+      {highlight && value > 0 && <span className="flex h-2 w-2 rounded-full bg-green-500 mb-2 animate-pulse" />}
+    </div>
+  </div>
+);
+
+const ProjectRow = ({ project, navigate }: any) => (
+  <div
+    onClick={() => navigate(`/admin/rei/${project.id}`)}
+    className="group flex items-center justify-between p-4 hover:bg-zinc-50/80 transition-colors cursor-pointer"
+  >
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-500 group-hover:bg-white group-hover:shadow-sm group-hover:text-zinc-900 transition-all border border-transparent group-hover:border-zinc-200">
+        <Folder className="w-5 h-5" />
+      </div>
+      <div>
+        <h3 className="text-[13px] font-bold text-black">{project.client_name || 'Projeto sem nome'}</h3>
+        <p className="text-[11px] text-black font-bold mt-0.5 flex items-center gap-1.5 opacity-60">
+          {project.status === 'active' ? (
+            <span className="inline-flex items-center gap-1 text-black font-black">
+              <span className="w-1.5 h-1.5 rounded-full bg-revgreen" /> Em Execução
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-black/40">
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-300" /> Pendente
+            </span>
+          )}
+          <span className="text-zinc-300">•</span>
+          <span>Q{project.quarter}/{project.year}</span>
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+      <Button
+        variant="ghost"
+        onClick={(e) => { e.stopPropagation(); navigate(`/admin/jornada/${project.id}`); }}
+        className="h-8 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50"
+      >
+        Ver Jornada
+      </Button>
+      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900">
+        <MoreHorizontal className="w-4 h-4" />
+      </Button>
+    </div>
+  </div>
+);
+
+const EmptyState = ({ navigate }: any) => (
+  <div className="bg-white rounded-xl border border-dashed border-zinc-200 p-12 flex flex-col items-center justify-center text-center">
+    <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center mb-4">
+      <Folder className="w-6 h-6 text-zinc-300" />
+    </div>
+    <h3 className="text-sm font-semibold text-zinc-900 mb-1">Sem projetos ativos</h3>
+    <p className="text-[12px] text-zinc-500 max-w-xs mx-auto mb-6">
+      Comece criando um novo projeto para gerenciar o onboarding e ciclo de vida do cliente.
+    </p>
+    <Button
+      variant="outline"
+      onClick={() => navigate('/admin/rei/novo')}
+      className="bg-white border-2 border-zinc-100 text-black hover:bg-black hover:text-white shadow-sm h-10 px-6 text-[11px] font-black uppercase tracking-widest rounded-none transition-all"
+    >
+      Iniciar Primeiro Projeto
+    </Button>
+  </div>
+);
 
 export default Admin;

@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Target, Share2, ArrowRight, Zap, TrendingUp, BarChart2 } from 'lucide-react';
+import { Target, Share2, ArrowRight, Zap, TrendingUp, BarChart2, Loader2, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { generateReiPdf } from '@/utils/pdfGenerator';
 
 interface RadarData {
     label: string;
@@ -8,18 +11,21 @@ interface RadarData {
 }
 
 interface DashboardProps {
-    type: 'FOUNDER' | 'DEV' | 'CONSULTING';
+    type: 'FOUNDER' | 'DEV' | 'CONSULTING' | 'FUNNEL' | 'SITE';
     score: number;
     radarData: RadarData[];
     insights: string[];
     onAction: () => void;
+    clientName?: string; // Optional context for filename
 }
 
 const RadarChart = ({ data }: { data: RadarData[] }) => {
     const center = 100;
     const scale = 0.8;
-    const points = data.map((d, i) => {
-        const angle = (Math.PI * 2 * i) / data.length - Math.PI / 2;
+    const safeData = Array.isArray(data) ? data : [];
+
+    const points = safeData.map((d, i) => {
+        const angle = (Math.PI * 2 * i) / safeData.length - Math.PI / 2;
         const r = (d.value / 100) * 100 * scale;
         return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
     }).join(" ");
@@ -29,11 +35,11 @@ const RadarChart = ({ data }: { data: RadarData[] }) => {
             <svg viewBox="0 0 200 200" className="w-[200px] h-[200px] overflow-visible">
                 {/* Grid */}
                 {[20, 40, 60, 80, 100].map(r => (
-                    <circle key={r} cx={100} cy={100} r={r * scale} fill="none" stroke="#e4e4e7" strokeDasharray="2 2" />
+                    <circle key={r} cx={100} cy={100} r={r * scale} fill="none" stroke="#d4d4d8" strokeDasharray="2 2" />
                 ))}
                 {/* Axes */}
-                {data.map((_, i) => {
-                    const angle = (Math.PI * 2 * i) / data.length - Math.PI / 2;
+                {safeData.map((_, i) => {
+                    const angle = (Math.PI * 2 * i) / safeData.length - Math.PI / 2;
                     return (
                         <line
                             key={i}
@@ -41,7 +47,7 @@ const RadarChart = ({ data }: { data: RadarData[] }) => {
                             y1={100}
                             x2={100 + 100 * scale * Math.cos(angle)}
                             y2={100 + 100 * scale * Math.sin(angle)}
-                            stroke="#e4e4e7"
+                            stroke="#d4d4d8"
                         />
                     )
                 })}
@@ -56,8 +62,8 @@ const RadarChart = ({ data }: { data: RadarData[] }) => {
                     transition={{ duration: 1, ease: "easeOut" }}
                 />
                 {/* Labels */}
-                {data.map((d, i) => {
-                    const angle = (Math.PI * 2 * i) / data.length - Math.PI / 2;
+                {safeData.map((d, i) => {
+                    const angle = (Math.PI * 2 * i) / safeData.length - Math.PI / 2;
                     const r = 105 * scale + 20;
                     const x = 100 + r * Math.cos(angle);
                     const y = 100 + r * Math.sin(angle);
@@ -82,8 +88,31 @@ const RadarChart = ({ data }: { data: RadarData[] }) => {
     )
 }
 
-const ReiDashboard = ({ type, score, radarData, insights, onAction }: DashboardProps) => {
-    const content = {
+const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName = "Report" }: DashboardProps) => {
+    const { toast } = useToast();
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleExportPdf = async () => {
+        setIsExporting(true);
+        try {
+            await generateReiPdf('rei-dashboard-content', `REI_Result_${clientName}_${type}`);
+            toast({
+                title: "PDF Gerado!",
+                description: "O download deve começar em instantes.",
+                className: "bg-black text-white border-zinc-800"
+            });
+        } catch (error) {
+            toast({
+                title: "Erro ao gerar PDF",
+                description: "Tente novamente mais tarde.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const contentMap = {
         FOUNDER: {
             label: "Founder Ledger",
             title: "Painel de Autoridade",
@@ -103,66 +132,107 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction }: DashboardP
             title: "Raio-X de Receita",
             scoreLabel: "Revenue Score",
             icon: <TrendingUp className="w-3 h-3" />,
-            cta: "Agendar Análise de ROI"
+            cta: "Agendar Planejamento Estratégico"
+        },
+        FUNNEL: {
+            label: "Sales Machine",
+            title: "Funnels & Automação",
+            scoreLabel: "Eficiência Comercial",
+            icon: <Zap className="w-3 h-3" />,
+            cta: "Ver Estrutura de Funis"
+        },
+        SITE: {
+            label: "Tech Check",
+            title: "Performance Digital",
+            scoreLabel: "Site Score",
+            icon: <Globe className="w-3 h-3" />,
+            cta: "Ver Relatório de Tech"
         }
-    }[type];
+    };
+
+    const content = contentMap[type as keyof typeof contentMap] || contentMap.CONSULTING;
 
     return (
         <motion.div
+            id="rei-dashboard-content"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white border border-zinc-200 rounded-none p-8"
         >
             <div className="flex flex-col md:flex-row justify-between items-start mb-12 border-b border-zinc-200 pb-8">
                 <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-zinc-100 border border-zinc-200 text-black text-[10px] uppercase tracking-[0.3em] mb-4 font-bold">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-black text-white text-[10px] uppercase tracking-[0.3em] mb-4 font-bold">
                         {content.icon} {content.label}
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-2 uppercase">
+                    <h1 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-2">
                         {content.title}
                     </h1>
-                    <p className="text-zinc-500 text-sm">Análise baseada no seu perfil e objetivos.</p>
+                    <p className="text-zinc-500 text-sm">Análise de maturidade e potencial de crescimento.</p>
                 </div>
                 <div className="text-right mt-6 md:mt-0">
                     <div className="text-[10px] text-zinc-500 uppercase mb-1 tracking-[0.3em] font-bold">{content.scoreLabel}</div>
-                    <div className="text-6xl font-black text-black">{score}<span className="text-2xl text-zinc-400">/100</span></div>
+                    <div className="text-7xl font-black text-black tracking-tighter">{score}<span className="text-2xl text-zinc-300 font-light">/100</span></div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                 {/* Left: Radar */}
-                <div className="bg-zinc-50 rounded-none p-8 border border-zinc-200 flex flex-col items-center justify-center relative min-h-[300px]">
-                    <h3 className="absolute top-6 left-6 text-[10px] text-zinc-500 uppercase tracking-[0.3em] font-bold">Matriz de Performance</h3>
+                <div className="bg-white rounded-none p-8 border border-zinc-100 shadow-sm flex flex-col items-center justify-center relative min-h-[350px]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black via-zinc-500 to-zinc-200" />
+                    <h3 className="absolute top-6 left-6 text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">Matriz de Performance</h3>
                     <RadarChart data={radarData} />
                 </div>
 
                 {/* Right: Insights */}
-                <div className="space-y-6">
-                    <h3 className="text-xl font-black text-black flex items-center gap-2 uppercase tracking-wide">
-                        <Target className="w-5 h-5 text-black" /> Insights Estratégicos
-                    </h3>
+                <div className="space-y-8">
+                    <div>
+                        <h3 className="text-lg font-black text-black flex items-center gap-2 tracking-wide mb-6 uppercase border-b border-black pb-2 w-max">
+                            <Target className="w-4 h-4 text-black" /> Diagnóstico Estratégico
+                        </h3>
 
-                    <div className="space-y-4">
-                        {insights.map((insight: string, idx: number) => (
-                            <div key={idx} className="p-4 bg-zinc-50 border-l-2 border-black rounded-none text-zinc-700 text-sm leading-relaxed">
-                                {insight}
-                            </div>
-                        ))}
+                        <div className="space-y-4">
+                            {insights.map((insight: string, idx: number) => (
+                                <div key={idx} className="group p-5 bg-zinc-50 hover:bg-white border hover:border-black transition-all duration-300 border-l-4 border-l-black rounded-sm">
+                                    <p className="text-zinc-800 text-sm leading-relaxed font-medium">
+                                        {insight}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="pt-8 mt-8 border-t border-zinc-200">
-                        <h3 className="text-xl font-black text-black mb-4 uppercase tracking-wide">Próximos Passos</h3>
-                        <p className="text-zinc-600 mb-6 text-sm">
-                            Com base na sua pontuação <strong>{score}</strong>, preparamos um plano de ação imediato.
-                        </p>
+                    <div className="pt-8 border-t border-zinc-100">
                         <div className="flex gap-4">
-                            <Button onClick={onAction} className="bg-black hover:bg-zinc-800 text-white flex-1 rounded-none h-12 text-xs uppercase tracking-wider font-bold">
+                            <Button onClick={onAction} className="bg-revgreen hover:bg-emerald-400 text-black flex-1 rounded-sm h-14 text-xs uppercase tracking-widest font-black transition-all hover:scale-[1.02]">
                                 {content.cta} <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
-                            <Button variant="outline" className="border-zinc-200 text-black hover:bg-zinc-50 rounded-none h-12 w-12 p-0">
-                                <Share2 className="w-4 h-4" />
+                            <Button
+                                onClick={handleExportPdf}
+                                disabled={isExporting}
+                                variant="outline"
+                                className="border-zinc-200 text-zinc-500 hover:text-black hover:border-black rounded-sm h-14 px-6 uppercase text-[10px] tracking-widest font-bold"
+                            >
+                                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4 mr-2" />}
+                                {isExporting ? "Gerando..." : "Exportar PDF"}
                             </Button>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div className="mt-20 pt-20 border-t border-zinc-100">
+                <h3 className="text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold mb-10">Premissas Alinhadas</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="p-6 bg-zinc-50 border border-zinc-100">
+                        <h4 className="text-xs font-black uppercase tracking-widest mb-3">Maturidade & Escala</h4>
+                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Foco em eficiência operacional e processos que permitem dobrar o volume sem dobrar o custo.</p>
+                    </div>
+                    <div className="p-6 bg-zinc-50 border border-zinc-100">
+                        <h4 className="text-xs font-black uppercase tracking-widest mb-3">Tecnologia & Dados</h4>
+                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Decisões baseadas em evidências. Stack integrada para visibilidade total do pipeline.</p>
+                    </div>
+                    <div className="p-6 bg-zinc-50 border border-zinc-100">
+                        <h4 className="text-xs font-black uppercase tracking-widest mb-3">Velocidade de Execução</h4>
+                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Framework ágil de testes e iteração. Sprints de 15 dias para validação de hipóteses.</p>
                     </div>
                 </div>
             </div>

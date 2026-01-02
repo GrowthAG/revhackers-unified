@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const bldnDigitalData: PartnerData = {
   name: "BLDN Digital",
-  logo: "/lovable-uploads/116d453a-7ffe-43a3-bcc4-aeac34c74bd4.png",
+  logo: "/uploads/116d453a-7ffe-43a3-bcc4-aeac34c74bd4.png",
   coverImage: "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a",
   category: "Marketing Digital",
   description: "Agência especializada em estratégias digitais inovadoras para empresas que buscam crescimento exponencial e presença online diferenciada.",

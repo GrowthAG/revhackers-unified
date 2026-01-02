@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const enicsData: PartnerData = {
   name: "ENICS",
-  logo: "/lovable-uploads/d3fb7069-d98b-48fe-a6b6-64c0ea6636f8.png",
+  logo: "/uploads/d3fb7069-d98b-48fe-a6b6-64c0ea6636f8.png",
   coverImage: "https://images.unsplash.com/photo-1511578314322-379afb476865",
   category: "Eventos",
   description: "Empresa organizadora de eventos corporativos e educacionais de grande porte, especializada em experiências imersivas e interativas.",

@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const toeflData: PartnerData = {
   name: "TOEFL Junior Brasil",
-  logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
+  logo: "/uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png",
   coverImage: "https://images.unsplash.com/photo-1503428593586-e225b39bddfe",
   category: "Educação - Idiomas",
   description: "Certificação internacional de proficiência em inglês reconhecida por instituições acadêmicas e empresas em todo o mundo.",

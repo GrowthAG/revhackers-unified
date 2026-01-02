@@ -4,7 +4,7 @@ import { CaseStudy } from './index';
 export const emagrecentroCase: CaseStudy = {
   title: "Emagrecentro",
   category: "Saúde",
-  logo: "/lovable-uploads/emagrecentro-logo-new.png",
+  logo: "/uploads/emagrecentro-logo-new.png",
   coverImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop",
   challenge: "O Emagrecentro, rede de franquias de emagrecimento e estética, enfrentava um desafio crítico na captação de novos clientes:\n\n(1) Alto volume de leads de mídia paga, mas baixa qualificação e conversão;\n\n(2) Ausência de um funil de vendas estruturado - leads eram perdidos por falta de follow-up;\n\n(3) Sem visibilidade do pipeline - impossível prever receita ou identificar gargalos.\n\nO mercado de emagrecimento é altamente competitivo, com CAC elevado e ciclo de vendas sensível ao timing.",
   solution: "Implementamos uma transformação completa da operação comercial:\n\n(1) Funil de Vendas Estruturado: mapeamento de jornada do lead, criação de 5 estágios (Lead → Qualificado → Consulta Agendada → Proposta → Fechamento) com critérios claros de passagem;\n\n(2) CRM com Lead Scoring: implementação de Kommo CRM com scoring automático baseado em comportamento (abertura de emails, cliques, engajamento), priorizando leads quentes;\n\n(3) Automações de Vendas: sequências de nutrição via email/WhatsApp, recuperação automática de propostas abandonadas, follow-up pós-consulta;\n\n(4) Mídia Paga Otimizada: reestruturação de campanhas Meta Ads e Google Ads com segmentação por dor específica (emagrecimento pós-parto, obesidade, estética), reduzindo CPL em 35%.",

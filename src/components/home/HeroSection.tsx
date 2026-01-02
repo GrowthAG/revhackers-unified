@@ -9,32 +9,30 @@ const HeroSection = () => {
   };
 
   return (
-    <Section variant="dark" className="relative pt-24 pb-20 md:pt-32 md:pb-32 min-h-[90vh] flex flex-col justify-center items-center border-b border-white/10 overflow-hidden">
+    <Section variant="dark" className="relative pt-32 pb-20 md:pt-48 md:pb-32 min-h-[90vh] flex flex-col justify-center items-center border-b border-white/10 overflow-hidden">
 
       {/* Modern Hacker Aesthetic Background */}
       <ModernTechnicalBackground />
 
-      <div className="container-custom flex flex-col items-center text-center max-w-5xl relative z-10">
+      <div className="w-full px-4 flex flex-col items-center text-center relative z-10">
 
         {/* Badge - Intelligent Positioning - UPDATED TEXT */}
         {/* Badge - Premium Corporate Style (No Vibe Code) */}
         <div className="mb-8 flex items-center justify-center animate-fade-in">
-          <span className="text-xs md:text-sm font-medium text-white tracking-wide">
-            Consultoria Especializada em Revenue B2B
+          <span className="text-xs md:text-sm font-medium text-white tracking-wide uppercase px-3 py-1 rounded-full bg-white/5 border border-white/10">
+            Estratégia Inovadora de Inbound + IA CRM e Automações
           </span>
         </div>
 
-        {/* Headline - Reduced Size from 8xl/7xl to 6xl/7xl for better balance */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-[1.1] tracking-tight">
-          <span className="block md:inline">Sua Estratégia B2B</span>{" "}
-          <br className="hidden md:block" />
-          <span className="text-zinc-500 block md:inline">Precisa de Inteligência.</span>
+        {/* Headline - Strictly 2 lines V5 */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-[1.1] tracking-tight w-full max-w-[90rem] mx-auto">
+          <span className="md:whitespace-nowrap">Aumente suas Conversões em +10x</span> <br className="hidden md:block" />
+          <span className="text-revgreen md:whitespace-nowrap">e Reduza Custos de Marketing e Vendas.</span>
         </h1>
 
-        {/* Subheadline - Keeping same logic */}
-        <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl leading-relaxed font-light text-balance">
-          Gerar demanda não é sorte. É <span className="text-white">Engenharia de Receita</span>.
-          Unificamos <span className="text-white">CRO, Automação e Mídia Paga</span> para transformar operações caóticas em sistemas previsíveis.
+        {/* Subheadline - Stronger synergy, no generic science */}
+        <p className="text-lg md:text-xl text-zinc-200 mb-12 max-w-5xl leading-relaxed font-light text-balance">
+          Atraia <strong className="text-white font-medium">12x mais leads qualificados</strong> prontos para comprar. Reduza o tempo de atendimento para menos de 10 minutos e aumente sua conversão em até <strong className="text-white font-medium">100x</strong> com Chatbot IA.
         </p>
 
         {/* Buttons - Centered */}
@@ -44,15 +42,15 @@ const HeroSection = () => {
             onClick={scrollToTop}
             className="btn-green-flat inline-flex items-center justify-center min-w-[200px]"
           >
-            Diagnóstico Estratégico
+            Diagnóstico Grátis
           </Link>
 
           <Link
-            to="/metodologia"
+            to="/quem-somos"
             onClick={scrollToTop}
             className="btn-outline-flat inline-flex items-center justify-center min-w-[200px]"
           >
-            Ver Nossa Metodologia
+            Conheça a RevHackers
           </Link>
         </div>
 

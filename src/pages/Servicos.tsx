@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Section from '@/components/ui/Section';
 import { ArrowUpRight, Cpu, Database, LayoutTemplate, LineChart, MessageSquareCode, Search, Zap } from 'lucide-react';
+import SEO from '@/components/shared/SEO';
 
 const capabilities = [
   {

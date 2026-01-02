@@ -4,7 +4,7 @@ import { CaseStudy } from './index';
 export const lindoyaCase: CaseStudy = {
     title: "Lindoya Thermal",
     category: "Ecommerce",
-    logo: "/lovable-uploads/lindoya-logo.png",
+    logo: "/uploads/lindoya-logo.png",
     coverImage: "/images/cases/covers/lindoya-cover.jpg",
     challenge: "A Lindoya, marca tradicional de águas minerais, precisava lançar e escalar as vendas diretas ao consumidor (DTC) de sua linha de dermocosméticos Lindoya Thermal. O desafio era triplo: criar um canal de vendas digital do zero, competir em um mercado saturado de dermocosméticos e gerar tráfego qualificado sem depender apenas de mídia paga. Precisavam de uma estratégia sustentável que combinasse tráfego orgânico e pago.",
     solution: "Implementamos uma estratégia completa de 'Máquina de Vendas' para ecommerce em 4 frentes: (1) SEO e Conteúdo: otimização técnica do site, criação de blog com artigos sobre cuidados com a pele e águas termais, link building; (2) Tráfego Pago: campanhas de Google Ads (Search e Shopping) e Meta Ads segmentadas por interesse em dermocosméticos; (3) Funil de Vendas: estruturação de jornada do cliente com páginas otimizadas para conversão; (4) Automações: recuperação de carrinho, pós-venda e recompra via Klaviyo.",

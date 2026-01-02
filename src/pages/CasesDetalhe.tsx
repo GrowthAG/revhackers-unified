@@ -101,73 +101,59 @@ const CasesDetalhe = () => {
         canonical={`https://revhackers.com/cases/${slug}`}
       />
 
-      <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-24 pb-20 overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0"
-          >
-            {caseData.coverImage && (
-              <img
-                src={caseData.coverImage}
-                alt=""
-                className="w-full h-full object-cover blur-xl scale-110 opacity-60"
-              />
-            )}
-          </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
-          <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+      <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-32 pb-24 overflow-hidden bg-white">
+        <div className="absolute inset-0 z-0 opacity-40">
+          {/* Subtle gradient instead of noise */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-50 via-white to-white"></div>
         </div>
 
         <div className="container-custom flex flex-col items-center text-center max-w-6xl relative z-10">
-          <Link to="/cases" className="absolute top-0 left-0 text-zinc-400 hover:text-white flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors mb-8 md:mb-0 md:static self-start md:self-center">
-            <ArrowLeft className="w-4 h-4" /> Voltar para Cases
+          <Link to="/cases" className="absolute top-0 left-0 text-zinc-400 hover:text-black flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-colors mb-8 md:mb-0 md:static self-start md:self-center bg-zinc-50 px-4 py-2 rounded-full border border-zinc-100">
+            <ArrowLeft className="w-3 h-3" /> Voltar para Cases
           </Link>
 
-          <header className="max-w-5xl pt-8 w-full mt-8">
+          <header className="max-w-5xl pt-12 w-full mt-8">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-10">
                 {caseData.logo ? (
                   <img
                     src={caseData.logo}
                     alt={`${caseData.title} Logo`}
-                    className="h-12 md:h-16 w-auto object-contain brightness-0 invert opacity-90"
+                    className="h-16 md:h-20 w-auto object-contain" // Removed brightness-0 invert
                   />
                 ) : (
-                  <span className="text-2xl font-bold text-white">{caseData.title}</span>
+                  <span className="text-3xl font-bold text-black tracking-tighter">{caseData.title}</span>
                 )}
               </div>
 
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-                <Badge variant="outline" className="bg-revgreen/10 text-revgreen border-revgreen/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest h-fit">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">
                   {caseData.category}
-                </Badge>
+                </span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight tracking-tight text-balance max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-black mb-8 leading-tight tracking-tighter text-balance max-w-5xl mx-auto">
                 {caseData.title}
               </h1>
             </motion.div>
           </header>
 
           {caseData.preview_description && (
-            <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl leading-relaxed font-normal text-balance mx-auto">
+            <p className="text-lg md:text-xl text-zinc-500 mb-16 max-w-3xl leading-relaxed font-normal text-balance mx-auto">
               {caseData.preview_description}
             </p>
           )}
 
           {caseData.metrics && caseData.metrics.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/10 pt-8 mt-4 animate-fade-in-up delay-300 w-full">
+            <div className="flex flex-wrap justify-center gap-12 md:gap-24 border-t border-zinc-100 pt-12 mt-4 animate-fade-in-up delay-300 w-full">
               {caseData.metrics.slice(0, 3).map((metric, idx) => (
-                <div key={idx} className="text-center">
-                  <div className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-1 relative inline-block">
+                <div key={idx} className="text-center group">
+                  <div className="text-4xl md:text-5xl font-bold text-black tracking-tighter mb-2 relative inline-block group-hover:scale-110 transition-transform duration-500 origin-center">
                     {metric.value}
-                    <span className="absolute -top-1 -right-3 text-revgreen text-lg">+</span>
+                    <span className="absolute -top-2 -right-4 text-zinc-300 text-2xl font-light">+</span>
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{metric.label}</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400">{metric.label}</div>
                 </div>
               ))}
             </div>
@@ -178,9 +164,9 @@ const CasesDetalhe = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
             onClick={() => contentRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white hover:text-revgreen transition-colors cursor-pointer group z-50 md:bottom-10"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-zinc-300 hover:text-black transition-colors cursor-pointer group z-50 md:bottom-10"
           >
-            <div className="w-px h-12 bg-gradient-to-b from-transparent to-zinc-500 opacity-50 group-hover:to-revgreen transition-colors"></div>
+            <div className="w-px h-12 bg-gradient-to-b from-transparent to-zinc-300 group-hover:to-black transition-colors"></div>
           </motion.button>
         </div>
       </section>

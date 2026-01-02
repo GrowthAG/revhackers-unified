@@ -106,6 +106,7 @@ export default function Step4Estrategia({ form }: Step4Props) {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="hubspot">HubSpot</SelectItem>
+                            <SelectItem value="funnels">Funnels</SelectItem>
                             <SelectItem value="rd-station">RD Station</SelectItem>
                             <SelectItem value="salesforce">Salesforce</SelectItem>
                             <SelectItem value="pipedrive">Pipedrive</SelectItem>
@@ -281,6 +282,26 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     {form.formState.errors.ltvAtual && (
                         <p className="text-red-500 text-xs">{form.formState.errors.ltvAtual.message as string}</p>
                     )}
+                </div>
+                {/* Materiais de Marketing */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Qual o status dos seus materiais de marketing? *
+                    </Label>
+                    <Select
+                        onValueChange={(value) => form.setValue('marketingMaterials', value)}
+                        value={form.watch('marketingMaterials')}
+                    >
+                        <SelectTrigger className="bg-white border-zinc-200 h-12">
+                            <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="completos">Sim, temos materiais completos (Deck, Cases, etc)</SelectItem>
+                            <SelectItem value="basicos">Sim, mas são básicos</SelectItem>
+                            <SelectItem value="alguns">Temos alguns materiais dispersos</SelectItem>
+                            <SelectItem value="nao-temos">Não temos materiais estruturados</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </div>

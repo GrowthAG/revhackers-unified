@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const fmuVirtualData: PartnerData = {
   name: "FMU Virtual",
-  logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png",
+  logo: "/uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png",
   coverImage: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45",
   category: "Educação a Distância",
   description: "Divisão de ensino EAD da FMU, oferecendo cursos de graduação e pós-graduação com excelência e acessibilidade.",

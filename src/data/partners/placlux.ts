@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const placluxData: PartnerData = {
   name: "PlacLux",
-  logo: "/lovable-uploads/c949a25f-b0ab-4e66-981e-a3db0d728850.png",
+  logo: "/uploads/c949a25f-b0ab-4e66-981e-a3db0d728850.png",
   coverImage: "https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb",
   category: "Construção Civil",
   description: "Empresa especializada em soluções inovadoras para acabamentos e revestimentos de alto padrão para projetos residenciais e comerciais.",

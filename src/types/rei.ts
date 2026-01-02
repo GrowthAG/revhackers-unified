@@ -1,5 +1,5 @@
 // Types compartilhados para o sistema REI
-export type REIType = 'consulting' | 'dev' | 'founder';
+export type REIType = 'consulting' | 'dev' | 'founder' | 'funnel' | 'site';
 
 export type REIStatus = 'active' | 'pending' | 'overdue' | 'completed';
 

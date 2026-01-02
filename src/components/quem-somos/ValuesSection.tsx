@@ -35,25 +35,25 @@ const ValuesSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-20 md:py-32 bg-white">
       <div className="container-custom">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tighter text-black uppercase">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tighter text-gray-900 uppercase">
             Nossos valores
           </h2>
-          <p className="text-xl text-zinc-500 font-normal tracking-tight">
+          <p className="text-xl text-gray-600 font-normal tracking-tight">
             Princípios que guiam nossa atuação e nosso compromisso com os clientes
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {values.map((value, index) => (
-            <div key={index} className="bg-gray-50 p-8 rounded-lg shadow-sm">
-              <div className="h-12 w-12 bg-revgreen/20 rounded-full flex items-center justify-center mb-6">
+            <div key={index} className="bg-gray-50 border border-transparent p-8 rounded-sm hover:border-revgreen/30 transition-colors duration-300">
+              <div className="h-12 w-12 bg-revgreen/10 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="h-6 w-6 text-revgreen" />
               </div>
-              <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{value.title}</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
                 {value.description}
               </p>
             </div>

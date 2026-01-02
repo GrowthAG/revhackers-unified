@@ -16,27 +16,29 @@ const QuemSomos = () => {
 
   return (
     <PageLayout>
-      {/* Hero Section */}
-      <HeroSection />
+      <div className="min-h-screen bg-white animate-fade-in">
+        {/* Hero Section */}
+        <HeroSection />
 
-      {/* Nossa História */}
-      <HistorySection />
+        {/* Nossa História */}
+        <HistorySection />
 
-      {/* Timeline Section */}
-      <TimelineSection />
+        {/* Timeline Section */}
+        <TimelineSection />
 
-      {/* Nossos Valores */}
-      <ValuesSection />
+        {/* Nossos Valores */}
+        <ValuesSection />
 
-      {/* Booking Widget Section */}
-      <section className="py-24 bg-white border-t border-zinc-100">
-        <div className="container-custom">
-          <BookingWidget />
-        </div>
-      </section>
+        {/* Booking Widget Section */}
+        <section className="py-24 bg-black border-t border-white/5">
+          <div className="container-custom">
+            <BookingWidget />
+          </div>
+        </section>
 
-      {/* CTA Section */}
-      <CTASection />
+        {/* CTA Section */}
+        <CTASection />
+      </div>
     </PageLayout>
   );
 };

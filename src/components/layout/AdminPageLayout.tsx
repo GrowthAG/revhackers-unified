@@ -17,7 +17,7 @@ interface AdminPageLayoutProps {
 const AdminPageLayout = ({
     title,
     description,
-    backTo = '/dashboard',
+    backTo = '/admin/rei',
     backLabel = 'Voltar ao Hub',
     actions,
     children,
@@ -43,14 +43,14 @@ const AdminPageLayout = ({
     return (
         <div className="min-h-screen bg-white pt-32 pb-20 transition-colors duration-300">
             <div className={`container mx-auto px-4 ${maxWidthClasses[maxWidth]}`}>
-                {/* Header - Ultra Minimalist */}
+                {/* Header - Ultra Minimalist Standard */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         {showBackButton ? (
                             <Button
                                 variant="outline"
                                 onClick={() => navigate(backTo)}
-                                className="border-gray-200 bg-white text-black hover:bg-gray-50 hover:border-gray-300 rounded-md shadow-none transition-all text-[11px] font-medium px-4 h-9"
+                                className="border-gray-200 bg-white text-black hover:bg-zinc-50 hover:border-black rounded-none shadow-none transition-all text-[10px] font-black uppercase tracking-widest px-6 h-10"
                             >
                                 <ArrowLeft className="mr-2 h-3.5 w-3.5" /> {backLabel}
                             </Button>
@@ -77,7 +77,7 @@ const AdminPageLayout = ({
                     {children}
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

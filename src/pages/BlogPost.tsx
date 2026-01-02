@@ -57,9 +57,9 @@ const BlogPostPage = () => {
       try {
         // Fix author avatar path helper
         const getFixedAuthorAvatar = (path?: string | null) => {
-          if (!path) return "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
+          if (!path) return "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
           if (path.startsWith('http') || path.startsWith('/')) return path;
-          return `/lovable-uploads/${path}`;
+          return `/uploads/${path}`;
         };
 
         const apiPosts = await getAllPosts();
@@ -416,7 +416,7 @@ const BlogPostPage = () => {
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
       />
-    </PageLayout >
+    </PageLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
-import PageLayout from '@/components/layout/PageLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import PostEditor from '@/components/admin/PostEditor';
 import { Loader2 } from 'lucide-react';
@@ -36,29 +36,22 @@ const AdminPostEdit = () => {
 
     if (loading) {
         return (
-            <PageLayout>
-                <div className="flex h-[50vh] items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <AdminLayout>
+                <div className="flex h-[calc(100vh-60px)] items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-300" />
                 </div>
-            </PageLayout>
+            </AdminLayout>
         );
     }
 
     if (!post) return null;
 
     return (
-        <PageLayout>
-            <AdminPageLayout
-                title="Editar Artigo"
-                description={`Editando: ${post.title}`}
-                backTo="/admin/posts"
-                backLabel="Voltar aos Artigos"
-            >
-                <div className="max-w-5xl mx-auto">
-                    <PostEditor post={post} isEditing />
-                </div>
-            </AdminPageLayout>
-        </PageLayout>
+        <AdminLayout>
+            <div className="h-full">
+                <PostEditor post={post} isEditing />
+            </div>
+        </AdminLayout>
     );
 };
 

@@ -77,7 +77,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-06-18",
     readTime: "5 min"
@@ -107,7 +107,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-11-20",
     readTime: "12 min",
@@ -123,7 +123,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-08-15",
     readTime: "8 min",
@@ -139,7 +139,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-08-12",
     readTime: "10 min",
@@ -155,7 +155,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-08-10",
     readTime: "7 min",
@@ -171,7 +171,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-08-08",
     readTime: "9 min",
@@ -187,7 +187,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-08-05",
     readTime: "6 min",
@@ -237,7 +237,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-01-15",
     readTime: "12 min",
@@ -254,7 +254,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-01-12",
     readTime: "10 min",
@@ -271,7 +271,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-01-10",
     readTime: "15 min",
@@ -288,7 +288,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-01-08",
     readTime: "11 min"
@@ -304,7 +304,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-01-05",
     readTime: "13 min"
@@ -319,7 +319,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-04-10",
     readTime: "10 min",
@@ -336,7 +336,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-20",
     readTime: "8 min",
@@ -385,7 +385,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-28",
     readTime: "7 min"
@@ -434,7 +434,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-10",
     readTime: "12 min"
@@ -450,7 +450,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-05",
     readTime: "9 min"
@@ -466,7 +466,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-28",
     readTime: "7 min"
@@ -482,7 +482,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-20",
     readTime: "8 min"
@@ -498,7 +498,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-15",
     readTime: "11 min",
@@ -515,7 +515,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-10",
     readTime: "10 min"
@@ -531,7 +531,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-01-05",
     readTime: "7 min"
@@ -547,7 +547,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Giulliano Alves",
       role: "CEO and Founder",
-      avatar: "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-20",
     readTime: "8 min",

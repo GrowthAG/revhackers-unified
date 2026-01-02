@@ -146,10 +146,10 @@ export default function Step3Desafios({ form }: Step3Props) {
                     {(form.watch('prazo') === 'imediato' || form.watch('prazo') === 'curto') && (
                         <div className="bg-zinc-50 border-l-2 border-black p-3 my-2 animate-in fade-in slide-in-from-top-2">
                             <p className="text-[10px] uppercase tracking-widest font-black text-black mb-1">
-                                ALINHAMENTO CRÍTICO:
+                                ALINHAMENTO DE EXPECTATIVAS:
                             </p>
                             <p className="text-xs text-zinc-600 leading-relaxed font-medium">
-                                Nós vendemos <span className="text-black font-bold">PROCESSO DE IMPLEMENTAÇÃO</span>, não promessa de resultado. O resultado no curto prazo depende exclusivamente da execução disciplinada do seu time. O sucesso é consequência do processo.
+                                Acreditamos na parceria. Nós fornecemos <span className="text-black font-bold">PROCESSO E TECNOLOGIA</span>, e contamos com a sua <span className="text-black font-bold">EXECUÇÃO DISCIPLINADA</span> para alcançarmos os resultados juntos.
                             </p>
                         </div>
                     )}

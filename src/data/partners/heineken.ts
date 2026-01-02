@@ -3,8 +3,8 @@ import { PartnerData } from './types';
 
 export const heinekenData: PartnerData = {
   name: "Heineken",
-  logo: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png",
-  coverImage: "/lovable-uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png", // Atualizando a imagem
+  logo: "/uploads/aada4820-3f12-4185-9af6-811f30795a93.png",
+  coverImage: "/uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png", // Atualizando a imagem
   category: "Bebidas",
   description: "Uma das maiores cervejarias do mundo, conhecida por suas marcas premium e estratégias inovadoras de marketing.",
   tags: ["Bebidas", "CPG", "B2B2C", "E-commerce"],

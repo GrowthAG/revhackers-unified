@@ -230,3 +230,54 @@ export const updateProjectsStatus = async (): Promise<void> => {
         }
     }
 };
+
+/**
+ * SALVAR DIAGNÓSTICO REI
+ * Salva os dados do diagnóstico na tabela rei_responses e atualiza o projeto
+ */
+export const saveReiDiagnostic = async (
+    projectId: string,
+    type: string,
+    formData: any,
+    analysisResult: {
+        score: number;
+        radarData: { label: string; value: number }[];
+        insights: string[];
+    }
+): Promise<string | null> => {
+    try {
+        // Insert into rei_responses
+        const { data: response, error: responseError } = await supabase
+            .from('rei_responses')
+            .insert({
+                project_id: projectId,
+                diagnostic_type: type,
+                form_data: formData,
+                total_score: analysisResult.score,
+                radar_data: analysisResult.radarData,
+                insights: analysisResult.insights,
+            } as any)
+            .select()
+            .single();
+
+        if (responseError) {
+            console.error('Error saving REI diagnostic:', responseError);
+            throw responseError;
+        }
+
+        // Update the project with latest analysis result
+        await supabase
+            .from('rei_projects')
+            .update({
+                analysis_result: analysisResult,
+                updated_at: new Date().toISOString()
+            } as any)
+            .eq('id', projectId);
+
+        return response?.id || null;
+    } catch (error) {
+        console.error('Error in saveReiDiagnostic:', error);
+        throw error;
+    }
+};
+

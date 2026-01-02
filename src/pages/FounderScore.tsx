@@ -1,292 +1,398 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-    ArrowRight, Star, Linkedin, Users, Trophy, Target,
-    Briefcase, Calendar, MapPin, Award, ArrowUpRight, Check
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import PageLayout from '@/components/layout/PageLayout';
-import Section from '@/components/ui/Section';
+import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
+import { ArrowRight, Brain, Target, Users } from 'lucide-react';
+import { DiagnosticLayout } from '@/components/diagnostics/DiagnosticLayout';
+import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/DiagnosticForm';
+import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
+import { MetricCard } from '@/components/diagnostics/MetricCard';
+
+// Questions centered on "Founder Maturity"
+const QUESTIONS = [
+    {
+        id: 1,
+        question: "Qual o seu nível de envolvimento operacional hoje?",
+        options: [
+            { label: "Totalmente estratégico (Apenas direção e cultura)", score: 20 },
+            { label: "Híbrido (Estratégia + Vendas/Key Accounts)", score: 15 },
+            { label: "Operacional (Apago incêndios diariamente)", score: 5 },
+            { label: "Eu sou a operação (Eu faço tudo)", score: 0 }
+        ]
+    },
+    {
+        id: 2,
+        question: "Como você toma decisões de crescimento?",
+        options: [
+            { label: "Baseado em dados e relatórios financeiros (DRE/Fluxo)", score: 20 },
+            { label: "Mistura de dados básicos e intuição", score: 10 },
+            { label: "Totalmente na intuição / Feeling de mercado", score: 5 },
+            { label: "Sigo o que os concorrentes fazem", score: 0 }
+        ]
+    },
+    {
+        id: 3,
+        question: "Qual sua clareza sobre o próximo nível de escala?",
+        options: [
+            { label: "Plano claro, metas definidas e recursos alocados", score: 20 },
+            { label: "Sei onde quero chegar, mas não como", score: 10 },
+            { label: "Tenho apenas metas de faturamento", score: 5 },
+            { label: "Sobrevivendo um dia de cada vez", score: 0 }
+        ]
+    },
+    {
+        id: 4,
+        question: "Sua estrutura de liderança atual:",
+        options: [
+            { label: "Líderes autônomos para cada área core", score: 20 },
+            { label: "Alguns líderes, mas centralizo decisões finais", score: 10 },
+            { label: "Não tenho líderes, apenas executores", score: 5 },
+            { label: "Sócios operam tudo", score: 0 }
+        ]
+    },
+    {
+        id: 5,
+        question: "Qual sua relação com o time de vendas?",
+        options: [
+            { label: "Acompanho indicadores semanas (cobrança de meta)", score: 20 },
+            { label: "Participo de fechamentos complexos", score: 10 },
+            { label: "Eu sou o melhor vendedor da empresa", score: 5 },
+            { label: "Vendas acontecem passivamente (Indicação)", score: 0 }
+        ]
+    }
+];
+
+type Step = 'start' | 'questions' | 'lead-capture' | 'results';
 
 const FounderScore = () => {
     const { toast } = useToast();
-    const [step, setStep] = useState<'input' | 'analyzing' | 'results'>('input');
-    const [linkedinUrl, setLinkedinUrl] = useState('');
-    const [analysisProgress, setAnalysisProgress] = useState(0);
+    const [step, setStep] = useState<Step>('start');
+    const [currentQ, setCurrentQ] = useState(0);
+    const [score, setScore] = useState(0);
+    const [answers, setAnswers] = useState<number[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Mock Data State
-    const [mockProfile, setMockProfile] = useState<any>(null);
+    const handleAnswer = (optionScore: number) => {
+        const newScore = score + optionScore;
+        setScore(newScore);
+        setAnswers([...answers, optionScore]);
 
-    const handleStartAnalysis = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const cleanUrl = linkedinUrl.trim().toLowerCase();
-        if (!cleanUrl.includes('linkedin.com')) {
-            toast({
-                variant: "destructive",
-                title: "URL Inválida",
-                description: "Cole o link completo do perfil (ex: linkedin.com/in/seu-nome)."
-            });
-            return;
+        if (currentQ < QUESTIONS.length - 1) {
+            setTimeout(() => setCurrentQ(prev => prev + 1), 250);
+        } else {
+            setStep('lead-capture');
         }
-
-        setStep('analyzing');
-
-        // Simulate Proxycurl API Latency
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.floor(Math.random() * 15);
-            if (progress > 100) progress = 100;
-            setAnalysisProgress(progress);
-
-            if (progress >= 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    generateMockProfile();
-                    setStep('results');
-                }, 800);
-            }
-        }, 300);
     };
 
-    const generateMockProfile = () => {
-        // In a real scenario, this would come from the API
-        setMockProfile({
-            name: "Founder Exemplo",
-            role: "CEO & Founder",
-            company: "Tech Company",
-            location: "São Paulo, Brasil",
-            followers: 12450,
-            connections: 500,
-            experience: 12, // years
-            score: 78,
-            topSkills: ["Liderança", "Growth Hacking", "Estratégia"],
-            recentActivity: "High"
-        });
+    const handleFormSubmit = async (data: DiagnosticFormData) => {
+        setIsSubmitting(true);
+        try {
+            const result = getResultMap(score);
+            // Webhook for Founder Score (or generic)
+            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
+
+            await submitPublicDiagnostic(
+                { ...data, phone: '' },
+                { answers },
+                score,
+                {
+                    level: result.title,
+                    description: result.msg,
+                    action: "Agendar Call de Diagnóstico",
+                    color: "revgreen"
+                },
+                WEBHOOK_URL
+            );
+
+            setStep('results');
+            toast({
+                className: "bg-zinc-900 border-zinc-800 text-white",
+                title: "DIAGNÓSTICO PROCESSADO",
+                description: "Análise de perfilFounder gerada."
+            });
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: "Erro",
+                description: "Tente novamente."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    const getResultMap = (s: number) => {
+        if (s >= 80) return { title: "CEO Estrategista", msg: "Você opera como um CEO de verdade, focado no futuro e na cultura." };
+        if (s >= 50) return { title: "CEO Híbrido", msg: "Você equilibra pratos entre operação e estratégia. O risco de burnout existe." };
+        return { title: "CEO Operacional", msg: "Você é o gargalo. A empresa não cresce além da sua capacidade de horas." };
+    };
+
+    const result = getResultMap(score);
+
+    if (step === 'start') {
+        return (
+            <DiagnosticLayout
+                title="Diagnóstico Founder Led Sales"
+                subtitle="Avalie se você é um CEO Estrategista ou um Gargalo Operacional."
+                showGovernanceFooter={false}
+                variant="light"
+            >
+                <div className="max-w-xl">
+                    <div className="bg-zinc-50 border border-zinc-200 p-8 mb-8 rounded-lg">
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                                <Brain className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Mentalidade de Escala</span>
+                                    <span className="text-zinc-600 text-xs">Estratégia vs. Operação</span>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Target className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Tomada de Decisão</span>
+                                    <span className="text-zinc-600 text-xs">Dados vs. Intuição</span>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Users className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Liderança</span>
+                                    <span className="text-zinc-600 text-xs">Centralização vs. Autonomia</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button
+                        onClick={() => setStep('questions')}
+                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 font-bold tracking-[0.2em] uppercase text-xs transition-all flex items-center justify-center gap-2 rounded-none"
+                    >
+                        Iniciar Análise <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </DiagnosticLayout>
+        );
+    }
 
     return (
-        <PageLayout>
-            {/* STEP 1: INPUT */}
-            {step === 'input' && (
-                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center bg-white">
-                    <div className="container-custom max-w-4xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full mb-8">
-                            <Linkedin className="w-4 h-4 text-[#0077b5]" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                                LinkedIn Profile Analytics
+        <DiagnosticLayout
+            title="Diagnóstico Founder Led Sales"
+            subtitle="Diagnóstico de Liderança"
+            variant={step === 'results' ? 'dark' : 'light'}
+        >
+            {step === 'questions' && (
+                <div className="max-w-3xl mx-auto">
+                    <div className="mb-12">
+                        <div className="flex justify-between items-end mb-4">
+                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                                Questão {currentQ + 1} de {QUESTIONS.length}
+                            </span>
+                            <span className="text-[10px] font-mono text-zinc-400">
+                                {Math.round(((currentQ) / QUESTIONS.length) * 100)}%
                             </span>
                         </div>
-
-                        <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-black uppercase leading-[0.9]">
-                            Founder<br /><span className="text-zinc-400">Authority Score</span>
-                        </h1>
-                        <p className="text-xl text-zinc-500 mb-12 leading-relaxed max-w-xl mx-auto">
-                            Analise a força da sua marca pessoal usando inteligência de dados do seu LinkedIn.
-                        </p>
-
-                        <form onSubmit={handleStartAnalysis} className="max-w-xl mx-auto relative group">
-                            <div className="flex shadow-2xl shadow-zinc-200">
-                                <div className="bg-zinc-100 flex items-center px-4 border-y border-l border-zinc-200">
-                                    <Linkedin className="w-5 h-5 text-zinc-400" />
-                                </div>
-                                <Input
-                                    placeholder="linkedin.com/in/seu-perfil"
-                                    className="bg-white border-zinc-200 text-black h-16 rounded-none focus:border-black text-lg transition-all focus:ring-0 placeholder:text-zinc-300 font-medium border-l-0"
-                                    value={linkedinUrl}
-                                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                                    required
-                                />
-                                <Button type="submit" className="bg-black text-white px-8 h-16 rounded-none font-bold uppercase tracking-widest text-xs hover:bg-zinc-800 transition-all">
-                                    Analisar
-                                </Button>
-                            </div>
-                            <p className="text-[10px] text-zinc-400 mt-4 font-mono uppercase tracking-wider">
-                                *Usamos dados públicos via API de Enriquecimento
-                            </p>
-                        </form>
-                    </div>
-                </Section>
-            )}
-
-            {/* STEP 2: ANALYZING SIMULATION */}
-            {step === 'analyzing' && (
-                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center bg-white">
-                    <div className="container-custom max-w-md mx-auto text-center">
-                        <div className="mb-8 relative w-24 h-24 mx-auto">
-                            <svg className="animate-spin w-full h-full text-zinc-200" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center font-mono font-bold text-xs">
-                                {analysisProgress}%
-                            </div>
+                        <div className="w-full bg-zinc-100 h-px">
+                            <motion.div
+                                className="h-full bg-black"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
+                                transition={{ duration: 0.3 }}
+                            />
                         </div>
-                        <h2 className="text-xl font-bold text-black mb-2 animate-pulse">
-                            Extraindo dados do perfil...
-                        </h2>
-                        <p className="text-sm text-zinc-400 font-mono">
-                            Verificando histórico, conexões e autoridade.
-                        </p>
                     </div>
-                </Section>
-            )}
 
-            {/* STEP 3: DASHBOARD RESULTS (SURGICAL V2) */}
-            {step === 'results' && mockProfile && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="w-full max-w-7xl mx-auto py-12 px-4 md:px-8"
-                >
-                    {/* HEADER */}
-                    <div className="flex flex-col md:flex-row items-center justify-between mb-12 border-b border-zinc-200 pb-8">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="text-[#0077b5]">
-                                    <Linkedin className="w-5 h-5" />
-                                </div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                                    Perfil Integrado
-                                </span>
-                            </div>
-                            <h2 className="text-3xl font-bold text-black tracking-tight mb-2">
-                                {mockProfile.name}
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentQ}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <h2 className="text-2xl md:text-3xl font-medium text-black mb-12 leading-tight">
+                                {QUESTIONS[currentQ].question}
                             </h2>
-                            <p className="text-sm text-zinc-500 font-mono flex items-center gap-2">
-                                {mockProfile.role} <span className="text-zinc-300">|</span> {mockProfile.location}
-                            </p>
-                        </div>
-                        <div className="mt-6 md:mt-0 flex gap-4">
-                            <Button
-                                onClick={() => window.open(linkedinUrl, '_blank')}
-                                variant="outline"
-                                className="border-zinc-200 hover:bg-zinc-50 h-12 px-6 rounded-full text-xs font-bold uppercase tracking-widest"
-                            >
-                                Ver Perfil <ArrowUpRight className="ml-2 w-3 h-3" />
-                            </Button>
-                            <Button
-                                className="bg-black text-white hover:bg-zinc-800 h-12 px-8 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg"
-                            >
-                                Plano de Autoridade
-                            </Button>
-                        </div>
-                    </div>
 
-                    {/* DASHBOARD GRID */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                        {/* SCORE CARD */}
-                        <div className="lg:col-span-4">
-                            <div className="bg-white border border-zinc-200 p-8 h-full rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-center items-center text-center">
-                                <span className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-6">Founder Authority Score</span>
-
-                                <div className="relative mb-8">
-                                    <div className="text-9xl font-black tracking-tighter text-black leading-none">
-                                        {mockProfile.score}
-                                    </div>
-                                    <div className="absolute -right-4 -top-2 bg-[#0077b5] text-white text-[10px] font-bold px-2 py-1 rounded-full">
-                                        TOP 15%
-                                    </div>
-                                </div>
-
-                                <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden mb-4">
-                                    <div className="bg-[#0077b5] h-full rounded-full" style={{ width: `${mockProfile.score}%` }}></div>
-                                </div>
-
-                                <p className="text-sm text-zinc-500 leading-relaxed max-w-xs">
-                                    Sua autoridade digital é <strong className="text-black">Alta</strong>. Você está posicionado como uma referência no setor de tecnologia.
-                                </p>
+                            <div className="space-y-px bg-zinc-200 border border-zinc-200">
+                                {QUESTIONS[currentQ].options.map((opt, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleAnswer(opt.score)}
+                                        className="w-full text-left p-6 bg-white hover:bg-zinc-50 transition-colors flex items-center group"
+                                    >
+                                        <div className="w-8 h-8 flex items-center justify-center border border-zinc-200 text-zinc-400 text-xs mr-6 group-hover:border-black group-hover:text-black transition-colors rounded-sm">
+                                            {String.fromCharCode(65 + idx)}
+                                        </div>
+                                        <span className="text-zinc-600 group-hover:text-black transition-colors text-sm md:text-base font-medium">
+                                            {opt.label}
+                                        </span>
+                                    </button>
+                                ))}
                             </div>
-                        </div>
-
-                        {/* METRICS GRID */}
-                        <div className="lg:col-span-8 flex flex-col gap-8">
-
-                            {/* Key Stats */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Users className="w-4 h-4 text-zinc-400" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Seguidores</span>
-                                    </div>
-                                    <div className="text-3xl font-bold text-black">{mockProfile.followers.toLocaleString()}</div>
-                                </div>
-                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Calendar className="w-4 h-4 text-zinc-400" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Experiência</span>
-                                    </div>
-                                    <div className="text-3xl font-bold text-black">{mockProfile.experience} Anos</div>
-                                </div>
-                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-xl">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Trophy className="w-4 h-4 text-zinc-400" />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Skills Top</span>
-                                    </div>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                        {mockProfile.topSkills.map((s: string) => (
-                                            <span key={s} className="bg-white border border-zinc-200 px-2 py-1 rounded text-[10px] font-bold text-zinc-600">
-                                                {s}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Detailed Analysis */}
-                            <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm flex-1">
-                                <h3 className="text-sm font-bold text-black uppercase tracking-wide mb-6 flex items-center gap-2">
-                                    <Target className="w-4 h-4" />
-                                    Análise de Posicionamento
-                                </h3>
-
-                                <div className="space-y-6">
-                                    <div className="flex gap-4 items-start">
-                                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-1">
-                                            <Check className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-sm text-black">Headline Otimizada</h4>
-                                            <p className="text-xs text-zinc-500 mt-1">
-                                                Sua headline "{mockProfile.role}" contém as palavras-chave corretas para seu nicho.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-4 items-start">
-                                        <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center shrink-0 mt-1">
-                                            <ArrowUpRight className="w-4 h-4 text-yellow-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-sm text-black">Oportunidade de Conteúdo</h4>
-                                            <p className="text-xs text-zinc-500 mt-1">
-                                                Sua frequência de postagem pode melhorar. Founders Top 1% postam 3x por semana.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-4 items-start">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-1">
-                                            <Award className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-sm text-black">Social Proof Elevada</h4>
-                                            <p className="text-xs text-zinc-500 mt-1">
-                                                Com {mockProfile.followers.toLocaleString()} seguidores, você já tem a base para lançar comunidades ou produtos High Ticket.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </motion.div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             )}
-        </PageLayout>
+
+            {step === 'lead-capture' && (
+                <DiagnosticForm
+                    onSubmit={handleFormSubmit}
+                    isSubmitting={isSubmitting}
+                />
+            )}
+
+            {step === 'results' && (
+                <div className="space-y-32">
+                    {/* FOLD 01: DARK DASHBOARD */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        <div className="lg:col-span-4">
+                            <ScoreGauge
+                                score={score}
+                                label="Maturidade Founder Led Sales"
+                                description="Nível de pensamento estratégico."
+                            />
+                        </div>
+
+                        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <MetricCard
+                                label="Operacional"
+                                value={answers[0] > 10 ? "Baixo" : "Crítico"}
+                                description="Envolvimento no Dia a Dia"
+                                status={answers[0] > 10 ? 'success' : 'critical'}
+                            />
+                            <MetricCard
+                                label="Data Driven"
+                                value={answers[1] > 10 ? "Sim" : "Não"}
+                                description="Uso de Dados"
+                                status={answers[1] > 10 ? 'success' : 'warning'}
+                            />
+                            <MetricCard
+                                label="Clareza"
+                                value={answers[2] > 10 ? "Alta" : "Confusa"}
+                                description="Plano de Longo Prazo"
+                                status={answers[2] > 10 ? 'success' : 'warning'}
+                            />
+                            <MetricCard
+                                label="Time"
+                                value={answers[3] > 10 ? "Líderes" : "Executores"}
+                                description="Senioridade da Equipe"
+                                status={answers[3] > 10 ? 'success' : 'critical'}
+                            />
+                        </div>
+
+                        <div className="lg:col-span-12 mt-8 p-8 border border-zinc-900 bg-zinc-950/40 backdrop-blur-sm">
+                            <h3 className="text-[10px] font-black text-revgreen uppercase tracking-[0.3em] mb-6 border-b border-zinc-900 pb-4">
+                                Análise de Gargalos Estratégicos
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div>
+                                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3 block">01. O Diagnóstico</span>
+                                    <p className="text-zinc-300 leading-relaxed text-sm">
+                                        Detectamos uma <span className="text-white font-bold">dependência crítica</span> da figura do fundador.
+                                        A receita atual é frágil porque está centralizada no seu tempo e energia, criando um teto de vidro intransponível para escala.
+                                    </p>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3 block">02. Implicação</span>
+                                    <p className="text-zinc-300 leading-relaxed text-sm">
+                                        Empresas dependentes do fundador têm valuation 40% menor e são inegociáveis. Para escalar, precisamos <span className="text-white font-bold">industrializar o seu conhecimento</span> em processos de CRM e Automação.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* FOLD 02: WHITE MINIMALIST CTA & PREMISSAS */}
+                    <div className="bg-white -mx-6 md:-mx-12 lg:-mx-24 px-6 md:px-12 lg:px-24 py-32 border-t border-zinc-100 animate-in fade-in duration-1000 delay-500">
+                        <div className="max-w-5xl mx-auto space-y-24">
+
+                            {/* Premissas Alinhadas Section */}
+                            <section className="text-left">
+                                <div className="inline-block bg-black text-white px-3 py-1 text-[9px] font-black uppercase tracking-[0.3em] mb-8">
+                                    Premissas Alinhadas
+                                </div>
+                                <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase mb-12">
+                                    O que descobrimos sobre sua <span className="text-zinc-400 text-2xl">operação.</span>
+                                </h2>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-bold text-black uppercase tracking-tight flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                            Cultura de Dados
+                                        </h4>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">
+                                            Identificamos que a tomada de decisão ainda é centralizada na intuição do fundador. Para escalar sem quebrar, precisamos implementar dashboards de BI que falem a verdade em tempo real.
+                                        </p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-bold text-black uppercase tracking-tight flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                            Industrialização de Vendas
+                                        </h4>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">
+                                            Seu time de vendas hoje opera de forma artesanal. O próximo passo é criar um "Playbook de Máquina" onde cada etapa do funil é orquestrada por automação, não por memória.
+                                        </p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-bold text-black uppercase tracking-tight flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                            Gargalo do Fundador
+                                        </h4>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">
+                                            O CEO ainda é o maior "Growth Hacker" da empresa. Isso é um risco. Precisamos transferir essa inteligência para o CRM e sistemas de IA para liberar sua agenda para fusões e aquisições.
+                                        </p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-bold text-black uppercase tracking-tight flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                            Infraestrutura Técnica
+                                        </h4>
+                                        <p className="text-zinc-500 text-sm leading-relaxed">
+                                            Sua stack tecnológica atual possui pontos cegos de integração. Vamos unificar o fluxo de dados para que Mkt e Vendas joguem no mesmo time, com o mesmo placar.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Final CTA Area */}
+                            <div className="text-center space-y-12">
+                                <div className="space-y-4">
+                                    <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em]">Próximos Passos Operacionais</span>
+                                    <h2 className="text-4xl md:text-6xl font-black text-black tracking-tighter leading-tight">
+                                        Construa seu plano <br className="hidden md:block" />
+                                        <span className="text-zinc-400 text-3xl md:text-5xl">de 30 dias com o nosso time.</span>
+                                    </h2>
+                                    <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-medium leading-relaxed font-mono">
+                                        Sessão gratuita de Debriefing Estratégico para detalhamento desses 4 pilares.
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col items-center gap-6">
+                                    <a
+                                        href="https://cal.com/revhackers/diagnostico"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group relative px-12 py-6 bg-black text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-[0.3em] text-[11px] transition-all duration-300 rounded-none overflow-hidden"
+                                    >
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            AGENDAR DEBRIEFING <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </span>
+                                    </a>
+                                    <div className="flex items-center gap-3 text-[9px] text-zinc-300 uppercase tracking-widest font-black">
+                                        <span>Exclusivo para Founders</span>
+                                        <div className="w-1 h-1 bg-zinc-200 rounded-full" />
+                                        <span>Vagas Limitadas p/ Janeiro</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </DiagnosticLayout>
     );
 };
 

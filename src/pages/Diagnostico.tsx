@@ -1,66 +1,87 @@
 
-import { CheckCircle } from 'lucide-react';
 import PageLayout from '@/components/layout/PageLayout';
-import DiagnosticWizard from '@/components/diagnostic/DiagnosticWizard';
 import Section from '@/components/ui/Section';
+import { ArrowRight, BarChart2, Globe, TrendingUp, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const benefits = [
-  "Análise da Estratégia Digital",
-  "Oportunidades de Crescimento",
-  "Benchmarks do Segmento",
-  "Plano de Ação Personalizado",
-  "Tecnologias de Revenue",
-  "Roadmap de Aceleração"
-];
+const DiagnosticoGateway = () => {
+  const navigate = useNavigate();
 
-const DiagnosticoPage = () => {
+  const diagnostics = [
+    {
+      id: 'revenue',
+      title: 'Revenue Score',
+      description: 'Análise completa da sua operação de Receita (Marketing & Vendas).',
+      icon: BarChart2,
+      path: '/score-revenue',
+    },
+    {
+      id: 'founder',
+      title: 'Founder Score',
+      description: 'Avalie sua autoridade pessoal e posicionamento no mercado.',
+      icon: User,
+      path: '/score-founder',
+    },
+    {
+      id: 'growth',
+      title: 'Growth Score',
+      description: 'Mapeamento de maturidade e alavancas de crescimento.',
+      icon: TrendingUp,
+      path: '/score',
+    },
+    {
+      id: 'site',
+      title: 'Site Score',
+      description: 'Diagnóstico técnico de performance e conversão do site.',
+      icon: Globe,
+      path: '/score-site',
+    },
+  ];
+
   return (
     <PageLayout>
-      {/* Hero Section */}
-      <Section variant="light" className="relative pt-24 pb-16 md:pt-32 md:pb-24 min-h-[50vh] flex flex-col justify-center items-center overflow-hidden bg-white">
-        {/* Subtle Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none"></div>
+      <Section variant="light" className="py-24 md:py-32 bg-white min-h-[90vh] flex flex-col justify-center">
+        <div className="container-custom max-w-5xl">
 
-        <div className="container-custom relative z-10 text-center">
-          {/* Badge */}
-          <div className="mb-6 flex items-center justify-center animate-fade-in">
-            <span className="text-xs font-semibold text-gray-700 tracking-wide uppercase bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
-              Diagnóstico de Growth
-            </span>
+          <div className="text-center mb-20">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black tracking-tight mb-6">
+              Selecione seu <span className="text-zinc-400">Protocolo</span>
+            </h1>
+            <p className="text-xl text-zinc-500 font-light max-w-2xl mx-auto leading-relaxed">
+              Nossa inteligência artificial analisa diferentes dimensões do seu negócio. Escolha por onde começar a otimização.
+            </p>
           </div>
 
-          {/* Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-6 leading-[1.05] tracking-tight">
-            Descubra o Score da <br className="hidden md:block" />
-            <span className="text-zinc-400 font-light">sua Máquina de Vendas</span>
-          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {diagnostics.map((diag) => (
+              <div
+                key={diag.id}
+                onClick={() => navigate(diag.path)}
+                className="group cursor-pointer bg-white border border-zinc-200 p-8 md:p-10 hover:border-black hover:bg-zinc-50 transition-all duration-300 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 duration-300">
+                  <ArrowRight className="w-6 h-6 text-black" />
+                </div>
 
-          {/* Subheadline */}
-          <p className="text-xl text-zinc-500 mb-8 max-w-3xl mx-auto leading-relaxed font-light tracking-tight">
-            Responda 15 perguntas estratégicas para mapear o nível de maturidade da sua operação.
-            Receba um relatório imediato com os próximos passos para escala.
-          </p>
+                <div className="mb-6">
+                  <diag.icon className="w-8 h-8 text-black" strokeWidth={1} />
+                </div>
 
-          {/* Benefits Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-2 text-left">
-                <CheckCircle className="w-5 h-5 text-revgreen flex-shrink-0" />
-                <span className="text-sm text-black font-semibold uppercase tracking-widest text-[10px]">{benefit}</span>
+                <h3 className="text-2xl font-bold text-black mb-3 group-hover:translate-x-1 transition-transform duration-300">
+                  {diag.title}
+                </h3>
+
+                <p className="text-zinc-500 font-light leading-relaxed group-hover:text-zinc-600 transition-colors">
+                  {diag.description}
+                </p>
               </div>
             ))}
           </div>
-        </div>
-      </Section>
 
-      {/* Wizard Section */}
-      <Section variant="light" className="py-16 bg-white border-t border-zinc-100">
-        <div className="container-custom">
-          <DiagnosticWizard />
         </div>
       </Section>
     </PageLayout>
   );
 };
 
-export default DiagnosticoPage;
+export default DiagnosticoGateway;

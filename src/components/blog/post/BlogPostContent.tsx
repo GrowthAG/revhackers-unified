@@ -109,9 +109,9 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
   const CustomArticleComponent = articleSlug ? articleComponents[articleSlug] : null;
 
   const getFixedAuthorAvatar = (path: string) => {
-    if (!path) return "/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
+    if (!path) return "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
     if (path.startsWith('http') || path.startsWith('/')) return path;
-    return `/lovable-uploads/${path}`;
+    return `/uploads/${path}`;
   };
 
   const fixedAvatar = getFixedAuthorAvatar(authorAvatar);

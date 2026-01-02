@@ -4,7 +4,7 @@ import { CaseStudy } from './index';
 export const boltCase: CaseStudy = {
     title: "Bolt",
     category: "Agência",
-    logo: "/lovable-uploads/bolt-logo-new.png",
+    logo: "/uploads/bolt-logo-new.png",
     coverImage: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop",
     challenge: "A Bolt, agência digital focada em performance, enfrentava um desafio recorrente com seus clientes: landing pages genéricas que convertiam menos de 2%. Seus clientes investiam pesado em tráfego pago, mas perdiam a maior parte dos leads por páginas mal otimizadas. A agência precisava de uma metodologia escalável para criar páginas de alta conversão que justificassem o investimento em mídia e gerassem ROI positivo consistentemente.",
     solution: "Desenvolvemos páginas de alta conversão para os clientes da Bolt usando nossa metodologia de Conversion-Driven Design: (1) Pesquisa profunda de persona e objeções; (2) Estrutura de copywriting baseada em gatilhos mentais e prova social; (3) Design focado em hierarquia visual e CTAs estratégicos; (4) Testes A/B contínuos de headlines, CTAs e layouts. Cada página foi otimizada para mobile-first e velocidade de carregamento.",

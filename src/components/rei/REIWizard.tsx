@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,8 +7,9 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { saveReiDiagnostic } from '@/api/reiResponses';
+import { saveReiDiagnostic } from '@/api/reiProjects';
 import { REIType } from '@/types/rei';
+import { ReiScoringService } from '@/services/ReiScoringService';
 
 // Import dos Steps
 import Step1Identificacao from './steps/Step1Identificacao';
@@ -16,6 +17,9 @@ import Step2Contexto from './steps/Step2Contexto';
 import Step3Desafios from './steps/Step3Desafios';
 import Step4Estrategia from './steps/Step4Estrategia';
 import Step5Expectativas from './steps/Step5Expectativas';
+import StepFounderLinkedIn from './steps/StepFounderLinkedIn';
+import StepFounderDeepDive from './steps/StepFounderDeepDive';
+import StepDevTechnical from './steps/StepDevTechnical';
 
 interface REIWizardProps {
     projectId: string;
@@ -23,45 +27,81 @@ interface REIWizardProps {
     onComplete?: (responseId: string) => void;
 }
 
-// Schema de validação fixo
+// Schema de validação UNIFICADO (todos os campos de todos os fluxos)
 const wizardSchema = z.object({
-    // Step 1
+    // Step 1 (Comum)
     email: z.string().email('Email inválido'),
 
-    // Step 2
-    segmento: z.string().min(1, 'Selecione um segmento'),
+    // --- FOUNDER PROTOCOL FIELDS ---
+    linkedin_url: z.string().optional(),
+    founder_name: z.string().optional(), // Tornar obrigatório via refine se quiser
+    founder_role: z.string().optional(),
+    founder_bio: z.string().optional(),
+    founder_superpowers: z.string().optional(),
+
+    authority_topics: z.string().optional(),
+    industry_myths: z.string().optional(),
+    target_audience: z.string().optional(),
+    tone_voice: z.string().optional(),
+    references: z.string().optional(),
+    content_frequency: z.string().optional(),
+    preferred_formats: z.string().optional(),
+    approval_workflow: z.string().optional(),
+    anti_goals: z.string().optional(),
+    success_vision: z.string().optional(),
+    topics_to_avoid: z.string().optional(),
+    // -------------------------------
+
+    // Step Dev (Technical)
+    cms_preference: z.string().optional(),
+    dev_features: z.array(z.string()).optional(),
+    design_style: z.string().optional(),
+    design_references: z.string().optional(),
+    projectType: z.string().optional(),
+    deadline: z.string().optional(),
+    primaryGoal: z.string().optional(),
+    brandGuidelines: z.string().optional(),
+    contentStatus: z.string().optional(),
+    inspirationSites: z.string().optional(),
+    domainStatus: z.string().optional(),
+    integrations: z.string().optional(),
+    // ----------------------
+
+    // Step 2 (Contexto - Consulting)
+    segmento: z.string().optional(),
     segmento_outro: z.string().optional(),
-    tamanho: z.string().min(1, 'Selecione o tamanho'),
-    ticketMedio: z.string().min(1, 'Informe o ticket médio'),
-    cicloVendas: z.string().min(1, 'Selecione o ciclo de vendas'),
-    mrr: z.string().min(1, 'Selecione o MRR'),
-    modeloPrecificacao: z.string().min(1, 'Selecione o modelo de precificação'),
-    taxaChurn: z.string().min(1, 'Selecione a taxa de churn'),
+    tamanho: z.string().optional(),
+    ticketMedio: z.string().optional(),
+    cicloVendas: z.string().optional(),
+    mrr: z.string().optional(),
+    modeloPrecificacao: z.string().optional(),
+    taxaChurn: z.string().optional(),
 
-    // Step 3
-    desafios: z.array(z.string()).min(1, 'Selecione pelo menos 1 desafio').max(2, 'Selecione no máximo 2 desafios'),
-    metaCrescimento: z.string().min(1, 'Selecione uma meta'),
-    orcamento: z.string().min(1, 'Selecione um orçamento'),
-    prazo: z.string().min(1, 'Selecione um prazo'),
-    metricaPrincipal: z.string().min(1, 'Selecione uma métrica'),
-    gargaloFunil: z.string().min(1, 'Selecione um gargalo'),
+    // Step 3 (Desafios - Consulting)
+    desafios: z.array(z.string()).optional(),
+    metaCrescimento: z.string().optional(),
+    orcamento: z.string().optional(),
+    prazo: z.string().optional(),
+    metricaPrincipal: z.string().optional(),
+    gargaloFunil: z.string().optional(),
     gargaloFunil_outro: z.string().optional(),
-    processGap: z.string().min(10, 'Mínimo 10 caracteres').max(300),
-    implementationAttempts: z.string().min(10, 'Mínimo 10 caracteres').max(400),
-    executionConstraint: z.string().min(10, 'Mínimo 10 caracteres').max(300),
+    processGap: z.string().optional(),
+    implementationAttempts: z.string().optional(),
+    executionConstraint: z.string().optional(),
 
-    // Step 4
-    canaisAquisicao: z.array(z.string()).min(1, 'Selecione pelo menos 1 canal'),
-    crm: z.string().min(1, 'Selecione um CRM'),
+    // Step 4 (Estratégia - Consulting)
+    canaisAquisicao: z.array(z.string()).optional(),
+    crm: z.string().optional(),
     crm_outro: z.string().optional(),
-    timeGrowth: z.string().min(1, 'Selecione o tamanho do time'),
-    metricas: z.array(z.string()),
-    gargalo: z.string().min(1, 'Selecione um gargalo'),
+    timeGrowth: z.string().optional(),
+    metricas: z.array(z.string()).optional(),
+    gargalo: z.string().optional(),
     gargalo_outro: z.string().optional(),
-    cacAtual: z.string().min(1, 'Selecione o CAC'),
-    ltvAtual: z.string().min(1, 'Selecione o LTV'),
+    cacAtual: z.string().optional(),
+    ltvAtual: z.string().optional(),
+    marketingMaterials: z.string().optional(),
 
-    // Step 5
+    // Step 5 (Expectativas - Consulting)
     expectativas: z.array(z.string()).min(1, 'Selecione pelo menos 1 expectativa'),
     areasPrioridade: z.array(z.string()).min(1, 'Selecione pelo menos 1 área').max(3, 'Selecione no máximo 3 áreas'),
     prontidao: z.string().min(1, 'Selecione uma opção'),
@@ -76,35 +116,61 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     const [currentStep, setCurrentStep] = useState(1);
     const [direction, setDirection] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const TOTAL_STEPS = 5;
 
     const form = useForm<WizardFormData>({
         resolver: zodResolver(wizardSchema),
         mode: 'onChange'
     });
 
-    const stepTitles = [
-        'Identificação',
-        'Contexto do Negócio',
-        'Desafios & Objetivos',
-        'Estratégia Atual',
-        'Expectativas'
-    ];
-
-    const getFieldsForStep = (step: number): (keyof WizardFormData)[] => {
-        switch (step) {
-            case 1: return ['email'];
-            case 2: return ['segmento', 'segmento_outro', 'tamanho', 'ticketMedio', 'cicloVendas', 'mrr', 'modeloPrecificacao', 'taxaChurn'];
-            case 3: return ['desafios', 'metaCrescimento', 'orcamento', 'prazo', 'metricaPrincipal', 'gargaloFunil', 'gargaloFunil_outro', 'processGap', 'implementationAttempts', 'executionConstraint'];
-            case 4: return ['canaisAquisicao', 'crm', 'crm_outro', 'timeGrowth', 'metricas', 'gargalo', 'gargalo_outro', 'cacAtual', 'ltvAtual'];
-            case 5: return ['expectativas', 'areasPrioridade', 'prontidao', 'quandoComecar', 'observacoes'];
-            default: return [];
+    // --- LOGIC: DEFINE FLOW BASED ON TYPE ---
+    const getFlowForType = (type: REIType) => {
+        if (type === 'founder') {
+            return [
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+                { id: 'linkedin_identity', title: 'Identidade & Histórico', component: StepFounderLinkedIn, fields: ['linkedin_url', 'founder_name', 'founder_role', 'founder_bio', 'founder_superpowers'] },
+                { id: 'founder_deepdive', title: 'Posicionamento & Conteúdo', component: StepFounderDeepDive, fields: ['authority_topics', 'industry_myths', 'target_audience', 'tone_voice', 'content_frequency', 'preferred_formats', 'anti_goals', 'success_vision'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+            ];
+        } else if (type === 'dev') {
+            return [
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+                { id: 'technical', title: 'Briefing Técnico', component: StepDevTechnical, fields: ['projectType', 'deadline', 'primaryGoal', 'brandGuidelines', 'contentStatus'] },
+                { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+            ];
+        } else if (type === 'funnel') {
+            return [
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+                { id: 'estrategia', title: 'Estratégia & Funis', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm'] },
+                { id: 'desafios', title: 'Objetivos Comerciais', component: Step3Desafios, fields: ['metaCrescimento', 'gargaloFunil'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+            ];
+        } else if (type === 'site') {
+            return [
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+                { id: 'technical', title: 'Tech Briefing', component: StepDevTechnical, fields: ['projectType', 'primaryGoal', 'contentStatus'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+            ];
+        } else {
+            // Default: Consulting 360
+            return [
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+                { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho', 'ticketMedio', 'cicloVendas'] },
+                { id: 'desafios', title: 'Desafios & Objetivos', component: Step3Desafios, fields: ['desafios', 'metaCrescimento'] },
+                { id: 'estrategia', title: 'Estratégia Atual', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm', 'marketingMaterials'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+            ];
         }
     };
 
+    const flow = getFlowForType(type);
+    const TOTAL_STEPS = flow.length;
+    const currentStepConfig = flow[currentStep - 1];
+
     const handleNext = async () => {
-        const fields = getFieldsForStep(currentStep);
-        const isValid = await form.trigger(fields);
+        // Validate fields for current step
+        const fieldsToValidate = currentStepConfig.fields as any;
+        const isValid = await form.trigger(fieldsToValidate);
 
         if (isValid) {
             if (currentStep < TOTAL_STEPS) {
@@ -117,7 +183,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         } else {
             toast({
                 title: "Atenção",
-                description: "Preencha os campos obrigatórios para continuar.",
+                description: "Verifique os campos obrigatórios.",
                 variant: "destructive",
             });
         }
@@ -132,14 +198,22 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     const onSubmit = async (data: WizardFormData) => {
         setIsSubmitting(true);
         try {
-            const result = await saveReiDiagnostic(projectId, data);
+            // 1. Calculate Score based on Protocol Type (Logic Extracted!)
+            const scoreResult = ReiScoringService.calculateScore(type, data);
+
+            console.log("Saving REI Data:", { projectId, type, data, scoreResult });
+
+            // 2. Save to DB with 4 arguments: projectId, type, formData, analysisResult
+            const responseId = await saveReiDiagnostic(projectId, type, data, scoreResult);
+
             toast({
                 title: "Diagnóstico Gerado",
                 description: "Redirecionando para o resultado...",
                 className: "bg-black text-white border-zinc-800"
             });
-            if (onComplete) {
-                onComplete(result.id);
+
+            if (onComplete && responseId) {
+                onComplete(responseId);
             }
         } catch (error) {
             console.error('Erro ao salvar:', error);
@@ -153,21 +227,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         }
     };
 
-    // Placeholder function if needed by child components
-    const handleEmailBlur = () => {
-        // Logic to check existing email if necessary
-    };
-
-    const renderCurrentStep = () => {
-        switch (currentStep) {
-            case 1: return <Step1Identificacao form={form as any} onEmailBlur={handleEmailBlur} />;
-            case 2: return <Step2Contexto form={form as any} />;
-            case 3: return <Step3Desafios form={form as any} />;
-            case 4: return <Step4Estrategia form={form as any} />;
-            case 5: return <Step5Expectativas form={form as any} />;
-            default: return null;
-        }
-    };
+    const handleEmailBlur = () => { };
 
     const progress = (currentStep / TOTAL_STEPS) * 100;
 
@@ -188,6 +248,8 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         })
     };
 
+    const CurrentComponent = currentStepConfig.component;
+
     return (
         <div className="max-w-4xl mx-auto">
             {/* Back to Hub */}
@@ -199,7 +261,13 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 {/* Header Clean */}
                 <div className="flex flex-col items-center">
                     <h1 className="text-3xl md:text-5xl font-black text-black mb-4 tracking-tighter uppercase leading-none">
-                        Protocolo Diagnóstico
+                        Protocolo: <span className="text-zinc-400">{
+                            type === 'founder' ? 'Founder Led Sales' :
+                                type === 'dev' ? 'Dev Web & Design' :
+                                    type === 'funnel' ? 'Funnels & Automação' :
+                                        type === 'site' ? 'Site Score' :
+                                            'Consultoria 360º'
+                        }</span>
                     </h1>
                 </div>
 
@@ -214,7 +282,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 </div>
                 <div className="flex justify-between mt-2 text-[10px] text-zinc-400 uppercase tracking-widest max-w-md mx-auto">
                     <span>Etapa {currentStep} de {TOTAL_STEPS}</span>
-                    <span>{stepTitles[currentStep - 1]}</span>
+                    <span>{currentStepConfig.title}</span>
                 </div>
             </div>
 
@@ -230,7 +298,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                         exit="exit"
                         transition={{ duration: 0.3 }}
                     >
-                        {renderCurrentStep()}
+                        <CurrentComponent form={form as any} onEmailBlur={handleEmailBlur} />
                     </motion.div>
                 </AnimatePresence>
 

@@ -1,73 +1,63 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, TrendingUp, BarChart, Users2, Database, DollarSign, Lock, CheckCircle2 } from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import PageLayout from '@/components/layout/PageLayout';
-import Section from '@/components/ui/Section';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
+import { ArrowRight, BarChart, DollarSign, Target, Briefcase } from 'lucide-react';
+import { DiagnosticLayout } from '@/components/diagnostics/DiagnosticLayout';
+import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/DiagnosticForm';
+import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
+import { MetricCard } from '@/components/diagnostics/MetricCard';
 
-// Questions centered on "Revenue Maturity & Scale"
+// Questions centered on "Revenue Maturity"
 const QUESTIONS = [
     {
         id: 1,
-        icon: <TrendingUp className="w-8 h-8 text-revgreen" />,
-        question: "Sua receita é previsível?",
+        question: "Previsibilidade de Receita",
         options: [
-            { label: "Sim, sei exatamente quanto vou faturar mês que vem", score: 20 },
-            { label: "Mais ou menos, oscila mas tem base", score: 10 },
-            { label: "Não, vivo de altos e baixos (montanha-russa)", score: 5 },
-            { label: "Dependo da sorte ou de indicações aleatórias", score: 0 }
+            { label: "Receita Recorrente (MRR) domina o faturamento (>80%)", score: 20 },
+            { label: "Misto entre recorrente e projetos pontuais", score: 10 },
+            { label: "Dependente de grandes contratos sazonais", score: 5 },
+            { label: "Venda única / Não previsível", score: 0 }
         ]
     },
     {
         id: 2,
-        icon: <Users2 className="w-8 h-8 text-revgreen" />,
-        question: "Quem vende na sua empresa?",
+        question: "Como é a estrutura do time comercial?",
         options: [
-            { label: "Tenho um time de vendas estruturado (SDR + Closer)", score: 20 },
-            { label: "Eu (Founder) e mais um vendedor", score: 10 },
-            { label: "Apenas eu (Founder) vendo tudo", score: 5 },
-            { label: "Ninguém vende ativamente (vendas passivas)", score: 0 }
+            { label: "Especializado (SDR, Closer, CS separados)", score: 20 },
+            { label: "Vendedores fazem tudo (Prospecção ao Fechamento)", score: 10 },
+            { label: "Apenas fundadores vendem", score: 0 },
+            { label: "Não existe time comercial ativo", score: 0 }
         ]
     },
     {
         id: 3,
-        icon: <Database className="w-8 h-8 text-revgreen" />,
-        question: "Você usa CRM?",
+        question: "Qual sua taxa de conversão média (Leads -> Vendas)?",
         options: [
-            { label: "Sim, tudo registrado e com automações", score: 20 },
-            { label: "Sim, mas usamos mal / falta atualizar", score: 10 },
-            { label: "Uso planilha de Excel / Trello", score: 5 },
-            { label: "Uso caderno ou cabeça", score: 0 }
+            { label: "Acima de 20% (Alta eficiência)", score: 20 },
+            { label: "Entre 5% e 15% (Padrão de mercado)", score: 10 },
+            { label: "Abaixo de 5% (Baixa eficiência)", score: 0 },
+            { label: "Não monitoramos", score: 0 }
         ]
     },
     {
         id: 4,
-        icon: <BarChart className="w-8 h-8 text-revgreen" />,
-        question: "Qual sua taxa de conversão de Lead para Cliente?",
+        question: "Uso de CRM e Tecnologia",
         options: [
-            { label: "Sei exatamente (acompanho semanalmente)", score: 20 },
-            { label: "Tenho uma ideia aproximada", score: 10 },
-            { label: "Não sei", score: 0 },
-            { label: "Não meço nada", score: 0 }
+            { label: "CRM integrado com Marketing e Automação total", score: 20 },
+            { label: "CRM usado apenas para registro básico", score: 10 },
+            { label: "Planilhas ou Caderno", score: 0 },
+            { label: "Nenhuma ferramenta", score: 0 }
         ]
     },
     {
         id: 5,
-        icon: <DollarSign className="w-8 h-8 text-revgreen" />,
-        question: "Se você (Founder) viajar por 30 dias, a empresa cresce?",
+        question: "Ciclo de Vendas Médio",
         options: [
-            { label: "Sim, continua batendo meta sem mim", score: 20 },
-            { label: "Mantém, mas não cresce", score: 10 },
-            { label: "Cai o faturamento", score: 5 },
-            { label: "A empresa para/quebra", score: 0 }
+            { label: "Rápido (< 30 dias)", score: 20 },
+            { label: "Médio (30-90 dias)", score: 10 },
+            { label: "Longo (> 90 dias)", score: 5 },
+            { label: "Imprevisível", score: 0 }
         ]
     }
 ];
@@ -76,21 +66,10 @@ type Step = 'start' | 'questions' | 'lead-capture' | 'results';
 
 const RevenueScore = () => {
     const { toast } = useToast();
-    const { user } = useAuth();
     const [step, setStep] = useState<Step>('start');
-
     const [currentQ, setCurrentQ] = useState(0);
     const [score, setScore] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
-
-    // Lead Form State
-    const [leadForm, setLeadForm] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        role: ''
-    });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleAnswer = (optionScore: number) => {
@@ -105,314 +84,277 @@ const RevenueScore = () => {
         }
     };
 
-    const handleLeadSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!leadForm.role || !leadForm.company) {
-            toast({
-                variant: "destructive",
-                title: "Campos Obrigatórios",
-                description: "Por favor preencha empresa e cargo."
-            });
-            return;
-        }
-
+    const handleFormSubmit = async (data: DiagnosticFormData) => {
         setIsSubmitting(true);
-
         try {
+            const result = getResultMap(score);
+            // Default Webhook Layout
             const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
             await submitPublicDiagnostic(
-                leadForm,
-                {}, // We should ideally pass answers here
+                { ...data, phone: '' },
+                { answers },
                 score,
                 {
                     level: result.title,
-                    title: result.headline,
-                    description: result.msg,
-                    action: 'Auditoria',
-                    color: 'revgreen'
+                    description: result.msg
                 },
                 WEBHOOK_URL
             );
 
             setStep('results');
             toast({
-                className: "bg-black border border-white/10 text-white",
-                title: "RELATÓRIO AUTORIZADO",
-                description: "Seu diagnóstico de infraestrutura de receita foi processado."
+                className: "bg-zinc-900 border-zinc-800 text-white",
+                title: "DIAGNÓSTICO PROCESSADO",
+                description: "Seu relatório oficial foi gerado."
             });
-        } catch (error: any) {
-            console.error('Error sending diagnostic:', error);
+        } catch (error) {
+            console.error(error);
             toast({
-                variant: "destructive",
-                title: "Erro ao processar",
-                description: "Não foi possível processar seu diagnóstico. Tente novamente."
+                variant: 'destructive',
+                title: "Erro de Processamento",
+                description: "Tente novamente."
             });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const getResult = () => {
-        if (score >= 85) return {
-            headline: "MÁQUINA DE VENDAS VALIDADA",
-            title: "Operação Escalável",
-            color: "text-revgreen",
-            msg: "Você construiu um sistema que não depende de sorte. O foco agora é eficiência marginal (CAC/LTV) e expansão de canais."
-        };
-        if (score >= 50) return {
-            headline: "GARGALO OPERACIONAL DETECTADO",
-            title: "Tração sem Escala",
-            color: "text-white",
-            msg: "Você tem tração, mas sua operação depende de esforço manual ou heroísmo. Para crescer 10x, é preciso automatizar processos."
-        };
-        return {
-            headline: "RISCO DE QUEBRA ALTO",
-            title: "Caos Artesanal",
-            color: "text-gray-400",
-            msg: "Se você parar, o dinheiro para. Sua receita é imprevisível. O risco de burnout ou quebra é altíssimo sem processos."
-        };
+    const getResultMap = (s: number) => {
+        if (s >= 80) return { title: "Máquina de Receita", msg: "Operação madura, previsível e escalável." };
+        if (s >= 50) return { title: "Em Construção", msg: "Existem processos, mas a dependência manual é alta." };
+        return { title: "Risco Operacional", msg: "Falta de processos claros compromete o crescimento." };
     };
 
-    const result = getResult();
+    const result = getResultMap(score);
 
-    const chartData = [
-        { name: 'Score', value: score },
-        { name: 'Gap', value: 100 - score }
-    ];
+    if (step === 'start') {
+        return (
+            <DiagnosticLayout
+                title="Revenue Score"
+                subtitle="Diagnóstico de Maturidade Comercial e Previsibilidade."
+                showGovernanceFooter={false}
+                variant="light"
+            >
+                <div className="max-w-xl">
+                    <div className="bg-zinc-50 border border-zinc-200 p-8 mb-8 rounded-lg">
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                                <DollarSign className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Qualidade de Receita</span>
+                                    <span className="text-zinc-600 text-xs">Recorrência vs pontual</span>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Target className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Eficiência de Funil</span>
+                                    <span className="text-zinc-600 text-xs">Taxas de conversão e ciclo de vendas</span>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Briefcase className="w-5 h-5 text-black mt-0.5" />
+                                <div>
+                                    <span className="text-black text-sm font-bold block">Estrutura de Time</span>
+                                    <span className="text-zinc-600 text-xs">Especialização e indicadores</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button
+                        onClick={() => setStep('questions')}
+                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 font-bold tracking-[0.2em] uppercase text-xs transition-all flex items-center justify-center gap-2 rounded-none"
+                    >
+                        Iniciar Análise <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </DiagnosticLayout>
+        );
+    }
 
     return (
-        <PageLayout>
-            {step === 'start' && (
-                <Section variant="light" className="min-h-[100dvh] flex flex-col justify-center py-[5rem] relative overflow-hidden bg-white">
-                    {/* Background Grid */}
-                    <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
-
-                    <div className="container-custom max-w-5xl mx-auto text-center relative z-10 w-full">
-                        <div className="max-w-3xl mx-auto">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full mb-8">
-                                <span className="w-2 h-2 rounded-full bg-black animate-pulse"></span>
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-                                    Diagnóstico de Receita
-                                </span>
-                            </div>
-
-                            <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-black uppercase leading-[0.9]">
-                                Revenue<br /><span className="text-zinc-400">Maturity Score</span>
-                            </h1>
-                            <p className="text-xl text-zinc-500 mb-12 leading-relaxed max-w-2xl mx-auto">
-                                Descubra se sua operação de vendas é escalável ou um gargalo.
-                            </p>
-
-                            <Button onClick={() => setStep('questions')} className="w-full md:w-auto bg-black text-white px-12 h-16 rounded-none font-bold tracking-[0.2em] uppercase text-xs transition-all hover:scale-[1.02] active:scale-[0.98]">
-                                Iniciar Auditoria <ArrowRight className="ml-2 w-4 h-4" />
-                            </Button>
+        <DiagnosticLayout
+            title="Revenue Score"
+            subtitle="Diagnóstico de Maturidade Comercial"
+            variant={step === 'results' ? 'dark' : 'light'}
+            centered={step !== 'results'}
+        >
+            {step === 'questions' && (
+                <div className="max-w-3xl mx-auto">
+                    <div className="mb-12">
+                        <div className="flex justify-between items-end mb-4">
+                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                                Questão {currentQ + 1} de {QUESTIONS.length}
+                            </span>
+                            <span className="text-[10px] font-mono text-zinc-400">
+                                {Math.round(((currentQ) / QUESTIONS.length) * 100)}%
+                            </span>
+                        </div>
+                        <div className="w-full bg-zinc-100 h-px">
+                            <motion.div
+                                className="h-full bg-black"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
+                                transition={{ duration: 0.3 }}
+                            />
                         </div>
                     </div>
-                </Section>
-            )}
 
-            {step !== 'start' && (
-                <Section variant={step === 'results' ? 'dark' : 'light'} className={`min-h-[100dvh] flex flex-col justify-center relative overflow-hidden ${step === 'results' ? 'bg-black text-white py-20' : 'bg-white py-[5rem]'}`}>
+                    <AnimatePresence mode='wait'>
+                        <motion.div
+                            key={currentQ}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <h2 className="text-2xl md:text-3xl font-medium text-black mb-12 leading-tight">
+                                {QUESTIONS[currentQ].question}
+                            </h2>
 
-                    {step === 'questions' && (
-                        <div className="container-custom max-w-4xl mx-auto relative z-10 w-full">
-                            <div className="mb-20">
-                                <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
-                                            <span className="text-[10px] font-mono font-medium uppercase tracking-[0.2em] text-zinc-500">
-                                                Live Audit
-                                            </span>
-                                        </div>
-                                        <h1 className="text-3xl md:text-5xl font-bold text-black uppercase tracking-tight leading-none">
-                                            Revenue<br />Maturity
-                                        </h1>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-5xl font-light text-black tracking-tighter leading-none">
-                                            {Math.round((currentQ / QUESTIONS.length) * 100)}<span className="text-lg text-zinc-400 font-normal">%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="w-full bg-zinc-100 h-px">
-                                    <motion.div
-                                        className="h-full bg-black"
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
-                                        transition={{ duration: 0.3, ease: "linear" }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="min-h-[400px]">
-                                <AnimatePresence mode='wait'>
-                                    <motion.div
-                                        key={currentQ}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.3 }}
+                            <div className="space-y-px bg-zinc-200 border border-zinc-200">
+                                {QUESTIONS[currentQ].options.map((opt, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleAnswer(opt.score)}
+                                        className="w-full text-left p-6 bg-white hover:bg-zinc-50 transition-colors flex items-center group"
                                     >
-                                        <div className="mb-12">
-                                            <span className="block text-[10px] font-mono text-zinc-400 mb-4 uppercase tracking-widest">
-                                                0{QUESTIONS[currentQ].id} / 0{QUESTIONS.length}
-                                            </span>
-                                            <h2 className="text-2xl md:text-4xl font-medium text-black leading-tight">
-                                                {QUESTIONS[currentQ].question}
-                                            </h2>
+                                        <div className="w-8 h-8 flex items-center justify-center border border-zinc-200 text-zinc-400 text-xs mr-6 group-hover:border-black group-hover:text-black transition-colors rounded-sm">
+                                            {String.fromCharCode(65 + idx)}
                                         </div>
-
-                                        <div className="grid grid-cols-1 gap-px bg-zinc-100 border border-zinc-100">
-                                            {QUESTIONS[currentQ].options.map((opt, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => handleAnswer(opt.score)}
-                                                    className="group relative flex items-center p-6 md:p-8 text-left bg-white hover:bg-zinc-50 transition-colors duration-200 outline-none"
-                                                >
-                                                    <div className="mr-8 w-6 h-6 flex items-center justify-center border border-zinc-200 text-[10px] font-mono text-zinc-400 group-hover:border-black group-hover:text-black transition-colors rounded-none shrink-0">
-                                                        {String.fromCharCode(65 + idx)}
-                                                    </div>
-
-                                                    <span className="text-base text-zinc-600 group-hover:text-black transition-colors leading-relaxed">
-                                                        {opt.label}
-                                                    </span>
-
-                                                    <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
-                        </div>
-                    )}
-
-                    {step === 'lead-capture' && (
-                        <div className="container-custom max-w-5xl mx-auto relative z-10 w-full">
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="max-w-md mx-auto"
-                            >
-                                <div className="bg-white p-0 md:p-8">
-                                    <div className="text-center mb-12">
-                                        <h2 className="text-3xl font-bold text-black mb-4 tracking-tight uppercase leading-none">
-                                            Relatório Autorizado
-                                        </h2>
-                                        <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-[0.2em]">
-                                            Identificação obrigatória
-                                        </p>
-                                    </div>
-
-                                    <form onSubmit={handleLeadSubmit} className="space-y-6">
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Nome Completo</Label>
-                                            <Input required className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium" value={leadForm.name} onChange={e => setLeadForm({ ...leadForm, name: e.target.value })} placeholder="Digite seu nome" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">E-mail Corporativo</Label>
-                                            <Input required type="email" className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium" value={leadForm.email} onChange={e => setLeadForm({ ...leadForm, email: e.target.value })} placeholder="nome@empresa.com" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Empresa</Label>
-                                            <Input required className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium" value={leadForm.company} onChange={e => setLeadForm({ ...leadForm, company: e.target.value })} placeholder="Nome da organização" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">WhatsApp</Label>
-                                                <Input required type="tel" className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all placeholder:text-zinc-300 font-medium" value={leadForm.phone} onChange={e => setLeadForm({ ...leadForm, phone: e.target.value })} placeholder="(00) 00000-0000" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <Label className="text-[10px] font-bold text-black uppercase tracking-widest pl-1">Cargo</Label>
-                                                <Select onValueChange={val => setLeadForm({ ...leadForm, role: val })}>
-                                                    <SelectTrigger className="bg-zinc-50 border-zinc-200 text-black h-14 focus:border-black focus:ring-0 rounded-none transition-all font-medium"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                                                    <SelectContent className="bg-white border-zinc-200 text-black rounded-none"><SelectItem value="vp">VP / C-Level</SelectItem><SelectItem value="diretor">Diretor(a)</SelectItem><SelectItem value="gerente">Gerente</SelectItem><SelectItem value="vendedor">Vendedor(a)</SelectItem><SelectItem value="analista">Analista</SelectItem><SelectItem value="growth">Growth / Mkt</SelectItem><SelectItem value="outros">Outros</SelectItem></SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                        <Button type="submit" disabled={isSubmitting} className="w-full bg-black text-white hover:bg-zinc-800 h-14 mt-8 font-bold tracking-[0.2em] uppercase text-[10px] rounded-none shadow-none transition-all duration-300 border border-black">{isSubmitting ? 'Processando...' : 'Liberar Relatório Oficial'}</Button>
-                                    </form>
-                                </div>
-                            </motion.div>
-                        </div>
-                    )}
-
-                    {step === 'results' && (
-                        <div className="container-custom max-w-6xl mx-auto">
-                            <div className="flex justify-center mb-12">
-                                <span className="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-[10px] font-mono-tech uppercase tracking-[0.4em] text-gray-400">
-                                    Resultado Oficial
-                                </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                                {/* Score Circle Card */}
-                                <div className="lg:col-span-5 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col items-center justify-center relative shadow-2xl">
-                                    <div className="absolute top-8 left-8 text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">Revenue Score</div>
-                                    <div className="relative w-72 h-72 my-8">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie data={chartData} cx="50%" cy="50%" innerRadius="85%" outerRadius="100%" startAngle={90} endAngle={-270} dataKey="value" stroke="none">
-                                                    <Cell key="score" fill="#22c55e" />
-                                                    <Cell key="gap" fill="#111" />
-                                                </Pie>
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                            <div className="text-8xl font-bold text-white tracking-tighter leading-none">{score}</div>
-                                            <div className="text-xs text-gray-500 font-mono-tech mt-2 tracking-widest uppercase">Pontos</div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4 text-center">
-                                        <div className="text-revgreen text-sm font-mono-tech font-bold uppercase tracking-widest">
-                                            {score >= 80 ? 'Operação Escalável' : score >= 50 ? 'Potencial de Tração' : 'Risco Operacional'}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Info Card */}
-                                <div className="lg:col-span-7 bg-[#0a0a0a] border border-white/5 rounded-3xl p-12 flex flex-col justify-between shadow-2xl">
-                                    <div>
-                                        <span className="text-revgreen text-xs font-mono-tech uppercase tracking-widest font-bold block mb-4">Diagnóstico Operacional</span>
-                                        <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">{result.title}</h2>
-                                        <p className="text-gray-400 text-xl font-light leading-relaxed mb-10 max-w-xl">
-                                            {result.msg}
-                                        </p>
-                                    </div>
-                                    <Button className="bg-revgreen text-black hover:bg-revgreen/90 rounded-xl px-10 h-16 uppercase tracking-widest font-bold text-xs w-full lg:w-auto shadow-[0_0_30px_rgba(34,197,94,0.2)] transition-all" onClick={() => window.open('https://api.whatsapp.com/send?phone=5511999999999&text=Dashboard:%20Revenue%20Score', '_blank')}>
-                                        Agendar Plano de Escala <ArrowRight className="ml-3 w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            {/* Metric Bars (Bottom row) */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                                {[
-                                    { label: 'Previsibilidade', val: answers[0] > 10 ? 'Alta' : 'Baixa', color: answers[0] > 10 ? 'bg-revgreen' : 'bg-red-500' },
-                                    { label: 'Dependência', val: answers[4] > 10 ? 'Baixa' : 'Alta', color: answers[4] > 10 ? 'bg-revgreen' : 'bg-red-500' },
-                                    { label: 'Dados', val: answers[2] > 10 ? 'OK' : 'Crítico', color: answers[2] > 10 ? 'bg-revgreen' : 'bg-red-500' }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <span className="text-[10px] font-mono-tech text-gray-500 uppercase tracking-widest">{item.label}</span>
-                                            <span className={`text-[10px] font-mono-tech uppercase font-bold ${item.val === 'Alta' || (item.val === 'Baixa' && idx === 1) || item.val === 'OK' ? 'text-revgreen' : 'text-red-500'}`}>
-                                                {item.val}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                            <div className={`h-full ${item.color}`} style={{ width: item.val === 'Alta' || (item.val === 'Baixa' && idx === 1) || item.val === 'OK' ? '100%' : '30%' }}></div>
-                                        </div>
-                                    </div>
+                                        <span className="text-zinc-600 group-hover:text-black transition-colors text-sm md:text-base font-medium">
+                                            {opt.label}
+                                        </span>
+                                    </button>
                                 ))}
                             </div>
-                        </div>
-                    )}
-                </Section>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             )}
-        </PageLayout>
+
+            {step === 'lead-capture' && (
+                <DiagnosticForm
+                    onSubmit={handleFormSubmit}
+                    isSubmitting={isSubmitting}
+                />
+            )}
+
+            {step === 'results' && (
+                <div className="animate-in fade-in duration-700">
+                    {/* First Fold: Metrics Dashboard */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-32">
+                        {/* Left Column: Synthetic Score */}
+                        <div className="lg:col-span-4">
+                            <ScoreGauge
+                                score={score}
+                                label="Maturidade Comercial"
+                                description="Índice de eficiência de receita."
+                            />
+                        </div>
+
+                        {/* Right Column: Detailed Breakdown */}
+                        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <MetricCard
+                                label="Previsibilidade"
+                                value={answers[0] > 10 ? "Alta" : "Variável"}
+                                description="Recorrência de Receita"
+                                status={answers[0] > 10 ? 'success' : 'warning'}
+                            />
+                            <MetricCard
+                                label="Eficiência"
+                                value={answers[2] > 10 ? ">20%" : "<5%"}
+                                description="Taxa de Conversão"
+                                status={answers[2] > 10 ? 'success' : 'critical'}
+                            />
+                            <MetricCard
+                                label="Estrutura"
+                                value={answers[1] === 20 ? "Espec." : "Genérica"}
+                                description="Especialização do Time"
+                                status={answers[1] > 10 ? 'success' : 'warning'}
+                            />
+                            <MetricCard
+                                label="Tecnologia"
+                                value={answers[3] > 10 ? "CRM+" : "Manual"}
+                                description="Stack de Vendas"
+                                status={answers[3] > 10 ? 'success' : 'critical'}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Second Fold: High-Conversion CTA */}
+                    <div className="border-t border-zinc-900 pt-24 pb-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                            <div className="lg:col-span-7">
+                                <span className="text-revgreen font-mono text-xs uppercase tracking-[0.2em] mb-4 block">
+                                    Próximos Passos
+                                </span>
+                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                                    Transforme esse diagnóstico em <span className="text-zinc-500">plano de ação.</span>
+                                </h2>
+                                <p className="text-lg text-zinc-400 font-light leading-relaxed mb-8 max-w-xl">
+                                    Dados sem ação são apenas números. Nossa equipe de engenharia de receita pode auditar esses pontos cegos e implementar a infraestrutura necessária em 30 dias.
+                                </p>
+
+                                <ul className="space-y-4 mb-10">
+                                    <li className="flex items-center gap-3 text-zinc-300">
+                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                        <span>Auditoria profunda do seu CRM e processos.</span>
+                                    </li>
+                                    <li className="flex items-center gap-3 text-zinc-300">
+                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                        <span>Definição de metas de conversão realistas.</span>
+                                    </li>
+                                    <li className="flex items-center gap-3 text-zinc-300">
+                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
+                                        <span>Roadmap técnico de implementação.</span>
+                                    </li>
+                                </ul>
+
+                                <a
+                                    href="https://cal.com/revhackers/diagnostico"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-3 bg-revgreen text-black px-8 py-5 rounded-sm font-bold uppercase tracking-wider hover:bg-white hover:scale-105 transition-all duration-300 text-sm"
+                                >
+                                    Agendar Debriefing
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </a>
+                                <p className="text-zinc-600 text-xs mt-4">
+                                    * Sessão gratuita de 30min para qualificação.
+                                </p>
+                            </div>
+
+                            {/* Visual/Trust Element */}
+                            <div className="lg:col-span-5 bg-zinc-900/50 border border-zinc-800 p-8 rounded-sm relative overflow-hidden group hover:border-zinc-700 transition-colors">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-revgreen/10 rounded-full blur-[80px] pointer-events-none" />
+
+                                <h3 className="text-xl font-bold text-white mb-2">Engenharia de Receita</h3>
+                                <p className="text-zinc-500 text-sm mb-8">Nossa metodologia proprietária.</p>
+
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+                                        <span className="text-zinc-400 text-sm">Design de Processos</span>
+                                        <span className="text-revgreen font-mono text-xs">V2.0</span>
+                                    </div>
+                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+                                        <span className="text-zinc-400 text-sm">Automação & IA</span>
+                                        <span className="text-revgreen font-mono text-xs">ACTIVE</span>
+                                    </div>
+                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+                                        <span className="text-zinc-400 text-sm">Data Warehouse</span>
+                                        <span className="text-revgreen font-mono text-xs">CONNECTED</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </DiagnosticLayout >
     );
 };
+
 export default RevenueScore;

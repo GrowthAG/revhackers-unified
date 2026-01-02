@@ -4,7 +4,7 @@ import { CaseStudy } from "./index";
 export const funnelsCase: CaseStudy = {
   title: "Funnels",
   category: "SaaS • Founder-Led Growth",
-  logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
+  logo: "/uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png",
   coverImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0",
   challenge: "A Funnels, SaaS de automação de vendas, tinha um produto excepcional mas dependia 100% de prospecção fria (cold email/cold call) e anúncios pagos para gerar pipeline.\n\nO CEO Giulliano Alves tinha zero presença no LinkedIn, desperdiçando a oportunidade de criar autoridade e gerar demanda orgânica qualificada.\n\nO desafio era triplo: (1) Criar brand awareness pessoal do CEO como autoridade em automação de vendas; (2) Gerar leads qualificados (C-Level e Diretores) de forma orgânica, sem depender de anúncios; (3) Reduzir o ciclo de vendas através de warm leads que já conhecem e confiam no fundador.",
   solution: "Implementamos uma estratégia completa de Founder-Led Growth no LinkedIn:\n\n(1) Posicionamento de Autoridade: criação de conteúdo técnico e de liderança sobre automação de vendas, RevOps e crescimento de SaaS, publicado 5x por semana;\n\n(2) Engenharia Social: estratégia de conexão com decisores (VPs de Vendas, CEOs de SaaS, Diretores Comerciais) usando LinkedIn Sales Navigator com mensagens personalizadas;\n\n(3) Funil de Conteúdo para Conversão: sequência de posts educativos → case studies → direct response (CTA para demo) que guia o lead do awareness até a conversão;\n\n(4) Otimização de Perfil: transformação do perfil do CEO em uma landing page de conversão, com headline impactante, featured section com cases e CTA claro.",

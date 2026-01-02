@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
-import PageLayout from '@/components/layout/PageLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import CaseForm from '@/components/admin/CaseForm';
 import { Loader2 } from 'lucide-react';
@@ -40,43 +40,37 @@ const AdminCaseEdit = () => {
 
     if (loading) {
         return (
-            <PageLayout>
-                <div className="flex h-[50vh] items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <AdminLayout>
+                <div className="flex h-[calc(100vh-60px)] items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-300" />
                 </div>
-            </PageLayout>
+            </AdminLayout>
         );
     }
 
     if (fetchError) {
         return (
-            <PageLayout>
-                <AdminPageLayout title="Erro" backTo="/admin/cases" backLabel="Voltar">
-                    <div className="p-8 text-center">
-                        <h2 className="text-xl font-bold text-red-500 mb-2">Falha ao carregar Case</h2>
-                        <p className="text-gray-600 mb-4">{fetchError}</p>
-                        <button onClick={() => window.location.reload()} className="underline">Tentar novamente</button>
+            <AdminLayout>
+                <div className="p-8 text-center text-red-500">
+                    <h2 className="text-xl font-bold mb-2">Falha ao carregar Case</h2>
+                    <p className="mb-4">{fetchError}</p>
+                    <button onClick={() => window.location.reload()} className="underline text-sm">Tentar novamente</button>
+                    <div className="mt-4">
+                        <button onClick={() => navigate('/admin/cases')} className="text-sm text-zinc-500 hover:text-zinc-800">Voltar para listagem</button>
                     </div>
-                </AdminPageLayout>
-            </PageLayout>
+                </div>
+            </AdminLayout>
         );
     }
 
     if (!caseStudy) return null;
 
     return (
-        <PageLayout>
-            <AdminPageLayout
-                title="Editar Case"
-                description={`Editando: ${caseStudy.client_name}`}
-                backTo="/admin/cases"
-                backLabel="Voltar aos Cases"
-            >
-                <div className="max-w-5xl mx-auto">
-                    <CaseForm initialData={caseStudy} isEditing />
-                </div>
-            </AdminPageLayout>
-        </PageLayout>
+        <AdminLayout>
+            <div className="h-full">
+                <CaseForm initialData={caseStudy} isEditing />
+            </div>
+        </AdminLayout>
     );
 };
 

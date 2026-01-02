@@ -99,7 +99,7 @@ const AdminPosts = () => {
       image: post.image || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5',
       author_name: post.author?.name?.trim() || 'Giulliano Alves',
       author_role: post.author?.role?.trim() || 'CEO da RevHackers',
-      author_avatar: post.author?.avatar || '/lovable-uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png',
+      author_avatar: post.author?.avatar || '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png',
       date: new Date(post.date).toISOString(),
       read_time: post.readTime?.trim() || '5 min',
       featured: Boolean(post.featured)

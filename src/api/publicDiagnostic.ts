@@ -14,36 +14,7 @@ export const submitPublicDiagnostic = async (
     maturity: { level: string; description: string; action: string; color: string; title?: string },
     webhookUrl?: string
 ) => {
-    // FALLBACK STRATEGY: Use existing 'rei_projects'/'rei_responses' tables
-    // because the new 'diagnostico' table migration might not have applied yet.
-
-    // 1. Create Project (Lead)
-    const nextDate = new Date();
-    nextDate.setFullYear(nextDate.getFullYear() + 1);
-
-    const { data: project, error: pError } = await supabase
-        .from('rei_projects')
-        .insert({
-            client_name: lead.name,
-            client_email: lead.email,
-            client_company: lead.company,
-            analyst_email: 'giulliano@revhackers.com.br',
-            next_rei_date: nextDate.toISOString(),
-            quarter: 'Q1',
-            year: new Date().getFullYear(),
-            status: 'active'
-        })
-        .select()
-        .single();
-
-    if (pError) {
-        console.error('Error creating lead project:', pError);
-        throw pError;
-    }
-
-    // 2. Save Response
-    // We store the extra details (phone, role, maturity details) in the responses JSON or separate columns if available
-    // For now, we put everything in 'responses' block to ensure it's saved without schema errors
+    // USE RPC to bypass RLS issues securely (SECURITY DEFINER)
     const fullResponses = {
         ...answers,
         lead_details: {
@@ -55,35 +26,26 @@ export const submitPublicDiagnostic = async (
         diagnostic_type: answers.diagnostic_type || 'Diagnostic'
     };
 
-    const { data: response, error: rError } = await supabase
-        .from('rei_responses')
-        .insert({
-            project_id: project.id,
-            responses: fullResponses as any,
-            total_score: score,
-            maturity_level: maturity.title || maturity.level,
-            maturity_percentage: score,
-            // Try to set context/source if columns exist, otherwise this might fail if I assume they exist
-            // I'll assume they exist as they were in previous migrations. 
-            // If they fail, we might need to remove them, but let's hope. 
-            // Safest is to rely on defaults if possible, but let's try to set them.
-            context: 'lead_gen',
-            source: 'diagnostic',
-            score_version: 'v1.0'
-        })
-        .select()
-        .single();
+    const { data, error } = await supabase.rpc('create_diagnostic_entry', {
+        p_lead_name: lead.name,
+        p_lead_email: lead.email,
+        p_lead_company: lead.company,
+        p_responses: fullResponses,
+        p_score: score,
+        p_maturity_level: maturity.title || maturity.level
+    });
 
-    if (rError) {
-        console.error('Error saving response:', rError);
-        // If error is about missing columns (context/source), we retry without them?
-        // Too complex for now. Assuming previous migrations ran.
-        throw rError;
+    if (error) {
+        console.error('Error submitting diagnostic via RPC:', error);
+        throw error;
     }
+
+    // Cast data to expected type
+    const { response_id } = data as { project_id: string, response_id: string };
 
     // 3. Trigger Webhook
     // URL definition
-    const resultUrl = `${window.location.origin}/diagnostico/resultado/${response.id}`;
+    const resultUrl = `${window.location.origin}/diagnostico/resultado/${response_id}`;
 
     if (webhookUrl) {
         try {
@@ -105,5 +67,6 @@ export const submitPublicDiagnostic = async (
         }
     }
 
-    return { response, resultUrl };
+    // Return structure matching what UI expects (UI doesn't strictly check project object, just success)
+    return { response: { id: response_id }, resultUrl };
 };

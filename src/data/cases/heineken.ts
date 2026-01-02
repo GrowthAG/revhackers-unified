@@ -3,7 +3,7 @@ export const heinekenCase = {
   title: "Heineken",
   category: "Agência",
   logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f3b8319b8c34886c39bf4.png",
-  coverImage: "/lovable-uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png",
+  coverImage: "/uploads/9037d396-9312-4aaf-aa7f-024c71649df9.png",
   challenge: "A Heineken precisava fortalecer sua presença em bares e restaurantes do interior de São Paulo, uma região estratégica mas negligenciada pelas grandes campanhas nacionais. O desafio era criar conexão local autêntica com proprietários de estabelecimentos e consumidores, sem o orçamento de uma campanha de massa. Precisavam de materiais em vídeo personalizados que gerassem engajamento e aumentassem o sell-out nos pontos de venda.",
   solution: "Desenvolvemos uma campanha de trade marketing digital hiperlocal: (1) Produção de vídeos personalizados para cada estabelecimento parceiro, destacando a história do bar e a parceria com Heineken; (2) Distribuição dos vídeos nas redes sociais dos bares e em campanhas geolocalizadas no Facebook e Instagram; (3) Materiais de ponto de venda (PDV) digitais para uso em TVs dos estabelecimentos; (4) Campanha de incentivo para proprietários compartilharem os vídeos. Tudo focado em criar conexão emocional local.",
   results: [

@@ -187,7 +187,7 @@ const ReiFounderPage = () => {
                         </Link>
                         <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
                             REI – Revenue Excellence Initiative
-                            <span className="block text-lg md:text-xl text-revgreen font-normal font-mono-tech mt-2 tracking-wide">
+                            <span className="block text-lg md:text-xl text-revgreen font-normal font-mono-tech mt-2 tracking-wide uppercase">
                                 Protocolo Founder Growth
                             </span>
                         </h1>

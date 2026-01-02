@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import AdminLayout from '@/components/layout/AdminLayout';
+import AdminPageLayout from '@/components/layout/AdminPageLayout';
 
 const OFFICIAL_MATERIALS = [
     { title: "Framework Completo: Agente de IA para Meta Ads", url: "https://doc.clickup.com/9017035197/p/h/8cqa2dx-77477/31372c5d222fba9", type: "framework" },
@@ -95,23 +97,32 @@ const FixMaterialsPage = () => {
     };
 
     return (
-        <div className="p-10 max-w-4xl mx-auto min-h-screen bg-white">
-            <h1 className="text-3xl font-bold mb-6 text-red-600">Ferramenta de Correção de Materiais</h1>
+        <AdminLayout>
+            <AdminPageLayout
+                title="Correção de Materiais"
+                description="Ferramenta de emergência para resetar e corrigir materiais oficiais."
+                backTo="/admin/materials"
+                backLabel="Voltar aos Materiais"
+            >
+                <div className="max-w-4xl mx-auto min-h-screen bg-white">
+                    <h1 className="text-3xl font-bold mb-6 text-red-600">Ferramenta de Correção de Materiais</h1>
 
-            <div className="flex flex-col gap-4 mb-8">
-                <Button
-                    onClick={runResetAndFix}
-                    className="w-full h-24 text-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-xl border-4 border-red-800 rounded-xl uppercase tracking-widest"
-                >
-                    👉 CLIQUE AQUI PARA CORRIGIR AGORA
-                </Button>
-                <p className="text-sm text-gray-500 text-center">Isso vai apagar os dados incorretos e inserir os materiais oficiais automaticamente.</p>
-            </div>
+                    <div className="flex flex-col gap-4 mb-8">
+                        <Button
+                            onClick={runResetAndFix}
+                            className="w-full h-24 text-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-xl border-4 border-red-800 rounded-xl uppercase tracking-widest"
+                        >
+                            👉 CLIQUE AQUI PARA CORRIGIR AGORA
+                        </Button>
+                        <p className="text-sm text-gray-500 text-center">Isso vai apagar os dados incorretos e inserir os materiais oficiais automaticamente.</p>
+                    </div>
 
-            <div className="bg-gray-950 text-green-400 p-6 rounded-lg shadow-inner min-h-[400px] font-mono text-sm leading-relaxed whitespace-pre-wrap border border-gray-800">
-                {status}
-            </div>
-        </div>
+                    <div className="bg-gray-950 text-green-400 p-6 rounded-lg shadow-inner min-h-[400px] font-mono text-sm leading-relaxed whitespace-pre-wrap border border-gray-800">
+                        {status}
+                    </div>
+                </div>
+            </AdminPageLayout>
+        </AdminLayout>
     );
 };
 

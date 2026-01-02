@@ -3,7 +3,7 @@ import { PartnerData } from './types';
 
 export const agenceMrData: PartnerData = {
   name: "Agence MR",
-  logo: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
+  logo: "/uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
   coverImage: "https://images.unsplash.com/photo-1542744173-05336fcc7ad4",
   category: "Tecnologia",
   description: "Agência de tecnologia especializada em desenvolvimento de soluções digitais inovadoras para empresas de médio e grande porte.",

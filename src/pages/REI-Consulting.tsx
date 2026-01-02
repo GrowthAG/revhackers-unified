@@ -47,7 +47,10 @@ const section3Schema = z.object({
 });
 
 // Sections 4 & 5 Placeholders
-const section4Schema = z.object({});
+const section4Schema = z.object({
+    competitors: z.string().min(5, "Por favor, minimize os principais concorrentes"),
+    marketOrientation: z.string().min(5, "Campo obrigatório"),
+});
 const section5Schema = z.object({});
 
 const section6Schema = z.object({
@@ -77,6 +80,7 @@ const section7Schema = z.object({
 const formSchema = section1Schema
     .merge(section2Schema)
     .merge(section3Schema)
+    .merge(section4Schema)
     .merge(section6Schema)
     .merge(section7Schema);
 
@@ -152,9 +156,9 @@ const ReiConsultingPage = () => {
         if (currentStep === 6) fieldsToValidate = Object.keys(section6Schema.shape);
         if (currentStep === 7) fieldsToValidate = Object.keys(section7Schema.shape);
 
-        // Skip validation for placeholder steps 4 & 5
+        // Skip validation for placeholder step 5
         let isValid = true;
-        if (currentStep !== 4 && currentStep !== 5) {
+        if (currentStep !== 5) {
             isValid = await form.trigger(fieldsToValidate);
         }
 
@@ -273,7 +277,7 @@ const ReiConsultingPage = () => {
                         </Link>
 
                         {/* White Minimal Header */}
-                        <h1 className="text-4xl md:text-6xl font-semibold text-black mb-4 tracking-tighter uppercase leading-none">
+                        <h1 className="text-4xl md:text-6xl font-semibold text-black mb-4 tracking-tighter leading-none">
                             REI Consulting<span className="text-revgreen">.</span>
                         </h1>
                         <p className="text-xl text-zinc-500 font-normal tracking-tight">
@@ -307,7 +311,7 @@ const ReiConsultingPage = () => {
                             >
                                 {currentStep === 1 && (
                                     <div className="space-y-8">
-                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 uppercase tracking-tight">Informações Básicas</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Informações Básicas</h2>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-3">
                                                 <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Nome *</label>
@@ -369,7 +373,7 @@ const ReiConsultingPage = () => {
 
                                 {currentStep === 2 && (
                                     <div className="space-y-8">
-                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 uppercase tracking-tight">Produto e Expectativas</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Produto e Expectativas</h2>
                                         <div className="space-y-3">
                                             <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">O que você espera ter de resultados nos próximos 12 meses? *</label>
                                             <textarea {...form.register("results12Months")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Descreva seus objetivos..." />
@@ -403,7 +407,7 @@ const ReiConsultingPage = () => {
 
                                 {currentStep === 3 && (
                                     <div className="space-y-8">
-                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 uppercase tracking-tight">Problemas e Dores</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Problemas e Dores</h2>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-3">
                                                 <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Descrição do ICP *</label>
@@ -435,7 +439,24 @@ const ReiConsultingPage = () => {
                                     </div>
                                 )}
 
-                                {(currentStep === 4 || currentStep === 5) && (
+                                {currentStep === 4 && (
+                                    <div className="space-y-8">
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Mercado e Concorrência</h2>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Quem são seus principais concorrentes? *</label>
+                                            <p className="text-[10px] text-zinc-400 italic mb-2">Dica: Inclua o site/URL se possível (ex: www.concorrente.com.br)</p>
+                                            <textarea {...form.register("competitors")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Concorrente 1 (www.c1.com.br)&#10;Concorrente 2 (www.c2.com.br)..." />
+                                            {form.formState.errors.competitors && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.competitors.message}</p>}
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Como você se diferencia no mercado hoje? *</label>
+                                            <textarea {...form.register("marketOrientation")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Preço, Qualidade, Tecnologia..." />
+                                            {form.formState.errors.marketOrientation && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.marketOrientation.message}</p>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {currentStep === 5 && (
                                     <div className="text-center py-20 bg-zinc-50 rounded-sm border border-zinc-200 border-dashed">
                                         <h3 className="text-xl text-black font-mono font-bold mb-2">Aguardando Input</h3>
                                         <p className="text-zinc-500">Conteúdo da Seção {currentStep} em breve.</p>
@@ -445,7 +466,7 @@ const ReiConsultingPage = () => {
 
                                 {currentStep === 6 && (
                                     <div className="space-y-8">
-                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 uppercase tracking-tight">Vendas e Marketing</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Vendas e Marketing</h2>
                                         {[
                                             { id: "salesChannels", label: "Quais principais canais de vendas você utiliza? *" },
                                             { id: "marketingTools", label: "Quais ferramentas de marketing utiliza? *" },
@@ -479,7 +500,7 @@ const ReiConsultingPage = () => {
 
                                 {currentStep === 7 && (
                                     <div className="space-y-8">
-                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 uppercase tracking-tight">Recursos e Processos</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Recursos e Processos</h2>
                                         {[
                                             { id: "salesCycle", label: "Ciclo de vendas típico *" },
                                             { id: "leadNurturing", label: "Nutrição de leads?" },

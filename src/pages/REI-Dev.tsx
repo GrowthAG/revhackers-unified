@@ -188,7 +188,7 @@ const ReiDevPage = () => {
                         </Link>
                         <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
                             REI – Revenue Excellence Initiative
-                            <span className="block text-lg md:text-xl text-revgreen font-normal font-mono-tech mt-2 tracking-wide">
+                            <span className="block text-lg md:text-xl text-revgreen font-normal font-mono-tech mt-2 tracking-wide uppercase">
                                 Protocolo Web & Design
                             </span>
                         </h1>
@@ -273,7 +273,7 @@ const ReiDevPage = () => {
                                             {form.formState.errors.successKpi && <p className="text-red-500 text-xs">{form.formState.errors.successKpi.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quem são os principais concorrentes e o que você gosta/não gosta neles?</label>
+                                            <label className="text-sm font-medium text-gray-300">Quem são os principais concorrentes? (Por favor, cite o site se possível: ex: www.concorrente.com.br)</label>
                                             <textarea {...form.register("competitors")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>

@@ -2,24 +2,24 @@
 import Section from '@/components/ui/Section';
 
 const partners = [
-  { name: "Heineken", logo: "/lovable-uploads/aada4820-3f12-4185-9af6-811f30795a93.png", isBigger: true },
-  { name: "Lindoya", logo: "/lovable-uploads/lindoya-logo.png", isBigger: true },
-  { name: "FMU", logo: "/lovable-uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png", isBigger: true },
-  { name: "Anhembi Morumbi", logo: "/lovable-uploads/f5e74a47-fc77-4b34-970e-e839080310fd.png", isBigger: true },
-  { name: "Cruzeiro do Sul", logo: "/lovable-uploads/cruzeiro-sul-logo-v3.png", isBigger: true, isExtraWide: true },
-  { name: "Agence", logo: "/lovable-uploads/6c09375e-5298-4672-9226-27eb60a6b038.png", isBigger: true },
+  { name: "Heineken", logo: "/uploads/aada4820-3f12-4185-9af6-811f30795a93.png", isBigger: true },
+  { name: "Lindoya", logo: "/uploads/lindoya-logo.png", isBigger: true },
+  { name: "FMU", logo: "/uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png", isBigger: true },
+  { name: "Anhembi Morumbi", logo: "/uploads/f5e74a47-fc77-4b34-970e-e839080310fd.png", isBigger: true },
+  { name: "Cruzeiro do Sul", logo: "/uploads/cruzeiro-sul-logo-v3.png", isBigger: true, isExtraWide: true },
+  { name: "Agence", logo: "/uploads/6c09375e-5298-4672-9226-27eb60a6b038.png", isBigger: true },
   { name: "BLDN", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c77062fe4f1854fadf797.svg", isBigger: true },
   { name: "Idee Seguros", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c73dcdda192452a508485.png", isBigger: true },
   { name: "Wysion", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f321cb62dd3a75de235ca.jpg", isBigger: true },
-  { name: "Bolt", logo: "/lovable-uploads/bolt-logo-new.png", isBigger: true },
-  { name: "Emagrecentro", logo: "/lovable-uploads/emagrecentro-logo-new.png", isBigger: true, isExtraWide: true },
-  { name: "BT", logo: "/lovable-uploads/bt-logo-new.png", isBigger: true },
-  { name: "Tegra", logo: "/lovable-uploads/tegra-logo-new.png", isBigger: true },
-  { name: "Tikpag", logo: "/lovable-uploads/tikpag-logo-final.png", isBigger: true },
+  { name: "Bolt", logo: "/uploads/bolt-logo-new.png", isBigger: true },
+  { name: "Emagrecentro", logo: "/uploads/emagrecentro-logo-new.png", isBigger: true, isExtraWide: true },
+  { name: "BT", logo: "/uploads/bt-logo-new.png", isBigger: true },
+  { name: "Tegra", logo: "/uploads/tegra-logo-new.png", isBigger: true },
+  { name: "Tikpag", logo: "/uploads/tikpag-logo-final.png", isBigger: true },
   { name: "Placlux", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c76cfe889d38ced51667d.png", isBigger: true },
-  { name: "Funnels", logo: "/lovable-uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png", isBigger: true },
-  { name: "ENICS", logo: "/lovable-uploads/a05718ad-1822-4102-909a-7e86af151e98.png", isBigger: true },
-  { name: "TOEFL Junior Brasil", logo: "/lovable-uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png", isBigger: true }
+  { name: "Funnels", logo: "/uploads/e468ed87-3eee-496b-bb1a-3525f02f8429.png", isBigger: true },
+  { name: "ENICS", logo: "/uploads/a05718ad-1822-4102-909a-7e86af151e98.png", isBigger: true },
+  { name: "TOEFL Junior Brasil", logo: "/uploads/46993eff-c4c5-41af-b7ee-c93ef0366f59.png", isBigger: true }
 ];
 
 const PartnersSection = () => {
