@@ -16,7 +16,7 @@ const QuemSomos = () => {
 
   return (
     <PageLayout>
-      <div className="min-h-screen bg-white animate-fade-in">
+      <div className="min-h-screen bg-black animate-fade-in bg-grain">
         {/* Hero Section */}
         <HeroSection />
 
@@ -36,8 +36,7 @@ const QuemSomos = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <CTASection />
+
       </div>
     </PageLayout>
   );

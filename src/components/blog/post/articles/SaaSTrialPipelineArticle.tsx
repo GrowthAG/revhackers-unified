@@ -105,7 +105,7 @@ Abs,
                     proView="Alguém que convidou 2 teammates, usou a feature core X e visitou a página de preços nas últimas 24h."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6 tracking-tight">Os 4 Pilares da Engenharia de Trial</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6 tracking-tight">Os 4 Pilares da Arquitetura de Trial</h2>
                 <div className="bg-white border-l-2 border-black pl-6 py-2 mb-12">
                     <ul className="space-y-6">
                         <li className="flex flex-col md:flex-row gap-2 md:gap-3">

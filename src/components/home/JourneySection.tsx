@@ -11,7 +11,7 @@ const journeySteps = [
   },
   {
     id: "02",
-    title: "Setup de Engenharia",
+    title: "Setup de Arquitetura",
     desc: "Implementação técnica. Configuramos suas ferramentas para falarem a mesma língua (Marketing + Sales).",
     items: ["Integração via API/Webhook", "Tracking Avançado", "Score de Leads"]
   },
@@ -25,48 +25,50 @@ const journeySteps = [
 
 const JourneySection = () => {
   return (
-    <Section variant="light" className="border-t border-gray-100 py-32 bg-white">
+    <Section variant="light" className="border-t border-zinc-100 py-24 md:py-40 bg-white overflow-hidden">
       {/* Centered Standard Header - Light Mode */}
-      <div className="text-center mb-20 max-w-3xl mx-auto">
-        <span className="font-mono-tech text-gray-400 text-xs uppercase tracking-widest mb-4 block">
+      <div className="text-center mb-24 md:mb-32 max-w-4xl mx-auto">
+        <span className="font-mono text-xs text-zinc-400 uppercase tracking-[0.2em] mb-6 block">
           Metodologia Proprietária
         </span>
-        <h2 className="text-4xl md:text-5xl font-medium mb-6 text-black tracking-tight">
-          Como Construímos Máquinas
+        <h2 className="text-4xl md:text-6xl font-black mb-8 text-zinc-900 tracking-tighter text-balance">
+          Como Construímos Máquinas.
         </h2>
-        <p className="text-gray-500 text-lg font-light">
-          Do caos à previsibilidade em 3 etapas claras.
+        <p className="text-xl md:text-2xl text-zinc-500 font-light tracking-tight max-w-2xl mx-auto leading-relaxed">
+          Do caos à previsibilidade em 3 etapas de integração sistêmica.
         </p>
       </div>
 
       <div className="container-custom relative z-10">
-        {/* Connector Line (Desktop) - Gray for Light Mode */}
-        <div className="absolute top-[80px] left-0 w-full h-[1px] bg-gray-200 hidden md:block -z-10"></div>
+        {/* Connector Line (Desktop) - Subtle Zinc */}
+        <div className="absolute top-[100px] left-0 w-full h-px bg-zinc-100 hidden md:block -z-10"></div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {journeySteps.map((step, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 p-8 rounded-sm relative group hover:border-revgreen transition-all duration-300 shadow-sm hover:shadow-md"
+              className="bg-white border border-zinc-100 p-10 md:p-12 rounded-[2.5rem] relative group hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 shadow-sm flex flex-col h-full"
             >
-              {/* Number Badge - Inverted */}
-              <div className="w-16 h-16 bg-white border border-gray-200 text-black font-mono-tech text-xl flex items-center justify-center mb-8 group-hover:bg-revgreen group-hover:text-black group-hover:border-revgreen transition-colors duration-300 z-10 relative">
+              {/* Number Badge - Inverted Mono */}
+              <div className="w-16 h-16 bg-zinc-900 text-white font-mono text-xl flex items-center justify-center mb-10 group-hover:bg-black transition-all duration-500 rounded-2xl shadow-xl shadow-zinc-200 group-hover:scale-110">
                 {step.id}
               </div>
 
-              <h3 className="text-2xl font-bold text-black mb-4">{step.title}</h3>
-              <p className="text-gray-600 text-sm mb-8 leading-relaxed font-light border-b border-gray-100 pb-8">
+              <h3 className="text-2xl md:text-3xl font-bold text-zinc-900 mb-6 tracking-tight">{step.title}</h3>
+              <p className="text-zinc-500 text-[15px] mb-10 leading-relaxed font-normal flex-1">
                 {step.desc}
               </p>
 
-              <ul className="space-y-3">
-                {step.items.map((item, idx) => (
-                  <li key={idx} className="flex items-center text-xs uppercase tracking-wider text-gray-500 font-mono-tech">
-                    <div className="w-1.5 h-1.5 bg-revgreen mr-3"></div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <div className="pt-8 border-t border-zinc-50">
+                <ul className="space-y-4">
+                  {step.items.map((item, idx) => (
+                    <li key={idx} className="flex items-center text-[11px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                      <div className="w-2 h-2 bg-zinc-900 mr-4 rounded-full"></div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </div>

@@ -8,7 +8,7 @@ const services = [
     id: "01",
     title: "Tração",
     subtitle: "& Mídia Paga",
-    desc: "Engenharia de receitas.",
+    desc: "Arquitetura de receitas.",
     link: "/servicos/tracao-midia-paga",
     color: "group-hover:text-revgreen",
     border: "group-hover:border-revgreen/50"

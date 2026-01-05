@@ -1,44 +1,72 @@
 
+import React from 'react';
+
 const HistorySection = () => {
   return (
-    <section className="py-20 md:py-32 bg-white">
+    <section className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="container-custom">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tighter text-gray-900 uppercase">
-            Nossa história
-          </h2>
-          <p className="text-xl text-gray-600 font-normal tracking-tight">
-            De Agência Digital a Hub de Tecnologia e Inteligência Artificial
-          </p>
+        {/* Compact Header - Definitive Surgical Scale */}
+        <div className="max-w-6xl mx-auto mb-20 md:mb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-baseline">
+            <div className="space-y-6 lg:col-span-8">
+              <div className="flex items-center gap-3">
+                <span className="text-revgreen text-xs">•</span>
+                <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.4em] font-black">
+                  REVHACKERS // INTELLIGENCE UNIT
+                </span>
+              </div>
+              <h2 className="text-6xl md:text-[6rem] font-black tracking-tighter text-black leading-[0.85] mb-6">
+                ARQUITETURA <br />
+                DE RECEITA<span className="text-revgreen">.</span>
+              </h2>
+            </div>
+            <div className="lg:col-span-4 lg:pt-8 animate-fade-in [animation-delay:200ms]">
+              <p className="text-xl md:text-2xl text-zinc-900 font-bold tracking-tighter leading-[1.1]">
+                Substituímos o "achismo" por uma estrutura de vendas previsível e automatizada.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <img
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000"
-              alt="Dashboard de dados e métricas de receita"
-              className="rounded-sm shadow-xl w-full h-auto grayscale hover:grayscale-0 transition-all duration-700"
-            />
-          </div>
+        {/* Narrative Flow - Definitive Lab Style */}
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-100 border border-zinc-100">
+            {/* Era 01 */}
+            <div className="bg-white p-12 space-y-8 animate-fade-in [animation-delay:400ms] group hover:bg-zinc-50 transition-colors duration-500">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-mono text-zinc-300 font-black uppercase tracking-widest">
+                  [ RH_LOG.01 // ORIGEM ]
+                </span>
+                <div className="w-1 h-1 bg-zinc-200 group-hover:bg-black transition-colors" />
+              </div>
+              <p className="text-zinc-500 text-[16px] leading-relaxed font-medium">
+                Nascemos como <span className="text-black font-bold">GrowthAG</span>. Percebemos cedo que "vibe code" e vaidade não sustentam operações sérias. Onde o mercado via criatividade, instalamos processos.
+              </p>
+            </div>
 
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold mb-4 text-gray-900">Do "Feeling" à Engenharia</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Tudo começou com uma frustração genuína: o mercado estava saturado de "gurus" e agências vendendo métricas de vaidade.
-              Likes não pagam contas. Alcance não fecha contratos. Nascemos como <strong>GrowthAG</strong> para desafiar essa lógica,
-              focados obsessivamente em uma única coisa: <strong>ROI real e dinheiro no caixa</strong>.
-            </p>
-            <p className="text-gray-600 leading-relaxed">
-              Enquanto o mercado discutia a "cor do botão", nós mergulhamos no código. Como <strong>Growth Agency</strong>, transformamos
-              nossa operação em um laboratório de ciência de dados. Testamos, erramos, aprendemos e validamos teses de
-              <em>Revenue Operations</em> que se tornaram a base do nosso sucesso. Entendemos que Vendas e Marketing não são departamentos separados,
-              são engrenagens de uma mesma máquina.
-            </p>
-            <p className="text-gray-600 leading-relaxed">
-              Hoje, como <strong>RevHackers</strong>, o jogo mudou. Não usamos apenas ferramentas; nós construímos inteligência.
-              Somos um Hub de Tecnologia que usa IA para automatizar o que é repetitivo e dar superpoderes ao que é humano.
-              Não entregamos apenas "leads"; entregamos uma <strong>vantagem competitiva injusta</strong> para o seu negócio.
-            </p>
+            {/* Era 02 */}
+            <div className="bg-white p-12 space-y-8 animate-fade-in [animation-delay:600ms] group hover:bg-zinc-50 transition-colors duration-500">
+              <div className="flex justify-between items-start">
+                <span className="text-[9px] font-mono text-zinc-300 font-black uppercase tracking-widest">
+                  [ RH_LOG.02 // LAB ]
+                </span>
+                <div className="w-1 h-1 bg-zinc-200 group-hover:bg-revgreen transition-colors" />
+              </div>
+              <p className="text-zinc-500 text-[16px] leading-relaxed font-medium">
+                Evoluímos para a <span className="text-black font-bold">RevHackers</span>. Deixamos de ser agência para ser laboratório. Hoje, instalamos a arquitetura de receita que suporta o próximo nível de escala B2B.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Minimal Metadata Footer */}
+        <div className="max-w-6xl mx-auto mt-20 pt-8 border-t border-zinc-50 flex justify-between items-center opacity-30">
+          <span className="text-[8px] font-mono text-black font-black uppercase tracking-[0.5em]">
+            SYST_SECURE // ARCH_STABLE
+          </span>
+          <div className="flex gap-8">
+            <span className="text-[8px] font-mono font-bold uppercase tracking-widest">LATENCY: NULL</span>
+            <span className="text-[8px] font-mono font-bold uppercase tracking-widest">SYNC: 2026.RH</span>
           </div>
         </div>
       </div>

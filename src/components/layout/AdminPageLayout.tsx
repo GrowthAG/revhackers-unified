@@ -41,31 +41,31 @@ const AdminPageLayout = ({
     };
 
     return (
-        <div className="min-h-screen bg-white pt-32 pb-20 transition-colors duration-300">
-            <div className={`container mx-auto px-4 ${maxWidthClasses[maxWidth]}`}>
-                {/* Header - Ultra Minimalist Standard */}
-                <div className="mb-8">
-                    <div className="flex items-center justify-between mb-6">
+        <div className="min-h-screen bg-white pt-32 pb-20 transition-colors duration-300 relative bg-grain">
+            <div className={`container mx-auto px-12 ${maxWidthClasses[maxWidth]}`}>
+                {/* Header - Hyper Minimalist Surgical Standard */}
+                <div className="mb-20">
+                    <div className="flex items-center justify-between mb-16">
                         {showBackButton ? (
-                            <Button
-                                variant="outline"
+                            <button
                                 onClick={() => navigate(backTo)}
-                                className="border-gray-200 bg-white text-black hover:bg-zinc-50 hover:border-black rounded-none shadow-none transition-all text-[10px] font-black uppercase tracking-widest px-6 h-10"
+                                className="text-zinc-400 hover:text-black text-xs font-medium tracking-tight transition-all flex items-center gap-2 group"
                             >
-                                <ArrowLeft className="mr-2 h-3.5 w-3.5" /> {backLabel}
-                            </Button>
+                                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" strokeWidth={1} />
+                                {backLabel}
+                            </button>
                         ) : <div></div>}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-6">
                             {actions}
                         </div>
                     </div>
 
-                    <div>
-                        <h1 className="text-2xl font-bold text-black mb-1 tracking-tight">
+                    <div className="space-y-4">
+                        <h1 className="text-5xl md:text-6xl font-black text-black tracking-tighter leading-tight">
                             {title}
                         </h1>
                         {description && (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-zinc-500 font-medium tracking-tight max-w-2xl leading-relaxed">
                                 {description}
                             </p>
                         )}

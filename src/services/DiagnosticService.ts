@@ -8,6 +8,7 @@ export interface StrategicPlanData {
     financial_projections: any;
     budget_data: any;
     next_steps_data: any;
+    market_intelligence?: any;
 }
 
 export interface DiagnosticResult {
@@ -65,9 +66,9 @@ export interface StrategicDecision {
 
 export class DiagnosticService {
 
-    static generateDiagnosis(response: ReiResponse): DiagnosticResult {
+    static generateDiagnosis(response: ReiResponse, marketData?: any): DiagnosticResult {
         const answers = response.responses as Record<string, any>;
-        const plan_data = this.generatePlanFromResponse(response);
+        const plan_data = this.generatePlanFromResponse(response, marketData);
 
         // --- INTELLIGENCE LAYER (The Voice) ---
         const segment = answers.segmento || 'Generalista';
@@ -202,7 +203,7 @@ export class DiagnosticService {
     }
 
 
-    static generatePlanFromResponse(response: ReiResponse): StrategicPlanData {
+    static generatePlanFromResponse(response: ReiResponse, marketData?: any): StrategicPlanData {
         const answers = response.responses as Record<string, any>; // The raw answers
 
         // 1. ANALYZE CONTEXT (The "Brain")
@@ -212,15 +213,22 @@ export class DiagnosticService {
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
 
+        // Extract specific GTM data
+        const challenges = answers.desafios || [];
+        const bottlenecks = answers.gargalo || answers.gargaloFunil || 'Não identificado';
+        const channels = answers.canaisAquisicao || [];
+        const growthGoal = answers.metaCrescimento || 'Não definida';
+
         // 2. GENERATE MODULES
         return {
-            premises_data: this.generatePremises(segment, objective),
-            methodology_data: this.generateMethodology(isB2B),
-            roadmap_data: this.generateRoadmap(hasCRM, isB2B),
-            goals_data: this.generateGoals(objective),
+            premises_data: this.generatePremises(segment, objective, bottlenecks),
+            methodology_data: this.generateMethodology(isB2B, channels),
+            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges),
+            goals_data: this.generateGoals(objective, growthGoal),
             financial_projections: this.generateProjections(budget),
             budget_data: this.generateBudget(budget, isB2B),
-            next_steps_data: this.generateNextSteps(hasCRM)
+            next_steps_data: this.generateNextSteps(hasCRM),
+            market_intelligence: marketData || null
         };
     }
 
@@ -228,19 +236,19 @@ export class DiagnosticService {
 
     private static checkHasCRM(answers: any): boolean {
         // Simple heuristic: check if they mentioned a CRM name or "Sim" to tool questions
-        const tools = (answers.ferramentasAtuais || '').toLowerCase();
-        return tools.includes('active') || tools.includes('rd station') || tools.includes('pipedrive') || tools.includes('hubspot');
+        const tools = (answers.ferramentasAtuais || answers.crm || '').toLowerCase();
+        return tools.includes('active') || tools.includes('rd station') || tools.includes('pipedrive') || tools.includes('hubspot') || tools.includes('salesforce') || tools.length > 3;
     }
 
     private static checkIsB2B(answers: any): boolean {
         const segment = (answers.segmento || '').toLowerCase();
         const idealCustomer = (answers.clienteIdeal || '').toLowerCase();
-        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || idealCustomer.includes('empresas');
+        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || idealCustomer.includes('empresas') || idealCustomer.includes('corporativo');
     }
 
     // --- GENERATORS ---
 
-    private static generatePremises(segment: string, objective: string) {
+    private static generatePremises(segment: string, objective: string, bottleneck: string) {
         return {
             pillars: [
                 {
@@ -251,77 +259,92 @@ export class DiagnosticService {
                 {
                     name: 'Diagnóstico',
                     icon: '🔍',
-                    items: ['Análise de Maturidade Realizada', 'Gargalos Identificados']
+                    items: ['Análise de Maturidade Realizada', `Gargalo Principal: ${bottleneck}`]
                 }
             ]
         };
     }
 
-    private static generateMethodology(isB2B: boolean) {
+    private static generateMethodology(isB2B: boolean, currentChannels: string[]) {
+        const steps = [];
+
         if (isB2B) {
-            return {
-                steps: [
-                    { name: 'ABM & Outreach', description: 'Foco em listas segmentadas e abordagem direta via LinkedIn/Cold Email.' },
-                    { name: 'Conteúdo de Autoridade', description: 'Whitepapers e Cases para nutrir decisores técnicos.' },
-                    { name: 'Sales Enablement', description: 'Materiais de apoio para o time comercial fechar contas complexas.' }
-                ]
-            };
+            steps.push({ name: 'ABM & Outreach', description: 'Foco em listas segmentadas e abordagem direta via LinkedIn/Cold Email.' });
+            steps.push({ name: 'Conteúdo de Autoridade', description: 'Whitepapers e Cases para nutrir decisores técnicos.' });
+            steps.push({ name: 'Sales Enablement', description: 'Materiais de apoio para o time comercial fechar contas complexas.' });
         } else {
-            return {
-                steps: [
-                    { name: 'Tráfego de Alta Intenção', description: 'Google Ads e Meta Ads focados em conversão direta.' },
-                    { name: 'Otimização de Conversão (CRO)', description: 'Melhoria contínua da página de vendas.' },
-                    { name: 'Nutrição Automática', description: 'Sequências de email para recuperação de vendas.' }
-                ]
-            };
+            steps.push({ name: 'Tráfego de Alta Intenção', description: 'Google Ads e Meta Ads focados em conversão direta.' });
+            steps.push({ name: 'Otimização de Conversão (CRO)', description: 'Melhoria contínua da página de vendas.' });
+            steps.push({ name: 'Nutrição Automática', description: 'Sequências de email para recuperação de vendas.' });
         }
+
+        // Add channel specific nuance
+        if (currentChannels.includes('Google Ads')) {
+            steps.push({ name: 'Otimização Search', description: 'Refinamento de palavras-chave negativas e Quality Score.' });
+        }
+
+        return { steps };
     }
 
-    private static generateRoadmap(hasCRM: boolean, isB2B: boolean) {
+    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[]) {
         const phases = [];
 
         // Phase 1: Foundation (Condicional)
+        const foundationItems = ['Configuração de DNS/Deliverability', 'Integração de Formulários'];
         if (!hasCRM) {
-            phases.push({
-                name: 'Semana 1-2',
-                title: 'Fundação & Tech Setup',
-                items: ['Implementação de CRM', 'Configuração de DNS/Deliverability', 'Integração de Formulários']
-            });
+            foundationItems.unshift('Implementação de CRM (Prioridade Zero)');
         } else {
-            phases.push({
-                name: 'Semana 1',
-                title: 'Auditoria & Otimização',
-                items: ['Revisão do CRM atual', 'Limpeza de Base', 'Ajuste de Funil']
-            });
+            foundationItems.unshift('Auditoria de CRM e Limpeza de Dados');
         }
 
-        // Phase 2: Growth Engine
-        if (isB2B) {
-            phases.push({
-                name: 'Semana 3-6',
-                title: 'Motor de Vendas B2B',
-                items: ['Definição de ICP', 'Construção de Listas', 'Cadências de Outbound', 'Treinamento de SDRs']
-            });
-        } else {
-            phases.push({
-                name: 'Semana 2-5',
-                title: 'Escala de Mídia',
-                items: ['Criação de Criativos (UGC)', 'Setup de Campanhas', 'Testes A/B de Landing Pages']
-            });
+        // Add items based on challenges
+        if (challenges.some(c => c.includes('Processo') || c.includes('Desorganização'))) {
+            foundationItems.push('Definição de Playbook de Vendas');
         }
+
+        phases.push({
+            name: 'Semana 1-2',
+            title: 'Fundação & Tech Setup',
+            items: foundationItems
+        });
+
+        // Phase 2: Growth Engine
+        const growthItems = [];
+        if (isB2B) {
+            growthItems.push('Definição de ICP e Matriz de Objeções');
+            growthItems.push('Construção de Listas de Prospecção');
+            growthItems.push('Setup de Cold Mail & LinkedIn Automation');
+        } else {
+            growthItems.push('Criação de Criativos de Alta Conversão');
+            growthItems.push('Setup de Campanhas (Meta/Google)');
+            growthItems.push('Testes A/B de Landing Pages');
+        }
+
+        phases.push({
+            name: 'Semana 3-6',
+            title: isB2B ? 'Motor de Vendas B2B' : 'Escala de Mídia Paga',
+            items: growthItems
+        });
+
+        // Phase 3: Optimziation
+        phases.push({
+            name: 'Semana 7-12',
+            title: 'Otimização & Escala',
+            items: ['Review de Métricas de Funil', 'Ajuste de Investimento por Canal', 'Implementação de Novos Testes de Canal']
+        });
 
         return { phases };
     }
 
-    private static generateGoals(objective: string) {
+    private static generateGoals(objective: string, growthGoal: string) {
         return {
             okrs: [
-                { kr: 'Objetivo Principal', description: objective },
-                { kr: 'Saúde do Funil', description: 'Garantir rastreabilidade de ponta a ponta.' }
+                { kr: 'Objetivo Estratégico', description: objective },
+                { kr: 'Meta de Crescimento', description: growthGoal }
             ],
             month1_targets: [
-                { name: 'Setup Concluído', status: 'pending' },
-                { name: 'Primeiros Leads Qualificados', status: 'pending' }
+                { name: 'Setup de Infraestrutura', status: 'pending' },
+                { name: 'Validação de Canais de Aquisição', status: 'pending' }
             ]
         };
     }
@@ -330,8 +353,9 @@ export class DiagnosticService {
         return {
             note: `Projeções baseadas no budget declarado de ${budget}`,
             monthly_projections: [
-                { period: 'Mês 1', nmrr_total: '-' }, // TBD
-                { period: 'Mês 3', nmrr_total: 'Growth' }
+                { period: 'Mês 1', nmrr_total: 'Setup' },
+                { period: 'Mês 3', nmrr_total: 'Tração Inicial' },
+                { period: 'Mês 6', nmrr_total: 'Escala' }
             ]
         };
     }
@@ -340,21 +364,22 @@ export class DiagnosticService {
         return {
             annual_budget: budget,
             channels: isB2B ? [
-                { name: 'Outbound Tools', percentage: '40%' },
-                { name: 'LinkedIn Ads', percentage: '30%' },
-                { name: 'Conteúdo', percentage: '30%' }
+                { name: 'Ferramentas & Dados (Outbound)', percentage: '30%' },
+                { name: 'Mídia Paga (LinkedIn/Google)', percentage: '40%' },
+                { name: 'Conteúdo & Enablement', percentage: '30%' }
             ] : [
                 { name: 'Meta Ads', percentage: '50%' },
                 { name: 'Google Ads', percentage: '30%' },
-                { name: 'Creators', percentage: '20%' }
+                { name: 'Creators/Influencers', percentage: '20%' }
             ]
         };
     }
 
     private static generateNextSteps(hasCRM: boolean) {
         const actions = [];
-        if (!hasCRM) actions.push({ day: 'Imediato', action: 'Escolher e Contratar CRM', done: false });
-        actions.push({ day: 'Dia 1', action: 'Validar Acesso às Contas de Anúncio', done: false });
+        actions.push({ day: 'Imediato', action: 'Aprovação do Planejamento', done: false });
+        if (!hasCRM) actions.push({ day: 'Imediato', action: 'Seleção de CRM', done: false });
+        actions.push({ day: 'Dia 1', action: 'Onboarding do Time', done: false });
 
         return { week1_actions: actions };
     }

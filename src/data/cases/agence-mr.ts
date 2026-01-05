@@ -2,7 +2,7 @@
 export const agenceMrCase = {
   title: "Agence MR",
   category: "Tecnologia",
-  logo: "/uploads/6c09375e-5298-4672-9226-27eb60a6b038.png",
+  logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/695997bd3ccdd6417ab25199.png",
   coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
   challenge: "A Agence MR, empresa de tecnologia em expansão, enfrentava um platô de crescimento em sua aquisição digital.\n\nOs principais gargalos eram: (1) campanhas de Google Ads com baixo índice de qualidade e ROI estagnado; (2) falta de integração entre as campanhas de tráfego pago e o funil de vendas comercial, gerando leads desqualificados; (3) necessidade de suporte consultivo estratégico para capacitar o time interno na tomada de decisões baseada em dados reais.",
   solution: "Implementamos um motor de 'Monitoramento e Otimização Consultiva' estruturado em 3 eixos:\n\n(1) Auditoria e Reestruturação de Google Ads: limpeza de termos de pesquisa irrelevantes, otimização de copy e landing pages, focando em intenção de compra high-ticket;\n\n(2) Integração Full-Funnel: conexão direta de dados entre Google Ads e o CRM da agência, permitindo o feedback loop para algoritmos aprenderem quem são os leads que realmente fecham contrato;\n\n(3) Business Intelligence (Reporting): criação de dashboards dinâmicos no Looker Studio para visibilidade clara de CPA, ROI e ticket médio por canal.",

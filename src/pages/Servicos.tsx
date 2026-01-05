@@ -18,7 +18,7 @@ const capabilities = [
   {
     id: "02",
     title: "Ecossistema & CRM",
-    description: "Engenharia de dados centralizada. Implementação de Hubspot/Salesforce integrada a toda a stack de Revenue.",
+    description: "Arquitetura de dados centralizada. Implementação de Hubspot/Salesforce integrada a toda a stack de Revenue.",
     tech: ["CRM Architecture", "Data Warehousing", "API Integration"],
     icon: Database,
     slug: "ecossistema-crm"
@@ -61,7 +61,7 @@ const Servicos = () => {
   return (
     <PageLayout>
       <SEO
-        title="Nossos Serviços | Engenharia de Receita"
+        title="Nossos Serviços | Revenue Operations"
         description="Serviços de consultoria em Revenue Operations, ABM (Account Based Marketing), CRM e Automação de Vendas B2B. Transforme sua operação comercial."
         canonical="https://revhackers.com/servicos"
       />
@@ -80,52 +80,56 @@ const Servicos = () => {
       </Section>
 
       {/* Capabilities Matrix - The "Machine" View */}
-      <Section variant="light" className="py-24 bg-white relative overflow-hidden">
+      <Section variant="light" className="py-24 md:py-40 bg-zinc-50 relative overflow-hidden">
         <div className="container-custom">
           {/* Section Context */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 border-b border-zinc-100 pb-8">
-            <div className="max-w-xl">
-              <span className="font-mono text-xs text-revgreen uppercase tracking-wider mb-2 block">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8 border-b border-zinc-200 pb-12">
+            <div className="max-w-2xl">
+              <span className="font-mono text-xs text-zinc-400 uppercase tracking-[0.2em] mb-4 block">
                 // The Capabilities Matrix
               </span>
-              <h2 className="text-3xl font-bold text-black tracking-tight text-balance">
-                Engenharia de Crescimento. <br />
-                <span className="text-zinc-400 font-light">Peça por peça.</span>
+              <h2 className="text-4xl md:text-6xl font-black text-zinc-900 tracking-tighter text-balance leading-tight">
+                Sistemas de Crescimento. <br />
+                <span className="text-zinc-300 font-light italic">Peça por peça.</span>
               </h2>
             </div>
-            <p className="text-sm text-zinc-500 max-w-xs leading-relaxed text-right md:text-left">
+            <p className="text-lg text-zinc-500 max-w-xs leading-relaxed font-light text-right md:text-left">
               Não vendemos "serviços avulsos". Entregamos infraestrutura de receita compobível.
             </p>
           </div>
 
-          {/* Brutalist Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
+          {/* Apple-Style Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {capabilities.map((item) => (
-              <div key={item.id} className="group relative bg-white p-8 md:p-12 hover:bg-zinc-50 transition-colors duration-300">
-
+              <div
+                key={item.id}
+                className="group relative bg-white p-10 md:p-12 hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 rounded-[2.5rem] border border-zinc-100 flex flex-col h-full overflow-hidden"
+              >
                 {/* Header Card */}
-                <div className="flex justify-between items-start mb-8">
-                  <span className="font-mono text-4xl md:text-5xl font-light text-zinc-200 group-hover:text-revgreen transition-colors duration-300">
+                <div className="flex justify-between items-start mb-12">
+                  <span className="font-mono text-5xl md:text-6xl font-black text-zinc-50 group-hover:text-zinc-100 transition-colors duration-500 tracking-tighter">
                     {item.id}
                   </span>
-                  <div className="p-3 bg-zinc-50 rounded-none border border-zinc-100 group-hover:border-revgreen/20 group-hover:bg-revgreen/5 transition-all">
-                    <item.icon className="w-5 h-5 text-black group-hover:text-revgreen transition-colors" />
+                  <div className="p-5 bg-zinc-900 rounded-[1.25rem] shadow-xl shadow-zinc-200 group-hover:bg-black transition-all duration-500 group-hover:scale-110">
+                    <item.icon className="w-6 h-6 text-white" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold text-black mb-4 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-zinc-500 leading-relaxed mb-8 h-20">
-                  {item.description}
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-zinc-900 mb-6 tracking-tight group-hover:translate-x-1 transition-transform duration-500">
+                    {item.title}
+                  </h3>
+                  <p className="text-[15px] text-zinc-500 leading-relaxed mb-10 font-normal">
+                    {item.description}
+                  </p>
+                </div>
 
                 {/* Tech Stack Footer */}
-                <div className="pt-6 border-t border-zinc-100">
-                  <div className="flex flex-wrap gap-2 mb-6">
+                <div className="pt-8 border-t border-zinc-50">
+                  <div className="flex flex-wrap gap-2 mb-10">
                     {item.tech.map((tech) => (
-                      <span key={tech} className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider bg-zinc-50 px-2 py-1">
+                      <span key={tech} className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-50 border border-zinc-100 px-2.5 py-1 rounded-full">
                         {tech}
                       </span>
                     ))}
@@ -133,14 +137,14 @@ const Servicos = () => {
 
                   <Link
                     to={`/servicos/${item.slug}`}
-                    className="inline-flex items-center text-xs font-bold text-black uppercase tracking-widest group-hover:text-revgreen transition-colors gap-2"
+                    className="inline-flex items-center text-[10px] font-black text-zinc-900 uppercase tracking-[0.2em] group-hover:text-black transition-all gap-3 group-hover:gap-5"
                   >
-                    Explorar <ArrowUpRight className="w-3 h-3" />
+                    EXPLORAR <ArrowUpRight className="w-4 h-4" />
                   </Link>
                 </div>
 
-                {/* Active Line Indicator */}
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-revgreen group-hover:w-full transition-all duration-500 ease-out" />
+                {/* Subtle Hover Gradient */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-50 rounded-full -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-3xl -z-10" />
               </div>
             ))}
           </div>

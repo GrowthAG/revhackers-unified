@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Eye, BrainCircuit, Loader2 } from 'lucide-react';
+import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
 
 interface REIProject {
     id: string;
@@ -47,11 +48,12 @@ export default function StrategicPlanGenerator() {
 
             // Load Client (Resilient)
             let clientFinal = null;
-            if (projectData.client_id) {
+            const project = projectData as any;
+            if (project.client_id) {
                 const { data: clientData, error: clientError } = await supabase
                     .from('clients')
                     .select('*')
-                    .eq('id', projectData.client_id)
+                    .eq('id', project.client_id)
                     .maybeSingle(); // Changed from single() to maybeSingle() to avoid error on 0 rows
 
                 if (clientData) {
@@ -63,9 +65,9 @@ export default function StrategicPlanGenerator() {
             if (!clientFinal) {
                 clientFinal = {
                     id: 'legacy-or-missing',
-                    company_name: projectData.client_company || projectData.client_name || 'N/A',
-                    contact_name: projectData.client_name || 'N/A',
-                    email: projectData.client_email || 'N/A'
+                    company_name: project.client_company || project.client_name || 'N/A',
+                    contact_name: project.client_name || 'N/A',
+                    email: project.client_email || 'N/A'
                 };
             }
 
@@ -119,9 +121,18 @@ export default function StrategicPlanGenerator() {
             if (latestResponse) {
                 // Dynamically import the service to avoid circular deps if any
                 const { DiagnosticService } = await import('@/services/DiagnosticService');
+                const { MarketIntelligenceService } = await import('@/services/MarketIntelligenceService');
+
+                const answers = latestResponse.responses as any;
+                const segment = answers.segmento || 'B2B';
+                const objective = answers.objetivoPrincipal || 'Crescimento';
+
+                // Fetch real market data from Perplexity
+                console.log('Fetching market intelligence...');
+                const marketData = await MarketIntelligenceService.fetchMarketData(segment, objective);
 
                 // V2: Generate Full Diagnosis (Voice + Brain)
-                const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse);
+                const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketData);
                 const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
                 // Update the plan with the intelligent data AND the diagnostic context

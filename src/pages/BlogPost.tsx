@@ -62,6 +62,15 @@ const BlogPostPage = () => {
           return `/uploads/${path}`;
         };
 
+        const cleanContent = (content: string) => {
+          if (!content) return '';
+          return content
+            .replace(/COPIE E COLE NO ADMIN:[\s\S]*?\*\*CORPO DO ARTIGO:\*\*\s*/i, '')
+            .replace(/```markdown/g, '')
+            .replace(/```/g, '')
+            .trim();
+        };
+
         const apiPosts = await getAllPosts();
 
         // Convert static posts to match the unified interface
@@ -81,7 +90,7 @@ const BlogPostPage = () => {
           title: p.title,
           slug: p.slug,
           excerpt: p.excerpt || '',
-          content: p.content || '',
+          content: cleanContent(p.content || ''),
           category: p.category,
           image: p.image || '',
           author: p.author,

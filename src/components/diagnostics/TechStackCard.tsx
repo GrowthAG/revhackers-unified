@@ -6,13 +6,19 @@ interface TechStackCardProps {
     category: string;
     items: string[];
     status?: 'detected' | 'missing' | 'warning';
+    variant?: 'light' | 'dark';
 }
 
-export const TechStackCard = ({ category, items, status = 'detected' }: TechStackCardProps) => {
+export const TechStackCard = ({ category, items, status = 'detected', variant = 'dark' }: TechStackCardProps) => {
     return (
-        <div className="p-6 border border-zinc-900 bg-zinc-950/50 h-full flex flex-col hover:border-zinc-700 transition-colors duration-300">
-            <div className="flex justify-between items-start mb-4">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+        <div className={cn(
+            "p-6 border transition-all duration-300 h-full flex flex-col",
+            variant === 'dark'
+                ? "bg-zinc-950 border-zinc-900 hover:border-zinc-700"
+                : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
+        )}>
+            <div className="flex justify-between items-start mb-6">
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
                     {category}
                 </span>
                 {status === 'missing' && <AlertCircle className="w-4 h-4 text-red-500" />}
@@ -25,7 +31,12 @@ export const TechStackCard = ({ category, items, status = 'detected' }: TechStac
                         {items.map((item, idx) => (
                             <span
                                 key={idx}
-                                className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-white text-xs font-medium uppercase tracking-wide rounded-sm"
+                                className={cn(
+                                    "px-3 py-1.5 border text-[10px] font-bold uppercase tracking-widest rounded-sm transition-colors",
+                                    variant === 'dark'
+                                        ? "bg-zinc-900 border-zinc-800 text-white"
+                                        : "bg-white border-zinc-200 text-zinc-900"
+                                )}
                             >
                                 {item}
                             </span>

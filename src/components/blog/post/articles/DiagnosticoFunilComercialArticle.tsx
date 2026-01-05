@@ -13,7 +13,7 @@ const DiagnosticoFunilComercialArticle = ({ onCTAClick }: { onCTAClick?: () => v
         <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-gray-900 leading-relaxed">
 
             {/* Strategic Context */}
-            <StrategicContext label="Engenharia de Vendas">
+            <StrategicContext label="Arquitetura de Vendas">
                 <p className="text-xl font-medium text-gray-900">
                     Se você não sabe onde seu dinheiro está emperrando, você está sangrando receita.
                     A maioria dos times de vendas opera no "feeling", ignorando que um funil comercial é um

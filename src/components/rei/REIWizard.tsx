@@ -213,13 +213,14 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             });
 
             if (onComplete && responseId) {
-                onComplete(responseId);
+                // Pass projectId directly because the Result page expects ProjectId, not ResponseId
+                onComplete(projectId);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Erro ao salvar:', error);
             toast({
-                title: "Erro",
-                description: "Não foi possível salvar os dados.",
+                title: "Erro ao Salvar",
+                description: error.message || error.error_description || "Não foi possível salvar os dados. Verifique sua conexão.",
                 variant: "destructive"
             });
         } finally {

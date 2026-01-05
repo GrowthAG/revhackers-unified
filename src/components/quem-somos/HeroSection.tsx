@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import ModernTechnicalBackground from '@/components/shared/ModernTechnicalBackground';
 
 const HeroSection = () => {
   const scrollToTop = () => {
@@ -7,23 +8,46 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="pt-28 pb-16 md:pt-40 md:pb-20 bg-black">
-      <div className="container-custom">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold leading-none mb-8 tracking-tighter uppercase text-white animate-fade-in">
-            Somos a <span className="text-revgreen inline-block align-baseline">RevHackers</span>.
-          </h1>
+    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 min-h-[90vh] flex flex-col justify-center items-center border-b border-white/10 overflow-hidden bg-black text-center">
+      {/* Modern Hacker Aesthetic Background */}
+      <ModernTechnicalBackground />
 
-          <p className="text-xl md:text-2xl text-zinc-400 mb-10 font-normal tracking-tight leading-relaxed text-balance">
-            Transformamos estratégias de marketing B2B através de funis de vendas otimizados, automações inteligentes e integração entre times de receita.
-          </p>
+      <div className="w-full px-4 flex flex-col items-center text-center relative z-10">
+        {/* Headline - Parity with Home (3 lines, sentence case) */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-[1.1] tracking-tight w-full max-w-[90rem] mx-auto">
+          Construímos a <span className="text-revgreen">Arquitetura de Receita</span> <br className="hidden md:block" />
+          que sustenta o seu próximo <br className="hidden md:block" />
+          nível de escala.
+        </h1>
 
-          <Button asChild className="bg-white text-black px-8 py-6 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-revgreen hover:text-black transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:-translate-y-1">
+        {/* Subheadline - Parity with Home */}
+        <p className="text-lg md:text-xl text-zinc-200 mb-12 max-w-5xl leading-relaxed font-light text-balance mx-auto">
+          Unificamos Marketing, Vendas e Customer Success através de processos <br className="hidden md:block" />
+          cirúrgicos, automações inteligentes e ciência de dados.
+        </p>
+
+        {/* Buttons - Single as requested */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-16 w-full justify-center">
+          <Button asChild className="bg-white text-black h-16 px-12 rounded-none text-xs font-black uppercase tracking-[0.3em] hover:bg-revgreen hover:text-black transition-all duration-300">
             <Link to="/diagnostico" onClick={scrollToTop}>
-              Conheça nossa metodologia
+              Conhecer a Metodologia //
             </Link>
           </Button>
         </div>
+
+        {/* Expertise Pillars - Minimalist */}
+        <div className="w-full mt-16 pt-8 border-t border-white/5">
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-xs font-medium text-zinc-500 tracking-wide uppercase">
+            <span>Geração de Demanda</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>Automação & CRM</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>CRO & Analytics</span>
+            <span className="hidden md:inline text-zinc-800">•</span>
+            <span>RevOps</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );

@@ -246,16 +246,30 @@ export const saveReiDiagnostic = async (
     }
 ): Promise<string | null> => {
     try {
+        // Determine Maturity Level based on Score
+        let maturityLevel = "Iniciante";
+        if (analysisResult.score >= 80) maturityLevel = "Líder";
+        else if (analysisResult.score >= 50) maturityLevel = "Competitivo";
+        else if (analysisResult.score >= 30) maturityLevel = "Em Desenvolvimento";
+
         // Insert into rei_responses
+        // Schema Mapping:
+        // diagnostic_type -> context
+        // form_data -> responses (merged with analysis data)
         const { data: response, error: responseError } = await supabase
             .from('rei_responses')
             .insert({
                 project_id: projectId,
-                diagnostic_type: type,
-                form_data: formData,
+                context: type,
+                responses: {
+                    form_data: formData,
+                    radar_data: analysisResult.radarData,
+                    insights: analysisResult.insights
+                },
                 total_score: analysisResult.score,
-                radar_data: analysisResult.radarData,
-                insights: analysisResult.insights,
+                maturity_level: maturityLevel,
+                maturity_percentage: analysisResult.score,
+                source: 'web_wizard'
             } as any)
             .select()
             .single();
@@ -265,12 +279,16 @@ export const saveReiDiagnostic = async (
             throw responseError;
         }
 
-        // Update the project with latest analysis result
+        // Update the project with timestamp and backup of analysis in technical_evidences
         await supabase
             .from('rei_projects')
             .update({
-                analysis_result: analysisResult,
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
+                technical_evidences: {
+                    last_analysis: analysisResult,
+                    last_context: type,
+                    updated_at: new Date().toISOString()
+                }
             } as any)
             .eq('id', projectId);
 

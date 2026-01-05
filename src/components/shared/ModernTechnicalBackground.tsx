@@ -46,15 +46,13 @@ const ModernTechnicalBackground = () => {
 
             for (let i = 0; i < drops.length; i++) {
                 // Randomly skip drawing columns to reduce density (Optimization + Aesthetic)
-                if (Math.random() > 0.975) {
-                    const text = Math.random() > 0.5 ? '1' : '0'; // Binary
-                    // const text = '|'; // Abstract line (Alternative)
-
-                    // Vary opacity for depth
-                    const opacity = Math.random() * 0.5;
+                if (Math.random() > 0.985) {
+                    // Use a subtle square or dot instead of binary digits (Aesthetic upgrade)
+                    const opacity = Math.random() * 0.3;
                     ctx.fillStyle = `rgba(3, 252, 59, ${opacity})`;
 
-                    ctx.fillText(text, i * COLUMN_WIDTH, drops[i] * 12);
+                    // Draw a thin technical vertical line or small square
+                    ctx.fillRect(i * COLUMN_WIDTH, drops[i] * 12, 1, 8);
                 }
 
                 // Reset drop or move it down

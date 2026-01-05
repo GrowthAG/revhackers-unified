@@ -18,7 +18,7 @@ const servicosData = {
     color: "from-white/5 to-white/10", // Neutral but premium
     accent: "text-revgreen",
     whatWeDo: [
-      { title: "Engenharia de Tráfego B2B", description: "Não compramos cliques, compramos intenção. Campanhas desenhadas para atingir decisores no momento de compra." },
+      { title: "Arquitetura de Tráfego B2B", description: "Não compramos cliques, compramos intenção. Campanhas desenhadas para atingir decisores no momento de compra." },
       { title: "Account-Based Ads", description: "Mire nos logotipos que você quer fechar. Campanhas hiper-segmentadas para listas de contas alvo." },
       { title: "Criativos de Alta Conversão", description: "Ads que não parecem ads. Formatos nativos e copywriting direto que geram curiosidade e clique." },
       { title: "Tracking & Atribuição", description: "Saiba exatamente qual campanha, anúncio e palavra-chave gerou o contrato fechado." }

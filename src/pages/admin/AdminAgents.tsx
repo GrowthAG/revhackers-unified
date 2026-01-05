@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Plus, Edit, Trash2, Cpu, Search, ChevronRight,
-    Activity, Terminal, Send, Bot
+    Activity, Terminal, Send, Bot, Sparkles
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { toast } from 'sonner';
@@ -57,13 +57,11 @@ const AdminAgents = () => {
         const models: Record<string, { label: string; color: string; provider: string }> = {
             'gpt-4o': { label: 'GPT-4o', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'OpenAI' },
             'gpt-4o-mini': { label: '4o Mini', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'OpenAI' },
-            'claude-3-5-sonnet-20240620': { label: '3.5 Sonnet', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
+            'o1-preview': { label: 'O1 Preview', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
+            'claude-3-5-sonnet-20241022': { label: '3.5 Sonnet', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
             'claude-3-opus-20240229': { label: 'Opus', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
-            'claude-3-5-haiku-20241022': { label: 'Haiku', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
             'gemini-1.5-pro': { label: '1.5 Pro', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Google' },
-            'gemini-1.5-flash': { label: 'Flash', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Google' },
-            'manus': { label: 'Manus', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'AGENT' },
-            'perplexity-sonar': { label: 'Sonar', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'WEB' },
+            'sonar': { label: 'Sonar', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'WEB' },
         };
 
         const found = Object.entries(models).find(([key]) => m.toLowerCase().includes(key.toLowerCase()));
@@ -73,45 +71,37 @@ const AdminAgents = () => {
     return (
         <AdminLayout>
             <div className="min-h-screen bg-white font-sans selection:bg-black selection:text-white pb-20">
-                {/* Header Section */}
-                <div className="max-w-5xl mx-auto px-6 pt-20 pb-8">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+                <div className="max-w-6xl mx-auto px-6 pt-12 pb-8">
+                    {/* Minimalist Header */}
+                    <div className="flex items-center justify-between mb-16">
                         <div>
-                            <div className="flex items-center gap-2 mb-4 opacity-40">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black">Intelligence</span>
-                                <span className="text-zinc-300">/</span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black">Hub</span>
-                            </div>
-                            <h1 className="text-4xl font-black text-black tracking-tighter">
+                            <h1 className="text-3xl font-bold tracking-tight text-black mb-2">
                                 Central de Inteligência
                             </h1>
+                            <p className="text-zinc-400 text-sm font-medium">
+                                Gerencie seus especialistas e orquestre operações complexas.
+                            </p>
                         </div>
                         <Button
                             onClick={() => navigate('/admin/agents/builder')}
-                            className="bg-black text-white px-6 h-12 rounded-xl font-bold flex items-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 group shrink-0 text-sm shadow-lg shadow-black/10"
+                            className="bg-black text-white rounded-full px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm"
                         >
-                            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+                            <Plus className="w-4 h-4 mr-2" />
                             Novo Agente
                         </Button>
                     </div>
 
-                    <div className="mb-24 text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black mb-6">
-                            Central de Inteligência
-                        </h1>
-                        <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
-                            Orcestre sua frota de agentes especialistas e escale suas operações com precisão e inteligência avançada.
-                        </p>
-
-                        <div className="max-w-3xl mx-auto relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-zinc-200 to-zinc-100 rounded-[32px] blur opacity-25 group-focus-within:opacity-50 transition duration-1000"></div>
-                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-[28px] p-2 shadow-sm hover:shadow-md transition-all duration-300">
-                                <div className="w-12 h-12 flex items-center justify-center text-zinc-400">
-                                    <Search className="w-5 h-5" />
+                    {/* Main Interaction Area */}
+                    <div className="mb-20">
+                        <div className="max-w-2xl mx-auto relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-zinc-100 to-zinc-50 rounded-[24px] blur opacity-50 group-focus-within:opacity-75 transition duration-500"></div>
+                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-[20px] p-1.5 shadow-sm hover:shadow-md transition-all duration-300">
+                                <div className="w-10 h-10 flex items-center justify-center text-zinc-400">
+                                    <Sparkles className="w-4 h-4" />
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Qual seu objetivo hoje? Ex: Criar estratégia de Growth..."
+                                    placeholder="O que você deseja realizar hoje?"
                                     value={hubQuery}
                                     onChange={(e) => setHubQuery(e.target.value)}
                                     onKeyDown={(e) => {
@@ -119,7 +109,7 @@ const AdminAgents = () => {
                                             navigate(`/admin/ai-chat?q=${encodeURIComponent(hubQuery.trim())}`);
                                         }
                                     }}
-                                    className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-black placeholder:text-zinc-300 px-2"
+                                    className="flex-1 bg-transparent border-none outline-none text-base font-medium text-black placeholder:text-zinc-300 px-2"
                                 />
                                 <button
                                     onClick={() => {
@@ -127,110 +117,101 @@ const AdminAgents = () => {
                                             navigate(`/admin/ai-chat?q=${encodeURIComponent(hubQuery.trim())}`);
                                         }
                                     }}
-                                    className="bg-black text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-zinc-800 transition-colors shadow-lg shadow-black/10"
+                                    className="bg-zinc-900 text-white w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-black transition-colors"
                                 >
-                                    Iniciar
+                                    <Send className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-12 pb-6 border-b border-zinc-100">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-3">
-                            <div className="w-1.5 h-1.5 bg-zinc-300 rounded-full" />
-                            Especialistas Disponíveis
-                        </h2>
-                        <div className="relative group w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 w-4 h-4 transition-colors group-focus-within:text-black" />
+                    {/* List Header */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Ativos</span>
+                        </div>
+
+                        <div className="relative group w-64">
+                            <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-300 w-3.5 h-3.5 transition-colors group-focus-within:text-black" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Buscar Agente..."
-                                className="w-full bg-zinc-50 border-none rounded-xl py-3 pl-12 pr-4 text-sm font-medium text-black outline-none focus:bg-zinc-100 transition-all placeholder:text-zinc-300"
+                                placeholder="Filtrar..."
+                                className="w-full bg-transparent border-none py-2 pl-6 pr-0 text-sm font-medium text-black outline-none placeholder:text-zinc-300 text-right"
                             />
                         </div>
                     </div>
 
                     {/* Agents Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {filteredAgents.map(agent => {
                             const modelInfo = getModelDisplay(agent.model || '');
                             return (
                                 <div
                                     key={agent.id}
-                                    className="group relative bg-white border border-zinc-100 rounded-[24px] p-6 hover:border-zinc-200 hover:shadow-xl hover:shadow-black/5 transition-all duration-300 cursor-pointer flex flex-col h-full"
+                                    onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}
+                                    className="group relative bg-white border border-zinc-100 rounded-[20px] p-5 hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
                                 >
                                     <div className="flex items-start justify-between mb-6">
-                                        <div className="w-14 h-14 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500">
-                                            <Bot size={28} />
+                                        <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center text-black group-hover:scale-105 transition-transform duration-500 border border-zinc-100/50">
+                                            <Bot size={20} className="text-zinc-700" />
                                         </div>
-                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); navigate(`/admin/agents/builder/${agent.id}`); }}
-                                                className="w-8 h-8 bg-white hover:bg-black hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all border border-zinc-100 hover:border-black"
-                                                title="Editar"
+                                                className="w-8 h-8 bg-zinc-50 hover:bg-black hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all"
                                             >
-                                                <Edit size={14} />
+                                                <Edit size={12} />
                                             </button>
                                             <button
                                                 onClick={(e) => handleDelete(agent.id, e)}
-                                                className="w-8 h-8 bg-white hover:bg-red-600 hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all border border-zinc-100 hover:border-red-600"
-                                                title="Excluir"
+                                                className="w-8 h-8 bg-zinc-50 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={12} />
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="flex-1" onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}>
-                                        <div className="flex flex-col gap-1 mb-4">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{agent.model || 'GPT-4o'}</span>
-                                                <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">v2.4</span>
+                                    <div className="flex-1">
+                                        <div className="flex flex-col gap-1.5 mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${modelInfo.color} border bg-opacity-50`}>
+                                                    {modelInfo.label}
+                                                </span>
                                             </div>
-                                            <h3 className="text-lg font-bold text-black tracking-tight">{agent.name}</h3>
+                                            <h3 className="text-base font-bold text-black tracking-tight">{agent.name}</h3>
                                         </div>
-                                        <p className="text-zinc-500 text-[13px] font-medium leading-relaxed line-clamp-3">
-                                            {agent.description || "Agente especializado em fluxos estratégicos e automação inteligente."}
+                                        <p className="text-zinc-400 text-xs font-medium leading-relaxed line-clamp-3">
+                                            {agent.description || "Especialista em inteligência e automação."}
                                         </p>
                                     </div>
 
-                                    <div className="mt-8 flex items-center justify-between border-t border-zinc-50 pt-6" onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{agent.role || 'EXPERT'}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-black font-bold text-[13px] opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                                            Acessar <ChevronRight size={16} />
+                                    <div className="mt-auto pt-4 border-t border-zinc-50 flex items-center justify-between">
+                                        <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">{agent.role || 'AGENT'}</span>
+                                        <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-white">
+                                            <ChevronRight size={12} />
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
+
+                        {/* New Agent Card (Ghost) */}
+                        <div
+                            onClick={() => navigate('/admin/agents/builder')}
+                            className="bg-zinc-50/50 border border-dashed border-zinc-200 rounded-[20px] p-5 hover:bg-zinc-50 hover:border-zinc-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group h-[280px]"
+                        >
+                            <div className="w-12 h-12 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-300 group-hover:scale-110 group-hover:text-black transition-all shadow-sm">
+                                <Plus size={20} />
+                            </div>
+                            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black transition-colors">Criar Novo</span>
+                        </div>
                     </div>
 
-                    {filteredAgents.length === 0 && (search || agents.length === 0) && (
-                        <div className="py-32 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <div className="w-20 h-20 bg-zinc-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-sm">
-                                <Bot className="w-10 h-10 text-zinc-300" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-black tracking-tight mb-2">
-                                {search ? `Nenhum agente para "${search}"` : "Frota de Inteligência"}
-                            </h3>
-                            <p className="text-zinc-500 text-sm font-medium mb-10 max-w-sm mx-auto leading-relaxed">
-                                {search ? "Não encontramos correspondências para sua busca técnica." : "Comece orchestrando sua frota de agentes para automatizar e escalar suas operações."}
-                            </p>
-                            {search ? (
-                                <button onClick={() => setSearch('')} className="bg-zinc-100 text-black px-6 py-2.5 rounded-full text-[12px] font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all">
-                                    Limpar Filtros
-                                </button>
-                            ) : (
-                                <Button
-                                    onClick={() => navigate('/admin/agents/builder')}
-                                    className="bg-black text-white px-8 h-12 rounded-full font-bold hover:bg-zinc-800 transition-all shadow-lg shadow-black/10"
-                                >
-                                    Criar Primeiro Agente
-                                </Button>
-                            )}
+                    {filteredAgents.length === 0 && (search) && (
+                        <div className="py-20 text-center">
+                            <p className="text-zinc-400 text-sm">Nenhum agente encontrado.</p>
                         </div>
                     )}
                 </div>

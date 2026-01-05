@@ -27,7 +27,7 @@ interface CaseFormValues {
     challenge: string;
     solution: string;
     results: string;
-    testimonial: string;
+    testimonial_quote: string;
     testimonial_author: string;
     testimonial_role: string;
     published: boolean;
@@ -55,7 +55,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
             challenge: (initialData as any).challenge || '',
             solution: (initialData as any).solution || '',
             results: (initialData as any).results || '',
-            testimonial: (initialData as any).testimonial || '',
+            testimonial_quote: (initialData as any).testimonial_quote || '',
             testimonial_author: (initialData as any).testimonial_author || '',
             testimonial_role: (initialData as any).testimonial_role || '',
         } : {
@@ -69,7 +69,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
             challenge: '',
             solution: '',
             results: '',
-            testimonial: '',
+            testimonial_quote: '',
             testimonial_author: '',
             testimonial_role: '',
             published: false,
@@ -128,6 +128,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 const { error } = await supabase.from('cases').update(payload).eq('id', initialData.id);
                 if (error) throw error;
                 toast({ title: 'Case atualizado!' });
+                navigate('/admin/cases');
             } else {
                 const { error } = await supabase.from('cases').insert(payload);
                 if (error) throw error;
@@ -271,7 +272,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 <div className="border-t border-zinc-100 pt-8">
                     <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-4 block">Depoimento</Label>
                     <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-xl space-y-4">
-                        <Textarea {...register('testimonial')} placeholder="Citação do cliente..." className="bg-white italic border-zinc-200" />
+                        <Textarea {...register('testimonial_quote')} placeholder="Citação do cliente..." className="bg-white italic border-zinc-200" />
                         <div className="grid grid-cols-2 gap-4">
                             <Input {...register('testimonial_author')} placeholder="Autor" className="bg-white border-zinc-200" />
                             <Input {...register('testimonial_role')} placeholder="Cargo / Empresa" className="bg-white border-zinc-200" />

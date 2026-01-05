@@ -60,18 +60,18 @@ const AdminMaterials = () => {
                     <div className="p-4 space-y-4">
                         <button
                             onClick={() => navigate('/admin/materials/new')}
-                            className="w-full h-10 flex items-center justify-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-lg transition-all shadow-sm"
+                            className="w-full h-12 flex items-center justify-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-black uppercase tracking-[0.2em] transition-all"
                         >
-                            <Plus className="w-4 h-4" /> Novo Material
+                            <Plus className="w-4 h-4" /> NOVO_MATERIAL
                         </button>
 
                         <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 transition-colors" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-black transition-colors" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Buscar materiais..."
-                                className="w-full h-10 pl-9 pr-3 text-[13px] bg-white border border-zinc-200 rounded-lg outline-none focus:border-zinc-300 focus:ring-1 focus:ring-zinc-100 transition-all placeholder:text-zinc-400"
+                                placeholder="PROCURAR..."
+                                className="w-full h-12 pl-10 pr-4 text-[11px] font-bold uppercase tracking-widest bg-white border border-zinc-100 outline-none focus:border-black transition-all placeholder:text-zinc-300"
                             />
                         </div>
                     </div>
@@ -98,15 +98,15 @@ const AdminMaterials = () => {
                                     }
                                 `}
                             >
-                                <div className="flex justify-between items-start mb-2">
+                                <div className="flex justify-between items-start mb-4">
                                     <span className={`
-                                        text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm border
-                                        ${selected?.id === item.id ? 'bg-black text-white border-black' : 'bg-zinc-100 text-zinc-500 border-zinc-200'}
+                                        text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border
+                                        ${selected?.id === item.id ? 'bg-black text-white border-black' : 'bg-transparent text-zinc-400 border-zinc-100'}
                                     `}>
                                         {item.material_type || 'Geral'}
                                     </span>
                                     {item.published && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" title="Publicado" />
+                                        <div className="w-1.5 h-1.5 bg-revgreen" title="Publicado" />
                                     )}
                                 </div>
 
@@ -150,7 +150,7 @@ const AdminMaterials = () => {
                                                 {selected.published ? '● Publicado' : '○ Rascunho'}
                                             </span>
                                         </div>
-                                        <h1 className="text-4xl font-black text-black tracking-tight leading-tight">
+                                        <h1 className="text-6xl font-black text-black tracking-ultratight uppercase leading-none">
                                             {selected.title || selected.material_name}
                                         </h1>
                                         {selected.slug && (
@@ -159,10 +159,10 @@ const AdminMaterials = () => {
                                     </div>
                                     <button
                                         onClick={() => navigate(`/admin/materials/edit/${selected.id}`)}
-                                        className="shrink-0 flex items-center gap-2 px-6 py-3 bg-black hover:bg-zinc-800 text-white rounded-lg transition-all shadow-lg hover:shadow-xl group"
+                                        className="shrink-0 flex items-center gap-2 px-8 py-4 bg-black hover:bg-zinc-800 text-white transition-all group"
                                     >
                                         <Edit className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                        <span className="text-[11px] font-bold uppercase tracking-widest">Editar Material</span>
+                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Editar Registro</span>
                                     </button>
                                 </div>
 

@@ -14,7 +14,7 @@ const Index = () => {
     <PageLayout>
       <SEO
         title="Home"
-        description="A primeira consultoria de Revenue Operations do Brasil focada em Engenharia de Receita. Unificamos Marketing, Vendas e CS para escalar operações B2B."
+        description="A primeira consultoria de Revenue Operations do Brasil. Unificamos Marketing, Vendas e CS para escalar operações B2B."
         canonical="https://revhackers.com"
       />
       <HeroSection />

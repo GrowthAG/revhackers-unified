@@ -8,35 +8,32 @@ const CTASection = () => {
   };
 
   return (
-    <section className="py-20 md:py-32 bg-gray-50">
+    <section className="py-24 md:py-40 bg-zinc-50 border-t border-zinc-100">
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-gray-900 uppercase leading-none">
-              Vamos crescer <span className="text-revgreen">juntos?</span>
-            </h2>
+        <div className="bg-black p-12 md:p-24 overflow-hidden relative group rounded-none">
+          <div className="relative z-10 max-w-4xl space-y-12">
+            <div className="space-y-6">
+              <span className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.5em] font-black">
+                // PRONTO_PARA_ESCALAR?
+              </span>
+              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none italic uppercase">
+                VAMOS MONTAR SUA <br />
+                <span className="text-revgreen">ARQUITETURA.</span>
+              </h2>
+            </div>
 
-            <p className="text-xl text-gray-600 font-medium tracking-tight">
-              Agende uma conversa com nossos especialistas e descubra como podemos
-              ajudar sua empresa a escalar resultados de forma sustentável.
+            <p className="text-xl md:text-2xl text-zinc-400 font-medium tracking-tight leading-relaxed max-w-2xl">
+              Pare de depender da sorte. Instale o protocolo de receita que as empresas de alto crescimento utilizam.
             </p>
 
             <Button
               asChild
-              className="bg-white text-black font-bold text-xs uppercase tracking-widest px-10 py-6 rounded-sm hover:bg-revgreen hover:text-black transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+              className="bg-white text-black font-black text-xs uppercase tracking-[0.3em] h-16 px-12 rounded-none hover:bg-revgreen hover:text-black transition-all duration-300"
             >
               <Link to="/diagnostico" onClick={scrollToTop}>
-                Falar com um especialista
+                Diagnóstico Grátis //
               </Link>
             </Button>
-          </div>
-
-          <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
-              alt="Estratégias de crescimento"
-              className="w-full h-auto rounded-sm shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 opacity-80 hover:opacity-100"
-            />
           </div>
         </div>
       </div>

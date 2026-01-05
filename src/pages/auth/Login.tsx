@@ -10,7 +10,6 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [magicLinkLoading, setMagicLinkLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const { signInWithPassword, signIn, setDevBypass, user, isRecoveringPassword } = useAuth();
@@ -25,17 +24,6 @@ const Login = () => {
             console.log('🔑 Login: Fluxo de recuperação detectado pelo contexto. Mantendo na página.');
         }
     }, [user, navigate, isRecoveringPassword]);
-
-    const handleMagicLink = async () => {
-        if (!email) {
-            setError('Digite seu e-mail primeiro.');
-            return;
-        }
-        setError(null);
-        setMagicLinkLoading(true);
-        await signIn(email);
-        setMagicLinkLoading(false);
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -139,29 +127,6 @@ const Login = () => {
                                 ) : (
                                     <span className="flex items-center justify-center gap-2">
                                         Entrar <ArrowRight className="w-4 h-4" />
-                                    </span>
-                                )}
-                            </Button>
-
-                            <div className="relative flex py-4 items-center">
-                                <div className="flex-grow border-t border-zinc-200"></div>
-                                <span className="flex-shrink-0 mx-4 text-[9px] uppercase tracking-widest text-zinc-400">Ou</span>
-                                <div className="flex-grow border-t border-zinc-200"></div>
-                            </div>
-
-                            <Button
-                                type="button"
-                                onClick={handleMagicLink}
-                                variant="outline"
-                                className="w-full bg-transparent border-zinc-200 text-zinc-500 hover:text-black hover:border-black h-12 font-bold text-[10px] tracking-[0.2em] uppercase rounded-none transition-all"
-                                disabled={loading || magicLinkLoading}
-                            >
-                                {magicLinkLoading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <Mail className="w-4 h-4" />
-                                        Receber Link de Acesso
                                     </span>
                                 )}
                             </Button>

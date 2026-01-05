@@ -30,14 +30,24 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
             return;
         }
 
-        // Filter for text/pdf/md
+        // Filter for text/pdf/md/docx/csv/json
         const validFiles = acceptedFiles.filter(file => {
-            const isMatch = file.type === 'application/pdf' ||
-                file.type === 'text/plain' ||
-                file.type === 'text/markdown' ||
-                file.name.toLowerCase().endsWith('.pdf') ||
-                file.name.toLowerCase().endsWith('.md') ||
-                file.name.toLowerCase().endsWith('.txt');
+            const name = file.name.toLowerCase();
+            const type = file.type;
+
+            const isMatch =
+                type === 'application/pdf' ||
+                type === 'text/plain' ||
+                type === 'text/markdown' ||
+                type === 'text/csv' ||
+                type === 'application/json' ||
+                type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                name.endsWith('.pdf') ||
+                name.endsWith('.md') ||
+                name.endsWith('.txt') ||
+                name.endsWith('.csv') ||
+                name.endsWith('.json') ||
+                name.endsWith('.docx');
 
             console.log(`- Validando: ${file.name} (${file.type || 'sem tipo'}) -> ${isMatch ? 'ACEITO' : 'REJEITADO (FILTRO)'}`);
             return isMatch;
@@ -48,7 +58,7 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
             console.log(`- Enviando ${validFiles.length} arquivos para o estado do Builder.`);
             onFilesChange([...files, ...validFiles]);
         } else if (acceptedFiles.length > 0) {
-            toast.error('Os arquivos foram detectados, mas nenhum passou no filtro PDF/TXT.');
+            toast.error('Formato não suportado. Use PDF, DOCX, TXT, MD, CSV ou JSON.');
         }
 
         console.groupEnd();
@@ -56,7 +66,6 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        // Looping restrictions to let custom filter handle it with logs
         maxSize: 10 * 1024 * 1024 // 10MB
     });
 
@@ -80,28 +89,9 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
                     </div>
                     <div>
                         <p className="text-sm font-medium text-zinc-900">Clique para upload ou arraste arquivos</p>
-                        <p className="text-xs text-zinc-500">PDF, TXT, MD (Max 10MB)</p>
+                        <p className="text-xs text-zinc-500">PDF, DOCX, TXT, MD, CSV, JSON (Max 10MB)</p>
                     </div>
                 </div>
-            </div>
-
-            {/* FALLBACK: Botão de Seleção Manual (Eliminação) */}
-            <div className="flex justify-center mt-2">
-                <label className="text-[10px] font-bold text-revgreen cursor-pointer hover:underline flex items-center gap-2 bg-revgreen/5 px-3 py-1.5 rounded-full border border-revgreen/20">
-                    <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.txt,.md"
-                        className="hidden"
-                        onChange={(e) => {
-                            const selected = Array.from(e.target.files || []);
-                            console.log('[ELIMINAÇÃO] Seleção Manual via Input HTML:', selected.length, "arquivos.");
-                            // We call onDrop manually to reuse the filtering and state logic
-                            onDrop(selected, []);
-                        }}
-                    />
-                    ( ELIMINAÇÃO: CLIQUE AQUI SE O ARRASTAR FALHAR )
-                </label>
             </div>
 
             {files.length > 0 && (

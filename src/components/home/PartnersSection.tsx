@@ -2,6 +2,7 @@
 import Section from '@/components/ui/Section';
 
 const partners = [
+  { name: "TLDV", logo: "https://tldv.io/wp-content/uploads/2021/04/tldv-logo-1.svg", isBigger: true },
   { name: "Heineken", logo: "/uploads/aada4820-3f12-4185-9af6-811f30795a93.png", isBigger: true },
   { name: "Lindoya", logo: "/uploads/lindoya-logo.png", isBigger: true },
   { name: "FMU", logo: "/uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png", isBigger: true },
@@ -24,27 +25,27 @@ const partners = [
 
 const PartnersSection = () => {
   return (
-    <Section variant="light" className="bg-white border-b border-gray-100 py-12">
+    <Section variant="light" className="bg-white border-b border-zinc-100 py-16 md:py-24">
       <div className="container-custom">
-        <div className="text-center mb-8">
-          <span className="font-mono-tech text-xs text-gray-400 uppercase tracking-widest">
-            LÍDERES DE MERCADO QUE CONFIAM
+        <div className="text-center mb-16">
+          <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">
+            LÍDERES DE MERCADO QUE CONFIAM NO NOSSO ECOSSISTEMA
           </span>
         </div>
 
-        {/* Grid Layout with Background Cards */}
-        <div className="flex items-center justify-center gap-6 flex-wrap max-w-6xl mx-auto">
+        {/* Grid Layout with Sophisticated Cards */}
+        <div className="flex items-center justify-center gap-4 md:gap-6 flex-wrap max-w-7xl mx-auto">
           {partners.map((partner: any, index) => (
             <div
               key={index}
-              className="h-32 w-52 flex items-center justify-center bg-gray-50 rounded-lg p-8 hover:bg-white hover:shadow-xl hover:scale-105 transition-all duration-300 group border border-gray-100 cursor-pointer"
+              className="h-28 w-44 md:h-32 md:w-56 flex items-center justify-center bg-zinc-50/50 rounded-[2rem] p-8 hover:bg-white hover:shadow-2xl hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-700 group border border-zinc-100/50 cursor-pointer overflow-hidden"
             >
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className={`w-full object-contain transition-all duration-500 
-                ${partner.isBigger ? (partner.isExtraWide ? 'max-h-24 scale-[1.6]' : 'max-h-20 scale-110') : 'max-h-16'}
-                filter grayscale opacity-70 group-hover:filter-none group-hover:opacity-100 group-hover:scale-105`}
+                className={`w-full object-contain transition-all duration-700 
+                ${partner.isBigger ? (partner.isExtraWide ? 'max-h-24 scale-[1.5]' : 'max-h-20 scale-110') : 'max-h-16'}
+                grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105`}
               />
             </div>
           ))}

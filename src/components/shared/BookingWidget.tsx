@@ -62,13 +62,18 @@ const BookingWidget = () => {
   };
   return (
     <div className="flex justify-center">
-      <div className="w-full max-w-lg">
-        <Card className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all">
-          <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">
-            Entre em <span className="text-revgreen">contato</span>
-          </h3>
-          <ContactForm />
-        </Card>
+      <div className="w-full max-w-xl">
+        <div className="bg-zinc-900/50 backdrop-blur-3xl rounded-[2.5rem] p-10 md:p-14 border border-white/10 shadow-2xl shadow-revgreen/5 hover:border-white/20 transition-all duration-700">
+          <div className="mb-12 text-center">
+            <h3 className="text-3xl font-black text-white tracking-tighter mb-4">
+              Agende um <span className="text-revgreen">Diagnóstico.</span>
+            </h3>
+            <p className="text-zinc-400 text-sm font-normal tracking-tight">
+              Fale com um Engenheiro de Receita e descubra seu potencial real.
+            </p>
+          </div>
+          <ContactForm variant="dark" formType="diagnosis" />
+        </div>
       </div>
     </div>
   );

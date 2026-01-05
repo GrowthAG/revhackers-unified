@@ -21,8 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, CheckCircle, XCircle, Shield, ShieldAlert, User, Users, Mail, Send, Plus, Trash2, Edit2, AlertTriangle } from "lucide-react";
+import { Loader2, Search, MoreHorizontal, Plus, Trash2, Edit2, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -32,8 +31,16 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserProfile {
     id: string;
@@ -111,7 +118,7 @@ const AdminUsers = () => {
         if (!inviteData.email) return;
         setInviting(true);
         try {
-            const { data: functionData, error: functionError } = await supabase.functions.invoke('invite-member', {
+            const { error: functionError } = await supabase.functions.invoke('invite-member', {
                 body: {
                     email: inviteData.email,
                     role: inviteData.role,
@@ -121,7 +128,7 @@ const AdminUsers = () => {
 
             if (functionError) throw new Error(functionError.message || "Erro ao disparar e-mail de convite");
 
-            const { error: dbError } = await supabase
+            await supabase
                 .from("invitations")
                 .insert([{
                     email: inviteData.email,
@@ -131,8 +138,8 @@ const AdminUsers = () => {
                 }]);
 
             toast({
-                title: "Convite Enviado!",
-                description: `O e-mail de acesso foi enviado para ${inviteData.email}.`
+                title: "Convite enviado",
+                description: `Enviamos um email para ${inviteData.email}.`
             });
 
             setIsInviteModalOpen(false);
@@ -141,7 +148,7 @@ const AdminUsers = () => {
         } catch (error: any) {
             toast({
                 title: "Erro ao convidar",
-                description: error.message || "Ocorreu um erro inesperado.",
+                description: error.message,
                 variant: "destructive",
             });
         } finally {
@@ -160,7 +167,7 @@ const AdminUsers = () => {
         if (myLevel <= targetLevel && currentUser?.id !== userId) {
             toast({
                 title: "Acesso Negado",
-                description: "Você não tem permissão para alterar o cargo deste nível.",
+                description: "Você não tem permissão para alterar este usuário.",
                 variant: "destructive"
             });
             return;
@@ -168,116 +175,47 @@ const AdminUsers = () => {
 
         setUpdating(userId);
         try {
-            const { error } = await supabase
-                .from("profiles")
-                .update({ role: newRole })
-                .eq("id", userId);
-
+            const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", userId);
             if (error) throw error;
-
             setUsers(users.map(u => u.id === userId ? { ...u, role: newRole as any } : u));
-            toast({ title: "Role atualizada com sucesso!" });
+            toast({ title: "Permissão atualizada" });
         } catch (error: any) {
-            toast({
-                title: "Erro ao atualizar",
-                description: error.message,
-                variant: "destructive",
-            });
+            toast({ title: "Erro", description: error.message, variant: "destructive" });
         } finally {
             setUpdating(null);
         }
     };
 
     const handleDeleteUser = async (user: UserProfile) => {
-        const roleLevels = { super_admin: 3, admin: 2, user: 1 };
-        const myLevel = roleLevels[userRole as keyof typeof roleLevels] || 0;
-        const targetLevel = roleLevels[user.role as keyof typeof roleLevels] || 0;
-
-        if (myLevel <= targetLevel || currentUser?.id === user.id) {
-            toast({
-                title: "Ações Restritas",
-                description: "Você não pode excluir um usuário de mesmo nível ou superior.",
-                variant: "destructive"
-            });
-            return;
-        }
-
-        if (!confirm(`TEM CERTEZA QUE DESEJA EXCLUIR ${user.email.toUpperCase()}?`)) return;
-
+        if (!confirm(`Tem certeza que deseja remover ${user.email}?`)) return;
         setUpdating(user.id);
         try {
-            const { data, error } = await supabase.functions.invoke('delete-user', {
-                body: { userId: user.id }
-            });
-
+            const { error } = await supabase.functions.invoke('delete-user', { body: { userId: user.id } });
             if (error) throw error;
-
             setUsers(users.filter(u => u.id !== user.id));
-            toast({ title: "Usuário excluído com sucesso." });
+            toast({ title: "Usuário removido" });
         } catch (error: any) {
-            toast({
-                title: "Erro ao excluir",
-                description: error.message || "Não foi possível remover o usuário.",
-                variant: "destructive",
-            });
+            toast({ title: "Erro", description: error.message, variant: "destructive" });
         } finally {
             setUpdating(null);
         }
-    };
-
-    const handleStatusChange = async (userId: string, newStatus: string) => {
-        setUpdating(userId);
-        try {
-            const { error } = await supabase
-                .from("profiles")
-                .update({ status: newStatus })
-                .eq("id", userId);
-
-            if (error) throw error;
-
-            setUsers(users.map(u => u.id === userId ? { ...u, status: newStatus as any } : u));
-            toast({ title: "Status atualizado com sucesso!" });
-        } catch (error: any) {
-            toast({
-                title: "Erro ao atualizar",
-                description: error.message,
-                variant: "destructive",
-            });
-        } finally {
-            setUpdating(null);
-        }
-    };
-
-    const handleEditClick = (user: UserProfile) => {
-        setEditData(user);
-        setIsEditModalOpen(true);
     };
 
     const handleRunUpdateUser = async () => {
         if (!editData) return;
         setUpdating(editData.id);
-
         try {
             const { error } = await supabase
                 .from("profiles")
-                .update({
-                    full_name: editData.full_name,
-                    role: editData.role,
-                    status: editData.status
-                })
+                .update({ full_name: editData.full_name, role: editData.role, status: editData.status })
                 .eq("id", editData.id);
 
             if (error) throw error;
-
             setUsers(users.map(u => u.id === editData.id ? editData : u));
-            toast({ title: "Usuário atualizado com sucesso!" });
+            toast({ title: "Perfil atualizado" });
             setIsEditModalOpen(false);
         } catch (error: any) {
-            toast({
-                title: "Erro ao atualizar",
-                description: error.message,
-                variant: "destructive",
-            });
+            toast({ title: "Erro", description: error.message, variant: "destructive" });
         } finally {
             setUpdating(null);
         }
@@ -288,267 +226,282 @@ const AdminUsers = () => {
         (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) || "")
     );
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case "active": return <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">ATIVO</span>;
-            case "inactive": return <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">INATIVO</span>;
-            default: return <span className="text-[9px] font-black uppercase tracking-widest text-red-500">PENDENTE</span>;
-        }
+    const StatusBadge = ({ status }: { status: string }) => {
+        const styles = {
+            active: "bg-emerald-50 text-emerald-700 border-emerald-100",
+            inactive: "bg-zinc-50 text-zinc-500 border-zinc-100",
+            pending: "bg-amber-50 text-amber-700 border-amber-100"
+        };
+        const labels = { active: "Ativo", inactive: "Inativo", pending: "Pendente" };
+
+        return (
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${styles[status as keyof typeof styles] || styles.pending}`}>
+                {labels[status as keyof typeof labels] || status}
+            </span>
+        );
+    };
+
+    const RoleBadge = ({ role }: { role: string }) => {
+        const labels = { super_admin: "Super Admin", admin: "Admin", user: "Membro" };
+        return <span className="text-sm text-zinc-600">{labels[role as keyof typeof labels] || role}</span>;
+    };
+
+    const handleEditClick = (user: UserProfile) => {
+        setEditData(user);
+        setIsEditModalOpen(true);
     };
 
     if (loading) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-zinc-300" />
             </div>
         );
     }
 
     return (
         <PageLayout>
-            <AdminPageLayout
-                title="Gestão de Usuários"
-                description="Gerencie permissões e acessos ao sistema."
-                backTo="/admin"
-                backLabel="Voltar ao Hub"
-                actions={
-                    <Button onClick={() => setIsInviteModalOpen(true)} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest">
-                        <Plus className="mr-2 h-4 w-4" /> Convidar Membro
+            <div className="max-w-6xl mx-auto px-6 py-8">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">Membros & Permissões</h1>
+                        <p className="text-zinc-500 text-sm mt-1">Gerencie quem tem acesso ao seu workspace.</p>
+                    </div>
+                    <Button
+                        onClick={() => setIsInviteModalOpen(true)}
+                        className="bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg h-9 px-4 text-sm font-medium shadow-sm transition-all"
+                    >
+                        <Plus className="mr-2 h-4 w-4" /> Adicionar membro
                     </Button>
-                }
-            >
-                <div className="space-y-8">
-                    {/* Search bar */}
-                    <div className="max-w-xl">
-                        <div className="relative">
+                </div>
+
+                <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+                    <div className="p-4 border-b border-zinc-100 flex items-center justify-between bg-white">
+                        <div className="relative max-w-sm w-full">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                             <Input
-                                placeholder="Buscar por nome ou e-mail..."
+                                placeholder="Buscar usuários..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 h-11 border-zinc-200 rounded-none focus-visible:ring-0 focus-visible:border-black text-sm"
+                                className="pl-9 h-9 border-zinc-200 rounded-lg bg-zinc-50/50 focus:bg-white focus:ring-2 focus:ring-zinc-100 focus:border-zinc-300 text-sm transition-all shadow-none"
                             />
                         </div>
+                        <Tabs defaultValue="active" className="w-auto">
+                            <TabsList className="bg-zinc-100/50 h-9 p-1 rounded-lg">
+                                <TabsTrigger value="active" className="text-xs font-medium rounded-md px-3 h-7 data-[state=active]:bg-white data-[state=active]:shadow-sm text-zinc-600">Ativos</TabsTrigger>
+                                <TabsTrigger value="pending" className="text-xs font-medium rounded-md px-3 h-7 data-[state=active]:bg-white data-[state=active]:shadow-sm text-zinc-600">Convites</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
                     </div>
 
                     <Tabs defaultValue="active" className="w-full">
-                        <TabsList className="bg-transparent border-b border-zinc-200 h-auto p-0 gap-8 mb-8 rounded-none w-full justify-start">
-                            <TabsTrigger value="active" className="px-1 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black rounded-none uppercase tracking-widest font-black text-[10px] transition-all">
-                                MEMBROS ATIVOS ({users.length})
-                            </TabsTrigger>
-                            <TabsTrigger value="pending" className="px-1 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black rounded-none uppercase tracking-widest font-black text-[10px] transition-all">
-                                CONVITES PENDENTES ({invitations.length})
-                            </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="active">
-                            <div className="bg-white border border-zinc-200 rounded-none overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 transition-none">
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4 pl-6">Usuário</TableHead>
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4">Nível</TableHead>
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4">Status</TableHead>
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4 text-right pr-6">Ações</TableHead>
+                        <TabsContent value="active" className="m-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 border-b border-zinc-100">
+                                        <TableHead className="text-xs font-medium text-zinc-500 pl-6 py-3 h-10 w-[300px]">Usuário</TableHead>
+                                        <TableHead className="text-xs font-medium text-zinc-500 py-3 h-10">Cargo</TableHead>
+                                        <TableHead className="text-xs font-medium text-zinc-500 py-3 h-10">Status</TableHead>
+                                        <TableHead className="text-xs font-medium text-zinc-500 py-3 h-10 text-right pr-6">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredUsers.map((user) => (
+                                        <TableRow key={user.id} className="hover:bg-zinc-50/30 transition-colors border-b border-zinc-50 last:border-0">
+                                            <TableCell className="py-3 pl-6">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8 rounded-full border border-zinc-100 bg-white">
+                                                        <AvatarImage src={user.avatar_url} />
+                                                        <AvatarFallback className="bg-zinc-50 text-zinc-400 text-xs font-medium">
+                                                            {user.full_name?.substring(0, 2).toUpperCase() || "US"}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-medium text-zinc-900">{user.full_name || "Usuário"}</span>
+                                                        <span className="text-xs text-zinc-500">{user.email}</span>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <RoleBadge role={user.role} />
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-3">
+                                                <StatusBadge status={user.status || 'pending'} />
+                                            </TableCell>
+                                            <TableCell className="py-3 pr-6 text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-600 rounded-md">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-[160px] rounded-xl border-zinc-200 shadow-lg shadow-black/5 p-1 bg-white">
+                                                        <DropdownMenuLabel className="text-xs text-zinc-500 px-2 py-1.5 font-medium">Gerenciar</DropdownMenuLabel>
+                                                        <DropdownMenuItem onClick={() => handleEditClick(user)} className="text-sm rounded-lg px-2 py-1.5 focus:bg-zinc-100 cursor-pointer">
+                                                            <Edit2 className="mr-2 h-3.5 w-3.5" /> Editar
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="bg-zinc-100 my-1" />
+                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user)} className="text-sm rounded-lg px-2 py-1.5 focus:bg-red-50 text-red-600 focus:text-red-700 cursor-pointer">
+                                                            <Trash2 className="mr-2 h-3.5 w-3.5" /> Remover
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredUsers.map((user) => (
-                                            <TableRow key={user.id} className="hover:bg-zinc-50/50 transition-all border-zinc-100">
-                                                <TableCell className="py-4 pl-6">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center overflow-hidden border border-zinc-200">
-                                                            {user.avatar_url ? (
-                                                                <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <User className="h-4 w-4 text-zinc-400" />
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-bold text-black text-[13px] uppercase tracking-tight">{user.full_name || "Membro"}</div>
-                                                            <div className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">{user.email}</div>
-                                                        </div>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="py-4">
-                                                    <Select
-                                                        defaultValue={user.role || 'user'}
-                                                        onValueChange={(val) => handleRoleChange(user.id, val)}
-                                                        disabled={updating === user.id}
-                                                    >
-                                                        <SelectTrigger className="w-[140px] h-8 border-zinc-200 rounded-none text-[10px] font-bold uppercase tracking-widest text-black shadow-none bg-white">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-none border-black">
-                                                            <SelectItem value="user" className="uppercase text-[9px] tracking-widest">COLABORADOR</SelectItem>
-                                                            <SelectItem value="admin" className="uppercase text-[9px] tracking-widest">ADMIN</SelectItem>
-                                                            <SelectItem value="super_admin" className="uppercase text-[9px] tracking-widest">SUPER ADMIN</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                <TableCell className="py-4 whitespace-nowrap">
-                                                    {getStatusBadge(user.status || 'pending')}
-                                                </TableCell>
-                                                <TableCell className="text-right pr-6 py-4">
-                                                    <div className="flex justify-end gap-1">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => handleEditClick(user)}
-                                                            className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-50 rounded-none transition-all"
-                                                        >
-                                                            <Edit2 className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => handleDeleteUser(user)}
-                                                            className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-zinc-50 rounded-none transition-all"
-                                                            disabled={updating === user.id}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </TabsContent>
 
-                        <TabsContent value="pending">
-                            <div className="bg-white border border-zinc-200 rounded-none overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 transition-none">
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4 pl-6">E-mail</TableHead>
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4">Nível Pretendido</TableHead>
-                                            <TableHead className="text-black font-bold uppercase tracking-widest text-[9px] py-4 text-right pr-6">Data</TableHead>
+                        <TabsContent value="pending" className="m-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 border-b border-zinc-100">
+                                        <TableHead className="text-xs font-medium text-zinc-500 pl-6 py-3 h-10">Email</TableHead>
+                                        <TableHead className="text-xs font-medium text-zinc-500 py-3 h-10">Permissão</TableHead>
+                                        <TableHead className="text-xs font-medium text-zinc-500 py-3 h-10 text-right pr-6">Enviado em</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {invitations.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={3} className="h-48 text-center">
+                                                <div className="flex flex-col items-center justify-center text-zinc-400">
+                                                    <Mail className="h-8 w-8 mb-2 opacity-20" />
+                                                    <span className="text-sm">Nenhum convite pendente.</span>
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {invitations.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={3} className="h-32 text-center text-zinc-400 text-xs uppercase tracking-widest font-medium">Nenhum convite pendente.</TableCell>
-                                            </TableRow>
-                                        ) : invitations.map((invite) => (
-                                            <TableRow key={invite.id} className="hover:bg-zinc-50/50 transition-all border-zinc-100">
-                                                <TableCell className="py-4 pl-6 font-bold text-black border-zinc-100 uppercase tracking-widest text-[11px]">{invite.email}</TableCell>
-                                                <TableCell className="py-4">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 bg-zinc-100 px-2 py-1">{invite.role}</span>
-                                                </TableCell>
-                                                <TableCell className="text-right pr-6 py-4 text-zinc-400 text-[10px] font-bold uppercase tracking-widest">
-                                                    {new Date(invite.created_at).toLocaleDateString('pt-BR')}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                    ) : invitations.map((invite) => (
+                                        <TableRow key={invite.id} className="hover:bg-zinc-50/30 transition-colors border-b border-zinc-50 last:border-0">
+                                            <TableCell className="py-3 pl-6 text-sm text-zinc-700">{invite.email}</TableCell>
+                                            <TableCell className="py-3">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-zinc-50 border border-zinc-100 text-xs font-medium text-zinc-600">
+                                                    {invite.role}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-3 pr-6 text-right text-xs text-zinc-400">
+                                                {new Date(invite.created_at).toLocaleDateString('pt-BR')}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </TabsContent>
                     </Tabs>
                 </div>
+            </div>
 
-                {/* Modals */}
-                <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
-                    <DialogContent className="max-w-md bg-white border border-black p-8 rounded-none shadow-none">
-                        <DialogHeader className="mb-6">
-                            <DialogTitle className="text-xl font-black uppercase tracking-widest">Novo Convite</DialogTitle>
-                            <DialogDescription className="text-xs text-zinc-400 uppercase tracking-widest mt-1">Conceda acesso a um novo orquestrador.</DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-6">
+            {/* Invite Modal */}
+            <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
+                <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-xl rounded-2xl gap-0">
+                    <DialogHeader className="px-6 py-6 border-b border-zinc-50">
+                        <DialogTitle className="text-lg font-semibold text-zinc-900 tracking-tight">Convidar membro</DialogTitle>
+                        <DialogDescription className="text-sm text-zinc-500">
+                            Envie um convite por e-mail para adicionar um novo membro ao time.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="p-6 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-medium text-zinc-700">Email</Label>
+                            <Input
+                                id="email"
+                                value={inviteData.email}
+                                onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
+                                className="h-10 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 shadow-sm"
+                                placeholder="exemplo@empresa.com"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="role" className="text-sm font-medium text-zinc-700">Função</Label>
+                            <Select
+                                value={inviteData.role}
+                                onValueChange={(val) => setInviteData({ ...inviteData, role: val })}
+                            >
+                                <SelectTrigger className="h-10 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 shadow-sm">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-zinc-200 shadow-lg bg-white">
+                                    <SelectItem value="user">Membro</SelectItem>
+                                    <SelectItem value="admin">Administrador</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter className="px-6 py-4 bg-zinc-50 border-t border-zinc-100 flex items-center justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsInviteModalOpen(false)} className="h-9 rounded-lg border-zinc-200 text-zinc-600 hover:bg-white hover:text-zinc-900">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleInvite} disabled={inviting} className="h-9 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 shadow-sm">
+                            {inviting ? "Enviando..." : "Enviar convite"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit Modal */}
+            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-xl rounded-2xl gap-0">
+                    <DialogHeader className="px-6 py-6 border-b border-zinc-50">
+                        <DialogTitle className="text-lg font-semibold text-zinc-900 tracking-tight">Editar usuário</DialogTitle>
+                    </DialogHeader>
+                    {editData && (
+                        <div className="p-6 space-y-4">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">E-mail Corporativo</Label>
+                                <Label className="text-sm font-medium text-zinc-700">Nome</Label>
                                 <Input
-                                    value={inviteData.email}
-                                    onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
-                                    className="h-10 border-zinc-200 rounded-none focus-visible:ring-0 focus-visible:border-black uppercase text-xs tracking-widest"
-                                    placeholder="NOME@EMPRESA.COM"
+                                    value={editData.full_name || ''}
+                                    onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
+                                    className="h-10 border-zinc-200 rounded-lg shadow-sm"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Nível de Acesso</Label>
-                                <Select
-                                    value={inviteData.role}
-                                    onValueChange={(val) => setInviteData({ ...inviteData, role: val })}
-                                >
-                                    <SelectTrigger className="h-10 border-zinc-200 rounded-none text-xs uppercase tracking-widest font-black">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-none border-black">
-                                        <SelectItem value="user" className="uppercase text-[10px] tracking-widest">COLABORADOR</SelectItem>
-                                        <SelectItem value="admin" className="uppercase text-[10px] tracking-widest">ADMIN</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-zinc-700">Cargo</Label>
+                                    <Select
+                                        value={editData.role}
+                                        onValueChange={(val: any) => setEditData({ ...editData, role: val })}
+                                    >
+                                        <SelectTrigger className="h-10 border-zinc-200 rounded-lg shadow-sm">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl bg-white shadow-lg border-zinc-200">
+                                            <SelectItem value="user">Membro</SelectItem>
+                                            <SelectItem value="admin">Admin</SelectItem>
+                                            <SelectItem value="super_admin">Super Admin</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-zinc-700">Status</Label>
+                                    <Select
+                                        value={editData.status}
+                                        onValueChange={(val: any) => setEditData({ ...editData, status: val })}
+                                    >
+                                        <SelectTrigger className="h-10 border-zinc-200 rounded-lg shadow-sm">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl bg-white shadow-lg border-zinc-200">
+                                            <SelectItem value="active">Ativo</SelectItem>
+                                            <SelectItem value="inactive">Inativo</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
-                        <DialogFooter className="mt-8">
-                            <Button onClick={handleInvite} disabled={inviting} className="w-full h-11 bg-black text-white hover:bg-zinc-800 rounded-none font-black uppercase tracking-widest">
-                                {inviting ? "Enviando..." : "Enviar Convite"}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                    <DialogContent className="max-w-md bg-white border border-black p-8 rounded-none shadow-none">
-                        <DialogHeader className="mb-6">
-                            <DialogTitle className="text-xl font-black uppercase tracking-widest">Editar Usuário</DialogTitle>
-                        </DialogHeader>
-                        {editData && (
-                            <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Nome Completo</Label>
-                                    <Input
-                                        value={editData.full_name || ''}
-                                        onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                        className="h-10 border-zinc-200 rounded-none focus-visible:ring-0 focus-visible:border-black uppercase text-xs tracking-widest font-bold"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Cargo</Label>
-                                        <Select
-                                            value={editData.role}
-                                            onValueChange={(val: any) => setEditData({ ...editData, role: val })}
-                                        >
-                                            <SelectTrigger className="h-10 border-zinc-200 rounded-none text-[10px] font-black uppercase tracking-widest">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-none border-black">
-                                                <SelectItem value="user" className="uppercase text-[10px] tracking-widest">USER</SelectItem>
-                                                <SelectItem value="admin" className="uppercase text-[10px] tracking-widest">ADMIN</SelectItem>
-                                                <SelectItem value="super_admin" className="uppercase text-[10px] tracking-widest">SUPER</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Status</Label>
-                                        <Select
-                                            value={editData.status}
-                                            onValueChange={(val: any) => setEditData({ ...editData, status: val })}
-                                        >
-                                            <SelectTrigger className="h-10 border-zinc-200 rounded-none text-[10px] font-black uppercase tracking-widest">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-none border-black">
-                                                <SelectItem value="active" className="uppercase text-[10px] tracking-widest">ATIVO</SelectItem>
-                                                <SelectItem value="inactive" className="uppercase text-[10px] tracking-widest">INATIVO</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        <DialogFooter className="mt-8">
-                            <Button onClick={handleRunUpdateUser} className="w-full h-11 bg-black text-white hover:bg-zinc-800 rounded-none font-black uppercase tracking-widest">
-                                Salvar Alterações
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </AdminPageLayout>
+                    )}
+                    <DialogFooter className="px-6 py-4 bg-zinc-50 border-t border-zinc-100 flex items-center justify-end gap-2">
+                        <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="h-9 rounded-lg border-zinc-200 text-zinc-600 hover:bg-white hover:text-zinc-900">
+                            Cancelar
+                        </Button>
+                        <Button onClick={handleRunUpdateUser} className="h-9 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 shadow-sm">
+                            Salvar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </PageLayout>
     );
 };

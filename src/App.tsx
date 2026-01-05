@@ -11,6 +11,7 @@ import "./styles/article.css";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import PublicDealRoom from "./pages/public/PublicDealRoom";
 import Diagnostico from "./pages/Diagnostico";
 import SupabaseDiagnostic from "./pages/SupabaseDiagnostic";
 import NotFound from "./pages/NotFound";
@@ -106,13 +107,16 @@ import StrategicPlanGenerator from "./pages/admin/StrategicPlanGenerator";
 import StrategicPlanPresentation from "./pages/client/StrategicPlanPresentation";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import ChatbotManager from "./components/shared/ChatbotManager";
 import SchedulingSuccess from "./pages/SchedulingSuccess";
 import { AIProvider } from "./context/AIContext";
 // AIChatSidebar removed - Chat now lives at /admin/ai-chat
 import AdminAgentBuilder from "./pages/admin/AdminAgentBuilder";
 import AdminAgents from "./pages/admin/AdminAgents";
+import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
 import AdminAIChat from "./pages/admin/AdminAIChat";
+import AdminProposals from "./pages/admin/AdminProposals";
+import AdminProposalNew from "./pages/admin/AdminProposalNew";
+import AdminProposalEdit from "./pages/admin/AdminProposalEdit";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
 
 const queryClient = new QueryClient();
@@ -126,11 +130,10 @@ const App = () => (
             <Toaster />
             <Sonner />
             <ScrollToTop />
-            <ChatbotManager />
-            {/* AIChatSidebar removed - use /admin/ai-chat instead */}
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
+              <Route path="/p/:slug" element={<PublicDealRoom />} /> {/* Public Deal Room Route */}
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
@@ -257,7 +260,13 @@ const App = () => (
               <Route path="/admin/agents" element={<ProtectedRoute><AdminAgents /></ProtectedRoute>} />
               <Route path="/admin/agents/builder" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
               <Route path="/admin/agents/builder/:id" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
-              <Route path="/admin/ai-chat" element={<ProtectedRoute><AdminAIChat /></ProtectedRoute>} />
+              <Route path="/admin/knowledge" element={<ProtectedRoute><AdminKnowledgeBase /></ProtectedRoute>} />
+              <Route path="/admin/ai-chat" element={<ProtectedRoute><ErrorBoundary><AdminAIChat /></ErrorBoundary></ProtectedRoute>} />
+
+              {/* Admin - Proposals (Deal Rooms) */}
+              <Route path="/admin/proposals" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
+              <Route path="/admin/proposals/new" element={<ProtectedRoute><AdminProposalNew /></ProtectedRoute>} />
+              <Route path="/admin/proposals/edit/:id" element={<ProtectedRoute><AdminProposalEdit /></ProtectedRoute>} />
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />

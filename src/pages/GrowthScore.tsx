@@ -7,6 +7,9 @@ import { DiagnosticLayout } from '@/components/diagnostics/DiagnosticLayout';
 import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/DiagnosticForm';
 import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
+import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
+import { CallDiagnosticModal } from '@/components/diagnostics/CallDiagnosticModal';
+import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 
 // Questions centered on "Growth Maturity"
 const QUESTIONS = [
@@ -18,7 +21,8 @@ const QUESTIONS = [
             { label: "Dependente de um único canal (Ex: só Ads ou só Indicação)", score: 10 },
             { label: "Oscilante, sem processos claros", score: 5 },
             { label: "Passiva (espero o cliente vir)", score: 0 }
-        ]
+        ],
+        log: "Multicanalidade é a única defesa contra o aumento do custo de mídia."
     },
     {
         id: 2,
@@ -28,7 +32,8 @@ const QUESTIONS = [
             { label: "Tenho uma média geral", score: 10 },
             { label: "Tenho uma ideia, mas não meço", score: 5 },
             { label: "Não faço ideia", score: 0 }
-        ]
+        ],
+        log: "Se você não mede por canal, está queimando dinheiro no lugar errado."
     },
     {
         id: 3,
@@ -38,7 +43,8 @@ const QUESTIONS = [
             { label: "Uso CRM, mas depende muito do vendedor", score: 10 },
             { label: "Uso planilhas ou controle manual", score: 5 },
             { label: "Não tenho processo definido", score: 0 }
-        ]
+        ],
+        log: "Processo vence talento. Sem playbook, sua receita depende de 'heróis'."
     },
     {
         id: 4,
@@ -48,17 +54,19 @@ const QUESTIONS = [
             { label: "Acompanhamos apenas o Churn (cancelamentos)", score: 10 },
             { label: "Só percebemos quando o cliente sai", score: 5 },
             { label: "Não monitoramos", score: 0 }
-        ]
+        ],
+        log: "Reter custa 5x menos que adquirir. Upsell é lucro líquido."
     },
     {
         id: 5,
         question: "Seu time de Growth/Marketing tem metas de receita?",
         options: [
             { label: "Sim, respondem por pipeline e receita gerada", score: 20 },
-            { label: "Respondem por Leads/MQLs", score: 10 },
-            { label: "Respondem por atividades (posts, emails)", score: 5 },
-            { label: "Não têm metas claras", score: 0 }
-        ]
+            { label: "Medimos métricas de vaidade (likes, seguidores)", score: 10 },
+            { label: "Não tem metas definidas", score: 0 },
+            { label: "Não tenho time de marketing", score: 0 }
+        ],
+        log: "Metas de vaidade não enchem o caixa da empresa."
     }
 ];
 
@@ -66,22 +74,36 @@ type Step = 'start' | 'questions' | 'lead-capture' | 'results';
 
 const GrowthScore = () => {
     const { toast } = useToast();
-    const [step, setStep] = useState<Step>('start');
+    const [step, setStep] = useState<Step>('questions');
     const [currentQ, setCurrentQ] = useState(0);
     const [score, setScore] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<number | null>(null);
+    const [showLog, setShowLog] = useState(false);
+    const insights = getDiagnosticInsights('growth', score);
+    const currentQData = QUESTIONS[currentQ];
 
-    const handleAnswer = (optionScore: number) => {
+    const [hasSubmittedLead, setHasSubmittedLead] = useState(false);
+
+    const handleAnswer = (optionScore: number, optionIndex: number) => {
+        setSelectedOption(optionIndex);
+        setShowLog(true);
+
         const newScore = score + optionScore;
         setScore(newScore);
         setAnswers([...answers, optionScore]);
 
-        if (currentQ < QUESTIONS.length - 1) {
-            setTimeout(() => setCurrentQ(prev => prev + 1), 250);
-        } else {
-            setStep('lead-capture');
-        }
+        setTimeout(() => {
+            setShowLog(false);
+            setSelectedOption(null);
+            if (currentQ < QUESTIONS.length - 1) {
+                setCurrentQ(prev => prev + 1);
+            } else {
+                setStep('results');
+            }
+        }, 2000); // 2000ms delay
     };
 
     const handleFormSubmit = async (data: DiagnosticFormData) => {
@@ -97,12 +119,14 @@ const GrowthScore = () => {
                 score,
                 {
                     level: result.title,
-                    description: result.msg
+                    description: result.msg,
+                    action: "Diagnóstico de Growth",
+                    color: "revgreen"
                 },
                 WEBHOOK_URL
             );
 
-            setStep('results');
+            setHasSubmittedLead(true);
             toast({
                 className: "bg-zinc-900 border-zinc-800 text-white",
                 title: "DIAGNÓSTICO PROCESSADO",
@@ -127,201 +151,227 @@ const GrowthScore = () => {
     };
 
     const result = getResultMap(score);
+    const teaserScore = score;
 
-    // Initial Start Screen using Shared Layout structure but custom content for Landing
-    if (step === 'start') {
-        return (
-            <DiagnosticLayout
-                title="Growth Maturity Score"
-                subtitle="Avaliação técnica de processos de aquisição, retenção e dados."
-                showGovernanceFooter={false}
-                variant="light"
-            >
-                <div className="max-w-xl">
-                    <div className="bg-zinc-50 border border-zinc-200 p-8 mb-8 rounded-lg">
-                        <ul className="space-y-4">
-                            <li className="flex items-start gap-3">
-                                <TrendingUp className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Aquisição & Canais</span>
-                                    <span className="text-zinc-600 text-xs">Dependência vs. Multicanalidade</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Database className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Maturidade de Dados</span>
-                                    <span className="text-zinc-600 text-xs">CAC, LTV e Atribuição</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Users2 className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Alinhamento de Time</span>
-                                    <span className="text-zinc-600 text-xs">Metas de Receita vs. Vaidade</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button
-                        onClick={() => setStep('questions')}
-                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 font-bold tracking-[0.2em] uppercase text-xs transition-all flex items-center justify-center gap-2 rounded-none"
-                    >
-                        Iniciar Análise <ArrowRight className="w-4 h-4" />
-                    </button>
-                </div>
-            </DiagnosticLayout>
-        );
-    }
 
     return (
         <DiagnosticLayout
-            title="Growth Maturity Score"
-            subtitle="Avaliação técnica de processos de aquisição, retenção e dados."
+            title={step === 'results' ? "" : "Growth Score"}
+            subtitle={step === 'results' ? "" : "Diagnóstico Técnico de Crescimento v3.0"}
             variant={step === 'results' ? 'dark' : 'light'}
+            hideHeader={step === 'results'}
+            centered={step === 'results'}
+            headerVariant={step === 'results' ? 'default' : 'light'}
         >
+            {/* BACKDROP DE SEGURANÇA */}
+            {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}
             {step === 'questions' && (
-                <div className="max-w-3xl mx-auto">
-                    <div className="mb-12">
-                        <div className="flex justify-between items-end mb-4">
-                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-                                Questão {currentQ + 1} de {QUESTIONS.length}
-                            </span>
-                            <span className="text-[10px] font-mono text-zinc-400">
-                                {Math.round(((currentQ) / QUESTIONS.length) * 100)}%
-                            </span>
+                <div className="max-w-4xl animate-fade-in w-full">
+                    {/* ... (Questions UI logic unchanged but wrapped) */}
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
+                            <span>Questão {currentQ + 1} de {QUESTIONS.length}</span>
+                            <span>ID: 0{currentQ + 1}</span>
                         </div>
-                        <div className="w-full bg-zinc-100 h-px">
-                            <motion.div
-                                className="h-full bg-black"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
-                                transition={{ duration: 0.3 }}
-                            />
-                        </div>
-                    </div>
 
-                    <AnimatePresence mode='wait'>
-                        <motion.div
-                            key={currentQ}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <h2 className="text-2xl md:text-3xl font-medium text-black mb-12 leading-tight">
-                                {QUESTIONS[currentQ].question}
+                        <div className="space-y-6 relative pb-40"> {/* Standardized spacing */}
+                            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tighter leading-tight">
+                                {currentQData.question}
                             </h2>
 
-                            <div className="space-y-px bg-zinc-200 border border-zinc-200">
-                                {QUESTIONS[currentQ].options.map((opt, idx) => (
+                            <div className="grid grid-cols-1 gap-3 max-w-xl mx-auto">
+                                {currentQData.options.map((opt, idx) => (
                                     <button
                                         key={idx}
-                                        onClick={() => handleAnswer(opt.score)}
-                                        className="w-full text-left p-6 bg-white hover:bg-zinc-50 transition-colors flex items-center group"
+                                        disabled={selectedOption !== null}
+                                        onClick={() => handleAnswer(opt.score, idx)}
+                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
+                                            ? "bg-[#03FC3B] text-black border-[#03FC3B] shadow-[0_0_15px_rgba(3,252,59,0.4)] scale-[1.02]"
+                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
+                                            } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
-                                        <div className="w-8 h-8 flex items-center justify-center border border-zinc-200 text-zinc-400 text-xs mr-6 group-hover:border-black group-hover:text-black transition-colors rounded-sm">
+                                        <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                            ? "bg-white text-black border-white"
+                                            : "bg-zinc-50 border-zinc-100 text-zinc-400 group-hover:border-black group-hover:text-black"
+                                            }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
-                                        <span className="text-zinc-600 group-hover:text-black transition-colors text-sm md:text-base font-medium">
+                                        <span className="text-sm font-medium">
                                             {opt.label}
                                         </span>
                                     </button>
                                 ))}
                             </div>
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            )}
 
-            {step === 'lead-capture' && (
-                <DiagnosticForm
-                    onSubmit={handleFormSubmit}
-                    isSubmitting={isSubmitting}
-                />
-            )}
-
-            {step === 'results' && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch animate-in fade-in duration-700">
-                    {/* Left Column: Synthetic Score */}
-                    <div className="lg:col-span-4">
-                        <ScoreGauge
-                            score={score}
-                            label="Maturidade de Growth"
-                            description="Índice sintético baseado nas respostas declaradas."
-                        />
-                    </div>
-
-                    {/* Right Column: Detailed Breakdown */}
-                    <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <MetricCard
-                            label="Processo de Vendas"
-                            value={answers[2] > 10 ? "Estruturado" : "Ad-Hoc"}
-                            description="Nível de Automação"
-                            status={answers[2] > 10 ? 'success' : 'critical'}
-                        />
-                        <MetricCard
-                            label="Analytcs & Dados"
-                            value={answers[1] > 10 ? "Clear" : "Dark"}
-                            description="Visibilidade de CAC"
-                            status={answers[1] > 10 ? 'success' : 'warning'}
-                        />
-                        <MetricCard
-                            label="Arquitetura de Canais"
-                            value={answers[0] > 10 ? "Omni" : "Single"}
-                            description="Dependência"
-                            status={answers[0] > 10 ? 'success' : 'warning'}
-                        />
-                        <MetricCard
-                            label="Retenção"
-                            value={answers[3] > 10 ? "Ativa" : "Passiva"}
-                            description="Estratégia de LTV"
-                            status={answers[3] > 10 ? 'success' : 'critical'}
-                        />
-                    </div>
-
-                    <div className="lg:col-span-12 mt-8 p-8 border border-zinc-900 bg-zinc-950/50">
-                        <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-6 border-b border-zinc-800 pb-4">
-                            Diagnóstico de Motor de Crescimento
-                        </h3>
-
-                        <div className="space-y-8">
-                            <div>
-                                <span className="text-xs font-mono text-red-500 uppercase tracking-widest mb-2 block">
-                                    01. O Problema Real
-                                </span>
-                                <p className="text-zinc-300 leading-relaxed text-sm md:text-base">
-                                    Sua operação de crescimento carece de <strong className="text-white">previsibilidade científica</strong>.
-                                    Você vive de "picos e vales", dependendo de indicação, sorte ou esforço heróico para bater meta.
-                                    Sem um motor de aquisição validado, você não controla seu destino—o mercado controla você.
-                                </p>
-                            </div>
-
-                            <div>
-                                <span className="text-xs font-mono text-red-500 uppercase tracking-widest mb-2 block">
-                                    02. O Custo da Incerteza
-                                </span>
-                                <p className="text-zinc-300 leading-relaxed text-sm md:text-base">
-                                    A falta de previsibilidade impede investimentos ousados e contratações de peso.
-                                    Você está deixando dinheiro na mesa todos os meses por não ter um sistema que transforma R$ 1,00 investido em R$ 5,00 retornados de forma consistente.
-                                </p>
-                            </div>
-
-                            <div className="pt-6 border-t border-zinc-900 flex flex-col items-center">
-                                <p className="text-zinc-400 text-xs mb-4 uppercase tracking-widest">Solução Definitiva</p>
-                                <a
-                                    href="https://cal.com/revhackers/diagnostico"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-revgreen text-black px-8 py-4 rounded-sm font-bold uppercase tracking-wider hover:bg-white transition-all text-sm w-full md:w-auto text-center"
-                                >
-                                    Construir Máquina de Vendas
-                                </a>
-                            </div>
+                            {/* Minimal Log */}
+                            <AnimatePresence>
+                                {showLog && currentQData.log && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
+                                    >
+                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 rounded-full inline-block border border-zinc-100">
+                                            <span className="text-black font-bold mr-2">Info:</span>{currentQData.log}
+                                        </p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {step === 'results' && (
+                <>
+                    {/* GATE OVERLAY - Padronizado Side-by-Side */}
+                    {!hasSubmittedLead && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-500">
+                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-2xl relative overflow-hidden my-auto max-h-[90vh]">
+                                {/* Coluna Esquerda: Teaser */}
+                                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
+                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
+                                        <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
+                                    </div>
+
+                                    <div className="relative">
+                                        <div className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none shadow-black drop-shadow-2xl">{teaserScore}</div>
+                                    </div>
+
+                                    <h3 className="text-sm font-medium text-zinc-400 leading-relaxed max-w-xs">
+                                        Detectamos oportunidades de <span className="text-revgreen font-bold">otimização crítica</span> na sua operação de growth.
+                                    </h3>
+                                </div>
+
+                                {/* Coluna Direita: Formulário */}
+                                <div className="flex-1 w-full max-w-md flex flex-col justify-center">
+                                    <DiagnosticForm
+                                        onSubmit={handleFormSubmit}
+                                        isSubmitting={isSubmitting}
+                                        title="Receber Relatório"
+                                        subtitle="Desbloqueie sua análise completa."
+                                        variant="dark"
+                                        diagnosticType="Growth"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={`space-y-0 transition-all duration-700 ${!hasSubmittedLead ? 'blur-sm opacity-60 pointer-events-none' : ''}`}>
+
+                        {/* DASHBOARD HEADLINE - Padronizado */}
+                        <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
+                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
+                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#03FC3B]"></span>
+                                <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
+                            </div>
+                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
+                                Relatório de <span className="text-zinc-600">Crescimento</span>
+                            </h1>
+                            <p className="text-zinc-500 font-medium max-w-xl mx-auto">
+                                Diagnóstico tático dos vetores de aquisição e expansão.
+                            </p>
+                        </div>
+
+                        {/* FOLD 01: DARK METRICS */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch animate-in fade-in duration-700">
+                            <div className="lg:col-span-4">
+                                <ScoreGauge
+                                    score={score}
+                                    label="Maturidade de Growth"
+                                    description="Índice sintético baseado nas respostas declaradas."
+                                />
+                            </div>
+
+                            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <MetricCard
+                                    label="Processo de Vendas"
+                                    value={answers[2] > 10 ? "Estruturado" : "Ad-Hoc"}
+                                    description="Nível de Automação"
+                                    status={answers[2] > 10 ? 'success' : 'critical'}
+                                    variant="light"
+                                />
+                                <MetricCard
+                                    label="Analytics & Dados"
+                                    value={answers[1] > 10 ? "Clear" : "Dark"}
+                                    description="Visibilidade de CAC"
+                                    status={answers[1] > 10 ? 'success' : 'warning'}
+                                    variant="light"
+                                />
+                                <MetricCard
+                                    label="Arquitetura de Canais"
+                                    value={answers[0] > 10 ? "Omni" : "Single"}
+                                    description="Dependência"
+                                    status={answers[0] > 10 ? 'success' : 'warning'}
+                                    variant="light"
+                                />
+                                <MetricCard
+                                    label="Retenção"
+                                    value={answers[3] > 10 ? "Ativa" : "Passiva"}
+                                    description="Estratégia de LTV"
+                                    status={answers[3] > 10 ? 'success' : 'critical'}
+                                    variant="light"
+                                />
+                            </div>
+                        </div>
+
+                        {/* FOLD 02: WHITE DIAGNOSIS & ACTION PLAN */}
+                        <div className="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] bg-white px-4 md:px-0 py-20 mt-32 border-t border-zinc-200 animate-fade-in duration-1000 delay-500">
+                            <div className="max-w-6xl mx-auto space-y-32">
+
+                                {/* DIAGNOSIS TEXT (Black on White) */}
+                                <section>
+                                    <div className="space-y-6 mb-20 text-center md:text-left">
+                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                            DIAGNÓSTICO_DE_CRESCIMENTO
+                                        </div>
+                                        <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
+                                            {insights.title.split(' ')[0]} <span className="text-zinc-500">{insights.title.split(' ').slice(1).join(' ')}</span>
+                                        </h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32">
+                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                Perspectiva Técnica
+                                            </h4>
+                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                {insights.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                Plano de Ação
+                                            </h4>
+                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                Sua prioridade estratégica agora é: <strong className="bg-yellow-300 px-1 !text-black">{insights.action}</strong>.
+                                                O custo de ignorar este ajuste é a estagnação prematura do seu CAC.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Standardized CTA */}
+                                    <DiagnosticActionSection
+                                        title="Construa sua Máquina de Vendas em 30 dias."
+                                        onCtaClick={() => setIsBookingModalOpen(true)}
+                                    />
+                                </section>
+
+                                <CallDiagnosticModal
+                                    isOpen={isBookingModalOpen}
+                                    onClose={() => setIsBookingModalOpen(false)}
+                                    source="growth-score"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </>
             )}
         </DiagnosticLayout>
     );

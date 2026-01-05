@@ -150,19 +150,37 @@
     }
   }
 
-  /* Infinite Marquee Animation */
-  .animate-marquee {
-    animation: marquee 25s linear infinite;
+  /* Apple/OpenAI Minimalist Overhaul Utilities */
+  .rounded-apple {
+    border-radius: 2.5rem;
   }
 
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
+  .card-apple {
+    @apply bg-white border border-zinc-100 shadow-sm transition-all duration-700 hover:shadow-2xl hover:shadow-zinc-200/50 hover:-translate-y-1 rounded-apple;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .tracking-ultratight {
+    letter-spacing: -0.05em;
+  }
+
+  @keyframes pulse-subtle {
+
+    0%,
+    100% {
+      opacity: 1;
     }
 
-    100% {
-      transform: translateX(-50%);
+    50% {
+      opacity: 0.5;
     }
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 
@@ -173,8 +191,8 @@
 .card-text,
 .description,
 p {
-  color: #2d2d2d !important;
-  /* Cinza escuro legível */
+  color: #000000 !important;
+  /* Pure Black for Max Contrast */
 }
 
 /* IMPORTANT: Override back to white for Dark Sections to prevent illegibility */

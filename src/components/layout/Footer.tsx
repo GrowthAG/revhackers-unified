@@ -76,14 +76,14 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-24 pt-8 border-t border-revgreen/20 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-zinc-600 text-[10px] uppercase font-medium tracking-widest">
-            © {currentYear} RevHackers. Todos os direitos reservados.
+        <div className="mt-24 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-[0.3em]">
+            © {currentYear} RevHackers. Engineering Revenue for Scale.
           </p>
-          <div className="flex gap-8 text-[10px] uppercase font-medium tracking-widest text-zinc-600">
-            <Link to="/privacidade" className="hover:text-zinc-400 transition-colors">Política de Privacidade</Link>
-            <Link to="/termos" className="hover:text-zinc-400 transition-colors">Termos de Uso</Link>
-            <a href="https://usefunnels.io" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Nossa Tecnologia</a>
+          <div className="flex gap-8 text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-600">
+            <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
+            <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
+            <a href="https://usefunnels.io" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Powered by Funnels</a>
           </div>
         </div>
       </div>

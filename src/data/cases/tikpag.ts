@@ -5,7 +5,7 @@ export const tikpagCase: CaseStudy = {
     title: "Tikpag",
     category: "Fintech",
     logoScale: 1.6,
-    logo: "/uploads/tikpag-logo-final.png",
+    logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/695997877483037113e88497.png",
     coverImage: "/uploads/tikpag-logo-final.png",
     challenge: "A Tikpag, fintech de soluções de pagamento para o mercado imobiliário, precisava escalar parcerias com imobiliárias para distribuir sua solução de pagamento de aluguéis e taxas condominiais. O desafio era triplo: (1) Criar brand awareness em um nicho específico (imobiliárias); (2) Captar imobiliárias parceiras de forma escalável via outbound e inbound; (3) Competir com soluções tradicionais já estabelecidas no mercado. Precisavam de uma estratégia B2B agressiva e eficiente.",
     solution: "Desenvolvemos uma estratégia completa de captação B2B de imobiliárias: (1) Branding: criação de identidade visual, posicionamento como 'solução moderna de pagamentos para imobiliárias' e materiais de vendas; (2) Outbound: campanhas de LinkedIn Ads e Google Ads segmentadas para gestores de imobiliárias, cold email personalizado via Apollo.io; (3) Inbound: marketing de conteúdo educativo sobre gestão de pagamentos imobiliários, webinars e cases de sucesso; (4) CRM estruturado no Funnels com pipeline específico para parcerias B2B.",

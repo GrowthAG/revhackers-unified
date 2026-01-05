@@ -29,24 +29,35 @@ serve(async (req) => {
 
         console.log(`Enriching profile URL with Perplexity: ${url}`);
 
-        const systemPrompt = `Você é um especialista em análise de perfis profissionais do LinkedIn.
-Dado uma URL de perfil, pesquise informações públicas disponíveis sobre este profissional.
-
-IMPORTANTE: Retorne APENAS um objeto JSON válido, sem markdown, sem explicações, sem texto adicional.
-
-O JSON deve ter exatamente esta estrutura:
-{
-  "name": "Nome Completo do Profissional",
-  "headline": "Cargo ou título profissional atual",
-  "about": "Resumo profissional em 2-3 frases (máximo 100 palavras)",
-  "skills": ["Habilidade 1", "Habilidade 2", "Habilidade 3", "Habilidade 4"],
-  "experience": [
-    { "role": "Cargo", "company": "Nome da Empresa", "duration": "Período (ex: 2020 - Presente)" }
-  ],
-  "education": { "school": "Nome da Universidade", "degree": "Formação/Curso" }
-}
-
-Se não encontrar informações específicas, use valores plausíveis baseados no contexto da URL.`;
+        const systemPrompt = `Você é um Analista de Inteligência de Mercado e Perfilador de Venture Capital.
+        Sua missão é realizar uma análise PROFUNDA e ESTRATÉGICA de um perfil do LinkedIn.
+        
+        DIRETRIZES DE ANÁLISE:
+        1. Se o perfil for público, extraia dados reais. Se for privado ou inacessível, use o handle da URL para inferir o posicionamento de mercado mais provável para aquele nível de cargo/setor.
+        2. Fuja do óbvio. Não diga apenas "ele é um líder". Diga "Ele opera com um viés técnico que pode sufocar a inovação cultural" ou "Seu posicionamento digital foca excessivamente em processos, negligenciando a autoridade proprietária".
+        3. O "authorityScore" (0-100) deve refletir: Consistência de posts, clareza da proposta de valor no headline e vigor da marca pessoal.
+        4. O "actionableInsight" deve ser um conselho "pé no peito", algo que o founder possa implementar amanhã para mudar sua percepção de mercado.
+        
+        IMPORTANTE: Retorne APENAS um objeto JSON válido. Não inclua conversas ou explicações fora do JSON.
+        
+        ESTRUTURA OBRIGATÓRIA:
+        {
+          "name": "Nome Completo",
+          "headline": "Cargo Estratégico Real",
+          "about": "Resumo analítico (não apenas cópia da bio)",
+          "summary": "Impacto principal do posicionamento dele hoje",
+          "managementStyle": "Strategic" | "Operational" | "Hybrid",
+          "softSkills": ["Skill 1", "Skill 2", "Skill 3"],
+          "blindSpots": ["Gargalo 1", "Gargalo 2", "Gargalo 3"],
+          "actionableInsight": "Conselho prático e direto em Português",
+          "authorityScore": 85, 
+          "simulatedProfile": {
+            "postsLastMonth": 4,
+            "engagementRate": "High/Medium/Low",
+            "isTopVoice": false,
+            "profileImageUrl": ""
+          }
+        }`;
 
         const response = await fetch('https://api.perplexity.ai/chat/completions', {
             method: 'POST',
@@ -58,10 +69,10 @@ Se não encontrar informações específicas, use valores plausíveis baseados n
                 model: 'sonar-reasoning-pro',
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Analise este perfil do LinkedIn e extraia as informações: ${url}` }
+                    { role: 'user', content: `Realize uma auditoria técnica e estratégica deste perfil: ${url}. Se houver restrições de privacidade, gere um Benchmark Gerencial baseado no seu cargo provável.` }
                 ],
-                temperature: 0.1, // Low temperature for more consistent JSON output
-                max_tokens: 1000,
+                temperature: 0.2,
+                max_tokens: 1200,
             }),
         });
 
@@ -78,52 +89,39 @@ Se não encontrar informações específicas, use valores plausíveis baseados n
             throw new Error('No content in Perplexity response');
         }
 
-        // Parse the JSON from the response
-        // sonar-reasoning-pro includes <think>...</think> blocks, we need to strip them
         let cleanContent = content.trim();
-
-        // Remove <think>...</think> blocks (reasoning from sonar-reasoning-pro)
         const thinkRegex = /<think>[\s\S]*?<\/think>/gi;
         cleanContent = cleanContent.replace(thinkRegex, '').trim();
 
-        // Sometimes LLMs wrap JSON in markdown code blocks, so we need to clean it
-        if (cleanContent.startsWith('```json')) {
-            cleanContent = cleanContent.slice(7);
-        }
-        if (cleanContent.startsWith('```')) {
-            cleanContent = cleanContent.slice(3);
-        }
-        if (cleanContent.endsWith('```')) {
-            cleanContent = cleanContent.slice(0, -3);
-        }
+        if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
+        if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
+        if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
         cleanContent = cleanContent.trim();
 
-        // Try to extract JSON object from the content if it contains other text
         const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            cleanContent = jsonMatch[0];
-        }
+        if (jsonMatch) cleanContent = jsonMatch[0];
 
         let profileData;
         try {
             profileData = JSON.parse(cleanContent);
         } catch (parseError) {
             console.error('Failed to parse Perplexity response as JSON:', cleanContent);
-            // Fallback to mock if parsing fails
             profileData = getMockData(url);
         }
 
-        console.log('Successfully enriched profile:', profileData.name);
+        // Final sanitation: Ensure no fields are missing for the UI
+        const finalData = {
+            ...getMockData(url), // Start with robust mock structures
+            ...profileData       // Override with real AI data if available
+        };
 
-        return new Response(JSON.stringify(profileData), {
+        return new Response(JSON.stringify(finalData), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });
 
     } catch (error) {
         console.error('scrape-profile error:', error.message);
-
-        // Graceful fallback to mock data
         const { url } = await req.json().catch(() => ({ url: '' }));
         return new Response(JSON.stringify(getMockData(url || '')), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -132,26 +130,25 @@ Se não encontrar informações específicas, use valores plausíveis baseados n
     }
 });
 
-// Fallback mock data generator
 function getMockData(url: string) {
     const username = url.split('/in/')[1]?.split('/')[0] || 'founder';
     const formattedName = username.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
     return {
         name: formattedName,
-        headline: "Founder & CEO | Building the Future of SaaS",
-        about: "Serial entrepreneur with 10+ years of experience in B2B growth and digital scaling. Passionate about helping startups achieve their full potential through data-driven strategies.",
-        experience: [
-            {
-                role: "Chief Executive Officer",
-                company: "TechScale Solutions",
-                duration: "2020 - Present"
-            }
-        ],
-        education: {
-            school: "Innovation University",
-            degree: "Computer Science"
-        },
-        skills: ["Growth Hacking", "SaaS", "Leadership", "Product Strategy"]
+        headline: "Founder & CEO | Estratégia e Crescimento",
+        about: "Perfil identificado via URL. Devido às configurações de privacidade do LinkedIn, geramos este Benchmark Estratégico baseado em perfis similares de mercado.",
+        summary: "Forte orientação para resultados, mas com provável sobrecarga operacional.",
+        managementStyle: "Hybrid",
+        softSkills: ["Liderança Adaptativa", "Visão de Negócio", "Execução"],
+        blindSpots: ["Falta de Posicionamento de Autoridade", "Processos Dependentes do Founder", "Escala de Conteúdo Inexistente"],
+        actionableInsight: "Pare de ser o 'segredo mais bem guardado' do seu nicho. Transforme seus processos internos em ativos de conteúdo proprietário imediatamente.",
+        authorityScore: 40,
+        simulatedProfile: {
+            postsLastMonth: 0,
+            engagementRate: "Low",
+            isTopVoice: false,
+            profileImageUrl: ""
+        }
     };
 }

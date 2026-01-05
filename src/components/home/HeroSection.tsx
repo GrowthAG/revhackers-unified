@@ -26,13 +26,13 @@ const HeroSection = () => {
 
         {/* Headline - Strictly 2 lines V5 */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-[1.1] tracking-tight w-full max-w-[90rem] mx-auto">
-          <span className="md:whitespace-nowrap">Aumente suas Conversões em +10x</span> <br className="hidden md:block" />
-          <span className="text-revgreen md:whitespace-nowrap">e Reduza Custos de Marketing e Vendas.</span>
+          <span className="md:whitespace-nowrap">Aumente suas <span className="text-revgreen">Conversões em +10x</span></span> <br className="hidden md:block" />
+          <span className="md:whitespace-nowrap">e Reduza Custos de Marketing e Vendas.</span>
         </h1>
 
         {/* Subheadline - Stronger synergy, no generic science */}
         <p className="text-lg md:text-xl text-zinc-200 mb-12 max-w-5xl leading-relaxed font-light text-balance">
-          Atraia <strong className="text-white font-medium">12x mais leads qualificados</strong> prontos para comprar. Reduza o tempo de atendimento para menos de 10 minutos e aumente sua conversão em até <strong className="text-white font-medium">100x</strong> com Chatbot IA.
+          Atraia <strong className="text-white font-medium">12x mais leads qualificados</strong> prontos para comprar. Reduza o tempo de atendimento para menos de 5 minutos e aumente sua conversão em até <strong className="text-white font-medium">10x</strong> com Chatbot IA.
         </p>
 
         {/* Buttons - Centered */}

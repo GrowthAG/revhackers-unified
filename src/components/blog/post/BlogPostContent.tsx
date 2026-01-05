@@ -149,7 +149,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
             <h4 className="text-2xl font-black text-black tracking-tighter mb-1 uppercase italic">{authorName}</h4>
             <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-[10px] mb-6">{authorRole}</p>
             <p className="text-zinc-500 text-sm leading-relaxed font-bold uppercase tracking-widest opacity-60">
-              Especialista em Growth B2B e Revenue Operations. Focado em transformar operações de vendas através de dados e engenharia de processos.
+              Especialista em Growth B2B e Revenue Operations. Focado em transformar operações de vendas através de dados e arquitetura de processos.
             </p>
           </div>
         </div>

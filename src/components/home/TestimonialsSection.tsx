@@ -16,7 +16,7 @@ const TestimonialsSection = () => {
 
   // Extract testimonials from cases
   const testimonials = Object.entries(casesData)
-    .filter(([key, c]) => c.quote && c.author && !c.title.includes('Lindoya') && key !== 'enics') // Only cases with quotes (excluding Lindoya & Enics)
+    .filter(([key, c]) => c.quote && c.author && !c.title.includes('Lindoya') && key !== 'enics' && key !== 'tegra') // Only cases with quotes
     .map(([key, c]) => ({
       id: key,
       quote: c.quote,

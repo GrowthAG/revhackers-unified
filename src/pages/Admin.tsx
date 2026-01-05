@@ -32,8 +32,8 @@ const Admin = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center">
-        <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-5 h-5 text-black animate-spin" />
       </div>
     );
   }
@@ -47,17 +47,17 @@ const Admin = () => {
 
   return (
     <AdminLayout>
-      <div className="min-h-screen bg-[#F5F5F7] font-sans selection:bg-zinc-200">
-        <div className="max-w-[1600px] mx-auto p-6 lg:p-12 space-y-12">
+      <div className="min-h-screen bg-white font-sans selection:bg-zinc-200">
+        <div className="max-w-[1600px] mx-auto p-8 lg:p-20 space-y-24">
 
           {/* Header */}
-          <header className="flex items-end justify-between">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-                Dashboard
+          <header className="flex items-end justify-between border-b border-zinc-100 pb-12">
+            <div className="space-y-4">
+              <h1 className="text-7xl font-black tracking-ultratight text-black uppercase leading-none">
+                CENTRAL_OPS
               </h1>
-              <p className="text-[13px] text-zinc-500 font-medium">
-                Visão geral da operação e projetos ativos.
+              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.3em]">
+                // SISTEMA DE CONTROLE DE RECEITA // v2.0
               </p>
             </div>
             <Button
@@ -95,20 +95,18 @@ const Admin = () => {
           </div>
 
           {/* Main Content Area */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-[13px] font-semibold text-zinc-900 uppercase tracking-wider">
-                Projetos Recentes
+          <div className="space-y-8">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
+              <h2 className="text-[10px] font-black text-black uppercase tracking-[0.4em]">
+                PROJETOS_ATIVOS
               </h2>
             </div>
 
             {operationalProjects.length > 0 ? (
-              <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.04)] border border-zinc-200/60 overflow-hidden">
-                <div className="grid grid-cols-1 divide-y divide-zinc-100">
-                  {operationalProjects.map((project) => (
-                    <ProjectRow key={project.id} project={project} navigate={navigate} />
-                  ))}
-                </div>
+              <div className="border border-zinc-100 divide-y divide-zinc-100 overflow-hidden">
+                {operationalProjects.map((project) => (
+                  <ProjectRow key={project.id} project={project} navigate={navigate} />
+                ))}
               </div>
             ) : (
               <EmptyState navigate={navigate} />
@@ -124,14 +122,13 @@ const Admin = () => {
 // --- Subcomponents ---
 
 const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
-  <div className="bg-white p-5 rounded-xl border border-zinc-200/60 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between h-32 group hover:border-zinc-300/80 transition-all">
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">{label}</span>
-      <Icon className={`w-4 h-4 ${highlight ? 'text-zinc-900' : 'text-zinc-300'}`} />
+  <div className="bg-white p-8 border border-zinc-100 flex flex-col justify-between h-48 transition-all hover:border-black group">
+    <div className="flex items-center justify-between mb-4">
+      <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] font-mono">// {label.toUpperCase().replace(' ', '_')}</span>
     </div>
     <div className="flex items-baseline gap-2">
-      <span className="text-3xl font-semibold tracking-tight text-zinc-900">{value}</span>
-      {highlight && value > 0 && <span className="flex h-2 w-2 rounded-full bg-green-500 mb-2 animate-pulse" />}
+      <span className="text-7xl font-black tracking-ultratight text-black leading-none">{value}</span>
+      {highlight && value > 0 && <span className="flex h-3 w-3 rounded-full bg-revgreen animate-pulse" />}
     </div>
   </div>
 );
@@ -139,11 +136,11 @@ const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
 const ProjectRow = ({ project, navigate }: any) => (
   <div
     onClick={() => navigate(`/admin/rei/${project.id}`)}
-    className="group flex items-center justify-between p-4 hover:bg-zinc-50/80 transition-colors cursor-pointer"
+    className="group flex items-center justify-between p-8 hover:bg-zinc-50 transition-all cursor-pointer bg-white"
   >
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-500 group-hover:bg-white group-hover:shadow-sm group-hover:text-zinc-900 transition-all border border-transparent group-hover:border-zinc-200">
-        <Folder className="w-5 h-5" />
+    <div className="flex items-center gap-8">
+      <div className="w-12 h-12 border border-zinc-100 flex items-center justify-center text-zinc-400 group-hover:bg-black group-hover:text-white transition-all">
+        <Folder className="w-5 h-5" strokeWidth={1} />
       </div>
       <div>
         <h3 className="text-[13px] font-bold text-black">{project.client_name || 'Projeto sem nome'}</h3>
@@ -163,15 +160,15 @@ const ProjectRow = ({ project, navigate }: any) => (
       </div>
     </div>
 
-    <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+    <div className="flex items-center gap-3">
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={(e) => { e.stopPropagation(); navigate(`/admin/jornada/${project.id}`); }}
-        className="h-8 text-[11px] font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50"
+        className="h-8 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-zinc-200 hover:bg-black hover:text-white hover:border-black transition-all px-4 rounded-none"
       >
         Ver Jornada
       </Button>
-      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900">
+      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900 opacity-0 group-hover:opacity-100 transition-opacity">
         <MoreHorizontal className="w-4 h-4" />
       </Button>
     </div>

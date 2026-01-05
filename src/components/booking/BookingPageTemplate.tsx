@@ -17,8 +17,9 @@ const BookingPageTemplate = ({
     iframeSrc,
     label = "Próxima Etapa",
     avatarSrc,
-    showLogoHeadline = false
-}: BookingPageProps) => {
+    showLogoHeadline = false,
+    children
+}: BookingPageProps & { children?: React.ReactNode }) => {
     useEffect(() => {
         const scriptId = "revhackers-booking-script";
         if (!document.getElementById(scriptId)) {
@@ -82,6 +83,12 @@ const BookingPageTemplate = ({
                             scrolling="no"
                         />
                     </div>
+
+                    {children && (
+                        <div className="max-w-3xl mx-auto mt-12 text-left">
+                            {children}
+                        </div>
+                    )}
                 </div>
             </Section>
         </PageLayout>

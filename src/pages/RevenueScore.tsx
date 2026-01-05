@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
-import { ArrowRight, BarChart, DollarSign, Target, Briefcase } from 'lucide-react';
+import { ArrowRight, BarChart, DollarSign, Target, Briefcase, TrendingUp, Users } from 'lucide-react';
 import { DiagnosticLayout } from '@/components/diagnostics/DiagnosticLayout';
 import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/DiagnosticForm';
 import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
+import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
+import { CallDiagnosticModal } from '@/components/diagnostics/CallDiagnosticModal';
+import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 
 // Questions centered on "Revenue Maturity"
 const QUESTIONS = [
@@ -18,7 +21,8 @@ const QUESTIONS = [
             { label: "Misto entre recorrente e projetos pontuais", score: 10 },
             { label: "Dependente de grandes contratos sazonais", score: 5 },
             { label: "Venda única / Não previsível", score: 0 }
-        ]
+        ],
+        log: "A previsibilidade reduz drasticamente o risco do Equity."
     },
     {
         id: 2,
@@ -28,7 +32,8 @@ const QUESTIONS = [
             { label: "Vendedores fazem tudo (Prospecção ao Fechamento)", score: 10 },
             { label: "Apenas fundadores vendem", score: 0 },
             { label: "Não existe time comercial ativo", score: 0 }
-        ]
+        ],
+        log: "Especialização é o primeiro passo para escalar vendas outbound."
     },
     {
         id: 3,
@@ -38,7 +43,8 @@ const QUESTIONS = [
             { label: "Entre 5% e 15% (Padrão de mercado)", score: 10 },
             { label: "Abaixo de 5% (Baixa eficiência)", score: 0 },
             { label: "Não monitoramos", score: 0 }
-        ]
+        ],
+        log: "Conversão baixa indica problemas de qualificação ou oferta."
     },
     {
         id: 4,
@@ -48,7 +54,8 @@ const QUESTIONS = [
             { label: "CRM usado apenas para registro básico", score: 10 },
             { label: "Planilhas ou Caderno", score: 0 },
             { label: "Nenhuma ferramenta", score: 0 }
-        ]
+        ],
+        log: "Sem CRM integrado, seus dados estão desconexos e inoperantes."
     },
     {
         id: 5,
@@ -58,7 +65,8 @@ const QUESTIONS = [
             { label: "Médio (30-90 dias)", score: 10 },
             { label: "Longo (> 90 dias)", score: 5 },
             { label: "Imprevisível", score: 0 }
-        ]
+        ],
+        log: "Ciclos longos sem nutrição automatizada geram 'Pipeline Fantasma'."
     }
 ];
 
@@ -66,43 +74,61 @@ type Step = 'start' | 'questions' | 'lead-capture' | 'results';
 
 const RevenueScore = () => {
     const { toast } = useToast();
-    const [step, setStep] = useState<Step>('start');
+    const [step, setStep] = useState<Step>('questions');
     const [currentQ, setCurrentQ] = useState(0);
     const [score, setScore] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<number | null>(null);
+    const [showLog, setShowLog] = useState(false);
+    const insights = getDiagnosticInsights('revenue', score);
+    const currentQData = QUESTIONS[currentQ];
 
-    const handleAnswer = (optionScore: number) => {
+    const [hasSubmittedLead, setHasSubmittedLead] = useState(false);
+
+    // Estado do Protocolo e Logs
+    const handleAnswer = (optionScore: number, optionIdx: number) => {
+        if (selectedOption !== null) return;
+        setSelectedOption(optionIdx);
+        setShowLog(true);
+
         const newScore = score + optionScore;
         setScore(newScore);
         setAnswers([...answers, optionScore]);
 
-        if (currentQ < QUESTIONS.length - 1) {
-            setTimeout(() => setCurrentQ(prev => prev + 1), 250);
-        } else {
-            setStep('lead-capture');
-        }
+        setTimeout(() => {
+            if (currentQ < QUESTIONS.length - 1) {
+                setShowLog(false);
+                setSelectedOption(null);
+                setCurrentQ(prev => prev + 1);
+            } else {
+                setStep('results');
+            }
+        }, 2000);
     };
 
     const handleFormSubmit = async (data: DiagnosticFormData) => {
         setIsSubmitting(true);
         try {
-            const result = getResultMap(score);
+            const resultMap = getResultMap(score);
             // Default Webhook Layout
             const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
             await submitPublicDiagnostic(
                 { ...data, phone: '' },
-                { answers },
+                { answers, source: 'revenue-score' },
                 score,
                 {
-                    level: result.title,
-                    description: result.msg
+                    level: resultMap.title,
+                    description: resultMap.msg,
+                    action: "Diagnóstico de Receita",
+                    color: "revgreen"
                 },
                 WEBHOOK_URL
             );
 
-            setStep('results');
+            setHasSubmittedLead(true);
             toast({
                 className: "bg-zinc-900 border-zinc-800 text-white",
                 title: "DIAGNÓSTICO PROCESSADO",
@@ -122,238 +148,236 @@ const RevenueScore = () => {
 
     const getResultMap = (s: number) => {
         if (s >= 80) return { title: "Máquina de Receita", msg: "Operação madura, previsível e escalável." };
-        if (s >= 50) return { title: "Em Construção", msg: "Existem processos, mas a dependência manual é alta." };
+        if (s >= 50) return { title: "Em Construção", msg: "Existent processos, mas a dependência manual é alta." };
         return { title: "Risco Operacional", msg: "Falta de processos claros compromete o crescimento." };
     };
 
-    const result = getResultMap(score);
-
-    if (step === 'start') {
-        return (
-            <DiagnosticLayout
-                title="Revenue Score"
-                subtitle="Diagnóstico de Maturidade Comercial e Previsibilidade."
-                showGovernanceFooter={false}
-                variant="light"
-            >
-                <div className="max-w-xl">
-                    <div className="bg-zinc-50 border border-zinc-200 p-8 mb-8 rounded-lg">
-                        <ul className="space-y-4">
-                            <li className="flex items-start gap-3">
-                                <DollarSign className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Qualidade de Receita</span>
-                                    <span className="text-zinc-600 text-xs">Recorrência vs pontual</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Target className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Eficiência de Funil</span>
-                                    <span className="text-zinc-600 text-xs">Taxas de conversão e ciclo de vendas</span>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Briefcase className="w-5 h-5 text-black mt-0.5" />
-                                <div>
-                                    <span className="text-black text-sm font-bold block">Estrutura de Time</span>
-                                    <span className="text-zinc-600 text-xs">Especialização e indicadores</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button
-                        onClick={() => setStep('questions')}
-                        className="w-full bg-black text-white hover:bg-zinc-800 h-14 font-bold tracking-[0.2em] uppercase text-xs transition-all flex items-center justify-center gap-2 rounded-none"
-                    >
-                        Iniciar Análise <ArrowRight className="w-4 h-4" />
-                    </button>
-                </div>
-            </DiagnosticLayout>
-        );
-    }
+    const resultMap = getResultMap(score);
+    const teaserScore = score;
 
     return (
         <DiagnosticLayout
-            title="Revenue Score"
-            subtitle="Diagnóstico de Maturidade Comercial"
+            title={step === 'results' ? "" : "Revenue Score"}
+            subtitle={step === 'results' ? "" : "Diagnóstico de Eficiência de Receita (RevOps)"}
             variant={step === 'results' ? 'dark' : 'light'}
-            centered={step !== 'results'}
+            centered={step === 'results'}
+            hideHeader={step === 'results'}
+            headerVariant={step === 'results' ? 'default' : 'light'}
         >
-            {step === 'questions' && (
-                <div className="max-w-3xl mx-auto">
-                    <div className="mb-12">
-                        <div className="flex justify-between items-end mb-4">
-                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-                                Questão {currentQ + 1} de {QUESTIONS.length}
-                            </span>
-                            <span className="text-[10px] font-mono text-zinc-400">
-                                {Math.round(((currentQ) / QUESTIONS.length) * 100)}%
-                            </span>
-                        </div>
-                        <div className="w-full bg-zinc-100 h-px">
-                            <motion.div
-                                className="h-full bg-black"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${((currentQ) / QUESTIONS.length) * 100}%` }}
-                                transition={{ duration: 0.3 }}
-                            />
-                        </div>
-                    </div>
+            {/* BACKDROP DE SEGURANÇA */}
+            {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}
 
-                    <AnimatePresence mode='wait'>
-                        <motion.div
-                            key={currentQ}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <h2 className="text-2xl md:text-3xl font-medium text-black mb-12 leading-tight">
+            {step === 'questions' && (
+                <div className="max-w-4xl animate-fade-in w-full mx-auto">
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
+                            <span>Questão {currentQ + 1} de {QUESTIONS.length}</span>
+                            <span>ID: 0{currentQ + 1}</span>
+                        </div>
+
+                        <div className="space-y-6 relative">
+                            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tighter leading-tight">
                                 {QUESTIONS[currentQ].question}
                             </h2>
 
-                            <div className="space-y-px bg-zinc-200 border border-zinc-200">
-                                {QUESTIONS[currentQ].options.map((opt, idx) => (
+                            <div className="grid grid-cols-1 gap-3 max-w-xl mx-auto">
+                                {currentQData.options.map((opt, idx) => (
                                     <button
                                         key={idx}
-                                        onClick={() => handleAnswer(opt.score)}
-                                        className="w-full text-left p-6 bg-white hover:bg-zinc-50 transition-colors flex items-center group"
+                                        disabled={selectedOption !== null}
+                                        onClick={() => handleAnswer(opt.score, idx)}
+                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
+                                            ? "bg-[#03FC3B] text-black border-[#03FC3B] shadow-[0_0_15px_rgba(3,252,59,0.4)] scale-[1.02]"
+                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
+                                            } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
-                                        <div className="w-8 h-8 flex items-center justify-center border border-zinc-200 text-zinc-400 text-xs mr-6 group-hover:border-black group-hover:text-black transition-colors rounded-sm">
+                                        <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                            ? "bg-white text-black border-white"
+                                            : "bg-zinc-50 border-zinc-100 text-zinc-400 group-hover:border-black group-hover:text-black"
+                                            }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
-                                        <span className="text-zinc-600 group-hover:text-black transition-colors text-sm md:text-base font-medium">
+                                        <span className="text-sm font-medium">
                                             {opt.label}
                                         </span>
                                     </button>
                                 ))}
                             </div>
-                        </motion.div>
-                    </AnimatePresence>
+
+                            {/* Minimal Log */}
+                            <AnimatePresence>
+                                {showLog && currentQData.log && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
+                                    >
+                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 rounded-full inline-block border border-zinc-100">
+                                            <span className="text-black font-bold mr-2">Análise:</span>{currentQData.log}
+                                        </p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
                 </div>
             )}
 
-            {step === 'lead-capture' && (
-                <DiagnosticForm
-                    onSubmit={handleFormSubmit}
-                    isSubmitting={isSubmitting}
-                />
-            )}
-
             {step === 'results' && (
-                <div className="animate-in fade-in duration-700">
-                    {/* First Fold: Metrics Dashboard */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-32">
-                        {/* Left Column: Synthetic Score */}
-                        <div className="lg:col-span-4">
-                            <ScoreGauge
-                                score={score}
-                                label="Maturidade Comercial"
-                                description="Índice de eficiência de receita."
-                            />
-                        </div>
+                <>
+                    {/* GATE OVERLAY - Padronizado Side-by-Side */}
+                    {!hasSubmittedLead && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-500">
+                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-2xl relative overflow-hidden my-auto max-h-[90vh]">
+                                {/* Coluna Esquerda: Teaser */}
+                                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
+                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
+                                        <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
+                                    </div>
 
-                        {/* Right Column: Detailed Breakdown */}
-                        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <MetricCard
-                                label="Previsibilidade"
-                                value={answers[0] > 10 ? "Alta" : "Variável"}
-                                description="Recorrência de Receita"
-                                status={answers[0] > 10 ? 'success' : 'warning'}
-                            />
-                            <MetricCard
-                                label="Eficiência"
-                                value={answers[2] > 10 ? ">20%" : "<5%"}
-                                description="Taxa de Conversão"
-                                status={answers[2] > 10 ? 'success' : 'critical'}
-                            />
-                            <MetricCard
-                                label="Estrutura"
-                                value={answers[1] === 20 ? "Espec." : "Genérica"}
-                                description="Especialização do Time"
-                                status={answers[1] > 10 ? 'success' : 'warning'}
-                            />
-                            <MetricCard
-                                label="Tecnologia"
-                                value={answers[3] > 10 ? "CRM+" : "Manual"}
-                                description="Stack de Vendas"
-                                status={answers[3] > 10 ? 'success' : 'critical'}
-                            />
-                        </div>
-                    </div>
+                                    <div className="relative">
+                                        <div className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none shadow-black drop-shadow-2xl">{teaserScore}</div>
+                                    </div>
 
-                    {/* Second Fold: High-Conversion CTA */}
-                    <div className="border-t border-zinc-900 pt-24 pb-12">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-                            <div className="lg:col-span-7">
-                                <span className="text-revgreen font-mono text-xs uppercase tracking-[0.2em] mb-4 block">
-                                    Próximos Passos
-                                </span>
-                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                                    Transforme esse diagnóstico em <span className="text-zinc-500">plano de ação.</span>
-                                </h2>
-                                <p className="text-lg text-zinc-400 font-light leading-relaxed mb-8 max-w-xl">
-                                    Dados sem ação são apenas números. Nossa equipe de engenharia de receita pode auditar esses pontos cegos e implementar a infraestrutura necessária em 30 dias.
-                                </p>
+                                    <h3 className="text-sm font-medium text-zinc-400 leading-relaxed max-w-xs">
+                                        Detectamos vazamentos de <span className="text-revgreen font-bold">eficiência financeira</span> na sua operação de receita.
+                                    </h3>
+                                </div>
 
-                                <ul className="space-y-4 mb-10">
-                                    <li className="flex items-center gap-3 text-zinc-300">
-                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
-                                        <span>Auditoria profunda do seu CRM e processos.</span>
-                                    </li>
-                                    <li className="flex items-center gap-3 text-zinc-300">
-                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
-                                        <span>Definição de metas de conversão realistas.</span>
-                                    </li>
-                                    <li className="flex items-center gap-3 text-zinc-300">
-                                        <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
-                                        <span>Roadmap técnico de implementação.</span>
-                                    </li>
-                                </ul>
-
-                                <a
-                                    href="https://cal.com/revhackers/diagnostico"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-3 bg-revgreen text-black px-8 py-5 rounded-sm font-bold uppercase tracking-wider hover:bg-white hover:scale-105 transition-all duration-300 text-sm"
-                                >
-                                    Agendar Debriefing
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                </a>
-                                <p className="text-zinc-600 text-xs mt-4">
-                                    * Sessão gratuita de 30min para qualificação.
-                                </p>
+                                {/* Coluna Direita: Formulário */}
+                                <div className="flex-1 w-full max-w-md flex flex-col justify-center">
+                                    <DiagnosticForm
+                                        onSubmit={handleFormSubmit}
+                                        isSubmitting={isSubmitting}
+                                        title="Receber Relatório"
+                                        subtitle="Obtenha o plano de ação financeiro."
+                                        variant="dark"
+                                        diagnosticType="Revenue"
+                                    />
+                                </div>
                             </div>
+                        </div>
+                    )}
 
-                            {/* Visual/Trust Element */}
-                            <div className="lg:col-span-5 bg-zinc-900/50 border border-zinc-800 p-8 rounded-sm relative overflow-hidden group hover:border-zinc-700 transition-colors">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-revgreen/10 rounded-full blur-[80px] pointer-events-none" />
+                    <div className={`space-y-0 transition-all duration-700 ${!hasSubmittedLead ? 'blur-sm opacity-60 pointer-events-none' : ''}`}>
 
-                                <h3 className="text-xl font-bold text-white mb-2">Engenharia de Receita</h3>
-                                <p className="text-zinc-500 text-sm mb-8">Nossa metodologia proprietária.</p>
+                        {/* DASHBOARD HEADLINE - Padronizado */}
+                        <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
+                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
+                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#03FC3B]"></span>
+                                <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
+                            </div>
+                            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
+                                Relatório de <span className="text-zinc-600">Receita</span>
+                            </h1>
+                            <p className="text-zinc-500 font-medium max-w-xl mx-auto">
+                                Diagnóstico da eficiência do funil e arquitetura de receita.
+                            </p>
+                        </div>
 
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                                        <span className="text-zinc-400 text-sm">Design de Processos</span>
-                                        <span className="text-revgreen font-mono text-xs">V2.0</span>
+                        {/* FOLD 01: DARK METRICS (Directly on Dark Bg) */}
+                        <div className="w-full max-w-6xl mx-auto mt-12 md:mt-20 mb-32 z-10 relative">
+                            <div className="animate-in fade-in duration-700">
+                                {/* First Fold: Metrics Dashboard */}
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-32">
+                                    {/* Left Column: Synthetic Score */}
+                                    <div className="lg:col-span-4">
+                                        <ScoreGauge
+                                            score={score}
+                                            label="Maturidade Comercial"
+                                            description="Índice de eficiência de receita."
+                                        />
                                     </div>
-                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                                        <span className="text-zinc-400 text-sm">Automação & IA</span>
-                                        <span className="text-revgreen font-mono text-xs">ACTIVE</span>
-                                    </div>
-                                    <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                                        <span className="text-zinc-400 text-sm">Data Warehouse</span>
-                                        <span className="text-revgreen font-mono text-xs">CONNECTED</span>
+
+                                    {/* Right Column: Detailed Breakdown */}
+                                    <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <MetricCard
+                                            label="Previsibilidade"
+                                            value={answers[0] > 10 ? "Alta" : "Variável"}
+                                            description="Recorrência de Receita"
+                                            status={answers[0] > 10 ? 'success' : 'warning'}
+                                            variant="light"
+                                        />
+                                        <MetricCard
+                                            label="Eficiência"
+                                            value={answers[2] > 10 ? ">20%" : "<5%"}
+                                            description="Taxa de Conversão"
+                                            status={answers[2] > 10 ? 'success' : 'critical'}
+                                            variant="light"
+                                        />
+                                        <MetricCard
+                                            label="Estrutura"
+                                            value={answers[1] === 20 ? "Espec." : "Genérica"}
+                                            description="Especialização do Time"
+                                            status={answers[1] > 10 ? 'success' : 'warning'}
+                                            variant="light"
+                                        />
+                                        <MetricCard
+                                            label="Tecnologia"
+                                            value={answers[3] > 10 ? "CRM+" : "Manual"}
+                                            description="Stack de Vendas"
+                                            status={answers[3] > 10 ? 'success' : 'critical'}
+                                            variant="light"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {/* FOLD 02: WHITE CTA SECTION */}
+                        <div className="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] bg-white text-zinc-900 px-4 md:px-0 py-20 border-t border-zinc-200">
+                            <div className="max-w-6xl mx-auto">
+                                <section className="pt-12">
+                                    <div className="space-y-6 mb-20 text-center md:text-left">
+                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                            DIAGNÓSTICO_DE_RECEITA
+                                        </div>
+                                        <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
+                                            {insights.title.split(' ')[0]} <span className="text-zinc-500">{insights.title.split(' ').slice(1).join(' ')}</span>
+                                        </h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32">
+                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                Perspectiva Técnica
+                                            </h4>
+                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                {insights.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                Plano de Ação
+                                            </h4>
+                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                Sua prioridade estratégica agora é: <strong className="bg-yellow-300 px-1 !text-black">{insights.action}</strong>.
+                                                O custo de ignorar este ajuste é a erosão silenciosa da sua margem operacional.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <DiagnosticActionSection
+                                        title="Transforme esse diagnóstico em plano de ação."
+                                        onCtaClick={() => setIsBookingModalOpen(true)}
+                                    />
+                                </section>
+
+                                <CallDiagnosticModal
+                                    isOpen={isBookingModalOpen}
+                                    onClose={() => setIsBookingModalOpen(false)}
+                                    source="revenue-score"
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </>
             )}
-        </DiagnosticLayout >
+        </DiagnosticLayout>
     );
 };
 

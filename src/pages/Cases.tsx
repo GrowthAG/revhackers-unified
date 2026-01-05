@@ -6,7 +6,7 @@ import Section from '@/components/ui/Section';
 import { Search, Loader2, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { getAllCases, CaseStudy } from '@/api/cases';
 
 
 const Cases = () => {
@@ -15,31 +15,17 @@ const Cases = () => {
   const [loading, setLoading] = useState(true);
   const [cases, setCases] = useState<any[]>([]);
 
-  // Buscar cases do Supabase
+  // Buscar cases via API Centralizada (com Overrides)
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        // Timeout de 10 segundos (Codex recommendation)
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout de rede')), 10000)
-        );
-
-        const fetchPromise = supabase
-          .from('cases')
-          .select('*')
-          .eq('published', true)
-          .order('created_at', { ascending: false });
-
-        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
-
-        if (error) throw error;
-
+        const data = await getAllCases();
         if (data) {
-          console.log('✅ [DATABASE] Cases carregados:', data.length);
+          console.log('✅ [API] Cases carregados:', data.length);
           setCases(data);
         }
       } catch (err: any) {
-        console.warn('⚠️ [DATABASE] Falha ao buscar cases (offline):', err.message);
+        console.warn('⚠️ [API] Falha ao buscar cases:', err.message);
       } finally {
         setLoading(false);
       }
@@ -52,11 +38,11 @@ const Cases = () => {
   const filteredCases = cases.map(dbCase => ({
     ...dbCase,
     // Ensure all required fields for UI are present
-    client_logo: dbCase.client_logo || '', // Handle potentially missing logo
-    title: dbCase.client_name || dbCase.title, // Handle different field names
+    client_logo: dbCase.client_logo || '',
+    title: dbCase.client_name || dbCase.title,
     case_category: dbCase.case_category || 'Geral',
     preview_description: dbCase.preview_description || dbCase.description || '',
-    image_url: dbCase.image_url || dbCase.cover_image, // Adapter
+    image_url: dbCase.image_url || dbCase.cover_image,
     slug: dbCase.slug
   })).filter(c => {
     const searchLower = searchQuery.toLowerCase();
@@ -86,7 +72,7 @@ const Cases = () => {
               Cases<span className="text-revgreen">.</span>
             </h1>
             <p className="text-lg md:text-xl text-zinc-500 font-normal tracking-tight leading-relaxed max-w-2xl mx-auto">
-              Histórias reais de empresas que transformaram seus resultados através de engenharia.
+              Histórias reais de empresas que transformaram seus resultados através de inteligência técnica.
             </p>
           </div>
 
@@ -149,7 +135,7 @@ const Cases = () => {
                         <img
                           src={study.client_logo}
                           alt={study.title}
-                          className="max-w-[180px] max-h-[75px] w-auto h-auto object-contain opacity-90 group-hover:opacity-100 transition-all duration-500"
+                          className="max-w-[180px] max-h-[75px] w-auto h-auto object-contain opacity-100 grayscale group-hover:grayscale-0 transition-all duration-500"
                           style={{
                             transform: study.logoScale ? `scale(${study.logoScale})` : 'scale(1.0)',
                           }}
@@ -158,10 +144,10 @@ const Cases = () => {
                     </div>
 
                     <div className="p-10 md:p-12 flex-1 flex flex-col bg-white">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6 font-mono-tech">
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-6 font-mono-tech bg-zinc-50 w-fit px-2 py-1 rounded-full border border-zinc-100">
                         {study.case_category}
                       </span>
-                      <h3 className="text-xl font-bold text-black mb-4 group-hover:text-zinc-500 transition-colors leading-tight">
+                      <h3 className="text-2xl font-bold text-black mb-4 group-hover:text-zinc-500 transition-colors leading-tight">
                         {study.title}
                       </h3>
                       <p className="text-zinc-600 font-normal text-[13px] mb-8 flex-1 line-clamp-3 leading-relaxed">

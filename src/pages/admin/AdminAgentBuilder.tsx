@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
     Cpu, Save, ArrowLeft, Database, Target, FileText, Play, Send,
     Globe, Type, Upload, Info, Plus, X, Trash2, Loader2, ChevronDown, Zap,
-    Crosshair, Terminal, Binary, Box, Bot
+    Crosshair, Terminal, Binary, Box, Bot, BookOpen
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { KnowledgeUploader } from '@/components/ai/KnowledgeUploader';
@@ -29,15 +29,16 @@ interface KnowledgeSource {
 }
 
 export const MODEL_OPTIONS = [
-    { value: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet', description: 'Anthropic • Raciocínio Avançado', tech: 'CLD-3.5-S', color: '#d97757' },
-    { value: 'gpt-4o', label: 'GPT-4o', description: 'OpenAI • Inteligência Máxima', tech: 'GPT-4.0-O', color: '#10a37f' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini', description: 'OpenAI • Resposta Rápida', tech: 'GPT-4.0-M', color: '#10a37f' },
-    { value: 'gemini-2-0-flash', label: 'Gemini 2.0 Flash', description: 'Google • Velocidade Extrema', tech: 'GEM-2.0-F', color: '#4285f4' },
-    { value: 'gemini-1-5-pro', label: 'Gemini 1.5 Pro', description: 'Google • Contexto Estendido 2M', tech: 'GEM-1.5-P', color: '#4285f4' },
-    { value: 'gemini-1-5-flash', label: 'Gemini 1.5 Flash', description: 'Google • Processamento Veloz', tech: 'GEM-1.5-F', color: '#4285f4' },
-    { value: 'manus', label: 'Manus', description: 'Híbrido • Agente Híbrido Avançado', tech: 'MANUS-1.0', color: '#000000' },
-    { value: 'perplexity-sonar', label: 'Perplexity', description: 'Web • Motor de Busca em Tempo Real', tech: 'PPLX-S', color: '#00a99d' },
+    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Inteligência Multimodal', tech: 'GPT-4.0', color: '#10a37f' },
+    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Eficiente', tech: 'GPT-4.0-M', color: '#10a37f' },
+    { value: 'o1-preview', label: 'OPENAI O1', description: 'OpenAI • Raciocínio Profundo (Reasoning)', tech: 'O1-PRE', color: '#000000' },
+    { value: 'claude-3-opus-20240229', label: 'CLAUDE 3 OPUS', description: 'Anthropic • Capacidade Máxima', tech: 'CLD-3-OP', color: '#d97757' },
+    { value: 'claude-3-5-sonnet-20241022', label: 'CLAUDE 3.5 SONNET', description: 'Anthropic • O Melhor Equilibrium', tech: 'CLD-3.5-S', color: '#d97757' },
+    { value: 'gemini-1.5-pro', label: 'GEMINI 1.5 PRO', description: 'Google • Janela de 2M Tokens', tech: 'GEM-1.5-P', color: '#4285f4' },
+    { value: 'sonar', label: 'PERPLEXITY', description: 'Perplexity • Pesquisa Web em Tempo Real', tech: 'PPLX-S', color: '#00a99d' },
 ];
+
+
 
 const AdminAgentBuilder = () => {
     const navigate = useNavigate();
@@ -64,6 +65,10 @@ const AdminAgentBuilder = () => {
     const [personality, setPersonality] = useState('');
     const [goal, setGoal] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
+
+    // Libraries State
+    const [allLibraries, setAllLibraries] = useState<any[]>([]);
+    const [agentLibraryIds, setAgentLibraryIds] = useState<string[]>([]);
 
     // Logger de estado para eliminação
     useEffect(() => {
@@ -157,6 +162,22 @@ const AdminAgentBuilder = () => {
                     }
                 }
 
+                // Fetch Libraries
+                const { data: libsData } = await supabase.functions.invoke('agent-documents', {
+                    body: { action: 'list_libraries' }
+                });
+                if (libsData?.success) setAllLibraries(libsData.libraries);
+
+                // Fetch Agent's assigned libraries
+                const { data: assignedLibs } = await supabase
+                    .from('agent_libraries')
+                    .select('library_id')
+                    .eq('agent_id', id);
+
+                if (assignedLibs) {
+                    setAgentLibraryIds(assignedLibs.map(al => al.library_id));
+                }
+
                 // Get profile for RLS debugging
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
@@ -173,7 +194,11 @@ const AdminAgentBuilder = () => {
     };
 
     const extractTextFromFile = async (file: File): Promise<string> => {
-        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        const fileType = file.type;
+        const fileName = file.name.toLowerCase();
+
+        // 1. PDF Handling
+        if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
             console.log(`[RAG DEBUG] Extraindo PDF: ${file.name}...`);
             try {
                 if (!(window as any).pdfjsLib) {
@@ -200,9 +225,33 @@ const AdminAgentBuilder = () => {
                 return fullText;
             } catch (err) {
                 console.error('Erro no processamento PDF, tentando fallback para texto:', err);
+                // Fallthrough to text
             }
         }
 
+        // 2. DOCX Handling (Mammoth)
+        if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || fileName.endsWith('.docx')) {
+            console.log(`[RAG DEBUG] Extraindo DOCX: ${file.name}...`);
+            try {
+                if (!(window as any).mammoth) {
+                    await new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+                        script.onload = resolve;
+                        script.onerror = reject;
+                        document.head.appendChild(script);
+                    });
+                }
+                const mammoth = (window as any).mammoth;
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                return result.value;
+            } catch (err) {
+                console.error('Erro no processamento DOCX, tentando fallback para texto:', err);
+            }
+        }
+
+        // 3. Fallback: Text/JSON/CSV/MD
         return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
@@ -464,7 +513,7 @@ const AdminAgentBuilder = () => {
         }
     };
 
-    const handleAddKnowledgeSource = () => {
+    const handleAddKnowledgeSource = async () => {
         if (!newSourceName.trim()) {
             toast.error('Nome é obrigatório');
             return;
@@ -480,6 +529,48 @@ const AdminAgentBuilder = () => {
                 return;
             }
             content = validItems.map(item => `Q: ${item.question}\nA: ${item.answer}`).join('\n\n');
+        }
+
+        // URL Crawler Logic
+        if (activeKnowledgeModal === 'url') {
+            const urls = newSourceContent.split('\n').map(u => u.trim()).filter(u => u);
+            if (urls.length === 0) {
+                toast.error('Adicione pelo menos uma URL válida');
+                return;
+            }
+
+            const toastId = toast.loading('Rastreando URLs e extraindo conteúdo...');
+
+            try {
+                let combinedContent = '';
+                for (const url of urls) {
+                    // Call Crawler Edge Function
+                    const { data, error } = await supabase.functions.invoke('agent-documents', {
+                        body: { action: 'crawl', url: url }
+                    });
+
+                    if (error || !data?.success) {
+                        console.error(`Falha ao rastrear ${url}:`, error || data?.error);
+                        toast.error(`Erro ao ler ${url}: ${data?.error || 'Falha na conexão'}`);
+                        // We continue to next URL or stop? Let's add partial content or fail?
+                        // Let's add a note in content that it failed
+                        combinedContent += `[URL: ${url} (FALHA AO LER)]\n\n`;
+                    } else {
+                        combinedContent += `[Fonte: ${url}]\n${data.content}\n\n-------------------\n\n`;
+                    }
+                }
+
+                if (!combinedContent.trim()) {
+                    toast.dismiss(toastId);
+                    return; // Don't add if empty
+                }
+                content = combinedContent;
+                toast.success('Conteúdo extraído com sucesso!', { id: toastId });
+            } catch (err) {
+                console.error('Crawler logic error:', err);
+                toast.error('Erro interno no rastreador', { id: toastId });
+                return;
+            }
         }
 
         const newSource: KnowledgeSource = {
@@ -500,6 +591,45 @@ const AdminAgentBuilder = () => {
     const handleRemoveSource = (id: string) => {
         setKnowledgeSources(knowledgeSources.filter(s => s.id !== id));
     };
+
+    const toggleLibrary = async (libraryId: string) => {
+        if (!id) {
+            toast.error('Salve o agente primeiro para associar bibliotecas');
+            return;
+        }
+
+        const isAssigned = agentLibraryIds.includes(libraryId);
+
+        try {
+            if (isAssigned) {
+                // Unassign
+                const { error } = await supabase
+                    .from('agent_libraries')
+                    .delete()
+                    .eq('agent_id', id)
+                    .eq('library_id', libraryId);
+
+                if (error) throw error;
+                setAgentLibraryIds(prev => prev.filter(lid => lid !== libraryId));
+                toast.success('Biblioteca removida');
+            } else {
+                // Assign
+                const { data, error } = await supabase.functions.invoke('agent-documents', {
+                    body: { action: 'assign_library', agentId: id, libraryId }
+                });
+
+                if (error || !data?.success) throw error || new Error(data?.error);
+
+                setAgentLibraryIds(prev => [...prev, libraryId]);
+                toast.success('Biblioteca vinculada com sucesso!');
+            }
+        } catch (err: any) {
+            console.error('Error toggling library:', err);
+            toast.error('Erro ao atualizar bibliotecas');
+        }
+    };
+
+    // ...
 
     // Tab Button using Segmented Control Style
     const TabButton = ({ id, label }: { id: ActiveTab, label: string }) => (
@@ -722,11 +852,11 @@ const AdminAgentBuilder = () => {
                             <div className="space-y-1.5">
                                 <Label className="text-sm font-bold text-black uppercase tracking-widest flex items-center gap-2">
                                     <Binary size={14} className="text-zinc-400" />
-                                    Motor de Base
+                                    Modelo de Linguagem
                                 </Label>
                                 <Select value={model} onValueChange={setModel}>
                                     <SelectTrigger className="h-12 border-zinc-200 bg-zinc-50/50 hover:border-black rounded-xl font-bold">
-                                        <SelectValue placeholder="Selecionar Motor" />
+                                        <SelectValue placeholder="Selecionar Modelo" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {MODEL_OPTIONS.map(opt => (
@@ -789,61 +919,129 @@ const AdminAgentBuilder = () => {
                             </div>
                         </div>
 
-                        {(knowledgeSources.length > 0 || files.length > 0) && (
-                            <div className="space-y-4 pt-4 border-t border-zinc-100">
-                                <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-                                    <Binary className="w-4 h-4 text-zinc-500" />
-                                    Fontes Ativas ({knowledgeSources.length})
-                                </h3>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {/* Existing persistent sources */}
-                                    {knowledgeSources.map(source => (
-                                        <div key={source.id} className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center border border-zinc-100">
-                                                    {source.type === 'url' && <Globe className="w-5 h-5 text-zinc-400" />}
-                                                    {source.type === 'text' && <Type className="w-5 h-5 text-zinc-400" />}
-                                                    {source.type === 'faq' && <Terminal className="w-5 h-5 text-zinc-400" />}
-                                                    {source.type === 'file' && <FileText className="w-5 h-5 text-zinc-400" />}
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-zinc-900">{source.name}</p>
-                                                    <p className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">
-                                                        {source.type === 'url' ? 'Site/Link' :
-                                                            source.type === 'text' ? 'Texto Manual' :
-                                                                source.type === 'faq' ? 'FAQ' : 'Arquivo'}
-                                                    </p>
-                                                </div>
+                        <div className="space-y-4 pt-4 border-t border-zinc-100">
+                            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                                <Binary className="w-4 h-4 text-zinc-500" />
+                                Fontes Ativas ({knowledgeSources.length})
+                            </h3>
+                            <div className="grid grid-cols-1 gap-2">
+                                {/* Existing persistent sources */}
+                                {knowledgeSources.map(source => (
+                                    <div key={source.id} className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center border border-zinc-100">
+                                                {source.type === 'url' && <Globe className="w-5 h-5 text-zinc-400" />}
+                                                {source.type === 'text' && <Type className="w-5 h-5 text-zinc-400" />}
+                                                {source.type === 'faq' && <Terminal className="w-5 h-5 text-zinc-400" />}
+                                                {source.type === 'file' && <FileText className="w-5 h-5 text-zinc-400" />}
                                             </div>
-                                            <button
-                                                onClick={() => handleRemoveSource(source.id)}
-                                                className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            <div>
+                                                <p className="text-sm font-semibold text-zinc-900">{source.name}</p>
+                                                <p className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">
+                                                    {source.type === 'url' ? 'Site/Link' :
+                                                        source.type === 'text' ? 'Texto Manual' :
+                                                            source.type === 'faq' ? 'FAQ' : 'Arquivo'}
+                                                </p>
+                                            </div>
                                         </div>
-                                    ))}
+                                        <button
+                                            onClick={() => handleRemoveSource(source.id)}
+                                            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
 
-                                    {/* Staged uploaded files (not yet saved) */}
-                                    {files.map((file, idx) => (
-                                        <div key={`staged-${idx}`} className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-200 border-dashed rounded-xl opacity-80">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-zinc-100">
-                                                    <FileText className="w-5 h-5 text-zinc-300" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-zinc-500">{file.name}</p>
-                                                    <p className="text-[10px] text-revgreen font-bold flex items-center gap-1.5">
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-revgreen animate-pulse"></span>
-                                                        CLIQUE EM SALVAR PARA ATIVAR
-                                                    </p>
-                                                </div>
+                                {/* Staged uploaded files (not yet saved) */}
+                                {files.map((file, idx) => (
+                                    <div key={`staged-${idx}`} className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-200 border-dashed rounded-xl opacity-80">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-zinc-100">
+                                                <FileText className="w-5 h-5 text-zinc-300" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-zinc-500">{file.name}</p>
+                                                <p className="text-[10px] text-revgreen font-bold flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-revgreen animate-pulse"></span>
+                                                    CLIQUE EM SALVAR PARA ATIVAR
+                                                </p>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
-                        )}
+                        </div>
+
+                        {/* Libraries Subscription Section */}
+                        <div className="space-y-4 pt-8 border-t border-zinc-100">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                                    <Database className="w-4 h-4 text-zinc-500" />
+                                    Bibliotecas de Treinamento (Compartilhadas)
+                                </h3>
+                                <Button
+                                    variant="link"
+                                    size="sm"
+                                    onClick={() => navigate('/admin/knowledge')}
+                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-black"
+                                >
+                                    Gerenciar Hub
+                                </Button>
+                            </div>
+                            <p className="text-[11px] text-zinc-500 leading-relaxed max-w-xl">
+                                Vincule este agente a bibliotecas de conhecimento globais. Isso permite que múltiplos agentes compartilhem o mesmo cérebro técnico sem duplicar arquivos.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                {allLibraries.map(lib => (
+                                    <div
+                                        key={lib.id}
+                                        onClick={() => toggleLibrary(lib.id)}
+                                        className={cn(
+                                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
+                                            agentLibraryIds.includes(lib.id)
+                                                ? "bg-black border-black text-white"
+                                                : "bg-white border-zinc-100 hover:border-zinc-300"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "w-8 h-8 rounded-lg flex items-center justify-center border transition-colors",
+                                                agentLibraryIds.includes(lib.id)
+                                                    ? "bg-zinc-800 border-zinc-700"
+                                                    : "bg-zinc-50 border-zinc-100"
+                                            )}>
+                                                <BookOpen size={14} className={agentLibraryIds.includes(lib.id) ? "text-zinc-400" : "text-zinc-500"} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold tracking-tight">{lib.name}</p>
+                                                <p className={cn(
+                                                    "text-[9px] font-medium uppercase tracking-widest",
+                                                    agentLibraryIds.includes(lib.id) ? "text-zinc-500" : "text-zinc-400"
+                                                )}>
+                                                    Biblioteca {lib.is_global ? 'Global' : 'Privada'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "w-5 h-5 rounded-full flex items-center justify-center transition-all",
+                                            agentLibraryIds.includes(lib.id)
+                                                ? "bg-revgreen text-black"
+                                                : "bg-zinc-50 text-zinc-300 group-hover:text-zinc-900"
+                                        )}>
+                                            <Plus size={12} className={cn("transition-transform", agentLibraryIds.includes(lib.id) && "rotate-45")} />
+                                        </div>
+                                    </div>
+                                ))}
+                                {allLibraries.length === 0 && (
+                                    <div className="col-span-2 py-8 text-center border-2 border-dashed border-zinc-50 rounded-2xl grayscale opacity-40">
+                                        <Database className="w-8 h-8 mx-auto mb-2 text-zinc-300" />
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nenhuma biblioteca disponível</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
 

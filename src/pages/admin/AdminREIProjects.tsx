@@ -118,36 +118,37 @@ const AdminREIProjects = () => {
                 description="Controle a jornada de 90 dias, diagnósticos REI e cronogramas estratégicos."
                 backTo="/admin"
                 backLabel="Voltar ao Hub"
-                actions={
-                    <div className="flex items-center gap-2">
-                        {selectedIds.length > 0 && (
-                            <Button
-                                onClick={handleBulkDelete}
-                                disabled={deleting === 'bulk'}
-                                variant="destructive"
-                                className="bg-red-600 hover:bg-red-700 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest mr-2"
-                            >
-                                {deleting === 'bulk' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                Excluir ({selectedIds.length})
-                            </Button>
-                        )}
-                        <Button onClick={() => navigate('/admin/rei/novo')} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest">
-                            <Plus className="mr-2 h-4 w-4" /> Novo Projeto
-                        </Button>
-                    </div>
-                }
             >
                 <div className="space-y-6">
-                    {/* Search and Filter */}
-                    <div className="flex items-center gap-4 bg-white border border-zinc-200 p-1">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                            <Input
-                                placeholder="Buscar projeto por cliente ou empresa..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 h-10 border-0 focus-visible:ring-0 rounded-none text-sm placeholder:text-zinc-400"
-                            />
+                    {/* Header Actions */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 bg-white border border-zinc-200 p-1 flex-1 w-full md:w-auto">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                <Input
+                                    placeholder="Buscar projeto por cliente ou empresa..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 h-10 border-0 focus-visible:ring-0 rounded-none text-sm placeholder:text-zinc-400"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                            {selectedIds.length > 0 && (
+                                <Button
+                                    onClick={handleBulkDelete}
+                                    disabled={deleting === 'bulk'}
+                                    variant="destructive"
+                                    className="bg-red-600 hover:bg-red-700 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest mr-2 flex-1 md:flex-none"
+                                >
+                                    {deleting === 'bulk' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                    Excluir ({selectedIds.length})
+                                </Button>
+                            )}
+                            <Button onClick={() => navigate('/admin/rei/novo')} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 text-xs font-bold uppercase tracking-widest flex-1 md:flex-none whitespace-nowrap">
+                                <Plus className="mr-2 h-4 w-4" /> Novo Projeto
+                            </Button>
                         </div>
                     </div>
 
@@ -155,8 +156,8 @@ const AdminREIProjects = () => {
                     <div className="bg-white border border-zinc-200">
                         <Table>
                             <TableHeader>
-                                <TableRow className="bg-zinc-50/50 hover:bg-zinc-50/50 transition-none">
-                                    <TableHead className="w-[50px] pl-6 py-4">
+                                <TableRow className="border-b-2 border-black hover:bg-transparent transition-none">
+                                    <TableHead className="w-[50px] pl-6 py-6">
                                         <Checkbox
                                             checked={filteredProjects.length > 0 && selectedIds.length === filteredProjects.length}
                                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
@@ -180,7 +181,7 @@ const AdminREIProjects = () => {
                                     filteredProjects.map((project) => (
                                         <TableRow
                                             key={project.id}
-                                            className={`hover:bg-zinc-50/50 transition-all border-zinc-100 cursor-pointer ${selectedIds.includes(project.id) ? 'bg-zinc-50' : ''}`}
+                                            className={`hover:bg-zinc-50 transition-all border-zinc-100 cursor-pointer h-24 ${selectedIds.includes(project.id) ? 'bg-zinc-50' : ''}`}
                                             onClick={() => navigate(`/admin/jornada/${project.id}`)}
                                         >
                                             <TableCell className="pl-6 py-4" onClick={(e) => e.stopPropagation()}>
@@ -197,9 +198,9 @@ const AdminREIProjects = () => {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <span className={`text-[9px] font-black uppercase tracking-widest ${project.status === 'completed' ? 'text-revgreen' :
-                                                        project.status === 'pending' ? 'text-red-500' :
-                                                            project.status === 'active' || project.status === 'in_progress' ? 'text-blue-500' :
-                                                                'text-zinc-400'
+                                                    project.status === 'pending' ? 'text-red-500' :
+                                                        project.status === 'active' || project.status === 'in_progress' ? 'text-blue-500' :
+                                                            'text-zinc-400'
                                                     }`}>
                                                     {project.status === 'completed' ? 'CONCLUÍDO' :
                                                         project.status === 'pending' ? 'PENDENTE' :

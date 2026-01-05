@@ -35,66 +35,58 @@ const TimelineSection = () => {
   ];
 
   return (
-    <section className="py-20 md:py-32 bg-zinc-50">
+    <section className="py-24 md:py-48 bg-white overflow-hidden border-y border-zinc-100">
       <div className="container-custom">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 tracking-tight">
-            Nossa Jornada Evolutiva
-          </h2>
-          <p className="text-lg text-gray-600">
-            De Agência Local para um Ecossistema Global de Inteligência
-          </p>
+        <div className="max-w-6xl mx-auto mb-32">
+          <div className="flex flex-col md:flex-row justify-between items-baseline gap-12">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-1 bg-black rounded-full" />
+                <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.4em] font-black">
+                  // Evolutionary_Roadmap
+                </span>
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-[0.85]">
+                JORNADA <br />
+                EVOLUTIVA<span className="text-revgreen">.</span>
+              </h2>
+            </div>
+            <p className="text-lg text-zinc-500 max-w-xs font-medium tracking-tight leading-relaxed">
+              De Agência Local para um Ecossistema de Inteligência Integrada.
+            </p>
+          </div>
         </div>
 
-        <div className="relative">
-          {/* Timeline center line */}
-          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-gray-200"></div>
+        <div className="space-y-24 relative max-w-6xl mx-auto">
+          {/* Vertical Technical Line */}
+          <div className="absolute left-0 bottom-0 top-0 w-px bg-zinc-100" />
 
-          <div className="space-y-12">
-            {timelineEvents.map((event, index) => (
-              <div key={index} className="relative">
-                {/* Desktop layout */}
-                <div className="hidden md:flex items-center">
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'order-last pl-12'}`}>
-                    <div className="mb-2">
-                      <span className="text-4xl font-bold text-revgreen tracking-tighter">{event.year}</span>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{event.title}</h3>
-                    <p className="text-gray-600 font-light">{event.description}</p>
-                  </div>
+          {timelineEvents.map((event, index) => (
+            <div key={index} className="relative pl-12 group">
+              {/* Year Marker */}
+              <div className="absolute left-0 -translate-x-1/2 top-1.5 flex flex-col items-center">
+                <div className="w-3 h-3 bg-black rounded-full border-4 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.1)] group-hover:bg-revgreen transition-colors" />
+              </div>
 
-                  <div className="z-10 flex items-center justify-center w-4 h-4 bg-white border-2 border-revgreen rounded-full shrink-0 mx-auto">
-                  </div>
-
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'order-last pl-12' : 'pr-12 text-right'}`}>
-                    {index % 2 !== 0 && (
-                      <>
-                        <div className="mb-2">
-                          <span className="text-4xl font-bold text-revgreen tracking-tighter">{event.year}</span>
-                        </div>
-                        <h3 className="text-2xl font-bold mb-2 text-gray-900">{event.title}</h3>
-                        <p className="text-gray-600 font-light">{event.description}</p>
-                      </>
-                    )}
-                  </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-2">
+                  <span className="text-4xl md:text-5xl font-black text-black tracking-tighter leading-none">
+                    {event.year}
+                  </span>
                 </div>
-
-                {/* Mobile layout */}
-                <div className="md:hidden flex gap-4 pl-4 border-l border-gray-200 ml-2">
-                  <div className="relative">
-                    <div className="absolute -left-[21px] top-2 w-3 h-3 bg-white border-2 border-revgreen rounded-full"></div>
-                  </div>
-                  <div className="pb-8">
-                    <div className="mb-1">
-                      <span className="text-2xl font-bold text-revgreen tracking-tighter">{event.year}</span>
-                    </div>
-                    <h3 className="text-xl font-medium mb-2 text-gray-900">{event.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{event.description}</p>
+                <div className="lg:col-span-10">
+                  <div className="p-8 border border-zinc-100 rounded-none bg-white hover:border-black transition-all duration-500">
+                    <h3 className="text-sm font-mono font-black text-zinc-400 uppercase tracking-widest mb-4">
+                      PROTOCOL :: {event.title}
+                    </h3>
+                    <p className="text-zinc-600 font-medium leading-relaxed text-[16px] max-w-3xl">
+                      {event.description}
+                    </p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

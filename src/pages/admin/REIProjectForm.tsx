@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createReiProject, updateReiProject, getReiProjectById } from '@/api/reiProjects';
+import { supabase } from '@/integrations/supabase/client';
 import { getAllClients, type Client } from '@/api/clients';
 import type { ReiProjectInsert } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
@@ -9,13 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Users, Calendar, Zap, Target, Search } from 'lucide-react';
+import { Loader2, Save, Users, Calendar, Zap, Target, Search, FileText, ExternalLink, Edit2, Copy } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ClientFormContent from './ClientFormContent';
 import AdminLayout from '@/components/layout/AdminLayout'; // Replaces PageLayout
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 
 type FormData = {
+    client_id?: string; // Added client_id
     client_name: string;
     client_email: string;
     client_company?: string;
@@ -41,12 +43,15 @@ const REIProjectForm = () => {
         }
     });
 
-    // UI State for toggling between existing/new client
     const [mode, setMode] = useState<'existing' | 'new'>('existing');
-
     const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
 
-    // CNPJ Lookup Logic
+    // Styling Constants (Diagnostic Standard)
+    const inputClasses = "bg-transparent border-0 border-b h-14 rounded-none transition-all font-medium text-base px-4 focus:ring-0 w-full border-zinc-200 text-black focus:border-black placeholder:text-zinc-300 hover:bg-zinc-50/50";
+    const labelClasses = "text-[10px] font-black uppercase tracking-widest pl-0.5 text-zinc-400";
+    const sectionTitleClasses = "text-xs font-semibold text-zinc-900 border-b border-zinc-200 pb-2 flex items-center gap-2 mb-6";
+
+    // ... CNPJ Logic (Keep same) ...
     const handleCnpjLookup = async (cnpjValue: string) => {
         const cleanCnpj = cnpjValue.replace(/\D/g, '');
         if (cleanCnpj.length !== 14) return;
@@ -57,20 +62,17 @@ const REIProjectForm = () => {
             if (!response.ok) throw new Error('CNPJ não encontrado');
             const data = await response.json();
 
-            // Auto-fill Core Data
             if (data.razao_social) setValue('client_company', data.razao_social);
-
-            // Try to set email from QSA or data
             if (data.email) setValue('client_email', data.email.toLowerCase());
 
             toast({
-                title: 'DADOS CORPORATIVOS LOCALIZADOS',
+                title: 'Dados Corporativos Localizados',
                 description: `Empresa: ${data.razao_social}`,
             });
         } catch (error) {
             console.error('Erro ao buscar CNPJ:', error);
             toast({
-                title: 'CNPJ NÃO LOCALIZADO',
+                title: 'CNPJ não localizado',
                 description: 'Prossiga com o preenchimento manual.',
                 variant: 'destructive'
             });
@@ -95,6 +97,7 @@ const REIProjectForm = () => {
                 setLoadingProject(true);
                 const project = await getReiProjectById(id);
                 if (project) {
+                    setValue('client_id', project.client_id || undefined);
                     setValue('client_name', project.client_name);
                     setValue('client_email', project.client_email);
                     setValue('client_company', project.client_company || '');
@@ -118,6 +121,7 @@ const REIProjectForm = () => {
     const handleClientSelect = (clientId: string) => {
         const client = clients.find(c => c.id === clientId);
         if (client) {
+            setValue('client_id', client.id);
             setValue('client_name', client.name);
             setValue('client_email', client.email);
             setValue('client_company', client.company || '');
@@ -136,9 +140,17 @@ const REIProjectForm = () => {
     }, [quarter, year, isEditing]);
 
     const onSubmit = async (data: FormData) => {
+        // Validation removed for client_id since column might be missing, but logic requires client name
+        if (!data.client_name) {
+            toast({ title: 'Dados Incompletos', description: 'Por favor, selecione ou cadastre um cliente.', variant: 'destructive' });
+            return;
+        }
+
         setLoading(true);
         try {
-            const projectData: ReiProjectInsert = {
+            // FIX: Removing client_id from insert to avoid schema error
+            const projectData: any = { // Using any to bypass strict type check for now if needed
+                // client_id: data.client_id, <--- REMOVED due to DB Schema mismatch
                 client_name: data.client_name,
                 client_email: data.client_email,
                 client_company: data.client_company || null,
@@ -154,6 +166,8 @@ const REIProjectForm = () => {
                 toast({ title: 'Protocolo atualizado com sucesso' });
             } else {
                 const res = await createReiProject(projectData);
+                if (res && (res as any).error) throw new Error((res as any).error.message || 'Erro desconhecido ao criar');
+
                 toast({ title: 'Novo Protocolo Iniciado' });
 
                 if (res && res.id) {
@@ -162,8 +176,10 @@ const REIProjectForm = () => {
                 }
             }
             navigate('/admin/rei');
-        } catch (error) {
-            toast({ title: 'Erro ao salvar protocolo', variant: 'destructive' });
+        } catch (error: any) {
+            console.error("Error creating project:", error);
+            const errorMessage = error?.message || error?.toString() || 'Verifique os dados e tente novamente.';
+            toast({ title: 'Erro ao salvar projeto', description: errorMessage, variant: 'destructive' });
         } finally {
             setLoading(false);
         }
@@ -180,114 +196,92 @@ const REIProjectForm = () => {
     return (
         <AdminLayout>
             <AdminPageLayout
-                title={isEditing ? "Editar Projeto" : "Cadastrar Novo Projeto"}
+                title={isEditing ? "Editar Projeto" : "Cadastrar novo projeto"}
                 description="Defina a estratégia inicial e o direcionamento da conta."
                 backTo="/admin/rei"
                 backLabel="Voltar a Lista"
-                showBackButton={false} // Sidebar handles navigation mostly, but keeping back button context is fine. Or maybe true.
+                showBackButton={false}
+                maxWidth="4xl"
             >
-                <div className="max-w-4xl py-10 mx-auto">
+                <div className="max-w-3xl pt-0 pb-20">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-                        {/* ... form content ... */}
+                        {/* Hidden Client ID input */}
+                        <input type="hidden" {...register('client_id')} />
 
-
-
-
-                        {/* 1. SELEÇÃO DE CLIENTE (Toggle) */}
+                        {/* 1. SELEÇÃO DE CLIENTE */}
                         <div className="space-y-6">
-                            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest border-b border-zinc-200 pb-2">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
                                 01. Vincular Cliente
                             </h3>
 
-                            <div className="bg-white border border-zinc-200 p-8 pt-6">
-                                {/* Only show selector if not editing an existing project */}
+                            <div className="space-y-4">
                                 {!isEditing && (
-                                    <div className="space-y-4 animate-in fade-in duration-300">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-3">
-                                                <Users size={14} className="text-zinc-400" />
-                                                <Label className="text-xs font-medium text-zinc-500">Buscar no Portfólio</Label>
-                                            </div>
-                                            <Dialog open={mode === 'new'} onOpenChange={(open) => setMode(open ? 'new' : 'existing')}>
-                                                <DialogTrigger asChild>
-                                                    <Button variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-widest border-zinc-200 hover:bg-zinc-50 hover:text-black">
-                                                        + Novo Cliente
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
-                                                    <div className="bg-zinc-50 rounded-lg overflow-hidden">
-                                                        <div className="bg-white border-b border-zinc-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                                                            <div>
-                                                                <h2 className="text-sm font-black uppercase tracking-widest text-black">Cadastrar Novo Cliente</h2>
-                                                                <p className="text-[10px] text-zinc-400 font-medium tracking-wide">Preencha os dados completos para iniciar o protocolo.</p>
+                                    <div className="space-y-6">
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center px-1">
+                                                <Label className={labelClasses}>Selecione do Portfólio</Label>
+                                                <Dialog open={mode === 'new'} onOpenChange={(open) => setMode(open ? 'new' : 'existing')}>
+                                                    <DialogTrigger asChild>
+                                                        <button type="button" className="text-[10px] uppercase font-bold text-indigo-600 hover:underline">
+                                                            + Novo Cliente
+                                                        </button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
+                                                        <div className="bg-zinc-50 rounded-lg overflow-hidden">
+                                                            <div className="bg-white border-b border-zinc-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                                                                <div>
+                                                                    <h2 className="text-sm font-bold text-black">Cadastrar Novo Cliente</h2>
+                                                                    <p className="text-[10px] text-zinc-400 font-medium tracking-wide">Preencha os dados completos para iniciar o protocolo.</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="p-4 bg-zinc-50">
+                                                                <ClientFormContent
+                                                                    mode="admin"
+                                                                    onCancel={() => setMode('existing')}
+                                                                    onSuccess={(newClient) => {
+                                                                        setMode('existing');
+                                                                        loadData().then(() => {
+                                                                            handleClientSelect(newClient.id);
+                                                                        });
+                                                                        toast({ title: 'Cliente vinculado com sucesso!' });
+                                                                    }}
+                                                                />
                                                             </div>
                                                         </div>
-                                                        <div className="p-4 bg-zinc-50">
-                                                            <ClientFormContent
-                                                                mode="admin"
-                                                                onCancel={() => setMode('existing')}
-                                                                onSuccess={(newClient) => {
-                                                                    setMode('existing');
-                                                                    // Reload clients to include the new one
-                                                                    loadData().then(() => {
-                                                                        // Auto-select the new client
-                                                                        handleClientSelect(newClient.id);
-                                                                        // Also select it in the dropdown
-                                                                        setValue('client_name', newClient.name); // Just to trigger re-render if needed
-                                                                        // We can't easily control the Select value state without a controlled component state for the Select value itself
-                                                                        // But handleClientSelect updates the form values.
-                                                                    });
-                                                                    toast({ title: 'Cliente vinculado com sucesso!' });
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </div>
+                                            <Select
+                                                onValueChange={handleClientSelect}
+                                                disabled={isEditing}
+                                                value={watch('client_id')}
+                                            >
+                                                <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
+                                                    <SelectValue placeholder="Selecione..." />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-none border-zinc-100 max-h-[250px] shadow-2xl">
+                                                    {filterClients(clients).map(client => (
+                                                        <SelectItem key={client.id} value={client.id} className="text-sm py-2 cursor-pointer">
+                                                            {client.name} {client.company ? `— ${client.company}` : ''}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                        <Select
-                                            onValueChange={handleClientSelect}
-                                            disabled={isEditing}
-                                            value={clients.find(c => c.name === watch('client_name') && c.company === watch('client_company'))?.id}
-                                        >
-                                            <SelectTrigger className="bg-white border-zinc-200 rounded-none h-12 text-sm font-medium focus:ring-1 focus:ring-black">
-                                                <SelectValue placeholder="Selecione um cliente..." />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-none border-zinc-100 max-h-[250px]">
-                                                {filterClients(clients).map(client => (
-                                                    <SelectItem key={client.id} value={client.id} className="text-sm py-2">
-                                                        {client.name} {client.company ? `— ${client.company}` : ''}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
 
-                                        {/* Display Selected Client Details */}
                                         {watch('client_name') && (
-                                            <div className="mt-4 p-4 bg-zinc-50 border border-zinc-100 flex items-start gap-4">
-                                                <div className="h-10 w-10 bg-white border border-zinc-200 flex items-center justify-center shrink-0">
-                                                    <Users size={16} className="text-zinc-300" />
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-black">{watch('client_name')}</div>
-                                                    <div className="text-xs text-zinc-500">{watch('client_company')}</div>
-                                                    <div className="text-[10px] text-zinc-400 mt-1 uppercase tracking-wider">{watch('client_email')}</div>
-                                                </div>
+                                            <div className="pl-4 border-l-2 border-black py-2">
+                                                <p className="text-xs font-bold uppercase tracking-wider text-black">{watch('client_name')}</p>
+                                                <p className="text-[10px] text-zinc-500 mt-0.5">{watch('client_company') || 'Empresa não informada'}</p>
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 {isEditing && (
-                                    <div className="p-4 bg-zinc-50 border border-zinc-100 flex items-start gap-4">
-                                        <div className="h-10 w-10 bg-white border border-zinc-200 flex items-center justify-center shrink-0">
-                                            <Users size={16} className="text-zinc-300" />
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-bold text-black">{watch('client_name')}</div>
-                                            <div className="text-xs text-zinc-500">{watch('client_company')}</div>
-                                            <div className="text-[10px] text-zinc-400 mt-1 uppercase tracking-wider">{watch('client_email')}</div>
-                                        </div>
+                                    <div className="pl-4 border-l-2 border-black py-2">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-black">{watch('client_name')}</p>
+                                        <p className="text-[10px] text-zinc-500 mt-0.5">{watch('client_company') || 'Empresa não informada'}</p>
                                     </div>
                                 )}
                             </div>
@@ -295,85 +289,165 @@ const REIProjectForm = () => {
 
                         {/* 2. PARAMETROS DO PROJETO */}
                         <div className="space-y-6">
-                            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-widest border-b border-zinc-200 pb-2">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
                                 02. Parâmetros de Execução
                             </h3>
 
-                            <div className="bg-white border border-zinc-200 p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <Label className="text-xs font-medium text-zinc-500">Analista Responsável</Label>
+                            <div className="space-y-8">
+                                <div className="space-y-1.5">
+                                    <Label className={labelClasses}>Analista Responsável</Label>
                                     <Input
                                         id="analyst_email"
                                         type="email"
                                         {...register('analyst_email', { required: 'Obrigatório' })}
-                                        className="bg-white border-zinc-200 rounded-none h-12 text-sm text-black focus:border-black"
+                                        className={inputClasses}
                                         placeholder="analista@revhackers.com.br"
                                     />
                                 </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-xs font-medium text-zinc-500">Trimestre de Início</Label>
-                                    <Select
-                                        value={watch('quarter')}
-                                        onValueChange={(value) => setValue('quarter', value as any)}
-                                    >
-                                        <SelectTrigger className="bg-white border-zinc-200 rounded-none h-12 text-sm font-medium focus:ring-1 focus:ring-black">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-none border-zinc-100">
-                                            <SelectItem value="Q1">Q1 (JAN-MAR)</SelectItem>
-                                            <SelectItem value="Q2">Q2 (ABR-JUN)</SelectItem>
-                                            <SelectItem value="Q3">Q3 (JUL-SET)</SelectItem>
-                                            <SelectItem value="Q4">Q4 (OUT-DEZ)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="space-y-1.5">
+                                        <Label className={labelClasses}>Trimestre</Label>
+                                        <Select
+                                            value={watch('quarter')}
+                                            onValueChange={(value) => setValue('quarter', value as any)}
+                                        >
+                                            <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-none border-zinc-100 shadow-2xl">
+                                                <SelectItem value="Q1">Q1 (JAN-MAR)</SelectItem>
+                                                <SelectItem value="Q2">Q2 (ABR-JUN)</SelectItem>
+                                                <SelectItem value="Q3">Q3 (JUL-SET)</SelectItem>
+                                                <SelectItem value="Q4">Q4 (OUT-DEZ)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <Label className={labelClasses}>Ano Fiscal</Label>
+                                        <Input
+                                            id="year"
+                                            type="number"
+                                            {...register('year', { required: true })}
+                                            className={inputClasses}
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-xs font-medium text-zinc-500">Ano Fiscal</Label>
-                                    <Input
-                                        id="year"
-                                        type="number"
-                                        {...register('year', { required: true })}
-                                        className="bg-white border-zinc-200 rounded-none h-12 text-sm text-black focus:border-black"
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <Label className="text-xs font-medium text-zinc-500">Início do Onboarding</Label>
+                                <div className="space-y-1.5">
+                                    <Label className={labelClasses}>Data de Início do Onboarding</Label>
                                     <Input
                                         id="next_rei_date"
                                         type="date"
                                         {...register('next_rei_date', { required: 'Obrigatório' })}
-                                        className="bg-white border-zinc-200 focus:border-black rounded-none h-12 text-sm text-black [color-scheme:light]"
+                                        className={`${inputClasses} [color-scheme:light] w-full`}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-6">
+                        {/* 3. DOCUMENTOS & ESTRATÉGIA (Proposals Integration) */}
+                        {isEditing && (
+                            <div className="space-y-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
+                                    03. Documentos & Estratégia
+                                </h3>
+
+                                <div className="border border-zinc-100 p-6 bg-zinc-50/30">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-black">Planejamento GTM & Quarter</h4>
+                                            <p className="text-[10px] text-zinc-500 mt-1">Gerencie a estratégia de Go-To-Market, métricas e atualizações trimestrais.</p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            onClick={() => navigate(`/admin/proposals/new?title=${encodeURIComponent('Planejamento Q' + (quarter || 'X'))}&client_name=${encodeURIComponent(watch('client_name'))}&client_email=${encodeURIComponent(watch('client_email'))}`)}
+                                            className="bg-black text-white hover:bg-zinc-800 rounded-none h-8 px-4 text-[10px] font-bold uppercase tracking-widest transition-all"
+                                        >
+                                            Novo Planejamento
+                                        </Button>
+                                    </div>
+
+                                    {/* Embedded Proposal List */}
+                                    <ProposalListByClient clientName={watch('client_name')} />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="pt-8 flex gap-4">
                             <Button
                                 type="button"
                                 variant="ghost"
                                 onClick={() => navigate('/admin/rei')}
-                                className="flex-1 h-14 rounded-none text-xs font-medium uppercase tracking-widest text-zinc-500 hover:text-black hover:bg-zinc-50 transition-all"
+                                className="h-14 px-8 rounded-none text-[10px] uppercase font-bold tracking-widest text-zinc-400 hover:text-black hover:bg-transparent hover:underline transition-all -ml-4"
                                 disabled={loading}
                             >
-                                Cancelar e Voltar
+                                Cancelar
                             </Button>
                             <Button
                                 type="submit"
-                                className="flex-[2] h-14 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-bold text-xs uppercase tracking-widest shadow-none gap-3"
+                                className="h-14 px-10 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-black text-[10px] uppercase tracking-[0.2em] ml-auto"
                                 disabled={loading}
                             >
-                                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save size={16} />}
-                                {isEditing ? 'Salvar Projeto' : 'Cadastrar Projeto'}
+                                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (isEditing ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PROJETO')}
                             </Button>
                         </div>
                     </form>
                 </div>
             </AdminPageLayout>
         </AdminLayout>
+    );
+};
+
+// Helper component to list proposals linked to the client
+const ProposalListByClient = ({ clientName }: { clientName: string }) => {
+    const navigate = useNavigate();
+    const [proposals, setProposals] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!clientName) return;
+        const fetchProposals = async () => {
+            setLoading(true);
+            const { data } = await supabase
+                .from('proposals')
+                .select('*')
+                .ilike('client_name', `%${clientName}%`)
+                .order('created_at', { ascending: false });
+            if (data) setProposals(data);
+            setLoading(false);
+        };
+        fetchProposals();
+    }, [clientName]);
+
+    if (loading) return <div className="text-xs text-zinc-400">Carregando propostas...</div>;
+    if (proposals.length === 0) return <div className="text-xs text-zinc-400 italic">Nenhuma proposta encontrada para {clientName}.</div>;
+
+    return (
+        <div className="space-y-2">
+            {proposals.map((doc) => (
+                <div key={doc.id} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 rounded-lg hover:border-zinc-300 transition-all group">
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 bg-white border border-zinc-200 flex items-center justify-center rounded text-indigo-600">
+                            <FileText size={16} />
+                        </div>
+                        <div>
+                            <div className="text-xs font-bold text-black">{doc.title}</div>
+                            <div className="text-[10px] text-zinc-400 capitalize">{doc.category || 'Proposta'} • {new Date(doc.created_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/admin/proposals/edit/${doc.id}`)}>
+                            <Edit2 size={12} className="text-zinc-500" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(`/p/${doc.slug}`, '_blank')}>
+                            <ExternalLink size={12} className="text-zinc-500" />
+                        </Button>
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 };
 

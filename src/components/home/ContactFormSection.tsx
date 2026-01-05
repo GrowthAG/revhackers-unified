@@ -56,17 +56,17 @@ const ContactFormSection = () => {
 
           {/* Right Column: "Application" Form - Cleanest Possible */}
           <div className="lg:col-span-7">
-            <div className="bg-zinc-50/50 border border-zinc-100 p-8 md:p-12 rounded-2xl shadow-[0_2px_40px_rgba(0,0,0,0.02)]">
-              <div className="mb-10">
-                <h3 className="text-xl font-bold text-black tracking-tight mb-2">Formulário de Aplicação</h3>
-                <p className="text-sm text-zinc-500">Preencha seus dados para análise de perfil.</p>
+            <div className="bg-zinc-50 border border-zinc-100 p-10 md:p-14 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 hover:-translate-y-1">
+              <div className="mb-12">
+                <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-3">Formulário de Aplicação</h3>
+                <p className="text-[15px] text-zinc-500 font-normal leading-relaxed">Preencha seus dados para análise técnica de perfil.</p>
               </div>
 
               <ContactForm formType="contact" variant="light" />
 
-              <div className="mt-8 pt-6 border-t border-zinc-200/50 text-center">
-                <p className="text-[10px] text-zinc-400 uppercase tracking-widest">
-                  Segurança de Dados · Resposta em 24h
+              <div className="mt-12 pt-8 border-t border-zinc-200/50 text-center">
+                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">
+                  Segurança de Dados · Resposta Técnica em 24h
                 </p>
               </div>
             </div>

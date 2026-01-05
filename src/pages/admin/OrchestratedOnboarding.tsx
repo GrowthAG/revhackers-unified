@@ -11,7 +11,9 @@ import {
     RefreshCw,
     Lock,
     Code,
-    Crown
+    Crown,
+    Clock,
+    FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -28,6 +30,35 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
         {children}
     </h3>
 );
+
+// Simple Error Boundary Component
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+    constructor(props: { children: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error: any) {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: any, errorInfo: any) {
+        console.error("OrchestratedOnboarding Error:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="p-8 text-center">
+                    <h2 className="text-xl font-bold mb-4">Algo deu errado.</h2>
+                    <Button onClick={() => window.location.reload()} variant="outline">Recarregar Página</Button>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
 
 const OrchestratedOnboarding = () => {
     const { id } = useParams();
@@ -48,6 +79,7 @@ const OrchestratedOnboarding = () => {
 
     const isStepLocked = (stepIndex: number) => {
         if (!project) return true;
+        if (project.status === 'active') return false; // Unlock everything for active projects
         if (stepIndex === 0) return false;
         if (stepIndex === 1) return !(latestResponse && latestResponse.total_score > 0);
         if (stepIndex === 2) return !project.scheduling_completed;
@@ -62,6 +94,9 @@ const OrchestratedOnboarding = () => {
     const loadData = async () => {
         try {
             setLoading(true);
+            if (!id || id === 'undefined') {
+                throw new Error("ID do projeto inválido");
+            }
             const proj = await getReiProjectById(id!);
             if (proj) {
                 setProject(proj);
@@ -69,9 +104,13 @@ const OrchestratedOnboarding = () => {
                 const allResponses = await getReiResponsesByProject(proj.id);
                 setHistory(allResponses);
                 setLatestResponse(allResponses.length > 0 ? allResponses[0] : null);
+            } else {
+                toast({ title: 'Projeto não encontrado', variant: 'destructive' });
+                navigate('/admin/rei');
             }
         } catch (error) {
             console.error("Error loading onboarding data:", error);
+            toast({ title: 'Erro ao carregar dados', description: 'Não foi possível carregar o projeto.', variant: 'destructive' });
         } finally {
             setLoading(false);
         }
@@ -125,13 +164,13 @@ const OrchestratedOnboarding = () => {
                                             <p className="text-xs text-zinc-400">Escolha a profundidade da análise para este projeto.</p>
                                         </div>
                                         <div className="grid grid-cols-3 divide-x divide-zinc-100">
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=consulting`)}>
+                                            <div className="p-12 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=consulting`)}>
                                                 <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Target size={20} />
+                                                <div className="w-16 h-16 bg-white border border-zinc-100 flex items-center justify-center mb-12 text-black group-hover:bg-black group-hover:text-white transition-colors mx-auto">
+                                                    <Target size={24} strokeWidth={1} />
                                                 </div>
-                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Consultoria 360º</h3>
-                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Diagnóstico Completo (Padrão)</p>
+                                                <h3 className="text-xl font-black uppercase tracking-ultratight text-center mb-4 text-black">Consultoria 360º</h3>
+                                                <p className="text-[10px] text-zinc-400 text-center leading-relaxed mb-6 uppercase tracking-widest">Diagnóstico Completo</p>
                                                 <div className="text-center">
                                                     <Badge className="bg-zinc-100 text-zinc-500 group-hover:bg-black group-hover:text-white text-[9px] uppercase tracking-widest transition-colors">Recomendado</Badge>
                                                 </div>
@@ -158,47 +197,64 @@ const OrchestratedOnboarding = () => {
                             </Dialog>
                         </div>
 
+                        {latestResponse && (
+                            <div className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 mb-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-zinc-100 text-zinc-400">
+                                        <FileText size={14} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-black">Resultado do Diagnóstico</p>
+                                        <p className="text-[9px] text-zinc-500">Última atualização: {new Date(latestResponse.completed_at || '').toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => navigate(`/admin/diagnostico/${id}`)}
+                                    variant="ghost"
+                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-black"
+                                >
+                                    Ver Painel Completo →
+                                </Button>
+                            </div>
+                        )}
+
                         {/* Diagnostic Status Card */}
-                        <div className="grid grid-cols-12 gap-6">
-                            <div className="md:col-span-4 space-y-6">
-                                <div className="bg-white border border-zinc-200 p-6">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Status do Diagnóstico</h4>
+                        <div className="grid grid-cols-12 gap-0 border border-zinc-100">
+                            <div className="md:col-span-4 space-y-0 border-r border-zinc-100">
+                                <div className="bg-white p-8">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6 font-mono">// DIAGNOSTIC_STATUS</h4>
                                     {latestResponse ? (
-                                        <div className="space-y-4">
-                                            <Badge className="bg-green-100 text-green-700 rounded-none text-[9px] uppercase tracking-widest">Completo</Badge>
-                                            <p className="text-2xl font-black text-black">{Math.round(latestResponse.total_score)}/100</p>
-                                            <p className="text-xs text-zinc-500">Score calculado em {new Date(latestResponse.created_at).toLocaleDateString('pt-BR')}</p>
+                                        <div className="space-y-6">
+                                            <div className="text-7xl font-black text-black tracking-ultratight leading-none">{Math.round(latestResponse.total_score)}%</div>
+                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest">Score calculado em {new Date(latestResponse.created_at).toLocaleDateString('pt-BR')}</p>
                                         </div>
                                     ) : (
-                                        <div className="text-center py-8">
-                                            <Zap className="w-8 h-8 text-zinc-200 mx-auto mb-4" />
-                                            <p className="text-xs text-zinc-400">Nenhum diagnóstico realizado</p>
+                                        <div className="text-center py-12">
+                                            <Zap className="w-8 h-8 text-zinc-100 mx-auto mb-4" strokeWidth={1} />
+                                            <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Aguardando Início</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="md:col-span-8 space-y-6">
-                                <div className="bg-white border border-zinc-200 p-8 shadow-sm">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-6">
-                                        <Target size={14} /> Diagnóstico de Contexto
+                            <div className="md:col-span-8 space-y-0">
+                                <div className="bg-white p-12 border-b border-zinc-100">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2 mb-8 font-mono">
+                                        <Target size={14} strokeWidth={1.5} /> // CONTEXT_ANALYSIS
                                     </h4>
                                     {!latestResponse ? (
-                                        <div className="flex flex-col items-center justify-center py-12 text-center bg-zinc-50/50 border border-zinc-100 rounded-sm">
-                                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                                                <Zap className="text-zinc-300" size={24} />
-                                            </div>
-                                            <h3 className="text-sm font-black uppercase tracking-widest text-black mb-2">Diagnóstico Não Iniciado</h3>
-                                            <p className="text-xs text-zinc-500 max-w-sm mx-auto mb-6 leading-relaxed">
-                                                Para destravar o agendamento e o planejamento estratégico, é necessário completar o diagnóstico inicial do cliente.
+                                        <div className="flex flex-col items-center justify-center py-12 text-center bg-zinc-50/30">
+                                            <h3 className="text-4xl font-black text-black tracking-ultratight uppercase mb-4">Aguardando Dados</h3>
+                                            <p className="text-xs text-zinc-500 max-w-sm mx-auto leading-relaxed">
+                                                O motor de estratégia REI necessita do diagnóstico para calibrar a execução.
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
-                                            <div className="p-6 bg-zinc-50 border-l-2 border-l-black">
-                                                <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Hipótese Inicial</p>
-                                                <p className="text-sm font-medium text-black leading-relaxed">
-                                                    Diagnóstico concluído com score de {latestResponse.total_score}. Pronto para a próxima fase.
+                                            <div className="p-8 border-l-4 border-l-black bg-zinc-50/50">
+                                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4 font-mono">// HYPOTHESIS_V1</p>
+                                                <p className="text-2xl font-medium text-black leading-tight tracking-tight">
+                                                    Diagnóstico concluído. Protocolo de tração cirúrgica pronto para implementação.
                                                 </p>
                                             </div>
                                         </div>
@@ -219,7 +275,7 @@ const OrchestratedOnboarding = () => {
                                                                     {Math.round(resp.total_score)}
                                                                 </div>
                                                                 <div>
-                                                                    <p className="text-xs font-bold uppercase tracking-wide text-black">{resp.diagnostic_type}</p>
+                                                                    <p className="text-xs font-bold uppercase tracking-wide text-black">{(resp as any).diagnostic_type || 'Diagnóstico'}</p>
                                                                     <p className="text-[10px] text-zinc-400">{new Date(resp.created_at).toLocaleDateString()} às {new Date(resp.created_at).toLocaleTimeString()}</p>
                                                                 </div>
                                                             </div>
@@ -230,10 +286,10 @@ const OrchestratedOnboarding = () => {
                                                     </DialogTrigger>
                                                     <DialogContent className="max-w-5xl h-[90vh] overflow-y-auto p-0 border-0 bg-transparent">
                                                         <ReiDashboard
-                                                            type={resp.diagnostic_type.toUpperCase() as any}
+                                                            type={((resp as any).diagnostic_type || 'CONSULTING').toUpperCase() as any}
                                                             score={resp.total_score}
-                                                            radarData={Array.isArray(resp.radar_data) ? (resp.radar_data as any) : []}
-                                                            insights={Array.isArray(resp.insights) ? (resp.insights as string[]) : []}
+                                                            radarData={Array.isArray((resp as any).radar_data) ? ((resp as any).radar_data as any) : []}
+                                                            insights={Array.isArray((resp as any).insights) ? ((resp as any).insights as string[]) : []}
                                                             onAction={() => { }}
                                                             clientName={project?.client_name}
                                                         />
@@ -276,13 +332,38 @@ const OrchestratedOnboarding = () => {
                             )}
                         </div>
 
-                        <div className="bg-white border border-zinc-200 p-8 text-center min-h-[400px] flex items-center justify-center">
-                            <div className="max-w-md">
-                                <h3 className="text-lg font-black text-black mb-4">Calendário de Agendamento</h3>
-                                <p className="text-sm text-zinc-500 mb-6">Selecione um horário para a apresentação do planejamento estratégico.</p>
-                                <Button onClick={confirmScheduling} disabled={(project as any)?.scheduling_completed} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 uppercase text-[10px] font-black tracking-widest">
-                                    {(project as any)?.scheduling_completed ? 'Agendado' : 'Confirmar Agendamento'}
-                                </Button>
+                        <div className="bg-white border border-zinc-100 p-24 text-center min-h-[500px] flex flex-col items-center justify-center space-y-12">
+                            <div className="w-24 h-24 border border-zinc-100 flex items-center justify-center">
+                                <Clock className={`w-8 h-8 ${project.scheduling_completed || project.status === 'active' ? 'text-black' : 'text-zinc-200'}`} strokeWidth={1} />
+                            </div>
+                            <div className="max-w-xl">
+                                <h3 className="text-6xl font-black text-black tracking-ultratight uppercase mb-6 leading-none">
+                                    {project.scheduling_completed || project.status === 'active' ? 'Data Confirmada' : 'Agendamento'}
+                                </h3>
+                                <p className="text-sm text-zinc-400 mb-12 leading-relaxed uppercase tracking-widest">
+                                    {project.scheduling_completed || project.status === 'active'
+                                        ? `O agendamento estratégico está ativo${project.next_rei_date ? ` para ${new Date(project.next_rei_date).toLocaleDateString()}` : ''}.`
+                                        : 'Aguardando seleção de slot para apresentação de roadmap.'}
+                                </p>
+                                <div className="flex flex-col gap-4 items-center">
+                                    <Button
+                                        onClick={confirmScheduling}
+                                        disabled={project.scheduling_completed || project.status === 'active'}
+                                        className="bg-black text-white hover:bg-zinc-800 rounded-none h-16 px-12 uppercase text-xs font-black tracking-[0.3em] transition-all disabled:opacity-20"
+                                    >
+                                        {project.scheduling_completed || project.status === 'active' ? 'CONCLUÍDO' : 'CONFIRMAR AGENDAMENTO'}
+                                    </Button>
+
+                                    {(project.scheduling_completed || project.status === 'active') && (
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setCurrentStep(2)}
+                                            className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-black mt-4"
+                                        >
+                                            AVANÇAR PARA PLANEJAMENTO →
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,13 +376,28 @@ const OrchestratedOnboarding = () => {
                         <SectionTitle>Planejamento Estratégico</SectionTitle>
                         <div className="bg-white border border-zinc-200 p-8 text-center min-h-[400px] flex items-center justify-center">
                             <div className="max-w-md">
-                                <h3 className="text-lg font-black text-black mb-4">Construção do Roadmap</h3>
-                                <p className="text-sm text-zinc-500 mb-6">Nesta fase, elaboramos o planejamento estratégico completo baseado no diagnóstico.</p>
-                                <Button onClick={() => navigate(`/admin/planejamento/${id}`)} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 uppercase text-[10px] font-black tracking-widest">
-                                    Acessar Planejamento
+                                <h3 className="text-xl font-bold text-black mb-3">Construção do Roadmap</h3>
+                                <p className="text-sm text-zinc-500 mb-8 leading-relaxed">O diagnóstico foi concluído. Agora, vamos estruturar o planejamento estratégico e o roteiro de implementação para o cliente.</p>
+                                <Button
+                                    onClick={() => navigate(`/admin/planejamento/${id}`)}
+                                    className="bg-black text-white hover:bg-zinc-800 rounded-none h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-lg shadow-zinc-200 transition-all"
+                                >
+                                    Abrir Gerador de Planejamento
                                 </Button>
                             </div>
                         </div>
+
+                        {/* Summary of Insights if available */}
+                        {latestResponse && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-60">
+                                <div className="p-6 border border-zinc-100 bg-zinc-50/30">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Input do REI</h4>
+                                    <div className="text-[11px] text-zinc-500 leading-relaxed italic">
+                                        "Diagnóstico concluído com score de {latestResponse.total_score}. Clique acima para sincronizar esses dados com o roadmap estratégico."
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             }
@@ -334,53 +430,64 @@ const OrchestratedOnboarding = () => {
         );
     }
 
+    if (!project) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-white flex-col gap-4">
+                <p className="text-zinc-400">Projeto não encontrado.</p>
+                <Button onClick={() => navigate('/admin/rei')} variant="outline">Voltar</Button>
+            </div>
+        )
+    }
+
     return (
-        <AdminPageLayout
-            title={project?.client_name || 'Projeto'}
-            description="Jornada de Onboarding"
-            backTo="/admin/rei"
-        >
-            <div className="flex gap-8">
-                {/* Sidebar Steps */}
-                <div className="w-72 shrink-0 border-r border-zinc-100 pr-8">
-                    <div className="flex flex-col gap-1">
-                        {steps.map((step, i) => {
-                            const locked = isStepLocked(i);
-                            return (
-                                <button
-                                    key={i}
-                                    onClick={() => !locked && setCurrentStep(i)}
-                                    disabled={locked}
-                                    className={`flex items-center gap-4 py-4 px-6 text-left transition-all border-l-2 ${currentStep === i
-                                        ? 'border-black bg-zinc-50 text-black'
-                                        : locked
-                                            ? 'border-transparent text-zinc-300 cursor-not-allowed opacity-50'
-                                            : 'border-transparent text-zinc-400 hover:text-black hover:bg-zinc-50/50'
-                                        }`}
-                                >
-                                    <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-black border ${currentStep === i ? 'bg-black text-white border-black' :
-                                        locked ? 'bg-zinc-100 text-zinc-300 border-zinc-200' :
-                                            'border-zinc-200 text-zinc-300'
-                                        }`}>
-                                        {locked ? <Lock size={10} /> : i + 1}
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black tracking-widest uppercase">{step.title}</span>
-                                        <span className="text-[9px] text-zinc-400 font-medium hidden lg:block">{step.desc}</span>
-                                        {locked && <span className="text-[8px] text-zinc-300 uppercase tracking-widest lg:hidden">Bloqueado</span>}
-                                    </div>
-                                </button>
-                            );
-                        })}
+        <ErrorBoundary>
+            <AdminPageLayout
+                title={project?.client_name || 'Projeto'}
+                description="Jornada de Onboarding"
+                backTo="/admin/rei"
+            >
+                <div className="flex gap-8">
+                    {/* Sidebar Steps */}
+                    <div className="w-72 shrink-0 border-r border-zinc-100 pr-8">
+                        <div className="flex flex-col gap-1">
+                            {steps.map((step, i) => {
+                                const locked = isStepLocked(i);
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => !locked && setCurrentStep(i)}
+                                        disabled={locked}
+                                        className={`flex items-center gap-4 py-4 px-6 text-left transition-all border-l-2 ${currentStep === i
+                                            ? 'border-black bg-zinc-50 text-black'
+                                            : locked
+                                                ? 'border-transparent text-zinc-300 cursor-not-allowed opacity-50'
+                                                : 'border-transparent text-zinc-400 hover:text-black hover:bg-zinc-50/50'
+                                            }`}
+                                    >
+                                        <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-black border ${currentStep === i ? 'bg-black text-white border-black' :
+                                            locked ? 'bg-zinc-100 text-zinc-300 border-zinc-200' :
+                                                'border-zinc-200 text-zinc-300'
+                                            }`}>
+                                            {locked ? <Lock size={10} /> : i + 1}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black tracking-widest uppercase">{step.title}</span>
+                                            <span className="text-[9px] text-zinc-400 font-medium hidden lg:block">{step.desc}</span>
+                                            {locked && <span className="text-[8px] text-zinc-300 uppercase tracking-widest lg:hidden">Bloqueado</span>}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Main Content Area */}
+                    <div className="flex-1 min-w-0">
+                        {renderContent()}
                     </div>
                 </div>
-
-                {/* Main Content Area */}
-                <div className="flex-1 min-w-0">
-                    {renderContent()}
-                </div>
-            </div>
-        </AdminPageLayout>
+            </AdminPageLayout>
+        </ErrorBoundary>
     );
 };
 

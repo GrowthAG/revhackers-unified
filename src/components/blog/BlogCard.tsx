@@ -98,13 +98,16 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
           {/* Footer / Author - Ultra clean */}
           <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100">
             <div className="flex items-center gap-3">
-              {post.author?.avatar && (
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-8 h-8 rounded-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
+              <Avatar className="w-8 h-8 rounded-full border border-gray-100 p-0.5">
+                <AvatarImage
+                  src={post.author?.avatar}
+                  alt={post.author?.name}
+                  className="rounded-full object-cover"
                 />
-              )}
+                <AvatarFallback className="bg-zinc-100 text-zinc-400 text-[8px] font-bold">
+                  {post.author?.name?.charAt(0) || 'R'}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex flex-col">
                 <span className="text-[9px] font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
                 <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{post.author?.role}</span>
