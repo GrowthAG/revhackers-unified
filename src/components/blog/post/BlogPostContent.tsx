@@ -1,6 +1,6 @@
 
 
-// File updated to optimize reading flow and fix component mapping
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PolemicLedGrowthArticle from './articles/PolemicLedGrowthArticle';
 import ChatGPTGrowthArticle from './articles/ChatGPTGrowthArticle';
 import ColdEmailArticle from './articles/ColdEmailArticle';
@@ -139,17 +139,20 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
           </div>
         )}
 
-        {/* Author Footer */}
-        <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-10">
-          <div className="relative shrink-0">
-            <div className="absolute -inset-1 bg-revgreen opacity-20 blur-md rounded-full" />
-            <img src={fixedAvatar} alt={authorName} className="relative w-24 h-24 rounded-full object-cover border-2 border-zinc-100 transition-all duration-700 hover:scale-105" />
-          </div>
+        {/* Author Footer - Fixed Visuals */}
+        <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-8 bg-zinc-50/50 p-8 rounded-2xl">
+          <Avatar className="w-24 h-24 border-4 border-white shadow-xl">
+            <AvatarImage src={fixedAvatar} alt={authorName} className="object-cover" />
+            <AvatarFallback className="bg-revgreen text-black font-black text-2xl">
+              {authorName.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+
           <div className="flex-1 text-center md:text-left">
             <h4 className="text-2xl font-black text-black tracking-tighter mb-1 uppercase italic">{authorName}</h4>
-            <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-[10px] mb-6">{authorRole}</p>
-            <p className="text-zinc-500 text-sm leading-relaxed font-bold uppercase tracking-widest opacity-60">
-              Especialista em Growth B2B e Revenue Operations. Focado em transformar operações de vendas através de dados e arquitetura de processos.
+            <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-[10px] mb-4">{authorRole}</p>
+            <p className="text-zinc-500 text-sm leading-relaxed font-medium uppercase tracking-wider opacity-80">
+              Especialista Sênior em Growth e Estratégia de Receita. Focado em transformar operações complexas em máquinas de crescimento previsíveis e escaláveis.
             </p>
           </div>
         </div>

@@ -173,6 +173,15 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                         # 🎯 Diagnóstico Executivo
                         [Resuma a dor principal do cliente identificada na call. O que está custando dinheiro a eles hoje?]
                         
+                        # 📊 Análise de Mercado & Benchmarks
+                        [Apresente dados de mercado e benchmarks do setor baseados no contexto da call.]
+
+                        # 👤 ICP & Personas Detalhadas
+                        [Defina o Perfil de Cliente Ideal e as Personas específicas que devem ser atacadas.]
+
+                        # 🗺️ Mapa de Oportunidades
+                        [Mapeie os gargalos e as vitórias rápidas (quick wins) identificadas.]
+
                         # 🚀 O Plano de Jogo (A Solução)
                         [Descreva a estratégia RevHackers para resolver isso. Não fale de funcionalidades, fale de TRANSFORMACAO.]
                         

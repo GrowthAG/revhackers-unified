@@ -66,6 +66,8 @@ const BlogPostPage = () => {
           if (!content) return '';
           return content
             .replace(/COPIE E COLE NO ADMIN:[\s\S]*?\*\*CORPO DO ARTIGO:\*\*\s*/i, '')
+            .replace(/# ARTIGO COMPLETO[\s\S]*?\*\*CORPO DO ARTIGO:\*\*\s*/i, '')
+            .replace(/📋 COLE ESTE CONTEÚDO COMPLETO[\s\S]*?\*\*CORPO DO ARTIGO:\*\*\s*/i, '')
             .replace(/```markdown/g, '')
             .replace(/```/g, '')
             .trim();
