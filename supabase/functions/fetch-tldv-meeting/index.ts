@@ -1,234 +1,201 @@
 
+declare const Deno: any;
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+// Hardcoded CORS headers for debugging
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 const TLDV_API_BASE = "https://pasta.tldv.io/v1alpha1";
 
-serve(async (req) => {
-    if (req.method === "OPTIONS") {
-        return new Response(null, { headers: corsHeaders });
+const extractClientData = (meeting: any, transcriptText: string = "") => {
+    const res = { clientEmail: "", clientContactName: "", clientName: "" };
+    const title = meeting.name || meeting.title || "";
+    const people = meeting.participants || meeting.attendees || [];
+
+    // 1. Participant Details
+    let clientFound = false;
+    const INTERNAL_NAMES = ['Giulliano Alves', 'Giulliano', 'RevHackers', 'Bot', 'Notetaker', 'tl;dv', 'Host'];
+
+    if (Array.isArray(people) && people.length > 0) {
+        const client = people.find((p: any) => {
+            const e = (p.email || p.emailAddress || "").toLowerCase();
+            const n = (p.name || "").toLowerCase();
+            // FILTER RULES:
+            // 1. Must have email
+            // 2. Must not be internal domains (revhackers, tldv)
+            // 3. Must not be known internal names (Giulliano, Bot, Host)
+            return e &&
+                !e.includes('revhackers.com') &&
+                !e.includes('tldv.io') &&
+                !INTERNAL_NAMES.some(i => n.includes(i.toLowerCase()));
+        });
+        if (client) {
+            res.clientEmail = client.email || client.emailAddress || "";
+            res.clientContactName = client.name || (res.clientEmail.split('@')[0].split(/[._]/)[0].replace(/\b\w/g, (c: string) => c.toUpperCase())) || "";
+
+            if (res.clientEmail && !res.clientEmail.match(/gmail|outlook|hotmail|yahoo|icloud/i)) {
+                try {
+                    const dom = res.clientEmail.split('@')[1].split('.')[0];
+                    res.clientName = dom.charAt(0).toUpperCase() + dom.slice(1);
+                } catch (e) { }
+            }
+            clientFound = true;
+        }
     }
 
-    try {
-        const { meetingUrl, apiKey, action } = await req.json();
-
-        // 1. Determine API Key (Prioritize Env Var -> User Input -> Hardcoded Fallback)
-        const envKey = Deno.env.get('TLDV_API_KEY');
-        const TLDV_API_KEY = envKey || apiKey || "14539301-bff7-4b91-9689-3af63ae7d5cc";
-
-        // 2. Handle "LIST" action
-        if (action === 'list') {
-            console.log("Fetching recent meetings list from tl;dv...");
-
-            let listResponse;
-            try {
-                listResponse = await fetch(`${TLDV_API_BASE}/meetings?limit=10`, {
-                    method: 'GET',
-                    headers: {
-                        'x-api-key': TLDV_API_KEY,
-                        'Content-Type': 'application/json'
-                    }
-                });
-            } catch (networkError) {
-                console.error("Network error fetching tl;dv meetings:", networkError);
-                // Force fallback behavior below
-                listResponse = { ok: false, status: 0, text: async () => "Network Error" };
-            }
-
-            let meetings = [];
-            let useMock = false;
-            let debugError = "";
-
-            if (!listResponse.ok) {
-                debugError = await listResponse.text();
-                console.warn(`tl;dv API Failed (Status ${listResponse.status}): ${debugError}`);
-                useMock = true;
-            } else {
-                try {
-                    const rawData = await listResponse.json();
-
-                    // Normalize results
-                    if (rawData.results && Array.isArray(rawData.results)) {
-                        meetings = rawData.results;
-                    } else if (Array.isArray(rawData)) {
-                        meetings = rawData;
-                    } else if (rawData.meetings && Array.isArray(rawData.meetings)) {
-                        meetings = rawData.meetings;
-                    } else if (rawData.data && Array.isArray(rawData.data)) {
-                        meetings = rawData.data;
-                    } else {
-                        console.warn("Unexpected API response structure:", Object.keys(rawData));
-                        // If structure is weird but valid JSON, we might want to default to empty or mock
-                        // Let's default to empty unless we really want to force mock
-                    }
-                } catch (jsonError) {
-                    console.error("Error parsing tl;dv JSON:", jsonError);
-                    debugError = "Invalid JSON response";
-                    useMock = true;
+    // 1.5 Transcript Scan Fallback
+    if (!clientFound && transcriptText) {
+        const speakerRegex = /^([^:]+):/gm;
+        const potentialNames = new Set<string>();
+        let match;
+        // Check first 15k chars
+        while ((match = speakerRegex.exec(transcriptText.substring(0, 15000))) !== null) {
+            const name = match[1].trim();
+            if (name.length > 1 && !name.includes('http') && !name.includes('Speaker')) {
+                const isInternal = INTERNAL_NAMES.some(internal => name.toLowerCase().includes(internal.toLowerCase()));
+                if (!isInternal) {
+                    potentialNames.add(name);
                 }
             }
-
-            // Fallback to Mock Data if API failed or JSON was invalid
-            if (useMock) {
-                console.log("Serving Mock Data for tl;dv list...");
-                const mockMeetings = [
-                    {
-                        name: "Reunião de Kickoff - Projeto Alpha (MOCK)",
-                        date: new Date().toISOString(),
-                        duration: 3600,
-                        url: "https://tldv.io/app/meetings/mock-meeting-id-1",
-                        recordingUrl: "https://tldv.io/app/meetings/mock-meeting-id-1",
-                        transcript: "Speaker A: Vamos iniciar o projeto Alpha.\nSpeaker B: Certo, o escopo inclui setup e onboarding.\nSpeaker A: O orçamento é de R$ 50.000 com entrada de R$ 10.000.",
-                        clientName: "Alpha Corp",
-                        clientEmail: "contato@alpha.com"
-                    },
-                    {
-                        name: "Alinhamento Mensal - Beta Inc (MOCK)",
-                        date: new Date(Date.now() - 86400000).toISOString(),
-                        duration: 1800,
-                        url: "https://tldv.io/app/meetings/mock-meeting-id-2",
-                        recordingUrl: "https://tldv.io/app/meetings/mock-meeting-id-2",
-                        transcript: "Speaker A: Como estão os resultados?\nSpeaker B: Crescemos 20% este mês.\nSpeaker A: Ótimo, vamos renovar o contrato.",
-                        clientName: "Beta Inc",
-                        clientEmail: "ceo@beta.com"
-                    }
-                ];
-
-                return new Response(
-                    JSON.stringify({
-                        success: true,
-                        data: mockMeetings,
-                        _is_mock: true,
-                        _api_error: debugError
-                    }),
-                    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-                );
-            }
-
-            // Normaliza dados reais
-            const normalizedMeetings = meetings.map((m: any) => ({
-                ...m,
-                name: m.name || m.title || "Sem Título",
-                date: m.date || m.createdAt || m.created_at || m.startedAt || new Date().toISOString(),
-                url: m.url || m.recordingUrl || m.publicUrl
-            }));
-
-            return new Response(
-                JSON.stringify({
-                    success: true,
-                    data: normalizedMeetings,
-                    _debug_meta: { found: normalizedMeetings.length }
-                }),
-                { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
         }
 
-        // ... Rest of the file (Get Single Meeting logic) ...
-        if (!meetingUrl) {
-            throw new Error("Meeting URL is required");
+        if (potentialNames.size > 0) {
+            res.clientContactName = Array.from(potentialNames)[0];
+            // If contact found but no company, try to infer or placeholder
+            if (!res.clientName) res.clientName = "Empresa de " + res.clientContactName;
         }
+    }
 
-        console.log(`Fetching tl;dv meeting info for URL: ${meetingUrl}`);
-
-        const response = await fetch(`${TLDV_API_BASE}/meetings`, {
-            method: 'GET',
-            headers: {
-                'x-api-key': TLDV_API_KEY,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        // ... (Keep the rest of single meeting logic, just updated key variable usage) ...
-
-        // REPEAT similar try/catch pattern for the single meeting fetch if desired, 
-        // but for now the user issue is primarily about the LIST action failing ("Últimas Reuniões").
-        // I will just rely on the existing logic there but use the new TLDV_API_KEY variable which is safe.
-
-        if (!response.ok) {
-            // ... existing fallback logic ...
-            const errText = await response.text();
-            console.warn("Single meeting API failed, falling back to mock");
-
-            // Reuse the mock response logic from original file
-            return new Response(
-                JSON.stringify({
-                    success: true,
-                    data: {
-                        transcript: "TRANSCRICAO DEMO (API conectada mas URL nao encontrada exata):\n\nSpeaker A: Ola, gostaria de saber mais sobre Growth.\nSpeaker B: Claro, nossa metodologia é baseada em dados...",
-                        videoUrl: meetingUrl,
-                        summary: "Dados importados do tl;dv (Demo Mode - Ajustar URL exata)"
-                    },
-                }),
-                { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
+    // 2. Title Logic
+    if (title) {
+        let extracted = "";
+        if (title.includes('with')) extracted = title.split('with').pop()!.trim();
+        else if (title.includes(' x ')) {
+            const parts = title.split(' x ');
+            extracted = parts[0].toLowerCase().includes('revhackers') ? parts[1].trim() : parts[0].trim();
         }
+        else if (title.includes('>')) extracted = title.split('>').pop()!.trim();
+        else if (title.includes(' - ')) extracted = title.split(' - ').pop()!.trim();
 
-        const data = await response.json();
-        // ... rest of the original logic using 'data' ...
-        const meetings = Array.isArray(data) ? data : (data.meetings || []);
-        const meeting = meetings.find((m: any) => m.url === meetingUrl || m.publicUrl === meetingUrl || (m.recordingUrl && m.recordingUrl === meetingUrl));
+        if (extracted && extracted.length > 2) res.clientName = extracted;
+        else if (!res.clientName) res.clientName = title.replace(/Reunião de |Reunion of |Kickoff |Meeting |tl;dv /gi, '').trim();
+    }
 
-        if (!meeting) {
-            // ... existing fallback ...
-            return new Response(
-                JSON.stringify({
-                    success: true,
-                    data: {
-                        transcript: "TRANSCRICAO DEMO (API conectada mas URL nao encontrada exata):\n\nSpeaker A: Ola, gostaria de saber mais sobre Growth.\nSpeaker B: Claro, nossa metodologia é baseada em dados...",
-                        videoUrl: meetingUrl,
-                        summary: "Dados importados do tl;dv (Demo Mode - Ajustar URL exata)"
-                    },
-                }),
-                { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-        }
+    return res;
+};
 
-        // ... extract fields ...
-        let transcriptText = "";
-        if (meeting.transcript) {
-            transcriptText = meeting.transcript;
-        } else if (meeting.id) {
-            // Fetch transcript
-            const transcriptReq = await fetch(`${TLDV_API_BASE}/meetings/${meeting.id}/transcript`, {
+serve(async (req: Request) => {
+    if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+    try {
+        const { meetingUrl, apiKey, action, meetingId: providedId } = await req.json();
+
+        // DEBUG: Force working key
+        const TLDV_API_KEY = "14539301-bff7-4b91-9689-3af63ae7d5cc";
+
+        console.log(`Executing fetch-tldv-meeting with action: ${action || 'default'}`);
+
+        // LIST
+        if (action === 'list') {
+            console.log("Fetching meeting list from tl;dv...");
+            const res = await fetch(`${TLDV_API_BASE}/meetings?limit=20&orderBy=createdAt&orderDirection=desc`, {
                 headers: { 'x-api-key': TLDV_API_KEY }
             });
-            if (transcriptReq.ok) {
-                const tData = await transcriptReq.json();
-                transcriptText = Array.isArray(tData)
-                    ? tData.map((t: any) => `${t.speaker || 'Speaker'}: ${t.text}`).join('\n')
-                    : JSON.stringify(tData);
+
+            if (!res.ok) {
+                console.error(`tl;dv API error: ${res.status} ${res.statusText}`);
+                const errText = await res.text();
+                throw new Error(`tl;dv API Error: ${errText}`);
+            }
+
+            const data = await res.json();
+            console.log("Response structure keys:", Object.keys(data));
+            const meetings = (data.results || data.data || []).map((m: any) => ({
+                id: m.id,
+                name: m.name,
+                createdAt: m.happenedAt || m.createdAt || new Date().toISOString(),
+                duration: m.duration,
+                url: m.recordingUrl,
+                ...extractClientData(m)
+            }));
+
+            return new Response(JSON.stringify({ success: true, data: meetings }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+
+        // SINGLE FETCH
+        let meetingId = providedId;
+        if (!meetingId && meetingUrl) {
+            const matches = meetingUrl.match(/meetings?\/([a-zA-Z0-9-]+)/);
+            if (matches) meetingId = matches[1];
+        }
+
+        if (meetingId) {
+            const [mRes, tRes] = await Promise.all([
+                fetch(`${TLDV_API_BASE}/meetings/${meetingId}`, { headers: { 'x-api-key': TLDV_API_KEY } }),
+                fetch(`${TLDV_API_BASE}/meetings/${meetingId}/transcript`, { headers: { 'x-api-key': TLDV_API_KEY } })
+            ]);
+
+            if (mRes.ok) {
+                const meeting = await mRes.json();
+
+                // Fix: Construct video URL if missing (it usually is in single fetch)
+                if (!meeting.recordingUrl && meeting.id) {
+                    meeting.recordingUrl = `https://tldv.io/app/meetings/${meeting.id}`;
+                }
+
+                // Fix: Ensure date is consistent
+                if (!meeting.createdAt && meeting.happenedAt) {
+                    meeting.createdAt = meeting.happenedAt;
+                }
+
+                let transcriptText = "";
+                let debugInfo = "";
+
+                if (tRes.ok) {
+                    try {
+                        const tData = await tRes.json();
+                        const isArray = Array.isArray(tData);
+                        debugInfo = `Status: ${tRes.status}, IsArray: ${isArray}, Keys: ${Object.keys(tData)}`;
+
+                        const transcriptArray = isArray ? tData : (tData.results || tData.data || []);
+
+                        if (Array.isArray(transcriptArray)) {
+                            transcriptText = transcriptArray.map((t: any) => `${t.speaker || 'Speaker'}: ${t.text}`).join('\n');
+                            debugInfo += `, Items: ${transcriptArray.length}`;
+                        } else {
+                            debugInfo += ", FAILED TO FIND ARRAY";
+                        }
+                    } catch (e: any) {
+                        debugInfo += `, JSON Parse Error: ${e.message}`;
+                    }
+                } else {
+                    debugInfo = `Fetch Failed: ${tRes.status} ${tRes.statusText}`;
+                    try { debugInfo += ` Body: ${await tRes.text()}`; } catch (e) { }
+                }
+
+                // DEBUG: Inject raw participants into transcript to see why name fails
+                const participantDebugInfo = `DEBUG_PARTICIPANTS: ${JSON.stringify(meeting.participants || meeting.attendees || [], null, 2)}`;
+                transcriptText = participantDebugInfo + "\n\n" + transcriptText;
+
+                if (!transcriptText) {
+                    transcriptText = `[[DEBUG INFO: Transcrição vazia. Detalhes: ${debugInfo}]]`;
+                }
+
+                console.log(`Single fetch success. Video: ${meeting.recordingUrl}, Transcript len: ${transcriptText.length}`);
+
+                return new Response(JSON.stringify({
+                    success: true,
+                    data: { ...meeting, ...extractClientData(meeting, transcriptText), transcript: transcriptText }
+                }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
             }
         }
 
-        const extractEmail = (meeting: any) => {
-            if (!meeting.participants) return "cliente@exemplo.com";
-            const p = meeting.participants.find((p: any) => !p.email.includes('revhackers.com'));
-            return p ? p.email : meeting.participants[0]?.email || "";
-        };
+        return new Response(JSON.stringify({ success: false, error: 'Meeting not found' }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-        const mockEmail = "contato@cliente-potencial.com.br";
-
-        return new Response(
-            JSON.stringify({
-                success: true,
-                data: {
-                    transcript: transcriptText || "Transcript not available in API response",
-                    videoUrl: meeting.videoUrl || meeting.url || meetingUrl,
-                    summary: meeting.name || "Meeting imported from tl;dv",
-                    clientEmail: extractEmail(meeting) || mockEmail,
-                    clientName: meeting.name?.split('-')[0]?.trim() || "Cliente Novo"
-                },
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-
-    } catch (error) {
-        return new Response(
-            JSON.stringify({ error: error.message }),
-            {
-                status: 500,
-                headers: { ...corsHeaders, "Content-Type": "application/json" }
-            }
-        );
+    } catch (e: any) {
+        console.error("Function error:", e.message);
+        return new Response(JSON.stringify({ success: false, error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 });

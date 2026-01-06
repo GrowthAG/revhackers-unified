@@ -8,18 +8,18 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, Eye, RefreshCw, Save, ExternalLink, Sparkles, ChevronDown, Upload } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs";
 
 interface ProposalFormValues {
     title: string;
@@ -40,6 +40,18 @@ interface ProposalFormValues {
     loom_url?: string;
     mindmap_url?: string;
     manual_transcript?: string;
+    headline?: string;
+    subheadline?: string;
+    brief_explanation?: string;
+    mindmap_embed?: string;
+    detailed_scope?: string;
+    payment_terms?: string;
+    crm_data?: any;
+    proposal_source?: 'call' | 'bid';
+    bid_document_url?: string;
+    call_detail_summary?: string;
+    agenda_link?: string;
+    booking_url?: string;
 }
 
 interface ProposalFormProps {
@@ -52,9 +64,10 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [uploadingDoc, setUploadingDoc] = useState(false);
     const [meetingHistory, setMeetingHistory] = useState<any[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
-    const [historyOpen, setHistoryOpen] = useState(false); // State for Dialog control
+    const [historyOpen, setHistoryOpen] = useState(false);
     const { agents } = useAI();
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProposalFormValues>({
@@ -63,6 +76,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             slug: initialData?.slug || '',
             client_name: initialData?.client_name || '',
             client_contact_name: initialData?.client_contact_name || '',
+            client_email: initialData?.client_email || '',
             client_logo: initialData?.client_logo || '',
             recording_url: initialData?.recording_url || '',
             transcript: initialData?.transcript || '',
@@ -76,10 +90,29 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             loom_url: initialData?.loom_url || '',
             mindmap_url: initialData?.mindmap_url || '',
             manual_transcript: initialData?.manual_transcript || '',
+            headline: initialData?.headline || '',
+            subheadline: initialData?.subheadline || '',
+            brief_explanation: initialData?.brief_explanation || '',
+            mindmap_embed: initialData?.mindmap_embed || '',
+            detailed_scope: initialData?.detailed_scope || '',
+            payment_terms: initialData?.payment_terms || '',
+            proposal_source: initialData?.proposal_source || 'call',
+            bid_document_url: initialData?.bid_document_url || '',
+            call_detail_summary: initialData?.call_detail_summary || '', // Registered new field
+            booking_url: initialData?.booking_url || 'https://pages.revhackers.com.br/widget/booking/MmyRuRPox3ZComQA3jJ1',
+            crm_data: initialData?.crm_data || {
+                pain_points: [],
+                budget_range: '',
+                decision_makers: '',
+                urgency: '',
+                next_steps: '',
+                qualified_score: 5
+            }
         }
     });
 
     const watchedTitle = watch('title');
+    const watchedSource = watch('proposal_source');
 
     useEffect(() => {
         if (!isEditing && watchedTitle) {
@@ -93,22 +126,163 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
     }, [watchedTitle, isEditing, setValue]);
 
-    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updateFieldsWithMetadata = (m: any, force = false) => {
+        if (!m) return;
+
+        let cName = m.clientName;
+        if (!cName && (m.name || m.title)) {
+            const n = m.name || m.title;
+            if (n.includes('with')) {
+                const parts = n.split('with');
+                cName = parts[parts.length - 1].trim();
+            }
+            else if (n.includes(' x ')) cName = n.split(' x ')[0].toLowerCase().includes('revhackers') ? n.split(' x ')[1].trim() : n.split(' x ')[0].trim();
+            else if (n.includes('>')) cName = n.split('>')[1].trim();
+            else if (n.includes('-')) {
+                const parts = n.split('-');
+                cName = parts[parts.length - 1].trim();
+            } else {
+                cName = n.replace('Reunião de ', '').replace('Kickoff ', '').trim();
+            }
+        }
+
+        const shouldSet = (field: keyof ProposalFormValues) => {
+            const current = watch(field);
+            return force || !current || current === "" || current === "0" || current === 0;
+        };
+
+        const INTERNAL_NAMES = ['Giulliano', 'RevHackers', 'Bot', 'Notetaker'];
+        const isInternal = (str: string) => str && INTERNAL_NAMES.some(i => str.toLowerCase().includes(i.toLowerCase()));
+
+        // 1. Find Valid External Participant
+        let validContactName = m.clientContactName;
+        let validEmail = m.clientEmail;
+
+        const allParticipants = m.participants || m.attendees || [];
+        if (Array.isArray(allParticipants) && allParticipants.length > 0) {
+            // Find first person who is NOT internal
+            const externalPerson = allParticipants.find((p: any) => {
+                const n = p.name || p.display_name || "";
+                const e = p.email || p.emailAddress || "";
+                return (n && !isInternal(n)) || (e && !isInternal(e));
+            });
+
+            if (externalPerson) {
+                validContactName = externalPerson.name || externalPerson.display_name || validContactName;
+                validEmail = externalPerson.email || externalPerson.emailAddress || validEmail;
+            }
+        }
+
+        if (cName && shouldSet('client_name') && !isInternal(cName)) setValue('client_name', cName);
+
+        if (validContactName && shouldSet('client_contact_name') && !isInternal(validContactName)) {
+            setValue('client_contact_name', validContactName);
+        }
+
+        if (validEmail && shouldSet('client_email') && !isInternal(validEmail)) {
+            setValue('client_email', validEmail);
+        }
+
+        // 5. Fallback: Parse Transcript if no metadata (API invalid/empty)
+        if ((!validContactName || !validEmail) && m.transcript) {
+            const speakerRegex = /^([^:\n]+):/gm;
+            const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+            let match;
+            const seenSpeakers = new Set<string>();
+
+            // Limit scan to first 20k chars to avoid lag
+            const txt = m.transcript.substring(0, 20000);
+
+            while ((match = speakerRegex.exec(txt)) !== null) {
+                const name = match[1].trim();
+                // Filter out short names, internal names, and generic labels
+                if (name.length > 2 && !isInternal(name) && !name.includes('Speaker') && !seenSpeakers.has(name)) { // Added 'Speaker' check
+                    seenSpeakers.add(name);
+                    validContactName = name;
+                    break; // Found the first non-internal speaker!
+                }
+            }
+
+            // B. Extract Email
+            if (!validEmail) {
+                const emails = txt.match(emailRegex);
+                if (emails && emails.length > 0) {
+                    const found = emails.find((e: string) => !isInternal(e) && !e.includes('tldv.io') && !e.includes('notetaker'));
+                    if (found) validEmail = found.toLowerCase();
+                }
+            }
+
+            if (validContactName && shouldSet('client_contact_name')) {
+                setValue('client_contact_name', validContactName);
+                // Heuristic: If we found a name but no company, suggest "Empresa de [Nome]"
+                if (shouldSet('client_name')) {
+                    setValue('client_name', `Empresa de ${validContactName}`);
+                }
+            }
+
+            if (validEmail && shouldSet('client_email')) {
+                setValue('client_email', validEmail);
+            }
+        }
+
+        if (m.transcript && shouldSet('transcript')) {
+            setValue('transcript', m.transcript);
+            setValue('manual_transcript', m.transcript);
+        }
+
+        if (m.crm_data) {
+            setValue('crm_data', m.crm_data);
+        }
+
+        if (cName && (force || !watch('title') || watch('title').includes('Proposta'))) {
+            setValue('title', `Proposta ${cName}`);
+        }
+    };
+
+    const watchedUrl = watch('recording_url');
+    useEffect(() => {
+        const fetchMetadata = async () => {
+            if (watchedUrl && (watchedUrl.includes('tldv.io') || watchedUrl.includes('call')) && watchedUrl.length > 20) {
+                try {
+                    const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
+                        body: { meetingUrl: watchedUrl }
+                    });
+
+                    if (data?.success && data.data) {
+                        updateFieldsWithMetadata(data.data);
+                    }
+                } catch (e) {
+                    console.warn("Auto-fetch metadata failed:", e);
+                }
+            }
+        };
+        fetchMetadata();
+    }, [watchedUrl, setValue]);
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'document') => {
         if (!e.target.files || e.target.files.length === 0) return;
 
         const file = e.target.files[0];
-        setUploadingLogo(true);
+        if (type === 'logo') setUploadingLogo(true);
+        else setUploadingDoc(true);
+
         try {
             const publicUrl = await uploadImageToSupabase(file, 'lovable-uploads');
             if (publicUrl) {
-                setValue('client_logo', publicUrl);
-                toast({ title: 'Logo enviado com sucesso!' });
+                if (type === 'logo') {
+                    setValue('client_logo', publicUrl);
+                    toast({ title: 'Logo enviado com sucesso!' });
+                } else {
+                    setValue('bid_document_url', publicUrl);
+                    toast({ title: 'Documento enviado!', description: 'Extraindo dados estratégicos...' });
+                }
             }
         } catch (error) {
             console.error(error);
-            toast({ title: 'Erro no upload', description: 'Não foi possível enviar a logo.', variant: 'destructive' });
+            toast({ title: 'Erro no upload', variant: 'destructive' });
         } finally {
-            setUploadingLogo(false);
+            if (type === 'logo') setUploadingLogo(false);
+            else setUploadingDoc(false);
         }
     };
 
@@ -125,17 +299,16 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             if (isEditing && initialData?.id) {
                 const { error } = await supabase.from('proposals').update(payload).eq('id', initialData.id);
                 if (error) throw error;
-                toast({ title: 'Página atualizada!' });
-                navigate('/admin/proposals');
+                toast({ title: 'Proposta atualizada!' });
+                // Stay on page or navigate to details
+                // navigate(`/admin/proposals/${initialData.id}`); 
             } else {
                 const { data: newProposal, error } = await supabase.from('proposals').insert(payload).select().single();
                 if (error) throw error;
-                toast({ title: 'Página criada!' });
-                // Redirect to the new proposal (Open it)
+                toast({ title: 'Proposta criada!' });
                 if (newProposal?.id) {
-                    navigate(`/admin/proposals/${newProposal.id}`);
-                } else {
-                    navigate('/admin/proposals');
+                    // Redirect to the edit/view page of the new proposal
+                    navigate(`/admin/proposals/edit/${newProposal.id}`);
                 }
             }
         } catch (error: any) {
@@ -145,92 +318,128 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
     };
 
-    const handleGenerateScope = async () => {
-        const transcript = watch('transcript');
-        if (!transcript) {
-            toast({ title: 'Erro', description: 'Adicione uma transcrição primeiro.', variant: 'destructive' });
+    const fetchMeetingHistory = async () => {
+        setLoadingHistory(true);
+        try {
+            const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
+                body: { action: 'list' }
+            });
+            if (!error && data?.success && Array.isArray(data.data)) {
+                setMeetingHistory(data.data);
+            }
+        } catch (e: any) {
+            console.warn("Failed to fetch history:", e);
+            toast({ title: 'Erro ao buscar histórico', description: e.message || 'Verifique se a função foi deployada.', variant: 'destructive' });
+        } finally {
+            setLoadingHistory(false);
+        }
+    };
+
+    const handleGenerateScope = async (input?: string | { text: string; type: 'transcript' | 'bid'; metadata?: any }) => {
+        let transcript = '';
+        let contextMetadata: any = null;
+
+        if (input) {
+            if (typeof input === 'string') {
+                transcript = input;
+            } else {
+                transcript = input.text;
+                contextMetadata = input.metadata;
+            }
+        }
+
+        // Fallback to form watch if not passed explicitly
+        if (!transcript) transcript = watch('transcript');
+
+        const sourceDoc = watch('bid_document_url');
+
+        if (!transcript && !sourceDoc) {
+            toast({ title: 'Erro', description: 'Adicione uma fonte de dados válida primeiro (Transcrição ou Documento).', variant: 'destructive' });
             return;
         }
 
         setGenerating(true);
         try {
+            // Construct Context Block
+            let contextBlock = "";
+            if (contextMetadata) {
+                contextBlock = `
+                CONTEXTO DA CALL (METADATA):
+                - Título: ${contextMetadata.name || 'N/A'}
+                - Duração: ${Math.round((contextMetadata.duration || 0) / 60)} min
+                - Participantes: ${contextMetadata.participants ? contextMetadata.participants.map((p: any) => p.name).join(', ') : 'Não listado'}
+                - Data: ${contextMetadata.createdAt ? new Date(contextMetadata.createdAt).toLocaleDateString('pt-BR') : 'N/A'}
+                
+                USE ESTES DADOS PARA:
+                1. Identificar quem é o Decisor (pelo cargo/nome).
+                2. Estimar o 'Budget' baseado no nível dos participantes.
+                3. Se a call for curta (<15min), seja direto. Se longa (>40min), detalhe mais a estratégia.
+                `;
+            }
+
             const { data, error } = await supabase.functions.invoke('agent-chat', {
                 body: {
                     messages: [{
                         role: 'system',
-                        content: `Você é o SENIOR GROWTH PARTNER da RevHackers. Sua missão é transformar transcrições de reuniões em PROPOSTAS VENDÁVEIS DE ALTO IMPACTO (High-Ticket).
-                        
-                        Diretrizes de Tom e Estilo:
-                        - Autoridade: Use linguagem segura, direta e executiva.
-                        - Foco em ROI: Tudo deve ser justificado pelo ganho financeiro ou de eficiência.
-                        - Formatação Rica: Use Emojis estratégicos, NEGRITO para ênfase, e Listas para clareza.
-                        - CORREÇÃO INTELIGENTE: A transcrição pode conter erros de ASR (ex: "Heiro" em vez de "Hero", "Bittob" em vez de "B2B"). 
-                           Sua obrigação é analisar o contexto fonético e semântico para corrigir esses termos mentalmente ANTES de gerar a proposta. 
-                           Ignore erros gramaticais literais da transcrição e foque na INTENÇÃO do falante.
+                        content: `Você é o SENIOR GROWTH PARTNER da RevHackers. Sua missão é extrair inteligência comercial de calls para alimentar o CRM e gerar Propostas.
 
-                        Estrutura Obrigatória da Proposta (Markdown):
-                        
-                        # 🎯 Diagnóstico Executivo
-                        [Resuma a dor principal do cliente identificada na call. O que está custando dinheiro a eles hoje?]
-                        
-                        # 📊 Análise de Mercado & Benchmarks
-                        [Apresente dados de mercado e benchmarks do setor baseados no contexto da call.]
+                        DIRETRIZES PARA O "call_summary":
+                        - O RESUMO DEVE SER RICO E ESTRUTURADO em Markdown.
+                        - Crie as seguintes seções (H3 ###):
+                          ### Contexto do Cliente
+                          (Quem são, setor, tamanho, momento atual. USE OS DADOS DE PARTICIPANTES SE DISPONÍVEL)
+                          
+                          ### Desafios e Dores
+                          (Lista detalhada dos problemas mencionados)
+                          
+                          ### Decisão e Orçamento
+                          (Quem decide, budget disponível, urgência. Identifique o Decisor na lista de participantes)
+                          
+                          ### Próximos Passos
+                          (O que ficou combinado de ação concreta)
 
-                        # 👤 ICP & Personas Detalhadas
-                        [Defina o Perfil de Cliente Ideal e as Personas específicas que devem ser atacadas.]
+                        DIRETRIZES PARA O ESCOPO:
+                        - "detailed_scope": OBRIGATÓRIO: Crie um PLANO DE AÇÃO em Markdown. Divida em FASES (Fase 1: Setup, Fase 2: Implementação, etc). Liste "Entregáveis" e "KPIs de Sucesso".
+                        - "mindmap": Gere um código MERMAID válido (graph TD). Simples e visual. NÃO use caracteres especiais complexos.
 
-                        # 🗺️ Mapa de Oportunidades
-                        [Mapeie os gargalos e as vitórias rápidas (quick wins) identificadas.]
-
-                        # 🚀 O Plano de Jogo (A Solução)
-                        [Descreva a estratégia RevHackers para resolver isso. Não fale de funcionalidades, fale de TRANSFORMACAO.]
-                        
-                        # 📦 Escopo de Implementação (Sprints)
-                        [Liste os entregáveis técnicos e estratégicos em bullets. Ex: Setup de CRM, Automação de Outbound, Playbook de Vendas, etc.]
-                        
-                        # 💰 Detalhamento do Investimento
-                        [Se houver valores, crie uma tabela ou lista detalhada:]
-                        - Valor Total: [R$ X]
-                        - Condições de Pagamento: [Ex: 12x, à vista com 10% off]
-                        - Descontos Aplicados: [Ex: Isenção de Setup]
-                        - Inclusos: [Ex: Setup, Onboarding, Consultoria]
-                        [Se não houver valores claros, use: "A discutir conforme escopo final".]
-                        `
+                        REGRAS DE RESPOSTA (100% EM PORTUGUÊS):
+                        - RETORNE APENAS JSON VÁLIDO.
+                        - Se não encontrar um dado, NUNCA INVENTE. Use "Não mencionado".
+                        - PREENCHA O "crm_data" COM CUIDADO.`
                     }, {
                         role: 'user',
-                        content: `Analise esta transcrição com EXTREMA ATENÇÃO AOS NÚMEROS E VALORES.
+                        content: `Analise este material (${watchedSource === 'bid' ? 'Documento/Bid' : 'Transcrição de Reunião'}) e gere a proposta estratégica em JSON.
                         
-                        Sua tarefa extra: DETECTAR E INTERPRETAR A OFERTA FINANCEIRA COMPLETAMENTE.
-                        - Separe o que é valor de SETUP do que é RECORRÊNCIA (Monthly Retainer).
-                        - Identifique descontos mencionados (ex: "se fechar hoje", "pagamento anual").
-                        - Identifique parcelamentos (ex: "12 vezes", "trimestral").
-                        
-                        Gere:
-                        1. O Conteúdo da Proposta (campo 'summary') seguindo a estrutura markdown. No item 'Detalhamento do Investimento', seja minucioso.
-                        2. Um código Mermaid.js (campo 'mindmap').
-                        3. Extraia os valores financeiros:
-                           - setup_fee: Valor de entrada / setup.
-                           - installment_value: Valor da mensalidade ou parcela recorrente.
-                           - investment_total: Valor Total do Contrato (Soma do primeiro ano ou valor total do projeto).
-                        4. Extraia dados do cliente (Contexto):
-                           - client_name: Nome da EMPRESA (ex: Revolut, Heineken).
-                           - client_contact_name: Nome da PESSOA com quem falamos (ex: Gabin, João).
-                           - client_email: Email citado na reunião (se houver).
-                        
-                        Retorne APENAS JSON:
+                        ${contextBlock}
+
+                        Conteúdo:
+                        ${transcript.substring(0, 25000)}
+
+                        JSON Schema:
                         {
-                            "summary": "markdown string...",
-                            "mindmap": "graph TD...",
+                            "summary": "Resumo Executivo curto (focado na estratégia)...",
+                            "call_summary": "### Contexto do Cliente\nTexto...\n\n### Desafios e Dores\n- Dor 1\n- Dor 2\n...",
+                            "mindmap": "mermaid code...",
                             "investment_total": 0.00,
                             "setup_fee": 0.00,
                             "installment_value": 0.00,
-                            "client_name": "Empresa",
-                            "client_contact_name": "Pessoa",
-                            "client_email": "..."
-                        }
-                        
-                        Transcrição:
-                        ${transcript.substring(0, 25000)}`
+                            "client_name": "Nome da Empresa",
+                            "client_contact_name": "Nome do Cliente",
+                            "client_email": "email@cliente.com",
+                            "headline": "Título da Proposta...",
+                            "subheadline": "Subtítulo estratégico...",
+                            "brief_explanation": "Contexto curto...",
+                            "detailed_scope": "### FASE 1: ...\n- Entregáveis: ...\n- KPIs: ...",
+                            "payment_terms": "Condições de pagamento...",
+                            "crm_data": {
+                                "pain_points": ["Dor 1", "Dor 2"],
+                                "budget_range": "Range ou Valor",
+                                "decision_makers": "Nomes/Cargos",
+                                "urgency": "Alta/Média/Baixa",
+                                "next_steps": "Ação",
+                                "qualified_score": 0
+                            }
+                        }`
                     }],
                     model: 'gpt-4o'
                 }
@@ -238,709 +447,256 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
 
             if (error) throw error;
 
-            if (data?.response) {
-                // Robust JSON Parse with detailed logging
-                console.log("Raw AI Response:", data.response);
+            const rawResponse = data?.response || data?.choices?.[0]?.message?.content || "";
+            let cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+            const firstBrace = cleanJson.indexOf('{');
+            const lastBrace = cleanJson.lastIndexOf('}');
+            cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
 
-                let cleanJson = data.response.replace(/```json/g, '').replace(/```/g, '');
-                const firstBrace = cleanJson.indexOf('{');
-                const lastBrace = cleanJson.lastIndexOf('}');
+            const parsed = JSON.parse(cleanJson);
+            if (parsed.summary) setValue('summary', parsed.summary);
+            if (parsed.call_summary) setValue('call_detail_summary', parsed.call_summary);
+            if (parsed.detailed_scope) setValue('detailed_scope', parsed.detailed_scope);
+            if (parsed.headline) setValue('headline', parsed.headline);
+            if (parsed.subheadline) setValue('subheadline', parsed.subheadline);
 
-                if (firstBrace !== -1 && lastBrace !== -1) {
-                    cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
-                }
-
-                console.log("Attempting to parse:", cleanJson);
-
-                try {
-                    const parsed = JSON.parse(cleanJson);
-                    if (parsed.summary) setValue('summary', parsed.summary);
-                    if (parsed.mindmap) setValue('mindmap_code', parsed.mindmap);
-                    if (parsed.investment_total) setValue('investment_total', parsed.investment_total.toString());
-                    if (parsed.setup_fee) setValue('setup_fee', parsed.setup_fee.toString());
-                    if (parsed.installment_value) setValue('installment_value', String(parsed.installment_value));
-
-                    // AI Extracted Contact Data (Fallback/Correction)
-                    if (parsed.client_name) {
-                        setValue('client_name', parsed.client_name);
-                        // Auto-update title if it's empty or generic
-                        const currentTitle = watch('title');
-                        if (!currentTitle || currentTitle.includes('Proposta') || currentTitle === '') {
-                            setValue('title', `Proposta ${parsed.client_name}`);
-                        }
-                    }
-                    if (parsed.client_contact_name) setValue('client_contact_name', parsed.client_contact_name);
-                    if (parsed.client_email) setValue('client_email', parsed.client_email);
-
-                } catch (parseError: any) {
-                    console.error("JSON PARSE ERROR:", parseError);
-                    throw new Error(`Parse Error: ${parseError.message.slice(0, 50)}...`);
-                }
-
-                toast({ title: 'Conteúdo Gerado!', description: 'Resumo, Visual e Valores extraídos com sucesso.' });
+            if (parsed.mindmap) {
+                // Remove markdown wrappers if AI put them to prevent Syntax Error
+                let cleanMindmap = parsed.mindmap.replace(/```mermaid/g, '').replace(/```/g, '').trim();
+                setValue('mindmap_code', cleanMindmap);
             }
-        } catch (error) {
-            console.error(error);
-            toast({ title: 'Erro na IA', description: 'Falha ao gerar escopo.', variant: 'destructive' });
+
+            if (parsed.investment_total) setValue('investment_total', String(parsed.investment_total));
+            if (parsed.setup_fee) setValue('setup_fee', String(parsed.setup_fee));
+            if (parsed.installment_value) setValue('installment_value', String(parsed.installment_value));
+
+            if (parsed.client_name && !["Não mencionado", "N/A", "Empresa"].includes(parsed.client_name)) {
+                updateFieldsWithMetadata({
+                    clientName: parsed.client_name,
+                    clientContactName: (parsed.client_contact_name && !["Não mencionado", "N/A", "Pessoa"].includes(parsed.client_contact_name)) ? parsed.client_contact_name : "",
+                    clientEmail: (parsed.client_email && !["Não mencionado", "N/A"].includes(parsed.client_email)) ? parsed.client_email : "",
+                    ...parsed
+                }, true);
+            } else {
+                if (parsed.headline) setValue('headline', parsed.headline);
+                if (parsed.summary) setValue('summary', parsed.summary);
+                if (parsed.detailed_scope) setValue('detailed_scope', parsed.detailed_scope);
+                if (parsed.crm_data) setValue('crm_data', parsed.crm_data);
+            }
+
+            toast({ title: 'Inteligência Aplicada!' });
+        } catch (error: any) {
+            console.error("AI GEN ERROR:", error);
+            toast({ title: 'Erro na IA', description: error.message, variant: 'destructive' });
         } finally {
             setGenerating(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-5xl mx-auto pb-20">
-            {/* Header */}
-            <div className="flex items-center justify-between">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-7xl mx-auto pb-20 px-8">
+            {/* Header Ultra Minimalista */}
+            <div className="flex items-center justify-between pb-6 border-b border-zinc-100">
                 <div className="flex items-center gap-4">
-                    <Button type="button" variant="ghost" size="icon" onClick={() => navigate('/admin/proposals')}>
-                        <ArrowLeft className="w-5 h-5" />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => navigate('/admin/proposals')} className="rounded-full w-8 h-8 hover:bg-zinc-50 transition-all">
+                        <ArrowLeft className="w-4 h-4 text-zinc-400" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-zinc-900">{isEditing ? 'Editar Página' : 'Nova Página do Cliente'}</h1>
-                        <p className="text-zinc-500 text-sm">Crie uma sala de negociação ou página de entrega.</p>
+                        <h1 className="text-sm font-semibold tracking-tight text-zinc-900 leading-none">
+                            {isEditing ? 'Editar Proposta' : 'Nova Proposta'}
+                        </h1>
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Button type="submit" disabled={loading} className="bg-black text-white hover:bg-zinc-800 rounded-lg px-8 shadow-lg shadow-black/5">
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                        Salvar
-                    </Button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column: Input & AI */}
-                <div className="lg:col-span-2 space-y-8">
+            <div className="max-w-5xl mx-auto space-y-12 pb-32">
 
-                    {/* 1. Basic Settings */}
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Cliente (Empresa)</Label>
-                                <Input {...register('client_name')} placeholder="Nome da Empresa" className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Contato (Nome)</Label>
-                                <Input {...register('client_contact_name')} placeholder="Nome da Pessoa" className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Email</Label>
-                                <Input {...register('client_email')} placeholder="email@cliente.com" className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black" />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <input type="hidden" {...register('category')} />
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Status</Label>
-                                <select {...register('status')} className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 shadow-sm">
-                                    <option value="draft">Rascunho</option>
-                                    <option value="sent">Enviado</option>
-                                    <option value="approved">Aprovado</option>
-                                    <option value="rejected">Rejeitado</option>
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Valor Total (R$)</Label>
-                                <Input type="number" {...register('investment_total')} className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black font-bold" placeholder="0.00" />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Setup / Entrada (R$)</Label>
-                                <Input type="number" {...register('setup_fee')} className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black" placeholder="0.00" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Mensal / Parcela (R$)</Label>
-                                <Input type="number" {...register('installment_value')} className="bg-white border-zinc-200 h-10 shadow-sm focus:ring-black" placeholder="0.00" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Título Interno</Label>
-                            <Input {...register('title')} placeholder="Ex: Proposta de Growth - Q1 2026" className="font-medium text-lg h-12 bg-white border-zinc-200 shadow-sm focus:ring-black" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">URL Slug (Link Público)</Label>
-                            <Input {...register('slug')} placeholder="acme-kickoff-q1" className="bg-zinc-50 border-zinc-200 font-mono text-sm shadow-sm focus:ring-black" />
-                        </div>
+                {/* 1. SINGLE CARD: VIDEO + DATA SOURCE */}
+                <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-2">
+                            <div className="w-1 h-1 rounded-full bg-blue-500" />
+                            Fonte de Dados & Review
+                        </h2>
+                        {watch('recording_url') && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(watch('recording_url'), '_blank')}
+                                className="h-6 text-[10px] font-bold uppercase text-zinc-400 hover:text-zinc-900"
+                            >
+                                Abrir Externo <ExternalLink className="w-2.5 h-2.5 ml-1" />
+                            </Button>
+                        )}
                     </div>
 
-                    <div className="w-full h-px bg-zinc-100" />
-
-                    {/* 2. AI Intelligence Agent */}
-                    <div>
-                        <div className="mb-6">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-black text-white">
-                                    <Sparkles size={14} fill="currentColor" />
-                                </span>
-                                <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Intelligence Agent</span>
-                            </div>
-                            <h2 className="text-xl font-bold text-zinc-900 tracking-tight">Gerador de Estratégia</h2>
-                            <p className="text-zinc-500 max-w-lg text-sm mt-1">
-                                Importe uma reunião do tl;dv para que a IA extraia o contexto de vendas e gere uma proposta de alto valor.
-                            </p>
-                        </div>
-
-                        <div className="grid gap-6">
-                            {/* Step 1: Link & Manual Input */}
-                            <div className="group border border-zinc-200 rounded-xl p-6 hover:border-zinc-300 transition-colors bg-white relative">
-                                <div className="absolute top-6 left-6 flex flex-col items-center gap-1 h-full">
-                                    <div className="w-6 h-6 rounded-full border border-zinc-200 text-[10px] font-bold text-zinc-500 flex items-center justify-center bg-zinc-50 z-10">1</div>
-                                    <div className="w-px h-full bg-zinc-100" />
-                                </div>
-
-                                <div className="pl-12 space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-sm font-semibold text-zinc-900">Fonte de Dados</h3>
-                                            <p className="text-xs text-zinc-500">Escolha a origem do conteúdo para a IA.</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Tabs for Source */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-4 border-b border-zinc-100 pb-2">
-                                            <button type="button" className="text-xs font-semibold text-black border-b-2 border-black pb-2 -mb-2.5">Link (tl;dv / Loom)</button>
-                                            <button type="button" className="text-xs font-medium text-zinc-400 hover:text-zinc-600 pb-2 -mb-2.5 transition-colors">Transcrição Manual</button>
-                                        </div>
-
-                                        {/* Link Input Section */}
-                                        <div className="space-y-4">
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    {...register('recording_url')}
-                                                    placeholder="https://tldv.io/..."
-                                                    className="font-mono text-sm bg-zinc-50 border-zinc-200 focus:bg-white transition-all h-10 flex-1"
-                                                />
-                                                <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-                                                    <DialogTrigger asChild>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            className="h-10 bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50"
-                                                            onClick={async () => {
-                                                                setLoadingHistory(true);
-
-                                                                // Local Mock Data for Fallback/Demo
-                                                                const MOCK_MEETINGS = [
-                                                                    {
-                                                                        name: "Kickoff RevHackers - Projeto Growth (Demo)",
-                                                                        date: new Date().toISOString(),
-                                                                        duration: 3600,
-                                                                        url: "https://tldv.io/app/meetings/demo-1",
-                                                                        transcript: "Speaker A: Vamos focar em ROI.\nSpeaker B: Concordo, meta de 100k.\nSpeaker A: Setup de 5k e mensal de 10k.",
-                                                                        clientName: "Cliente Demo Corp",
-                                                                        clientEmail: "contato@clientedemo.com"
-                                                                    },
-                                                                    {
-                                                                        name: "Follow-up Mensal - Campanha Q1 (Demo)",
-                                                                        date: new Date(Date.now() - 86400000).toISOString(),
-                                                                        duration: 1800,
-                                                                        url: "https://tldv.io/app/meetings/demo-2",
-                                                                        transcript: "Speaker A: Resultados positivos no LinkedIn.\nSpeaker B: Vamos escalar para o próximo mês.",
-                                                                        clientName: "Beta Inc",
-                                                                        clientEmail: "ceo@beta.com"
-                                                                    }
-                                                                ];
-
-                                                                try {
-                                                                    // Attempt 1: Try via Backend Edge Function (Secure Proxy)
-                                                                    const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
-                                                                        body: {
-                                                                            action: 'list',
-                                                                            apiKey: '14539301-bff7-4b91-9689-3af63ae7d5cc'
-                                                                        }
-                                                                    });
-
-                                                                    if (!error && data?.success && Array.isArray(data.data)) {
-                                                                        if (data.data.length > 0) {
-                                                                            // Normalize Backend Data
-                                                                            const normalized = data.data.map((m: any) => ({
-                                                                                id: m.id,
-                                                                                name: m.name || m.title || "Sem Título",
-                                                                                date: m.date || m.createdAt || new Date().toISOString(),
-                                                                                duration: m.duration || 0,
-                                                                                url: m.url || m.recordingUrl,
-                                                                                transcript: m.transcript || "",
-                                                                                // Smart extraction: "Kickoff - Acme Corp" -> "Acme Corp"
-                                                                                clientName: m.clientName || (m.name && m.name.includes('-') ? m.name.split('-')[1].trim() : ""),
-                                                                                clientEmail: m.clientEmail || ""
-                                                                            }));
-                                                                            setMeetingHistory(normalized);
-                                                                            return;
-                                                                        }
-                                                                    }
-
-                                                                    // Trigger fallback if backend returned error or empty
-                                                                    throw new Error(data?.error || error?.message || "Backend Error");
-
-                                                                } catch (backendError: any) {
-                                                                    console.warn("Backend failed, trying direct fetch...", backendError);
-
-                                                                    try {
-                                                                        // Attempt 2: Direct Fetch (Client-side)
-                                                                        // Note: This relies on the API supporting CORS. If it fails, we go to mock.
-                                                                        const directResponse = await fetch("https://pasta.tldv.io/v1alpha1/meetings?limit=5", {
-                                                                            method: 'GET',
-                                                                            headers: {
-                                                                                'x-api-key': '14539301-bff7-4b91-9689-3af63ae7d5cc',
-                                                                                'Content-Type': 'application/json'
-                                                                            }
-                                                                        });
-
-                                                                        if (directResponse.ok) {
-                                                                            const rawData = await directResponse.json();
-                                                                            let meetings = rawData.results || rawData.data || rawData || [];
-
-                                                                            // Normalize
-                                                                            const normalized = meetings.map((m: any) => ({
-                                                                                id: m.id,
-                                                                                name: m.name || m.title || "Sem Título",
-                                                                                date: m.date || m.createdAt || new Date().toISOString(),
-                                                                                duration: m.duration || 0,
-                                                                                url: m.url || m.recordingUrl,
-                                                                                transcript: m.transcript || "",
-                                                                                clientName: (m.name && m.name.includes('-') ? m.name.split('-')[1].trim() : ""),
-                                                                                clientEmail: ""
-                                                                            }));
-
-                                                                            if (normalized.length > 0) {
-                                                                                setMeetingHistory(normalized);
-                                                                                toast({ title: 'Sucesso', description: 'Reuniões carregadas (Direct Mode).' });
-                                                                                return;
-                                                                            }
-                                                                        }
-                                                                        throw new Error("Direct Fetch Failed: " + directResponse.status);
-
-                                                                    } catch (directError: any) {
-                                                                        // Fallback to Mock
-                                                                        console.warn("All APIs failed. Using Mock.", directError);
-                                                                        setMeetingHistory(MOCK_MEETINGS);
-                                                                        toast({
-                                                                            title: 'Modo Demonstração Ativado',
-                                                                            description: `Falha na conexão real (${backendError.message || 'Network'}). Exibindo dados locais.`,
-                                                                            duration: 5000,
-                                                                            variant: 'default'
-                                                                        });
-                                                                    }
-                                                                } finally {
-                                                                    setLoadingHistory(false);
-                                                                }
-                                                            }}
-                                                        >
-                                                            <RefreshCw className="w-3.5 h-3.5 mr-2" />
-                                                            Histórico
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="max-w-2xl bg-white">
-                                                        <DialogHeader>
-                                                            <DialogTitle>Últimas Reuniões (tl;dv)</DialogTitle>
-                                                        </DialogHeader>
-                                                        <div className="space-y-4 mt-2">
-                                                            {/* API Key input removed as per user request (Backend handles auth) */}
-
-                                                            <div className="max-h-[50vh] overflow-y-auto space-y-2 p-1">
-                                                                {loadingHistory ? (
-                                                                    <div className="flex justify-center p-8"><Loader2 className="animate-spin text-zinc-300" /></div>
-                                                                ) : meetingHistory.length > 0 ? (
-                                                                    meetingHistory.map((meeting, idx) => (
-                                                                        <div
-                                                                            key={idx}
-                                                                            className="p-4 border border-zinc-100 rounded-lg hover:bg-zinc-50/80 cursor-pointer transition-all flex items-center justify-between group"
-                                                                            onClick={async () => {
-                                                                                const url = meeting.url || meeting.recordingUrl;
-
-                                                                                // 1. Reset Context (New Video = New Proposal) - Enforce Fresh Start
-                                                                                setValue('recording_url', url);
-                                                                                setValue('loom_url', url);
-
-                                                                                // Clear Generated Financials & Outputs to avoid mixing data
-                                                                                setValue('setup_fee', '');
-                                                                                setValue('installment_value', '');
-                                                                                setValue('investment_total', '');
-                                                                                setValue('summary', '');
-                                                                                setValue('mindmap_code', '');
-
-                                                                                // Clear/Overwrite Client Data
-                                                                                setValue('client_contact_name', '');
-                                                                                setValue('client_name', meeting.clientName || '');
-                                                                                setValue('client_email', meeting.clientEmail || '');
-
-                                                                                // Immediate Title Update
-                                                                                if (meeting.clientName) {
-                                                                                    setValue('title', `Proposta ${meeting.clientName}`);
-                                                                                } else {
-                                                                                    // Fallback if clientName empty: Use Meeting Title or clear
-                                                                                    setValue('title', meeting.name ? `Proposta - ${meeting.name}` : '');
-                                                                                }
-
-
-                                                                                setGenerating(true);
-                                                                                toast({ title: 'Processando...', description: 'Extraindo dados da reunião...' });
-
-                                                                                // If we already have transcript in metadata (rare but possible)
-                                                                                if (meeting.transcript) {
-                                                                                    setValue('transcript', meeting.transcript);
-                                                                                    setValue('manual_transcript', meeting.transcript);
-                                                                                    // Overwrite if specific data exists
-                                                                                    if (meeting.clientName) setValue('client_name', meeting.clientName);
-                                                                                    if (meeting.clientEmail) setValue('client_email', meeting.clientEmail);
-
-                                                                                    toast({ title: 'Dados Carregados', description: 'Transcrição pronta.' });
-                                                                                    setHistoryOpen(false);
-                                                                                    setGenerating(false);
-                                                                                    return;
-                                                                                }
-
-                                                                                try {
-                                                                                    // 1. Try Backend Proxy with Key Injection
-                                                                                    const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
-                                                                                        body: {
-                                                                                            meetingUrl: url,
-                                                                                            apiKey: '14539301-bff7-4b91-9689-3af63ae7d5cc',
-                                                                                            meetingId: meeting.id // Pass ID just in case backend uses it
-                                                                                        }
-                                                                                    });
-
-                                                                                    if (!error && data?.success && data.data.transcript) {
-                                                                                        setValue('transcript', data.data.transcript);
-                                                                                        setValue('manual_transcript', data.data.transcript);
-                                                                                        // FORCE Update Client Data if API serves it
-                                                                                        if (data.data.clientName) {
-                                                                                            setValue('client_name', data.data.clientName);
-                                                                                            setValue('title', `Proposta ${data.data.clientName}`);
-                                                                                        }
-                                                                                        if (data.data.clientEmail) setValue('client_email', data.data.clientEmail);
-
-                                                                                        toast({ title: 'Transcrição Extraída!' });
-                                                                                        setHistoryOpen(false);
-                                                                                        return;
-                                                                                    }
-
-                                                                                    throw new Error("Backend invoke failed");
-
-                                                                                } catch (invokeError) {
-                                                                                    console.warn("Backend transcript fetch failed, trying direct...", invokeError);
-
-                                                                                    // 2. Direct Fetch Fallback
-                                                                                    if (meeting.id) {
-                                                                                        try {
-                                                                                            const tRes = await fetch(`https://pasta.tldv.io/v1alpha1/meetings/${meeting.id}/transcript`, {
-                                                                                                headers: { 'x-api-key': '14539301-bff7-4b91-9689-3af63ae7d5cc' }
-                                                                                            });
-
-                                                                                            if (tRes.ok) {
-                                                                                                const tData = await tRes.json();
-                                                                                                // Normalize Transcript (Handle top-level array OR object with .data)
-                                                                                                const transcriptArray = Array.isArray(tData) ? tData : (Array.isArray(tData.data) ? tData.data : []);
-
-                                                                                                const transcriptText = transcriptArray.length > 0
-                                                                                                    ? transcriptArray.map((t: any) => `${t.speaker || 'Speaker'}: ${t.text}`).join('\n')
-                                                                                                    : (typeof tData === 'string' ? tData : JSON.stringify(tData, null, 2));
-
-                                                                                                setValue('transcript', transcriptText);
-                                                                                                setValue('manual_transcript', transcriptText);
-                                                                                                toast({ title: 'Transcrição Recuperada (Direct)' });
-                                                                                                setHistoryOpen(false);
-                                                                                                return;
-                                                                                            }
-                                                                                        } catch (directErr) {
-                                                                                            console.error("Direct transcript fetch failed", directErr);
-                                                                                        }
-                                                                                    }
-
-                                                                                    toast({
-                                                                                        title: 'Aviso: Transcrição Pendente',
-                                                                                        description: 'Link carregado, mas não foi possível baixar a transcrição automaticamente. Por favor, cole manualmente se necessário.',
-                                                                                    });
-                                                                                } finally {
-                                                                                    setGenerating(false);
-                                                                                }
-                                                                            }}
-                                                                        >
-                                                                            <div>
-                                                                                <div className="font-semibold text-sm text-zinc-900">{meeting.name || 'Sem Título'}</div>
-                                                                                <div className="text-xs text-zinc-400 mt-1 flex items-center gap-2">
-                                                                                    <span>{meeting.date ? new Date(meeting.date).toLocaleDateString() : 'Data desconhecida'}</span>
-                                                                                    <span>•</span>
-                                                                                    <span>{meeting.duration ? `${Math.round(meeting.duration / 60)} min` : '-- min'}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 text-xs">
-                                                                                Selecionar <ArrowLeft className="w-3 h-3 rotate-180 ml-2" />
-                                                                            </Button>
-                                                                        </div>
-                                                                    ))
-                                                                ) : (
-                                                                    <div className="text-center p-8 text-zinc-400 text-sm">Nenhuma reunião encontrada.</div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </DialogContent>
-                                                </Dialog>
-
-                                                <Button
-                                                    type="button"
-                                                    onClick={async () => {
-                                                        const url = watch('recording_url');
-                                                        if (!url) return toast({ title: 'Insira um link', variant: 'destructive' });
-                                                        setGenerating(true);
-                                                        try {
-                                                            const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url, apiKey: '14539301-bff7-4b91-9689-3af63ae7d5cc' } });
-                                                            if (data?.success) {
-                                                                setValue('transcript', data.data.transcript);
-                                                                setValue('manual_transcript', data.data.transcript);
-                                                                if (!watch('client_name')) setValue('client_name', data.data.clientName);
-                                                                if (data.data.clientName) setValue('title', `Proposta ${data.data.clientName}`);
-                                                                toast({ title: 'Sucesso', description: 'Transcrição carregada.' });
-                                                            }
-                                                        } catch (e) { toast({ title: 'Erro', variant: 'destructive' }); }
-                                                        finally { setGenerating(false); }
-                                                    }}
-                                                    disabled={generating || !watch('recording_url')}
-                                                    className="h-10 bg-zinc-900 text-white hover:bg-black px-4 shadow-sm"
-                                                    title="Extrair Manualmente"
-                                                >
-                                                    {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4 rotate-180" />}
-                                                </Button>
-                                            </div>
-
-                                            {/* Video Preview - Above Transcript */}
-                                            {(() => {
-                                                const rawUrl = watch('recording_url');
-                                                // Extract URL if user pasted full <iframe> code
-                                                let embedSrc = rawUrl?.match(/src="([^"]+)"/)?.[1] || rawUrl;
-
-                                                // Convert Loom Share to Embed
-                                                if (embedSrc?.includes('loom.com/share')) {
-                                                    embedSrc = embedSrc.replace('loom.com/share', 'loom.com/embed');
-                                                }
-
-                                                const isTldv = embedSrc?.includes('tldv.io');
-
-                                                return embedSrc ? (
-                                                    <div className="mb-4 rounded-lg border border-zinc-200 bg-black aspect-video relative group overflow-hidden">
-                                                        <iframe
-                                                            src={embedSrc}
-                                                            className="w-full"
-                                                            style={{
-                                                                height: isTldv ? 'calc(100% + 220px)' : '100%',
-                                                                marginTop: isTldv ? '-200px' : '0',
-                                                                borderRadius: '8px'
-                                                            }}
-                                                            allowFullScreen
-                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
-                                                            frameBorder="0"
-                                                            scrolling="no"
-                                                        />
-                                                        <div className="absolute top-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                                            Preview
-                                                        </div>
-                                                        <a
-                                                            href={embedSrc}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="absolute bottom-2 right-2 bg-white/90 text-zinc-900 text-[10px] font-medium px-2 py-1 rounded shadow-sm hover:bg-white z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            Abrir Nova Aba ↗
-                                                        </a>
-                                                    </div>
-                                                ) : null;
-                                            })()}
-
-                                            {/* Manual Transcript Area */}
-                                            <div className="space-y-2 pt-2">
-                                                <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Transcrição (Edite se necessário)</Label>
-                                                <Textarea
-                                                    {...register('manual_transcript')}
-                                                    placeholder="Cole a transcrição aqui manualmente ou aguarde a importação..."
-                                                    className="min-h-[150px] text-xs font-mono bg-zinc-50 border-zinc-200 resize-y"
-                                                    onChange={(e) => {
-                                                        setValue('manual_transcript', e.target.value);
-                                                        setValue('transcript', e.target.value);
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {/* Additional Assets Inputs */}
-                                            {/* Additional Assets Inputs */}
-                                            <div className="pt-4 border-t border-zinc-100">
-                                                <div className="space-y-2">
-                                                    <Label className="text-xs uppercase tracking-wide text-zinc-500 font-semibold">Whimsical / Miro / Figjam (Manual Embed)</Label>
-                                                    <Input
-                                                        {...register('mindmap_url')}
-                                                        placeholder="Cole a URL ou código de embed do board..."
-                                                        className="h-9 text-xs"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Step 2: Generate */}
-                            <div className="group border border-zinc-200 rounded-xl p-6 bg-zinc-50/50 hover:bg-zinc-50 transition-colors relative">
-                                <div className="absolute top-6 left-6 flex flex-col items-center gap-1 h-full">
-                                    <div className="w-6 h-6 rounded-full border border-zinc-300 text-[10px] font-bold text-zinc-600 flex items-center justify-center bg-white shadow-sm z-10">2</div>
-                                </div>
-
-                                <div className="pl-12">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div>
-                                            <h3 className="text-sm font-semibold text-zinc-900">Gerar Estratégia</h3>
-                                            <p className="text-xs text-zinc-500">A IA criará o resumo executivo, precificação e mapa mental.</p>
-                                        </div>
-                                        <Collapsible>
-                                            <CollapsibleTrigger asChild>
-                                                <button className="flex items-center gap-1.5 text-[10px] font-medium text-zinc-400 hover:text-zinc-600 uppercase tracking-wider bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm">
-                                                    <Eye size={10} />
-                                                    Debug
-                                                </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent>
-                                                <div className="absolute top-full left-0 right-0 z-20 mt-2 p-4 bg-white border border-zinc-200 rounded-lg shadow-xl w-full">
-                                                    <Textarea
-                                                        {...register('transcript')}
-                                                        className="min-h-[200px] font-mono text-[10px] text-zinc-500 bg-zinc-50 resize-none focus:ring-0"
-                                                        readOnly
-                                                        placeholder="Transcrições aparecerão aqui..."
-                                                    />
-                                                </div>
-                                            </CollapsibleContent>
-                                        </Collapsible>
-                                    </div>
-
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* URL INPUT & CLIENT DATA */}
+                        <div className="space-y-6">
+                            <div className="space-y-4 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
+                                <Label className="text-[10px] font-bold uppercase text-zinc-400">URL da Reunião (tl;dv)</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        {...register('recording_url')}
+                                        placeholder="Cole o link do tl;dv..."
+                                        className="bg-white border-zinc-200"
+                                    />
                                     <Button
                                         type="button"
-                                        onClick={handleGenerateScope}
-                                        disabled={generating || !watch('transcript')}
-                                        className="w-full h-12 bg-zinc-900 hover:bg-black text-white font-medium text-sm shadow-md disabled:opacity-50 disabled:shadow-none transition-all rounded-lg active:scale-[0.99]"
+                                        onClick={async () => {
+                                            const url = watch('recording_url');
+                                            if (!url) return;
+                                            toast({ title: 'Sincronizando...', description: 'Conectando ao tl;dv...' });
+                                            const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
+                                            if (data?.success) {
+                                                updateFieldsWithMetadata(data.data, true);
+                                                const foundEmail = data.data.clientEmail || "Não encontrado";
+                                                const foundClient = data.data.clientName || "Não identificado";
+                                                toast({
+                                                    title: 'Sincronização Concluída',
+                                                    description: `Cliente: ${foundClient} | Email: ${foundEmail}`,
+                                                    variant: 'default'
+                                                });
+                                            } else {
+                                                toast({ title: 'Erro', description: 'Dados não encontrados.', variant: 'destructive' });
+                                            }
+                                        }}
+                                        className="bg-zinc-900 text-white font-bold text-xs hover:bg-black px-4 rounded-lg"
                                     >
-                                        <span className="font-semibold">Gerar Proposta Completa (AI)</span>
+                                        Sync
                                     </Button>
-
-                                    {/* Submit / Save Button */}
-                                    <div className="pt-4 mt-4 border-t border-zinc-200">
-                                        <Button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold text-sm shadow-md transition-all rounded-lg"
-                                        >
-                                            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                                            SALVAR E VISUALIZAR PROPOSTA
-                                        </Button>
-                                    </div>
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Cliente</Label>
+                                    <Input {...register('client_name')} className="bg-white h-9 text-xs font-bold" placeholder="Empresa" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Email</Label>
+                                    <Input {...register('client_email')} className="bg-white h-9 text-xs" placeholder="email@client..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* VIDEO PREVIEW (Right Side of Grid) */}
+                        {watch('recording_url') ? (
+                            <div className="rounded-xl overflow-hidden relative shadow-lg shadow-zinc-900/5 border border-zinc-100 bg-black aspect-video group">
+                                <div className="w-full h-full relative overflow-hidden">
+                                    {/* 
+                                        UPDATED CROP STRATEGY: 
+                                        Video is on the RIGHT side of the page.
+                                        We need to Shift LEFT to bring right side into view.
+                                        - Scale Width: 180% (Make it wider so we can slide it)
+                                        - Left: -80% (Slide left side/notes out of view)
+                                        - Check Height as well.
+                                     */}
+                                    <iframe
+                                        src={watch('recording_url')}
+                                        className="absolute top-0 left-[-80%] w-[180%] h-[130%] -mt-[6%] border-none"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title="Preview da Call"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300 text-xs font-medium uppercase tracking-widest aspect-video">
+                                Preview do Vídeo
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {/* 3. GENERATE ACTION */}
+                <div className="flex justify-center py-4">
+                    <Button
+                        type="button"
+                        onClick={() => handleGenerateScope()}
+                        disabled={generating || !watch('recording_url')}
+                        className="h-12 px-8 bg-zinc-900 hover:bg-black text-white rounded-full font-bold uppercase tracking-widest text-xs shadow-xl shadow-zinc-900/20 active:scale-95 transition-all"
+                    >
+                        {generating ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando Proposta IA...</>
+                        ) : (
+                            <><Sparkles className="w-4 h-4 mr-2" /> Gerar Proposta Estratégica</>
+                        )}
+                    </Button>
+                </div>
+
+                {/* 4. PROPOSAL DOCUMENT FIELDS */}
+                <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
+                    <div className="p-8 border-b border-zinc-100 bg-zinc-50/30">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white font-bold">P</div>
+                            <div>
+                                <h3 className="text-zinc-900 font-bold text-lg leading-none">Documento da Proposta</h3>
+                                <p className="text-zinc-400 text-xs mt-1 font-medium">Edite o conteúdo antes de enviar</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título / Headline</Label>
+                                <Input {...register('headline')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Título de Impacto" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Resumo Executivo</Label>
+                                <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Resumo..." />
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Generated Content */}
-                    <div className="space-y-6">
-                        <Card className="border-zinc-100 shadow-sm h-full bg-zinc-50/50 sticky top-6">
-                            <CardContent className="p-6 space-y-6 h-full flex flex-col">
-                                <h3 className="font-bold text-zinc-900 border-b border-zinc-200 pb-4 mb-2 text-sm uppercase tracking-wide">Assets Gerados</h3>
+                    <div className="p-8 space-y-8">
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Plano de Ação (Fases & Entregáveis)</Label>
+                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Markdown Suportado</Badge>
+                            </div>
+                            <Textarea
+                                {...register('detailed_scope')}
+                                className="min-h-[400px] font-mono text-sm leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-6"
+                                placeholder="Fase 1: ..."
+                            />
+                        </div>
 
-                                {/* Video Preview Removed (Moved to Left Col) */}
+                        <div className="space-y-3">
+                            <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Mermaid)</Label>
+                            <Textarea {...register('mindmap_code')} className="min-h-[100px] font-mono text-xs bg-zinc-50 border-zinc-100" />
+                        </div>
 
-                                <div className="space-y-3 flex-1 pb-4 border-b border-zinc-100">
-                                    {/* Leaving this empty space or removing if no other top element */}
-                                    <Label className="text-xs text-zinc-500 uppercase font-semibold">Logo (Upload)</Label>
-                                    <div className="flex flex-col gap-3">
-                                        <div className="flex items-center gap-2">
-                                            <label className="cursor-pointer inline-flex items-center justify-center gap-2 bg-white border border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 text-zinc-700 text-xs font-medium py-2 px-4 rounded-md shadow-sm transition-colors w-full">
-                                                {uploadingLogo ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                                                {uploadingLogo ? 'Enviando...' : 'Selecionar Imagem'}
-                                                <input
-                                                    type="file"
-                                                    className="hidden"
-                                                    accept="image/*"
-                                                    onChange={handleLogoUpload}
-                                                    disabled={uploadingLogo}
-                                                />
-                                            </label>
-                                        </div>
-
-                                        {watch('client_logo') && (
-                                            <div className="bg-white border border-zinc-200 rounded-lg p-3 relative group">
-                                                <img
-                                                    src={watch('client_logo')}
-                                                    alt="Logo Preview"
-                                                    className="h-12 w-auto object-contain mx-auto"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setValue('client_logo', '')}
-                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                    <div className="w-3 h-3 flex items-center justify-center font-bold text-[10px]">✕</div>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3 flex-1">
-                                    <Label className="text-xs text-zinc-500 uppercase font-semibold">Resumo Executivo</Label>
-                                    <Textarea
-                                        {...register('summary')}
-                                        placeholder="Conteúdo gerado pela IA..."
-                                        className="min-h-[150px] bg-white border-zinc-200 text-xs leading-relaxed"
-                                    />
-                                </div>
-
-                                {/* Mermaid Code - Only show if content exists */}
-                                {watch('mindmap_code') && (
-                                    <div className="space-y-3 pt-4 border-t border-zinc-100">
-                                        <div className="flex items-center justify-between">
-                                            <Label className="text-xs text-zinc-500 uppercase font-semibold">Mermaid.js Code</Label>
-                                            <a href="https://mermaid.live" target="_blank" rel="noreferrer" className="text-[10px] text-blue-600 hover:underline">Testar ↗</a>
-                                        </div>
-                                        <Textarea
-                                            {...register('mindmap_code')}
-                                            className="min-h-[300px] font-mono text-[11px] bg-white resize-none shadow-sm h-full rounded-md border-zinc-200 focus:ring-black"
-                                            placeholder="# Proposta..."
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Mermaid Code Input (Visible for editing) */}
-                                <div className="space-y-3 pt-4 border-t border-zinc-100">
-                                    <Label className="text-xs text-zinc-500 uppercase font-semibold">Código Mermaid (Visual)</Label>
-                                    <Textarea
-                                        {...register('mindmap_code')}
-                                        className="min-h-[100px] font-mono text-[10px] bg-zinc-50 resize-none shadow-sm rounded-md border-zinc-200"
-                                        placeholder="graph TD..."
-                                    />
-                                </div>
-
-                                {watch('mindmap_url') && (
-                                    <div className="space-y-3 pt-4 border-t border-zinc-100">
-                                        <Label className="text-xs text-zinc-500 uppercase font-semibold">Visual Embed (Miro / Figjam)</Label>
-                                        <div className="w-full aspect-video bg-zinc-100 rounded-lg border border-zinc-200 overflow-hidden relative">
-                                            <iframe
-                                                src={watch('mindmap_url')?.replace('miro.com/app/board', 'miro.com/app/live-embed')}
-                                                className="w-full h-full"
-                                                frameBorder="0"
-                                                allowFullScreen
-                                            />
-                                            <div className="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] px-2 py-1 rounded pointer-events-none">
-                                                Preview
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                        {/* FINANCIALS & CLOSING */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 border-t border-zinc-100/50">
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Investimento Total</Label>
+                                <Input {...register('investment_total')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                            </div>
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Setup Fee</Label>
+                                <Input {...register('setup_fee')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                            </div>
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Mensal</Label>
+                                <Input {...register('installment_value')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                            </div>
+                            <div className="p-4 rounded-xl bg-blue-50/50 border border-blue-100/50 space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-blue-400">Agenda (Embed Cal.com)</Label>
+                                <Input {...register('booking_url')} className="font-medium text-blue-900 bg-transparent border-none text-xs h-auto p-0 placeholder:text-blue-300" placeholder="https://cal.com/..." />
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div className="flex justify-end pt-8">
+                    <Button type="submit" disabled={loading} className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-green-900/10">
+                        <Save className="w-4 h-4 mr-2" />
+                        Salvar Proposta
+                    </Button>
+                </div>
             </div>
-        </form>
+        </form >
     );
 };
 

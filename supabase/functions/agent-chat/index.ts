@@ -91,8 +91,8 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
             body: JSON.stringify({
                 model: mdl,
                 messages: apiMessages,
-                max_completion_tokens: isO1 ? 4096 : undefined,
-                max_tokens: !isO1 ? 4096 : undefined,
+                max_completion_tokens: isO1 ? 16384 : undefined,
+                max_tokens: !isO1 ? 16384 : undefined,
                 temperature: isO1 ? 1 : 0.4
             })
         });
@@ -120,7 +120,7 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
                     model: targetModel,
                     system: sys,
                     messages: claudeMessages,
-                    max_tokens: 4096
+                    max_tokens: 16384
                 })
             });
             const d = await res.json();
@@ -182,7 +182,7 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
             contents,
             system_instruction: { parts: [{ text: sys }] },
             generationConfig: {
-                maxOutputTokens: 4096,
+                maxOutputTokens: 16384,
                 temperature: 0.4
             }
         };

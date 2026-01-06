@@ -49,6 +49,20 @@ export default function PublicDealRoom() {
         }
     }, [proposal]);
 
+    // Inject GHL/RevHackers Script when booking URL is present (to handle resize etc)
+    useEffect(() => {
+        if (proposal?.booking_url && proposal.booking_url.includes('revhackers.com.br')) {
+            const script = document.createElement('script');
+            script.src = "https://pages.revhackers.com.br/js/form_embed.js";
+            script.async = true;
+            script.type = "text/javascript";
+            document.body.appendChild(script);
+            return () => {
+                document.body.removeChild(script);
+            }
+        }
+    }, [proposal]);
+
     if (loading) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-zinc-50">
@@ -99,77 +113,136 @@ export default function PublicDealRoom() {
             {/* Main Content */}
             <main className="pt-28 pb-20 px-6 max-w-7xl mx-auto space-y-12">
 
-                {/* Intro Section */}
-                <section className="text-center space-y-4 max-w-3xl mx-auto">
-                    <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 leading-[1.1]">
-                        {proposal.title}
+                {/* Hero Section: Headline & Subheadline */}
+                <section className="text-center space-y-6 max-w-4xl mx-auto">
+                    <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-[1.05]">
+                        {proposal.headline || proposal.title}
                     </h1>
-                    <p className="text-lg text-zinc-500">
+                    {proposal.subheadline && (
+                        <p className="text-xl lg:text-2xl text-zinc-500 font-medium leading-relaxed">
+                            {proposal.subheadline}
+                        </p>
+                    )}
+                    <p className="text-lg text-zinc-400">
                         Preparado exclusivamente para <strong className="text-zinc-900">{proposal.client_name}</strong>
                     </p>
                 </section>
 
-                {/* Video & AI Summary Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-
-                    {/* Left: Video */}
-                    <div className="space-y-6">
-                        <div className="aspect-video w-full bg-black rounded-2xl shadow-2xl overflow-hidden border border-zinc-800 relative group">
-                            {/* Simplified Embed Logic */}
-                            {proposal.recording_url ? (
-                                <iframe
-                                    src={proposal.recording_url.replace('loom.com/share', 'loom.com/embed').replace('tldv.io', 'tldv.io/embed')} // Very basic replacement, needs robust logic
-                                    className="w-full h-full"
-                                    frameBorder="0"
-                                    allowFullScreen
-                                ></iframe>
-                            ) : (
-                                <div className="flex items-center justify-center h-full text-zinc-500 bg-zinc-900">
-                                    <p>Sem vídeo disponível</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Investment Card (Mobile/Desktop compact) */}
-                        {proposal.investment_total && (
-                            <div className="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Investimento Total</p>
-                                    <p className="text-3xl font-bold text-zinc-900 mt-1">{proposal.investment_total}</p>
-                                </div>
-                                <div className="h-10 w-10 bg-green-50 rounded-full flex items-center justify-center text-green-600">
-                                    <DollarSign className="w-5 h-5" />
-                                </div>
+                {/* Video Section */}
+                <section className="space-y-8">
+                    <div className="aspect-video w-full bg-black rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 relative group">
+                        {proposal.recording_url ? (
+                            <iframe
+                                src={proposal.recording_url}
+                                className="absolute top-0 left-[-80%] w-[180%] h-[130%] -mt-[6%] border-none"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-zinc-500 bg-zinc-900">
+                                <p>Sem vídeo disponível</p>
                             </div>
                         )}
                     </div>
 
-                    {/* Right: AI Executive Summary */}
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-zinc-100 space-y-6">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="h-2 w-2 rounded-full bg-[#03FC3B] animate-pulse"></div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Executive Summary (AI)</span>
+                    {proposal.brief_explanation && (
+                        <div className="max-w-3xl mx-auto text-center">
+                            <p className="text-lg text-zinc-600 leading-relaxed italic">
+                                "{proposal.brief_explanation}"
+                            </p>
                         </div>
-                        <div className="prose prose-zinc prose-sm max-w-none text-zinc-600 leading-relaxed whitespace-pre-line">
-                            {proposal.summary || "Generating strategies..."}
+                    )}
+                </section>
+
+                {/* Mindmap / Strategy Visual */}
+                {(proposal.mindmap_code || proposal.mindmap_embed) && (
+                    <section className="space-y-8 pt-8 border-t border-zinc-100">
+                        <div className="text-center">
+                            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Visual Strategy Map</h2>
+                        </div>
+
+                        {proposal.mindmap_embed ? (
+                            <div className="w-full aspect-[16/10] bg-white rounded-2xl shadow-sm border border-zinc-100 overflow-hidden"
+                                dangerouslySetInnerHTML={{ __html: proposal.mindmap_embed }}
+                            />
+                        ) : (
+                            <div className="p-1 bg-gradient-to-tr from-zinc-50 via-white to-zinc-50 rounded-2xl border border-zinc-200">
+                                <div className="bg-white rounded-xl p-8 overflow-hidden min-h-[400px] flex justify-center items-center">
+                                    <div className="mermaid scale-110">
+                                        {proposal.mindmap_code}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                )}
+
+                {/* Detailed Scope Section */}
+                {proposal.detailed_scope && (
+                    <section className="space-y-8 pt-16 border-t border-zinc-100">
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-2xl font-bold text-zinc-900">Projeto & Escopo Detalhado</h2>
+                            <div className="h-[1px] flex-1 bg-zinc-100" />
+                        </div>
+
+                        <div className="bg-white p-8 lg:p-12 rounded-3xl shadow-sm border border-zinc-100 prose prose-zinc max-w-none">
+                            <div className="whitespace-pre-line text-zinc-600 leading-relaxed">
+                                {proposal.detailed_scope}
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* Investment & Payments */}
+                <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-16 border-t border-zinc-100">
+                    <div className="lg:col-span-2 space-y-6">
+                        <h2 className="text-2xl font-bold text-zinc-900">Prazos & Condições</h2>
+                        <div className="bg-zinc-900 text-zinc-100 p-8 rounded-3xl space-y-4">
+                            <div className="prose prose-invert max-w-none text-zinc-400 text-sm whitespace-pre-line">
+                                {proposal.payment_terms || "Condições padrão da RevHackers: Net 15 para setup, parcelas mensais antecipadas."}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Mindmap Strategy Section */}
-                {proposal.mindmap_code && (
-                    <section className="space-y-6">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Visual Strategy Map</span>
-                        </div>
-                        <div className="p-1 bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-100 rounded-2xl">
-                            <div className="bg-white rounded-xl p-8 overflow-hidden min-h-[400px]">
-                                <div className="mermaid flex justify-center">
-                                    {proposal.mindmap_code}
-                                </div>
-                                {/* Fallback explanation if mermaid fails to render immediately */}
-                                <p className="text-center text-xs text-zinc-300 mt-4 font-mono">Rendered by Mermaid.js</p>
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-zinc-900">Investimento</h2>
+                        <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-xl shadow-green-500/5 flex flex-col justify-center h-full min-h-[200px]">
+                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">Total Estimado</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-lg font-bold">R$</span>
+                                <span className="text-5xl font-black tracking-tighter">
+                                    {proposal.investment_total || "0,00"}
+                                </span>
                             </div>
+                            <Button
+                                onClick={() => {
+                                    const el = document.getElementById('closing');
+                                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className="w-full mt-8 bg-[#03FC3B] hover:bg-[#02d632] text-black font-bold h-12 rounded-xl text-md"
+                            >
+                                Agendar Call de Aceite da Proposta
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Booking / Closing Section */}
+                {proposal.booking_url && (
+                    <section className="pt-24 pb-12" id="closing">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">Próximos Passos</h2>
+                            <p className="text-zinc-500 mt-2">Agende a call de assinatura para formalizarmos a parceria.</p>
+                        </div>
+                        <div className="max-w-4xl mx-auto w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-zinc-100">
+                            {/* Adjusted Iframe for GHL Widget */}
+                            <iframe
+                                src={proposal.booking_url}
+                                style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
+                                scrolling="no"
+                                id="booking_iframe"
+                                title="Agendamento"
+                            />
                         </div>
                     </section>
                 )}
