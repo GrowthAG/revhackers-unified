@@ -91,26 +91,61 @@ const OrchestratedOnboarding = () => {
         if (id) loadData();
     }, [id]);
 
+    // Auto-navigate to correct step based on project state
+    useEffect(() => {
+        if (!project || loading) return;
+
+        // Determine correct step based on progress
+        if (project.status === 'active') {
+            setCurrentStep(3);
+        } else if (project.scheduling_completed) {
+            setCurrentStep(2);
+        } else if (latestResponse && latestResponse.total_score > 0) {
+            setCurrentStep(1);
+        } else {
+            setCurrentStep(0);
+        }
+    }, [project, latestResponse, loading]);
+
     const loadData = async () => {
         try {
             setLoading(true);
-            if (!id || id === 'undefined') {
-                throw new Error("ID do projeto inválido");
+
+            // Validate ID before proceeding
+            if (!id || id === 'undefined' || id === 'null' || id.length < 10) {
+                console.error("Invalid project ID:", id);
+                toast({ title: 'ID do projeto inválido', description: 'Redirecionando para lista de projetos...', variant: 'destructive' });
+                setTimeout(() => navigate('/admin/rei'), 1500);
+                return;
             }
-            const proj = await getReiProjectById(id!);
-            if (proj) {
-                setProject(proj);
-                // Fetch all history
+
+            const proj = await getReiProjectById(id);
+
+            if (!proj) {
+                toast({ title: 'Projeto não encontrado', description: 'Verifique se o projeto existe.', variant: 'destructive' });
+                setTimeout(() => navigate('/admin/rei'), 1500);
+                return;
+            }
+
+            setProject(proj);
+
+            // Fetch all history
+            try {
                 const allResponses = await getReiResponsesByProject(proj.id);
                 setHistory(allResponses);
                 setLatestResponse(allResponses.length > 0 ? allResponses[0] : null);
-            } else {
-                toast({ title: 'Projeto não encontrado', variant: 'destructive' });
-                navigate('/admin/rei');
+            } catch (historyError) {
+                console.warn("Could not load response history:", historyError);
+                // Non-critical error, continue without history
             }
-        } catch (error) {
+
+        } catch (error: any) {
             console.error("Error loading onboarding data:", error);
-            toast({ title: 'Erro ao carregar dados', description: 'Não foi possível carregar o projeto.', variant: 'destructive' });
+            toast({
+                title: 'Erro ao carregar dados',
+                description: error?.message || 'Não foi possível carregar o projeto. Tente novamente.',
+                variant: 'destructive'
+            });
         } finally {
             setLoading(false);
         }
@@ -198,24 +233,35 @@ const OrchestratedOnboarding = () => {
                         </div>
 
                         {latestResponse && (
-                            <div className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-zinc-100 text-zinc-400">
-                                        <FileText size={14} />
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 mb-2 cursor-pointer hover:bg-zinc-100 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-zinc-100 text-zinc-400">
+                                                <FileText size={14} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-black">Resultado do Diagnóstico</p>
+                                                <p className="text-[9px] text-zinc-500">Última atualização: {new Date(latestResponse.completed_at || '').toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-black">
+                                            Ver Painel Completo →
+                                        </span>
                                     </div>
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-black">Resultado do Diagnóstico</p>
-                                        <p className="text-[9px] text-zinc-500">Última atualização: {new Date(latestResponse.completed_at || '').toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                                <Button
-                                    onClick={() => navigate(`/admin/diagnostico/${id}`)}
-                                    variant="ghost"
-                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-black"
-                                >
-                                    Ver Painel Completo →
-                                </Button>
-                            </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-5xl h-[90vh] overflow-y-auto p-0 border-0 bg-transparent">
+                                    <ReiDashboard
+                                        type={(((latestResponse as any).responses?.diagnostic_type || (latestResponse as any).diagnostic_type) || 'CONSULTING').toUpperCase() as any}
+                                        score={latestResponse.total_score}
+                                        radarData={Array.isArray((latestResponse as any).responses?.radar_data) ? (latestResponse as any).responses.radar_data : []}
+                                        insights={Array.isArray((latestResponse as any).responses?.insights) ? (latestResponse as any).responses.insights : []}
+                                        onAction={() => { }}
+                                        clientName={project?.client_name}
+                                        answers={((latestResponse as any).responses?.form_data || {}) as Record<string, any>}
+                                    />
+                                </DialogContent>
+                            </Dialog>
                         )}
 
                         {/* Diagnostic Status Card */}
@@ -286,12 +332,13 @@ const OrchestratedOnboarding = () => {
                                                     </DialogTrigger>
                                                     <DialogContent className="max-w-5xl h-[90vh] overflow-y-auto p-0 border-0 bg-transparent">
                                                         <ReiDashboard
-                                                            type={((resp as any).diagnostic_type || 'CONSULTING').toUpperCase() as any}
+                                                            type={(((resp as any).responses?.diagnostic_type || (resp as any).diagnostic_type) || 'CONSULTING').toUpperCase() as any}
                                                             score={resp.total_score}
-                                                            radarData={Array.isArray((resp as any).radar_data) ? ((resp as any).radar_data as any) : []}
-                                                            insights={Array.isArray((resp as any).insights) ? ((resp as any).insights as string[]) : []}
+                                                            radarData={Array.isArray((resp as any).responses?.radar_data) ? (resp as any).responses.radar_data : []}
+                                                            insights={Array.isArray((resp as any).responses?.insights) ? (resp as any).responses.insights : []}
                                                             onAction={() => { }}
                                                             clientName={project?.client_name}
+                                                            answers={((resp as any).responses?.form_data || {}) as Record<string, any>}
                                                         />
                                                     </DialogContent>
                                                 </Dialog>
@@ -301,7 +348,7 @@ const OrchestratedOnboarding = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </div >
                 );
             }
 
@@ -432,9 +479,18 @@ const OrchestratedOnboarding = () => {
 
     if (!project) {
         return (
-            <div className="flex items-center justify-center h-screen bg-white flex-col gap-4">
-                <p className="text-zinc-400">Projeto não encontrado.</p>
-                <Button onClick={() => navigate('/admin/rei')} variant="outline">Voltar</Button>
+            <div className="flex items-center justify-center h-screen bg-white flex-col gap-6">
+                <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-zinc-300" />
+                </div>
+                <div className="text-center">
+                    <h2 className="text-lg font-bold text-zinc-900 mb-2">Projeto não encontrado</h2>
+                    <p className="text-sm text-zinc-500 mb-4">O projeto solicitado não existe ou foi removido.</p>
+                </div>
+                <Button onClick={() => navigate('/admin/rei')} className="bg-black text-white hover:bg-zinc-800">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Voltar para Projetos
+                </Button>
             </div>
         )
     }
@@ -443,15 +499,51 @@ const OrchestratedOnboarding = () => {
         <ErrorBoundary>
             <AdminPageLayout
                 title={project?.client_name || 'Projeto'}
-                description="Jornada de Onboarding"
+                description={`Jornada ${project?.quarter || 'Q1'} ${project?.year || ''} — Onboarding Estratégico`}
                 backTo="/admin/rei"
             >
+                {/* Progress Bar - Visual indicator of journey progress */}
+                <div className="mb-8 bg-zinc-50 p-4 rounded-lg border border-zinc-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                            Progresso da Jornada {project?.quarter}
+                        </span>
+                        <span className="text-[10px] font-bold text-zinc-500">
+                            Etapa {currentStep + 1} de {steps.length}
+                        </span>
+                    </div>
+                    <div className="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-black transition-all duration-500 ease-out"
+                            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                        />
+                    </div>
+                    <div className="flex justify-between mt-2">
+                        {steps.map((step, i) => (
+                            <span
+                                key={i}
+                                className={`text-[8px] uppercase tracking-wider ${i <= currentStep ? 'text-black font-bold' : 'text-zinc-300'
+                                    }`}
+                            >
+                                {i + 1}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="flex gap-8">
                     {/* Sidebar Steps */}
                     <div className="w-72 shrink-0 border-r border-zinc-100 pr-8">
+                        {/* Quarter Badge */}
+                        <div className="mb-6 p-4 bg-black text-white text-center">
+                            <span className="text-4xl font-black tracking-tighter">{project?.quarter || 'Q1'}</span>
+                            <span className="block text-[10px] uppercase tracking-widest text-zinc-400 mt-1">{project?.year}</span>
+                        </div>
+
                         <div className="flex flex-col gap-1">
                             {steps.map((step, i) => {
                                 const locked = isStepLocked(i);
+                                const completed = !locked && i < currentStep;
                                 return (
                                     <button
                                         key={i}
@@ -461,14 +553,17 @@ const OrchestratedOnboarding = () => {
                                             ? 'border-black bg-zinc-50 text-black'
                                             : locked
                                                 ? 'border-transparent text-zinc-300 cursor-not-allowed opacity-50'
-                                                : 'border-transparent text-zinc-400 hover:text-black hover:bg-zinc-50/50'
+                                                : completed
+                                                    ? 'border-green-500 text-zinc-600 hover:bg-zinc-50'
+                                                    : 'border-transparent text-zinc-400 hover:text-black hover:bg-zinc-50/50'
                                             }`}
                                     >
                                         <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-black border ${currentStep === i ? 'bg-black text-white border-black' :
                                             locked ? 'bg-zinc-100 text-zinc-300 border-zinc-200' :
-                                                'border-zinc-200 text-zinc-300'
+                                                completed ? 'bg-green-500 text-white border-green-500' :
+                                                    'border-zinc-200 text-zinc-300'
                                             }`}>
-                                            {locked ? <Lock size={10} /> : i + 1}
+                                            {locked ? <Lock size={10} /> : completed ? <Check size={10} /> : i + 1}
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black tracking-widest uppercase">{step.title}</span>

@@ -161,7 +161,7 @@ const GrowthScore = () => {
             variant={step === 'results' ? 'dark' : 'light'}
             hideHeader={step === 'results'}
             centered={step === 'results'}
-            headerVariant={step === 'results' ? 'default' : 'light'}
+            headerVariant="default"
         >
             {/* BACKDROP DE SEGURANÇA */}
             {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}

@@ -123,12 +123,12 @@ const StrategyPlanning = () => {
                         />
                     </PlanSection>
 
-                    {/* Planejamento Financeiro */}
+                    {/* Investimento em Mídia - Platform Selection */}
                     <section className="space-y-8 bg-black p-12 text-white">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-zinc-800 pb-8 gap-4">
                             <div>
-                                <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">PLANEJAMENTO DE MÍDIA</h3>
-                                <h2 className="text-4xl font-black uppercase tracking-tighter text-revgreen">INVESTIMENTO TRIMESTRAL</h2>
+                                <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">INVESTIMENTO EM MÍDIA</h3>
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-revgreen">ALOCAÇÃO DE BUDGET</h2>
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
@@ -136,22 +136,85 @@ const StrategyPlanning = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Platform Selection Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
-                                { label: "Performance (Ads)", val: 0.6, color: "bg-revgreen" },
-                                { label: "Outbound & CRM", val: 0.2, color: "bg-white" },
-                                { label: "Conteúdo & SEO", val: 0.2, color: "bg-zinc-700" }
-                            ].map((item, i) => (
-                                <div key={i} className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{item.label}</span>
-                                        <span className="text-lg font-black">R$ {(getBudgetAmount() * item.val).toLocaleString()}/mês</span>
+                                {
+                                    id: 'google',
+                                    name: 'Google Ads',
+                                    logo: 'https://www.gstatic.com/images/branding/product/1x/ads_48dp.png',
+                                    color: 'bg-blue-500',
+                                    defaultValue: 40
+                                },
+                                {
+                                    id: 'meta',
+                                    name: 'Meta Ads',
+                                    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/50px-Facebook_Logo_%282019%29.png',
+                                    color: 'bg-blue-600',
+                                    defaultValue: 35
+                                },
+                                {
+                                    id: 'linkedin',
+                                    name: 'LinkedIn Ads',
+                                    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/50px-LinkedIn_logo_initials.png',
+                                    color: 'bg-sky-600',
+                                    defaultValue: 25
+                                }
+                            ].map((platform) => (
+                                <div
+                                    key={platform.id}
+                                    className="group border border-zinc-800 hover:border-zinc-600 p-6 transition-all cursor-pointer hover:bg-zinc-900/50"
+                                >
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-2">
+                                            <img
+                                                src={platform.logo}
+                                                alt={platform.name}
+                                                className="w-8 h-8 object-contain"
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{platform.name}</p>
+                                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Performance</p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <div className={`w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-revgreen border-revgreen' : ''}`}>
+                                                {platform.defaultValue > 0 && (
+                                                    <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="h-1 bg-zinc-800 w-full overflow-hidden">
-                                        <div className={`h-full ${item.color}`} style={{ width: `${item.val * 100}%` }} />
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Investimento Mensal</span>
+                                            <span className="text-lg font-black text-white">
+                                                R$ {Math.round(getBudgetAmount() * (platform.defaultValue / 100)).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full ${platform.color} transition-all duration-500`}
+                                                style={{ width: `${platform.defaultValue}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-zinc-500 text-right">{platform.defaultValue}% do budget</p>
                                     </div>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Summary */}
+                        <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
+                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
+                                Plataformas selecionadas: <span className="text-revgreen font-bold">3</span>
+                            </p>
+                            <p className="text-sm text-zinc-400">
+                                Distribuição recomendada baseada no diagnóstico REI
+                            </p>
                         </div>
                     </section>
 

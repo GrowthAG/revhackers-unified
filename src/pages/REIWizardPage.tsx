@@ -43,8 +43,8 @@ export default function REIWizardPage() {
         }
     }, [projectId, user, isLoading, navigate]);
 
-    const handleComplete = (responseId: string) => {
-        navigate(`/rei/resultado/${responseId}`);
+    const handleComplete = (projectId: string) => {
+        navigate(`/rei/resultado/${projectId}`);
     };
 
     if (isLoading || loading) {

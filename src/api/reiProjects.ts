@@ -260,16 +260,18 @@ export const saveReiDiagnostic = async (
             .from('rei_responses')
             .insert({
                 project_id: projectId,
-                context: type,
+                context: 'internal', // Fixed: Must match constraint ('internal', 'lead_gen', 'public')
                 responses: {
                     form_data: formData,
                     radar_data: analysisResult.radarData,
-                    insights: analysisResult.insights
+                    insights: analysisResult.insights,
+                    diagnostic_type: type // Store the specific type inside JSONB
                 },
                 total_score: analysisResult.score,
                 maturity_level: maturityLevel,
                 maturity_percentage: analysisResult.score,
-                source: 'web_wizard'
+                source: 'rei', // Fixed: Must match constraint ('rei', 'diagnostic', 'quiz')
+                completed_at: new Date().toISOString()
             } as any)
             .select()
             .single();
@@ -283,6 +285,7 @@ export const saveReiDiagnostic = async (
         await supabase
             .from('rei_projects')
             .update({
+                status: 'active', // Mark project as completed/active
                 updated_at: new Date().toISOString(),
                 technical_evidences: {
                     last_analysis: analysisResult,

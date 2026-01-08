@@ -29,11 +29,12 @@ interface KnowledgeSource {
 }
 
 export const MODEL_OPTIONS = [
+    { value: 'gpt-5.2', label: 'GPT-5.2', description: 'OpenAI • Última Geração', tech: 'GPT-5.2', color: '#10a37f' },
     { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Inteligência Multimodal', tech: 'GPT-4.0', color: '#10a37f' },
     { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Eficiente', tech: 'GPT-4.0-M', color: '#10a37f' },
     { value: 'o1-preview', label: 'OPENAI O1', description: 'OpenAI • Raciocínio Profundo (Reasoning)', tech: 'O1-PRE', color: '#000000' },
-    { value: 'claude-3-opus-20240229', label: 'CLAUDE 3 OPUS', description: 'Anthropic • Capacidade Máxima', tech: 'CLD-3-OP', color: '#d97757' },
-    { value: 'claude-3-5-sonnet-20241022', label: 'CLAUDE 3.5 SONNET', description: 'Anthropic • O Melhor Equilibrium', tech: 'CLD-3.5-S', color: '#d97757' },
+    { value: 'claude-sonnet-4-5-20250929', label: 'CLAUDE SONNET 4.5', description: 'Anthropic • Extended Thinking', tech: 'CLD-4.5-S', color: '#d97757' },
+    { value: 'claude-3-5-haiku-20241022', label: 'CLAUDE 3.5 HAIKU', description: 'Anthropic • Ultra Rápido', tech: 'CLD-3.5-H', color: '#d97757' },
     { value: 'gemini-1.5-pro', label: 'GEMINI 1.5 PRO', description: 'Google • Janela de 2M Tokens', tech: 'GEM-1.5-P', color: '#4285f4' },
     { value: 'sonar', label: 'PERPLEXITY', description: 'Perplexity • Pesquisa Web em Tempo Real', tech: 'PPLX-S', color: '#00a99d' },
 ];
@@ -49,7 +50,7 @@ const AdminAgentBuilder = () => {
 
     // Basic Config
     const [name, setName] = useState('');
-    const [model, setModel] = useState('gpt-4o-mini');
+    const [model, setModel] = useState('gpt-5.2');
 
     // Knowledge
     const [knowledgeSources, setKnowledgeSources] = useState<KnowledgeSource[]>([]);
@@ -81,7 +82,7 @@ const AdminAgentBuilder = () => {
     const [testMessages, setTestMessages] = useState<{ role: string, content: string }[]>([]);
     const [testInput, setTestInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [chatModel, setChatModel] = useState('gpt-4o-mini');
+    const [chatModel, setChatModel] = useState('gpt-5.2');
 
     const { id } = useParams();
 

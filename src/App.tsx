@@ -22,7 +22,7 @@ import Cases from "./pages/Cases";
 import CasesDetalhe from "./pages/CasesDetalhe";
 import Downloads from "./pages/Downloads";
 import Materiais from "./pages/Materiais";
-import MaterialDetalhe from "./pages/MaterialDetalhe";
+import MaterialLanding from "./pages/MaterialLanding";
 import Metodologia from "./pages/Metodologia";
 import AdminPosts from "./pages/admin/AdminPosts";
 import AgendaDiagnostico from "./pages/AgendaDiagnostico";
@@ -147,7 +147,7 @@ const App = () => (
               <Route path="/partners/enics" element={<PartnerEnics />} />
               <Route path="/downloads" element={<Downloads />} />
               <Route path="/materiais" element={<Materiais />} />
-              <Route path="/materiais/:slug" element={<MaterialDetalhe />} />
+              <Route path="/materiais/:slug" element={<MaterialLanding />} />
               <Route path="/comunidade" element={<Comunidade />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/agenda" element={<Agenda />} />
@@ -247,7 +247,7 @@ const App = () => (
               <Route path="/admin/estrategia/:id" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
               <Route path="/admin/cronograma" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               <Route path="/admin/cronograma/:id" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
-              <Route path="/admin/jornada" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
+              <Route path="/admin/jornada" element={<Navigate to="/admin/rei" replace />} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
 
               {/* Admin - Diagnostic View (The Voice) */}

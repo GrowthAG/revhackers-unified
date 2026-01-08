@@ -162,7 +162,7 @@ const RevenueScore = () => {
             variant={step === 'results' ? 'dark' : 'light'}
             centered={step === 'results'}
             hideHeader={step === 'results'}
-            headerVariant={step === 'results' ? 'default' : 'light'}
+            headerVariant="default"
         >
             {/* BACKDROP DE SEGURANÇA */}
             {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}

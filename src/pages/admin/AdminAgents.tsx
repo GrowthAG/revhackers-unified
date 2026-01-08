@@ -55,11 +55,12 @@ const AdminAgents = () => {
 
     const getModelDisplay = (m: string) => {
         const models: Record<string, { label: string; color: string; provider: string }> = {
+            'gpt-5.2': { label: 'GPT-5.2', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
             'gpt-4o': { label: 'GPT-4o', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'OpenAI' },
             'gpt-4o-mini': { label: '4o Mini', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'OpenAI' },
             'o1-preview': { label: 'O1 Preview', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
-            'claude-3-5-sonnet-20241022': { label: '3.5 Sonnet', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
-            'claude-3-opus-20240229': { label: 'Opus', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
+            'claude-sonnet-4-5-20250929': { label: 'Sonnet 4.5', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
+            'claude-3-5-haiku-20241022': { label: 'Haiku 3.5', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
             'gemini-1.5-pro': { label: '1.5 Pro', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Google' },
             'sonar': { label: 'Sonar', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'WEB' },
         };

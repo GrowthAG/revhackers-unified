@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Zap, Target, BarChart2, TrendingUp, Globe, Loader2, Share2, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Zap, Target, Loader2, Share2, Check, Globe } from 'lucide-react';
 import { getReiProjectById } from '@/api/reiProjects';
-import PageLayout from '@/components/layout/PageLayout';
-import Section from '@/components/ui/Section';
+// import PageLayout from '@/components/layout/PageLayout'; // Not used in this layout
+// import Section from '@/components/ui/Section'; // Not used
 import { useToast } from '@/components/ui/use-toast';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -15,24 +15,49 @@ export default function REIResult() {
     const navigate = useNavigate();
     const { toast } = useToast();
     const [project, setProject] = useState<any>(null);
+    const [answers, setAnswers] = useState<any>(null);
+    const [plan, setPlan] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [generatingPlan, setGeneratingPlan] = useState(false);
 
     useEffect(() => {
-        const fetchProject = async () => {
+        const fetchData = async () => {
             if (!id) return;
 
             try {
-                const data = await getReiProjectById(id);
-                setProject(data);
-            } catch (error) {
-                console.error("Erro ao carregar projeto", error);
+                // 1. Fetch Project
+                const projectData = await getReiProjectById(id);
+                setProject(projectData);
 
-                // Demo fallback removed for production consistency, or keep if needed?
-                // Keeping fallback minimal to avoid crashes if dev mode
+                // 2. Fetch Latest Response (Answers)
+                const { data: latestResponse } = await supabase
+                    .from('rei_responses')
+                    .select('*')
+                    .eq('project_id', id)
+                    .order('completed_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (latestResponse) {
+                    setAnswers(latestResponse.responses);
+                }
+
+                // 3. Fetch Existing Plan
+                const { data: planData } = await supabase
+                    .from('strategic_plans')
+                    .select('*')
+                    .eq('rei_project_id', id)
+                    .single();
+
+                if (planData) {
+                    setPlan(planData);
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar dados", error);
                 toast({
                     title: "Erro",
-                    description: "Projeto não encontrado.",
+                    description: "Erro ao carregar dados do projeto.",
                     variant: "destructive"
                 });
             } finally {
@@ -40,15 +65,25 @@ export default function REIResult() {
             }
         };
 
-        fetchProject();
+        fetchData();
     }, [id]);
+
+    const handlePrint = () => {
+        window.print();
+    };
 
     const handleGenerateStrategicPlan = async () => {
         if (!project?.id) return;
-
         setGeneratingPlan(true);
 
         try {
+            // 1. Check if plan already exists (double check)
+            if (plan) {
+                handleViewPlan();
+                setGeneratingPlan(false);
+                return;
+            }
+
             // 1. Call RPC to generate plan (Base Template)
             const { data: planId, error } = await supabase.rpc('generate_strategic_plan', {
                 p_rei_project_id: project.id
@@ -56,21 +91,30 @@ export default function REIResult() {
 
             if (error) throw error;
 
-            // 2. Intelligence Layer: Inject Data into the Plan (The "Writer")
+            // 2. Intelligence Layer: Inject Data into the Plan
             try {
-                // Fetch the specific analysis response used for this result
-                const { data: latestResponse } = await supabase
-                    .from('rei_responses')
-                    .select('*')
-                    .eq('project_id', project.id)
-                    .order('completed_at', { ascending: false })
-                    .limit(1)
-                    .single();
-
-                if (latestResponse) {
+                // Use the answers we already fetched
+                if (answers) {
+                    console.log("[REIResult] Generating Intelligence for Plan...");
                     const { DiagnosticService } = await import('@/services/DiagnosticService');
-                    // We skip heavy external MarketIntelligence here for speed, can be enhanced in Admin later
-                    const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, null);
+                    const { MarketIntelligenceService } = await import('@/services/MarketIntelligenceService');
+
+                    const segment = answers.segmento || 'B2B';
+                    const objective = answers.objetivoPrincipal || 'Crescimento';
+
+                    // 2a. Fetch REAL Market Intelligence (Perplexity/API)
+                    // If we have budget for API calls, otherwise use mock
+                    const marketData = await MarketIntelligenceService.fetchMarketData(segment, objective);
+
+                    // 2b. Generate Full Diagnosis
+                    // We need to reconstruct a response-like object for the service
+                    // The service expects response object to have 'responses' key or similar structure
+                    // Actually generateDiagnosis takes (response: ReiResponse, marketData)
+                    // We need to fetch the actual response object or mock it
+                    // Fortunately we fetched 'latestResponse' in useEffect but didn't save the whole object
+                    // Let's refetch or just pass a constructed object
+                    const mockResponseObj = { responses: answers };
+                    const fullDiagnostic = DiagnosticService.generateDiagnosis(mockResponseObj as any, marketData);
                     const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
                     await supabase
@@ -80,35 +124,45 @@ export default function REIResult() {
                             diagnostic_data: diagnosticContext as any
                         })
                         .eq('rei_project_id', project.id);
+
+                    // Refresh plan state
+                    const { data: updatedPlan } = await supabase
+                        .from('strategic_plans')
+                        .select('*')
+                        .eq('rei_project_id', project.id)
+                        .single();
+                    setPlan(updatedPlan);
                 }
             } catch (intelError) {
                 console.error("Error weaving intelligence:", intelError);
-                // We don't block success, just log it. The base plan exists.
             }
 
             toast({
                 title: "Planejamento Gerado!",
-                description: "Nossa IA criou um rascunho estratégico inicial.",
+                description: "Seu planejamento estratégico está pronto.",
                 className: "bg-revgreen border-none text-black",
                 duration: 5000
             });
-
-            // 2. Fetch the plan to get the access token (or just redirect to admin view if user is admin?)
-            // For now, let's redirect to a "Success/Booking" page or the admin view if logged in.
-            // Assuming this is client facing, maybe redirect to the Plan Presentation if auto-approved? 
-            // Usually it goes to Draft. Let's redirect to a "Booking" page to discuss the plan.
-
-            navigate('/agendar-consultoria?context=rei_plan_ready');
 
         } catch (error) {
             console.error("Error generating plan:", error);
             toast({
                 title: "Erro",
-                description: "Não foi possível gerar o planejamento automático.",
+                description: "Não foi possível gerar o planejamento.",
                 variant: "destructive"
             });
         } finally {
             setGeneratingPlan(false);
+        }
+    };
+
+    const handleViewPlan = () => {
+        if (plan?.access_token) {
+            // Open in new tab
+            window.open(`/plan/${plan.access_token}`, '_blank');
+        } else if (plan?.id) {
+            // Fallback if access token missing? navigate to admin view
+            navigate(`/admin/planejamento/${project.id}`);
         }
     };
 
@@ -167,6 +221,23 @@ export default function REIResult() {
 
     return (
         <>
+            <style>
+                {`
+                    @media print {
+                        .no-print { display: none !important; }
+                        .print-only { display: block !important; }
+                        body { background: white !important; color: black !important; }
+                        .bg-zinc-950 { background: white !important; color: black !important; }
+                        .text-white { color: black !important; }
+                        .text-zinc-400 { color: #666 !important; }
+                        /* Ensure full width */
+                        .max-w-5xl { max-width: 100% !important; }
+                        .container-custom { padding: 0 !important; }
+                    }
+                    .print-only { display: none; }
+                `}
+            </style>
+
             <div className="min-h-screen bg-zinc-950">
                 {/* 1. DARK COVER SECTION (Results & High Level) */}
                 <DiagnosticLayout
@@ -181,10 +252,21 @@ export default function REIResult() {
                         {/* Floating Back Button */}
                         <button
                             onClick={() => navigate('/rei-hub')}
-                            className="absolute top-0 left-0 text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest font-bold flex items-center gap-2 transition-colors"
+                            className="absolute top-0 left-0 text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest font-bold flex items-center gap-2 transition-colors no-print"
                         >
                             <ArrowLeft className="w-3 h-3" /> Voltar
                         </button>
+
+                        <div className="absolute top-0 right-0 flex items-center gap-3 no-print">
+                            <Button
+                                onClick={handlePrint}
+                                variant="outline"
+                                className="bg-transparent border-white/20 text-white hover:bg-white/10 text-xs px-3 h-8"
+                            >
+                                <Share2 className="w-3 h-3 mr-2" />
+                                Exportar PDF
+                            </Button>
+                        </div>
 
                         <div className="flex flex-col items-center justify-center text-center mt-12 mb-16">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-[10px] uppercase tracking-[0.2em] mb-6">
@@ -257,7 +339,7 @@ export default function REIResult() {
                             </div>
 
                             {/* Right: Action Plan (Sticky) */}
-                            <div className="lg:col-span-5">
+                            <div className="lg:col-span-5 no-print">
                                 <div className="sticky top-24 bg-zinc-950 text-white p-8 rounded-xl shadow-2xl">
                                     <div className="mb-8">
                                         <h3 className="text-lg font-bold mb-2">Próximos Passos</h3>
@@ -273,40 +355,77 @@ export default function REIResult() {
                                             </div>
                                             <span className="text-zinc-300">Diagnóstico Completo</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-sm">
-                                            <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center animate-pulse">
-                                                <div className="w-2 h-2 rounded-full bg-white" />
+                                        {plan ? (
+                                            <div className="flex items-center gap-3 text-sm">
+                                                <div className="w-5 h-5 rounded-full bg-revgreen flex items-center justify-center">
+                                                    <Check className="w-3 h-3 text-black" />
+                                                </div>
+                                                <span className="text-zinc-300">Planejamento Gerado</span>
                                             </div>
-                                            <span className="text-white font-medium">Gerar Planejamento Estratégico</span>
-                                        </div>
+                                        ) : (
+                                            <div className="flex items-center gap-3 text-sm">
+                                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center animate-pulse">
+                                                    <div className="w-2 h-2 rounded-full bg-white" />
+                                                </div>
+                                                <span className="text-white font-medium">Gerar Planejamento Estratégico</span>
+                                            </div>
+                                        )}
                                         <div className="flex items-center gap-3 text-sm opacity-50">
                                             <div className="w-5 h-5 rounded-full border border-white/20" />
                                             <span className="text-zinc-500">Call de Implementação</span>
                                         </div>
                                     </div>
 
-                                    <Button
-                                        onClick={handleGenerateStrategicPlan}
-                                        disabled={generatingPlan}
-                                        className="w-full bg-revgreen hover:bg-emerald-400 text-black font-black uppercase tracking-wider py-6 text-xs mb-4"
-                                    >
-                                        {generatingPlan ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin mr-2" /> Gerando Plano...
-                                            </>
-                                        ) : (
-                                            <>
-                                                Gerar Planejamento <ArrowRight className="w-4 h-4 ml-2" />
-                                            </>
-                                        )}
-                                    </Button>
+                                    {plan ? (
+                                        <Button
+                                            onClick={handleViewPlan}
+                                            className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-wider py-6 text-xs mb-4"
+                                        >
+                                            Ver Planejamento <ArrowRight className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            onClick={handleGenerateStrategicPlan}
+                                            disabled={generatingPlan}
+                                            className="w-full bg-revgreen hover:bg-emerald-400 text-black font-black uppercase tracking-wider py-6 text-xs mb-4"
+                                        >
+                                            {generatingPlan ? (
+                                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>
+                                            ) : (
+                                                <>Desbloquear Plano Completo <ArrowRight className="w-4 h-4 ml-2" /></>
+                                            )}
+                                        </Button>
+                                    )}
 
                                     <p className="text-[10px] text-zinc-500 text-center">
-                                        Gera um plano de 90 dias com roadmap e orçamento.
+                                        Receba seu plano de 90 dias com roadmap e orçamento detalhado.
                                     </p>
                                 </div>
                             </div>
                         </div>
+
+                        {/* PRINT ONLY: FULL RESPONSES */}
+                        <div className="print-only mt-20 pt-10 border-t border-black">
+                            <h3 className="text-2xl font-black text-black mb-8">Resumo das Respostas</h3>
+                            {answers && (
+                                <div className="grid grid-cols-2 gap-x-12 gap-y-8">
+                                    {Object.entries(answers).map(([key, value]) => {
+                                        if (key === 'wizardStep' || key === 'timestamp' || !value) return null;
+                                        // Formatter for key labels if possible, simplified for now
+                                        const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                        const displayValue = Array.isArray(value) ? value.join(', ') : String(value);
+
+                                        return (
+                                            <div key={key} className="break-inside-avoid">
+                                                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
+                                                <p className="text-sm font-medium text-black">{displayValue}</p>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
                     </div>
                 </div>
             </div>

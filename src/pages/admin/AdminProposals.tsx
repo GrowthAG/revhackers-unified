@@ -78,8 +78,8 @@ const AdminProposals = () => {
             <div className="p-8 max-w-[1600px] mx-auto space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Client Hub & Deal Rooms</h1>
-                        <p className="text-zinc-500 mt-2">Organize propostas, onboardings, kickoffs e QBRs por cliente.</p>
+                        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Centro de Propostas</h1>
+                        <p className="text-zinc-500 mt-2">Crie propostas comerciais conectadas ao tl;dv.</p>
                     </div>
                     <Button
                         onClick={() => navigate("/admin/proposals/new")}
@@ -142,18 +142,14 @@ const AdminProposals = () => {
                                             {clientProposals.map((item) => (
                                                 <div key={item.id} className="flex items-center justify-between p-3 ml-11 rounded-lg hover:bg-zinc-50 border border-transparent hover:border-zinc-100 transition-all group">
                                                     <div className="flex items-center gap-4">
-                                                        <div className={`p-2 rounded-md ${item.category === 'proposal' ? 'bg-indigo-50 text-indigo-600' :
-                                                            item.category === 'kickoff' ? 'bg-orange-50 text-orange-600' :
-                                                                item.category === 'onboarding' ? 'bg-blue-50 text-blue-600' :
-                                                                    'bg-emerald-50 text-emerald-600'
-                                                            }`}>
+                                                        <div className="p-2 rounded-md bg-indigo-50 text-indigo-600">
                                                             <FileText className="w-4 h-4" />
                                                         </div>
                                                         <div>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="font-medium text-zinc-800">{item.title}</span>
                                                                 <Badge variant="outline" className="text-[10px] h-5 px-1.5 uppercase tracking-wide">
-                                                                    {item.category || 'Geral'}
+                                                                    Proposta
                                                                 </Badge>
                                                             </div>
                                                             <div className="text-xs text-zinc-400 mt-0.5 flex items-center gap-2">

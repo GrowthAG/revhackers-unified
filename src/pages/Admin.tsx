@@ -137,7 +137,7 @@ const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
 
 const ProjectRow = ({ project, navigate }: any) => (
   <div
-    onClick={() => navigate(`/admin/rei/${project.id}`)}
+    onClick={() => navigate(`/admin/jornada/${project.id}`)}
     className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm hover:shadow-md"
   >
     <div className="flex items-center gap-4">
@@ -165,10 +165,11 @@ const ProjectRow = ({ project, navigate }: any) => (
     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
       <Button
         variant="outline"
-        onClick={(e) => { e.stopPropagation(); navigate(`/admin/jornada/${project.id}`); }}
-        className="h-7 text-[9px] font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all px-3 rounded-lg"
+        onClick={(e) => { e.stopPropagation(); navigate(`/admin/rei/${project.id}`); }}
+        className="h-7 text-[9px] font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:text-zinc-900 hover:border-zinc-200 transition-all px-3 rounded-lg"
+        title="Editar dados cadastrais"
       >
-        Jornada
+        Editar
       </Button>
       <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-300 hover:text-zinc-900">
         <MoreHorizontal className="w-3.5 h-3.5" />

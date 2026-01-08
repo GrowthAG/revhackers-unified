@@ -166,27 +166,45 @@ Para uma empresa do segmento: ${segment}
 ${ticket ? `Ticket Médio: ${ticket}` : ''}
 ${objective ? `Objetivo Principal: ${objective}` : ''}
 
-Gere 2 personas detalhadas do cliente ideal (ICP) para este negócio.
+Gere EXATAMENTE 3 personas detalhadas do cliente ideal (ICP) para este negócio.
+IMPORTANTE: Gere nomes brasileiros realistas e cargos específicos.
 
-Retorne um JSON com esta estrutura:
+Retorne um JSON com esta estrutura EXATA:
 {
   "personas": [
     {
-      "nome": "Nome fictício representativo (ex: Carlos, o Diretor de Vendas)",
-      "cargo": "Cargo típico",
-      "idade": "Faixa etária",
-      "empresa_tipo": "Tipo de empresa onde trabalha",
+      "nome": "Nome Sobrenome (brasileiro, realista, ex: Marina Costa)",
+      "cargo": "Cargo específico (ex: Head de Marketing, CEO, Diretor Comercial)",
+      "idade": "Faixa etária (ex: 35-45 anos)",
+      "genero": "M ou F (para foto)",
+      "empresa_tipo": "Tipo e porte de empresa onde trabalha",
       "dores": ["Dor 1", "Dor 2", "Dor 3"],
-      "motivacoes": ["Motivação 1", "Motivação 2"],
+      "motivacoes": ["Motivação 1", "Motivação 2", "Motivação 3"],
       "objecoes": ["Objeção comum 1", "Objeção comum 2"],
       "canais_preferidos": ["LinkedIn", "Email", "WhatsApp"],
       "gatilhos_compra": ["Quando busca solução", "Evento gatilho"]
     }
   ]
-}`;
+}
+
+OBRIGATÓRIO: Gere exatamente 3 personas diferentes, variando cargos e perfis.`;
 
     try {
-        return await callPerplexity(apiKey, prompt);
+        const result = await callPerplexity(apiKey, prompt);
+
+        // Add avatar URLs to each persona using placeholder service
+        if (result?.personas && Array.isArray(result.personas)) {
+            result.personas = result.personas.map((persona: any, index: number) => {
+                const gender = persona.genero?.toLowerCase() === 'f' ? 'women' : 'men';
+                const avatarId = Math.floor(Math.random() * 70) + 1; // Random ID for variety
+                return {
+                    ...persona,
+                    foto_url: `https://randomuser.me/api/portraits/${gender}/${avatarId}.jpg`
+                };
+            });
+        }
+
+        return result;
     } catch (error) {
         console.error('Personas enrichment failed:', error);
         return null;

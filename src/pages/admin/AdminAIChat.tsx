@@ -43,12 +43,11 @@ const ModelIcon = ({ provider, className, color }: { provider: string, className
 };
 
 const MODELS = [
-    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Inteligência Máxima', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Eficiência e Velocidade', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'o1-preview', label: 'OPENAI O1', description: 'OpenAI • Raciocínio Profundo', color: '#000000', provider: 'OpenAI' },
-    { value: 'claude-3-opus-20240229', label: 'CLAUDE 3 OPUS', description: 'Anthropic • Capacidade Máxima', color: '#d97757', provider: 'Anthropic' },
-    { value: 'claude-3-5-sonnet-20241022', label: 'CLAUDE 3.5 SONNET', description: 'Anthropic • Equilíbrio Perfeito', color: '#d97757', provider: 'Anthropic' },
-    { value: 'gemini-1.5-pro', label: 'GEMINI 1.5 PRO', description: 'Google • Janela de 2M Tokens', color: '#4285f4', provider: 'Google' },
+    { value: 'gpt-5.2', label: 'GPT-5.2', description: 'OpenAI • Última Geração', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Multimodal', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Econômico', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'claude-sonnet-4-5-20250929', label: 'CLAUDE SONNET 4.5', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
+    { value: 'claude-3-5-haiku-20241022', label: 'CLAUDE 3.5 HAIKU', description: 'Anthropic • Ultra Rápido', color: '#d97757', provider: 'Anthropic' },
     { value: 'sonar', label: 'PERPLEXITY', description: 'Web • Busca em Tempo Real', color: '#00a99d', provider: 'Perplexity' },
 ];
 
@@ -88,7 +87,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
     const [loading, setLoading] = useState(false);
 
     // Config
-    const [selectedModel, setSelectedModel] = useState('gpt-4o');
+    const [selectedModel, setSelectedModel] = useState('gpt-5.2');
     const [selectedAgentName, setSelectedAgentName] = useState<string>(''); // NEW: Agent Name State
     const [agentKnowledgeCount, setAgentKnowledgeCount] = useState<number>(0);
     const [agentKnowledgeFilenames, setAgentKnowledgeFilenames] = useState<string[]>([]);

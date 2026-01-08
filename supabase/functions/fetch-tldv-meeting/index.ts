@@ -18,6 +18,8 @@ const extractClientData = (meeting: any, transcriptText: string = "") => {
     let clientFound = false;
     const INTERNAL_NAMES = ['Giulliano Alves', 'Giulliano', 'RevHackers', 'Bot', 'Notetaker', 'tl;dv', 'Host'];
 
+    console.log('[TLDV] Participants raw:', JSON.stringify(people));
+
     if (Array.isArray(people) && people.length > 0) {
         const client = people.find((p: any) => {
             const e = (p.email || p.emailAddress || "").toLowerCase();
@@ -63,8 +65,10 @@ const extractClientData = (meeting: any, transcriptText: string = "") => {
 
         if (potentialNames.size > 0) {
             res.clientContactName = Array.from(potentialNames)[0];
-            // If contact found but no company, try to infer or placeholder
-            if (!res.clientName) res.clientName = "Empresa de " + res.clientContactName;
+            // If contact found but no company, try to infer
+            if (!res.clientName && res.clientContactName) {
+                // Don't prefix with 'Empresa de' - leave blank to use title fallback
+            }
         }
     }
 
@@ -175,12 +179,8 @@ serve(async (req: Request) => {
                     try { debugInfo += ` Body: ${await tRes.text()}`; } catch (e) { }
                 }
 
-                // DEBUG: Inject raw participants into transcript to see why name fails
-                const participantDebugInfo = `DEBUG_PARTICIPANTS: ${JSON.stringify(meeting.participants || meeting.attendees || [], null, 2)}`;
-                transcriptText = participantDebugInfo + "\n\n" + transcriptText;
-
                 if (!transcriptText) {
-                    transcriptText = `[[DEBUG INFO: Transcrição vazia. Detalhes: ${debugInfo}]]`;
+                    transcriptText = `[[Transcrição indisponível. Detalhes: ${debugInfo}]]`;
                 }
 
                 console.log(`Single fetch success. Video: ${meeting.recordingUrl}, Transcript len: ${transcriptText.length}`);

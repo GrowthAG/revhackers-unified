@@ -17,6 +17,7 @@ interface DashboardProps {
     insights: string[];
     onAction: () => void;
     clientName?: string; // Optional context for filename
+    answers?: Record<string, any>; // New prop for full responses
 }
 
 const RadarChart = ({ data }: { data: RadarData[] }) => {
@@ -88,7 +89,7 @@ const RadarChart = ({ data }: { data: RadarData[] }) => {
     )
 }
 
-const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName = "Report" }: DashboardProps) => {
+const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName = "Report", answers }: DashboardProps) => {
     const { toast } = useToast();
     const [isExporting, setIsExporting] = useState(false);
 
@@ -191,19 +192,28 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                         </h3>
 
                         <div className="space-y-4">
-                            {insights.map((insight: string, idx: number) => (
+                            {(insights && insights.length > 0) ? insights.map((insight: string, idx: number) => (
                                 <div key={idx} className="group p-5 bg-zinc-50 hover:bg-white border hover:border-black transition-all duration-300 border-l-4 border-l-black rounded-sm">
                                     <p className="text-zinc-800 text-sm leading-relaxed font-medium">
                                         {insight}
                                     </p>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="p-5 bg-zinc-50 border-l-4 border-l-zinc-200 rounded-sm">
+                                    <p className="text-zinc-400 text-sm italic">
+                                        Nenhum insight disponível para este diagnóstico.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="pt-8 border-t border-zinc-100">
                         <div className="flex gap-4">
-                            <Button onClick={onAction} className="bg-revgreen hover:bg-emerald-400 text-black flex-1 rounded-sm h-14 text-xs uppercase tracking-widest font-black transition-all hover:scale-[1.02]">
+                            <Button
+                                onClick={() => window.open('/agenda-luna', '_blank')}
+                                className="bg-revgreen hover:bg-emerald-400 text-black flex-1 rounded-sm h-14 text-xs uppercase tracking-widest font-black transition-all hover:scale-[1.02]"
+                            >
                                 {content.cta} <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                             <Button
@@ -236,7 +246,48 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                     </div>
                 </div>
             </div>
-        </motion.div>
+
+            {/* Detailed Answers Section */}
+            {
+                answers && Object.keys(answers).length > 0 && (
+                    <div className="mt-12 pt-12 border-t border-zinc-200 print-only-force">
+                        <h3 className="text-sm font-black text-black uppercase tracking-widest mb-8 flex items-center gap-2">
+                            <Share2 className="w-4 h-4" /> Respostas do Protocolo
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            {Object.entries(answers).map(([key, value], idx) => {
+                                // Filter out internal control fields
+                                if (['wizardStep', 'timestamp', 'privacyPolicy', 'terms'].includes(key)) return null;
+                                if (!value) return null;
+
+                                // Format the key to be more readable (camelCase to Title Case)
+                                const label = key
+                                    .replace(/([A-Z])/g, ' $1')
+                                    .replace(/^./, (str) => str.toUpperCase());
+
+                                // Handle array values (multi-select)
+                                const displayValue = Array.isArray(value)
+                                    ? value.join(', ')
+                                    : String(value);
+
+                                if (displayValue === 'true') return null; // Skip boolean flags usually
+
+                                return (
+                                    <div key={idx} className="break-inside-avoid pb-4 border-b border-zinc-50 last:border-0">
+                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
+                                            {label}
+                                        </p>
+                                        <p className="text-sm font-medium text-zinc-900 leading-relaxed">
+                                            {displayValue}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )
+            }
+        </motion.div >
     );
 };
 

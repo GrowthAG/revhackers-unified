@@ -12,6 +12,17 @@ const AdminMaterials = () => {
     const [selected, setSelected] = useState<any | null>(null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (selected) {
+            console.log("DEBUG SELECTED MATERIAL:", {
+                title: selected.title || selected.material_name,
+                material_url: selected.material_url,
+                link_material: selected.link_material,
+                type: selected.material_type
+            });
+        }
+    }, [selected]);
+
     useEffect(() => { fetchMaterials(); }, []);
 
     const fetchMaterials = async () => {
@@ -189,9 +200,9 @@ const AdminMaterials = () => {
                                         <div className="p-6 bg-zinc-50 rounded-xl border border-zinc-100 space-y-6">
                                             <div>
                                                 <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Link de Acesso</h4>
-                                                {selected.material_url || selected.link_material ? (
+                                                {selected.link_material || selected.material_url ? (
                                                     <a
-                                                        href={selected.material_url || selected.link_material}
+                                                        href={selected.link_material || selected.material_url}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 break-all"

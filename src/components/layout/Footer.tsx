@@ -52,9 +52,9 @@ const Footer = () => {
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Navegação</h3>
             <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/about" className="hover:text-white transition-colors">Sobre Nós</Link></li>
+              <li><Link to="/quem-somos" className="hover:text-white transition-colors">Sobre Nós</Link></li>
               <li><Link to="/cases" className="hover:text-white transition-colors">Cases</Link></li>
-              <li><Link to="/community" className="hover:text-white transition-colors">Comunidade</Link></li>
+              <li><Link to="/comunidade" className="hover:text-white transition-colors">Comunidade</Link></li>
             </ul>
           </div>
 
@@ -62,9 +62,9 @@ const Footer = () => {
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Conteúdo</h3>
             <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
               <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link to="/services" className="hover:text-white transition-colors">Serviços</Link></li>
-              <li><Link to="/materials" className="hover:text-white transition-colors">Materiais</Link></li>
-              <li><Link to="/protocol" className="hover:text-white transition-colors">Protocolo REI</Link></li>
+              <li><Link to="/servicos" className="hover:text-white transition-colors">Serviços</Link></li>
+              <li><Link to="/materiais" className="hover:text-white transition-colors">Materiais</Link></li>
+              <li><Link to="/booking" className="hover:text-white transition-colors">Agendar Call</Link></li>
             </ul>
           </div>
 
@@ -82,7 +82,7 @@ const Footer = () => {
           </p>
           <div className="flex gap-8 text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-600">
             <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-            <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
+            <Link to="/termos-de-uso" className="hover:text-white transition-colors">Termos</Link>
             <a href="https://usefunnels.io" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Powered by Funnels</a>
           </div>
         </div>

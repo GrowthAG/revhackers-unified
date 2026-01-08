@@ -439,7 +439,7 @@ const SiteScore = () => {
                 variant="light"
                 centered={true}
                 hideHeader={false}
-                headerVariant="light"
+                headerVariant="default"
             >
                 <div className="max-w-4xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center animate-fade-in">
                     <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors rounded-3xl shadow-sm">
@@ -545,7 +545,7 @@ const SiteScore = () => {
     if (step === 'questions') {
         const question = QUESTIONS[currentQ];
         return (
-            <DiagnosticLayout title="Auditoria" subtitle="Em análise" variant="light" centered={true} hideHeader={true} headerVariant="light">
+            <DiagnosticLayout title="Auditoria" subtitle="Em análise" variant="light" centered={true} hideHeader={false} headerVariant="default">
                 <div className="max-w-3xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center px-4 md:px-0">
 
                     {/* Header Clean */}
@@ -618,7 +618,7 @@ const SiteScore = () => {
 
     if (step === 'analyzing') {
         return (
-            <DiagnosticLayout title="Analisando" subtitle="Processando..." variant="light" centered={true} hideHeader={true} headerVariant="light">
+            <DiagnosticLayout title="Analisando" subtitle="Processando..." variant="light" centered={true} hideHeader={false} headerVariant="default">
                 <div className="max-w-xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
                     <div className="w-full space-y-12">
                         <div className="relative w-16 h-16 mx-auto flex items-center justify-center">

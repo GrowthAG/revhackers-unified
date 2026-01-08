@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 
 const MODEL_OPTIONS = [
+    { value: 'gpt-5.2', label: 'GPT-5.2' },
     { value: 'gpt-4o', label: 'GPT-4o' },
     { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'claude-3-haiku', label: 'Claude Haiku' },
+    { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
+    { value: 'claude-3-5-haiku-20241022', label: 'Claude Haiku' },
 ];
 
 const ARTICLE_GENERATOR_PROMPT = `Você é redator B2B da RevHackers. Crie artigos em HTML otimizados para SEO.
@@ -122,7 +124,7 @@ export const AIChatSidebar = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [currentModel, setCurrentModel] = useState('gpt-4o-mini');
+    const [currentModel, setCurrentModel] = useState('gpt-5.2');
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 

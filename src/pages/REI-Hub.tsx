@@ -8,6 +8,90 @@ import PageLayout from '@/components/layout/PageLayout';
 import Section from '@/components/ui/Section';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
+import { getReiProjectsByClientEmail, ReiProject } from '@/api/reiProjects';
+import { Button } from '@/components/ui/button';
+import { Loader2, Calendar } from 'lucide-react';
+
+// Subcomponent for Existing Projects
+const MyProjectsSection = ({ userEmail }: { userEmail?: string | undefined }) => {
+    const navigate = useNavigate();
+    const [projects, setProjects] = useState<ReiProject[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            if (!userEmail) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const data = await getReiProjectsByClientEmail(userEmail);
+                setProjects(data);
+            } catch (error) {
+                console.error("Error fetching projects:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProjects();
+    }, [userEmail]);
+
+    if (loading) return null;
+
+    if (projects.length === 0) return null;
+
+    return (
+        <div className="mb-12">
+            <h2 className="text-lg font-black text-black uppercase tracking-tight mb-6 flex items-center gap-2">
+                <Database className="w-5 h-5" /> Meus Diagnósticos
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projects.map((project) => (
+                    <div key={project.id} className="bg-zinc-50 border border-zinc-200 p-6 rounded-sm hover:border-black transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <span className="text-[10px] font-bold uppercase tracking-widest bg-white border border-zinc-200 px-2 py-1 rounded-full">
+                                {project.type?.toUpperCase() || 'CONSULTING'}
+                            </span>
+                            {project.status === 'active' ? (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-revgreen flex items-center gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-revgreen animate-pulse" /> Concluído
+                                </span>
+                            ) : (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-orange-500 flex items-center gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-orange-500" /> Pendente
+                                </span>
+                            )}
+                        </div>
+
+                        <h3 className="text-xl font-bold text-black mb-2">
+                            {new Date(project.created_at).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                        </h3>
+
+                        <div className="flex items-center gap-2 text-xs text-zinc-500 mb-6 font-medium">
+                            <Calendar className="w-3 h-3" /> Última atualização: {new Date(project.updated_at || project.created_at).toLocaleDateString('pt-BR')}
+                        </div>
+
+                        <Button
+                            onClick={() => {
+                                if (project.status === 'active') {
+                                    navigate(`/rei/resultado/${project.id}`);
+                                } else {
+                                    navigate(`/rei/wizard?projectId=${project.id}`);
+                                }
+                            }}
+                            className="w-full bg-white border border-black text-black hover:bg-black hover:text-revgreen uppercase tracking-widest text-xs font-bold"
+                        >
+                            {project.status === 'active' ? 'Ver Resultado' : 'Continuar'}
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 const ReiHubPage = () => {
     const navigate = useNavigate();
@@ -140,6 +224,15 @@ const ReiHubPage = () => {
                         </div>
                     </div>
 
+                    {/* Meus Projetos Section */}
+                    <MyProjectsSection userEmail={user?.email} />
+
+                    <div className="flex items-center gap-2 mb-8 mt-12">
+                        <div className="h-px bg-zinc-200 flex-1"></div>
+                        <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">Novo Diagnóstico</span>
+                        <div className="h-px bg-zinc-200 flex-1"></div>
+                    </div>
+
                     {/* REI Cards - Updated Grid & Motion */}
                     <motion.div
                         variants={container}
@@ -248,5 +341,7 @@ const ReiHubPage = () => {
         </PageLayout>
     );
 };
+
+
 
 export default ReiHubPage;

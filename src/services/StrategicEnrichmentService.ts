@@ -17,12 +17,14 @@ export interface Persona {
     nome: string;
     cargo: string;
     idade: string;
+    genero?: string;
     empresa_tipo: string;
     dores: string[];
     motivacoes: string[];
     objecoes: string[];
     canais_preferidos: string[];
     gatilhos_compra: string[];
+    foto_url?: string;
 }
 
 export interface PersonasData {

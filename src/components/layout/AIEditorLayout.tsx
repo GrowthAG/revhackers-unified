@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { PanelRight, X } from 'lucide-react';
 import AdminAIChat from '@/pages/admin/AdminAIChat'; // We'll adapt this or create a simplified version
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 
 interface AIEditorLayoutProps {
     children: ReactNode;
@@ -67,7 +68,9 @@ const AIEditorLayout = ({ children, title, description, onSave, saving, actions,
                     {sidebarContent ? (
                         sidebarContent
                     ) : (
-                        <AdminAIChat embed />
+                        <ErrorBoundary>
+                            <AdminAIChat embed />
+                        </ErrorBoundary>
                     )}
                 </div>
             </div>

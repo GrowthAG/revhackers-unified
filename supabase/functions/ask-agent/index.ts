@@ -51,7 +51,7 @@ serve(async (req) => {
                 apiUrl = 'https://api.openai.com/v1/chat/completions';
                 apiKey = Deno.env.get('OPENAI_API_KEY');
                 requestBody = {
-                    model: model || 'gpt-4o',
+                    model: model || 'gpt-5.2',
                     messages: [
                         { role: 'system', content: finalSystemPrompt },
                         ...messages
@@ -65,14 +65,18 @@ serve(async (req) => {
                 apiUrl = 'https://api.anthropic.com/v1/messages';
                 apiKey = Deno.env.get('ANTHROPIC_API_KEY');
                 requestBody = {
-                    model: model || 'claude-3-opus-20240229',
-                    max_tokens: 4096,
+                    model: model || 'claude-sonnet-4-5-20250929',
+                    max_tokens: 16000,
                     system: finalSystemPrompt,
-                    messages: messages.map((m: any) => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })), // Anthropic doesn't support system role in messages array
+                    messages: messages.map((m: any) => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })),
                     stream: true,
+                    thinking: {
+                        type: "enabled",
+                        budget_tokens: 10000
+                    }
                 };
                 headers['x-api-key'] = apiKey;
-                headers['anthropic-version'] = '2023-06-01';
+                headers['anthropic-version'] = '2025-01-01';
                 break;
 
             case 'perplexity': // Uses OpenAI-compatible endpoint

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Check, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, X, LayoutDashboard, BarChart2, Target, Users, Microscope, Calendar, TrendingUp, DollarSign, Wallet, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Import sections
@@ -27,39 +27,29 @@ interface StrategicPlan {
     goals_data: any;
     financial_projections: any;
     budget_data: any;
-    budget_data: any;
     next_steps_data: any;
-    diagnostic_data?: {
-        implementation_steps?: Array<{
-            category: string;
-            title: string;
-            description: string;
-            priority: string;
-            estimated_time: string;
-        }>;
-    };
     status: string;
     created_at: string;
 }
 
 interface Client {
     id: string;
-    company_name: string;
-    contact_name: string;
+    company: string;
+    name?: string;
     logo_url?: string;
 }
 
 const SECTIONS = [
-    { id: 0, name: 'Capa', icon: '📄' },
-    { id: 1, name: 'Diagnóstico', icon: '📊' },
-    { id: 2, name: 'Premissas', icon: '🎯' },
-    { id: 3, name: 'Persona', icon: '👤' },
-    { id: 4, name: 'Metodologia', icon: '🔬' },
-    { id: 5, name: 'Roadmap 90 Dias', icon: '🗓️' },
-    { id: 6, name: 'Metas & KPIs', icon: '📈' },
-    { id: 7, name: 'Projeções', icon: '💰' },
-    { id: 8, name: 'Investimento', icon: '💵' },
-    { id: 9, name: 'Próximos Passos', icon: '🚀' },
+    { id: 0, name: 'Capa', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: 1, name: 'Diagnóstico', icon: <BarChart2 className="w-4 h-4" /> },
+    { id: 2, name: 'Premissas', icon: <Target className="w-4 h-4" /> },
+    { id: 3, name: 'Persona', icon: <Users className="w-4 h-4" /> },
+    { id: 4, name: 'Metodologia', icon: <Microscope className="w-4 h-4" /> },
+    { id: 5, name: 'Roadmap 90 Dias', icon: <Calendar className="w-4 h-4" /> },
+    { id: 6, name: 'Metas & KPIs', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 7, name: 'Projeções', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 8, name: 'Investimento', icon: <Wallet className="w-4 h-4" /> },
+    { id: 9, name: 'Próximos Passos', icon: <Rocket className="w-4 h-4" /> },
 ];
 
 export default function StrategicPlanPresentation() {
@@ -227,15 +217,15 @@ export default function StrategicPlanPresentation() {
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         {client.logo_url && (
-                            <img src={client.logo_url} alt={client.company_name} className="h-8 object-contain" />
+                            <img src={client.logo_url} alt={client.company} className="h-8 object-contain" />
                         )}
                         <div>
-                            <h1 className="text-lg font-semibold text-black">{client.company_name}</h1>
+                            <h1 className="text-lg font-semibold text-black">{client.company}</h1>
                             <p className="text-xs text-zinc-500">Planejamento Estratégico de Crescimento</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <img src="/logo.svg" alt="RevHackers" className="h-6" />
+                        <span className="text-sm font-bold text-black tracking-tight">▲<span className="text-revgreen">RevHackers</span></span>
                     </div>
                 </div>
             </header>

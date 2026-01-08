@@ -150,7 +150,6 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                 {renderMenuSection("Operacional", [
                     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
                     { icon: Handshake, label: 'Deal Rooms', path: '/admin/proposals' },
-                    { icon: Zap, label: 'Onboarding', path: '/admin/rei' },
                     { icon: Users, label: 'Clientes', path: '/admin/clients' },
                     { icon: Shield, label: 'Equipe', path: '/admin/users' }
                 ])}

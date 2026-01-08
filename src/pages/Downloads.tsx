@@ -207,24 +207,14 @@ const Downloads = () => {
                     </CardDescription>
                   </CardContent>
                   <CardFooter className="bg-gray-50 border-t">
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={() => navigate(`/materiais/${materialSlug}`)}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Ver detalhes
-                      </Button>
-                      <Button
-                        className="w-full"
-                        variant="default"
-                        onClick={() => handleDownloadClick(material)}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Baixar
-                      </Button>
-                    </div>
+                    <Button
+                      className="w-full"
+                      variant="default"
+                      onClick={() => navigate(`/materiais/${materialSlug}`)}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Acessar Material
+                    </Button>
                   </CardFooter>
                 </Card>
               );

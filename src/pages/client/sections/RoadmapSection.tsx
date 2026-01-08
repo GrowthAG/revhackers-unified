@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, Check } from 'lucide-react';
 
 interface RoadmapSectionProps {
     plan: any;
@@ -39,7 +39,7 @@ export default function RoadmapSection({ plan }: RoadmapSectionProps) {
 
                             {/* Phase Content */}
                             <div className="flex-1 pb-8">
-                                <div className="bg-white border border-zinc-200 rounded-lg p-6">
+                                <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">
@@ -55,7 +55,7 @@ export default function RoadmapSection({ plan }: RoadmapSectionProps) {
                                     <ul className="space-y-2">
                                         {phase.items && phase.items.map((item: string, itemIndex: number) => (
                                             <li key={itemIndex} className="flex items-start gap-2 text-sm text-zinc-700">
-                                                <span className="text-green-600 mt-0.5">✓</span>
+                                                <Check className="w-4 h-4 text-black mt-0.5" />
                                                 <span>{item}</span>
                                             </li>
                                         ))}
@@ -78,24 +78,24 @@ export default function RoadmapSection({ plan }: RoadmapSectionProps) {
             <div className="mt-12 pt-12 border-t border-zinc-200">
                 <h3 className="text-2xl font-semibold text-black mb-6">🎯 Marcos Principais</h3>
                 <div className="grid md:grid-cols-3 gap-6">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                        <div className="text-3xl font-bold text-green-700 mb-2">Dia 10</div>
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6">
+                        <div className="text-3xl font-bold text-black mb-2">Dia 10</div>
                         <h4 className="font-semibold text-black mb-1">Kick-Off Completo</h4>
                         <p className="text-sm text-zinc-600">
                             Planejamento aprovado e materiais coletados
                         </p>
                     </div>
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                        <div className="text-3xl font-bold text-blue-700 mb-2">Dia 35</div>
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6">
+                        <div className="text-3xl font-bold text-black mb-2">Dia 35</div>
                         <h4 className="font-semibold text-black mb-1">Go Live!</h4>
                         <p className="text-sm text-zinc-600">
                             Campanhas ativas e primeiros leads
                         </p>
                     </div>
 
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-                        <div className="text-3xl font-bold text-purple-700 mb-2">Dia 90</div>
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-6">
+                        <div className="text-3xl font-bold text-black mb-2">Dia 90</div>
                         <h4 className="font-semibold text-black mb-1">Quarter Review</h4>
                         <p className="text-sm text-zinc-600">
                             Análise completa e otimizações

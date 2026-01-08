@@ -97,12 +97,12 @@ const REIProjectForm = () => {
                 setLoadingProject(true);
                 const project = await getReiProjectById(id);
                 if (project) {
-                    setValue('client_id', project.client_id || undefined);
+                    setValue('client_id', (project as any).client_id || undefined);
                     setValue('client_name', project.client_name);
                     setValue('client_email', project.client_email);
                     setValue('client_company', project.client_company || '');
                     setValue('analyst_email', project.analyst_email);
-                    setValue('quarter', project.quarter);
+                    setValue('quarter', project.quarter as any);
                     setValue('year', project.year);
                     setValue('next_rei_date', project.next_rei_date.split('T')[0]);
                 } else {
@@ -347,33 +347,7 @@ const REIProjectForm = () => {
                             </div>
                         </div>
 
-                        {/* 3. DOCUMENTOS & ESTRATÉGIA (Proposals Integration) */}
-                        {isEditing && (
-                            <div className="space-y-6">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
-                                    03. Documentos & Estratégia
-                                </h3>
-
-                                <div className="border border-zinc-100 p-6 bg-zinc-50/30">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div>
-                                            <h4 className="text-sm font-bold text-black">Planejamento GTM & Quarter</h4>
-                                            <p className="text-[10px] text-zinc-500 mt-1">Gerencie a estratégia de Go-To-Market, métricas e atualizações trimestrais.</p>
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            onClick={() => navigate(`/admin/proposals/new?title=${encodeURIComponent('Planejamento Q' + (quarter || 'X'))}&client_name=${encodeURIComponent(watch('client_name'))}&client_email=${encodeURIComponent(watch('client_email'))}`)}
-                                            className="bg-black text-white hover:bg-zinc-800 rounded-none h-8 px-4 text-[10px] font-bold uppercase tracking-widest transition-all"
-                                        >
-                                            Novo Planejamento
-                                        </Button>
-                                    </div>
-
-                                    {/* Embedded Proposal List */}
-                                    <ProposalListByClient clientName={watch('client_name')} />
-                                </div>
-                            </div>
-                        )}
+                        {/* Seção de Documentos removida - Proposta é funcionalidade de pré-venda */}
 
                         <div className="pt-8 flex gap-4">
                             <Button

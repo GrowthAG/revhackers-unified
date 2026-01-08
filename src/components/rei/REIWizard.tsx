@@ -206,6 +206,24 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             // 2. Save to DB with 4 arguments: projectId, type, formData, analysisResult
             const responseId = await saveReiDiagnostic(projectId, type, data, scoreResult);
 
+            // 3. Webhook Trigger (Internal REI)
+            try {
+                await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        projectId,
+                        type,
+                        scoreResult,
+                        ...data,
+                        submittedAt: new Date().toISOString()
+                    })
+                });
+                console.log("Webhook sent successfully");
+            } catch (webhookError) {
+                console.error("Webhook failed:", webhookError);
+            }
+
             toast({
                 title: "Diagnóstico Gerado",
                 description: "Redirecionando para o resultado...",

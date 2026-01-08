@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, Sparkles } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
@@ -33,10 +33,11 @@ interface ProposalFormValues {
     summary: string;
     investment_total: string;
     status: 'draft' | 'sent' | 'approved' | 'rejected';
-    category: 'proposal' | 'kickoff' | 'onboarding' | 'qbr' | 'other';
+    category: 'proposal';
     mindmap_code: string;
     setup_fee: string;
     installment_value: string;
+    installment_count: string;
     loom_url?: string;
     mindmap_url?: string;
     manual_transcript?: string;
@@ -87,6 +88,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             mindmap_code: initialData?.mindmap_code || 'graph TD; A[Desafio] --> B[Solução];',
             setup_fee: initialData?.setup_fee || '',
             installment_value: initialData?.installment_value || '',
+            installment_count: initialData?.installment_count || '6',
             loom_url: initialData?.loom_url || '',
             mindmap_url: initialData?.mindmap_url || '',
             manual_transcript: initialData?.manual_transcript || '',
@@ -116,13 +118,15 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
 
     useEffect(() => {
         if (!isEditing && watchedTitle) {
-            const slug = watchedTitle
+            const baseSlug = watchedTitle
                 .toLowerCase()
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '');
-            setValue('slug', slug);
+            // Add timestamp to ensure uniqueness
+            const uniqueSlug = `${baseSlug}-${Date.now().toString(36)}`;
+            setValue('slug', uniqueSlug);
         }
     }, [watchedTitle, isEditing, setValue]);
 
@@ -214,14 +218,18 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
 
             if (validContactName && shouldSet('client_contact_name')) {
                 setValue('client_contact_name', validContactName);
-                // Heuristic: If we found a name but no company, suggest "Empresa de [Nome]"
-                if (shouldSet('client_name')) {
-                    setValue('client_name', `Empresa de ${validContactName}`);
-                }
+                // Don't set 'Empresa de...' - leave blank for user to fill
             }
 
             if (validEmail && shouldSet('client_email')) {
                 setValue('client_email', validEmail);
+                // Try to extract company name from email domain
+                if (shouldSet('client_name') && !validEmail.match(/gmail|outlook|hotmail|yahoo|icloud/i)) {
+                    const domain = validEmail.split('@')[1]?.split('.')[0];
+                    if (domain && domain.length > 2) {
+                        setValue('client_name', domain.charAt(0).toUpperCase() + domain.slice(1));
+                    }
+                }
             }
         }
 
@@ -235,7 +243,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
 
         if (cName && (force || !watch('title') || watch('title').includes('Proposta'))) {
-            setValue('title', `Proposta ${cName}`);
+            setValue('title', `Proposta REVHACKERS x ${cName}`);
         }
     };
 
@@ -250,6 +258,13 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
 
                     if (data?.success && data.data) {
                         updateFieldsWithMetadata(data.data);
+                        // Automatically generate proposal data if we got a transcript
+                        if (data.data.transcript && data.data.transcript.length > 100) {
+                            // Small delay to let fields populate first
+                            setTimeout(() => {
+                                handleGenerateScope(data.data.transcript);
+                            }, 500);
+                        }
                     }
                 } catch (e) {
                     console.warn("Auto-fetch metadata failed:", e);
@@ -289,11 +304,31 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
     const onSubmit = async (data: ProposalFormValues) => {
         setLoading(true);
         try {
+            // Only include fields that exist in the database
             const payload = {
-                ...data,
+                title: data.title,
+                slug: data.slug,
+                client_name: data.client_name,
+                client_contact_name: data.client_contact_name || null,
+                client_email: data.client_email || null,
+                client_logo: data.client_logo || null,
+                recording_url: data.recording_url || null,
+                transcript: data.transcript || null,
+                summary: data.summary || null,
                 investment_total: data.investment_total ? Number(data.investment_total) : null,
                 setup_fee: data.setup_fee ? Number(data.setup_fee) : null,
                 installment_value: data.installment_value ? Number(data.installment_value) : null,
+                installment_count: data.installment_count ? Number(data.installment_count) : null,
+                status: data.status || 'draft',
+                category: data.category || 'proposal',
+                mindmap_code: data.mindmap_code || null,
+                loom_url: data.loom_url || null,
+                headline: data.headline || null,
+                subheadline: data.subheadline || null,
+                brief_explanation: data.brief_explanation || null,
+                detailed_scope: data.detailed_scope || null,
+                payment_terms: data.payment_terms || null,
+                crm_data: data.crm_data || null,
             };
 
             if (isEditing && initialData?.id) {
@@ -379,112 +414,96 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
 
             const { data, error } = await supabase.functions.invoke('agent-chat', {
                 body: {
+                    raw_mode: true,
                     messages: [{
                         role: 'system',
-                        content: `Você é o SENIOR GROWTH PARTNER da RevHackers. Sua missão é extrair inteligência comercial de calls para alimentar o CRM e gerar Propostas.
-
-                        DIRETRIZES PARA O "call_summary":
-                        - O RESUMO DEVE SER RICO E ESTRUTURADO em Markdown.
-                        - Crie as seguintes seções (H3 ###):
-                          ### Contexto do Cliente
-                          (Quem são, setor, tamanho, momento atual. USE OS DADOS DE PARTICIPANTES SE DISPONÍVEL)
-                          
-                          ### Desafios e Dores
-                          (Lista detalhada dos problemas mencionados)
-                          
-                          ### Decisão e Orçamento
-                          (Quem decide, budget disponível, urgência. Identifique o Decisor na lista de participantes)
-                          
-                          ### Próximos Passos
-                          (O que ficou combinado de ação concreta)
-
-                        DIRETRIZES PARA O ESCOPO:
-                        - "detailed_scope": OBRIGATÓRIO: Crie um PLANO DE AÇÃO em Markdown. Divida em FASES (Fase 1: Setup, Fase 2: Implementação, etc). Liste "Entregáveis" e "KPIs de Sucesso".
-                        - "mindmap": Gere um código MERMAID válido (graph TD). Simples e visual. NÃO use caracteres especiais complexos.
-
-                        REGRAS DE RESPOSTA (100% EM PORTUGUÊS):
-                        - RETORNE APENAS JSON VÁLIDO.
-                        - Se não encontrar um dado, NUNCA INVENTE. Use "Não mencionado".
-                        - PREENCHA O "crm_data" COM CUIDADO.`
+                        content: `Você é um consultor de RevOps. REGRAS: 1) Extraia SOMENTE dados REAIS da transcrição. 2) O campo "summary" deve ser TEXTO PURO formatado com emojis, NÃO objeto/array. 3) O campo "detailed_scope" deve ser TEXTO PURO em formato de documento profissional. 4) Retorne APENAS JSON válido com strings de texto.`
                     }, {
                         role: 'user',
-                        content: `Analise este material (${watchedSource === 'bid' ? 'Documento/Bid' : 'Transcrição de Reunião'}) e gere a proposta estratégica em JSON.
-                        
-                        ${contextBlock}
+                        content: `TRANSCRIÇÃO:
+${transcript.substring(0, 18000)}
 
-                        Conteúdo:
-                        ${transcript.substring(0, 25000)}
+Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
 
-                        JSON Schema:
-                        {
-                            "summary": "Resumo Executivo curto (focado na estratégia)...",
-                            "call_summary": "### Contexto do Cliente\nTexto...\n\n### Desafios e Dores\n- Dor 1\n- Dor 2\n...",
-                            "mindmap": "mermaid code...",
-                            "investment_total": 0.00,
-                            "setup_fee": 0.00,
-                            "installment_value": 0.00,
-                            "client_name": "Nome da Empresa",
-                            "client_contact_name": "Nome do Cliente",
-                            "client_email": "email@cliente.com",
-                            "headline": "Título da Proposta...",
-                            "subheadline": "Subtítulo estratégico...",
-                            "brief_explanation": "Contexto curto...",
-                            "detailed_scope": "### FASE 1: ...\n- Entregáveis: ...\n- KPIs: ...",
-                            "payment_terms": "Condições de pagamento...",
-                            "crm_data": {
-                                "pain_points": ["Dor 1", "Dor 2"],
-                                "budget_range": "Range ou Valor",
-                                "decision_makers": "Nomes/Cargos",
-                                "urgency": "Alta/Média/Baixa",
-                                "next_steps": "Ação",
-                                "qualified_score": 0
-                            }
-                        }`
+{
+  "summary": "🎯 DORES DO CLIENTE:\\n• [dor real 1]\\n• [dor real 2]\\n\\n💰 BUDGET: [valor ou A definir]\\n\\n👤 DECISOR: [nome, cargo]\\n\\n📋 PRÓXIMOS PASSOS:\\n• [passo 1]\\n• [passo 2]\\n\\n⭐ SCORE: X/10",
+  
+  "headline": "Proposta REVHACKERS x [EMPRESA]",
+  
+  "detailed_scope": "FASE 0 – Diagnóstico Estratégico (30 dias)\\n\\nObjetivo: [baseado na call]\\n\\nEntregáveis:\\n• [item real]\\n• [item real]\\n\\n📌 Saída da fase: [resultado]\\n\\n---\\n\\nFASE 1 – Geração de Demanda\\n\\nObjetivo: [objetivo]\\n\\nFoco inicial:\\n• [canal mencionado - Google Ads, Meta, LinkedIn]\\n• [integração - HubSpot, CRM]\\n\\nEntregáveis:\\n• [entregável]\\n\\n📌 Resultado esperado: [resultado]\\n\\n---\\n\\nFASE 2 – Automação & Escala\\n\\nObjetivo: [objetivo]\\n\\nEntregáveis:\\n• [item]\\n\\n📌 Resultado: [resultado]",
+  
+  "client_name": "[EMPRESA REAL]",
+  "client_contact_name": "[NOME REAL - busque quem se apresentou]", 
+  "client_email": "[BUSQUE EMAIL na transcrição ou cabeçalho. Ex: @empresa.com.br. Se não achar, deixe em branco]",
+  "investment_total": 0,
+  "setup_fee": 0,
+  "installment_value": 0
+}`
                     }],
-                    model: 'gpt-4o'
+                    model: 'gpt-5.2'
                 }
             });
+
+            console.log('[AI GEN] Response received:', { success: !error, hasData: !!data, errorMsg: error?.message });
 
             if (error) throw error;
 
             const rawResponse = data?.response || data?.choices?.[0]?.message?.content || "";
+            console.log('[AI GEN] Raw response length:', rawResponse?.length || 0);
+
+            if (!rawResponse || rawResponse.length < 50) {
+                throw new Error("Resposta da IA muito curta ou vazia. Tente novamente.");
+            }
+
+            // Clean the response
             let cleanJson = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             const firstBrace = cleanJson.indexOf('{');
             const lastBrace = cleanJson.lastIndexOf('}');
+
+            if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+                console.error("Invalid JSON structure:", rawResponse.substring(0, 500));
+                throw new Error("Formato de resposta inválido. Tente novamente.");
+            }
+
             cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
 
-            const parsed = JSON.parse(cleanJson);
-            if (parsed.summary) setValue('summary', parsed.summary);
-            if (parsed.call_summary) setValue('call_detail_summary', parsed.call_summary);
-            if (parsed.detailed_scope) setValue('detailed_scope', parsed.detailed_scope);
-            if (parsed.headline) setValue('headline', parsed.headline);
-            if (parsed.subheadline) setValue('subheadline', parsed.subheadline);
-
-            if (parsed.mindmap) {
-                // Remove markdown wrappers if AI put them to prevent Syntax Error
-                let cleanMindmap = parsed.mindmap.replace(/```mermaid/g, '').replace(/```/g, '').trim();
-                setValue('mindmap_code', cleanMindmap);
+            let parsed;
+            try {
+                parsed = JSON.parse(cleanJson);
+            } catch (parseError) {
+                console.error("JSON Parse Error. Raw:", cleanJson.substring(0, 1000));
+                throw new Error("Erro ao processar resposta da IA. Tente com uma transcrição menor.");
             }
+
+
+            // Apply parsed values to form (handle objects)
+            const toString = (val: any) => typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val || '');
+
+            if (parsed.summary) setValue('summary', toString(parsed.summary));
+            if (parsed.call_summary) setValue('call_detail_summary', toString(parsed.call_summary));
+            if (parsed.detailed_scope) setValue('detailed_scope', toString(parsed.detailed_scope));
+            if (parsed.headline) setValue('headline', toString(parsed.headline));
 
             if (parsed.investment_total) setValue('investment_total', String(parsed.investment_total));
             if (parsed.setup_fee) setValue('setup_fee', String(parsed.setup_fee));
             if (parsed.installment_value) setValue('installment_value', String(parsed.installment_value));
 
-            if (parsed.client_name && !["Não mencionado", "N/A", "Empresa"].includes(parsed.client_name)) {
-                updateFieldsWithMetadata({
-                    clientName: parsed.client_name,
-                    clientContactName: (parsed.client_contact_name && !["Não mencionado", "N/A", "Pessoa"].includes(parsed.client_contact_name)) ? parsed.client_contact_name : "",
-                    clientEmail: (parsed.client_email && !["Não mencionado", "N/A"].includes(parsed.client_email)) ? parsed.client_email : "",
-                    ...parsed
-                }, true);
-            } else {
-                if (parsed.headline) setValue('headline', parsed.headline);
-                if (parsed.summary) setValue('summary', parsed.summary);
-                if (parsed.detailed_scope) setValue('detailed_scope', parsed.detailed_scope);
-                if (parsed.crm_data) setValue('crm_data', parsed.crm_data);
+            // Handle client name - avoid "Empresa de..."
+            if (parsed.client_name && !parsed.client_name.includes("Empresa de") && !["Não mencionado", "N/A"].includes(parsed.client_name)) {
+                setValue('client_name', parsed.client_name);
+            }
+            if (parsed.client_contact_name && !["Não mencionado", "N/A"].includes(parsed.client_contact_name)) {
+                setValue('client_contact_name', parsed.client_contact_name);
+            }
+            if (parsed.client_email && !["Não mencionado", "N/A"].includes(parsed.client_email)) {
+                setValue('client_email', parsed.client_email);
             }
 
-            toast({ title: 'Inteligência Aplicada!' });
+            if (parsed.crm_data) {
+                setValue('crm_data', parsed.crm_data);
+            }
+
+            toast({ title: '✅ Proposta Extraída!', description: 'Revise os campos e ajuste se necessário.' });
         } catch (error: any) {
             console.error("AI GEN ERROR:", error);
             toast({ title: 'Erro na IA', description: error.message, variant: 'destructive' });
@@ -532,41 +551,94 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* URL INPUT & CLIENT DATA */}
+                        {/* MEETING PICKER & CLIENT DATA */}
                         <div className="space-y-6">
+                            {/* Meeting Picker Button */}
                             <div className="space-y-4 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
-                                <Label className="text-[10px] font-bold uppercase text-zinc-400">URL da Reunião (tl;dv)</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        {...register('recording_url')}
-                                        placeholder="Cole o link do tl;dv..."
-                                        className="bg-white border-zinc-200"
-                                    />
-                                    <Button
-                                        type="button"
-                                        onClick={async () => {
-                                            const url = watch('recording_url');
-                                            if (!url) return;
-                                            toast({ title: 'Sincronizando...', description: 'Conectando ao tl;dv...' });
-                                            const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
-                                            if (data?.success) {
-                                                updateFieldsWithMetadata(data.data, true);
-                                                const foundEmail = data.data.clientEmail || "Não encontrado";
-                                                const foundClient = data.data.clientName || "Não identificado";
-                                                toast({
-                                                    title: 'Sincronização Concluída',
-                                                    description: `Cliente: ${foundClient} | Email: ${foundEmail}`,
-                                                    variant: 'default'
-                                                });
-                                            } else {
-                                                toast({ title: 'Erro', description: 'Dados não encontrados.', variant: 'destructive' });
-                                            }
-                                        }}
-                                        className="bg-zinc-900 text-white font-bold text-xs hover:bg-black px-4 rounded-lg"
-                                    >
-                                        Sync
-                                    </Button>
-                                </div>
+                                <Label className="text-[10px] font-bold uppercase text-zinc-400">Selecionar Reunião do tl;dv</Label>
+
+                                <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                setHistoryOpen(true);
+                                                fetchMeetingHistory();
+                                            }}
+                                            className="w-full h-12 bg-zinc-900 hover:bg-black text-white font-bold text-xs uppercase tracking-widest"
+                                        >
+                                            <Video className="w-4 h-4 mr-2" />
+                                            {watch('recording_url') ? 'Trocar Reunião' : 'Escolher Reunião'}
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+                                        <DialogHeader>
+                                            <DialogTitle>Suas Reuniões Recentes</DialogTitle>
+                                            <DialogDescription>Clique em uma reunião para selecionar e preencher os dados automaticamente.</DialogDescription>
+                                        </DialogHeader>
+                                        <div className="overflow-y-auto max-h-[60vh] space-y-2 py-4">
+                                            {loadingHistory ? (
+                                                <div className="flex items-center justify-center py-12">
+                                                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                                                    <span className="ml-2 text-sm text-zinc-500">Carregando reuniões...</span>
+                                                </div>
+                                            ) : meetingHistory.length === 0 ? (
+                                                <div className="text-center py-12 text-zinc-400 text-sm">
+                                                    Nenhuma reunião encontrada. Verifique sua API Key do tl;dv.
+                                                </div>
+                                            ) : (
+                                                meetingHistory.map((meeting: any) => (
+                                                    <div
+                                                        key={meeting.id || meeting.url}
+                                                        onClick={async () => {
+                                                            const url = meeting.url || meeting.share_url || `https://tldv.io/app/meetings/${meeting.id}`;
+                                                            setValue('recording_url', url);
+                                                            setHistoryOpen(false);
+                                                            // Auto-fetch full details
+                                                            toast({ title: 'Carregando dados...', description: meeting.name || meeting.title });
+                                                            const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
+                                                            if (data?.success) {
+                                                                updateFieldsWithMetadata(data.data, true);
+                                                                toast({ title: 'Dados carregados!', description: `Cliente: ${data.data.clientName || 'N/A'}` });
+                                                            }
+                                                        }}
+                                                        className="p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"
+                                                    >
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
+                                                                <Video className="w-5 h-5 text-zinc-500" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="font-semibold text-zinc-900 truncate group-hover:text-black">
+                                                                    {meeting.name || meeting.title || 'Reunião'}
+                                                                </h4>
+                                                                <p className="text-xs text-zinc-400 mt-0.5">
+                                                                    {meeting.createdAt ? new Date(meeting.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Data N/A'}
+                                                                    {meeting.duration && ` • ${Math.round(meeting.duration / 60)} min`}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+
+                                {watch('recording_url') && (
+                                    <div className="p-3 bg-white rounded-lg border border-zinc-100 flex items-center justify-between">
+                                        <span className="text-xs text-zinc-600 truncate flex-1">{watch('recording_url')}</span>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => setValue('recording_url', '')}
+                                            className="h-6 w-6 shrink-0"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -581,27 +653,22 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                             </div>
                         </div>
 
-                        {/* VIDEO PREVIEW (Right Side of Grid) */}
+                        {/* VIDEO PREVIEW - Thumbnail with external link */}
                         {watch('recording_url') ? (
-                            <div className="rounded-xl overflow-hidden relative shadow-lg shadow-zinc-900/5 border border-zinc-100 bg-black aspect-video group">
-                                <div className="w-full h-full relative overflow-hidden">
-                                    {/* 
-                                        UPDATED CROP STRATEGY: 
-                                        Video is on the RIGHT side of the page.
-                                        We need to Shift LEFT to bring right side into view.
-                                        - Scale Width: 180% (Make it wider so we can slide it)
-                                        - Left: -80% (Slide left side/notes out of view)
-                                        - Check Height as well.
-                                     */}
-                                    <iframe
-                                        src={watch('recording_url')}
-                                        className="absolute top-0 left-[-80%] w-[180%] h-[130%] -mt-[6%] border-none"
-                                        allow="autoplay; fullscreen; picture-in-picture"
-                                        allowFullScreen
-                                        title="Preview da Call"
-                                    />
+                            <a
+                                href={watch('recording_url')}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-xl overflow-hidden relative shadow-lg shadow-zinc-900/5 border border-zinc-100 bg-zinc-900 aspect-video group flex items-center justify-center hover:bg-zinc-800 transition-all cursor-pointer"
+                            >
+                                <div className="text-center">
+                                    <Video className="w-12 h-12 text-white/50 mx-auto mb-3" />
+                                    <span className="text-white/80 text-sm font-medium">Clique para assistir no tl;dv</span>
+                                    <div className="mt-2">
+                                        <ExternalLink className="w-4 h-4 text-white/40 mx-auto" />
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         ) : (
                             <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300 text-xs font-medium uppercase tracking-widest aspect-video">
                                 Preview do Vídeo
@@ -610,7 +677,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                     </div>
                 </div>
                 {/* 3. GENERATE ACTION */}
-                <div className="flex justify-center py-4">
+                <div className="flex flex-col items-center py-4 gap-2">
                     <Button
                         type="button"
                         onClick={() => handleGenerateScope()}
@@ -618,33 +685,35 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                         className="h-12 px-8 bg-zinc-900 hover:bg-black text-white rounded-full font-bold uppercase tracking-widest text-xs shadow-xl shadow-zinc-900/20 active:scale-95 transition-all"
                     >
                         {generating ? (
-                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando Proposta IA...</>
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analisando Call...</>
                         ) : (
-                            <><Sparkles className="w-4 h-4 mr-2" /> Gerar Proposta Estratégica</>
+                            <><Wand2 className="w-4 h-4 mr-2" /> Extrair Dados com IA</>
                         )}
                     </Button>
+                    <p className="text-[10px] text-zinc-400 text-center max-w-md">
+                        A IA analisa a transcrição e preenche: Resumo Executivo, Escopo do Projeto, Dores do Cliente e valores sugeridos.
+                    </p>
                 </div>
 
-                {/* 4. PROPOSAL DOCUMENT FIELDS */}
                 <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-zinc-100 bg-zinc-50/30">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white font-bold">P</div>
                             <div>
                                 <h3 className="text-zinc-900 font-bold text-lg leading-none">Documento da Proposta</h3>
-                                <p className="text-zinc-400 text-xs mt-1 font-medium">Edite o conteúdo antes de enviar</p>
+                                <p className="text-zinc-400 text-xs mt-1 font-medium">Dados extraídos da call + seu mapa mental</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título / Headline</Label>
-                                <Input {...register('headline')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Título de Impacto" />
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título da Proposta</Label>
+                                <Input {...register('title')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Proposta REVHACKERS x Cliente" />
                             </div>
 
                             <div className="space-y-2">
                                 <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Resumo Executivo</Label>
-                                <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Resumo..." />
+                                <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Resumo da reunião e próximos passos..." />
                             </div>
                         </div>
                     </div>
@@ -652,38 +721,90 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                     <div className="p-8 space-y-8">
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Plano de Ação (Fases & Entregáveis)</Label>
-                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Markdown Suportado</Badge>
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Transcrição da Call</Label>
+                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Importado do tl;dv</Badge>
                             </div>
                             <Textarea
-                                {...register('detailed_scope')}
-                                className="min-h-[400px] font-mono text-sm leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-6"
-                                placeholder="Fase 1: ..."
+                                {...register('transcript')}
+                                className="min-h-[200px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4"
+                                placeholder="Transcrição será carregada automaticamente..."
                             />
                         </div>
 
-                        <div className="space-y-3">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Mermaid)</Label>
-                            <Textarea {...register('mindmap_code')} className="min-h-[100px] font-mono text-xs bg-zinc-50 border-zinc-100" />
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Embed)</Label>
+                                <a
+                                    href="https://whimsical.com/mind-maps"
+                                    target="_blank"
+                                    rel="noopener"
+                                    className="text-[10px] text-blue-500 hover:underline flex items-center gap-1"
+                                >
+                                    <ExternalLink className="w-3 h-3" />
+                                    Criar no Whimsical
+                                </a>
+                            </div>
+
+                            <Input
+                                {...register('mindmap_code')}
+                                className="font-mono text-xs bg-white border-zinc-200"
+                                placeholder="https://whimsical.com/embed/..."
+                            />
+
+                            <p className="text-[10px] text-zinc-400 leading-relaxed">
+                                1. Crie um mapa mental no <strong>Whimsical</strong> (use a IA deles para gerar)<br />
+                                2. Clique em <strong>Share → Embed</strong><br />
+                                3. Cole a URL de embed aqui
+                            </p>
+
+                            {/* Preview if URL exists */}
+                            {watch('mindmap_code') && watch('mindmap_code').includes('http') && (
+                                <div className="w-full aspect-video bg-white rounded-xl border border-zinc-100 overflow-hidden">
+                                    <iframe
+                                        src={watch('mindmap_code')}
+                                        className="w-full h-full border-none"
+                                        sandbox="allow-scripts"
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer"
+                                        title="Mapa Mental"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ESCOPO DO PROJETO */}
+                        <div className="space-y-3 pt-8 border-t border-zinc-100/50">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Escopo do Projeto</Label>
+                                <Badge variant="outline" className="text-[9px] bg-green-50 text-green-700 border-green-200">Gerado pela IA</Badge>
+                            </div>
+                            <Textarea
+                                {...register('detailed_scope')}
+                                className="min-h-[200px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4"
+                                placeholder="O escopo será gerado automaticamente ao clicar em 'Gerar Proposta Estratégica' ou edite manualmente aqui..."
+                            />
+                            <p className="text-[10px] text-zinc-400">
+                                Descreva as fases do projeto, entregáveis e KPIs esperados. Este campo é editável.
+                            </p>
                         </div>
 
                         {/* FINANCIALS & CLOSING */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 border-t border-zinc-100/50">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-8 border-t border-zinc-100/50">
                             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Investimento Total</Label>
-                                <Input {...register('investment_total')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Investimento Total (R$)</Label>
+                                <Input {...register('investment_total')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="60000" />
                             </div>
                             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Setup Fee</Label>
-                                <Input {...register('setup_fee')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Setup Fee (R$)</Label>
+                                <Input {...register('setup_fee')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
                             </div>
                             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Mensal</Label>
-                                <Input {...register('installment_value')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="0.00" />
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Valor Mensal (R$)</Label>
+                                <Input {...register('installment_value')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
                             </div>
-                            <div className="p-4 rounded-xl bg-blue-50/50 border border-blue-100/50 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-blue-400">Agenda (Embed Cal.com)</Label>
-                                <Input {...register('booking_url')} className="font-medium text-blue-900 bg-transparent border-none text-xs h-auto p-0 placeholder:text-blue-300" placeholder="https://cal.com/..." />
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Nº de Parcelas</Label>
+                                <Input {...register('installment_count')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="6" />
                             </div>
                         </div>
                     </div>

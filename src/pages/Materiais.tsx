@@ -32,6 +32,7 @@ const Materiais = () => {
   const [loading, setLoading] = useState(true);
   const [apiMaterials, setApiMaterials] = useState<any[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Buscar materiais do Supabase com timeout
   useEffect(() => {
@@ -181,7 +182,15 @@ const Materiais = () => {
                   <div
                     key={index}
                     className="group"
-                    onClick={() => handleDownloadClick(material)}
+                    onClick={() => {
+                      // Generate slug from title and navigate to landing page
+                      const slug = (material.slug || title)
+                        .toLowerCase()
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-');
+                      navigate(`/materiais/${slug}`);
+                    }}
                   >
                     <div className="h-full flex flex-col p-8 rounded-sm border border-zinc-200 bg-white shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative cursor-pointer group">
                       <div className="flex justify-between items-start mb-6">

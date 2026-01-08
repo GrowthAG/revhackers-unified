@@ -213,7 +213,8 @@ export class DiagnosticService {
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
 
-        // Extract specific GTM data
+        // Extract specific GTM data 
+        // DATA LINKING: We explicitly capture these to show "Based on X" later
         const challenges = answers.desafios || [];
         const bottlenecks = answers.gargalo || answers.gargaloFunil || 'Não identificado';
         const channels = answers.canaisAquisicao || [];
@@ -221,7 +222,7 @@ export class DiagnosticService {
 
         // 2. GENERATE MODULES
         return {
-            premises_data: this.generatePremises(segment, objective, bottlenecks),
+            premises_data: this.generatePremises(segment, objective, bottlenecks, answers), // Pass full answers for linking
             methodology_data: this.generateMethodology(isB2B, channels),
             roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges),
             goals_data: this.generateGoals(objective, growthGoal),
@@ -248,18 +249,24 @@ export class DiagnosticService {
 
     // --- GENERATORS ---
 
-    private static generatePremises(segment: string, objective: string, bottleneck: string) {
+    private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any) {
         return {
             pillars: [
                 {
                     name: 'Contexto',
-                    icon: '🏢',
-                    items: [`Segmento: ${segment}`, `Foco: ${objective}`]
+                    icon: 'building',
+                    items: [
+                        `Segmento: ${segment} (Baseado na resposta: "Qual seu segmento?")`,
+                        `Foco: ${objective} (Baseado na resposta: "Objetivo Principal")`
+                    ]
                 },
                 {
                     name: 'Diagnóstico',
-                    icon: '🔍',
-                    items: ['Análise de Maturidade Realizada', `Gargalo Principal: ${bottleneck}`]
+                    icon: 'search',
+                    items: [
+                        `Maturidade Digital: ${this.checkHasCRM(answers) ? 'Intermediária' : 'Inicial'} (Análise de Ferramentas)`,
+                        `Gargalo Principal: ${bottleneck}`
+                    ]
                 }
             ]
         };

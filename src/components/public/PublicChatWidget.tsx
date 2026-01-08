@@ -10,20 +10,20 @@ export function PublicChatWidget() {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
 
-    // Exclusion Logic
-    const excludedPaths = [
-        '/agendamento',
-        '/blog/', // Subpages of blog
-        '/materiais/',
-        '/cases/',
-        '/admin', // Don't show public widget on admin
-        '/auth',
-        '/p/' // Don't show on Deal Room (it has its own focus)
+    // ALLOWLIST: Only show chatbot on these specific pages
+    const allowedPaths = [
+        '/',           // Home page
+        '/blog',       // Blog main page
+        '/materiais',  // Materials main page (NOT individual material pages)
     ];
 
-    const isExcluded = excludedPaths.some(path => location.pathname.startsWith(path));
+    // Check if current path starts with /blog/ (for blog articles)
+    const isBlogArticle = location.pathname.startsWith('/blog/') && location.pathname !== '/blog';
 
-    if (isExcluded) return null;
+    // Check if path is allowed
+    const isAllowed = allowedPaths.includes(location.pathname) || isBlogArticle;
+
+    if (!isAllowed) return null;
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">

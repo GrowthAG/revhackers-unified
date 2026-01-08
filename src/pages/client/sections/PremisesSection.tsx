@@ -1,4 +1,5 @@
 import React from 'react';
+import { Building2, Search, Check, Target } from 'lucide-react';
 
 interface PremisesSectionProps {
     plan: any;
@@ -7,6 +8,14 @@ interface PremisesSectionProps {
 export default function PremisesSection({ plan }: PremisesSectionProps) {
     const premises = plan.premises_data || {};
     const pillars = premises.pillars || [];
+
+    const getIcon = (iconName: string) => {
+        switch (iconName) {
+            case 'building': return <Building2 className="w-6 h-6 text-black" />;
+            case 'search': return <Search className="w-6 h-6 text-black" />;
+            default: return <Target className="w-6 h-6 text-black" />;
+        }
+    };
 
     return (
         <div>
@@ -29,8 +38,8 @@ export default function PremisesSection({ plan }: PremisesSectionProps) {
                     >
                         {/* Pillar Header */}
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-lg bg-zinc-100 flex items-center justify-center text-2xl">
-                                {pillar.icon}
+                            <div className="w-12 h-12 rounded-lg bg-zinc-100 flex items-center justify-center">
+                                {getIcon(pillar.icon)}
                             </div>
                             <h3 className="text-xl font-semibold text-black">{pillar.name}</h3>
                         </div>
@@ -39,7 +48,7 @@ export default function PremisesSection({ plan }: PremisesSectionProps) {
                         <ul className="space-y-2">
                             {pillar.items && pillar.items.map((item: string, itemIndex: number) => (
                                 <li key={itemIndex} className="flex items-start gap-2 text-sm text-zinc-700">
-                                    <span className="text-green-600 mt-0.5">✓</span>
+                                    <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                                     <span>{item}</span>
                                 </li>
                             ))}

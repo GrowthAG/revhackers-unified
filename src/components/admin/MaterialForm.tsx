@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Save, Upload, Trash2, Image as ImageIcon } from 'lucide-react';
-import AIEditorLayout from '@/components/layout/AIEditorLayout';
+// import AIEditorLayout from '@/components/layout/AIEditorLayout';
 
 // Define explicit form values matching database needs
 interface MaterialFormValues {
@@ -112,6 +112,7 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                 material_name: data.title,
                 material_type: data.type,
                 link_material: data.material_url,
+                material_url: data.material_url, // Add redundant field to satisfy types if needed, or check DB
                 slug: data.slug,
                 description: data.description,
                 cover_image: data.cover_image,
@@ -136,20 +137,23 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
         }
     };
 
+
+
     return (
-        <AIEditorLayout
-            title={isEditing ? 'Editar Material' : 'Novo Material'}
-            description='Gerencie materiais ricos, templates e playbooks.'
-            saving={loading}
-            actions={
-                <>
-                    <div className="flex items-center gap-2">
+        <div className="space-y-6">
+            <div className="flex items-center justify-between border-b pb-4">
+                <div>
+                    <h1 className="text-2xl font-bold">{isEditing ? 'Editar Material' : 'Novo Material'}</h1>
+                    <p className="text-sm text-gray-500">Gerencie materiais ricos, templates e playbooks.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 mr-2">
                         <Switch id="published" checked={watch('published') || false} onCheckedChange={(c) => setValue('published', c)} />
                         <Label htmlFor="published" className="text-xs uppercase font-medium text-zinc-500 cursor-pointer">
                             {watch('published') ? 'Publicado' : 'Rascunho'}
                         </Label>
                     </div>
-                    <Button onClick={handleSubmit(onSubmit)} disabled={loading || uploading} className="bg-zinc-900 text-white hover:bg-black font-medium h-9 text-xs px-4">
+                    <Button onClick={handleSubmit(onSubmit)} disabled={loading} className="bg-zinc-900 text-white hover:bg-black font-medium h-9 text-xs px-4">
                         {loading ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Save className="w-3 h-3 mr-2" />}
                         {isEditing ? 'Salvar' : 'Criar'}
                     </Button>
@@ -158,47 +162,50 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     )}
-                </>
-            }
-        >
-            <div className="space-y-8">
-                {/* Cover Image */}
-                <div className="group relative rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 aspect-[21/9] flex items-center justify-center transition-all hover:border-zinc-300">
-                    {imagePreview ? (
-                        <>
-                            <img src={imagePreview} alt="Cover" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                        </>
-                    ) : (
-                        <div className="text-center">
-                            <ImageIcon className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
-                            <span className="text-xs text-zinc-400 font-medium">Adicionar Imagem de Capa</span>
-                        </div>
-                    )}
+                </div>
+            </div>
 
-                    <label className="absolute inset-0 cursor-pointer flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
-                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm text-xs font-medium text-zinc-700 flex items-center gap-2">
-                            {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                            {imagePreview ? 'Alterar Imagem' : 'Upload Imagem'}
-                        </div>
-                    </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="md:col-span-2 space-y-6">
+                    <div className="space-y-2">
+                        <Label>Título do Material</Label>
+                        <Input
+                            {...register('title', { required: true })}
+                            placeholder="Ex: Playbook de Vendas B2B"
+                            className="bg-white text-lg font-medium"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Descrição</Label>
+                        <Textarea
+                            {...register('description')}
+                            placeholder="Descreva o material e seus benefícios para o lead..."
+                            className="min-h-[200px] bg-white resize-y"
+                        />
+                    </div>
                 </div>
 
-                {/* Title */}
-                <div className="space-y-2">
-                    <Input
-                        {...register('title', { required: true })}
-                        placeholder="Título do Material (ex: Playbook de Vendas 2025)"
-                        className="text-4xl font-bold border-none px-0 h-auto placeholder:text-zinc-200 text-zinc-900 bg-transparent focus-visible:ring-0"
-                    />
-                </div>
+                {/* Sidebar - Link is the most important field */}
+                <div className="space-y-6">
+                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100 space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-sm font-bold text-zinc-700">🔗 Link do Material (URL)</Label>
+                            <Input {...register('material_url', { required: true })} placeholder="https://clickup.com/..." className="bg-white font-mono text-xs" />
+                            <p className="text-[10px] text-zinc-500">Este é o link que o lead receberá após preencher o formulário.</p>
+                            {errors.material_url && <span className="text-red-500 text-[10px]">O link é obrigatório!</span>}
+                        </div>
 
-                {/* Meta Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-zinc-50 rounded-xl border border-zinc-100">
-                    <div className="space-y-4">
-                        <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Tipo de Material</Label>
+                        <div className="h-px bg-zinc-200" />
+
+                        <div className="space-y-2">
+                            <Label>Slug (URL interna)</Label>
+                            <Input {...register('slug')} className="bg-white font-mono text-xs" placeholder="playbook-vendas-b2b" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Tipo</Label>
                             <Select onValueChange={(v) => setValue('type', v)} defaultValue={watch('type') || 'framework'}>
                                 <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -208,32 +215,12 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Link do Material (Externo - ClickUp/Drive)</Label>
-                            <Input {...register('material_url', { required: true })} placeholder="https://..." className="bg-white text-zinc-600 font-mono text-sm" />
-                            {errors.material_url && <span className="text-red-500 text-[10px]">Obrigatório para envio via Webhook</span>}
-                        </div>
                     </div>
-                    <div className="space-y-4">
-                        <div className="space-y-1.5 flex flex-col justify-end h-full">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-auto">Slug (URL)</Label>
-                            <Input {...register('slug', { required: true })} placeholder="playbook-vendas-2025" className="bg-white text-zinc-400 font-mono text-sm" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2 pt-4">
-                    <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Descrição Completa</Label>
-                    <Textarea
-                        {...register('description')}
-                        placeholder="Descreva o material, benefícios e público-alvo..."
-                        className="min-h-[300px] border-zinc-200 text-[16px] leading-relaxed p-6 font-serif resize-y"
-                    />
                 </div>
             </div>
-        </AIEditorLayout>
+        </div>
     );
 };
 
 export default MaterialForm;
+

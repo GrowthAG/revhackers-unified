@@ -9,13 +9,15 @@ const corsHeaders = {
 
 // --- CONFIGURATION: MODEL IDENTITIES ---
 const MODEL_IDENTITIES: Record<string, string> = {
-    'gpt-4o': "Você é o GPT-4O, o modelo multimodal mais avançado da OpenAI.",
+    'gpt-5.2': "Você é o GPT-5.2, o modelo mais avançado da OpenAI com capacidades superiores de raciocínio.",
+    'gpt-4o': "Você é o GPT-4O, o modelo multimodal avançado da OpenAI.",
     'o1-preview': "Você é o OpenAI O1. Utilize sua capacidade de raciocínio profundo para resolver problemas complexos passo-a-passo.",
     'gpt-4o-mini': "Você é o GPT-4O MINI, otimizado para respostas rápidas e diretas.",
-    'claude-3-opus-20240229': "Você é o CLAUDE 3 OPUS. Utilize Cadeia de Pensamento profunda.",
-    'claude-3-5-sonnet-20241022': "Você é o CLAUDE 3.5 SONNET, conhecido por sua inteligência equilibrada e capacidades de codificação.",
-    'sonar': "Você é o PERPLEXITY SONAR. Um motor de resposta semântica conectado à internet. Sempre forneça fontes citadas.",
-    'gemini-1.5-pro': "Você é o GEMINI 1.5 PRO, o modelo mais capaz do Google, com uma janela de contexto massiva e raciocínio multimodal avançado.",
+    'claude-sonnet-4-5-20250929': "Você é o CLAUDE SONNET 4.5, modelo de última geração da Anthropic com Extended Thinking.",
+    'claude-3-5-haiku-20241022': "Você é o CLAUDE 3.5 HAIKU, o modelo mais rápido da Anthropic.",
+    'claude-3-5-sonnet-20241022': "Você é o CLAUDE 3.5 SONNET, modelo equilibrado da Anthropic.",
+    'sonar': "Você é o PERPLEXITY SONAR. Um motor de resposta semântica conectado à internet.",
+    'gemini-1.5-pro': "Você é o GEMINI 1.5 PRO, o modelo mais capaz do Google.",
 };
 
 // --- HELPER: Strict Message Sanitization (The \"Zipper\") ---
@@ -104,7 +106,10 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
 
     'anthropic': async (msgs, sys, mdl) => {
         const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
-        if (!apiKey) throw new Error('Anthropic API Key missing');
+        if (!apiKey) throw new Error('ANTHROPIC_API_KEY não configurada no Supabase.');
+
+        console.log(`[ANTHROPIC] Iniciando chamada para modelo: ${mdl}`);
+        console.log(`[ANTHROPIC] API Key prefix: ${apiKey.substring(0, 15)}...`);
 
         // Anthropic requires strict User-first
         const claudeMessages = [...msgs];
@@ -112,29 +117,52 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
             claudeMessages.unshift({ role: 'user', content: '...' });
         }
 
-        const queryTwice = async (targetModel: string) => {
+        const queryWithFallback = async (targetModel: string): Promise<string> => {
+            console.log(`[ANTHROPIC] Tentando modelo: ${targetModel}`);
+
             const res = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
-                headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
+                headers: {
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2025-01-01',
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     model: targetModel,
                     system: sys,
                     messages: claudeMessages,
-                    max_tokens: 16384
+                    max_tokens: 16000,
+                    thinking: {
+                        type: "enabled",
+                        budget_tokens: 10000
+                    }
                 })
             });
+
             const d = await res.json();
-            // Fallback specific error types
+            console.log(`[ANTHROPIC] Response status: ${res.status}`);
+
             if (!res.ok) {
-                if (d.error?.type === 'not_found_error' && targetModel !== 'claude-3-5-sonnet-20241022') {
-                    return await queryTwice('claude-3-5-sonnet-20241022');
+                console.error(`[ANTHROPIC] Error response:`, JSON.stringify(d));
+
+                // Handle specific error types
+                if (d.error?.type === 'not_found_error' && targetModel !== 'claude-3-haiku-20240307') {
+                    console.log(`[ANTHROPIC] Modelo não encontrado, tentando fallback para Haiku...`);
+                    return await queryWithFallback('claude-3-haiku-20240307');
                 }
-                throw new Error(`Anthropic Error: ${d.error?.message}`);
+                if (d.error?.type === 'authentication_error') {
+                    throw new Error(`Claude: Chave de API inválida ou expirada. Verifique a ANTHROPIC_API_KEY.`);
+                }
+                if (d.error?.type === 'invalid_request_error') {
+                    throw new Error(`Claude: ${d.error?.message || 'Requisição inválida'}`);
+                }
+                throw new Error(`Claude Error: ${d.error?.message || res.statusText}`);
             }
+
             return d.content[0].text;
         };
 
-        return await queryTwice(mdl);
+        return await queryWithFallback(mdl);
     },
 
     'perplexity': async (msgs, sys, mdl) => {
@@ -166,12 +194,14 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
         return data.choices[0].message.content;
     },
     'google': async (msgs, sys, mdl) => {
-        const apiKey = Deno.env.get('GOOGLE_API_KEY') || Deno.env.get('GEMINI_API_KEY');
-        if (!apiKey) throw new Error('Google/Gemini API Key missing');
+        // Prioritize GEMINI_API_KEY as it's more specific
+        const apiKey = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GOOGLE_API_KEY');
+        if (!apiKey) throw new Error('GEMINI_API_KEY ou GOOGLE_API_KEY não configurada no Supabase.');
+
+        console.log(`[GEMINI] Iniciando chamada para modelo: ${mdl}`);
+        console.log(`[GEMINI] API Key prefix: ${apiKey.substring(0, 10)}...`);
 
         // Gemini REST API needs a specific format
-        // https://ai.google.dev/tutorials/rest_quickstart
-
         const contents = msgs.map((m: any) => ({
             role: m.role === 'assistant' ? 'model' : 'user',
             parts: [{ text: m.content }]
@@ -182,22 +212,44 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
             contents,
             system_instruction: { parts: [{ text: sys }] },
             generationConfig: {
-                maxOutputTokens: 16384,
+                maxOutputTokens: 8192,
                 temperature: 0.4
             }
         };
 
         const modelId = mdl.includes('gemini') ? mdl : 'gemini-1.5-pro';
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`, {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
+
+        console.log(`[GEMINI] Endpoint: ${endpoint.split('?')[0]}`);
+
+        const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(`Google Gemini Error: ${data.error?.message || res.statusText}`);
+        console.log(`[GEMINI] Response status: ${res.status}`);
 
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        if (!res.ok) {
+            console.error(`[GEMINI] Error response:`, JSON.stringify(data));
+
+            if (data.error?.status === 'PERMISSION_DENIED') {
+                throw new Error('Gemini: Chave de API inválida ou sem permissão. Verifique a GEMINI_API_KEY.');
+            }
+            if (data.error?.status === 'INVALID_ARGUMENT') {
+                throw new Error(`Gemini: ${data.error?.message || 'Argumento inválido'}`);
+            }
+            throw new Error(`Gemini Error: ${data.error?.message || res.statusText}`);
+        }
+
+        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!responseText) {
+            console.error(`[GEMINI] Empty response:`, JSON.stringify(data));
+            throw new Error('Gemini retornou resposta vazia. Verifique os logs.');
+        }
+
+        return responseText;
     }
 };
 
@@ -210,10 +262,42 @@ serve(async (req) => {
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-        const { messages, model, system_prompt, tone, agentId } = await req.json();
+        const { messages, model, system_prompt, tone, agentId, raw_mode } = await req.json();
+
+        console.log(`[AGENT-CHAT] raw_mode value:`, raw_mode, typeof raw_mode);
+
+        // RAW MODE: Direct OpenAI call without RAG/Guardrails
+        if (raw_mode) {
+            const apiKey = Deno.env.get('OPENAI_API_KEY');
+            if (!apiKey) throw new Error('OpenAI API Key missing');
+
+            const targetModel = model || 'gpt-5.2';
+            console.log(`[RAW MODE] Direct call to ${targetModel} with ${messages?.length} messages`);
+
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: targetModel,
+                    messages: messages,
+                    max_tokens: 4096,
+                    temperature: 0.3
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(`OpenAI Error: ${data.error?.message}`);
+
+            return new Response(JSON.stringify({
+                success: true,
+                response: data.choices[0].message.content
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
 
         // 1. RESOLVE AGENT IDENTITY FROM DATABASE
-        let targetModelId = model || 'gpt-4o';
+        let targetModelId = model || 'gpt-5.2';
         let baseSystemPrompt = system_prompt || '';
         let agentName = 'Assistente';
         let dbAgent: any = null;
@@ -242,9 +326,12 @@ serve(async (req) => {
         const m = (targetModelId || '').toLowerCase();
 
         if (m.includes('o1')) { targetModelId = 'o1-preview'; provider = 'openai'; }
+        else if (m.includes('5.2') || m.includes('gpt-5')) { targetModelId = 'gpt-5.2'; provider = 'openai'; }
         else if (m.includes('mini')) { targetModelId = 'gpt-4o-mini'; provider = 'openai'; }
-        else if (m.includes('opus')) { targetModelId = 'claude-3-opus-20240229'; provider = 'anthropic'; }
-        else if (m.includes('sonnet')) { targetModelId = 'claude-3-5-sonnet-20241022'; provider = 'anthropic'; }
+        else if (m.includes('opus')) { targetModelId = 'claude-sonnet-4-5-20250929'; provider = 'anthropic'; }
+        else if (m.includes('sonnet-4.5') || m.includes('sonnet-4-5')) { targetModelId = 'claude-sonnet-4-5-20250929'; provider = 'anthropic'; }
+        else if (m.includes('sonnet')) { targetModelId = 'claude-sonnet-4-5-20250929'; provider = 'anthropic'; }
+        else if (m.includes('haiku') || m.includes('claude')) { targetModelId = 'claude-3-5-haiku-20241022'; provider = 'anthropic'; }
         else if (m.includes('gemini')) { targetModelId = 'gemini-1.5-pro'; provider = 'google'; }
         else if (m.includes('sonar') || m.includes('perplexity')) { targetModelId = 'sonar'; provider = 'perplexity'; }
 

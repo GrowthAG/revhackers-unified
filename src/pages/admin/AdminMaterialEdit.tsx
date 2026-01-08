@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from '@/components/layout/AdminLayout';
@@ -30,7 +30,6 @@ const AdminMaterialEdit = () => {
                 console.error("Error fetching material:", error);
                 setFetchError(error.message);
                 toast.error(`Erro ao buscar material: ${error.message}`);
-                // navigate('/admin/materials');
             } else {
                 console.log('Material data:', data);
                 setMaterial(data);
@@ -43,17 +42,17 @@ const AdminMaterialEdit = () => {
 
     if (loading) {
         return (
-            <PageLayout>
-                <div className="flex h-screen items-center justify-center pt-32">
+            <AdminLayout>
+                <div className="flex h-screen items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
                 </div>
-            </PageLayout>
+            </AdminLayout>
         );
     }
 
     if (fetchError) {
         return (
-            <PageLayout>
+            <AdminLayout>
                 <AdminPageLayout title="Erro" backTo="/admin/materials" backLabel="Voltar">
                     <div className="p-8 text-center">
                         <h2 className="text-xl font-bold text-red-500 mb-2">Falha ao carregar material</h2>
@@ -61,15 +60,13 @@ const AdminMaterialEdit = () => {
                         <button onClick={() => window.location.reload()} className="underline">Tentar novamente</button>
                     </div>
                 </AdminPageLayout>
-            </PageLayout>
+            </AdminLayout>
         );
     }
 
     if (!material) return null;
 
     // Mapping DB columns to Form Interface
-    // DB: material_name, material_type, link_material, slug, etc.
-    // Form: title, type, material_url, etc.
     const formInitialData = {
         id: material.id,
         title: material.material_name || material.title || '',
@@ -102,3 +99,4 @@ const AdminMaterialEdit = () => {
 };
 
 export default AdminMaterialEdit;
+
