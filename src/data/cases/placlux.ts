@@ -32,10 +32,10 @@ export const placluxCase = {
       label: "Aumento em Conversões"
     }
   ],
-  quote: "A RevHackers estruturou nosso comercial do zero. Antes perdíamos 70% dos leads por falta de processo. Hoje temos CRM rodando, campanhas trazendo leads qualificados todo dia e conseguimos atender arquitetos e consumidores finais de forma profissional. O CAC caiu 35%.",
-  author: "Caroline Siqueira",
-  role: "VP do Grupo Innova Steel",
-  authorImage: "/uploads/5336ba0d-ed69-49f9-8041-36171f3f7b99.png",
+  quote: "",
+  author: "",
+  role: "",
+  authorImage: "",
   preview_description: "CRM e Mídia Paga B2B/B2C: Implementação de CRM estruturado e campanhas segmentadas que cresceram a base B2B em 75%, vendas B2C em 50% e reduziram CAC em 35%.",
   logoScale: 1.4,
   techStack: ["Pinterest Ads", "LinkedIn Ads", "Funnels", "WordPress"]

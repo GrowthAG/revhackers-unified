@@ -1,15 +1,116 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar, Clock, DollarSign, CreditCard, CheckCircle2 } from "lucide-react";
+import { Loader2, Calendar, Clock, DollarSign, CreditCard, CheckCircle2, Zap, Quote, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { casesData } from "@/data/casesData";
+import PageLayout from "@/components/layout/PageLayout";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+
+interface ScopePhase {
+    phase: string;
+    duration: string;
+    description: string;
+    deliverables: string[];
+    status?: string;
+}
+
+const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
+    let phases: ScopePhase[] | null = null;
+    let htmlContent: string | null = null;
+
+    try {
+        if (typeof scope === 'string') {
+            if (scope.trim().startsWith('[')) {
+                phases = JSON.parse(scope);
+            } else {
+                htmlContent = scope;
+            }
+        } else if (Array.isArray(scope)) {
+            phases = scope;
+        }
+    } catch (e) {
+        htmlContent = scope;
+    }
+
+    if (htmlContent) {
+        return (
+            <div className="bg-white p-6 lg:p-12 rounded-[4px] border border-zinc-200 shadow-sm">
+                <div
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
+                    className="prose prose-zinc prose-sm max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900"
+                />
+            </div>
+        );
+    }
+
+    if (!phases) return null;
+
+    return (
+        <div className="space-y-0 border-l border-zinc-200 ml-2">
+            {phases.slice(0, 5).map((phase, idx) => (
+                <div key={idx} className="relative pl-6 pb-10 last:pb-0">
+                    {/* Subtle Number */}
+                    <span className="absolute left-0 -translate-x-1/2 text-[10px] font-mono text-zinc-300 bg-white px-0.5">{`0${idx + 1}`}</span>
+
+                    {/* Week Label */}
+                    <span className="text-[10px] text-zinc-400 tracking-wide">
+                        {phase.duration || `Fase ${idx + 1}`}
+                    </span>
+
+                    {/* Phase Title */}
+                    <h4 className="text-base font-medium text-zinc-800 mt-1 mb-1">
+                        {phase.phase || `Fase ${idx + 1}`}
+                    </h4>
+
+                    {/* Description */}
+                    {phase.description && (
+                        <p className="text-sm text-zinc-500 leading-relaxed mb-3 max-w-xl">
+                            {phase.description}
+                        </p>
+                    )}
+
+                    {/* Deliverables */}
+                    {phase.deliverables && phase.deliverables.length > 0 && (
+                        <ul className="space-y-1 pl-0">
+                            {phase.deliverables.map((item, i) => (
+                                <li key={i} className="text-sm text-zinc-600">
+                                    <span className="text-zinc-300 mr-2">→</span>{item}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            ))}
+
+            {/* End */}
+            <div className="relative pl-6 pt-1">
+                <span className="absolute left-0 -translate-x-1/2 text-[10px] font-mono text-emerald-500 bg-white px-0.5">✓</span>
+                <span className="text-[10px] text-zinc-500">
+                    {proposal.crm_data?.project_duration === '3' ? 'Semana 12' :
+                        proposal.crm_data?.project_duration === '6' ? 'Mês 6' :
+                            proposal.crm_data?.project_duration === '12' ? 'Mês 12' : 'Semana 8'} → Ongoing
+                </span>
+            </div>
+        </div>
+    );
+};
 
 export default function PublicDealRoom() {
     const { slug } = useParams();
     const [proposal, setProposal] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const testimonialsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchProposal = async () => {
@@ -29,6 +130,25 @@ export default function PublicDealRoom() {
 
         fetchProposal();
     }, [slug]);
+
+    // Auto-scroll testimonials carousel
+    useEffect(() => {
+        const container = testimonialsRef.current;
+        if (!container) return;
+
+        const interval = setInterval(() => {
+            const scrollAmount = 420; // card width + gap
+            const maxScroll = container.scrollWidth - container.clientWidth;
+
+            if (container.scrollLeft >= maxScroll - 10) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [proposal]);
 
     // Inject Script for Widget
     useEffect(() => {
@@ -62,293 +182,351 @@ export default function PublicDealRoom() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FDFDFD] text-zinc-900 font-sans selection:bg-[#03FC3B] selection:text-black pb-32 overflow-x-hidden">
+        <PageLayout>
+            <div className="bg-[#FDFDFD] text-zinc-900 font-sans selection:bg-[#03FC3B] selection:text-black pb-32 overflow-x-hidden pt-20">
 
-            {/* Header: BLACK BAR STANDARD (Tarja Preta) */}
-            <header className="fixed top-0 left-0 right-0 h-16 bg-[#09090B] border-b border-zinc-800 z-50 flex items-center justify-between px-4 lg:px-12 transition-all duration-500">
-                <div className="flex items-center gap-4 lg:gap-6">
-                    {/* RevHackers Logo (From Main Site) */}
-                    <img
-                        src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
-                        alt="RevHackers"
-                        className="h-6 lg:h-8 w-auto opacity-100"
-                    />
+                {/* Main Content Container */}
+                <main className="pt-10 lg:pt-16 px-6 max-w-[1200px] mx-auto space-y-12">
 
-                    <div className="h-4 lg:h-6 w-[1px] bg-zinc-800" />
-
-                    {/* Client Identifier */}
-                    <div className="flex items-center gap-3">
-                        <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium hidden md:block">Para</span>
-                        {proposal.client_logo ? (
-                            <div className="bg-white p-1 rounded-sm h-6 lg:h-8 w-auto min-w-[28px] lg:min-w-[32px] flex items-center justify-center">
-                                <img src={proposal.client_logo} alt={proposal.client_name} className="h-5 lg:h-6 w-auto mix-blend-multiply" />
+                    {/* Section 1: Hero & Context - COMPACT */}
+                    <section className="text-center space-y-6">
+                        <div className="space-y-4 max-w-4xl mx-auto relative">
+                            {/* Status Badge - Moved from Header */}
+                            <div className="flex justify-center mb-6">
+                                <Badge className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-0 shadow-sm ${proposal.status === 'approved'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-zinc-100 text-zinc-500'
+                                    }`}>
+                                    {proposal.status === 'active' ? 'Em Aberto' : proposal.status}
+                                </Badge>
                             </div>
-                        ) : (
-                            <div className="h-6 lg:h-8 w-6 lg:w-8 bg-zinc-800 text-zinc-300 rounded-[2px] flex items-center justify-center font-bold text-[10px] lg:text-xs ring-1 ring-zinc-700">
-                                {proposal.client_name?.substring(0, 2).toUpperCase()}
+
+                            <div className="flex items-center justify-center gap-3">
+                                <span className="h-[1px] w-8 bg-zinc-300"></span>
+                                <p className="text-[10px] font-serif italic text-zinc-500 tracking-wide uppercase">
+                                    Plano Estratégico Exclusivo
+                                </p>
+                                <span className="h-[1px] w-8 bg-zinc-300"></span>
                             </div>
-                        )}
-                    </div>
-                </div>
 
-                <div className="flex items-center gap-4">
-                    <Badge className={`rounded-full px-2 lg:px-3 py-0.5 text-[8px] lg:text-[10px] font-bold tracking-wider uppercase border-0 ${proposal.status === 'approved'
-                        ? 'bg-green-500 text-black'
-                        : 'bg-zinc-800 text-zinc-400'
-                        }`}>
-                        {proposal.status === 'active' ? '● Em Aberto' : proposal.status}
-                    </Badge>
-                </div>
-            </header>
+                            <h1 className="text-3xl lg:text-5xl font-semibold tracking-tighter text-zinc-900 leading-[1.1] text-balance">
+                                {proposal.title || proposal.headline || `Proposta de Implementação RevHackers X ${proposal.client_name}`}
+                            </h1>
 
-            {/* Main Content Container */}
-            <main className="pt-28 lg:pt-32 px-6 max-w-[1200px] mx-auto space-y-20 lg:space-y-24">
-
-                {/* Section 1: Hero & Context - REFINED & INTERESTING */}
-                <section className="text-center space-y-8 lg:space-y-10">
-                    <div className="space-y-4 lg:space-y-6 max-w-5xl mx-auto">
-                        <div className="flex items-center justify-center gap-3">
-                            <span className="h-[1px] w-8 bg-zinc-300"></span>
-                            <p className="text-xs font-serif italic text-zinc-500 tracking-wide">
-                                Plano Estratégico Exclusivo
+                            <p className="text-base text-zinc-400 font-light tracking-tight">
+                                Preparado para <span className="font-medium text-zinc-900 border-b border-zinc-200 pb-0.5">{proposal.client_name}</span>
                             </p>
-                            <span className="h-[1px] w-8 bg-zinc-300"></span>
+                        </div>
+                    </section>
+
+                    {/* Section 2: Video (The Centerpiece) */}
+                    <section className="space-y-8">
+                        <div className="group relative w-full aspect-[16/9] bg-zinc-900 rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
+                            {proposal.recording_url ? (
+                                <iframe
+                                    src={proposal.recording_url.includes('/embed')
+                                        ? proposal.recording_url
+                                        : proposal.recording_url.replace('/app/meetings/', '/app/embed/')}
+                                    // Smart Crop Technique - Responsive
+                                    className="relative z-10 w-full h-full md:w-[110%] md:h-[150%] md:-mt-[72px] md:-ml-[5%] border-none grayscale-[5%] group-hover:grayscale-0 group-hover:scale-[1.01] transition-all duration-1000 ease-out opacity-90 group-hover:opacity-100"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    title="Recording"
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-zinc-400 gap-2">
+                                    <p className="text-xs uppercase tracking-widest text-zinc-600">Vídeo não disponível</p>
+                                </div>
+                            )}
                         </div>
 
-                        <h1 className="text-5xl lg:text-8xl font-semibold tracking-tighter text-zinc-900 leading-[0.9] text-balance">
-                            {proposal.headline || "Growth Strategy Blueprint"}
-                        </h1>
-
-                        <p className="text-lg lg:text-xl text-zinc-400 font-light tracking-tight">
-                            Preparado para <span className="font-medium text-zinc-900 border-b border-zinc-200 pb-0.5">{proposal.client_name}</span>
-                        </p>
-                    </div>
-                </section>
-
-                {/* Section 2: Video (The Centerpiece) */}
-                <section className="max-w-5xl mx-auto">
-                    <div className="group relative w-full aspect-video bg-zinc-900 rounded-[2px] shadow-2xl shadow-zinc-300/40 overflow-hidden hover:shadow-zinc-400/50 transition-all duration-700">
-                        {proposal.recording_url ? (
-                            <iframe
-                                src={proposal.recording_url.includes('/embed')
-                                    ? proposal.recording_url
-                                    : proposal.recording_url.replace('/app/meetings/', '/app/embed/')}
-                                // Smart Crop Technique
-                                style={{
-                                    width: '110%',
-                                    height: '150%',
-                                    marginTop: '-72px',
-                                    marginLeft: '-5%',
-                                    border: 'none',
+                        {/* Action Buttons */}
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-4 print:hidden">
+                            <Button
+                                className="h-12 px-8 bg-zinc-900 text-white hover:bg-zinc-800 uppercase tracking-widest text-[10px] font-bold rounded-sm w-full md:w-auto"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast({ title: "Link Copiado!", description: "O link da proposta foi copiado para sua área de transferência." });
                                 }}
-                                className="relative z-10 w-full h-full grayscale-[5%] group-hover:grayscale-0 group-hover:scale-[1.01] transition-all duration-1000 ease-out opacity-90 group-hover:opacity-100"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                                title="Recording"
-                            />
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-zinc-400 gap-2">
-                                <p className="text-xs uppercase tracking-widest text-zinc-600">Vídeo não disponível</p>
+                            >
+                                <Share2 className="w-3 h-3 mr-2" /> Compartilhar Proposta
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="h-12 px-8 border-zinc-200 text-zinc-600 hover:text-black hover:border-black uppercase tracking-widest text-[10px] font-bold rounded-sm w-full md:w-auto"
+                                onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })}
+                            >
+                                Ver Cronograma
+                            </Button>
+                        </div>
+                    </section>
+
+                    {/* Section 3: Mindmap / Blueprint */}
+                    {(() => {
+                        let mindmapSrc = proposal.mindmap_url || proposal.mindmap_code;
+
+                        // If the input is an iframe HTML, extract the src
+                        if (mindmapSrc && mindmapSrc.includes('<iframe')) {
+                            const srcMatch = mindmapSrc.match(/src=["']([^"']+)["']/);
+                            if (srcMatch) mindmapSrc = srcMatch[1];
+                        }
+
+                        // Only convert Whimsical share URLs to embed (NOT already embed URLs)
+                        if (mindmapSrc && mindmapSrc.includes('whimsical.com') && !mindmapSrc.includes('/embed/')) {
+                            // Convert share URL like whimsical.com/my-board-ABC123 to embed/ABC123
+                            const parts = mindmapSrc.split('/');
+                            const lastPart = parts[parts.length - 1];
+                            // Extract ID (might be after a dash or the whole last segment)
+                            const id = lastPart.includes('-') ? lastPart.split('-').pop() : lastPart;
+                            if (id) mindmapSrc = `https://whimsical.com/embed/${id}`;
+                        }
+
+                        const isValidUrl = mindmapSrc && (
+                            mindmapSrc.includes('whimsical.com/embed') ||
+                            mindmapSrc.includes('miro.com') ||
+                            mindmapSrc.includes('figma.com')
+                        );
+
+                        if (!isValidUrl && !proposal.mindmap_embed) return null;
+
+                        return (
+                            <section className="space-y-6 pt-8 border-t border-zinc-100">
+                                <div className="flex items-center justify-center gap-2 mb-8">
+                                    <span className="w-2 h-2 rounded-full bg-zinc-200"></span>
+                                    <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-[0.2em] text-center">Arquitetura da Solução</h3>
+                                </div>
+                                <div className="w-full aspect-[16/9] bg-white rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-500">
+                                    {isValidUrl ? (
+                                        <iframe src={mindmapSrc} className="w-full h-full border-none" title="Blueprint" />
+                                    ) : (
+                                        <div dangerouslySetInnerHTML={{ __html: proposal.mindmap_embed }} className="w-full h-full" />
+                                    )}
+                                </div>
+                            </section>
+                        );
+                    })()}
+
+                    {/* Section 4: Detailed Scope (IMPROVED LAYOUT) */}
+                    {proposal.detailed_scope && (
+                        <section id="roadmap" className="max-w-5xl mx-auto pt-8 space-y-12">
+                            <div className="text-center space-y-4">
+                                <h3 className="text-3xl font-semibold text-zinc-900 tracking-tighter">Roadmap de Execução</h3>
+                                <p className="text-zinc-500 max-w-lg mx-auto text-sm">
+                                    O detalhamento técnico das fases, entregáveis e objetivos estratégicos do projeto.
+                                </p>
                             </div>
-                        )}
-                    </div>
-                </section>
 
-                {/* Section 3: Mindmap / Blueprint */}
-                {(() => {
-                    let mindmapSrc = proposal.mindmap_url || proposal.mindmap_code;
-
-                    // If the input is an iframe HTML, extract the src
-                    if (mindmapSrc && mindmapSrc.includes('<iframe')) {
-                        const srcMatch = mindmapSrc.match(/src=["']([^"']+)["']/);
-                        if (srcMatch) mindmapSrc = srcMatch[1];
-                    }
-
-                    // Only convert Whimsical share URLs to embed (NOT already embed URLs)
-                    if (mindmapSrc && mindmapSrc.includes('whimsical.com') && !mindmapSrc.includes('/embed/')) {
-                        // Convert share URL like whimsical.com/my-board-ABC123 to embed/ABC123
-                        const parts = mindmapSrc.split('/');
-                        const lastPart = parts[parts.length - 1];
-                        // Extract ID (might be after a dash or the whole last segment)
-                        const id = lastPart.includes('-') ? lastPart.split('-').pop() : lastPart;
-                        if (id) mindmapSrc = `https://whimsical.com/embed/${id}`;
-                    }
-
-                    const isValidUrl = mindmapSrc && (
-                        mindmapSrc.includes('whimsical.com/embed') ||
-                        mindmapSrc.includes('miro.com') ||
-                        mindmapSrc.includes('figma.com')
-                    );
-
-                    if (!isValidUrl && !proposal.mindmap_embed) return null;
-
-                    return (
-                        <section className="space-y-6 pt-12 border-t border-zinc-100">
-                            <div className="flex items-center justify-center gap-2 mb-8">
-                                <span className="w-2 h-2 rounded-full bg-zinc-200"></span>
-                                <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-[0.2em] text-center">Arquitetura da Solução</h3>
-                            </div>
-                            <div className="w-full aspect-[16/9] bg-white rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-500">
-                                {isValidUrl ? (
-                                    <iframe src={mindmapSrc} className="w-full h-full border-none" title="Blueprint" />
-                                ) : (
-                                    <div dangerouslySetInnerHTML={{ __html: proposal.mindmap_embed }} className="w-full h-full" />
-                                )}
-                            </div>
+                            {/* ROADMAP DISPLAY COMPONENT */}
+                            <RoadmapDisplay scope={proposal.detailed_scope} proposal={proposal} />
                         </section>
-                    );
-                })()}
+                    )}
 
-                {/* Section 4: Detailed Scope (IMPROVED LAYOUT) */}
-                {proposal.detailed_scope && (
-                    <section className="max-w-4xl mx-auto pt-16 space-y-12">
-                        <div className="text-center space-y-4">
-                            <h3 className="text-3xl font-semibold text-zinc-900 tracking-tighter">Roadmap de Execução</h3>
-                            <p className="text-zinc-500 max-w-lg mx-auto text-sm">
-                                O detalhamento técnico das fases, entregáveis e objetivos estratégicos do projeto.
-                            </p>
+                    {/* Testimonials Carousel (Before Pricing) */}
+                    <section className="pt-16 pb-8 border-t border-zinc-100/50 print:hidden">
+                        <div className="flex items-center gap-3 border-b border-zinc-100 pb-4 mb-8">
+                            <Quote className="w-5 h-5 text-zinc-400" />
+                            <h2 className="text-xl font-semibold text-zinc-900 tracking-tight">O que dizem sobre nós</h2>
                         </div>
 
-                        {/* Styled "Document" Card */}
-                        <div className="bg-white p-8 lg:p-16 rounded-[4px] border border-zinc-200 shadow-lg shadow-zinc-200/20 prose prose-zinc prose-lg max-w-none 
-                            prose-headings:font-serif prose-headings:font-normal prose-headings:text-zinc-900 
-                            prose-p:text-zinc-600 prose-p:font-light prose-p:leading-8
-                            prose-li:text-zinc-700 prose-li:marker:text-zinc-300
-                            prose-strong:font-semibold prose-strong:text-zinc-900">
+                        <div ref={testimonialsRef} className="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent px-1">
+                            {Object.values(casesData)
+                                .filter(c => c.quote && c.quote.length > 20)
+                                .map((c, index) => (
+                                    <div key={index} className="snap-center shrink-0 w-[85vw] md:w-[400px] bg-white p-8 rounded-[4px] border border-zinc-100 shadow-sm hover:shadow-md transition-all space-y-6 flex flex-col justify-between select-none">
+                                        <div className="space-y-4">
+                                            <Quote className="w-6 h-6 text-zinc-200" />
+                                            <p className="text-sm text-zinc-600 leading-relaxed italic">
+                                                "{c.quote}"
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-4 pt-4 border-t border-zinc-50">
+                                            {c.authorImage ? (
+                                                <img src={c.authorImage} alt={c.author} className="w-10 h-10 rounded-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-400">
+                                                    {c.author.substring(0, 2).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <div>
+                                                <p className="text-xs font-bold text-zinc-900">{c.author}</p>
+                                                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">{c.role}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </section>
 
-                            <div className="whitespace-pre-line">
-                                {proposal.detailed_scope}
+                    {/* Section 5: Calendar + Pricing Grid */}
+                    <section className="pt-12 border-t border-zinc-100/50">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+
+                            {/* LEFT: Calendar */}
+                            <div className="lg:col-span-8 order-2 lg:order-1 flex flex-col space-y-5">
+                                <div className="h-20 flex flex-col justify-end">
+                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Concluir Projeto</h2>
+                                    <p className="text-[13px] text-zinc-500 mt-2.5 leading-relaxed">Agende a Call de Fechamento para tirar suas últimas dúvidas</p>
+                                </div>
+                                <div className="flex-grow">
+                                    <div className="w-full h-full bg-white rounded-[4px] border border-zinc-200 overflow-hidden shadow-sm">
+                                        <iframe
+                                            src="https://pages.revhackers.com.br/widget/booking/t705eSgxmMHJrqU5VW1z"
+                                            style={{ width: '100%', border: 'none', height: '100%', minHeight: '700px', overflow: 'hidden' }}
+                                            scrolling="no"
+                                            title="Booking"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Signature Placeholder */}
-                            <div className="mt-16 pt-8 border-t border-zinc-100 flex justify-end">
-                                <div className="text-right">
-                                    <p className="font-serif italic text-zinc-400 text-sm">RevHackers Team</p>
+                            {/* RIGHT: Pricing */}
+                            <div className="lg:col-span-4 order-1 lg:order-2 flex flex-col space-y-5">
+                                <div className="h-20 flex flex-col justify-end">
+                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Proposta Comercial</h2>
+                                    <p className="text-[13px] text-zinc-500 mt-2.5 leading-relaxed">Valores e condições de investimento</p>
+                                </div>
+                                <div className="flex-grow flex flex-col bg-white rounded-[4px] border border-zinc-200 overflow-hidden shadow-sm">
+                                    {/* Content Section */}
+                                    <div className="flex-grow flex flex-col">
+                                        {/* SERVIÇOS */}
+                                        <div className="p-8">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <h3 className="text-xs font-semibold text-zinc-900 uppercase tracking-widest">Serviços RevHackers</h3>
+                                                <span className="text-[10px] text-zinc-500 bg-zinc-100 px-2 py-1 rounded">
+                                                    {proposal.crm_data?.project_duration ? `${proposal.crm_data.project_duration} Meses` : '8 Semanas'}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-3 mb-5">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-zinc-600">Setup Estratégico</span>
+                                                    <span className="text-sm font-medium text-zinc-900">
+                                                        R$ {Number(proposal.setup_fee || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-zinc-600">Fee Mensal ({proposal.installment_count}x)</span>
+                                                    <span className="text-sm font-medium text-zinc-900">
+                                                        R$ {Number(proposal.installment_value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}/mês
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="border-t border-zinc-200 pt-4 space-y-3">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-semibold text-zinc-900">Total Serviços</span>
+                                                    <span className="text-xl font-bold text-zinc-900">
+                                                        R$ {Number(proposal.investment_total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
+                                                    </span>
+                                                </div>
+                                                <div className="bg-zinc-50 rounded px-3 py-2">
+                                                    <p className="text-xs text-zinc-600">
+                                                        Parcelável em até <span className="font-semibold">12x no cartão</span>
+                                                    </p>
+                                                    <p className="text-[10px] text-zinc-500 mt-0.5">com juros da operadora</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* PLATAFORMA (if applicable) */}
+                                        {(() => {
+                                            const planId = proposal.crm_data?.funnel_plan || 'none';
+
+                                            if (planId === 'none') return <div className="flex-grow" />;
+
+                                            let basePrice = 697;
+                                            if (planId.includes('497')) basePrice = 497;
+                                            if (planId.includes('297')) basePrice = 297;
+                                            if (planId.includes('997')) basePrice = 997;
+
+                                            const discountPercent = proposal.crm_data?.platform_discount_percent || 0;
+                                            const finalPrice = discountPercent > 0 ? basePrice * (1 - discountPercent / 100) : basePrice;
+                                            const isAnnual = planId.includes('annual');
+
+                                            return (
+                                                <div className="p-8 border-t border-zinc-100 flex-grow flex flex-col">
+                                                    <h3 className="text-xs font-semibold text-zinc-900 uppercase tracking-widest mb-4">Plataforma Funnels</h3>
+
+                                                    <div className="space-y-3 mb-5">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm text-zinc-600">Licença {isAnnual ? 'Anual' : 'Mensal'}</span>
+                                                            <span className="text-sm font-medium text-zinc-900">
+                                                                R$ {finalPrice.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}/{isAnnual ? 'ano' : 'mês'}
+                                                            </span>
+                                                        </div>
+                                                        {discountPercent > 0 && (
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-sm text-zinc-600">Desconto aplicado</span>
+                                                                <span className="text-sm font-medium text-zinc-900">-{discountPercent}%</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {isAnnual ? (
+                                                        <div className="border-t border-zinc-200 pt-4 space-y-3">
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-sm font-semibold text-zinc-900">Total Anual</span>
+                                                                <span className="text-xl font-bold text-zinc-900">
+                                                                    R$ {finalPrice.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                                                                </span>
+                                                            </div>
+                                                            <div className="bg-zinc-50 rounded px-3 py-2">
+                                                                <p className="text-xs text-zinc-600">
+                                                                    Parcelável em <span className="font-semibold">12x sem juros</span> no cartão
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="border-t border-zinc-200 pt-4 space-y-3">
+                                                            {proposal.crm_data?.funnel_promo_active ? (
+                                                                <>
+                                                                    <div className="flex justify-between items-center bg-emerald-50/50 px-3 py-2 rounded-lg border border-emerald-100/50">
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tight">Primeiro Mês</span>
+                                                                            <span className="text-xs text-emerald-600/70">Bonificação Ativa</span>
+                                                                        </div>
+                                                                        <span className="text-lg font-bold text-emerald-600">GRÁTIS</span>
+                                                                    </div>
+                                                                    <p className="text-[10px] text-zinc-500 text-center">
+                                                                        R$ {finalPrice.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}/mês após os primeiros 30 dias
+                                                                    </p>
+                                                                </>
+                                                            ) : (
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-sm font-semibold text-zinc-900">Mensalidade</span>
+                                                                    <span className="text-xl font-bold text-zinc-900">
+                                                                        R$ {finalPrice.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <div className="mt-6 pt-6 border-t border-zinc-100">
+                                                        <p className="text-[10px] text-zinc-400 leading-tight">
+                                                            Acesso completo à plataforma Funnels, incluindo CRM, dashboards em tempo real, automações ilimitadas e suporte prioritário.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+
+                                    {/* Terms - NOW INSIDE CARD */}
+                                    <div className="p-8 pt-0 mt-auto">
+                                        <div className="pt-4 border-t border-zinc-100/50">
+                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-2">Condições Gerais</p>
+                                            <p className="text-[11px] text-zinc-500 leading-relaxed italic">
+                                                * {proposal.payment_terms || "Pagamento do setup em D+5. Mensalidades via boleto ou cartão."}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </section>
-                )}
-
-                {/* Section 5: The "Decision Engine" Grid (Calendar + Pricing) */}
-                <section className="pt-24 border-t border-zinc-100/50">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-
-                        {/* LEFT: Calendar (Massive, Clean) */}
-                        <div className="lg:col-span-8 space-y-8 order-2 lg:order-1">
-                            <div className="flex items-center gap-3 border-b border-zinc-100 pb-4">
-                                <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight flex items-center gap-3">
-                                    <Calendar className="w-6 h-6 text-zinc-400" />
-                                    Próximos Passos
-                                </h2>
-                            </div>
-
-                            <div className="w-full bg-white rounded-[4px] border border-zinc-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-500 h-[800px] lg:h-auto">
-                                <iframe
-                                    src="https://pages.revhackers.com.br/widget/booking/uxqTwPld84iuewhcgOjd"
-                                    style={{ width: '100%', border: 'none', minHeight: '900px', overflow: 'hidden' }}
-                                    scrolling="no"
-                                    id="uxqTwPld84iuewhcgOjd_1767734526804"
-                                    title="Booking"
-                                />
-                            </div>
-                        </div>
-
-                        {/* RIGHT: Pricing & Terms (Sticky) */}
-                        <div className="lg:col-span-4 h-full relative order-1 lg:order-2">
-                            <div className="sticky top-24 space-y-8">
-
-                                <div className="flex items-center gap-3 border-b border-zinc-100 pb-4">
-                                    <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight flex items-center gap-3">
-                                        <DollarSign className="w-6 h-6 text-zinc-400" />
-                                        Investimento
-                                    </h2>
-                                </div>
-
-                                {/* Pricing Card - More "Technical" & Tactile */}
-                                <div className="bg-zinc-950 text-white p-8 rounded-[4px] shadow-2xl flex flex-col gap-8 relative overflow-hidden group hover:-translate-y-1 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out">
-
-                                    {/* Setup */}
-                                    {proposal.setup_fee && Number(proposal.setup_fee) > 0 && (
-                                        <div className="space-y-2 relative z-10">
-                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Setup & Onboarding</p>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-lg font-medium text-zinc-500">R$</span>
-                                                <span className="text-3xl font-medium text-white tracking-tighter">
-                                                    {Number(proposal.setup_fee).toLocaleString('pt-BR')}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Recurring */}
-                                    {proposal.installment_value && Number(proposal.installment_value) > 0 && (
-                                        <div className="space-y-2 relative z-10">
-                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Recorrência Mensal</p>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-4xl font-semibold text-white tracking-tighter">
-                                                    {proposal.installment_count && Number(proposal.installment_count) > 1
-                                                        ? `${proposal.installment_count}x R$ ${Number(proposal.installment_value).toLocaleString('pt-BR')}`
-                                                        : `R$ ${Number(proposal.installment_value).toLocaleString('pt-BR')}`
-                                                    }
-                                                </span>
-                                                {!(proposal.installment_count && Number(proposal.installment_count) > 1) &&
-                                                    <span className="text-sm text-zinc-600">/mês</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Total */}
-                                    <div className="pt-6 border-t border-zinc-800 relative z-10">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Total do Projeto</span>
-                                            <span className="text-xl font-bold text-zinc-200 tracking-tight">
-                                                {proposal.investment_total ? `R$ ${Number(proposal.investment_total).toLocaleString('pt-BR')}` : '-'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        onClick={() => {
-                                            if (proposal.checkout_url) {
-                                                window.open(proposal.checkout_url, '_blank');
-                                            } else {
-                                                // Fallback if no link: Scroll to calendar
-                                                document.getElementById('uxqTwPld84iuewhcgOjd_1767734526804')?.scrollIntoView({ behavior: 'smooth' });
-                                            }
-                                        }}
-                                        className="w-full bg-[#03FC3B] hover:bg-[#03FC3B]/90 text-zinc-900 font-bold tracking-wide uppercase text-xs h-12 rounded-sm mt-2 transition-transform active:scale-95 duration-200 shadow-[0_0_20px_rgba(3,252,59,0.2)] hover:shadow-[0_0_30px_rgba(3,252,59,0.4)]"
-                                    >
-                                        Assinar Proposta
-                                    </Button>
-                                </div>
-
-                                {/* Terms Card */}
-                                <div className="bg-white p-6 rounded-[4px] border border-zinc-200 space-y-3 shadow-sm hover:border-zinc-300 transition-colors">
-                                    <div className="flex items-center gap-2 text-zinc-400">
-                                        <Clock className="w-4 h-4" />
-                                        <span className="text-xs font-bold uppercase tracking-widest">Termos da Proposta</span>
-                                    </div>
-                                    <p className="text-sm text-zinc-600 leading-relaxed font-normal">
-                                        {proposal.payment_terms || "Condições padrão: Pagamento do setup em D+5, mensalidades via boleto ou cartão."}
-                                    </p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-            </main>
-
-            {/* Footer */}
-            <footer className="py-12 flex justify-center border-t border-zinc-100 mt-20">
-                <div className="flex items-center gap-2 opacity-30 grayscale hover:grayscale-0 transition-all duration-500">
-                    <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-6" />
-                </div>
-            </footer>
-        </div>
+                </main>
+            </div>
+        </PageLayout>
     );
 }

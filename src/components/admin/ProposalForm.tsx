@@ -71,7 +71,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
     const [historyOpen, setHistoryOpen] = useState(false);
     const { agents } = useAI();
 
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProposalFormValues>({
+    const { register, handleSubmit, setValue, getValues, watch, formState: { errors } } = useForm<ProposalFormValues>({
         defaultValues: {
             title: initialData?.title || '',
             slug: initialData?.slug || '',
@@ -108,10 +108,57 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                 decision_makers: '',
                 urgency: '',
                 next_steps: '',
-                qualified_score: 5
+                qualified_score: 5,
+                funnel_plan: 'none',
+                funnel_promo_active: false,
+                project_duration: initialData?.crm_data?.project_duration || '3'
             }
         }
     });
+
+    // [NEW] LocalStorage Persistence (Draft System)
+    const STORAGE_KEY = 'revhackers_proposal_draft';
+    const allValues = watch();
+
+    // 1. Load Draft on Mount
+    useEffect(() => {
+        if (!isEditing) {
+            const savedDraft = localStorage.getItem(STORAGE_KEY);
+            if (savedDraft) {
+                try {
+                    const parsed = JSON.parse(savedDraft);
+                    // Only prompt if form is mostly empty
+                    const currentTitle = getValues('title');
+                    if (!currentTitle || currentTitle === '') {
+                        if (confirm('Encontramos um rascunho não salvo. Deseja restaurar os dados?')) {
+                            // Reset form with saved data
+                            Object.entries(parsed).forEach(([key, value]: [any, any]) => {
+                                setValue(key, value);
+                            });
+                            toast({ title: 'Rascunho restaurado' });
+                        } else {
+                            localStorage.removeItem(STORAGE_KEY);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing draft:', e);
+                }
+            }
+        }
+    }, [isEditing, setValue, getValues]);
+
+    // 2. Auto-save Draft (Debounced)
+    useEffect(() => {
+        if (!isEditing) {
+            const timer = setTimeout(() => {
+                // Check if there is actual content to save
+                if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
+                }
+            }, 2000); // 2 seconds debounce
+            return () => clearTimeout(timer);
+        }
+    }, [allValues, isEditing]);
 
     const watchedTitle = watch('title');
     const watchedSource = watch('proposal_source');
@@ -129,6 +176,137 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             setValue('slug', uniqueSlug);
         }
     }, [watchedTitle, isEditing, setValue]);
+
+    // [NEW] Sync Title with Client Name
+    const clientName = watch('client_name');
+    useEffect(() => {
+        if (!isEditing && clientName) {
+            const currentTitle = watch('title');
+            // If title is empty or matches pattern, update it
+            if (!currentTitle || currentTitle.includes('Proposta REVHACKERS x')) {
+                setValue('title', `Proposta REVHACKERS x ${clientName}`);
+            }
+        }
+    }, [clientName, isEditing, setValue, watch]);
+
+    // [NEW] HTML Conversion Helper
+    const convertTextToHtml = (text: string) => {
+        if (!text) return '';
+        const lines = text.split('\n');
+        let html = '';
+        let inList = false;
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return;
+
+            // List Items
+            if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
+                if (!inList) {
+                    html += '<ul class="space-y-2 mb-6 list-none">';
+                    inList = true;
+                }
+                const content = trimmed.substring(1).trim();
+                html += `<li class="flex items-start gap-3"><span class="w-1.5 h-1.5 rounded-full bg-revgreen mt-2 shrink-0"></span><span class="text-zinc-700">${content}</span></li>`;
+            } else {
+                if (inList) {
+                    html += '</ul>';
+                    inList = false;
+                }
+
+                // Headers (Uppercase)
+                if (trimmed === trimmed.toUpperCase() && trimmed.length > 5 && !trimmed.includes(':')) {
+                    html += `<h3 class="text-xl font-bold text-zinc-900 mt-8 mb-4 tracking-tight">${trimmed}</h3>`;
+                }
+                // Bold Keys (Key: Value)
+                else if (trimmed.includes(':') && trimmed.split(':')[0].length < 30) {
+                    const parts = trimmed.split(':');
+                    html += `<p class="mb-3 text-zinc-600"><strong class="text-zinc-900">${parts[0]}:</strong> ${parts.slice(1).join(':')}</p>`;
+                }
+                // Paragraphs
+                else {
+                    html += `<p class="mb-4 text-zinc-600 leading-relaxed">${trimmed}</p>`;
+                }
+            }
+        });
+
+        if (inList) html += '</ul>';
+        return html;
+    };
+
+    // AI Helper: Convert Text/HTML to JSON Cards
+    const handleConvertToCards = async () => {
+        const currentScope = getValues('detailed_scope');
+        if (!currentScope) {
+            toast({ title: 'Erro', description: "O campo de escopo está vazio.", variant: 'destructive' });
+            return;
+        }
+
+        try {
+            setLoading(true);
+            toast({ title: 'Processando', description: "A IA está estruturando seu texto em Cards Visuais..." });
+
+            const { data, error } = await supabase.functions.invoke('agent-chat', {
+                body: {
+                    messages: [{
+                        role: 'system',
+                        content: `Você é um Consultor RevOps e CS Estratégico.
+MISSÃO: Transformar o texto abaixo em um ROADMAP VISUAL de 5 fases para implementação em exatamente 8 SEMANAS.
+
+ESTRUTURA OBRIGATÓRIA (8 SEMANAS):
+- Fase 1: Arquitetura de Receita & CS (Semana 1)
+- Fase 2: Integrações & Comunicação Unificada (Semana 2)
+- Fase 3: Funis de Vendas e Jornada de CS (Semanas 3-4)
+- Fase 4: Tickets, Governança & SLA (Semanas 5-6)
+- Fase 5: Operação Assistida & Validação (Semanas 7-8)
+
+O conteúdo deve ser 100% específico ao texto fornecido, usando as ferramentas e dores citadas.
+
+FORMATO JSON:
+[
+  {
+    "phase": "...",
+    "duration": "Semana 1",
+    "description": "...",
+    "deliverables": ["...", "..."],
+    "status": "pending"
+  },
+  ... (Gere exatamente 5 objetos)
+]
+
+RETORNE APENAS O JSON ARRAY.`
+                    }, {
+                        role: 'user',
+                        content: `TEXTO PARA CONVERSÃO EM CARDS:\n\n${currentScope}\n\n---\nBaseado no texto acima, gere as 5 fases da implementação de 8 semanas no formato JSON solicitado.`
+                    }],
+                    model: 'gpt-4o'
+                }
+            });
+
+            if (error) throw error;
+
+            const content = data?.response || data?.choices?.[0]?.message?.content || "";
+            let cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
+            // Try to extract array if wrapped
+            const firstBracket = cleanJson.indexOf('[');
+            const lastBracket = cleanJson.lastIndexOf(']');
+            if (firstBracket !== -1 && lastBracket !== -1) {
+                cleanJson = cleanJson.substring(firstBracket, lastBracket + 1);
+            }
+
+            // Validate
+            JSON.parse(cleanJson);
+
+            setValue('detailed_scope', cleanJson);
+            toast({ title: 'Sucesso', description: "Texto convertido em Cards Visuais com sucesso!" });
+
+        } catch (error) {
+            console.error(error);
+            toast({ title: 'Erro', description: "Falha ao converter texto. Tente simplificar o conteúdo.", variant: 'destructive' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const updateFieldsWithMetadata = (m: any, force = false) => {
         if (!m) return;
@@ -243,7 +421,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
 
         if (cName && (force || !watch('title') || watch('title').includes('Proposta'))) {
-            setValue('title', `Proposta REVHACKERS x ${cName}`);
+            setValue('title', `Proposta de Implementação RevHackers X ${cName}`);
         }
     };
 
@@ -301,6 +479,14 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
     };
 
+    // Sync Client Name to Title automatically
+    const watchedClientName = watch('client_name');
+    useEffect(() => {
+        if (watchedClientName && (!watch('title') || watch('title').includes('Proposta'))) {
+            setValue('title', `Proposta de Implementação RevHackers X ${watchedClientName}`);
+        }
+    }, [watchedClientName, setValue, watch]);
+
     const onSubmit = async (data: ProposalFormValues) => {
         setLoading(true);
         try {
@@ -331,19 +517,31 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                 crm_data: data.crm_data || null,
             };
 
+            let proposalId = initialData?.id;
+            let slug = data.slug;
+
             if (isEditing && initialData?.id) {
                 const { error } = await supabase.from('proposals').update(payload).eq('id', initialData.id);
                 if (error) throw error;
+                localStorage.removeItem(STORAGE_KEY);
                 toast({ title: 'Proposta atualizada!' });
-                // Stay on page or navigate to details
-                // navigate(`/admin/proposals/${initialData.id}`); 
+                navigate('/admin/proposals');
             } else {
                 const { data: newProposal, error } = await supabase.from('proposals').insert(payload).select().single();
                 if (error) throw error;
+                proposalId = newProposal.id;
+                slug = newProposal.slug;
+
+                localStorage.removeItem(STORAGE_KEY);
                 toast({ title: 'Proposta criada!' });
-                if (newProposal?.id) {
-                    // Redirect to the edit/view page of the new proposal
-                    navigate(`/admin/proposals/edit/${newProposal.id}`);
+
+                // AUTO-OPEN Public Page
+                if (proposalId) {
+                    const targetUrl = slug ? `/p/${slug}` : `/admin/proposals/edit/${proposalId}`;
+                    if (slug) {
+                        window.open(targetUrl, '_blank');
+                    }
+                    navigate(`/admin/proposals/edit/${proposalId}`);
                 }
             }
         } catch (error: any) {
@@ -352,6 +550,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
             setLoading(false);
         }
     };
+
 
     const fetchMeetingHistory = async () => {
         setLoadingHistory(true);
@@ -417,30 +616,66 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                     raw_mode: true,
                     messages: [{
                         role: 'system',
-                        content: `Você é um consultor de RevOps. REGRAS: 1) Extraia SOMENTE dados REAIS da transcrição. 2) O campo "summary" deve ser TEXTO PURO formatado com emojis, NÃO objeto/array. 3) O campo "detailed_scope" deve ser TEXTO PURO em formato de documento profissional. 4) Retorne APENAS JSON válido com strings de texto.`
+                        content: `🧠 ESTRATEGISTA SÊNIOR DE REVENUE OPERATIONS E CUSTOMER SUCCESS.
+
+Sua tarefa é analisar a transcrição/briefing e criar uma PROPOSTA COMERCIAL COMPLETA, EXECUTIVA E PRONTA PARA ENVIO.
+
+⚠️ REGRAS OBRIGATÓRIAS:
+- Linguagem executiva, clara e objetiva.
+- Foco em resolução de problemas reais, não em features.
+- Customer Success como pilar central da operação.
+- NÃO usar tom experimental, hack ou teste.
+- NÃO prometer troca de CRM se não for solicitado.
+- Escopo fechado, fases claras e KPIs objetivos.
+- PRAZO OBRIGATÓRIO: 8 SEMANAS.
+
+ESTRUTURA DE RESPOSTA (JSON):
+Preencha os campos abaixo baseando-se estritamente na transcrição fornecida.
+
+1. "summary": Documento estruturado para copy-paste contendo:
+   - CONTEXTO E DIAGNÓSTICO (Dores operacionais, riscos de negócio)
+   - OBJETIVO DO PROJETO (Macro e específicos, foco em CS)
+   - KPIs DE SUCESSO (SLA, tempo de resposta, aderência)
+   - FORA DO ESCOPO
+   - CONSIDERAÇÕES FINAIS
+
+2. "detailed_scope": Array de 5 FASES para o Roadmap Visual:
+   - Fase 1: Arquitetura de Receita & CS (Semana 1)
+   - Fase 2: Integrações & Comunicação Unificada (Semana 2)
+   - Fase 3: Funis de Vendas e Jornada de CS (Semanas 3-4)
+   - Fase 4: Tickets, Governança & SLA (Semanas 5-6)
+   - Fase 5: Operação Assistida & Validação (Semanas 7-8)`
                     }, {
                         role: 'user',
-                        content: `TRANSCRIÇÃO:
+                        content: `TRANSCRIÇÃO/BRIEFING DO CLIENTE:
 ${transcript.substring(0, 18000)}
 
-Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
+---
+Gere o JSON de proposta baseado no PROMPT MESTRE.
 
+Modelo de JSON de saída:
 {
-  "summary": "🎯 DORES DO CLIENTE:\\n• [dor real 1]\\n• [dor real 2]\\n\\n💰 BUDGET: [valor ou A definir]\\n\\n👤 DECISOR: [nome, cargo]\\n\\n📋 PRÓXIMOS PASSOS:\\n• [passo 1]\\n• [passo 2]\\n\\n⭐ SCORE: X/10",
-  
-  "headline": "Proposta REVHACKERS x [EMPRESA]",
-  
-  "detailed_scope": "FASE 0 – Diagnóstico Estratégico (30 dias)\\n\\nObjetivo: [baseado na call]\\n\\nEntregáveis:\\n• [item real]\\n• [item real]\\n\\n📌 Saída da fase: [resultado]\\n\\n---\\n\\nFASE 1 – Geração de Demanda\\n\\nObjetivo: [objetivo]\\n\\nFoco inicial:\\n• [canal mencionado - Google Ads, Meta, LinkedIn]\\n• [integração - HubSpot, CRM]\\n\\nEntregáveis:\\n• [entregável]\\n\\n📌 Resultado esperado: [resultado]\\n\\n---\\n\\nFASE 2 – Automação & Escala\\n\\nObjetivo: [objetivo]\\n\\nEntregáveis:\\n• [item]\\n\\n📌 Resultado: [resultado]",
-  
-  "client_name": "[EMPRESA REAL]",
-  "client_contact_name": "[NOME REAL - busque quem se apresentou]", 
-  "client_email": "[BUSQUE EMAIL na transcrição ou cabeçalho. Ex: @empresa.com.br. Se não achar, deixe em branco]",
+  "summary": "### 1. CONTEXTO E DIAGNÓSTICO\\n...\\n\\n### 2. OBJETIVO...\\n\\n### 4. KPIs...\\n\\n### 5. FORA DO ESCOPO...\\n\\n### 7. CONSIDERAÇÕES FINAIS...",
+  "headline": "Proposta Comercial: [Nome do Cliente]",
+  "detailed_scope": [
+    { "phase": "Arquitetura de Receita & CS", "duration": "Semana 1", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
+    { "phase": "Integrações & Comunicação", "duration": "Semana 2", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
+    { "phase": "Funis & Jornada CS", "duration": "Semanas 3-4", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
+    { "phase": "Governança & SLA", "duration": "Semanas 5-6", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
+    { "phase": "Validação & Operação", "duration": "Semanas 7-8", "description": "...", "deliverables": ["...", "..."], "status": "pending" }
+  ],
+  "investment_total": 0,
+  "setup_fee": 0,
+  "installment_value": 0,
+  "client_name": "[NOME DA EMPRESA - Nunca o nome da pessoa]",
+  "client_contact_name": "[NOME DA PESSOA COM QUEM FALAMOS]", 
+  "client_email": "[EMAIL SE MENCIONADO OU VAZIO]",
   "investment_total": 0,
   "setup_fee": 0,
   "installment_value": 0
 }`
                     }],
-                    model: 'gpt-5.2'
+                    model: 'gpt-4o'
                 }
             });
 
@@ -776,17 +1011,150 @@ Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
                         <div className="space-y-3 pt-8 border-t border-zinc-100/50">
                             <div className="flex items-center justify-between">
                                 <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Escopo do Projeto</Label>
-                                <Badge variant="outline" className="text-[9px] bg-green-50 text-green-700 border-green-200">Gerado pela IA</Badge>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            const clientName = watch('client_name') || 'Cliente';
+                                            const template = JSON.stringify([
+                                                {
+                                                    phase: "Arquitetura de Receita & CS",
+                                                    duration: "Semana 1",
+                                                    description: "Estruturação da base operacional e alinhamento de processos.",
+                                                    deliverables: ["Mapeamento AS-IS", "Definição de KPIs", "Arquitetura CS"],
+                                                    status: "pending"
+                                                },
+                                                {
+                                                    phase: "Integrações & Comunicação",
+                                                    duration: "Semana 2",
+                                                    description: "Conexão de ferramentas e canais de comunicação.",
+                                                    deliverables: ["Setup GHL", "Integrações Core", "Canais Unificados"],
+                                                    status: "pending"
+                                                },
+                                                {
+                                                    phase: "Funis & Jornada CS",
+                                                    duration: "Semanas 3-4",
+                                                    description: "Construção da jornada de valor do cliente.",
+                                                    deliverables: ["Funis de Vendas", "Playbook CS", "Automações Jornada"],
+                                                    status: "pending"
+                                                },
+                                                {
+                                                    phase: "Governança & SLA",
+                                                    duration: "Semanas 5-6",
+                                                    description: "Regras de negócio e acompanhamento de tickets.",
+                                                    deliverables: ["Gestão de Tickets", "Definição de SLA", "Dashboards"],
+                                                    status: "pending"
+                                                },
+                                                {
+                                                    phase: "Validação & Operação",
+                                                    duration: "Semanas 7-8",
+                                                    description: "Operação assistida e ajustes finais.",
+                                                    deliverables: ["Treinamento Time", "Validação Dados", "Handoff Ongoing"],
+                                                    status: "pending"
+                                                }
+                                            ], null, 2);
+                                            setValue('detailed_scope', template);
+                                            toast({ title: 'Template 8 Semanas Aplicado', description: 'Jornada estruturada conforme o Prompt Mestre.' });
+                                        }}
+                                        className="h-6 text-[10px] uppercase font-bold tracking-widest bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                                    >
+                                        📋 Definir 8 Semanas (Padrão)
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleConvertToCards}
+                                        disabled={loading}
+                                        className="h-6 text-[10px] uppercase font-bold tracking-widest bg-zinc-50 border-zinc-200 hover:bg-zinc-100"
+                                    >
+                                        {loading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : ''}
+                                        ✨ Gerar com IA
+                                    </Button>
+                                </div>
                             </div>
                             <Textarea
                                 {...register('detailed_scope')}
                                 className="min-h-[200px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4"
-                                placeholder="O escopo será gerado automaticamente ao clicar em 'Gerar Proposta Estratégica' ou edite manualmente aqui..."
+                                placeholder="⚠️ PARA CARDS VISUAIS: Use o botão 'Extrair Dados com IA' acima. Se você colar texto aqui manualmente, ele será exibido como um Documento Simples."
                             />
-                            <p className="text-[10px] text-zinc-400">
-                                Descreva as fases do projeto, entregáveis e KPIs esperados. Este campo é editável.
+                            <p className="text-[10px] text-amber-500 font-medium">
+                                ⚠️ Atenção: Para o layout visual (Cards/Timeline), este campo deve conter o JSON gerado pela IA. Texto comum aparecerá como documento.
                             </p>
                         </div>
+
+                        {/* FUNNEL SUBSCRIPTION (OPTIONAL) */}
+                        <div className="space-y-4 pt-8 border-t border-zinc-100/50">
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ferramenta Funnel (Opcional)</h3>
+                            <div className="p-6 rounded-xl bg-zinc-50 border border-zinc-100 grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div className="space-y-2 md:col-span-1">
+                                    <Label className="text-xs font-medium text-zinc-700">Plano Selecionado</Label>
+                                    <select
+                                        {...register('crm_data.funnel_plan')}
+                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+                                    >
+                                        <option value="none">Não incluir</option>
+                                        <option value="monthly_697">Mensal R$ 697</option>
+                                        <option value="monthly_997">Mensal R$ 997</option>
+                                        <option value="annual_6997">Anual R$ 6.997 (2 meses off)</option>
+                                        <option value="annual_9997">Anual R$ 9.997 (2 meses off)</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-medium text-zinc-700">Desconto (%)</Label>
+                                    <Input
+                                        {...register('crm_data.platform_discount_percent')}
+                                        type="number"
+                                        className="bg-white h-10"
+                                        placeholder="0"
+                                        min="0" max="100"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-medium text-zinc-700">Meses de Bônus</Label>
+                                    <Input
+                                        {...register('crm_data.platform_bonus_months')}
+                                        type="number"
+                                        className="bg-white h-10"
+                                        placeholder="0"
+                                        min="0"
+                                    />
+                                </div>
+
+                                {/* Promo Checkbox - Only show if plan is selected */}
+                                <div className="flex items-center space-x-2 pt-8 md:col-span-1">
+                                    <input
+                                        type="checkbox"
+                                        id="funnel_promo"
+                                        {...register('crm_data.funnel_promo_active')}
+                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    />
+                                    <label
+                                        htmlFor="funnel_promo"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
+                                    >
+                                        🎁 1º Mês Grátis
+                                    </label>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-medium text-zinc-700">Tempo de Projeto (Meses)</Label>
+                                    <select
+                                        {...register('crm_data.project_duration')}
+                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+                                    >
+                                        <option value="3">3 Meses</option>
+                                        <option value="6">6 Meses</option>
+                                        <option value="12">12 Meses</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
 
                         {/* FINANCIALS & CLOSING */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-8 border-t border-zinc-100/50">
@@ -798,6 +1166,7 @@ Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
                                 <Label className="text-[10px] uppercase font-bold text-zinc-400">Setup Fee (R$)</Label>
                                 <Input {...register('setup_fee')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
                             </div>
+
                             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
                                 <Label className="text-[10px] uppercase font-bold text-zinc-400">Valor Mensal (R$)</Label>
                                 <Input {...register('installment_value')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
@@ -807,8 +1176,8 @@ Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
                                 <Input {...register('installment_count')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="6" />
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
 
                 <div className="flex justify-end pt-8">
                     <Button type="submit" disabled={loading} className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-green-900/10">
@@ -816,7 +1185,7 @@ Retorne JSON com TEXTO PURO (não objetos) para summary e detailed_scope:
                         Salvar Proposta
                     </Button>
                 </div>
-            </div>
+            </div >
         </form >
     );
 };

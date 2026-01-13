@@ -9,7 +9,7 @@ const ContactFormSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
 
           {/* Left Column: Authority & Protocol */}
-          <div className="lg:col-span-5 space-y-16 py-4">
+          <div className="lg:col-span-5 space-y-16 pt-10 md:pt-14">
             <div>
               <h2 className="text-5xl md:text-6xl font-bold text-black tracking-tighter leading-none mb-8">
                 Inicie o <br />

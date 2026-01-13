@@ -91,7 +91,7 @@ CREATE TRIGGER update_rei_projects_updated_at
 -- ============================================================================
 
 -- Função para calcular próximo quarter
-CREATE OR REPLACE FUNCTION calculate_next_quarter(current_date TIMESTAMP WITH TIME ZONE)
+CREATE OR REPLACE FUNCTION calculate_next_quarter(p_ref_date TIMESTAMP WITH TIME ZONE)
 RETURNS TABLE (
     quarter TEXT,
     start_date TIMESTAMP WITH TIME ZONE,
@@ -103,8 +103,8 @@ DECLARE
     next_year INTEGER;
     start_month INTEGER;
 BEGIN
-    month := EXTRACT(MONTH FROM current_date);
-    next_year := EXTRACT(YEAR FROM current_date);
+    month := EXTRACT(MONTH FROM p_ref_date);
+    next_year := EXTRACT(YEAR FROM p_ref_date);
     
     IF month < 4 THEN
         next_quarter := 'Q2';

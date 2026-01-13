@@ -35,6 +35,6 @@ export const heinekenCase = {
   role: "Gerente de Vendas, Interior de São Paulo",
   authorImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f3768dda1929d728044f4.jpg",
   preview_description: "Trade Marketing Digital: Campanha hiperlocal com vídeos personalizados para 45 bares em 12 cidades que aumentaram o sell-out em 30% e o engajamento local em 45%.",
-  logoScale: 1.4,
+  logoScale: 2.5,
   techStack: ["Adobe Premiere", "After Effects", "Meta Ads", "Google Maps API"]
 };

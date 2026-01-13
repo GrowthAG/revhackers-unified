@@ -135,7 +135,7 @@ const Cases = () => {
                         <img
                           src={study.client_logo}
                           alt={study.title}
-                          className="max-w-[180px] max-h-[75px] w-auto h-auto object-contain opacity-100 grayscale group-hover:grayscale-0 transition-all duration-500"
+                          className="max-w-[200px] max-h-[110px] w-auto h-auto object-contain opacity-100 grayscale group-hover:grayscale-0 transition-all duration-500"
                           style={{
                             transform: study.logoScale ? `scale(${study.logoScale})` : 'scale(1.0)',
                           }}

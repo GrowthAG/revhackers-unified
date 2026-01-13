@@ -14,26 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => (
-  <Link
-    to={to}
-    className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-all duration-200 whitespace-nowrap"
-    onClick={() => window.scrollTo(0, 0)}
-  >
-    {children}
-  </Link>
-);
-
-const MobileNavLink = ({ to, onClick, children }: { to: string, onClick: () => void, children: React.ReactNode }) => (
-  <Link
-    to={to}
-    className="text-xl font-medium text-gray-300 hover:text-revgreen transition-colors py-2 border-b border-white/5 block"
-    onClick={onClick}
-  >
-    {children}
-  </Link>
-);
-
 interface HeaderProps {
   variant?: 'default' | 'light';
 }
@@ -46,6 +26,34 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   const isMobile = useIsMobile();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Helper variables for styling based on variant/scroll state
+  const isLightMode = variant === 'light' && !scrolled;
+
+  const textColor = isLightMode ? "text-zinc-600 hover:text-black" : "text-gray-300 hover:text-white";
+  const navBg = isLightMode ? "bg-white border-zinc-200/50 shadow-sm" : "bg-white/5 border-white/10";
+  const hoverBg = isLightMode ? "hover:bg-zinc-100" : "hover:bg-white/5";
+  const logoClass = isLightMode ? "invert" : "";
+
+  const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => (
+    <Link
+      to={to}
+      className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap ${textColor} ${hoverBg}`}
+      onClick={() => window.scrollTo(0, 0)}
+    >
+      {children}
+    </Link>
+  );
+
+  const MobileNavLink = ({ to, onClick, children }: { to: string, onClick: () => void, children: React.ReactNode }) => (
+    <Link
+      to={to}
+      className={`text-xl font-medium transition-colors py-2 border-b block ${isLightMode ? "text-zinc-800 border-zinc-100" : "text-gray-300 border-white/5 hover:text-revgreen"}`}
+      onClick={onClick}
+    >
+      {children}
+    </Link>
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,8 +126,8 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           "w-full fixed top-0 left-0 right-0 z-[60] transition-all duration-300 border-b",
           scrolled
             ? "bg-black/95 backdrop-blur-md border-white/10 shadow-lg py-4"
-            : variant === 'light'
-              ? "bg-white/50 backdrop-blur-sm border-transparent py-6"
+            : isLightMode
+              ? "bg-white/80 backdrop-blur-md border-zinc-200/50 py-6"
               : "bg-black border-transparent py-6"
         )}
       >
@@ -130,23 +138,23 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               <img
                 src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
                 alt="RevHackers Logo"
-                className="w-auto h-14 transition-all duration-300 group-hover:opacity-90"
+                className={`w-auto h-14 transition-all duration-300 group-hover:opacity-90 ${logoClass}`}
               />
             </Link>
           </div>
 
           {/* Center: Navigation */}
           <nav className="hidden md:flex items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="flex items-center bg-white/5 border border-white/10 rounded-full px-2 py-1 backdrop-blur-md shadow-lg">
+            <div className={`flex items-center rounded-full px-2 py-1 backdrop-blur-md ${navBg}`}>
               <div className="flex items-center space-x-1">
                 <NavLink to="/">Home</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
 
                 {/* Dropdown de Ferramentas */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex items-center gap-1 focus:outline-none data-[state=open]:text-white data-[state=open]:bg-white/5",
-                    variant === 'light' && !scrolled ? "text-zinc-800 hover:text-black hover:bg-black/5" : "text-gray-300 hover:text-white hover:bg-white/5"
+                    "px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex items-center gap-1 focus:outline-none data-[state=open]:bg-white/5",
+                    isLightMode ? "text-zinc-600 hover:text-black data-[state=open]:text-black data-[state=open]:bg-zinc-100" : "text-gray-300 hover:text-white data-[state=open]:text-white"
                   )}>
                     Diagnósticos <ChevronDown className="w-3 h-3 opacity-50" />
                   </DropdownMenuTrigger>
@@ -175,17 +183,17 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/quem-somos">Quem Somos</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/servicos">Serviços</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/cases">Cases</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/materiais">Materiais</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/blog">Blog</NavLink>
-                <div className="w-px h-3 bg-white/10 mx-1"></div>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
               </div>
             </div>
           </nav>
@@ -194,7 +202,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors focus:outline-none">
+                <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none ${textColor}`}>
                   {avatarUrl ? (
                     <div className="w-8 h-8 rounded-full border border-revgreen/30 overflow-hidden">
                       <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" />
@@ -233,7 +241,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               </DropdownMenu>
             ) : (
               <Link to="/login"
-                className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                className={`text-sm font-medium transition-colors ${textColor}`}
                 onClick={scrollToTop}
               >
                 Admin
@@ -252,7 +260,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
           <button
             onClick={toggleMenu}
-            className="md:hidden p-2 text-white hover:text-revgreen transition-colors ml-auto"
+            className={`md:hidden p-2 transition-colors ml-auto ${isLightMode ? "text-black hover:text-revgreen" : "text-white hover:text-revgreen"}`}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -322,7 +330,5 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
     </>
   );
 };
-
-
 
 export default Header;

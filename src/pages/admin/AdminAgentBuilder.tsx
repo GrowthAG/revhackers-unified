@@ -30,13 +30,11 @@ interface KnowledgeSource {
 
 export const MODEL_OPTIONS = [
     { value: 'gpt-5.2', label: 'GPT-5.2', description: 'OpenAI • Última Geração', tech: 'GPT-5.2', color: '#10a37f' },
-    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Inteligência Multimodal', tech: 'GPT-4.0', color: '#10a37f' },
-    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Eficiente', tech: 'GPT-4.0-M', color: '#10a37f' },
-    { value: 'o1-preview', label: 'OPENAI O1', description: 'OpenAI • Raciocínio Profundo (Reasoning)', tech: 'O1-PRE', color: '#000000' },
-    { value: 'claude-sonnet-4-5-20250929', label: 'CLAUDE SONNET 4.5', description: 'Anthropic • Extended Thinking', tech: 'CLD-4.5-S', color: '#d97757' },
+    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Multimodal', tech: 'GPT-4.0', color: '#10a37f' },
+    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Econômico', tech: 'GPT-4.0-M', color: '#10a37f' },
+    { value: 'claude-sonnet-4.5', label: 'CLAUDE SONNET 4.5', description: 'Anthropic • Extended Thinking', tech: 'CLD-4.5-S', color: '#d97757' },
     { value: 'claude-3-5-haiku-20241022', label: 'CLAUDE 3.5 HAIKU', description: 'Anthropic • Ultra Rápido', tech: 'CLD-3.5-H', color: '#d97757' },
-    { value: 'gemini-1.5-pro', label: 'GEMINI 1.5 PRO', description: 'Google • Janela de 2M Tokens', tech: 'GEM-1.5-P', color: '#4285f4' },
-    { value: 'sonar', label: 'PERPLEXITY', description: 'Perplexity • Pesquisa Web em Tempo Real', tech: 'PPLX-S', color: '#00a99d' },
+    { value: 'sonar-pro', label: 'PERPLEXITY', description: 'Web • Busca em Tempo Real', tech: 'PPLX-P', color: '#00a99d' },
 ];
 
 
@@ -62,9 +60,11 @@ const AdminAgentBuilder = () => {
     // FAQ Q&A pairs
     const [faqItems, setFaqItems] = useState<{ question: string; answer: string }[]>([{ question: '', answer: '' }]);
 
-    // Personality & Goals
+    // Personality & Architecture
     const [personality, setPersonality] = useState('');
     const [goal, setGoal] = useState('');
+    const [operatingInstructions, setOperatingInstructions] = useState('');
+    const [actionableInfo, setActionableInfo] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
 
     // Libraries State
@@ -105,11 +105,31 @@ const AdminAgentBuilder = () => {
             if (data) {
                 setName(data.name);
                 setModel(data.model);
-                setGoal(data.role);
                 setPersonality(data.description);
-                // O sistema guarda system_prompt como texto
+                // Parsing do system_prompt estruturado
                 const prompt = typeof data.system_prompt === 'string' ? data.system_prompt : '';
-                setAdditionalInfo(prompt);
+
+                // Tenta extrair blocos estruturados se existirem
+                const extractBlock = (p: string, tag: string) => {
+                    const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i');
+                    const m = p.match(regex);
+                    return m ? m[1].trim() : '';
+                };
+
+                const goalsExtracted = extractBlock(prompt, 'OBJETIVOS');
+                const instructionsExtracted = extractBlock(prompt, 'INSTRUCOES');
+                const framesExtracted = extractBlock(prompt, 'FRAMEWORKS');
+                const miscExtracted = extractBlock(prompt, 'ADICIONAL');
+
+                if (goalsExtracted || instructionsExtracted || framesExtracted) {
+                    setGoal(goalsExtracted);
+                    setOperatingInstructions(instructionsExtracted);
+                    setActionableInfo(framesExtracted);
+                    setAdditionalInfo(miscExtracted);
+                } else {
+                    // Fallback para prompt antigo ou não estruturado
+                    setAdditionalInfo(prompt);
+                }
 
                 // Fetch documents via Edge Function (List action bypasses RLS)
                 console.log(`[RAG DEBUG] Carregando documentos via Edge Function para agente ${id}...`);
@@ -279,11 +299,30 @@ const AdminAgentBuilder = () => {
                 name: name.trim(),
                 role: goal || 'Assistente',
                 description: personality,
-                system_prompt: [
-                    personality ? `Personalidade: ${personality}` : '',
-                    goal ? `Objetivo: ${goal}` : '',
-                    additionalInfo ? `Info Adicional: ${additionalInfo}` : ''
-                ].filter(Boolean).join('\n\n') || 'Você é um assistente útil.',
+                system_prompt: `
+[ALMA E IDENTIDADE]
+${personality}
+
+[OBJETIVOS E METAS]
+[OBJETIVOS]
+${goal}
+[/OBJETIVOS]
+
+[INSTRUÇÕES OPERACIONAIS]
+[INSTRUCOES]
+${operatingInstructions}
+[/INSTRUCOES]
+
+[INFORMAÇÕES ACIONAIS E FRAMEWORKS]
+[FRAMEWORKS]
+${actionableInfo}
+[/FRAMEWORKS]
+
+[INFORMAÇÕES ADICIONAIS]
+[ADICIONAL]
+${additionalInfo}
+[/ADICIONAL]
+                `.trim(),
                 model: model,
                 is_public: true,
             };
@@ -1046,7 +1085,7 @@ const AdminAgentBuilder = () => {
                     </div>
                 )}
 
-                {/* Tab: Metas */}
+                {/* Tab: Metas & Arquitetura */}
                 {activeTab === 'goals' && (
                     <div className="space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="bg-gradient-to-br from-zinc-50 to-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
@@ -1055,13 +1094,13 @@ const AdminAgentBuilder = () => {
                                     <Target className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-bold text-zinc-900">Objetivo Principal</h3>
-                                    <p className="text-xs text-zinc-500 mt-1">Defina claramente o que é sucesso para este agente.</p>
+                                    <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Metas e Objetivos Estratégicos</h3>
+                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">O que este agente DEVE realizar.</p>
                                 </div>
                             </div>
                             <Textarea
-                                placeholder="Qual o objetivo principal deste agente? O que ele deve entregar?"
-                                className="min-h-32 border-zinc-200 bg-white text-sm resize-none focus:ring-1 focus:ring-black/5 rounded-xl"
+                                placeholder="Defina as metas críticas... EX: 'Converter 20% dos leads frios', 'Identificar 5 gargalos em cada relatório'."
+                                className="min-h-32 border-zinc-200 bg-white text-sm font-medium resize-none focus:ring-1 focus:ring-black/5 rounded-xl placeholder:text-zinc-300"
                                 value={goal}
                                 onChange={e => setGoal(e.target.value)}
                             />
@@ -1070,18 +1109,36 @@ const AdminAgentBuilder = () => {
                         <div className="bg-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
                             <div className="flex items-start gap-4 mb-4">
                                 <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
-                                    <FileText className="w-5 h-5" />
+                                    <Terminal className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-bold text-zinc-900">Instruções de Saída</h3>
-                                    <p className="text-xs text-zinc-500 mt-1">Formatos específicos, restrições ou regras de compliance.</p>
+                                    <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Instruções Operacionais</h3>
+                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">Protocolos e regras de execução.</p>
                                 </div>
                             </div>
                             <Textarea
-                                placeholder="Regras específicas, contexto adicional, dados importantes..."
-                                className="min-h-40 border-zinc-200 text-sm resize-none bg-zinc-50/30 focus:bg-white transition-colors rounded-xl"
-                                value={additionalInfo}
-                                onChange={e => setAdditionalInfo(e.target.value)}
+                                placeholder="Protocolos de resposta, restrições, formatos de saída... EX: 'Nunca sugira ferramentas pagas', 'Sempre finalize com um Call to Action'."
+                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors rounded-xl placeholder:text-zinc-300"
+                                value={operatingInstructions}
+                                onChange={e => setOperatingInstructions(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="bg-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
+                            <div className="flex items-start gap-4 mb-4">
+                                <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+                                    <Box className="w-5 h-5" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Biblioteca de Informações Acionais</h3>
+                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">Frameworks, fórmulas e dados fixos de referência.</p>
+                                </div>
+                            </div>
+                            <Textarea
+                                placeholder="Fórmulas de cálculo de ROI, frameworks de copy (AIDA, PAS), referências técnicas imutáveis."
+                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors rounded-xl placeholder:text-zinc-300"
+                                value={actionableInfo}
+                                onChange={e => setActionableInfo(e.target.value)}
                             />
                         </div>
                     </div>

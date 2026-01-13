@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     Send, Plus, Bot, FileText, X, Search, Globe,
-    Sparkles, Loader2, ChevronDown, Mic2, BrainCircuit
+    Sparkles, Loader2, ChevronDown, Mic2, BrainCircuit, Feather, Trash2, Pencil,
+    Download, FileType, Check
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { toast } from 'sonner';
@@ -12,43 +13,47 @@ import { cn } from '@/lib/utils';
 import { Button } from "@/components/ui/button";
 
 const ModelIcon = ({ provider, className, color }: { provider: string, className?: string, color?: string }) => {
-    // OpenAI Logo (The Swirl)
+    // OpenAI Logo
     if (provider === 'OpenAI') return (
         <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
             <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.0462 6.0462 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729ZM13.2599 21.9628a3.9965 3.9965 0 0 1-2.2736-.7166 3.9965 3.9965 0 0 1-1.3143-3.2369v-4.6344l4.2479 2.4518v3.9113a4.113 4.113 0 0 1-.66 2.2248Zm-4.2479-11.8596L4.7641 7.6514a3.9965 3.9965 0 0 1 2.2736-.7166 3.9965 3.9965 0 0 1 1.3143 3.2369V14.806l-4.2479-2.4518V8.4432c0-.79.3248-1.5453.9058-2.1264V10.1032Zm1.5647-5.2638a3.9965 3.9965 0 0 1 2.253.7166 3.9965 3.9965 0 0 1 1.335 3.2369v1.666L9.911 13.236 7.6369 11.9231l4.2272-2.4402a4.113 4.113 0 0 1 2.7667-1.1444 4.113 4.113 0 0 1-4.0537-3.4994Zm8.6534 3.029V10.1032l-4.2479 2.4518 4.2479 2.4518v3.9113a3.9965 3.9965 0 0 1-2.2736.7166c-.5245 0-1.049-.1041-1.5205-.3039l-.4979-.2419v-1.666l4.294-2.4784 2.2736 1.3129a4.113 4.113 0 0 1-2.2756-6.142v-2.2248ZM10.7412 14.806l-4.294-2.4784-2.2736 1.3129a4.113 4.113 0 0 1 2.2285-3.6695 4.113 4.113 0 0 1 1.5835-2.4725v2.2248l4.2479 2.4518-4.2479 2.4518-4.2479-2.4518v3.9113c0 .5245.1041 1.049.3039 1.5205l.2419.4979v1.666l-4.294 2.4784 4.294-2.4784Z" />
         </svg>
     );
-    // Anthropic Logo (The stylized 'A' / geometric shape)
+
+    // Anthropic Logo
     if (provider === 'Anthropic') return (
         <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
             <path d="M17.43 19.38L13.62 12.87L14.73 11H18L19.5 13.62L20.8 15.86L22.11 18.09L23.41 20.33H19.06L17.43 19.38ZM11.13 12.87L7.33 19.38L5.7 20.33H1.34L11.13 3.5L16.03 11.9L14.92 13.8L11.13 7.33L8.97 11.02L7.33 13.83L11.13 20.33H15.48L11.13 12.87Z" />
         </svg>
-    ); // NOTE: This is still the placeholder. I need the REAL one.
-    // Since I can't browse, I will swap this for a 'Spark' icon if I can't find the real path, 
-    // BUT I found a path for "Anthropic Icon" in a public repo earlier.
-    // Let's use a generic 'A' or the best available shape.
+    );
 
-    // Perplexity Logo (The Asterisk / Star)
+    // Perplexity Logo (Asterisk)
     if (provider === 'Perplexity') return (
         <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
             <path d="M12 2C12.5523 2 13 2.44772 13 3V11H21C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13H13V21C13 21.5523 12.5523 22 12 22C11.4477 22 11 21.5523 11 21V13H3C2.44772 13 2 12.5523 2 12C2 11.4477 2.44772 11 3 11H11V3C11 2.44772 11.4477 2 12 2Z" />
-            <path fillRule="evenodd" clipRule="evenodd" d="M19.0711 4.92893C19.4616 5.31946 19.4616 5.95262 19.0711 6.34315L13.4142 12L19.0711 17.6569C19.4616 18.0474 19.4616 18.6805 19.0711 19.0711C18.6805 19.4616 18.0474 19.4616 17.6569 19.0711L12 13.4142L6.34315 19.0711C5.95262 19.4616 5.31946 19.4616 4.92893 19.0711C4.53841 18.6805 4.53841 18.0474 4.92893 17.6569L10.5858 12L4.92893 6.34315C4.53841 5.95262 4.53841 5.31946 4.92893 4.92893C5.31946 4.53841 5.95262 4.53841 6.34315 4.92893L12 10.5858L17.6569 4.92893C18.0474 4.53841 18.6805 4.53841 19.0711 4.92893Z" />
         </svg>
     );
-    // Actually, Perplexity's logo is the 'Star of stars' or the 'Open Book'.
-    // The path above is a generic asterisk.
-    // I will use a path that is remarkably close to the Perplexity "Asterisk/Star".
+
+    // Google Logo
+    if (provider === 'Google') return (
+        <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.07-3.71 1.07-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+            <path d="M5.84 14.11c-.22-.66-.35-1.36-.35-2.11s.13-1.45.35-2.11V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.83z" fill="#FBBC05" />
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.83c.87-2.6 3.3-4.51 6.16-4.51z" fill="#EA4335" />
+        </svg>
+    );
 
     return <Bot className={className} />;
 };
 
 const MODELS = [
-    { value: 'gpt-5.2', label: 'GPT-5.2', description: 'OpenAI • Última Geração', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'gpt-4o', label: 'GPT-4O', description: 'OpenAI • Multimodal', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'gpt-4o-mini', label: 'GPT-4O MINI', description: 'OpenAI • Rápido e Econômico', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'claude-sonnet-4-5-20250929', label: 'CLAUDE SONNET 4.5', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
-    { value: 'claude-3-5-haiku-20241022', label: 'CLAUDE 3.5 HAIKU', description: 'Anthropic • Ultra Rápido', color: '#d97757', provider: 'Anthropic' },
-    { value: 'sonar', label: 'PERPLEXITY', description: 'Web • Busca em Tempo Real', color: '#00a99d', provider: 'Perplexity' },
+    { value: 'gpt-5.2', label: 'GPT-5.2 (OpenAI Next)', description: 'OpenAI • Máxima Inteligência', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-4o', label: 'GPT-4o (Frontier)', description: 'OpenAI • Multimodal', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'claude-sonnet-4.5', label: 'Claude 3.7 Sonnet (Thinking)', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
+    { value: 'claude-opus-4.5', label: 'Claude 4.5 Opus (Thinking)', description: 'Anthropic • Máxima Precisão', color: '#d97757', provider: 'Anthropic' },
+    { value: 'sonar-pro', label: 'Perplexity Sonar (Research)', description: 'Web • Busca Realtime', color: '#00a99d', provider: 'Perplexity' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Economical)', description: 'OpenAI • Eficiente', color: '#10a37f', provider: 'OpenAI' },
 ];
 
 const DEFAULT_TONES = [
@@ -56,11 +61,16 @@ const DEFAULT_TONES = [
     { id: 'conciso', label: 'Conciso', prompt: 'Seja extremamente conciso e direto. Evite floreios.', predefined: true },
     { id: 'explicativo', label: 'Explicativo', prompt: 'Explique detalhadamente, como se estivesse ensinando.', predefined: true },
     { id: 'formal', label: 'Formal', prompt: 'Use um tom formal e corporativo.', predefined: true },
-    { id: 'disruptor', label: 'Disruptor Digital', prompt: 'Use um tom provocativo, inovador e desafiador do status quo.', predefined: true },
-    { id: 'giuliano', label: 'Giuliano Style', prompt: 'Seja estratégico, focado em ROI e Growth, usando termos técnicos de RevOps.', predefined: true },
 ];
 
-interface Message { role: 'user' | 'assistant'; content: string; fileName?: string; }
+interface Message {
+    role: 'user' | 'assistant';
+    content: string;
+    fileName?: string;
+    image_url?: string;
+    preview?: string;
+    respondingModel?: string; // New field for Anti-Fake verification
+}
 interface Session { id: string; agentId: string | null; title: string; messages: Message[]; lastMessageAt: Date; model?: string; }
 
 interface Artifact {
@@ -94,7 +104,14 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
     const [isLoadingKnowledge, setIsLoadingKnowledge] = useState(false);
 
     // Tone State
-    const [tones, setTones] = useState(DEFAULT_TONES);
+    const [tones, setTones] = useState(() => {
+        const saved = localStorage.getItem('revhackers_custom_tones');
+        return saved ? JSON.parse(saved) : DEFAULT_TONES;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('revhackers_custom_tones', JSON.stringify(tones));
+    }, [tones]);
     const [selectedTone, setSelectedTone] = useState<string>('normal');
     const [isStyleMenuOpen, setIsStyleMenuOpen] = useState(false);
     const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
@@ -106,6 +123,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
     const [newToneTranscript, setNewToneTranscript] = useState('');
     const [generatedPrompt, setGeneratedPrompt] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [editingToneId, setEditingToneId] = useState<string | null>(null);
 
     const [attachedFile, setAttachedFile] = useState<File | null>(null);
     const [attachedPreview, setAttachedPreview] = useState<string | null>(null);
@@ -120,6 +138,8 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
     // Research / Search State
     const [isResearching, setIsResearching] = useState(false);
+    const [searchSteps, setSearchSteps] = useState<string[]>([]);
+    const [activeSearchQuery, setActiveSearchQuery] = useState('');
 
     const endRef = useRef<HTMLDivElement>(null);
 
@@ -306,35 +326,54 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
         if (!messageText.trim() && !attachedFile) return;
         if (loading || isLoadingGlobal) return;
 
+        // Force clear any lingering toasts to maintain OpenAI-style silence
+        toast.dismiss();
+
         let finalContent = messageText.trim();
-        const toastId = attachedFile ? toast.loading(`Processando arquivo: ${attachedFile.name}...`) : null;
+        const userMsg: Message = { role: 'user', content: finalContent };
 
         try {
             if (attachedFile) {
-                if (attachedFile.type.startsWith('image/')) {
-                    // Vision support would go here. For now, we just acknowledge the image.
-                    finalContent = `[IMAGEM ANEXADA: ${attachedFile.name}]\n\nPERGUNTA DO USUÁRIO: ${finalContent || 'Analise a imagem acima.'}`;
-                } else {
-                    const fileText = await extractTextFromFile(attachedFile);
-                    finalContent = `[DOCUMENTO ANEXADO NA CONVERSA: ${attachedFile.name}]\n\n${fileText}\n\n-------------------\n\nPERGUNTA DO USUÁRIO: ${finalContent || 'Analise o documento acima.'}`;
-                    toast.success('Arquivo processado!', { id: toastId! });
+                try {
+                    if (attachedFile.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        const base64Promise = new Promise<string>((resolve, reject) => {
+                            reader.onload = () => resolve(reader.result as string);
+                            reader.onerror = () => reject(new Error('Erro ao ler imagem'));
+                            reader.readAsDataURL(attachedFile);
+                        });
+                        const base64 = await base64Promise;
+                        userMsg.image_url = base64;
+                        finalContent = `[IMAGEM ANEXADA: ${attachedFile.name}]\n\n${finalContent || 'Analise a imagem acima.'}`;
+                    } else {
+                        const fileText = await extractTextFromFile(attachedFile);
+                        finalContent = `[DOCUMENTO ANEXADO NA CONVERSA: ${attachedFile.name}]\n\n${fileText}\n\n-------------------\n\nPERGUNTA DO USUÁRIO: ${finalContent || 'Analise o documento acima.'}`;
+                    }
+                } catch (err) {
+                    console.error('File extraction error:', err);
+                    toast.error('Erro ao processar arquivo anexado.');
+                    setLoading(false);
+                    return;
                 }
             }
+            userMsg.content = finalContent;
         } catch (err) {
             console.error('File extraction error:', err);
-            toast.error('Erro ao ler arquivo', { id: toastId! });
+            // This catch block is for the outer try, if file processing was successful,
+            // but something else failed before the message was sent.
+            // The file processing specific error handling is now in the inner try-catch.
         }
 
-        const userMsg: Message = { role: 'user', content: finalContent };
         const displayUserMsg: Message = {
             role: 'user',
             content: messageText.trim(),
-            fileName: attachedFile?.name
+            fileName: attachedFile?.name,
+            preview: attachedPreview, // Keep preview for UI
+            image_url: userMsg.image_url // CRITICAL: Keep image_url for next turns!
         };
 
         setMessages(prev => [...prev, displayUserMsg]);
         if (!overrideText) setInput('');
-        const sentFile = attachedFile; // Store for cleanup reference if needed
         setAttachedFile(null);
         setAttachedPreview(null);
         setLoading(true);
@@ -379,6 +418,9 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
             // --- PERPLEXITY ANIMATION TRIGGER ---
             if (selectedModel === 'sonar-pro') {
                 setIsResearching(true);
+                // Simulate steps
+                setSearchSteps(['Analisando fontes...']);
+                setTimeout(() => setSearchSteps(prev => [...prev, 'Cruzando dados em tempo real...']), 1500);
             }
 
             // --- SECURITY UPDATE: Send only ID, backend handles the rest ---
@@ -400,12 +442,17 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 throw new Error(chatData?.error || "Erro desconhecido do servidor.");
             }
 
-            const botMsg: Message = { role: 'assistant', content: chatData.response };
+            const botMsg: Message = {
+                role: 'assistant',
+                content: chatData.response,
+                respondingModel: chatData.respondingModel // Store the REAL engine that answered
+            };
             setMessages(prev => [...prev, botMsg]);
 
             // Artifact Detection Logic
             const artifactRegex = /\[ARTIFACT:(code|markdown|document|search):([^\]]+)\]([\s\S]*?)\[\/ARTIFACT\]/i;
-            const match = chatData.response.match(artifactRegex);
+            const responseToMatch = chatData.response || "";
+            const match = responseToMatch.match(artifactRegex);
             if (match) {
                 const [_, type, title, content] = match;
                 const newArtifact: Artifact = {
@@ -429,21 +476,30 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
         } catch (error: any) {
             console.error('Error in chat workflow:', error);
-            // Enhanced error mapping
-            let errorMessage = error.message || "Desculpe, ocorreu um erro na comunicação.";
 
-            // If it's a Supabase Functions error, try to extract the details
-            if (error.context?.json?.error) {
-                errorMessage = error.context.json.error;
-            } else if (error.status === 500) {
-                errorMessage = "Erro interno no servidor (Edge Function). Verifique os logs do Supabase.";
+            let errorMessage = "Desculpe, ocorreu um erro na comunicação.";
+
+            // Supabase Edge Function detailed error extraction
+            try {
+                if (error.context && typeof error.context.json === 'function') {
+                    const body = await error.context.json();
+                    if (body.error) errorMessage = body.error;
+                } else if (error.message && error.message.includes('non-2xx')) {
+                    errorMessage = "O servidor da IA (Edge Function) retornou um erro inesperado. Verifique se as chaves API estão corretas e se a função foi deployada.";
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+            } catch (e) {
+                console.error("Failed to extract error details:", e);
+                errorMessage = error.message || "Erro na Edge Function.";
             }
 
-            setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ **Erro:** ${errorMessage}` }]);
-            toast.error(`Erro: ${errorMessage}`, {
-                description: "Se o erro persistir, verifique a chave de API do provedor (Anthropic/OpenAI) nas configurações do Supabase."
+            setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ **Erro Detalhado:** ${errorMessage}` }]);
+            toast.error("Falha na Conexão", {
+                description: errorMessage
             });
-        } finally {
+        }
+        finally {
             setLoading(false);
             setIsResearching(false);
         }
@@ -455,8 +511,12 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
         try {
             const { data, error } = await supabase.functions.invoke('agent-chat', {
                 body: {
-                    agentId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Linguista System Agent
-                    messages: [{ role: 'user', content: `Analise:\n\n"${newToneTranscript}"` }]
+                    raw_mode: true, // Use raw mode for character analysis
+                    model: 'gpt-4o-mini',
+                    messages: [{
+                        role: 'user',
+                        content: `Aja como um linguista especialista. Analise o texto abaixo e extraia as principais diretrizes de TOM DE VOZ, PERSONALIDADE e ESTILO DE ESCRITA. Transforme isso em uma instrução de sistema curta (máximo 300 caracteres) que comece com "Aja como...".\n\nTEXTO:\n"${newToneTranscript}"`
+                    }]
                 }
             });
             if (data?.success) {
@@ -471,13 +531,38 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
     const handleSaveTone = () => {
         if (!newToneName || !generatedPrompt) return;
-        const newTone = { id: `custom-${Date.now()}`, label: newToneName, prompt: generatedPrompt, predefined: false };
-        setTones([...tones, newTone]);
-        setSelectedTone(newTone.id);
+
+        if (editingToneId) {
+            setTones(tones.map(t => t.id === editingToneId ? { ...t, label: newToneName, prompt: generatedPrompt } : t));
+            setEditingToneId(null);
+            toast.success("Estilo atualizado!");
+        } else {
+            const newTone = { id: `custom-${Date.now()}`, label: newToneName, prompt: generatedPrompt, predefined: false };
+            setTones([...tones, newTone]);
+            setSelectedTone(newTone.id);
+            toast.success("Estilo criado!");
+        }
+
         setIsToneModalOpen(false);
         resetToneModal();
         setIsStyleMenuOpen(false);
-        toast.success("Estilo criado!");
+    };
+
+    const handleDeleteTone = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setTones(tones.filter(t => t.id !== id));
+        if (selectedTone === id) setSelectedTone('normal');
+        toast.success("Estilo removido!");
+    };
+
+    const handleEditTone = (tone: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEditingToneId(tone.id);
+        setNewToneName(tone.label);
+        setGeneratedPrompt(tone.prompt);
+        setToneModalStep('describe');
+        setIsToneModalOpen(true);
+        setIsStyleMenuOpen(false);
     };
 
     const resetToneModal = () => {
@@ -499,6 +584,48 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
         } else setAttachedPreview(null);
     };
 
+    const handleExportMarkdown = () => {
+        if (!activeArtifact) return;
+        const blob = new Blob([activeArtifact.content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${activeArtifact.title.replace(/\s+/g, '_').toLowerCase()}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success('Documento .md exportado!');
+    };
+
+    const handleExportPDF = () => {
+        if (!activeArtifact) return;
+        // Simple Print-based PDF for MVP (Ultraminimalist approach)
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>${activeArtifact.title}</title>
+                    <style>
+                        body { font-family: 'Inter', sans-serif; padding: 40px; color: #18181b; line-height: 1.6; }
+                        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                        pre { background: #f4f4f5; padding: 20px; border-radius: 8px; font-family: monospace; }
+                        .footer { margin-top: 50px; font-size: 10px; color: #a1a1aa; text-align: center; border-top: 1px solid #e4e4e7; padding-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${activeArtifact.title}</h1>
+                    <div style="margin-top: 30px">${activeArtifact.content.replace(/\n/g, '<br/>')}</div>
+                    <div class="footer">Gerado estrategicamente por RevHackers AI Hub • 2026</div>
+                    <script>window.onload = () => { window.print(); window.close(); }</script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        toast.success('Preparando PDF para impressão...');
+    };
+
     const ChatContent = (
         <div className={cn(
             "flex overflow-hidden bg-white",
@@ -509,34 +636,40 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 "flex flex-col flex-1 min-w-0 transition-all duration-500",
                 isArtifactPanelOpen ? "lg:flex-[0.5] border-r border-zinc-100" : "flex-1"
             )}>
-                {/* Header */}
-                <div className="h-20 border-b border-zinc-100 flex items-center justify-between px-8 bg-white sticky top-0 z-10">
+                <div className="h-24 border-b border-zinc-100 flex items-center justify-between px-8 bg-white/80 backdrop-blur-xl sticky top-0 z-10 transition-all">
                     {!embed && (
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-black flex items-center justify-center text-white">
-                                <Bot className="w-5 h-5" strokeWidth={1.5} />
+                        <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 bg-black flex items-center justify-center text-white rounded-xl shadow-2xl shadow-black/10">
+                                <Feather className="w-5 h-5" strokeWidth={1.5} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-black tracking-ultratight uppercase leading-none">
+                                <h2 className="text-xl font-black text-black tracking-tight uppercase leading-none mb-1.5 flex items-center gap-3">
                                     {selectedAgentName || 'RevhackersAI'}
+                                    <span className="flex w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                                 </h2>
-                                <div className="flex items-center gap-2">
-                                    <span className="flex w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                                        Sistema Ativo
-                                        {agentKnowledgeCount > 0 && (
-                                            <>
-                                                <span className="text-zinc-300">•</span>
-                                                <button
-                                                    onClick={() => setIsKnowledgeModalOpen(true)}
-                                                    className="group flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-md border border-emerald-100 font-bold hover:bg-emerald-100 transition-all"
-                                                >
-                                                    <BrainCircuit className="w-2.5 h-2.5" />
-                                                    {agentKnowledgeCount} DOCS
-                                                </button>
-                                            </>
-                                        )}
-                                    </span>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-100 px-2 py-0.5 rounded-md">
+                                        <div className="w-2.5 h-2.5 rounded-full flex items-center justify-center">
+                                            <ModelIcon provider={MODELS.find(m => m.value === selectedModel)?.provider || ''} className="w-2.5 h-2.5" />
+                                        </div>
+                                        <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none">
+                                            {MODELS.find(m => m.value === selectedModel)?.label} • {MODELS.find(m => m.value === selectedModel)?.provider} ENGINE
+                                        </span>
+                                    </div>
+
+                                    {agentKnowledgeCount > 0 ? (
+                                        <button
+                                            onClick={() => setIsKnowledgeModalOpen(true)}
+                                            className="group flex items-center gap-1.5 bg-emerald-50/50 text-emerald-600 px-2 py-0.5 rounded-md border border-emerald-100/50 font-bold hover:bg-emerald-100 transition-all text-[9px] uppercase tracking-widest"
+                                        >
+                                            <BrainCircuit className="w-2.5 h-2.5" />
+                                            {agentKnowledgeCount} DATASET
+                                        </button>
+                                    ) : (
+                                        <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
+                                            Zero Data Injection
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -627,12 +760,27 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                             </div>
                                         )}
                                         <div className="whitespace-pre-wrap">
-                                            {msg.content.replace(/\[ARTIFACT:[\s\S]*?\[\/ARTIFACT\]/ig, (match) => {
+                                            {(msg.content || '').replace(/\[ARTIFACT:[\s\S]*?\[\/ARTIFACT\]/ig, (match) => {
                                                 const titleMatch = match.match(/\[ARTIFACT:(?:[^:]+):([^\]]+)\]/i);
                                                 const title = titleMatch ? titleMatch[1] : 'Documento';
                                                 return `\n\n> [!TIP]\n> **${title}** gerado. Veja no painel lateral.\n\n`;
                                             })}
                                         </div>
+
+                                        {/* Anti-Fake Verification Badge */}
+                                        {msg.role === 'assistant' && msg.respondingModel && (
+                                            <div className="mt-3 flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
+                                                <div className="p-1 bg-zinc-50 border border-zinc-100 rounded-md">
+                                                    <ModelIcon
+                                                        provider={MODELS.find(m => m.value === msg.respondingModel || m.value.includes(msg.respondingModel!))?.provider || 'Bot'}
+                                                        className="w-2.5 h-2.5"
+                                                    />
+                                                </div>
+                                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-none">
+                                                    Verified Engine: {msg.respondingModel}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -667,10 +815,99 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                         )}
                     </div>
 
-                    <div className="max-w-3xl mx-auto relative flex items-end gap-2 p-2 bg-white border border-zinc-200 focus-within:border-black transition-all">
+                    <div className="max-w-3xl mx-auto relative flex items-end gap-2 p-2 bg-white border border-black transition-all">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    setAttachedFile(file);
+                                    if (file.type.startsWith('image/')) {
+                                        const url = URL.createObjectURL(file);
+                                        setAttachedPreview(url);
+                                    } else {
+                                        setAttachedPreview(null);
+                                    }
+                                }
+                            }}
+                        />
                         <Button variant="ghost" size="icon" className="h-10 w-10 text-zinc-400 hover:text-black hover:bg-zinc-50" onClick={() => fileInputRef.current?.click()}>
                             <Plus className="w-4 h-4" />
                         </Button>
+
+                        <div className="relative">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsStyleMenuOpen(!isStyleMenuOpen)}
+                                className={cn(
+                                    "h-10 w-10 transition-all rounded-xl",
+                                    selectedTone !== 'normal' ? "text-emerald-500 bg-emerald-50 shadow-sm" : "text-zinc-400 hover:text-black hover:bg-zinc-50"
+                                )}
+                            >
+                                <Feather className="w-4 h-4" />
+                            </Button>
+
+                            {isStyleMenuOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsStyleMenuOpen(false)} />
+                                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-2xl shadow-2xl border border-zinc-100 p-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+                                        <div className="px-3 py-2 border-b border-zinc-50 mb-1 flex justify-between items-center">
+                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Estilos de Resposta</span>
+                                            <button
+                                                onClick={() => {
+                                                    setIsToneModalOpen(true);
+                                                    setToneModalStep('initial');
+                                                    setIsStyleMenuOpen(false);
+                                                }}
+                                                className="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-black transition-colors"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                        <div className="max-h-64 overflow-y-auto">
+                                            {tones.map((tone) => (
+                                                <div
+                                                    key={tone.id}
+                                                    onClick={() => {
+                                                        setSelectedTone(tone.id);
+                                                        setIsStyleMenuOpen(false);
+                                                        toast.success(`Estilo: ${tone.label}`);
+                                                    }}
+                                                    className={cn(
+                                                        "group w-full flex items-center justify-between p-2.5 rounded-xl transition-all mb-0.5 cursor-pointer",
+                                                        selectedTone === tone.id ? "bg-black text-white font-bold" : "hover:bg-zinc-50 text-zinc-600"
+                                                    )}
+                                                >
+                                                    <span className="text-xs truncate">{tone.label}</span>
+                                                    <div className="flex items-center gap-1">
+                                                        {!tone.predefined && (
+                                                            <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button
+                                                                    onClick={(e) => handleEditTone(tone, e)}
+                                                                    className="p-1 hover:bg-zinc-200 rounded text-zinc-400 hover:text-black"
+                                                                >
+                                                                    <Pencil className="w-3 h-3" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => handleDeleteTone(tone.id, e)}
+                                                                    className="p-1 hover:bg-zinc-200 rounded text-zinc-400 hover:text-red-500"
+                                                                >
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                        {selectedTone === tone.id && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-1" />}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
 
                         <textarea
                             value={input}
@@ -682,19 +919,21 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 }
                             }}
                             placeholder="Comando ou Pergunta..."
-                            className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-0 shadow-none resize-none max-h-32 min-h-[40px] py-2 text-[15px] placeholder:text-zinc-300 font-medium"
+                            className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-0 shadow-none resize-none max-h-32 min-h-[40px] py-2 text-[15px] placeholder:text-zinc-400 font-medium"
                             rows={1}
                         />
 
                         <Button
                             onClick={() => handleSendMessage()}
-                            disabled={!input.trim() || loading}
+                            disabled={(!input.trim() && !attachedFile) || loading}
                             className={cn(
-                                "h-10 px-6 uppercase text-[10px] font-black tracking-widest transition-all",
-                                input.trim() ? "bg-black text-white hover:bg-zinc-800" : "bg-transparent text-zinc-300"
+                                "h-11 px-8 uppercase text-[10px] font-black tracking-widest transition-all rounded-xl",
+                                (input.trim() || attachedFile)
+                                    ? "bg-black text-white hover:bg-zinc-800 shadow-xl shadow-black/10"
+                                    : "bg-white text-zinc-400 cursor-not-allowed border border-black"
                             )}
                         >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Enviar"}
+                            {loading ? <Loader2 className="w-4 h-4 animate-spin text-zinc-400" /> : "Enviar"}
                         </Button>
                     </div>
                 </div>
@@ -716,18 +955,40 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 text-[11px] font-bold border-zinc-200 hover:bg-zinc-50 rounded-lg"
+                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:bg-black hover:text-white rounded-xl transition-all uppercase tracking-widest"
                                 onClick={() => {
                                     navigator.clipboard.writeText(activeArtifact.content);
                                     toast.success('Conteúdo copiado!');
                                 }}
                             >
-                                COPIAR
+                                <Check className="w-3.5 h-3.5" />
+                                Copiar
                             </Button>
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:border-black rounded-xl transition-all uppercase tracking-widest"
+                                onClick={handleExportMarkdown}
+                            >
+                                <Download className="w-3.5 h-3.5" />
+                                .MD
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:border-black rounded-xl transition-all uppercase tracking-widest"
+                                onClick={handleExportPDF}
+                            >
+                                <FileType className="w-3.5 h-3.5" />
+                                PDF
+                            </Button>
+
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-lg"
+                                className="h-8 w-8 rounded-xl hover:bg-zinc-100"
                                 onClick={() => setIsArtifactPanelOpen(false)}
                             >
                                 <X className="w-4 h-4 text-zinc-400" />
@@ -821,29 +1082,80 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 </div>
             )}
 
-            {/* Research Modal */}
+            {/* Search Frame Experience (Perplexity) */}
             {isResearching && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-6 relative">
-                                <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-                                <Search className="w-8 h-8 text-emerald-600 animate-pulse" />
+                <div className="hidden lg:flex flex-col w-[35%] bg-zinc-50 border-l border-zinc-100 animate-in slide-in-from-right duration-500 overflow-hidden shadow-2xl">
+                    <div className="p-6 bg-white border-b border-zinc-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-xl bg-emerald-50 relative">
+                                <Search className="w-5 h-5 text-emerald-600 animate-pulse" />
+                                <div className="absolute inset-0 rounded-xl border border-emerald-500/30 animate-ping opacity-20" />
                             </div>
-
-                            <h2 className="text-xl font-bold text-zinc-900 mb-2">Pesquisando na Web...</h2>
-                            <p className="text-sm text-zinc-500 leading-relaxed mb-6">
-                                Consultando fontes em tempo real, verificando fatos e sintetizando a melhor resposta.
-                            </p>
-
-                            <div className="w-full bg-zinc-50 rounded-2xl p-4 border border-zinc-100 flex items-center gap-4 text-left">
-                                <Globe className="w-5 h-5 text-zinc-400" />
-                                <div className="flex-1">
-                                    <div className="h-1.5 w-[60%] bg-zinc-200 rounded-full mb-2 animate-pulse" />
-                                    <div className="h-1.5 w-[40%] bg-zinc-100 rounded-full animate-pulse" />
-                                </div>
+                            <div>
+                                <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Search Intelligence</h3>
+                                <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest">Real-time Web Analysis</p>
                             </div>
                         </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg"
+                            onClick={() => setIsResearching(false)}
+                        >
+                            <X className="w-4 h-4 text-zinc-400" />
+                        </Button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        {/* Search Query */}
+                        <div className="p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm transition-all hover:shadow-md">
+                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block mb-2">Analyzing Query</span>
+                            <p className="text-sm font-bold text-zinc-800 italic">"{input || 'Explorando novas fronteiras...'}"</p>
+                        </div>
+
+                        {/* Search Steps / Preview */}
+                        <div className="space-y-4">
+                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block">Research Roadmap</span>
+
+                            <div className="space-y-3">
+                                {[
+                                    { label: 'Initializing Deep Scan', status: 'complete', time: '0.2s' },
+                                    { label: 'Verifying Global Sources', status: 'processing', time: '0.8s' },
+                                    { label: 'Synthesizing Intelligence', status: 'pending', time: '--' }
+                                ].map((step, i) => (
+                                    <div key={i} className={cn(
+                                        "flex items-center justify-between p-3 rounded-xl border transition-all",
+                                        step.status === 'complete' ? "bg-emerald-50/50 border-emerald-100" :
+                                            step.status === 'processing' ? "bg-white border-zinc-200 shadow-sm animate-pulse" :
+                                                "bg-zinc-50 border-zinc-100 opacity-50"
+                                    )}>
+                                        <div className="flex items-center gap-3">
+                                            {step.status === 'complete' ? <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> : <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />}
+                                            <span className="text-[11px] font-bold text-zinc-700">{step.label}</span>
+                                        </div>
+                                        <span className="text-[9px] font-mono text-zinc-400">{step.time}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Live Preview Placeholder */}
+                        <div className="p-4 bg-zinc-900 rounded-2xl border border-white/5 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-50 transition-opacity group-hover:opacity-100" />
+                            <div className="relative z-10 flex items-center gap-3 mb-4">
+                                <Globe className="w-4 h-4 text-emerald-400" />
+                                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Live Preview</span>
+                            </div>
+                            <div className="space-y-2 relative z-10">
+                                <div className="h-2 w-full bg-white/10 rounded-full animate-pulse" />
+                                <div className="h-2 w-[80%] bg-white/5 rounded-full animate-pulse" />
+                                <div className="h-2 w-[90%] bg-white/5 rounded-full animate-pulse" />
+                            </div>
+                        </div>
+
+                        <p className="text-[10px] text-zinc-400 text-center font-medium italic mt-auto pt-8">
+                            *This frame represents a live preview of the research and data synthesis process.
+                        </p>
                     </div>
                 </div>
             )}
@@ -852,8 +1164,8 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
             {isToneModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-zinc-900">Novo Tom de Voz</h3>
+                        <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+                            <h3 className="text-[11px] font-black text-black uppercase tracking-[0.2em]">Calibration Hub</h3>
                             <button onClick={() => setIsToneModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full">
                                 <X className="w-5 h-5 text-zinc-400" />
                             </button>
@@ -861,34 +1173,30 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
                         <div className="p-8">
                             {toneModalStep === 'initial' && (
-                                <div className="space-y-4">
-                                    <p className="text-sm text-zinc-500 mb-6">Como você gostaria de criar este novo estilo de resposta?</p>
+                                <div className="space-y-3">
+                                    <p className="text-sm text-zinc-500 mb-6">Selecione o método de calibração do seu tom de voz.</p>
                                     <button
                                         onClick={() => setToneModalStep('paste')}
-                                        className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-zinc-100 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all text-left group"
+                                        className="w-full flex items-center justify-between p-5 rounded-2xl border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-                                            <FileText className="w-6 h-6" />
+                                        <div className="flex-1">
+                                            <h4 className="text-[13px] font-black text-black uppercase tracking-widest leading-none mb-1">Engenharia de Estilo</h4>
+                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Analise sua escrita original</p>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-bold text-zinc-900">Analisar Texto Existente</h4>
-                                            <p className="text-[11px] text-zinc-400 uppercase font-medium mt-0.5">Cole um exemplo de como você escreve</p>
-                                        </div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 group-hover:bg-black transition-colors" />
                                     </button>
                                     <button
                                         onClick={() => {
                                             setToneModalStep('describe');
                                             setGeneratedPrompt('');
                                         }}
-                                        className="w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-zinc-100 hover:border-zinc-500 hover:bg-zinc-50/30 transition-all text-left group"
+                                        className="w-full flex items-center justify-between p-5 rounded-2xl border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-600 group-hover:scale-110 transition-transform">
-                                            <Sparkles className="w-6 h-6" />
+                                        <div className="flex-1">
+                                            <h4 className="text-[13px] font-black text-black uppercase tracking-widest leading-none mb-1">Configuração Manual</h4>
+                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Defina diretrizes de comportamento</p>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-bold text-zinc-900">Descrever Manualmente</h4>
-                                            <p className="text-[11px] text-zinc-400 uppercase font-medium mt-0.5">Defina as diretrizes você mesmo</p>
-                                        </div>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 group-hover:bg-black transition-colors" />
                                     </button>
                                 </div>
                             )}
@@ -897,17 +1205,17 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 <div className="space-y-4">
                                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Exemplo de Texto</label>
                                     <textarea
-                                        className="w-full h-40 p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+                                        className="w-full h-40 p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-1 focus:ring-black text-sm"
                                         placeholder="Cole aqui um e-mail, artigo ou mensagem que represente o tom desejado..."
                                         value={newToneTranscript}
                                         onChange={(e) => setNewToneTranscript(e.target.value)}
                                     />
                                     <Button
-                                        className="w-full h-12 bg-black text-white rounded-2xl font-bold mt-4"
+                                        className="w-full h-12 bg-black text-white rounded-2xl font-bold mt-4 hover:bg-zinc-800 transition-all font-black uppercase tracking-widest text-[11px]"
                                         disabled={!newToneTranscript || isAnalyzing}
                                         onClick={handleAnalyzeTone}
                                     >
-                                        {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'ANALISAR ESTILO'}
+                                        {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin text-zinc-400" /> : 'Analisar Estilo'}
                                     </Button>
                                 </div>
                             )}
@@ -957,11 +1265,11 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                         {generatedPrompt}
                                     </div>
                                     <Button
-                                        className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold mt-6"
+                                        className="w-full h-12 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[11px] mt-6"
                                         disabled={!newToneName}
                                         onClick={handleSaveTone}
                                     >
-                                        SALVAR E APLICAR
+                                        Salvar e Aplicar
                                     </Button>
                                 </div>
                             )}

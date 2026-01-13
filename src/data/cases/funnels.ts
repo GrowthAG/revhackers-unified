@@ -32,10 +32,10 @@ export const funnelsCase: CaseStudy = {
       label: "Redução no Ciclo de Vendas"
     }
   ],
-  quote: "Eu não acreditava que postar no LinkedIn poderia encher minha agenda. A estratégia da RevHackers não só trouxe leads, mas trouxe os leads CERTOS - decisores que já chegam na reunião confiando no meu trabalho. Fechamos contratos de ticket alto sem precisar de cold call ou anúncios.",
-  author: "Giulliano Alves",
-  role: "CEO, Funnels",
-  authorImage: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/691dfa81f05eaf58cb23a8ad.png",
+  quote: "",
+  author: "",
+  role: "",
+  authorImage: "",
   description: "Estratégia de gerenciamento de receita através de Founder-Led Growth para o CEO, criando conteúdo no LinkedIn para encher a agenda de vendas.",
   preview_description: "Founder-Led Growth: Como transformamos o perfil pessoal do CEO em um canal de aquisição orgânica de US$ 1M+ em pipeline, sem depender de anúncios.",
   logoScale: 1.5,

@@ -57,7 +57,7 @@ export const casesData: Record<string, CaseStudy> = {
   "enics": enicsCase,
   "placlux": placluxCase,
   "funnels": funnelsCase,
-  "tegra": tegraCase,
+
   "bt-digital": btDigitalCase,
   "tikpag": tikpagCase,
   "bolt": boltCase,

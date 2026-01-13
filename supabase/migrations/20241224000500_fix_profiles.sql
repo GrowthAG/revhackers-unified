@@ -15,12 +15,13 @@ BEGIN;
 COMMIT;
 
 -- 3. Update 'profiles' table with new collaborator fields
-ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS cpf text,
-ADD COLUMN IF NOT EXISTS address text,
-ADD COLUMN IF NOT EXISTS personal_email text,
-ADD COLUMN IF NOT EXISTS status text DEFAULT 'pending'; -- pending, approved, suspended
+-- 3. Update 'profiles' table with new collaborator fields
+-- ALTER TABLE public.profiles 
+-- ADD COLUMN IF NOT EXISTS cpf text,
+-- ADD COLUMN IF NOT EXISTS address text,
+-- ADD COLUMN IF NOT EXISTS personal_email text,
+-- ADD COLUMN IF NOT EXISTS status text DEFAULT 'pending'; -- pending, approved, suspended
 
 -- 4. Ensure 'bio' column exists
-ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS bio text;
+-- ALTER TABLE public.profiles 
+-- ADD COLUMN IF NOT EXISTS bio text;

@@ -57,6 +57,35 @@ const AdminProposals = () => {
         setOpenClients(prev => ({ ...prev, [clientName]: !prev[clientName] }));
     };
 
+    const handleDeleteClient = async (clientName: string) => {
+        if (!confirm(`Tem certeza que deseja excluir TODAS as propostas de "${clientName}"? Esta ação não pode ser desfeita.`)) return;
+
+        try {
+            const { error } = await supabase.from("proposals").delete().eq("client_name", clientName);
+            if (error) throw error;
+            toast.success(`Cliente "${clientName}" excluído com sucesso`);
+            refetch();
+        } catch (error) {
+            toast.error("Erro ao excluir cliente");
+            console.error(error);
+        }
+    };
+
+    const handleRenameClient = async (oldName: string) => {
+        const newName = prompt("Novo nome do cliente:", oldName);
+        if (!newName || newName === oldName) return;
+
+        try {
+            const { error } = await supabase.from("proposals").update({ client_name: newName }).eq("client_name", oldName);
+            if (error) throw error;
+            toast.success(`Cliente renomeado para "${newName}"`);
+            refetch();
+        } catch (error) {
+            toast.error("Erro ao renomear cliente");
+            console.error(error);
+        }
+    };
+
     const groupedProposals = useMemo(() => {
         if (!proposals) return {};
 
@@ -130,11 +159,31 @@ const AdminProposals = () => {
                                                 {clientProposals.length} items
                                             </Badge>
                                         </div>
-                                        <CollapsibleTrigger asChild>
-                                            <Button variant="ghost" size="sm" className="w-9 h-9 p-0">
-                                                {openClients[clientName] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={(e) => { e.stopPropagation(); handleRenameClient(clientName); }}
+                                                title="Renomear Cliente"
+                                            >
+                                                <Edit2 className="w-4 h-4 text-zinc-400 hover:text-zinc-900" />
                                             </Button>
-                                        </CollapsibleTrigger>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteClient(clientName); }}
+                                                className="hover:bg-red-50 hover:text-red-500"
+                                                title="Excluir Cliente e Propostas"
+                                            >
+                                                <Trash2 className="w-4 h-4 text-zinc-400" />
+                                            </Button>
+                                            <CollapsibleTrigger asChild>
+                                                <Button variant="ghost" size="sm" className="w-9 h-9 p-0">
+                                                    {openClients[clientName] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                                </Button>
+                                            </CollapsibleTrigger>
+                                        </div>
                                     </div>
 
                                     <CollapsibleContent>

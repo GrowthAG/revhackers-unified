@@ -56,16 +56,15 @@ const AdminAgents = () => {
     const getModelDisplay = (m: string) => {
         const models: Record<string, { label: string; color: string; provider: string }> = {
             'gpt-5.2': { label: 'GPT-5.2', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
-            'gpt-4o': { label: 'GPT-4o', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'OpenAI' },
-            'gpt-4o-mini': { label: '4o Mini', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'OpenAI' },
-            'o1-preview': { label: 'O1 Preview', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
-            'claude-sonnet-4-5-20250929': { label: 'Sonnet 4.5', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
-            'claude-3-5-haiku-20241022': { label: 'Haiku 3.5', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
-            'gemini-1.5-pro': { label: '1.5 Pro', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Google' },
-            'sonar': { label: 'Sonar', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'WEB' },
+            'gpt-4o': { label: 'GPT-4O', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'OpenAI' },
+            '4.5': { label: 'CLAUDE SONNET 4.5', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
+            'haiku': { label: 'CLAUDE 3.5 HAIKU', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
+            'sonar': { label: 'PERPLEXITY', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Perplexity' },
+            'google': { label: 'GEMINI 2.0', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Google' },
         };
 
-        const found = Object.entries(models).find(([key]) => m.toLowerCase().includes(key.toLowerCase()));
+        const mLower = m.toLowerCase();
+        const found = Object.entries(models).find(([key]) => mLower.includes(key.toLowerCase()));
         return found ? found[1] : { label: m.toUpperCase(), color: 'bg-zinc-50 text-zinc-500 border-zinc-100', provider: 'AI' };
     };
 
