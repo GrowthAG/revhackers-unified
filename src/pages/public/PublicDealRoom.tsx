@@ -15,7 +15,15 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+
+
+
+import { OnboardingRoadmap } from "@/components/roadmap/OnboardingRoadmap";
+import { First90Days } from "@/components/roadmap/First90Days";
 import { toast } from "@/components/ui/use-toast";
+
+
+
 
 interface ScopePhase {
     phase: string;
@@ -45,7 +53,8 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
 
     if (htmlContent) {
         return (
-            <div className="bg-white p-6 lg:p-12 rounded-[4px] border border-zinc-200 shadow-sm">
+            <div className="bg-white p-6 lg:p-12 rounded-[4px] border border-zinc-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20" />
                 <div
                     dangerouslySetInnerHTML={{ __html: htmlContent }}
                     className="prose prose-zinc prose-sm max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900"
@@ -57,50 +66,58 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
     if (!phases) return null;
 
     return (
-        <div className="space-y-0 border-l border-zinc-200 ml-2">
-            {phases.slice(0, 5).map((phase, idx) => (
-                <div key={idx} className="relative pl-6 pb-10 last:pb-0">
-                    {/* Subtle Number */}
-                    <span className="absolute left-0 -translate-x-1/2 text-[10px] font-mono text-zinc-300 bg-white px-0.5">{`0${idx + 1}`}</span>
+        <div className="relative space-y-8 pl-4 lg:pl-0">
+            {/* Timeline Line */}
+            <div className="absolute left-[27px] lg:left-1/2 top-4 bottom-4 w-0.5 bg-zinc-200 -translate-x-1/2 hidden lg:block" />
+            <div className="absolute left-[27px] top-4 bottom-4 w-0.5 bg-zinc-200 -translate-x-1/2 lg:hidden" />
 
-                    {/* Week Label */}
-                    <span className="text-[10px] text-zinc-400 tracking-wide">
-                        {phase.duration || `Fase ${idx + 1}`}
-                    </span>
+            {phases.slice(0, 5).map((phase, idx) => {
+                const isEven = idx % 2 === 0;
+                return (
+                    <div key={idx} className={`relative flex flex-col lg:flex-row gap-8 lg:gap-0 items-start ${isEven ? 'lg:flex-row-reverse' : ''}`}>
 
-                    {/* Phase Title */}
-                    <h4 className="text-base font-medium text-zinc-800 mt-1 mb-1">
-                        {phase.phase || `Fase ${idx + 1}`}
-                    </h4>
+                        {/* Empty Space for alignment */}
+                        <div className="flex-1 hidden lg:block" />
 
-                    {/* Description */}
-                    {phase.description && (
-                        <p className="text-sm text-zinc-500 leading-relaxed mb-3 max-w-xl">
-                            {phase.description}
-                        </p>
-                    )}
+                        {/* Center Node */}
+                        <div className="z-10 bg-white p-1 rounded-full border border-zinc-200 shadow-sm shrink-0 lg:mx-8 absolute left-[9px] lg:static lg:left-auto">
+                            <div className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold shadow-[0_4px_10px_rgba(0,0,0,0.2)]">
+                                {idx + 1}
+                            </div>
+                        </div>
 
-                    {/* Deliverables */}
-                    {phase.deliverables && phase.deliverables.length > 0 && (
-                        <ul className="space-y-1 pl-0">
-                            {phase.deliverables.map((item, i) => (
-                                <li key={i} className="text-sm text-zinc-600">
-                                    <span className="text-zinc-300 mr-2">→</span>{item}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                        {/* Content Card */}
+                        <div className={`flex-1 w-full pl-12 lg:pl-0 ${isEven ? 'lg:pr-8 lg:text-right' : 'lg:pl-8 lg:text-left'}`}>
+                            <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:shadow-md transition-all group hover:-translate-y-1 duration-300">
+                                <span className={`inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-600 mb-2 bg-emerald-50 px-2 py-1 rounded-md`}>
+                                    {phase.duration || `Fase ${idx + 1}`}
+                                </span>
+                                <h4 className="text-lg font-bold text-zinc-900 mb-3">{phase.phase}</h4>
+                                <p className="text-sm text-zinc-500 leading-relaxed mb-4">{phase.description}</p>
+
+                                {phase.deliverables && phase.deliverables.length > 0 && (
+                                    <div className={`space-y-2 pt-4 border-t border-zinc-100 ${isEven ? 'lg:flex lg:flex-col lg:items-end' : ''}`}>
+                                        {phase.deliverables.map((item, i) => (
+                                            <div key={i} className="flex items-center gap-2 text-xs text-zinc-700 font-medium">
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                                <span>{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+
+            {/* Success Node */}
+            <div className="relative flex justify-center pt-8">
+                <div className="z-10 bg-emerald-50 p-2 rounded-full border border-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg animate-pulse">
+                        <Zap className="w-6 h-6 fill-white" />
+                    </div>
                 </div>
-            ))}
-
-            {/* End */}
-            <div className="relative pl-6 pt-1">
-                <span className="absolute left-0 -translate-x-1/2 text-[10px] font-mono text-emerald-500 bg-white px-0.5">✓</span>
-                <span className="text-[10px] text-zinc-500">
-                    {proposal.crm_data?.project_duration === '3' ? 'Semana 12' :
-                        proposal.crm_data?.project_duration === '6' ? 'Mês 6' :
-                            proposal.crm_data?.project_duration === '12' ? 'Mês 12' : 'Semana 8'} → Ongoing
-                </span>
             </div>
         </div>
     );
@@ -115,9 +132,8 @@ export default function PublicDealRoom() {
     useEffect(() => {
         const fetchProposal = async () => {
             const { data, error } = await supabase
-                .from('proposals')
-                .select('*')
-                .eq('slug', slug)
+                // @ts-ignore
+                .rpc('get_proposal_by_slug', { slug_input: slug })
                 .single();
 
             if (error) {
@@ -242,6 +258,36 @@ export default function PublicDealRoom() {
 
                         {/* Action Buttons */}
                         <div className="flex flex-col md:flex-row items-center justify-center gap-4 print:hidden">
+                            {/* RECORDING BUTTON - THE GOLD */}
+                            <Button
+                                className="h-12 px-8 bg-red-600 hover:bg-red-700 text-white uppercase tracking-widest text-[10px] font-bold rounded-sm w-full md:w-auto flex items-center gap-2 shadow-[0_0_15px_rgba(220,38,38,0.3)] animate-pulse hover:animate-none transition-all"
+                                onClick={async () => {
+                                    if (!proposal.meeting_link) {
+                                        toast({ title: "Link indisponível", description: "Nenhum link de reunião configurado para este Deal.", variant: "destructive" });
+                                        return;
+                                    }
+
+                                    // 1. Log Session Start
+                                    toast({ title: "Iniciando Sessão...", description: "Registrando início e abrindo sala de conferência." });
+                                    try {
+                                        // Optional: You can create an RPC or table update here to log 'session_start'
+                                        await supabase.from('deal_sessions').insert({
+                                            deal_id: proposal.id,
+                                            started_at: new Date().toISOString(),
+                                            user_agent: navigator.userAgent
+                                        });
+                                    } catch (e) {
+                                        console.log('Session log optional/skipped');
+                                    }
+
+                                    // 2. Open Meet
+                                    window.open(proposal.meeting_link, '_blank');
+                                }}
+                            >
+                                <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+                                🔴 Gravar Sessão (Iniciar)
+                            </Button>
+
                             <Button
                                 className="h-12 px-8 bg-zinc-900 text-white hover:bg-zinc-800 uppercase tracking-widest text-[10px] font-bold rounded-sm w-full md:w-auto"
                                 onClick={() => {
@@ -251,15 +297,18 @@ export default function PublicDealRoom() {
                             >
                                 <Share2 className="w-3 h-3 mr-2" /> Compartilhar Proposta
                             </Button>
-                            <Button
-                                variant="outline"
-                                className="h-12 px-8 border-zinc-200 text-zinc-600 hover:text-black hover:border-black uppercase tracking-widest text-[10px] font-bold rounded-sm w-full md:w-auto"
-                                onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })}
-                            >
-                                Ver Cronograma
-                            </Button>
                         </div>
+
                     </section>
+
+
+                    {/* Section 2.5: Onboarding Roadmap (Methodology) */}
+                    <div className="space-y-12 py-8 bg-zinc-50/50 -mx-6 px-6 border-y border-zinc-100/50">
+                        <OnboardingRoadmap />
+                        <div className="max-w-4xl mx-auto h-[1px] bg-zinc-100"></div>
+                        <First90Days />
+                    </div>
+
 
                     {/* Section 3: Mindmap / Blueprint */}
                     {(() => {

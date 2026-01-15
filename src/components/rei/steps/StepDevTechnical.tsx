@@ -46,6 +46,36 @@ export default function StepDevTechnical({ form }: StepDevTechnicalProps) {
             </div>
 
             <div className="space-y-8">
+                {/* Goal Selection */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-black uppercase tracking-wider">
+                        Principal Objetivo do Site
+                    </Label>
+                    <Select onValueChange={(val) => form.setValue('main_goal', val)} defaultValue={form.watch('main_goal')}>
+                        <SelectTrigger className="w-full bg-white border-zinc-200">
+                            <SelectValue placeholder="O que o site precisa resolver?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="vendas">Vendas Diretas / Conversão</SelectItem>
+                            <SelectItem value="autoridade">Autoridade / Posicionamento</SelectItem>
+                            <SelectItem value="leads">Geração de Leads B2B</SelectItem>
+                            <SelectItem value="informativo">Informativo / Educação</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Platforms/Hosting */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-black uppercase tracking-wider">
+                        Hospedagem / Plataforma Atual
+                    </Label>
+                    <input
+                        {...form.register('current_platform')}
+                        placeholder="Ex: WordPress, Wix, Hostgator, ou 'Não tenho'..."
+                        className="w-full h-10 px-3 py-2 text-sm bg-white border border-zinc-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+                    />
+                </div>
+
                 {/* Project Type */}
                 <div className="space-y-3">
                     <Label className="text-sm font-bold text-black uppercase tracking-wider">

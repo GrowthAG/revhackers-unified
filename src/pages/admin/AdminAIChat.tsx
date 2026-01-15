@@ -50,10 +50,10 @@ const ModelIcon = ({ provider, className, color }: { provider: string, className
 const MODELS = [
     { value: 'gpt-5.2', label: 'GPT-5.2 (OpenAI Next)', description: 'OpenAI • Máxima Inteligência', color: '#10a37f', provider: 'OpenAI' },
     { value: 'gpt-4o', label: 'GPT-4o (Frontier)', description: 'OpenAI • Multimodal', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'claude-sonnet-4.5', label: 'Claude 3.7 Sonnet (Thinking)', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
-    { value: 'claude-opus-4.5', label: 'Claude 4.5 Opus (Thinking)', description: 'Anthropic • Máxima Precisão', color: '#d97757', provider: 'Anthropic' },
-    { value: 'sonar-pro', label: 'Perplexity Sonar (Research)', description: 'Web • Busca Realtime', color: '#00a99d', provider: 'Perplexity' },
     { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Economical)', description: 'OpenAI • Eficiente', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'claude-sonnet-4.5', label: 'Claude Sonnet 4.5 (Thinking)', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
+    { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku', description: 'Anthropic • Ultra Rápido', color: '#d97757', provider: 'Anthropic' },
+    { value: 'sonar-pro', label: 'Perplexity Sonar (Research)', description: 'Web • Busca Realtime', color: '#00a99d', provider: 'Perplexity' },
 ];
 
 const DEFAULT_TONES = [

@@ -104,8 +104,8 @@ const wizardSchema = z.object({
     // Step 5 (Expectativas - Consulting)
     expectativas: z.array(z.string()).min(1, 'Selecione pelo menos 1 expectativa'),
     areasPrioridade: z.array(z.string()).min(1, 'Selecione pelo menos 1 área').max(3, 'Selecione no máximo 3 áreas'),
-    prontidao: z.string().min(1, 'Selecione uma opção'),
-    quandoComecar: z.string().min(1, 'Selecione quando começar'),
+    prontidao: z.string().optional(),
+    quandoComecar: z.string().optional(),
     observacoes: z.string().optional(),
 });
 
@@ -129,27 +129,27 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
                 { id: 'linkedin_identity', title: 'Identidade & Histórico', component: StepFounderLinkedIn, fields: ['linkedin_url', 'founder_name', 'founder_role', 'founder_bio', 'founder_superpowers'] },
                 { id: 'founder_deepdive', title: 'Posicionamento & Conteúdo', component: StepFounderDeepDive, fields: ['authority_topics', 'industry_myths', 'target_audience', 'tone_voice', 'content_frequency', 'preferred_formats', 'anti_goals', 'success_vision'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
         } else if (type === 'dev') {
             return [
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
                 { id: 'technical', title: 'Briefing Técnico', component: StepDevTechnical, fields: ['projectType', 'deadline', 'primaryGoal', 'brandGuidelines', 'contentStatus'] },
                 { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
         } else if (type === 'funnel') {
             return [
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
                 { id: 'estrategia', title: 'Estratégia & Funis', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm'] },
                 { id: 'desafios', title: 'Objetivos Comerciais', component: Step3Desafios, fields: ['metaCrescimento', 'gargaloFunil'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
         } else if (type === 'site') {
             return [
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
                 { id: 'technical', title: 'Tech Briefing', component: StepDevTechnical, fields: ['projectType', 'primaryGoal', 'contentStatus'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
         } else {
             // Default: Consulting 360
@@ -158,7 +158,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho', 'ticketMedio', 'cicloVendas'] },
                 { id: 'desafios', title: 'Desafios & Objetivos', component: Step3Desafios, fields: ['desafios', 'metaCrescimento'] },
                 { id: 'estrategia', title: 'Estratégia Atual', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm', 'marketingMaterials'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade', 'prontidao'] },
+                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
         }
     };
@@ -167,6 +167,38 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     const TOTAL_STEPS = flow.length;
     const currentStepConfig = flow[currentStep - 1];
 
+    // --- PERSISTENCE LOGIC ---
+    useEffect(() => {
+        const savedData = localStorage.getItem(`rei_wizard_data_${projectId}`);
+        const savedStep = localStorage.getItem(`rei_wizard_step_${projectId}`);
+
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                form.reset(parsed);
+            } catch (e) {
+                console.error("Failed to parse saved draft", e);
+            }
+        }
+
+        if (savedStep) {
+            const step = parseInt(savedStep, 10);
+            if (!isNaN(step) && step > 0 && step <= TOTAL_STEPS) {
+                setCurrentStep(step);
+            }
+        }
+    }, [projectId, form, TOTAL_STEPS]);
+
+    // Save to localStorage on change
+    useEffect(() => {
+        const subscription = form.watch((value) => {
+            localStorage.setItem(`rei_wizard_data_${projectId}`, JSON.stringify(value));
+        });
+        localStorage.setItem(`rei_wizard_step_${projectId}`, currentStep.toString());
+        return () => subscription.unsubscribe();
+    }, [form, projectId, currentStep]);
+
+    // --- LOGIC: DEFINE FLOW BASED ON TYPE ---
     const handleNext = async () => {
         // Validate fields for current step
         const fieldsToValidate = currentStepConfig.fields as any;
@@ -178,7 +210,14 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 setCurrentStep(prev => prev + 1);
                 window.scrollTo(0, 0);
             } else {
-                form.handleSubmit(onSubmit)();
+                form.handleSubmit(onSubmit, (errors) => {
+                    console.error("Global Validation Errors:", errors);
+                    toast({
+                        title: "Erro de Validação",
+                        description: "Existem campos inválidos em etapas anteriores. Revise o formulário.",
+                        variant: "destructive"
+                    });
+                })();
             }
         } else {
             toast({
@@ -201,6 +240,16 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             // 1. Calculate Score based on Protocol Type (Logic Extracted!)
             const scoreResult = ReiScoringService.calculateScore(type, data);
 
+            // Enrich with Project Data (Needs import getReiProjectById if not passed as prop, but for now we rely on pure data or passed props)
+            // We'll fetch it simply here to be safe
+            let projectDetails: any = {};
+            try {
+                const { getReiProjectById } = await import('@/api/reiProjects');
+                projectDetails = await getReiProjectById(projectId);
+            } catch (err) {
+                console.warn("Could not fetch extra project details for webhook", err);
+            }
+
             console.log("Saving REI Data:", { projectId, type, data, scoreResult });
 
             // 2. Save to DB with 4 arguments: projectId, type, formData, analysisResult
@@ -208,6 +257,15 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
 
             // 3. Webhook Trigger (Internal REI)
             try {
+                // Prepare a formatted summary for GHL/Email
+                const formattedSummary = Object.entries(data)
+                    .map(([key, value]) => {
+                        const label = key.replace(/_/g, ' ').toUpperCase();
+                        const val = Array.isArray(value) ? value.join(', ') : value;
+                        return `${label}: ${val}`;
+                    })
+                    .join('\n');
+
                 await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -215,6 +273,10 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                         projectId,
                         type,
                         scoreResult,
+                        client_name: projectDetails?.client_name || '',
+                        client_company: projectDetails?.client_company || '',
+                        client_email: projectDetails?.client_email || data.email || '',
+                        formatted_summary: formattedSummary,
                         ...data,
                         submittedAt: new Date().toISOString()
                     })
@@ -224,9 +286,24 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 console.error("Webhook failed:", webhookError);
             }
 
+            // 4. TRIGGER AUTO-ENRICHMENT (Living Documents)
+            // Generates: Benchmark, Personas, Market Data, Draft Strategic Plan
+            try {
+                const { supabase } = await import('@/integrations/supabase/client');
+                await supabase.functions.invoke('trigger-post-rei-enrichment', {
+                    body: { projectId, reiType: type }
+                });
+                console.log("✅ Post-REI enrichment triggered");
+            } catch (enrichError) {
+                console.warn("Enrichment trigger failed (non-blocking):", enrichError);
+            }
+
+            // JOIN THE DOTS: Clear persistence
+            localStorage.removeItem(`rei_wizard_data_${projectId}`);
+
             toast({
                 title: "Diagnóstico Gerado",
-                description: "Redirecionando para o resultado...",
+                description: "Gerando plano estratégico automaticamente...",
                 className: "bg-black text-white border-zinc-800"
             });
 

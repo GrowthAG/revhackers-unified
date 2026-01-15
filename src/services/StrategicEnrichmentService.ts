@@ -10,20 +10,23 @@ export interface BenchmarkData {
         automacao: string[];
         ads: string[];
     };
-    fonte: string;
+    comparativo_mercado?: string;
+    fonte?: string;
 }
 
 export interface Persona {
     nome: string;
     cargo: string;
-    idade: string;
+    idade?: string;
     genero?: string;
-    empresa_tipo: string;
-    dores: string[];
-    motivacoes: string[];
-    objecoes: string[];
-    canais_preferidos: string[];
-    gatilhos_compra: string[];
+    bio_curta?: string;
+    empresa_tipo?: string;
+    dores_principais: string[];
+    ganhos_desejados: string[];
+    objecoes_compra: string[];
+    gatilhos_mentais: string[];
+    canais_favoritos: string[];
+    pitch_elevador?: string;
     foto_url?: string;
 }
 
@@ -33,20 +36,31 @@ export interface PersonasData {
 
 export interface MarketTrend {
     titulo: string;
+    impacto?: string;
     descricao: string;
 }
 
 export interface Competitor {
     nome: string;
-    diferencial: string;
+    url?: string;
+    pontos_fortes?: string;
+    pontos_fracos?: string;
+    diferencial?: string;
+    posicionamento?: string;
 }
 
 export interface MarketData {
-    tendencias: MarketTrend[];
-    concorrentes_referencia: Competitor[];
-    oportunidades: string[];
-    ameacas: string[];
-    tamanho_mercado: string;
+    tendencias_2025: MarketTrend[];
+    concorrentes_benchmark: Competitor[];
+    analise_swot_rapida?: {
+        oportunidades: string[];
+        ameacas: string[];
+    };
+    tam_sam_som?: {
+        tam: string;
+        sam: string;
+        som: string;
+    };
 }
 
 export interface StrategicEnrichmentResult {
@@ -54,16 +68,14 @@ export interface StrategicEnrichmentResult {
     personas?: PersonasData | null;
     market?: MarketData | null;
     error?: string;
+    isDeepResearch?: boolean;
 }
 
 export type EnrichmentType = 'benchmark' | 'personas' | 'market' | 'all';
 
 export class StrategicEnrichmentService {
     /**
-     * Enrich strategic data using Perplexity AI
-     * @param segment - Business segment (e.g., "SaaS B2B", "E-commerce", "Consultoria")
-     * @param enrichmentType - Type of enrichment to perform
-     * @param options - Additional context options
+     * Enrich strategic data using Perplexity AI (via Edge Function)
      */
     static async enrich(
         segment: string,
@@ -72,9 +84,12 @@ export class StrategicEnrichmentService {
             ticket?: string;
             objective?: string;
             isB2B?: boolean;
+            rei_responses?: any; // The full diagnostic context
         }
     ): Promise<StrategicEnrichmentResult> {
         try {
+            console.log('Invoking enrich-strategic-data with:', { segment, type: enrichmentType });
+
             const { data, error } = await supabase.functions.invoke('enrich-strategic-data', {
                 body: {
                     segment,
@@ -82,6 +97,7 @@ export class StrategicEnrichmentService {
                     ticket: options?.ticket,
                     objective: options?.objective,
                     isB2B: options?.isB2B ?? true,
+                    rei_responses: options?.rei_responses
                 }
             });
 
@@ -98,30 +114,6 @@ export class StrategicEnrichmentService {
     }
 
     /**
-     * Get only market benchmarks
-     */
-    static async getBenchmark(segment: string, ticket?: string, isB2B?: boolean): Promise<BenchmarkData | null> {
-        const result = await this.enrich(segment, 'benchmark', { ticket, isB2B });
-        return result.benchmark || null;
-    }
-
-    /**
-     * Get only buyer personas
-     */
-    static async getPersonas(segment: string, ticket?: string, objective?: string): Promise<PersonasData | null> {
-        const result = await this.enrich(segment, 'personas', { ticket, objective });
-        return result.personas || null;
-    }
-
-    /**
-     * Get only market analysis
-     */
-    static async getMarketAnalysis(segment: string): Promise<MarketData | null> {
-        const result = await this.enrich(segment, 'market');
-        return result.market || null;
-    }
-
-    /**
      * Get all enrichment data at once
      */
     static async getFullEnrichment(
@@ -130,8 +122,40 @@ export class StrategicEnrichmentService {
             ticket?: string;
             objective?: string;
             isB2B?: boolean;
+            rei_responses?: any;
         }
     ): Promise<StrategicEnrichmentResult> {
         return this.enrich(segment, 'all', options);
+    }
+
+    /**
+     * Trigger Deep Research (Tavily + Firecrawl)
+     */
+    static async researchIntelligence(
+        type: EnrichmentType,
+        segment: string,
+        options?: {
+            competitors?: string[];
+            objective?: string;
+            context?: any;
+        }
+    ): Promise<any> {
+        try {
+            const { data, error } = await supabase.functions.invoke('research-intelligence', {
+                body: {
+                    type,
+                    segment,
+                    competitors: options?.competitors,
+                    objective: options?.objective,
+                    context: options?.context
+                }
+            });
+
+            if (error) throw error;
+            return data;
+        } catch (e: any) {
+            console.error('Deep research failed:', e);
+            throw e;
+        }
     }
 }

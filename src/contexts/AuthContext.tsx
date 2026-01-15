@@ -66,8 +66,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    // NOVO: Bypass de desenvolvimento
+    // NOVO: Bypass de desenvolvimento - Protegido contra produção
     const setDevBypass = (email: string) => {
+        // Bloqueio rigoroso em produção
+        if (import.meta.env.PROD) {
+            console.error('❌ SEGURANÇA: Dev Bypass bloqueado em produção.');
+            return;
+        }
+
         const fakeUser: any = {
             id: 'dev-bypass-user',
             email: email,

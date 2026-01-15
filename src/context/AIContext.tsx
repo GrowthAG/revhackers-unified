@@ -44,6 +44,7 @@ type AIContextType = {
     setSelectedAgentId: (id: string | null) => void;
     openAgentChat: (agentId: string) => void;
     deleteSession: (sessionId: string) => Promise<void>;
+    renameSession: (sessionId: string, newTitle: string) => Promise<void>;
 };
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -130,6 +131,21 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const renameSession = async (sessionId: string, newTitle: string) => {
+        try {
+            const { error } = await supabase
+                .from('chat_sessions')
+                .update({ title: newTitle })
+                .eq('id', sessionId);
+
+            if (error) throw error;
+            await refreshAI();
+        } catch (error) {
+            console.error('Error renaming session:', error);
+            throw error;
+        }
+    };
+
     const setContext = (type: 'general' | 'article' | 'material' | 'project', id: string | null = null) => {
         setContextType(type);
         setContextId(id);
@@ -176,7 +192,8 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
             selectedAgentId,
             setSelectedAgentId,
             openAgentChat,
-            deleteSession
+            deleteSession,
+            renameSession
         }}>
             {children}
         </AIContext.Provider>

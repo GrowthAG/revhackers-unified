@@ -44,7 +44,9 @@ export default function REIWizardPage() {
     }, [projectId, user, isLoading, navigate]);
 
     const handleComplete = (projectId: string) => {
-        navigate(`/rei/resultado/${projectId}`);
+        // Redireciona para a jornada (onde está o agendamento) em vez de ir direto para o resultado,
+        // garantindo que o passo de agendamento não seja 'pulado'.
+        navigate(`/admin/jornada/${projectId}`);
     };
 
     if (isLoading || loading) {

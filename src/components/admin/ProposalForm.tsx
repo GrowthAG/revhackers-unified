@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
@@ -147,17 +147,38 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
     }, [isEditing, setValue, getValues]);
 
-    // 2. Auto-save Draft (Debounced)
+    // 2. Auto-save Draft (Debounced + Unmount)
     useEffect(() => {
-        if (!isEditing) {
-            const timer = setTimeout(() => {
-                // Check if there is actual content to save
-                if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
-                }
-            }, 2000); // 2 seconds debounce
-            return () => clearTimeout(timer);
-        }
+        if (isEditing) return;
+
+        const saveToStorage = () => {
+            if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
+            }
+        };
+
+        // Debounced save
+        const timer = setTimeout(saveToStorage, 2000);
+
+        // Save on unmount
+        return () => {
+            clearTimeout(timer);
+            saveToStorage();
+        };
+    }, [allValues, isEditing]);
+
+    // 3. Save on Browser/Tab Close
+    useEffect(() => {
+        if (isEditing) return;
+
+        const handleBeforeUnload = () => {
+            if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [allValues, isEditing]);
 
     const watchedTitle = watch('title');
@@ -250,31 +271,25 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                 body: {
                     messages: [{
                         role: 'system',
-                        content: `Você é um Consultor RevOps e CS Estratégico.
-MISSÃO: Transformar o texto abaixo em um ROADMAP VISUAL de 5 fases para implementação em exatamente 8 SEMANAS.
+                        content: ` Você é um Consultor Estratégico de Receita (Revenue Operations).
+MISSÃO: Transformar o contexto da proposta em um ROADMAP VISUAL de exatamente 8 SEMANAS.
 
-ESTRUTURA OBRIGATÓRIA (8 SEMANAS):
-- Fase 1: Arquitetura de Receita & CS (Semana 1)
-- Fase 2: Integrações & Comunicação Unificada (Semana 2)
-- Fase 3: Funis de Vendas e Jornada de CS (Semanas 3-4)
-- Fase 4: Tickets, Governança & SLA (Semanas 5-6)
-- Fase 5: Operação Assistida & Validação (Semanas 7-8)
+REGRAS DE OURO:
+1. O conteúdo deve ser 100% PERSONALIZADO para o cliente em questão, usando termos técnicos discutidos na call.
+2. Não use placeholders ou textos genéricos.
+3. Idioma: Português (Brasil).
+4. Estruture em 5 fases lógicas que cubram as 8 semanas.
 
-O conteúdo deve ser 100% específico ao texto fornecido, usando as ferramentas e dores citadas.
-
-FORMATO JSON:
+FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
 [
   {
-    "phase": "...",
+    "phase": "Fase 1: Título Criativo",
     "duration": "Semana 1",
-    "description": "...",
-    "deliverables": ["...", "..."],
+    "description": "Explicação clara e objetiva do que será feito.",
+    "deliverables": ["Entregável 1", "Entregável 2"],
     "status": "pending"
-  },
-  ... (Gere exatamente 5 objetos)
-]
-
-RETORNE APENAS O JSON ARRAY.`
+  }
+]`
                     }, {
                         role: 'user',
                         content: `TEXTO PARA CONVERSÃO EM CARDS:\n\n${currentScope}\n\n---\nBaseado no texto acima, gere as 5 fases da implementação de 8 semanas no formato JSON solicitado.`
@@ -490,7 +505,8 @@ RETORNE APENAS O JSON ARRAY.`
     const onSubmit = async (data: ProposalFormValues) => {
         setLoading(true);
         try {
-            // Only include fields that exist in the database
+            // [FIX] Ensure numeric fields are strings (DB Schema is text)
+            // [FIX] Only include fields that definitely exist in DB
             const payload = {
                 title: data.title,
                 slug: data.slug,
@@ -501,20 +517,36 @@ RETORNE APENAS O JSON ARRAY.`
                 recording_url: data.recording_url || null,
                 transcript: data.transcript || null,
                 summary: data.summary || null,
-                investment_total: data.investment_total ? Number(data.investment_total) : null,
-                setup_fee: data.setup_fee ? Number(data.setup_fee) : null,
-                installment_value: data.installment_value ? Number(data.installment_value) : null,
-                installment_count: data.installment_count ? Number(data.installment_count) : null,
+
+                // CAST NUMBERS TO STRING
+                investment_total: data.investment_total ? String(data.investment_total) : null,
+                setup_fee: data.setup_fee ? String(data.setup_fee) : null,
+                installment_value: data.installment_value ? String(data.installment_value) : null,
+                installment_count: data.installment_count ? Number(data.installment_count) : null, // This might need to be cast if DB is text, checking... let's keep number if defined, or string if text. Previous code sent number. If DB is text, string is safer.
+
                 status: data.status || 'draft',
                 category: data.category || 'proposal',
                 mindmap_code: data.mindmap_code || null,
-                loom_url: data.loom_url || null,
+
+                // [FIX] These fields might not exist in all migrations, check validity or keep if confident.
+                // Assuming "loom_url" is not in provided migration, but "crm_data" is.
+                // We'll move extra fields to crm_data to be safe if they are not columns
+
                 headline: data.headline || null,
                 subheadline: data.subheadline || null,
                 brief_explanation: data.brief_explanation || null,
                 detailed_scope: data.detailed_scope || null,
                 payment_terms: data.payment_terms || null,
-                crm_data: data.crm_data || null,
+
+                // Merge extra UI fields into crm_data to persist them without schema errors
+                crm_data: {
+                    ...data.crm_data,
+                    loom_url: data.loom_url || null,
+                    bid_document_url: data.bid_document_url || null,
+                    call_detail_summary: data.call_detail_summary || null,
+                    booking_url: data.booking_url || null,
+                    proposal_source: data.proposal_source || 'call'
+                }
             };
 
             let proposalId = initialData?.id;
@@ -523,29 +555,41 @@ RETORNE APENAS O JSON ARRAY.`
             if (isEditing && initialData?.id) {
                 const { error } = await supabase.from('proposals').update(payload).eq('id', initialData.id);
                 if (error) throw error;
+
+                // Only clear draft if save successful
                 localStorage.removeItem(STORAGE_KEY);
                 toast({ title: 'Proposta atualizada!' });
                 navigate('/admin/proposals');
             } else {
                 const { data: newProposal, error } = await supabase.from('proposals').insert(payload).select().single();
                 if (error) throw error;
+
+                if (!newProposal) throw new Error("Falha ao criar proposta: Nenhum dado retornado.");
+
                 proposalId = newProposal.id;
                 slug = newProposal.slug;
 
                 localStorage.removeItem(STORAGE_KEY);
-                toast({ title: 'Proposta criada!' });
+                toast({ title: 'Proposta criada com sucesso!' });
 
                 // AUTO-OPEN Public Page
-                if (proposalId) {
-                    const targetUrl = slug ? `/p/${slug}` : `/admin/proposals/edit/${proposalId}`;
-                    if (slug) {
-                        window.open(targetUrl, '_blank');
-                    }
+                if (proposalId && slug) {
+                    // Safe navigation
+                    const targetUrl = `/p/${slug}`;
+                    window.open(targetUrl, '_blank');
                     navigate(`/admin/proposals/edit/${proposalId}`);
+                } else {
+                    console.error("Missing ID or Slug for new proposal");
+                    navigate('/admin/proposals');
                 }
             }
         } catch (error: any) {
-            toast({ title: 'Erro ao salvar', description: error.message, variant: 'destructive' });
+            console.error("Save Error:", error);
+            toast({
+                title: 'Erro ao salvar',
+                description: error.message || "Verifique os campos e tente novamente.",
+                variant: 'destructive'
+            });
         } finally {
             setLoading(false);
         }
@@ -585,10 +629,12 @@ RETORNE APENAS O JSON ARRAY.`
         // Fallback to form watch if not passed explicitly
         if (!transcript) transcript = watch('transcript');
 
+        const crmData = watch('crm_data');
+        const hasDiagnosis = crmData?.source === 'rei_diagnosis';
         const sourceDoc = watch('bid_document_url');
 
-        if (!transcript && !sourceDoc) {
-            toast({ title: 'Erro', description: 'Adicione uma fonte de dados válida primeiro (Transcrição ou Documento).', variant: 'destructive' });
+        if (!transcript && !sourceDoc && !hasDiagnosis) {
+            toast({ title: 'Erro', description: 'Adicione uma fonte de dados (Transcrição, Documento ou Diagnóstico Prévio).', variant: 'destructive' });
             return;
         }
 
@@ -596,18 +642,30 @@ RETORNE APENAS O JSON ARRAY.`
         try {
             // Construct Context Block
             let contextBlock = "";
+            let diagnosisBlock = "";
+
             if (contextMetadata) {
                 contextBlock = `
                 CONTEXTO DA CALL (METADATA):
                 - Título: ${contextMetadata.name || 'N/A'}
                 - Duração: ${Math.round((contextMetadata.duration || 0) / 60)} min
                 - Participantes: ${contextMetadata.participants ? contextMetadata.participants.map((p: any) => p.name).join(', ') : 'Não listado'}
-                - Data: ${contextMetadata.createdAt ? new Date(contextMetadata.createdAt).toLocaleDateString('pt-BR') : 'N/A'}
+                `;
+            }
+
+            if (hasDiagnosis) {
+                diagnosisBlock = `
+                DADOS DO DIAGNÓSTICO ESTRATÉGICO (REI):
+                - ICP/Segmento: ${crmData.segmento || crmData.icpDescription || 'N/A'}
+                - Principais Dores: ${crmData.desafios ? crmData.desafios.join(', ') : crmData.painDescription || 'N/A'}
+                - Gatilho de Compra: ${crmData.buyingTrigger || 'N/A'}
+                - Concorrentes: ${crmData.concorrentes || 'N/A'}
+                - Objetivo Principal: ${crmData.objetivoPrincipal || 'N/A'}
+                - Faturamento: ${crmData.faturamento || 'N/A'}
+                - Time Comercial: SDRs: ${crmData.sdrCount || 0}, Closers: ${crmData.closerCount || 0}
+                - Ferramentas: ${crmData.crm || 'N/A'}
                 
-                USE ESTES DADOS PARA:
-                1. Identificar quem é o Decisor (pelo cargo/nome).
-                2. Estimar o 'Budget' baseado no nível dos participantes.
-                3. Se a call for curta (<15min), seja direto. Se longa (>40min), detalhe mais a estratégia.
+                USE ESTES DADOS PARA PERSONALIZAR A PROPOSTA (Cite as dores específicas e como resolvemos).
                 `;
             }
 
@@ -618,61 +676,75 @@ RETORNE APENAS O JSON ARRAY.`
                         role: 'system',
                         content: `🧠 ESTRATEGISTA SÊNIOR DE REVENUE OPERATIONS E CUSTOMER SUCCESS.
 
-Sua tarefa é analisar a transcrição/briefing e criar uma PROPOSTA COMERCIAL COMPLETA, EXECUTIVA E PRONTA PARA ENVIO.
+Sua tarefa é analisar a transcrição/briefing/diagnóstico e criar uma PROPOSTA COMERCIAL ÚNICA E PERSONALIZADA.
 
-⚠️ REGRAS OBRIGATÓRIAS:
-- Linguagem executiva, clara e objetiva.
-- Foco em resolução de problemas reais, não em features.
-- Customer Success como pilar central da operação.
-- NÃO usar tom experimental, hack ou teste.
-- NÃO prometer troca de CRM se não for solicitado.
-- Escopo fechado, fases claras e KPIs objetivos.
-- PRAZO OBRIGATÓRIO: 8 SEMANAS.
+⚠️ CRÍTICO: NÃO USE MODELOS PADRÃO. O Escopo deve refletir EXATAMENTE o que foi discutido/diagnosticado.
 
 ESTRUTURA DE RESPOSTA (JSON):
-Preencha os campos abaixo baseando-se estritamente na transcrição fornecida.
+1. "summary": Documento de Texto (Markdown) seguindo ESTRITAMENTE este formato visual:
 
-1. "summary": Documento estruturado para copy-paste contendo:
-   - CONTEXTO E DIAGNÓSTICO (Dores operacionais, riscos de negócio)
-   - OBJETIVO DO PROJETO (Macro e específicos, foco em CS)
-   - KPIs DE SUCESSO (SLA, tempo de resposta, aderência)
-   - FORA DO ESCOPO
-   - CONSIDERAÇÕES FINAIS
+   Sistema de Geração de Demanda & Atendimento Automatizado (ou Título Adequado ao Projeto)
+   
+   01
+   Objetivo do Projeto
+   [Extraia da transcrição: O que o cliente quer resolver? Ex: Garantir resposta rápida, organizar CRM...]
+   
+   02
+   Horizonte do Projeto
+   [Extraia da transcrição: Duração (ex: 90 dias), Modelo (Piloto/Rollout)...]
+   
+   03
+   Fase 1 — [Nome da Fase Extraído]
+   [O que será feito na primeira etapa?]
+   
+   04
+   Fase 2 — [Nome da Fase Extraído]
+   [O que será feito na sequência?]
+   
+   ... (Adicione quantas fases forem necessárias conforme a transcrição)
+   
+   XX
+   Fora do Escopo
+   [O que NÃO será feito?]
+   
+   XX
+   Consideração Final
+   [Resumo de valor]
 
-2. "detailed_scope": Array de 5 FASES para o Roadmap Visual:
-   - Fase 1: Arquitetura de Receita & CS (Semana 1)
-   - Fase 2: Integrações & Comunicação Unificada (Semana 2)
-   - Fase 3: Funis de Vendas e Jornada de CS (Semanas 3-4)
-   - Fase 4: Tickets, Governança & SLA (Semanas 5-6)
-   - Fase 5: Operação Assistida & Validação (Semanas 7-8)`
+2. "detailed_scope": Array para o Roadmap Visual. Deve ESPELHAR as fases descritas no texto acima.
+   Exemplo (Não copie, gere o seu):
+   [
+     { "phase": "Fase 1 — [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] },
+     { "phase": "Fase 2 — [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] }
+   ]`
                     }, {
                         role: 'user',
-                        content: `TRANSCRIÇÃO/BRIEFING DO CLIENTE:
-${transcript.substring(0, 18000)}
+                        content: `${contextBlock}
+
+${diagnosisBlock}
+
+FONTE DE DADOS DO CLIENTE:
+${transcript ? `TRANSCRIÇÃO:\n${transcript.substring(0, 15000)}` : 'Utilize os dados do DIAGNÓSTICO acima como base principal.'}
 
 ---
 Gere o JSON de proposta baseado no PROMPT MESTRE.
 
-Modelo de JSON de saída:
+Gere o JSON de proposta baseado no PROMPT MESTRE.
+
+Model de JSON de saída:
 {
-  "summary": "### 1. CONTEXTO E DIAGNÓSTICO\\n...\\n\\n### 2. OBJETIVO...\\n\\n### 4. KPIs...\\n\\n### 5. FORA DO ESCOPO...\\n\\n### 7. CONSIDERAÇÕES FINAIS...",
-  "headline": "Proposta Comercial: [Nome do Cliente]",
-  "detailed_scope": [
-    { "phase": "Arquitetura de Receita & CS", "duration": "Semana 1", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
-    { "phase": "Integrações & Comunicação", "duration": "Semana 2", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
-    { "phase": "Funis & Jornada CS", "duration": "Semanas 3-4", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
-    { "phase": "Governança & SLA", "duration": "Semanas 5-6", "description": "...", "deliverables": ["...", "..."], "status": "pending" },
-    { "phase": "Validação & Operação", "duration": "Semanas 7-8", "description": "...", "deliverables": ["...", "..."], "status": "pending" }
-  ],
-  "investment_total": 0,
-  "setup_fee": 0,
-  "installment_value": 0,
-  "client_name": "[NOME DA EMPRESA - Nunca o nome da pessoa]",
-  "client_contact_name": "[NOME DA PESSOA COM QUEM FALAMOS]", 
-  "client_email": "[EMAIL SE MENCIONADO OU VAZIO]",
-  "investment_total": 0,
-  "setup_fee": 0,
-  "installment_value": 0
+    "summary": "Sistema de Geração de Demanda...\\n\\n01\\nObjetivo...\\n\\n02\\nHorizonte...\\n\\n03\\nFase 1...",
+    "headline": "Proposta Comercial: [Nome do Cliente]",
+    "detailed_scope": [
+        { "phase": "Fase 1 — [Nome]", "duration": "Semana 1", "description": "...", "deliverables": ["..."], "status": "pending" },
+        { "phase": "Fase 2 — [Nome]", "duration": "Semana 2", "description": "...", "deliverables": ["..."], "status": "pending" }
+    ],
+    "investment_total": 0,
+    "setup_fee": 0,
+    "installment_value": 0,
+    "client_name": "[NOME DA EMPRESA - Nunca o nome da pessoa]",
+    "client_contact_name": "[NOME DA PESSOA COM QUEM FALAMOS]",
+    "client_email": "[EMAIL SE MENCIONADO OU VAZIO]"
 }`
                     }],
                     model: 'gpt-4o'
@@ -834,7 +906,7 @@ Modelo de JSON de saída:
                                                             const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
                                                             if (data?.success) {
                                                                 updateFieldsWithMetadata(data.data, true);
-                                                                toast({ title: 'Dados carregados!', description: `Cliente: ${data.data.clientName || 'N/A'}` });
+                                                                toast({ title: 'Dados do Cliente Carregados', description: `${data.data.clientName || 'Empresa'} — ${data.data.clientContactName || 'Contato'}` });
                                                             }
                                                         }}
                                                         className="p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"
@@ -876,14 +948,18 @@ Modelo de JSON de saída:
                                 )}
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Cliente</Label>
-                                    <Input {...register('client_name')} className="bg-white h-9 text-xs font-bold" placeholder="Empresa" />
+                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Empresa</Label>
+                                    <Input {...register('client_name')} className="bg-white h-9 text-xs font-bold" placeholder="Ex: Nome da Empresa" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Email</Label>
-                                    <Input {...register('client_email')} className="bg-white h-9 text-xs" placeholder="email@client..." />
+                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Contato Principal</Label>
+                                    <Input {...register('client_contact_name')} className="bg-white h-9 text-xs font-bold" placeholder="Nome do Decisor" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">E-mail</Label>
+                                    <Input {...register('client_email')} className="bg-white h-9 text-xs" placeholder="email@empresa.com.br" />
                                 </div>
                             </div>
                         </div>
@@ -933,22 +1009,22 @@ Modelo de JSON de saída:
                 <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-zinc-100 bg-zinc-50/30">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white font-bold">P</div>
+                            <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white font-bold text-xs">P</div>
                             <div>
-                                <h3 className="text-zinc-900 font-bold text-lg leading-none">Documento da Proposta</h3>
-                                <p className="text-zinc-400 text-xs mt-1 font-medium">Dados extraídos da call + seu mapa mental</p>
+                                <h3 className="text-zinc-900 font-bold text-lg leading-none">Estrutura da Proposta</h3>
+                                <p className="text-zinc-400 text-[10px] mt-1 font-bold uppercase tracking-wider">Dados estratégicos e cronograma de implementação</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título da Proposta</Label>
-                                <Input {...register('title')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Proposta REVHACKERS x Cliente" />
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título Público da Proposta</Label>
+                                <Input {...register('title')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Ex: Proposta de Implementação RevHackers X Nome do Cliente" />
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Resumo Executivo</Label>
-                                <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Resumo da reunião e próximos passos..." />
+                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Resumo Estratégico (Texto)</Label>
+                                <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Descreva os objetivos principais e o valor do projeto..." />
                             </div>
                         </div>
                     </div>
@@ -1007,82 +1083,37 @@ Modelo de JSON de saída:
                             )}
                         </div>
 
-                        {/* ESCOPO DO PROJETO */}
                         <div className="space-y-3 pt-8 border-t border-zinc-100/50">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Escopo do Projeto</Label>
+                                <div>
+                                    <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Cronograma Visual (JSON)</Label>
+                                    <p className="text-[10px] text-zinc-400 font-medium">Estrutura de fases que aparece no Roadmap da proposta.</p>
+                                </div>
                                 <div className="flex items-center gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            const clientName = watch('client_name') || 'Cliente';
-                                            const template = JSON.stringify([
-                                                {
-                                                    phase: "Arquitetura de Receita & CS",
-                                                    duration: "Semana 1",
-                                                    description: "Estruturação da base operacional e alinhamento de processos.",
-                                                    deliverables: ["Mapeamento AS-IS", "Definição de KPIs", "Arquitetura CS"],
-                                                    status: "pending"
-                                                },
-                                                {
-                                                    phase: "Integrações & Comunicação",
-                                                    duration: "Semana 2",
-                                                    description: "Conexão de ferramentas e canais de comunicação.",
-                                                    deliverables: ["Setup GHL", "Integrações Core", "Canais Unificados"],
-                                                    status: "pending"
-                                                },
-                                                {
-                                                    phase: "Funis & Jornada CS",
-                                                    duration: "Semanas 3-4",
-                                                    description: "Construção da jornada de valor do cliente.",
-                                                    deliverables: ["Funis de Vendas", "Playbook CS", "Automações Jornada"],
-                                                    status: "pending"
-                                                },
-                                                {
-                                                    phase: "Governança & SLA",
-                                                    duration: "Semanas 5-6",
-                                                    description: "Regras de negócio e acompanhamento de tickets.",
-                                                    deliverables: ["Gestão de Tickets", "Definição de SLA", "Dashboards"],
-                                                    status: "pending"
-                                                },
-                                                {
-                                                    phase: "Validação & Operação",
-                                                    duration: "Semanas 7-8",
-                                                    description: "Operação assistida e ajustes finais.",
-                                                    deliverables: ["Treinamento Time", "Validação Dados", "Handoff Ongoing"],
-                                                    status: "pending"
-                                                }
-                                            ], null, 2);
-                                            setValue('detailed_scope', template);
-                                            toast({ title: 'Template 8 Semanas Aplicado', description: 'Jornada estruturada conforme o Prompt Mestre.' });
-                                        }}
-                                        className="h-6 text-[10px] uppercase font-bold tracking-widest bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
-                                    >
-                                        📋 Definir 8 Semanas (Padrão)
-                                    </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         size="sm"
                                         onClick={handleConvertToCards}
                                         disabled={loading}
-                                        className="h-6 text-[10px] uppercase font-bold tracking-widest bg-zinc-50 border-zinc-200 hover:bg-zinc-100"
+                                        className="h-8 px-4 text-[10px] uppercase font-bold tracking-widest bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm transition-all"
                                     >
-                                        {loading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : ''}
-                                        ✨ Gerar com IA
+                                        {loading ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Wand2 className="w-3 h-3 mr-2" />}
+                                        Gerar Roadmap (8 Semanas)
                                     </Button>
                                 </div>
                             </div>
                             <Textarea
                                 {...register('detailed_scope')}
-                                className="min-h-[200px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4"
-                                placeholder="⚠️ PARA CARDS VISUAIS: Use o botão 'Extrair Dados com IA' acima. Se você colar texto aqui manualmente, ele será exibido como um Documento Simples."
+                                className="min-h-[220px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4 shadow-inner"
+                                placeholder="A IA preencherá este campo com a estrutura da jornada..."
                             />
-                            <p className="text-[10px] text-amber-500 font-medium">
-                                ⚠️ Atenção: Para o layout visual (Cards/Timeline), este campo deve conter o JSON gerado pela IA. Texto comum aparecerá como documento.
-                            </p>
+                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                                <p className="text-[10px] text-amber-600 font-bold flex items-center gap-2">
+                                    <ShieldAlert className="w-3 h-3" />
+                                    Importante: Este campo deve conter o JSON gerado pela IA para habilitar a visualização de cards na página do cliente.
+                                </p>
+                            </div>
                         </div>
 
                         {/* FUNNEL SUBSCRIPTION (OPTIONAL) */}

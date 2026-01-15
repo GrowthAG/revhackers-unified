@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
+import { createDocumentFromREI } from "./knowledge";
 
 export type ReiProject = Database['public']['Tables']['rei_projects']['Row'];
 export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'];
@@ -54,6 +55,26 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
 
     if (error) {
         console.error('Error fetching REI project:', error);
+        return null;
+    }
+
+    return data;
+};
+
+/**
+ * BUSCAR PROJETO (DADOS PÚBLICOS)
+ * Seleciona APENAS campos seguros para o Portal do Cliente
+ * Evita vazamento de dados sensíveis (Margins, Notes, etc)
+ */
+export const getPublicReiProjectById = async (id: string): Promise<Partial<ReiProject> | null> => {
+    const { data, error } = await supabase
+        .from('rei_projects')
+        .select('id, client_name, client_email, status, scheduling_completed, analyst_email, next_rei_date, created_at')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error('Error fetching public REI project:', error);
         return null;
     }
 
@@ -294,6 +315,26 @@ export const saveReiDiagnostic = async (
                 }
             } as any)
             .eq('id', projectId);
+
+        // Auto-generate document in project library
+        if (response?.id) {
+            // Get project name
+            const { data: project } = await supabase
+                .from('rei_projects')
+                .select('client_name')
+                .eq('id', projectId)
+                .single();
+
+            if (project?.client_name) {
+                await createDocumentFromREI(
+                    projectId,
+                    project.client_name,
+                    formData,
+                    analysisResult,
+                    type
+                );
+            }
+        }
 
         return response?.id || null;
     } catch (error) {

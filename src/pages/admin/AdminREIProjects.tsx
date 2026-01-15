@@ -15,7 +15,7 @@ import {
     Zap
 } from 'lucide-react';
 import { format } from 'date-fns';
-import PageLayout from '@/components/layout/PageLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import { Input } from '@/components/ui/input';
 import {
@@ -112,9 +112,9 @@ const AdminREIProjects = () => {
 
 
     return (
-        <PageLayout>
+        <AdminLayout>
             <AdminPageLayout
-                title="Gestão de Onboarding Orquestrado"
+                title="Onboarding Orquestrado"
                 description="Controle a jornada de 90 dias, diagnósticos REI e cronogramas estratégicos."
                 backTo="/admin"
                 backLabel="Voltar ao Hub"
@@ -129,7 +129,7 @@ const AdminREIProjects = () => {
                                     placeholder="Buscar projeto por cliente ou empresa..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 h-10 border-0 focus-visible:ring-0 rounded-none text-sm placeholder:text-zinc-400"
+                                    className="pl-10 h-10 border-0 focus-visible:ring-0 rounded-sm text-sm placeholder:text-zinc-400"
                                 />
                             </div>
                         </div>
@@ -140,13 +140,13 @@ const AdminREIProjects = () => {
                                     onClick={handleBulkDelete}
                                     disabled={deleting === 'bulk'}
                                     variant="destructive"
-                                    className="bg-red-600 hover:bg-red-700 rounded-none h-10 px-4 text-xs font-bold uppercase tracking-widest mr-2 flex-1 md:flex-none"
+                                    className="bg-red-600 hover:bg-red-700 rounded-sm h-10 px-4 text-xs font-bold uppercase tracking-widest mr-2 flex-1 md:flex-none"
                                 >
                                     {deleting === 'bulk' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
                                     Excluir ({selectedIds.length})
                                 </Button>
                             )}
-                            <Button onClick={() => navigate('/admin/rei/novo')} className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 text-xs font-bold uppercase tracking-widest flex-1 md:flex-none whitespace-nowrap">
+                            <Button onClick={() => navigate('/admin/rei/novo')} className="bg-black text-white hover:bg-zinc-800 rounded-sm h-10 px-6 text-xs font-bold uppercase tracking-widest flex-1 md:flex-none whitespace-nowrap">
                                 <Plus className="mr-2 h-4 w-4" /> Novo Projeto
                             </Button>
                         </div>
@@ -156,9 +156,10 @@ const AdminREIProjects = () => {
                     <div className="bg-white border border-zinc-200">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-b-2 border-black hover:bg-transparent transition-none">
+                                <TableRow className="border-b border-zinc-200 hover:bg-transparent transition-none">
                                     <TableHead className="w-[50px] pl-6 py-6">
                                         <Checkbox
+                                            className="rounded-sm"
                                             checked={filteredProjects.length > 0 && selectedIds.length === filteredProjects.length}
                                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
                                         />
@@ -182,7 +183,7 @@ const AdminREIProjects = () => {
                                         <TableRow
                                             key={project.id}
                                             className={`hover:bg-zinc-50 transition-all border-zinc-100 cursor-pointer h-24 ${selectedIds.includes(project.id) ? 'bg-zinc-50' : ''}`}
-                                            onClick={() => navigate(`/admin/jornada/${project.id}`)}
+                                            onClick={() => navigate(`/admin/projects/${project.id}`)}
                                         >
                                             <TableCell className="pl-6 py-4" onClick={(e) => e.stopPropagation()}>
                                                 <Checkbox
@@ -217,8 +218,8 @@ const AdminREIProjects = () => {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        onClick={() => navigate(`/admin/jornada/${project.id}`)}
-                                                        className="h-8 w-8 text-zinc-400 hover:text-revgreen hover:bg-zinc-50 rounded-none transition-all"
+                                                        onClick={() => navigate(`/admin/projects/${project.id}`)}
+                                                        className="h-8 w-8 text-zinc-400 hover:text-revgreen hover:bg-zinc-50 rounded-sm transition-all"
                                                         title="Gerenciar Jornada"
                                                     >
                                                         <Zap className="h-4 w-4" />
@@ -227,7 +228,7 @@ const AdminREIProjects = () => {
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => navigate(`/admin/rei/${project.id}`)}
-                                                        className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-50 rounded-none transition-all"
+                                                        className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-50 rounded-sm transition-all"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
@@ -235,7 +236,7 @@ const AdminREIProjects = () => {
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => handleDelete(project.id, project.client_name)}
-                                                        className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-zinc-50 rounded-none transition-all"
+                                                        className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-zinc-50 rounded-sm transition-all"
                                                         disabled={!!deleting}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -256,7 +257,7 @@ const AdminREIProjects = () => {
                     </div>
                 </div>
             </AdminPageLayout>
-        </PageLayout>
+        </AdminLayout>
     );
 };
 

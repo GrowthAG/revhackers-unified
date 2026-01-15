@@ -8,6 +8,7 @@ import {
     getClientById,
     type ClientInsert
 } from '@/api/clients';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -126,10 +127,27 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
 
         setIsSearchingCnpj(true);
         try {
-            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
-            if (!response.ok) throw new Error('CNPJ não encontrado');
-            const data = await response.json();
+            console.log("Fetching CNPJ data for:", cleanCnpj);
+            let data;
 
+            // Try Direct Fetch first (faster, reliable if CORS permitted)
+            try {
+                const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
+                if (!response.ok) throw new Error('Direct fetch failed');
+                data = await response.json();
+            } catch (directError) {
+                console.warn("Direct fetch failed, trying Edge Function...", directError);
+                // Fallback to Edge Function if direct fetch fails (e.g. CORS)
+                const { data: edgeData, error } = await supabase.functions.invoke('fetch-cnpj', {
+                    body: { cnpj: cleanCnpj }
+                });
+                if (error || !edgeData) throw error || new Error('Edge function failed');
+                data = edgeData;
+            }
+
+            if (!data) throw new Error('Dados não retornados');
+
+            // Map API response to Form
             if (data.razao_social) setValue('company', data.razao_social);
 
             if (data.qsa && data.qsa.length > 0) {
@@ -140,6 +158,8 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
             }
 
             if (data.cep) setValue('cep', data.cep);
+
+            // Handle Address Fields
             if (data.logradouro) setValue('address', data.logradouro);
             if (data.numero) setValue('number', data.numero);
             if (data.complemento) setValue('complement', data.complemento);

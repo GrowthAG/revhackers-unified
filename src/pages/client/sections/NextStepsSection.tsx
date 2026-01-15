@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, Rocket, Handshake, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -13,7 +13,7 @@ import {
 interface NextStepsSectionProps {
     plan: any;
     onApprove: () => void;
-    onReject: () => void;
+    onReject: (feedback: string) => void;
     approving: boolean;
     status: string;
 }
@@ -27,9 +27,11 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
     const displaySteps = implementationSteps.length > 0 ? implementationSteps : plan.next_steps_data?.week1_actions || [];
 
     const handleRequestAdjustments = async () => {
+        if (!adjustmentNotes.trim()) return;
         setSubmittingAdjustments(true);
+        // Simulate minor delay for UX
         setTimeout(() => {
-            onReject();
+            onReject(adjustmentNotes);
             setShowAdjustments(false);
             setSubmittingAdjustments(false);
         }, 1000);
@@ -37,146 +39,162 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
 
     // Default steps if none provided
     const defaultSteps = [
-        { day: 'Dia 1', action: 'Configuração Técnica' },
-        { day: 'Dia 2', action: 'Kick-off de Conteúdo' },
-        { day: 'Dia 3', action: 'Setup de Campanhas' },
-        { day: 'Dia 4', action: 'Validação de Tracking' },
-        { day: 'Dia 5', action: 'Go Live' },
+        { day: 'DIA 1', action: 'Otimizar perfil LinkedIn (headline, banner, sobre) - foco Brasil' },
+        { day: 'DIA 1-2', action: 'Criar lista de 200+ empresas target (SP, RJ, BH tech)' },
+        { day: 'DIA 2-3', action: 'Escrever 5 templates de prospecao em portugues brasileiro' },
+        { day: 'DIA 3', action: 'Criar demo workspace do Funnels com dados brasileiros' },
+        { day: 'DIA 4-6', action: 'Publicar 4 posts no LinkedIn sobre dores brasileiras (WhatsApp, consolidacao)' },
+        { day: 'DIA 5-6', action: 'Criar lead magnet: "Checklist: Migrar de RD+Pipedrive para Funnels em 48h"' },
+        { day: 'DIA 6-7', action: 'Configurar Calendly + email sequences (5 sequencias)' },
+        { day: 'DIA 7', action: 'Iniciar outreach manual (10-15 conexoes/dia no LinkedIn)' },
+        { day: 'SEMANA 1', action: 'Agendar 3-5 discovery calls (meta minima)' },
+        { day: 'SEMANA 1', action: 'Documentar objecoes comuns e respostas (playbook)' },
     ];
 
     const steps = displaySteps.length > 0 ? displaySteps : defaultSteps;
 
     return (
-        <div className="space-y-16">
-            {/* Header - Apple Style */}
-            <div className="text-center max-w-2xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-semibold text-black tracking-tight mb-4">
-                    Próximos Passos
+        <div className="py-20 space-y-32">
+            {/* Section Header */}
+            <div className="text-center space-y-6">
+                <h2 className="text-7xl md:text-[8rem] font-black text-white leading-[0.8] tracking-[-0.05em] uppercase select-none">
+                    Next <span className="text-revgreen">Steps</span>
                 </h2>
-                <p className="text-lg text-zinc-500 font-light leading-relaxed">
-                    Roadmap de execução para as próximas 48 horas.
+                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
+                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
+                    Immediate Action Protocol
                 </p>
             </div>
 
-            {/* Steps - Minimalist List */}
-            <div className="max-w-xl mx-auto">
+            {/* Steps - Surgical V2 Grid */}
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
                 {steps.map((step: any, index: number) => {
                     const title = step.title || step.action;
-                    const label = step.day || `Passo ${index + 1}`;
+                    const label = step.day || `STEP ${index + 1}`;
 
                     return (
                         <div
                             key={index}
-                            className="flex items-center gap-6 py-6 border-b border-zinc-200"
+                            className="flex items-start gap-6 group"
                         >
-                            <div className="w-10 h-10 border border-zinc-300 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-sm font-medium text-zinc-400">{index + 1}</span>
+                            <div className="w-12 h-12 rounded-full border border-zinc-900 bg-zinc-950 flex items-center justify-center flex-shrink-0 group-hover:border-revgreen transition-all shadow-[0_0_20px_rgba(3,252,59,0.05)]">
+                                <span className="text-xs font-black text-zinc-500 group-hover:text-revgreen">{String(index + 1).padStart(2, '0')}</span>
                             </div>
-                            <div className="flex-1">
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest mb-1">{label}</p>
-                                <p className="text-lg font-medium text-black">{title}</p>
+                            <div className="space-y-1">
+                                <p className="text-[10px] text-revgreen font-black uppercase tracking-[0.3em]">{label}</p>
+                                <p className="text-lg font-black text-white uppercase tracking-tight leading-tight">{title}</p>
                             </div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Approval Section */}
-            {status === 'approved' ? (
-                <div className="max-w-md mx-auto text-center py-12 border-2 border-black">
-                    <div className="w-12 h-12 mx-auto mb-4 border-2 border-black rounded-full flex items-center justify-center">
-                        <Check className="w-5 h-5 text-black" />
+            {/* Approval Console */}
+            <div className="max-w-4xl mx-auto pt-20 border-t border-zinc-900">
+                {status === 'approved' ? (
+                    <div className="text-center py-20 bg-zinc-950/50 border border-revgreen/20 rounded-[3rem] relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-revgreen/5 blur-[100px]"></div>
+                        <div className="relative z-10 space-y-6">
+                            <div className="w-20 h-20 mx-auto bg-revgreen rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(3,252,59,0.3)]">
+                                <Check className="w-10 h-10 text-black border-none" />
+                            </div>
+                            <h3 className="text-4xl font-black text-white uppercase tracking-tighter">
+                                Missão Iniciada
+                            </h3>
+                            <p className="text-zinc-500 font-medium uppercase tracking-widest max-w-sm mx-auto">
+                                Protocolo aprovado. Nossa equipe de engenharia de growth já está em campo.
+                            </p>
+                        </div>
                     </div>
-                    <h3 className="text-xl font-medium text-black mb-2">
-                        Aprovado
-                    </h3>
-                    <p className="text-sm text-zinc-500">
-                        Aguardando início da execução.
-                    </p>
-                </div>
-            ) : status === 'rejected' ? (
-                <div className="max-w-md mx-auto text-center py-12 border border-zinc-200">
-                    <h3 className="text-xl font-medium text-black mb-2">
-                        Ajustes Solicitados
-                    </h3>
-                    <p className="text-sm text-zinc-500">
-                        Em revisão pela equipe.
-                    </p>
-                </div>
-            ) : (
-                <div className="max-w-lg mx-auto text-center">
-                    <h3 className="text-xl font-medium text-black mb-2">
-                        Aprovação do Plano
-                    </h3>
-                    <p className="text-sm text-zinc-500 mb-8">
-                        Ao aprovar, você autoriza o início das ações descritas.
-                    </p>
-
-                    <div className="flex items-center justify-center gap-4">
-                        <Button
-                            onClick={() => setShowAdjustments(true)}
-                            variant="outline"
-                            className="h-12 px-6 border border-zinc-300 text-zinc-600 hover:text-black hover:border-black rounded-none"
-                            disabled={approving}
-                        >
-                            Solicitar Ajustes
-                        </Button>
-
-                        <Button
-                            onClick={onApprove}
-                            className="h-12 px-8 bg-black text-white hover:bg-zinc-800 rounded-none"
-                            disabled={approving}
-                        >
-                            {approving ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Processando
-                                </>
-                            ) : (
-                                'Aprovar Execução'
-                            )}
-                        </Button>
+                ) : status === 'rejected' ? (
+                    <div className="text-center py-16 border border-zinc-900 rounded-[3rem] bg-zinc-950/30">
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">
+                            Ajustes Solicitados
+                        </h3>
+                        <p className="text-sm font-black text-zinc-600 uppercase tracking-widest">
+                            Em revisão técnica. Retornaremos em menos de 24h.
+                        </p>
                     </div>
-                </div>
-            )}
+                ) : (
+                    <div className="space-y-16">
+                        <div className="text-center space-y-4">
+                            <Rocket className="w-12 h-12 mx-auto text-revgreen animate-pulse" />
+                            <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">
+                                Pronto para a Execução?
+                            </h3>
+                            <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs max-w-md mx-auto">
+                                Ao autorizar, ativamos o ecossistema RevHackers para escalar sua operação imediatamente.
+                            </p>
+                        </div>
 
-            {/* Adjustments Dialog */}
+                        {/* Action Primary */}
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                            <button
+                                onClick={() => setShowAdjustments(true)}
+                                className="px-12 py-4 border border-zinc-800 text-zinc-500 font-black uppercase tracking-[0.2em] text-[10px] rounded-full hover:border-white hover:text-white transition-all"
+                                disabled={approving}
+                            >
+                                Solicitar Ajustes
+                            </button>
+
+                            <button
+                                onClick={onApprove}
+                                className="px-16 py-5 bg-revgreen text-black font-black uppercase tracking-[0.3em] text-xs rounded-full hover:scale-105 transition-all shadow-[0_0_40px_rgba(3,252,59,0.2)] flex items-center gap-3"
+                                disabled={approving}
+                            >
+                                {approving ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Ativando...
+                                    </>
+                                ) : (
+                                    <>
+                                        Autorizar Execução
+                                        <ChevronRight size={16} />
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Adjustments Terminal (Dialog) */}
             <Dialog open={showAdjustments} onOpenChange={setShowAdjustments}>
-                <DialogContent className="max-w-lg rounded-none border-2 border-black">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-medium">
-                            Solicitar Ajustes
+                <DialogContent className="max-w-lg bg-zinc-950 border border-zinc-900 text-white rounded-[2rem] p-10">
+                    <DialogHeader className="space-y-4">
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
+                            Technical Feedback
                         </DialogTitle>
-                        <DialogDescription className="text-zinc-500">
-                            Descreva os ajustes que você gostaria de ver no planejamento.
+                        <DialogDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">
+                            Descreva os pontos de fricção para ajuste imediato.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 py-4">
+                    <div className="py-8">
                         <Textarea
                             value={adjustmentNotes}
                             onChange={(e) => setAdjustmentNotes(e.target.value)}
                             placeholder="Descreva os ajustes necessários..."
-                            className="min-h-[120px] resize-none border-zinc-200 focus:border-black rounded-none"
+                            className="min-h-[160px] bg-black border-zinc-900 rounded-2xl p-6 text-sm text-white placeholder:text-zinc-800 focus:border-revgreen transition-all resize-none shadow-none focus-visible:ring-0"
                         />
                     </div>
 
-                    <div className="flex justify-end gap-3">
-                        <Button
-                            variant="outline"
+                    <div className="flex justify-end gap-4">
+                        <button
                             onClick={() => setShowAdjustments(false)}
                             disabled={submittingAdjustments}
-                            className="rounded-none"
+                            className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
                         >
                             Cancelar
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                             onClick={handleRequestAdjustments}
                             disabled={!adjustmentNotes.trim() || submittingAdjustments}
-                            className="bg-black text-white hover:bg-zinc-800 rounded-none"
+                            className="px-10 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all"
                         >
-                            {submittingAdjustments ? 'Enviando...' : 'Enviar'}
-                        </Button>
+                            {submittingAdjustments ? 'Transmitindo...' : 'Enviar Protocolo'}
+                        </button>
                     </div>
                 </DialogContent>
             </Dialog>

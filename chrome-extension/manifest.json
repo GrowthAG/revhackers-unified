@@ -1,0 +1,49 @@
+{
+    "manifest_version": 3,
+    "name": "Ork - Meeting Intelligence",
+    "short_name": "Ork",
+    "version": "1.1.0",
+    "description": "Capture, transcreva e analise suas reuniões automaticamente. Powered by RevHackers.",
+    "permissions": [
+        "activeTab",
+        "storage",
+        "tabCapture",
+        "offscreen",
+        "notifications"
+    ],
+    "host_permissions": [
+        "https://meet.google.com/*"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Ork - Clique para gravar",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://meet.google.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    }
+}

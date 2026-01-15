@@ -225,6 +225,38 @@ export default function Step2Contexto({ form }: Step2Props) {
                         <p className="text-red-500 text-xs">{form.formState.errors.taxaChurn.message as string}</p>
                     )}
                 </div>
+
+                {/* --- NOVOS CAMPOS ESTRATÉGICOS (FEEDBACK) --- */}
+
+                {/* Concorrentes */}
+                <div className="space-y-3 pt-6 border-t border-zinc-100">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Principais Concorrentes
+                    </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        Liste os 3-5 principais players que você enfrenta nas negociações.
+                    </p>
+                    <textarea
+                        {...form.register('concorrentes')}
+                        className="w-full min-h-[100px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                        placeholder="Ex: Concorrente A (Preço baixo), Concorrente B (Líder de mercado)..."
+                    />
+                </div>
+
+                {/* ICP */}
+                <div className="space-y-3">
+                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
+                        Descrição do Perfil de Cliente Ideal (ICP)
+                    </Label>
+                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                        Quem é o cliente dos sonhos? (Cargo, Setor, Tamanho, Momento)
+                    </p>
+                    <textarea
+                        {...form.register('icpDescription')}
+                        className="w-full min-h-[120px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                        placeholder="Ex: Diretores de Marketing em empresas SaaS Series B, que estão sofrendo com CAC alto e buscam eficiência..."
+                    />
+                </div>
             </div>
         </div>
     );

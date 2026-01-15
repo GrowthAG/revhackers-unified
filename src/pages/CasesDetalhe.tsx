@@ -29,43 +29,31 @@ const CasesDetalhe = () => {
         const dbCase = await getCaseBySlug(slug);
 
         if (dbCase) {
-          // @ts-ignore
-          const staticCase = (casesData as any)[slug] || {};
-
           const mappedCase: CaseStudy = {
-            title: dbCase.client_name || staticCase.title || 'Case sem título',
-            category: dbCase.case_category || staticCase.category || 'Geral',
-            logo: dbCase.client_logo || staticCase.logo || '',
-            coverImage: dbCase.image_url || dbCase.cover_image || staticCase.coverImage || '',
-            challenge: staticCase.challenge || 'Desafio não informado.',
-            solution: staticCase.solution || 'Solução não informada.',
-            results: staticCase.results || [],
-            metrics: staticCase.metrics || [],
-            quote: staticCase.quote || '',
-            author: staticCase.author || '',
-            role: staticCase.role || '',
-            authorImage: staticCase.authorImage || '',
-            techStack: (Array.isArray(dbCase.tech_stack) ? dbCase.tech_stack : staticCase.techStack) || [],
-            logoScale: staticCase.logoScale || 1.4
+            title: dbCase.client_name || dbCase.title || 'Case sem título',
+            category: dbCase.case_category || 'Geral',
+            logo: dbCase.client_logo || '',
+            coverImage: dbCase.image_url || '',
+            challenge: dbCase.challenge || 'Desafio não informado.',
+            solution: dbCase.solution || 'Solução não informada.',
+            results: typeof dbCase.results === 'string' ? dbCase.results.split('\n') : (Array.isArray(dbCase.results) ? dbCase.results : []),
+            metrics: (Array.isArray(dbCase.metrics) ? dbCase.metrics : []) as any[],
+            quote: dbCase.testimonial_quote || '',
+            author: dbCase.testimonial_author || '',
+            role: dbCase.testimonial_role || '',
+            authorImage: dbCase.testimonial_avatar || '',
+            techStack: (Array.isArray((dbCase as any).tech_stack) ? (dbCase as any).tech_stack : []) || [],
+            logoScale: (dbCase as any).logoScale || 1.4,
+            preview_description: dbCase.preview_description || ''
           };
           setCaseData(mappedCase);
         } else {
-          // @ts-ignore
-          const staticCase = (casesData as any)[slug];
-          if (staticCase) {
-            setCaseData(staticCase);
-          } else {
-            console.warn(`Case not found for slug: ${slug}`);
-            setCaseData(null);
-          }
+          console.warn(`Case not found for slug: ${slug}`);
+          setCaseData(null);
         }
       } catch (error) {
         console.error("Error loading case detail:", error);
-        // @ts-ignore
-        const staticCase = (casesData as any)[slug];
-        if (staticCase) {
-          setCaseData(staticCase);
-        }
+        setCaseData(null);
       } finally {
         setLoading(false);
       }

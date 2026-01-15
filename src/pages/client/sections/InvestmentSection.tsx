@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Wallet, Info, ArrowUpRight } from 'lucide-react';
 
 interface InvestmentSectionProps {
     plan: any;
@@ -8,15 +9,16 @@ interface InvestmentSectionProps {
 
 const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     }).format(value);
 };
 
 const parseCurrency = (value: string): number => {
-    const cleaned = value.replace(/[^\d,]/g, '').replace(',', '.');
-    return parseFloat(cleaned) || 0;
+    if (!value) return 0;
+    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
 };
 
 export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSectionProps) {
@@ -26,20 +28,74 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
         google_ads: budget.google_ads || 0,
         meta_ads: budget.meta_ads || 0,
         linkedin_ads: budget.linkedin_ads || 0,
+        tiktok_ads: budget.tiktok_ads || 0,
+        taboola: budget.taboola || 0,
+        outbrain: budget.outbrain || 0,
+    });
+
+    const [inputValues, setInputValues] = useState<Record<string, string>>({
+        google_ads: budget.google_ads ? formatCurrency(budget.google_ads) : '',
+        meta_ads: budget.meta_ads ? formatCurrency(budget.meta_ads) : '',
+        linkedin_ads: budget.linkedin_ads ? formatCurrency(budget.linkedin_ads) : '',
+        tiktok_ads: budget.tiktok_ads ? formatCurrency(budget.tiktok_ads) : '',
+        taboola: budget.taboola ? formatCurrency(budget.taboola) : '',
+        outbrain: budget.outbrain ? formatCurrency(budget.outbrain) : '',
     });
 
     const channels = [
-        { key: 'google_ads', name: 'Google Ads' },
-        { key: 'meta_ads', name: 'Meta Ads' },
-        { key: 'linkedin_ads', name: 'LinkedIn Ads' },
+        {
+            key: 'google_ads',
+            name: 'Google Ads',
+            color: 'bg-blue-600',
+            icon: 'G'
+        },
+        {
+            key: 'meta_ads',
+            name: 'Meta Ads',
+            color: 'bg-blue-500',
+            icon: 'M'
+        },
+        {
+            key: 'linkedin_ads',
+            name: 'LinkedIn Ads',
+            color: 'bg-sky-700',
+            icon: 'in'
+        },
+        {
+            key: 'tiktok_ads',
+            name: 'TikTok Ads',
+            color: 'bg-zinc-900',
+            icon: 'TT'
+        },
+        {
+            key: 'taboola',
+            name: 'Taboola',
+            color: 'bg-orange-600',
+            icon: 'T'
+        },
+        {
+            key: 'outbrain',
+            name: 'Outbrain',
+            color: 'bg-amber-600',
+            icon: 'O'
+        },
     ];
 
     const totalBudget = Object.values(channelBudgets).reduce((sum, val) => sum + val, 0);
 
-    const handleBudgetChange = (key: string, value: string) => {
+    const handleInputChange = (key: string, value: string) => {
+        setInputValues(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleInputBlur = (key: string, value: string) => {
         const numValue = parseCurrency(value);
         const newBudgets = { ...channelBudgets, [key]: numValue };
         setChannelBudgets(newBudgets);
+
+        setInputValues(prev => ({
+            ...prev,
+            [key]: numValue > 0 ? formatCurrency(numValue) : ''
+        }));
 
         if (onBudgetChange) {
             onBudgetChange({
@@ -50,66 +106,103 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
     };
 
     return (
-        <div className="space-y-16">
-            {/* Header - Apple Style */}
-            <div className="text-center max-w-2xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-semibold text-black tracking-tight mb-4">
+        <div className="space-y-24">
+            {/* Header */}
+            <div className="border-b border-zinc-100 pb-8">
+                <h2 className="text-4xl font-black text-black tracking-tighter uppercase mb-4">
                     Investimento em Mídia
                 </h2>
-                <p className="text-lg text-zinc-500 font-light leading-relaxed">
-                    Defina o investimento mensal por canal de mídia paga.
+                <p className="text-xl text-zinc-500 font-light max-w-3xl">
+                    Planejamento de alocação de capital em canais de tração pagos.
+                    <span className="block mt-2 text-black font-medium text-base">Os valores abaixo são sugestões iniciais baseadas no seu objetivo de escala.</span>
                 </p>
             </div>
 
-            {/* Total Card - White with black border */}
-            <div className="max-w-md mx-auto">
-                <div className="border-2 border-black p-8 text-center">
-                    <p className="text-xs text-zinc-500 uppercase tracking-widest mb-4">
-                        Investimento Total Mensal
-                    </p>
-                    <p className="text-5xl md:text-6xl font-light text-black tracking-tight">
-                        {formatCurrency(totalBudget)}
-                    </p>
+            <div className="grid lg:grid-cols-3 gap-12">
+                {/* Channel Grid */}
+                <div className="lg:col-span-2 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {channels.map((channel) => {
+                            const inputVal = inputValues[channel.key as keyof typeof inputValues] || '';
+
+                            return (
+                                <div
+                                    key={channel.key}
+                                    className="group flex flex-col p-6 border border-zinc-200 rounded-3xl bg-white hover:border-black transition-all"
+                                >
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl text-white text-xs font-black shadow-sm ${channel.color}`}>
+                                                {channel.icon}
+                                            </div>
+                                            <span className="text-sm font-bold text-black uppercase tracking-wider">
+                                                {channel.name}
+                                            </span>
+                                        </div>
+                                        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-colors" />
+                                    </div>
+
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm font-bold">
+                                            R$
+                                        </span>
+                                        <Input
+                                            type="text"
+                                            value={inputVal}
+                                            onChange={(e) => handleInputChange(channel.key, e.target.value)}
+                                            onBlur={(e) => handleInputBlur(channel.key, e.target.value)}
+                                            placeholder="0,00"
+                                            className="pl-12 h-14 text-lg font-bold text-right border-zinc-100 bg-zinc-50/50 rounded-2xl focus:border-black focus:ring-0 focus:bg-white transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
 
-            {/* Channel Inputs - Minimalist */}
-            <div className="max-w-2xl mx-auto space-y-6">
-                {channels.map((channel) => {
-                    const value = channelBudgets[channel.key as keyof typeof channelBudgets];
+                {/* Summary Card */}
+                <div className="space-y-6">
+                    <div className="bg-black text-white p-10 rounded-3xl shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <Wallet className="w-24 h-24" />
+                        </div>
 
-                    return (
-                        <div
-                            key={channel.key}
-                            className="flex items-center justify-between py-6 border-b border-zinc-200"
-                        >
-                            <span className="text-lg font-medium text-black">
-                                {channel.name}
+                        <div className="relative z-10">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 block mb-2">
+                                Investimento Total Sugerido
                             </span>
-
-                            <div className="relative w-48">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                                    R$
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-2xl font-light text-zinc-400">R$</span>
+                                <span className="text-6xl font-black tracking-tighter">
+                                    {formatCurrency(totalBudget)}
                                 </span>
-                                <Input
-                                    type="text"
-                                    value={value > 0 ? value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : ''}
-                                    onChange={(e) => handleBudgetChange(channel.key, e.target.value)}
-                                    placeholder="0,00"
-                                    className="pl-10 h-12 text-lg font-light text-right border-zinc-200 focus:border-black focus:ring-0 rounded-none"
-                                />
+                            </div>
+
+                            <div className="mt-12 pt-8 border-t border-zinc-800 space-y-4">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-zinc-500 font-medium">Investimento Direto</span>
+                                    <span className="font-bold">100%</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-zinc-500 font-medium">Gestão Estratégica</span>
+                                    <span className="text-revgreen font-bold">Incluso no Fee</span>
+                                </div>
                             </div>
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
 
-            {/* Note */}
-            <div className="text-center">
-                <p className="text-sm text-zinc-400">
-                    Valores mensais estimados para campanhas de mídia paga.
-                </p>
+                    <div className="bg-zinc-50 border border-zinc-100 p-8 rounded-3xl">
+                        <div className="flex gap-4">
+                            <Info className="w-5 h-5 text-zinc-400 shrink-0" />
+                            <p className="text-xs text-zinc-500 leading-relaxed font-light">
+                                Os valores aqui apresentados podem ser ajustados conforme a validação dos primeiros testes A/B e performance de conversão por canal.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
 }
+

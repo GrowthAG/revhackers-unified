@@ -51,7 +51,7 @@ serve(async (req) => {
                 apiUrl = 'https://api.openai.com/v1/chat/completions';
                 apiKey = Deno.env.get('OPENAI_API_KEY');
                 requestBody = {
-                    model: model || 'gpt-5.2',
+                    model: model || 'gpt-4o',
                     messages: [
                         { role: 'system', content: finalSystemPrompt },
                         ...messages
@@ -65,7 +65,7 @@ serve(async (req) => {
                 apiUrl = 'https://api.anthropic.com/v1/messages';
                 apiKey = Deno.env.get('ANTHROPIC_API_KEY');
                 requestBody = {
-                    model: model || 'claude-sonnet-4-5-20250929',
+                    model: model || 'claude-3-5-sonnet-20241022',
                     max_tokens: 16000,
                     system: finalSystemPrompt,
                     messages: messages.map((m: any) => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })),
@@ -83,7 +83,7 @@ serve(async (req) => {
                 apiUrl = 'https://api.perplexity.ai/chat/completions';
                 apiKey = Deno.env.get('PERPLEXITY_API_KEY');
                 requestBody = {
-                    model: model || 'sonar-reasoning-pro',
+                    model: model || 'sonar-pro',
                     messages: [
                         { role: 'system', content: finalSystemPrompt },
                         ...messages

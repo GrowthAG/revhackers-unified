@@ -57,10 +57,10 @@ const AdminAgents = () => {
         const models: Record<string, { label: string; color: string; provider: string }> = {
             'gpt-5.2': { label: 'GPT-5.2', color: 'bg-zinc-900 text-white border-zinc-800', provider: 'OpenAI' },
             'gpt-4o': { label: 'GPT-4O', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'OpenAI' },
-            '4.5': { label: 'CLAUDE SONNET 4.5', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
-            'haiku': { label: 'CLAUDE 3.5 HAIKU', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
-            'sonar': { label: 'PERPLEXITY', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Perplexity' },
-            'google': { label: 'GEMINI 2.0', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Google' },
+            'gpt-4o-mini': { label: 'GPT-4O MINI', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'OpenAI' },
+            'claude-sonnet-4.5': { label: 'CLAUDE SONNET 4.5', color: 'bg-zinc-100 text-zinc-900 border-zinc-200', provider: 'Anthropic' },
+            'claude-3-5-haiku-20241022': { label: 'CLAUDE 3.5 HAIKU', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Anthropic' },
+            'sonar-pro': { label: 'PERPLEXITY', color: 'bg-zinc-50 text-zinc-600 border-zinc-100', provider: 'Perplexity' },
         };
 
         const mLower = m.toLowerCase();
@@ -84,7 +84,7 @@ const AdminAgents = () => {
                         </div>
                         <Button
                             onClick={() => navigate('/admin/agents/builder')}
-                            className="bg-black text-white rounded-full px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm"
+                            className="bg-black text-white rounded-sm px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm"
                         >
                             <Plus className="w-4 h-4 mr-2" />
                             Novo Agente
@@ -94,8 +94,8 @@ const AdminAgents = () => {
                     {/* Main Interaction Area */}
                     <div className="mb-20">
                         <div className="max-w-2xl mx-auto relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-zinc-100 to-zinc-50 rounded-[24px] blur opacity-50 group-focus-within:opacity-75 transition duration-500"></div>
-                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-[20px] p-1.5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-zinc-100 to-zinc-50 rounded-sm blur opacity-50 group-focus-within:opacity-75 transition duration-500"></div>
+                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-sm p-1.5 shadow-sm hover:shadow-md transition-all duration-300">
                                 <div className="w-10 h-10 flex items-center justify-center text-zinc-400">
                                     <Sparkles className="w-4 h-4" />
                                 </div>
@@ -117,7 +117,7 @@ const AdminAgents = () => {
                                             navigate(`/admin/ai-chat?q=${encodeURIComponent(hubQuery.trim())}`);
                                         }
                                     }}
-                                    className="bg-zinc-900 text-white w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-black transition-colors"
+                                    className="bg-zinc-900 text-white w-10 h-10 rounded-sm flex items-center justify-center hover:bg-black transition-colors"
                                 >
                                     <Send className="w-4 h-4" />
                                 </button>
@@ -128,7 +128,7 @@ const AdminAgents = () => {
                     {/* List Header */}
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-sm animate-pulse" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Ativos</span>
                         </div>
 
@@ -151,22 +151,22 @@ const AdminAgents = () => {
                                 <div
                                     key={agent.id}
                                     onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}
-                                    className="group relative bg-white border border-zinc-100 rounded-[20px] p-5 hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
+                                    className="group relative bg-white border border-zinc-100 rounded-sm p-5 hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
                                 >
                                     <div className="flex items-start justify-between mb-6">
-                                        <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center text-black group-hover:scale-105 transition-transform duration-500 border border-zinc-100/50">
+                                        <div className="w-12 h-12 bg-zinc-50 rounded-sm flex items-center justify-center text-black group-hover:scale-105 transition-transform duration-500 border border-zinc-100/50">
                                             <Bot size={20} className="text-zinc-700" />
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); navigate(`/admin/agents/builder/${agent.id}`); }}
-                                                className="w-8 h-8 bg-zinc-50 hover:bg-black hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all"
+                                                className="w-8 h-8 bg-zinc-50 hover:bg-black hover:text-white flex items-center justify-center text-zinc-400 rounded-sm transition-all"
                                             >
                                                 <Edit size={12} />
                                             </button>
                                             <button
                                                 onClick={(e) => handleDelete(agent.id, e)}
-                                                className="w-8 h-8 bg-zinc-50 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all"
+                                                className="w-8 h-8 bg-zinc-50 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 rounded-sm transition-all"
                                             >
                                                 <Trash2 size={12} />
                                             </button>
@@ -176,7 +176,7 @@ const AdminAgents = () => {
                                     <div className="flex-1">
                                         <div className="flex flex-col gap-1.5 mb-3">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${modelInfo.color} border bg-opacity-50`}>
+                                                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${modelInfo.color} border bg-opacity-50`}>
                                                     {modelInfo.label}
                                                 </span>
                                             </div>
@@ -189,7 +189,7 @@ const AdminAgents = () => {
 
                                     <div className="mt-auto pt-4 border-t border-zinc-50 flex items-center justify-between">
                                         <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">{agent.role || 'AGENT'}</span>
-                                        <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-white">
+                                        <div className="w-6 h-6 rounded-sm bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-white">
                                             <ChevronRight size={12} />
                                         </div>
                                     </div>
@@ -200,9 +200,9 @@ const AdminAgents = () => {
                         {/* New Agent Card (Ghost) */}
                         <div
                             onClick={() => navigate('/admin/agents/builder')}
-                            className="bg-zinc-50/50 border border-dashed border-zinc-200 rounded-[20px] p-5 hover:bg-zinc-50 hover:border-zinc-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group h-[280px]"
+                            className="bg-zinc-50/50 border border-dashed border-zinc-200 rounded-sm p-5 hover:bg-zinc-50 hover:border-zinc-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group h-[280px]"
                         >
-                            <div className="w-12 h-12 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-300 group-hover:scale-110 group-hover:text-black transition-all shadow-sm">
+                            <div className="w-12 h-12 rounded-sm bg-white border border-zinc-100 flex items-center justify-center text-zinc-300 group-hover:scale-110 group-hover:text-black transition-all shadow-sm">
                                 <Plus size={20} />
                             </div>
                             <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black transition-colors">Criar Novo</span>
@@ -216,10 +216,7 @@ const AdminAgents = () => {
                     )}
                 </div>
 
-                {/* Minimalist Footer */}
-                <div className="mt-20 text-center opacity-20 hover:opacity-100 transition-opacity">
-                    <p className="text-black font-bold text-[8px] uppercase tracking-[0.5em]">System v2.0 &bull; RevHackers Hub</p>
-                </div>
+                {/* Minimalist Footer REMOVED */}
             </div>
         </AdminLayout>
     );

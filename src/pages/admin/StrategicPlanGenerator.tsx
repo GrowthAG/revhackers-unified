@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Send, Eye, BrainCircuit, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Eye, BrainCircuit, Loader2, Users, TrendingUp, Target, ShieldAlert, BadgeCheck } from 'lucide-react';
 import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
+import { StrategicEnrichmentService, StrategicEnrichmentResult } from '@/services/StrategicEnrichmentService';
+import { DiagnosticService } from '@/services/DiagnosticService';
 
 interface REIProject {
     id: string;
@@ -24,13 +26,23 @@ export default function StrategicPlanGenerator() {
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [sending, setSending] = useState(false);
-    const [reiProject, setREIProject] = useState<any>(null); // Using any to avoid Supabase/JSON type conflicts
+    const [isDeepResearching, setIsDeepResearching] = useState<string | null>(null);
+    const [reiProject, setREIProject] = useState<any>(null);
     const [client, setClient] = useState<any>(null);
     const [existingPlan, setExistingPlan] = useState<any>(null);
+    const [enrichedData, setEnrichedData] = useState<StrategicEnrichmentResult | null>(null);
+    const [editMode, setEditMode] = useState(false);
+    const [editedData, setEditedData] = useState<any>(null);
 
     useEffect(() => {
         loadData();
     }, [reiProjectId]);
+
+    useEffect(() => {
+        if (enrichedData) {
+            setEditedData(JSON.parse(JSON.stringify(enrichedData)));
+        }
+    }, [enrichedData]);
 
     async function loadData() {
         if (!reiProjectId) return;
@@ -54,7 +66,7 @@ export default function StrategicPlanGenerator() {
                     .from('clients')
                     .select('*')
                     .eq('id', project.client_id)
-                    .maybeSingle(); // Changed from single() to maybeSingle() to avoid error on 0 rows
+                    .maybeSingle();
 
                 if (clientData) {
                     clientFinal = clientData;
@@ -67,7 +79,8 @@ export default function StrategicPlanGenerator() {
                     id: 'legacy-or-missing',
                     company_name: project.client_company || project.client_name || 'N/A',
                     contact_name: project.client_name || 'N/A',
-                    email: project.client_email || 'N/A'
+                    email: project.client_email || 'N/A',
+                    logo_url: '/revhackers-logo.png' // Default fallback
                 };
             }
 
@@ -82,12 +95,62 @@ export default function StrategicPlanGenerator() {
 
             if (planData) {
                 setExistingPlan(planData);
+                // Extract enriched data from diagnostic_data if available
+                const diagData = planData.diagnostic_data as any;
+                if (diagData?.enriched_analysis) {
+                    setEnrichedData(diagData.enriched_analysis);
+                }
             }
         } catch (error) {
             console.error('Error loading data:', error);
-            // alert('Erro ao carregar dados do projeto.'); // Suppress robust error for now to avoid scaring user if it's just a 404
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleSaveEdits() {
+        if (!existingPlan || !editedData) return;
+        setSending(true);
+        try {
+            const diagData = { ...(existingPlan.diagnostic_data as any) };
+            diagData.enriched_analysis = editedData;
+
+            const { data: updated, error } = await supabase
+                .from('strategic_plans')
+                .update({
+                    diagnostic_data: diagData as any,
+                    // If client updated logo, we might want to update it in the client table too
+                    // but for now let's just save it in the plan context if needed
+                })
+                .eq('id', existingPlan.id)
+                .select()
+                .single();
+
+            if (error) throw error;
+            setExistingPlan(updated);
+            setEnrichedData(editedData);
+            setEditMode(false);
+            alert('✅ Alterações salvas com sucesso!');
+        } catch (error) {
+            console.error('Save failed:', error);
+            alert('Erro ao salvar as alterações.');
+        } finally {
+            setSending(false);
+        }
+    }
+
+    async function handleUpdateLogo(newLogoUrl: string) {
+        if (!client || client.id === 'legacy-or-missing') return;
+        try {
+            const { error } = await supabase
+                .from('clients')
+                .update({ logo_url: newLogoUrl })
+                .eq('id', client.id);
+            if (error) throw error;
+            setClient({ ...client, logo_url: newLogoUrl });
+            alert('Logo atualizada!');
+        } catch (error) {
+            console.error('Logo update failed:', error);
         }
     }
 
@@ -100,7 +163,6 @@ export default function StrategicPlanGenerator() {
             // 1. Resolve Client ID (RPC bypass)
             let clientId = client?.id;
 
-            // ... (Client resolution logic remains the same, verified working) ...
             if (!clientId || clientId === 'legacy-or-missing') {
                 const { data: existingClient } = await supabase
                     .from('clients')
@@ -127,103 +189,8 @@ export default function StrategicPlanGenerator() {
                 }
             }
 
-            // 2. Define Defaults
-            const defaultPlan = {
-                rei_project_id: reiProjectId,
-                client_id: clientId,
-                created_by: (await supabase.auth.getUser()).data.user?.id,
-                status: 'draft',
-                premises_data: {
-                    pillars: [
-                        { name: 'Processos', icon: '🔄', items: ['Disponibilidade de Recursos', 'Reuniões mensais', 'Disponibilidade de Recursos'] },
-                        { name: 'Estratégia', icon: '🎯', items: ['Tráfego Pago e Resultado', 'Aumento do LTV', 'Aumento de Ticket Médio'] },
-                        { name: 'Metodologia', icon: '📋', items: ['Estudo de concorrência', 'Estudo de mercado', 'Estudo de persona'] },
-                        { name: 'Momento', icon: '⏰', items: ['Onde mais podemos trabalhar', 'Novos projetos', 'Confiabilidade', 'Segurança'] }
-                    ]
-                },
-                methodology_data: {
-                    steps: [
-                        { name: 'Canais certos', description: 'Foco em Meta Ads (Instagram/Facebook), combinando segmentação local e criativos adaptados à linguagem emocional da persona.' },
-                        { name: 'Comunicação realista', description: 'Narrativas simples e diretas, com foco em histórias reais de superação — sem promessas vagas e com clareza sobre o que é e o que não é bolsa.' },
-                        { name: 'Acompanhamento ativo', description: 'Nutrição contínua via CRM e SDR, reforçando acolhimento, esclarecendo dúvidas e construindo confiança até a matrícula.' }
-                    ]
-                },
-                roadmap_data: {
-                    phases: [
-                        { name: 'Dia 1 a Dia 10', title: 'Kick Off | Onboarding', items: ['Formulário REI', 'Reunião de Kick-Off', 'Entrega de Planejamento Estratégico', 'Reunião Planejamento Estratégico'] },
-                        { name: 'Dia 1 a Dia 10', title: 'Coleta de Materiais Disponíveis', items: ['Coleta e Desenvolvimento de Materiais', 'Linha Editorial'] },
-                        { name: 'Dia 1 a Dia 15', title: 'Configuração e SetUp de CRM', items: ['SetUp do CRM', 'Automações'] },
-                        { name: 'Dia 1 a Dia 35', title: 'Go Live! Início das campanhas.', items: ['Testes iniciais → Campanhas → Canais → Mensagem → Produto → Oferta'] },
-                        { name: 'Dia 35 a Dia 40', title: 'Análise de métricas do funil 30 dias.', items: ['R.A.P.T - Reunião de Apresentação de resultados 30 dias.'] },
-                        { name: 'Dia 45 a Dia 75', title: 'Ongoing | Análise e otimização', items: ['Início de novas estratégias baseado na análise das métricas, testes e resultados obtidos.'] },
-                        { name: 'Dia 75 a Dia 90', title: 'Análise de métricas do funil 30 dias.', items: ['R.A.P.2 - Reunião de Apresentação de resultados Quarter.'] }
-                    ]
-                },
-                goals_data: {
-                    okrs: [
-                        { kr: 'KR 1', description: 'Estrutura completa implantada e operando (Meta, Google, CRM, SDRs)' },
-                        { kr: 'KR 2', description: 'Geração de leads validada com rastreabilidade' },
-                        { kr: 'KR 3', description: 'Jornada do lead testada ponta a ponta' },
-                        { kr: 'KR 4', description: 'Primeira rodada de otimização aplicada' }
-                    ],
-                    month1_targets: [
-                        { name: '5 clientes pagos', status: 'pending' },
-                        { name: 'R$15-30K MRR', status: 'pending' },
-                        { name: 'Playbook documentado', status: 'pending' },
-                        { name: '2-3 case studies BR', status: 'pending' },
-                        { name: '50+ leads no pipeline', status: 'pending' }
-                    ]
-                },
-                financial_projections: {
-                    meta_month_12: { nmrr_total: 'R$100K', nmrr_brazil: 'R$80-100K', nmrr_latam: 'R$15-20K', clients_total: '300-350', clients_brazil: '300-350', clients_latam: '30-40' },
-                    monthly_projections: [
-                        { period: 'Mês 1-2', nmrr_brazil: 'R$10-15K', nmrr_latam: '-', nmrr_total: 'R$10-15K', clients_brazil: '10-15', clients_latam: '-', total_clients: '10-15' },
-                        { period: 'Mês 3-4', nmrr_brazil: 'R$25-40K', nmrr_latam: '-', nmrr_total: 'R$25-40K', clients_brazil: '50-80', clients_latam: '-', total_clients: '50-80' },
-                        { period: 'Mês 5-6', nmrr_brazil: 'R$40-50K', nmrr_latam: '-', nmrr_total: 'R$40-50K', clients_brazil: '100-120', clients_latam: '-', total_clients: '100-120' },
-                        { period: 'Mês 7-8', nmrr_brazil: 'R$50-60K', nmrr_latam: 'R$3-5K', nmrr_total: 'R$55-65K', clients_brazil: '130-150', clients_latam: '10-15', total_clients: '140-165' },
-                        { period: 'Mês 9-10', nmrr_brazil: 'R$65-80K', nmrr_latam: 'R$10-15K', nmrr_total: 'R$75-95K', clients_brazil: '250-300', clients_latam: '20-30', total_clients: '270-330' },
-                        { period: 'Mês 11-12', nmrr_brazil: 'R$80-100K', nmrr_latam: 'R$15-20K', nmrr_total: 'R$95-120K', clients_brazil: '300-350', clients_latam: '30-40', total_clients: '330-390' }
-                    ]
-                },
-                budget_data: {
-                    annual_budget: 'R$ 9.000,00',
-                    channels: [
-                        { name: 'LinkedIn Outreach', percentage: '40%' },
-                        { name: 'Content Brasil', percentage: '25%' },
-                        { name: 'Email Outreach', percentage: '15%' },
-                        { name: 'Paid Ads', percentage: '15%' },
-                        { name: 'Parcerias', percentage: '5%' }
-                    ]
-                },
-                next_steps_data: {
-                    week1_actions: [
-                        { day: 'Dia 1', action: 'Otimizar perfil LinkedIn (headline, banner, sobre) - foco Brasil', done: false },
-                        { day: 'Dia 1-2', action: 'Criar lista de 200+ empresas target (SP, RJ, BH tech)', done: false },
-                        { day: 'Dia 2-3', action: 'Escrever 5 templates de outreach em português brasileiro', done: false },
-                        { day: 'Dia 3', action: 'Criar demo workspace do Funnels com dados brasileiros', done: false },
-                        { day: 'Dia 4-6', action: 'Publicar 4 posts no LinkedIn sobre dores brasileiras (WhatsApp, consolidação)', done: false },
-                        { day: 'Dia 5-6', action: 'Criar lead magnet: "Checklist: Migrar de RD+Pipedrive para Funnels em 48h"', done: false },
-                        { day: 'Dia 6-7', action: 'Configurar Calendly + email sequences (5 sequências)', done: false },
-                        { day: 'Dia 7', action: 'Iniciar outreach manual (10-15 conexões/dia no LinkedIn)', done: false },
-                        { day: 'Semana 1', action: 'Agendar 3-5 discovery calls (meta mínima)', done: false },
-                        { day: 'Semana 1', action: 'Documentar objeções comuns e respostas (playbook)', done: false }
-                    ]
-                }
-            };
-
-            // 3. Create Plan (and SELECT it immediately)
-            const { data: newPlan, error: insertError } = await supabase
-                .from('strategic_plans')
-                .insert(defaultPlan as any)
-                .select()
-                .single();
-
-            if (insertError) throw insertError;
-
-            // Update State Immediately
-            setExistingPlan(newPlan);
-
-            // 4. Intelligence Enrichment
+            // 2. Intelligence Enrichment
+            console.log('Fetching latest REI responses...');
             const { data: latestResponse } = await supabase
                 .from('rei_responses')
                 .select('*')
@@ -233,77 +200,151 @@ export default function StrategicPlanGenerator() {
                 .maybeSingle();
 
             if (latestResponse) {
-                const { DiagnosticService } = await import('@/services/DiagnosticService');
-                const { MarketIntelligenceService } = await import('@/services/MarketIntelligenceService');
-
                 const answers = latestResponse.responses as any;
                 const segment = answers.segmento || 'B2B';
                 const objective = answers.objetivoPrincipal || 'Crescimento';
 
-                console.log('Fetching market intelligence...');
-                const marketData = await MarketIntelligenceService.fetchMarketData(segment, objective);
+                console.log('Invoking StrategicEnrichmentService...');
+                const enrichmentResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
+                    objective,
+                    rei_responses: answers // Passing full context!
+                });
 
-                const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketData);
+                if (enrichmentResult.error) {
+                    console.error('Enrichment error:', enrichmentResult.error);
+                    alert('Aviso: A inteligência artificial falhou, mas geraremos o plano base.');
+                } else {
+                    setEnrichedData(enrichmentResult);
+                }
+
+                // Generate Plan Structure
+                // Note: MarketIntelligenceService was mocked before, now we use the real data from enrichmentResult
+                // We map enrichmentResult back to what DiagnosticService expects if needed, or update DiagnosticService
+                // For now, we will merge it into the diagnostic_data
+
+                // Mock legacy MarketData for DiagnosticService compatibility if needed, using new data
+                const marketCtx = {
+                    industry_trends: enrichmentResult.market?.tendencias_2025?.map(t => t.titulo) || [],
+                    competitor_benchmarks: [], // Legacy format mismatch, ignored for now
+                    market_sizing: {
+                        tam: enrichmentResult.market?.tam_sam_som?.tam || '',
+                        sam: enrichmentResult.market?.tam_sam_som?.sam || '',
+                        som: enrichmentResult.market?.tam_sam_som?.som || ''
+                    },
+                    personas: [], // Legacy format mismatch, ignored
+                    strategic_advice: "Foco em eficiência e dados."
+                };
+
+                const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
                 const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
-                const { error: updateError, data: updatedPlan } = await supabase
+                // 3. Define Plan Data (Merging generated + enriched)
+                const finalPlanData = {
+                    ...plan_data,
+                    rei_project_id: reiProjectId,
+                    client_id: clientId,
+                    created_by: (await supabase.auth.getUser()).data.user?.id,
+                    status: existingPlan ? existingPlan.status : 'draft',
+                    diagnostic_data: {
+                        ...diagnosticContext,
+                        enriched_analysis: enrichmentResult // Saving the GOLD (Rich Data)
+                    } as any // Force cast to match Supabase Json type
+                };
+
+                // 4. Upsert Plan
+                const { data: savedPlan, error: saveError } = await supabase
                     .from('strategic_plans')
-                    .update({
-                        ...plan_data,
-                        diagnostic_data: diagnosticContext as any
-                    })
-                    .eq('rei_project_id', reiProjectId)
-                    .select()
-                    .single();
+                    .upsert(finalPlanData as any) // upsert handles insert or update based on ID (if we included it)
+                // But here we need to handle insert vs update manually or use logic. 
+                // Let's strictly use UPDATE if exists, INSERT if not, to avoid ID issues.
 
-                if (updateError) {
-                    console.error('Error applying intelligence:', updateError);
+                if (existingPlan) {
+                    const { data: updated, error: upError } = await supabase
+                        .from('strategic_plans')
+                        .update(finalPlanData)
+                        .eq('id', existingPlan.id)
+                        .select()
+                        .single();
+                    if (upError) throw upError;
+                    setExistingPlan(updated);
                 } else {
-                    console.log('✅ Plan enriched with REI intelligence (V2).');
-                    setExistingPlan(updatedPlan); // Update again with enriched data
+                    const { data: inserted, error: inError } = await supabase
+                        .from('strategic_plans')
+                        .insert(finalPlanData)
+                        .select()
+                        .single();
+                    if (inError) throw inError;
+                    setExistingPlan(inserted);
                 }
-            }
 
-            alert('✅ Planejamento estratégico gerado com sucesso!');
+                alert('✅ Planejamento estratégico gerado com Inteligência de Mercado!');
+            } else {
+                alert('Erro: Nenhuma resposta do REI encontrada para este projeto.');
+            }
 
         } catch (error) {
             console.error('Error generating plan:', error);
-            alert('Erro ao gerar planejamento. Tente novamente.');
+            alert('Erro crítico ao gerar planejamento. Consulte o console.');
         } finally {
             setGenerating(false);
         }
     }
 
+    async function handleDeepResearch(type: 'benchmark' | 'personas' | 'market') {
+        if (!reiProjectId || !reiProject) return;
+        setIsDeepResearching(type);
+        try {
+            const answers = (reiProject.data as any) || {};
+            const segment = answers.segmento || 'B2B';
+            const objective = answers.objetivoPrincipal || 'Crescimento';
+            const competitors = answers.concorrentes || [];
+
+            const result = await StrategicEnrichmentService.researchIntelligence(type, segment, {
+                objective,
+                competitors,
+                context: answers
+            });
+
+            // Merge into existing plan
+            if (existingPlan) {
+                const diagData = { ...(existingPlan.diagnostic_data as any) };
+                if (!diagData.enriched_analysis) diagData.enriched_analysis = {};
+                diagData.enriched_analysis[type] = result;
+                diagData.enriched_analysis.isDeepResearch = true;
+
+                const { data: updated, error } = await supabase
+                    .from('strategic_plans')
+                    .update({ diagnostic_data: diagData as any })
+                    .eq('id', existingPlan.id)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                setExistingPlan(updated);
+                setEnrichedData(diagData.enriched_analysis);
+                alert(`✅ Pesquisa Profunda de ${type} concluída!`);
+            } else {
+                alert('Gere o planejamento base primeiro antes de rodar a pesquisa profunda.');
+            }
+        } catch (error) {
+            console.error('Deep research failed:', error);
+            alert('Falha na pesquisa profunda.');
+        } finally {
+            setIsDeepResearching(null);
+        }
+    }
+
     async function handleSendToClient() {
         if (!existingPlan || !client) return;
-
         setSending(true);
-
         try {
-            // Update plan status to 'sent'
-            const { error: updateError } = await supabase
-                .from('strategic_plans')
-                .update({
-                    status: 'sent',
-                    sent_at: new Date().toISOString(),
-                })
-                .eq('id', existingPlan.id);
-
+            const { error: updateError } = await supabase.from('strategic_plans').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', existingPlan.id);
             if (updateError) throw updateError;
-
-            // TODO: Send email to client with link
             const clientLink = `${window.location.origin}/plan/${existingPlan.access_token}`;
-
-            console.log('Client link:', clientLink);
-            console.log('Send email to:', client.email);
-
-            alert(`✅ Planejamento enviado para ${client.contact_name}!\n\nLink: ${clientLink}`);
-
-            // Reload to update status
+            alert(`✅ Planejamento enviado! Link: ${clientLink}`);
             await loadData();
         } catch (error) {
-            console.error('Error sending plan:', error);
-            alert('Erro ao enviar planejamento. Tente novamente.');
+            alert('Erro ao enviar.');
         } finally {
             setSending(false);
         }
@@ -314,212 +355,435 @@ export default function StrategicPlanGenerator() {
         window.open(`/plan/${existingPlan.access_token}`, '_blank');
     }
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-zinc-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-zinc-600">Carregando...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!reiProject || !client) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <h2 className="text-2xl font-semibold text-black mb-4">Projeto não encontrado</h2>
-                    <Button onClick={() => navigate('/admin/onboarding')}>
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Voltar
-                    </Button>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin" /></div>;
+    if (!reiProject || !client) return <div>Projeto não encontrado.</div>;
 
     return (
-        <div className="min-h-screen bg-white p-8">
-            <div className="max-w-4xl mx-auto">
-                <ProjectTimeline
-                    currentStage={existingPlan ? (existingPlan.status === 'sent' ? 3 : 2) : 2}
-                    reiDate={reiProject?.created_at}
-                    planDate={existingPlan?.created_at}
-                />
+        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+            <div className="max-w-7xl mx-auto">
+                <ProjectTimeline currentStage={existingPlan ? (existingPlan.status === 'sent' ? 3 : 2) : 2} reiDate={reiProject?.created_at} planDate={existingPlan?.created_at} />
 
                 {/* Header */}
-                <div className="mb-8">
-                    <Button
-                        onClick={() => navigate(`/admin/jornada/${reiProjectId}`)}
-                        variant="outline"
-                        className="mb-4 text-[10px] font-bold uppercase tracking-widest"
-                    >
-                        <ArrowLeft className="w-3 h-3 mr-2" />
-                        Voltar para Jornada
-                    </Button>
-
-                    <h1 className="text-3xl font-semibold text-black mb-2">
-                        Gerador de Planejamento Estratégico
-                    </h1>
-                    <p className="text-zinc-600">
-                        Cliente: <span className="font-semibold text-black">{client.company_name}</span>
-                    </p>
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <Button variant="ghost" onClick={() => navigate(`/admin/jornada/${reiProjectId}`)} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-black mb-2 pl-0">
+                            <ArrowLeft className="w-3 h-3 mr-2" /> Voltar para Jornada
+                        </Button>
+                        <h1 className="text-3xl font-bold text-black tracking-tight">Gerador Estratégico AI</h1>
+                        <p className="text-zinc-500">Cliente: <span className="font-semibold text-black">{client.company_name}</span></p>
+                    </div>
+                    <div className="flex gap-3">
+                        {existingPlan && (
+                            <Button variant="outline" onClick={() => setEditMode(!editMode)}>
+                                {editMode ? 'Cancelar Edição' : 'Editar Plano'}
+                            </Button>
+                        )}
+                        {editMode ? (
+                            <Button onClick={handleSaveEdits} disabled={sending} className="bg-green-600 text-white hover:bg-green-700">
+                                {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ShieldAlert className="w-4 h-4 mr-2" />}
+                                Salvar Alterações
+                            </Button>
+                        ) : (
+                            <Button onClick={handleGenerate} disabled={generating} className="bg-black text-white hover:bg-zinc-800">
+                                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />}
+                                {existingPlan ? 'Regerar Inteligência Base' : 'Gerar Planejamento'}
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
-                {/* Content */}
-                {existingPlan ? (
-                    <div className="bg-white border border-zinc-200 rounded-lg p-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 className="text-2xl font-semibold text-black mb-2">
-                                    ✅ Planejamento Gerado
-                                </h2>
-                                <p className="text-sm text-zinc-600">
-                                    Status: <span className={`font-semibold ${existingPlan.status === 'approved' ? 'text-green-600' :
-                                        existingPlan.status === 'sent' ? 'text-blue-600' :
-                                            existingPlan.status === 'viewed' ? 'text-yellow-600' :
-                                                'text-zinc-600'
-                                        }`}>
-                                        {existingPlan.status === 'approved' ? 'Aprovado' :
-                                            existingPlan.status === 'sent' ? 'Enviado' :
-                                                existingPlan.status === 'viewed' ? 'Visualizado' :
-                                                    'Rascunho'}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Info Cards */}
-                        <div className="grid md:grid-cols-2 gap-4 mb-6">
-                            <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                                <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Criado em</p>
-                                <p className="text-sm font-semibold text-black">
-                                    {new Date(existingPlan.created_at).toLocaleDateString('pt-BR')}
-                                </p>
-                            </div>
-
-                            {existingPlan.sent_at && (
-                                <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Enviado em</p>
-                                    <p className="text-sm font-semibold text-black">
-                                        {new Date(existingPlan.sent_at).toLocaleDateString('pt-BR')}
-                                    </p>
-                                </div>
-                            )}
-
-                            {existingPlan.viewed_at && (
-                                <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Visualizado em</p>
-                                    <p className="text-sm font-semibold text-black">
-                                        {new Date(existingPlan.viewed_at).toLocaleDateString('pt-BR')}
-                                    </p>
-                                </div>
-                            )}
-
-                            {existingPlan.approved_at && (
-                                <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">Aprovado em</p>
-                                    <p className="text-sm font-semibold text-black">
-                                        {new Date(existingPlan.approved_at).toLocaleDateString('pt-BR')}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Link */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                            <p className="text-xs text-zinc-500 uppercase tracking-wide mb-2">Link do Cliente</p>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="text"
-                                    value={`${window.location.origin}/plan/${existingPlan.access_token}`}
-                                    readOnly
-                                    className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded text-sm"
-                                />
-                                <Button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(`${window.location.origin}/plan/${existingPlan.access_token}`);
-                                        alert('Link copiado!');
-                                    }}
-                                    variant="outline"
-                                    size="sm"
-                                >
-                                    Copiar
-                                </Button>
-                            </div>
-                        </div>
-
-                        {/* Actions */}
+                {editMode && (
+                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-8 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <Button
-                                onClick={handlePreview}
-                                variant="outline"
-                                className="flex items-center gap-2"
-                            >
-                                <Eye className="w-4 h-4" />
-                                Visualizar
-                            </Button>
-
-                            <Button
-                                onClick={handleGenerate}
-                                disabled={generating}
-                                variant="secondary"
-                                className="flex items-center gap-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-200"
-                                title="Atualizar diagnóstico com últimas respostas do REI"
-                            >
-                                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <BrainCircuit className="w-4 h-4" />}
-                                Regerar Inteligência
-                            </Button>
-
-                            {existingPlan.status === 'draft' && (
-                                <Button
-                                    onClick={handleSendToClient}
-                                    disabled={sending}
-                                    className="flex items-center gap-2"
-                                >
-                                    {sending ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Enviando...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Send className="w-4 h-4" />
-                                            Enviar para Cliente
-                                        </>
-                                    )}
-                                </Button>
-                            )}
+                            <ShieldAlert className="text-amber-600" />
+                            <div>
+                                <p className="text-sm font-bold text-amber-900">Modo de Edição Ativo</p>
+                                <p className="text-xs text-amber-700">Você está alterando os dados que serão exibidos para o cliente.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Logo do Cliente (URL):</label>
+                            <input
+                                type="text"
+                                defaultValue={client.logo_url}
+                                onBlur={(e) => handleUpdateLogo(e.target.value)}
+                                className="bg-white border border-zinc-300 rounded px-3 py-1 text-xs w-64"
+                                placeholder="https://logo.url/logo.png"
+                            />
                         </div>
                     </div>
-                ) : (
-                    <div className="bg-white border border-zinc-200 rounded-lg p-8 text-center">
-                        <h2 className="text-2xl font-semibold text-black mb-4">
-                            Nenhum planejamento gerado ainda
-                        </h2>
-                        <p className="text-zinc-600 mb-8">
-                            Gere o planejamento estratégico baseado nos dados do REI preenchido.
-                        </p>
+                )}
 
+                {existingPlan && (
+                    <div className="flex gap-2 mb-8 bg-zinc-100 p-1 rounded-lg w-fit">
                         <Button
-                            onClick={handleGenerate}
-                            disabled={generating}
-                            size="lg"
-                            className="flex items-center gap-2 mx-auto"
+                            variant={isDeepResearching === 'benchmark' ? 'secondary' : 'ghost'}
+                            size="sm"
+                            disabled={!!isDeepResearching}
+                            onClick={() => handleDeepResearch('benchmark')}
+                            className="text-[10px] font-bold uppercase tracking-widest h-8"
                         >
-                            {generating ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Gerando...
-                                </>
-                            ) : (
-                                <>
-                                    <Send className="w-5 h-5" />
-                                    Gerar Planejamento Estratégico
-                                </>
-                            )}
+                            {isDeepResearching === 'benchmark' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <TrendingUp className="w-3 h-3 mr-2" />}
+                            Deep Benchmark
                         </Button>
+                        <Button
+                            variant={isDeepResearching === 'personas' ? 'secondary' : 'ghost'}
+                            size="sm"
+                            disabled={!!isDeepResearching}
+                            onClick={() => handleDeepResearch('personas')}
+                            className="text-[10px] font-bold uppercase tracking-widest h-8"
+                        >
+                            {isDeepResearching === 'personas' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Users className="w-3 h-3 mr-2" />}
+                            Deep Personas
+                        </Button>
+                        <Button
+                            variant={isDeepResearching === 'market' ? 'secondary' : 'ghost'}
+                            size="sm"
+                            disabled={!!isDeepResearching}
+                            onClick={() => handleDeepResearch('market')}
+                            className="text-[10px] font-bold uppercase tracking-widest h-8"
+                        >
+                            {isDeepResearching === 'market' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <TrendingUp className="w-3 h-3 mr-2" />}
+                            Deep Market Tech
+                        </Button>
+                    </div>
+                )}
+
+                {existingPlan && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column: Status & Actions */}
+                        <div className="space-y-6">
+                            <div className="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm">
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400 mb-4">Status do Plano</h3>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className={`w-3 h-3 rounded-full ${existingPlan.status === 'sent' ? 'bg-blue-500' : 'bg-yellow-500'}`} />
+                                    <span className="font-semibold capitalize text-black">{existingPlan.status === 'sent' ? 'Enviado ao Cliente' : 'Rascunho Interno'}</span>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Button onClick={handlePreview} variant="outline" className="w-full justify-start"><Eye className="w-4 h-4 mr-2" /> Visualizar Página Pública</Button>
+                                    {existingPlan.status === 'draft' && (
+                                        <Button onClick={handleSendToClient} disabled={sending} className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white">
+                                            {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />} Enviar para Cliente
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Content: Enriched Analysis Visualization */}
+                        <div className="lg:col-span-2 space-y-8">
+
+                            {/* 1. Market Analysis */}
+                            {enrichedData?.market && (
+                                <div className="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center"><TrendingUp size={20} /></div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-black">Análise de Mercado</h2>
+                                            <p className="text-xs text-zinc-500 uppercase tracking-widest">Tendências & Competitividade</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-2 gap-6 mb-8">
+                                        <div className="p-5 bg-zinc-50 rounded-lg border border-zinc-100">
+                                            <h4 className="font-bold text-black mb-3 flex items-center gap-2"><Target size={16} /> TAM/SAM/SOM</h4>
+                                            {editMode ? (
+                                                <div className="space-y-3">
+                                                    <div className="flex flex-col">
+                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">TAM</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editedData.market.tam_sam_som?.tam || ''}
+                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, tam: e.target.value } } })}
+                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">SAM</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editedData.market.tam_sam_som?.sam || ''}
+                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, sam: e.target.value } } })}
+                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">SOM</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editedData.market.tam_sam_som?.som || ''}
+                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, som: e.target.value } } })}
+                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <ul className="space-y-3 text-sm text-zinc-600">
+                                                    <li><b className="text-black">TAM:</b> {enrichedData.market.tam_sam_som?.tam || 'N/A'}</li>
+                                                    <li><b className="text-black">SAM:</b> {enrichedData.market.tam_sam_som?.sam || 'N/A'}</li>
+                                                    <li><b className="text-black">SOM:</b> {enrichedData.market.tam_sam_som?.som || 'N/A'}</li>
+                                                </ul>
+                                            )}
+                                        </div>
+                                        <div className="p-5 bg-zinc-50 rounded-lg border border-zinc-100">
+                                            <h4 className="font-bold text-black mb-3 flex items-center gap-2"><ShieldAlert size={16} /> SWOT Rápida</h4>
+                                            <div className="space-y-3 text-sm">
+                                                <div>
+                                                    <span className="text-xs font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded mr-2">OPORTUNIDADES</span>
+                                                    {editMode ? (
+                                                        <textarea
+                                                            value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
+                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, oportunidades: e.target.value.split(',').map(s => s.trim()) } } })}
+                                                            className="w-full mt-2 bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
+                                                        />
+                                                    ) : (
+                                                        <p className="text-zinc-600 mt-1">{enrichedData.market.analise_swot_rapida?.oportunidades?.join(', ') || 'N/A'}</p>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2">AMEAÇAS</span>
+                                                    {editMode ? (
+                                                        <textarea
+                                                            value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}
+                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, ameacas: e.target.value.split(',').map(s => s.trim()) } } })}
+                                                            className="w-full mt-2 bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
+                                                        />
+                                                    ) : (
+                                                        <p className="text-zinc-600 mt-1">{enrichedData.market.analise_swot_rapida?.ameacas?.join(', ') || 'N/A'}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="font-bold text-black mb-4">Principais Tendências 2025</h4>
+                                        <div className="grid gap-3">
+                                            {(editMode ? editedData : enrichedData).market.tendencias_2025?.map((trend: any, i: number) => (
+                                                <div key={i} className="flex items-start gap-4 p-3 hover:bg-zinc-50 rounded-lg transition-colors border-l-2 border-transparent hover:border-black">
+                                                    <span className="font-bold text-zinc-300 text-lg">0{i + 1}</span>
+                                                    <div className="flex-1">
+                                                        {editMode ? (
+                                                            <div className="space-y-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={trend.titulo}
+                                                                    onChange={(e) => {
+                                                                        const newTrends = [...editedData.market.tendencias_2025];
+                                                                        newTrends[i].titulo = e.target.value;
+                                                                        setEditedData({ ...editedData, market: { ...editedData.market, tendencias_2025: newTrends } });
+                                                                    }}
+                                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-sm font-bold"
+                                                                />
+                                                                <textarea
+                                                                    value={trend.descricao}
+                                                                    onChange={(e) => {
+                                                                        const newTrends = [...editedData.market.tendencias_2025];
+                                                                        newTrends[i].descricao = e.target.value;
+                                                                        setEditedData({ ...editedData, market: { ...editedData.market, tendencias_2025: newTrends } });
+                                                                    }}
+                                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[40px]"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <h5 className="font-bold text-black text-sm">{trend.titulo}</h5>
+                                                                <p className="text-xs text-zinc-500 mt-1">{trend.descricao}</p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 2. Personas */}
+                            {enrichedData?.personas?.personas && (
+                                <div className="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center"><Users size={20} /></div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-black">Buyer Personas (ICP)</h2>
+                                            <p className="text-xs text-zinc-500 uppercase tracking-widest">Perfis Ideais Mapeados</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid md:grid-cols-3 gap-4">
+                                        {(editMode ? editedData : enrichedData).personas.personas.map((persona: any, idx: number) => (
+                                            <div key={idx} className="group relative border border-zinc-200 rounded-xl overflow-hidden hover:shadow-lg transition-all pt-12 pb-6 px-6 text-center">
+                                                <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-zinc-100 to-white" />
+                                                <div className="relative w-20 h-20 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden mb-4">
+                                                    <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}`} alt={persona.nome} className="w-full h-full object-cover" />
+                                                </div>
+
+                                                {editMode ? (
+                                                    <div className="space-y-4 text-left">
+                                                        <div className="flex flex-col">
+                                                            <label className="text-[10px] font-bold text-zinc-400 uppercase">Nome</label>
+                                                            <input
+                                                                type="text"
+                                                                value={persona.nome}
+                                                                onChange={(e) => {
+                                                                    const newPersonas = [...editedData.personas.personas];
+                                                                    newPersonas[idx].nome = e.target.value;
+                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
+                                                                }}
+                                                                className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm font-bold"
+                                                            />
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <label className="text-[10px] font-bold text-zinc-400 uppercase">Cargo</label>
+                                                            <input
+                                                                type="text"
+                                                                value={persona.cargo}
+                                                                onChange={(e) => {
+                                                                    const newPersonas = [...editedData.personas.personas];
+                                                                    newPersonas[idx].cargo = e.target.value;
+                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
+                                                                }}
+                                                                className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Dores Principais (Vírgula)</p>
+                                                            <textarea
+                                                                value={persona.dores_principais?.join(', ') || ''}
+                                                                onChange={(e) => {
+                                                                    const newPersonas = [...editedData.personas.personas];
+                                                                    newPersonas[idx].dores_principais = e.target.value.split(',').map(s => s.trim());
+                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
+                                                                }}
+                                                                className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
+                                                            />
+                                                        </div>
+                                                        <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Pitch de Elevador</p>
+                                                            <textarea
+                                                                value={persona.pitch_elevador || ''}
+                                                                onChange={(e) => {
+                                                                    const newPersonas = [...editedData.personas.personas];
+                                                                    newPersonas[idx].pitch_elevador = e.target.value;
+                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
+                                                                }}
+                                                                className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[40px] italic"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <h3 className="font-bold text-black text-lg leading-tight">{persona.nome}</h3>
+                                                        <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-4">{persona.cargo}</p>
+
+                                                        <div className="text-left space-y-4">
+                                                            <div>
+                                                                <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Dores Principais</p>
+                                                                <ul className="text-xs text-zinc-600 list-disc ml-3 space-y-1">
+                                                                    {persona.dores_principais?.slice(0, 3).map((dor: string, i: number) => (
+                                                                        <li key={i}>{dor}</li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                            <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                                                                <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Pitch de Elevador</p>
+                                                                <p className="text-xs text-black italic">"{persona.pitch_elevador || 'N/A'}"</p>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 3. Benchmarks */}
+                            {enrichedData?.benchmark && (
+                                <div className="bg-zinc-900 text-white p-8 rounded-xl shadow-xl">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={20} className="text-revgreen" /></div>
+                                        <div>
+                                            <h2 className="text-xl font-bold">Benchmarks do Setor</h2>
+                                            <p className="text-xs text-zinc-400 uppercase tracking-widest">Métricas de Referência</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
+                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">CAC Médio</p>
+                                            {editMode ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedData.benchmark.cac_medio}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, cac_medio: e.target.value } })}
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                />
+                                            ) : (
+                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.cac_medio}</p>
+                                            )}
+                                        </div>
+                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
+                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">Conv. Média</p>
+                                            {editMode ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedData.benchmark.taxa_conversao}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, taxa_conversao: e.target.value } })}
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-revgreen w-full"
+                                                />
+                                            ) : (
+                                                <p className="text-xl font-bold text-revgreen tracking-tight">{enrichedData.benchmark.taxa_conversao}</p>
+                                            )}
+                                        </div>
+                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
+                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">Ciclo Vendas</p>
+                                            {editMode ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedData.benchmark.ciclo_vendas}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ciclo_vendas: e.target.value } })}
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                />
+                                            ) : (
+                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.ciclo_vendas}</p>
+                                            )}
+                                        </div>
+                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
+                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">LTV:CAC</p>
+                                            {editMode ? (
+                                                <input
+                                                    type="text"
+                                                    value={editedData.benchmark.ltv_cac_ratio}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ltv_cac_ratio: e.target.value } })}
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                />
+                                            ) : (
+                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.ltv_cac_ratio}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {(editMode ? editedData : enrichedData).benchmark.comparativo_mercado && (
+                                        <div className="mt-6 pt-6 border-t border-zinc-800">
+                                            {editMode ? (
+                                                <textarea
+                                                    value={editedData.benchmark.comparativo_mercado}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, comparativo_mercado: e.target.value } })}
+                                                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-300 min-h-[80px]"
+                                                />
+                                            ) : (
+                                                <p className="text-sm font-medium text-zinc-300 leading-relaxed">
+                                                    <span className="text-revgreen font-bold mr-2">Insight:</span>
+                                                    {enrichedData.benchmark.comparativo_mercado}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                        </div>
                     </div>
                 )}
             </div>

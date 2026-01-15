@@ -292,13 +292,13 @@ const AdminKnowledgeBase = () => {
                                         <Brain size={18} />
                                     </div>
                                     <h1 className="text-3xl font-bold tracking-tight text-black">
-                                        {selectedLibrary ? selectedLibrary.name : 'Knowledge Hub'}
+                                        {selectedLibrary ? selectedLibrary.name : 'Hub de Conhecimento'}
                                     </h1>
                                 </div>
                                 <p className="text-zinc-400 text-sm font-medium">
                                     {selectedLibrary
-                                        ? selectedLibrary.description || 'Gerencie os documentos desta biblioteca.'
-                                        : 'Centralize e gerencie bibliotecas de treinamento para seus agentes.'}
+                                        ? selectedLibrary.description || 'Gerencie o conteúdo e documentos desta base estratégica.'
+                                        : 'Centralize o conhecimento estratégico da sua operação nesta base central.'}
                                 </p>
                             </div>
                         </div>
@@ -343,7 +343,7 @@ const AdminKnowledgeBase = () => {
                                 </div>
                                 <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
                                     <Globe className="text-zinc-400 mb-4" size={24} />
-                                    <h3 className="text-lg font-bold text-black">Global Access</h3>
+                                    <h3 className="text-lg font-bold text-black">Acesso Global</h3>
                                     <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Sincronização Ativa</p>
                                 </div>
                             </div>
@@ -351,14 +351,14 @@ const AdminKnowledgeBase = () => {
                             {/* List Controls */}
                             <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Bibliotecas de Treinamento</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Bibliotecas Estratégicas</span>
                                 </div>
                                 <div className="relative group w-64">
                                     <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-300 w-3.5 h-3.5 transition-colors group-focus-within:text-black" />
                                     <input
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Filtrar..."
+                                        placeholder="Buscar biblioteca..."
                                         className="w-full bg-transparent border-none py-2 pl-6 pr-0 text-sm font-medium text-black outline-none placeholder:text-zinc-300 text-right"
                                     />
                                 </div>
@@ -438,7 +438,7 @@ const AdminKnowledgeBase = () => {
                                             <div>
                                                 <p className="text-sm font-bold text-black">{doc.filename}</p>
                                                 <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest">
-                                                    {Math.round(doc.content?.length / 1024)} KB • {doc.metadata?.total_chunks || 1} Chunks
+                                                    {Math.round(doc.content?.length / 1024)} KB • {doc.metadata?.total_chunks || 1} Fragmentos (Chunks)
                                                 </p>
                                             </div>
                                         </div>

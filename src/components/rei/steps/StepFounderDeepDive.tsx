@@ -103,9 +103,44 @@ export default function StepFounderDeepDive({ form }: StepFounderDeepDiveProps) 
                     </div>
                 </div>
 
+                {/* Sales Force */}
+                <div className="space-y-6">
+                    <h3 className="text-lg font-bold border-l-4 border-revgreen pl-3 uppercase tracking-tight">Operação de Vendas</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Canal de Prospecção Principal *</Label>
+                            <Select onValueChange={(val) => form.setValue('main_prospecting_channel', val)} defaultValue={form.watch('main_prospecting_channel')}>
+                                <SelectTrigger className="bg-white border-zinc-200">
+                                    <SelectValue placeholder="Onde você busca clientes?" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="linkedin">LinkedIn Outbound</SelectItem>
+                                    <SelectItem value="cold_email">Cold Email / Listas</SelectItem>
+                                    <SelectItem value="partnership">Indicações / Parceiros</SelectItem>
+                                    <SelectItem value="ads">Tráfego Pago (Ads)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Possui SDR ou Closers? *</Label>
+                            <Select onValueChange={(val) => form.setValue('sales_team_size', val)} defaultValue={form.watch('sales_team_size')}>
+                                <SelectTrigger className="bg-white border-zinc-200">
+                                    <SelectValue placeholder="Tamanho do time..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">Apenas o Founder</SelectItem>
+                                    <SelectItem value="small">1-2 Pessoas</SelectItem>
+                                    <SelectItem value="medium">3-5 Pessoas</SelectItem>
+                                    <SelectItem value="large">Escalando (5+)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Logistics */}
                 <div className="space-y-6">
-                    <h3 className="text-lg font-bold border-l-4 border-revgreen pl-3 uppercase tracking-tight">Logística</h3>
+                    <h3 className="text-lg font-bold border-l-4 border-revgreen pl-3 uppercase tracking-tight">Logística de Conteúdo</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Disponibilidade Real *</Label>

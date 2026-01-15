@@ -10,8 +10,9 @@ const MODEL_OPTIONS = [
     { value: 'gpt-5.2', label: 'GPT-5.2' },
     { value: 'gpt-4o', label: 'GPT-4o' },
     { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
-    { value: 'claude-3-5-haiku-20241022', label: 'Claude Haiku' },
+    { value: 'claude-sonnet-4.5', label: 'Claude Sonnet 4.5' },
+    { value: 'claude-3-5-haiku-20241022', label: 'Claude Haiku 3.5' },
+    { value: 'sonar-pro', label: 'Perplexity Sonar' },
 ];
 
 const ARTICLE_GENERATOR_PROMPT = `Você é redator B2B da RevHackers. Crie artigos em HTML otimizados para SEO.
@@ -124,7 +125,7 @@ export const AIChatSidebar = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [currentModel, setCurrentModel] = useState('gpt-5.2');
+    const [currentModel, setCurrentModel] = useState('gpt-4o-mini');
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -251,13 +252,13 @@ export const AIChatSidebar = () => {
                 {/* Sessions List */}
                 <div className="border-b border-zinc-800 p-3">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] text-zinc-500 uppercase font-medium">Conversas</span>
+                        <span className="text-[10px] text-zinc-400 uppercase font-medium">Conversas</span>
                         <button onClick={handleNewChat} className="text-xs text-zinc-500 hover:text-white flex items-center gap-1">
                             <Plus className="w-3 h-3" /> Nova
                         </button>
                     </div>
                     {agentSessions.length === 0 ? (
-                        <p className="text-xs text-zinc-600">Nenhuma conversa ainda</p>
+                        <p className="text-xs text-zinc-500">Nenhuma conversa ainda</p>
                     ) : (
                         <div className="space-y-0.5 max-h-28 overflow-y-auto">
                             {agentSessions.map(session => (
@@ -266,7 +267,7 @@ export const AIChatSidebar = () => {
                                     onClick={() => handleSelectSession(session)}
                                     className={`w-full flex items-center gap-2 py-1.5 px-2 rounded text-xs group ${currentSession?.id === session.id
                                         ? 'bg-zinc-800 text-white'
-                                        : 'text-zinc-400 hover:bg-zinc-900'
+                                        : 'text-zinc-300 hover:bg-zinc-900'
                                         }`}
                                 >
                                     <MessageSquare className="w-3 h-3 flex-shrink-0" />
@@ -288,15 +289,15 @@ export const AIChatSidebar = () => {
                     {messages.length === 0 ? (
                         <div className="h-full flex items-center justify-center">
                             <div className="text-center">
-                                <p className="text-sm text-zinc-400">{selectedAgent.name}</p>
-                                <p className="text-xs text-zinc-600 mt-1">{selectedAgent.description}</p>
+                                <p className="text-sm text-zinc-300">{selectedAgent.name}</p>
+                                <p className="text-xs text-zinc-500 mt-1">{selectedAgent.description}</p>
                             </div>
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {messages.map((msg, idx) => (
                                 <div key={idx}>
-                                    <p className="text-[10px] text-zinc-500 mb-1">
+                                    <p className="text-[10px] text-zinc-400 mb-1">
                                         {msg.role === 'assistant' ? selectedAgent.name : 'Você'}
                                     </p>
                                     <div className={`text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'assistant' ? 'text-zinc-300' : 'text-white'
@@ -308,7 +309,7 @@ export const AIChatSidebar = () => {
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-zinc-500">
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span className="text-xs">Pensando...</span>
+                                    <span className="text-xs text-zinc-400">Pensando...</span>
                                 </div>
                             )}
                             <div ref={messagesEndRef} />

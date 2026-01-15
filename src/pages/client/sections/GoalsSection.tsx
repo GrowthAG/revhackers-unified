@@ -11,103 +11,118 @@ export default function GoalsSection({ plan }: GoalsSectionProps) {
     const month1Targets = goals.month1_targets || [];
 
     return (
-        <div>
+        <div className="py-20 space-y-32">
             {/* Section Header */}
-            <div className="border-b border-zinc-200 pb-6 mb-8">
-                <h2 className="text-3xl font-semibold text-black mb-2">
-                    📈 Metas & KPIs
+            <div className="text-center space-y-6">
+                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none">
+                    Objetivos
                 </h2>
-                <p className="text-zinc-600">
-                    Objetivos mensuráveis e indicadores-chave de performance
+                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
+                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
+                    Targets & Success Metrics
                 </p>
             </div>
 
             {/* Smart OKRs */}
-            <div className="mb-12">
-                <h3 className="text-2xl font-semibold text-black mb-6">🎯 Smart OKR's</h3>
-                <div className="grid md:grid-cols-2 gap-4">
+            <div className="max-w-7xl mx-auto space-y-12">
+                <div className="flex items-center justify-between border-b border-zinc-900 pb-8">
+                    <h3 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">Strategic OKRs</h3>
+                    <Target className="text-revgreen animate-pulse" size={32} />
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {okrs.map((okr: any, index: number) => (
-                        <div key={index} className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-black transition-colors">
-                            <div className="flex items-start gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center flex-shrink-0">
-                                    <Target className="w-5 h-5 text-black" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{okr.kr}</p>
-                                    <p className="text-sm text-zinc-900 font-medium">{okr.description}</p>
-                                </div>
-                            </div>
+                        <div key={index} className="bg-black border border-zinc-900 p-8 rounded-xl hover:border-revgreen/50 transition-all group relative overflow-hidden">
+                            <div className="absolute left-0 top-0 w-1 h-full bg-revgreen/30 group-hover:bg-revgreen transition-colors"></div>
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4 group-hover:text-revgreen transition-colors">{okr.kr}</span>
+                            <p className="text-lg font-black text-white uppercase tracking-tight leading-tight">{okr.description}</p>
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* Month 1: Proof of Concept */}
-            <div className="mb-12">
-                <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-8 mb-6">
-                    <h3 className="text-2xl font-semibold text-black mb-2">
-                        🚀 MÊS 1: Proof of Concept
-                    </h3>
-                    <p className="text-zinc-600">5 key targets com status tracker</p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-4">
-                    {(month1Targets.length > 0 ? month1Targets : [
-                        { name: '5 clientes pagos', status: 'pending' },
-                        { name: 'R$15-30K MRR', status: 'pending' },
-                        { name: 'Playbook documentado', status: 'pending' },
-                        { name: '2-3 case studies BR', status: 'pending' },
-                        { name: '50+ leads no pipeline', status: 'pending' },
-                    ]).map((target: any, index: number) => {
-                        const isDone = target.status === 'done';
-                        const isInProgress = target.status === 'in_progress';
-
-                        return (
-                            <div key={index} className="bg-white border border-zinc-200 rounded-lg p-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-semibold text-black">{target.name}</h4>
-                                    <span className={`px-2 py-1 rounded text-[10px] uppercase font-bold tracking-wider ${isDone ? 'bg-black text-white' :
-                                        isInProgress ? 'bg-zinc-100 text-zinc-900' :
-                                            'bg-zinc-50 text-zinc-400'
-                                        }`}>
-                                        {isDone ? 'Concluído' : isInProgress ? 'Em Andamento' : 'Pendente'}
-                                    </span>
-                                </div>
-                                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full ${isDone ? 'bg-black' : isInProgress ? 'bg-zinc-400' : 'bg-zinc-200'}`}
-                                        style={{ width: isDone ? '100%' : isInProgress ? '50%' : '0%' }}
-                                    ></div>
-                                </div>
+            <div className="max-w-7xl mx-auto">
+                <div className="bg-zinc-950 border border-zinc-900 rounded-[3rem] p-12 overflow-hidden relative">
+                    <div className="relative z-10 space-y-16">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                            <div className="space-y-4">
+                                <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em] block mb-2">Cycle 01 - Launch</span>
+                                <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">Prova de Conceito</h3>
                             </div>
-                        );
-                    })}
+                            <p className="text-zinc-500 font-medium max-w-sm uppercase tracking-widest text-right hidden md:block">
+                                5 metas mandatórias para validação do modelo de growth.
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-5 gap-6">
+                            {(month1Targets.length > 0 ? month1Targets : [
+                                { name: '5 Clientes Pagos', status: 'pending' },
+                                { name: 'R$15-30K MRR', status: 'pending' },
+                                { name: 'RevPlaybook v1', status: 'pending' },
+                                { name: '3 Success Cases', status: 'pending' },
+                                { name: '50 SQOs Pipeline', status: 'pending' },
+                            ]).map((target: any, index: number) => {
+                                const isDone = target.status === 'done';
+                                const isInProgress = target.status === 'in_progress';
+
+                                return (
+                                    <div key={index} className="p-6 bg-black border border-zinc-900 rounded-2xl hover:border-revgreen/30 transition-all group">
+                                        <div className="flex flex-col h-full justify-between gap-6">
+                                            <h4 className="text-xs font-black text-white uppercase tracking-widest leading-tight group-hover:text-revgreen transition-colors">{target.name}</h4>
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[8px] font-black text-zinc-600 uppercase tracking-tighter">Status</span>
+                                                    <span className={`text-[8px] font-black uppercase tracking-tighter ${isDone ? 'text-revgreen' : 'text-zinc-400'}`}>
+                                                        {isDone ? 'Deployed' : isInProgress ? 'Active' : 'Pending'}
+                                                    </span>
+                                                </div>
+                                                <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
+                                                    <div
+                                                        className={`h-full transition-all duration-1000 ${isDone ? 'bg-revgreen shadow-[0_0_10px_rgba(3,252,59,0.5)]' : 'bg-zinc-700'}`}
+                                                        style={{ width: isDone ? '100%' : isInProgress ? '50%' : '5%' }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* 3 Phases Overview */}
-            <div>
-                <h3 className="text-2xl font-semibold text-black mb-6">📊 Visão Geral das 3 Fases</h3>
-                <div className="space-y-4">
+            {/* 3 Phases: Master Scaling */}
+            <div className="max-w-7xl mx-auto pt-20 border-t border-zinc-900">
+                <div className="text-center mb-16">
+                    <h3 className="text-4xl font-black text-white uppercase tracking-tighter">Escala Trimestral</h3>
+                </div>
+
+                <div className="space-y-8">
                     {[
-                        { title: 'FASE 1: Validação', subtitle: 'Mês 1-4', desc: 'Meta: 60-80 clientes, R$50-40K NMRR', stats: [{ l: 'R$10-15K NMRR', v: 'Mês 1-2' }, { l: 'R$25-40K NMRR', v: 'Mês 3-4' }] },
-                        { title: 'FASE 2: Crescimento', subtitle: 'Mês 5-8', desc: 'Meta: 130-150 clientes, R$60-70K NMRR', stats: [{ l: 'R$60-70K NMRR', v: 'Mês 7-8' }, { l: '130-150 clientes', v: 'Brasil' }] },
-                        { title: 'FASE 3: Consolidação', subtitle: 'Mês 9-12', desc: 'Meta: 300-350 clientes, R$95-120K NMRR', stats: [{ l: 'R$95-120K NMRR', v: 'Mês 11-12' }, { l: '300-350 clientes', v: 'Escala' }] }
+                        { title: 'Validação', subtitle: 'Mês 1-4', desc: 'Foco em unit economics e canal primário.', stats: [{ l: 'R$15K MRR', v: 'Target 1' }, { l: 'ROI > 3x', v: 'Metric' }] },
+                        { title: 'Crescimento', subtitle: 'Mês 5-8', desc: 'Expansão de budget e diversificação de canais.', stats: [{ l: 'R$70K MRR', v: 'Target 2' }, { l: 'Scale Engine', v: 'LTV' }] },
+                        { title: 'Dominação', subtitle: 'Mês 9-12', desc: 'Liderança de mercado e maximização de EBITDA.', stats: [{ l: 'R$120K MRR', v: 'Target 3' }, { l: 'Market Leader', v: 'Exit Readiness' }] }
                     ].map((phase, i) => (
-                        <div key={i} className="bg-white border border-zinc-200 rounded-lg p-6 flex flex-col md:flex-row gap-6 items-start md:items-center">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <span className="w-8 h-8 flex items-center justify-center bg-black text-white font-bold text-sm rounded-full">{i + 1}</span>
-                                    <h4 className="text-lg font-bold text-black">{phase.title}</h4>
-                                    <span className="text-xs bg-zinc-100 px-2 py-1 rounded text-zinc-500 font-medium">{phase.subtitle}</span>
+                        <div key={i} className="bg-black border border-zinc-900 p-10 rounded-[2rem] flex flex-col md:flex-row gap-8 items-start md:items-center hover:bg-zinc-950 transition-all group">
+                            <div className="shrink-0 flex items-center gap-6">
+                                <span className="text-6xl font-black text-zinc-900 group-hover:text-revgreen/10 transition-colors">0{i + 1}</span>
+                                <div className="space-y-1">
+                                    <h4 className="text-2xl font-black text-white uppercase tracking-tighter">{phase.title}</h4>
+                                    <span className="text-[10px] text-revgreen font-bold uppercase tracking-widest">{phase.subtitle}</span>
                                 </div>
-                                <p className="text-sm text-zinc-600 pl-11">{phase.desc}</p>
                             </div>
-                            <div className="flex gap-4">
+
+                            <p className="flex-1 text-sm text-zinc-500 font-medium leading-relaxed md:border-l md:border-zinc-900 md:pl-10">
+                                {phase.desc}
+                            </p>
+
+                            <div className="flex gap-4 w-full md:w-auto">
                                 {phase.stats.map((stat, j) => (
-                                    <div key={j} className="bg-zinc-50 px-4 py-2 rounded border border-zinc-100 min-w-[120px]">
-                                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">{stat.v}</div>
-                                        <div className="text-sm font-bold text-black">{stat.l}</div>
+                                    <div key={j} className="flex-1 md:flex-none p-4 bg-zinc-950 border border-zinc-900 rounded-xl min-w-[140px] group-hover:border-zinc-800 transition-all text-center">
+                                        <div className="text-[8px] text-zinc-600 font-black uppercase tracking-[0.2em] mb-1">{stat.v}</div>
+                                        <div className="text-sm font-black text-white uppercase tracking-tight">{stat.l}</div>
                                     </div>
                                 ))}
                             </div>

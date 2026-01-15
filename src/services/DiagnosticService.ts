@@ -224,7 +224,7 @@ export class DiagnosticService {
         return {
             premises_data: this.generatePremises(segment, objective, bottlenecks, answers), // Pass full answers for linking
             methodology_data: this.generateMethodology(isB2B, channels),
-            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges),
+            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, marketData),
             goals_data: this.generateGoals(objective, growthGoal),
             financial_projections: this.generateProjections(budget),
             budget_data: this.generateBudget(budget, isB2B),
@@ -293,51 +293,70 @@ export class DiagnosticService {
         return { steps };
     }
 
-    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[]) {
+    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], marketData?: any) {
         const phases = [];
+        const market = marketData?.market || {};
+        const benchmark = marketData?.benchmark || {};
 
-        // Phase 1: Foundation (Condicional)
-        const foundationItems = ['Configuração de DNS/Deliverability', 'Integração de Formulários'];
+        // Ciclo 01: Embarque & Setup (Semana 1-2)
+        const cycle1Items = ['Alinhamento de expectativas e Handoff comercial'];
         if (!hasCRM) {
-            foundationItems.unshift('Implementação de CRM (Prioridade Zero)');
+            cycle1Items.push('Implementação prioritária de CRM');
         } else {
-            foundationItems.unshift('Auditoria de CRM e Limpeza de Dados');
+            cycle1Items.push('Auditoria técnica e limpeza da base de dados');
         }
-
-        // Add items based on challenges
-        if (challenges.some(c => c.includes('Processo') || c.includes('Desorganização'))) {
-            foundationItems.push('Definição de Playbook de Vendas');
-        }
+        cycle1Items.push('Configuração de DNS e Deliverability (SPF/DKIM/DMARC)');
 
         phases.push({
-            name: 'Semana 1-2',
-            title: 'Fundação & Tech Setup',
-            items: foundationItems
+            name: 'Ciclo 01',
+            title: 'Embarque & Setup (15 dias)',
+            items: cycle1Items
         });
 
-        // Phase 2: Growth Engine
-        const growthItems = [];
+        // Ciclo 02: Estratégia & Kickoff (Semana 3)
+        const cycle2Items = [
+            'Criação do Success Plan (Metodologia Donna Webber)',
+            'Reunião de Kickoff Estratégico com stakeholders',
+            `Análise competitiva de subnicho (Base: ${market.concorrentes_benchmark?.map((c: any) => c.nome).join(', ') || 'Mercado Geral'})`
+        ];
         if (isB2B) {
-            growthItems.push('Definição de ICP e Matriz de Objeções');
-            growthItems.push('Construção de Listas de Prospecção');
-            growthItems.push('Setup de Cold Mail & LinkedIn Automation');
+            cycle2Items.push('Definição de ICP e Matriz de Objeções complexas');
         } else {
-            growthItems.push('Criação de Criativos de Alta Conversão');
-            growthItems.push('Setup de Campanhas (Meta/Google)');
-            growthItems.push('Testes A/B de Landing Pages');
+            cycle2Items.push('Mapeamento de jornada de compra B2C e gatilhos mentais');
         }
 
         phases.push({
-            name: 'Semana 3-6',
-            title: isB2B ? 'Motor de Vendas B2B' : 'Escala de Mídia Paga',
-            items: growthItems
+            name: 'Ciclo 02',
+            title: 'Estratégia & Kickoff',
+            items: cycle2Items
         });
 
-        // Phase 3: Optimziation
+        // Ciclo 03: Execução & Adoção (Semana 4-10)
+        const cycle3Items = [
+            'Setup de campanhas de tração cirúrgica',
+            'Execução dos playbooks de Growth e Vendas'
+        ];
+        if (market.tendencias_2025) {
+            cycle3Items.push(`Implementação de tendência: ${market.tendencias_2025[0]?.titulo || 'IA Generativa'}`);
+        }
+        cycle3Items.push(`Otimização baseada em Benchmarks (Target Conversão: ${benchmark.taxa_conversao || '2.5%'})`);
+
         phases.push({
-            name: 'Semana 7-12',
-            title: 'Otimização & Escala',
-            items: ['Review de Métricas de Funil', 'Ajuste de Investimento por Canal', 'Implementação de Novos Testes de Canal']
+            name: 'Ciclo 03',
+            title: 'Execução & Adoção',
+            items: cycle3Items
+        });
+
+        // Ciclo 04: Valor & Expansão (Semana 11+)
+        phases.push({
+            name: 'Ciclo 04',
+            title: 'Valor & Expansão',
+            items: [
+                'Revisão de ROI e QBR (Quarterly Business Review)',
+                'Ajuste de investimento para nova fase de escala',
+                `Foco em LTV:CAC de ${benchmark.ltv_cac_ratio || '3:1'}`,
+                'Expansão para novos canais ou verticais'
+            ]
         });
 
         return { phases };

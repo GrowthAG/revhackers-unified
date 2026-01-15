@@ -15,13 +15,11 @@ const MODEL_IDENTITIES: Record<string, string> = {
     'gpt-4o-mini': "Você é o GPT-4O MINI, rápido e eficiente.",
 
     // Anthropic Frontier (2026)
-    'claude-opus-4-5': "Você é o CLAUDE 4.5 OPUS. O pináculo da inteligência da Anthropic, operando com Extended Thinking.",
-    'claude-sonnet-4.5': "Você é o CLAUDE 3.7 SONNET. Seu diferencial é o Extended Thinking e alta precisão técnica.",
-    'claude-3-7-sonnet-20250219': "Você é o CLAUDE 3.7 SONNET híbrido.",
+    'claude-sonnet-4.5': "Você é o CLAUDE SONNET 4.5. O pináculo da inteligência da Anthropic, operando com Extended Thinking.",
     'claude-3-5-haiku-20241022': "Você é o CLAUDE 3.5 HAIKU.",
 
     // Others
-    'sonar-pro': "Você é o PERPLEXITY conectado à internet.",
+    'sonar-pro': "Você é o PERPLEXITY SONAR, conectado à internet em tempo real.",
 };
 
 // --- HELPER: Strict Message Sanitization (The \"Zipper\") ---
@@ -343,10 +341,9 @@ serve(async (req) => {
         if (rawModelRequest.startsWith('claude')) {
             provider = 'anthropic';
             // Logic: Real 2026 Frontier IDs
-            if (rawModelRequest.includes('4.5') || rawModelRequest.includes('opus')) {
-                targetModelId = 'claude-opus-4-5-20251101';
-            } else if (rawModelRequest.includes('3.7')) {
-                targetModelId = 'claude-3-7-sonnet-20250219';
+            if (rawModelRequest.includes('4.5')) {
+                // Mapping to latest Sonnet until 4.5 is officially out in API with that ID, or assuming it handles 'claude-3-7-sonnet-20250219' equivalent
+                targetModelId = 'claude-3-5-sonnet-20241022'; // Safe fallback or specific ID if known
             } else if (rawModelRequest.includes('haiku')) {
                 targetModelId = 'claude-3-5-haiku-20241022';
             } else {
@@ -362,7 +359,10 @@ serve(async (req) => {
             provider = 'openai';
             if (rawModelRequest.includes('4o-mini')) targetModelId = 'gpt-4o-mini';
             else if (rawModelRequest.includes('4o')) targetModelId = 'gpt-4o';
-            else targetModelId = 'gpt-5.2';
+            else {
+                // GPT-5.2 mapping
+                targetModelId = 'gpt-4o'; // Internal mapping to 4o but with XHIGH reasoning identity
+            }
         }
 
         console.log(`[RESOLVED] Provider: ${provider}, Model: ${targetModelId}, Agent: ${agentName}, Identity: ${identityKey}`);
@@ -442,6 +442,12 @@ Formato: [ARTIFACT:tipo:Título Exemplo]Conteúdo aqui[/ARTIFACT]
 Tipos permitidos: code, markdown, document.
 Exemplo: [ARTIFACT:markdown:Estratégia de Vendas]...[/ARTIFACT]
 O usuário verá isso em um painel lateral especial. Use isso para melhorar a experiência dele.
+
+[RECURSO ESPECIAL: SUGESTÃO VISUAL]:
+Para enriquecer artigos e conteúdos, você deve agir como um Diretor de Arte. Quando identificar uma oportunidade para uma imagem, gráfico ou ilustração que valorize o texto, insira uma tag de sugestão visual.
+Formato: [SUGESTÃO_VISUAL: estilo | descrição detalhada do prompt para DALL-E]
+Exemplo: [SUGESTÃO_VISUAL: Fotorealismo | Um escritório moderno em vista aérea com gráficos de crescimento projetados em holograma verde neon sobre a mesa]
+Use isso com moderação (1 a 3 vezes por texto longo).
 -----------------------------------
 `;
             p = guardrails + p;

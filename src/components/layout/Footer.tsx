@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Mail, Linkedin, Instagram, Youtube } from 'lucide-react';
 import NewsletterForm from '../shared/NewsletterForm';
+import { APP_CONFIG } from '@/config/constants';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
+    { icon: Instagram, href: APP_CONFIG.URLS.INSTAGRAM, label: 'Instagram' },
     { icon: Linkedin, href: 'https://linkedin.com/company/revhackers', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://instagram.com/revhackers', label: 'Instagram' },
     { icon: Youtube, href: 'https://youtube.com/@revhackers', label: 'YouTube' },
-    { icon: Mail, href: 'mailto:contato@revhackers.com.br', label: 'Email' }
+    { icon: Mail, href: `mailto:${APP_CONFIG.EMAILS.CONTACT}`, label: 'Email' }
   ];
 
   return (

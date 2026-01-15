@@ -60,8 +60,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     }
 }
 
-const OrchestratedOnboarding = () => {
-    const { id } = useParams();
+const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: { embedded?: boolean; projectId?: string }) => {
+    const { id: paramId } = useParams();
+    const id = propProjectId || paramId;
     const navigate = useNavigate();
     const { toast } = useToast();
     const [currentStep, setCurrentStep] = useState(0);
@@ -495,10 +496,69 @@ const OrchestratedOnboarding = () => {
         )
     }
 
+    // Simplified embedded layout (inside ProjectDetails)
+    if (embedded) {
+        return (
+            <ErrorBoundary>
+                <div className="max-w-4xl mx-auto py-8 px-4">
+                    {/* Minimal Progress Indicator */}
+                    <div className="mb-8">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">
+                                Progresso da Jornada
+                            </span>
+                            <span className="text-[10px] text-zinc-400">
+                                {currentStep + 1} / {steps.length}
+                            </span>
+                        </div>
+                        <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-zinc-900 transition-all duration-500 ease-out"
+                                style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                            />
+                        </div>
+                        {/* Step Pills */}
+                        <div className="flex gap-2 mt-4">
+                            {steps.map((step, i) => {
+                                const isLocked = isStepLocked(i);
+                                const isActive = currentStep === i;
+                                const isCompleted = currentStep > i;
+
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => !isLocked && setCurrentStep(i)}
+                                        disabled={isLocked}
+                                        className={`text-[10px] px-3 py-1.5 rounded-full transition-all ${isActive
+                                            ? 'bg-zinc-900 text-white'
+                                            : isCompleted
+                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                                : isLocked
+                                                    ? 'bg-zinc-50 text-zinc-300 cursor-not-allowed'
+                                                    : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
+                                            }`}
+                                    >
+                                        {step.title.split(':')[0]}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="bg-white border border-zinc-100 rounded-xl p-8">
+                        {renderContent()}
+                    </div>
+                </div>
+            </ErrorBoundary>
+        );
+    }
+
+    // Full standalone layout (with AdminPageLayout)
     return (
         <ErrorBoundary>
             <AdminPageLayout
-                title={project?.client_name || 'Projeto'}
+                title={project?.client_company || project?.client_name || 'Projeto'}
                 description={`Jornada ${project?.quarter || 'Q1'} ${project?.year || ''} — Onboarding Estratégico`}
                 backTo="/admin/rei"
             >

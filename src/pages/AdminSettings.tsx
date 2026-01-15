@@ -9,12 +9,13 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Shield, Settings, UserCircle, Loader2 } from "lucide-react";
 import { toast } from 'sonner';
+import { APP_CONFIG } from "@/config/constants";
 
-const AdminSettings = () => {
+export default function AdminSettings() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [platformName, setPlatformName] = useState("RevHackers Growth Hub");
-  const [adminEmail, setAdminEmail] = useState("contato@revhackers.com.br");
+  const [platformName, setPlatformName] = useState(APP_CONFIG.PLATFORM_NAME);
+  const [adminEmail, setAdminEmail] = useState(APP_CONFIG.EMAILS.CONTACT);
 
   const handleSave = () => {
     setSaving(true);
@@ -174,4 +175,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+

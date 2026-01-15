@@ -75,7 +75,7 @@ const AdminClients = () => {
                 actions={
                     <Button
                         onClick={() => navigate('/admin/clients/novo')}
-                        className="bg-black text-white hover:bg-zinc-800 rounded-none h-11 px-6 text-xs font-black uppercase tracking-widest shadow-none gap-2"
+                        className="bg-black text-white hover:bg-zinc-800 rounded-sm h-11 px-6 text-xs font-black uppercase tracking-widest shadow-sm gap-2"
                     >
                         <Plus size={16} /> Novo Cliente
                     </Button>
@@ -90,7 +90,7 @@ const AdminClients = () => {
                                 placeholder="BUSCAR CLIENTE OU EMPRESA..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 h-12 bg-zinc-50 border-none rounded-none text-[10px] font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-black"
+                                className="pl-12 h-12 bg-zinc-50 border-transparent rounded-sm text-[10px] font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-black focus-visible:bg-white transition-all shadow-none"
                             />
                         </div>
                         <div className="flex gap-8">
@@ -165,7 +165,7 @@ const AdminClients = () => {
                                                                 size="icon"
                                                                 onClick={() => navigate(`/admin/rei?search=${client.email}`)}
                                                                 title="Ver Projetos REI"
-                                                                className="h-10 w-10 text-zinc-300 hover:text-revgreen hover:bg-black transition-all rounded-none"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-revgreen hover:bg-black transition-all rounded-sm"
                                                             >
                                                                 <Zap size={16} />
                                                             </Button>
@@ -173,7 +173,7 @@ const AdminClients = () => {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => navigate(`/admin/clients/edit/${client.id}`)}
-                                                                className="h-10 w-10 text-zinc-300 hover:text-black hover:bg-zinc-100 transition-all rounded-none"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-black hover:bg-zinc-100 transition-all rounded-sm"
                                                             >
                                                                 <Edit2 size={16} />
                                                             </Button>
@@ -181,7 +181,7 @@ const AdminClients = () => {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => handleDelete(client.id, client.name)}
-                                                                className="h-10 w-10 text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all rounded-none"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all rounded-sm"
                                                             >
                                                                 <Trash2 size={16} />
                                                             </Button>

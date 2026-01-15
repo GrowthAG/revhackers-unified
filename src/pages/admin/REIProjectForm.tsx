@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createReiProject, updateReiProject, getReiProjectById } from '@/api/reiProjects';
 import { supabase } from '@/integrations/supabase/client';
@@ -131,13 +131,44 @@ const REIProjectForm = () => {
     const quarter = watch('quarter');
     const year = watch('year');
 
+    // [HANDOFF AUTOMATION]
+    const location = useLocation();
+
     useEffect(() => {
-        if (!isEditing && quarter && year) {
-            const monthMap = { 'Q1': 0, 'Q2': 3, 'Q3': 6, 'Q4': 9 };
-            const date = new Date(year, monthMap[quarter], 1);
-            setValue('next_rei_date', date.toISOString().split('T')[0]);
+        if (!loadingClients && clients.length > 0 && location.state?.handoffData) {
+            const { client_name, client_email } = location.state.handoffData;
+
+            // 1. Try to find existing client matches
+            const match = clients.find(c =>
+                c.name.toLowerCase() === client_name.toLowerCase() ||
+                (c.email && client_email && c.email.toLowerCase() === client_email.toLowerCase())
+            );
+
+            if (match) {
+                handleClientSelect(match.id);
+                toast({
+                    title: 'Handoff: Cliente Localizado',
+                    description: `Vinculado automaticamente a ${match.name}`
+                });
+            } else {
+                // 2. Pre-fill for new creation
+                setValue('client_name', client_name);
+                if (client_email) setValue('client_email', client_email);
+
+                toast({
+                    title: 'Handoff de Vendas',
+                    description: 'Cliente novo detectado. Complete o cadastro clicando em "+ Novo Cliente".',
+                    variant: "default"
+                });
+                // Optional: setMode('new'); 
+            }
+
+            // Clean state to avoid re-triggering
+            window.history.replaceState({}, '');
         }
-    }, [quarter, year, isEditing]);
+    }, [location.state, clients, loadingClients]);
+
+
 
     const onSubmit = async (data: FormData) => {
         // Validation removed for client_id since column might be missing, but logic requires client name
@@ -316,10 +347,10 @@ const REIProjectForm = () => {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-none border-zinc-100 shadow-2xl">
-                                                <SelectItem value="Q1">Q1 (JAN-MAR)</SelectItem>
-                                                <SelectItem value="Q2">Q2 (ABR-JUN)</SelectItem>
-                                                <SelectItem value="Q3">Q3 (JUL-SET)</SelectItem>
-                                                <SelectItem value="Q4">Q4 (OUT-DEZ)</SelectItem>
+                                                <SelectItem value="Q1">Q1 (Ciclo 1 - 0-90 dias)</SelectItem>
+                                                <SelectItem value="Q2">Q2 (Ciclo 2 - 91-180 dias)</SelectItem>
+                                                <SelectItem value="Q3">Q3 (Ciclo 3 - 181-270 dias)</SelectItem>
+                                                <SelectItem value="Q4">Q4 (Ciclo 4 - 270-360 dias)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>

@@ -226,13 +226,16 @@ export default function REIResult() {
                     @media print {
                         .no-print { display: none !important; }
                         .print-only { display: block !important; }
-                        body { background: white !important; color: black !important; }
+                        body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; }
                         .bg-zinc-950 { background: white !important; color: black !important; }
                         .text-white { color: black !important; }
                         .text-zinc-400 { color: #666 !important; }
+                        .border-white\\/5 { border-color: #ddd !important; }
+                        .bg-white\\/5 { background-color: #f5f5f5 !important; }
                         /* Ensure full width */
-                        .max-w-5xl { max-width: 100% !important; }
-                        .container-custom { padding: 0 !important; }
+                        .max-w-5xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+                        .container-custom { padding: 0 !important; max-width: 100% !important; }
+                        .min-h-screen { min-height: auto !important; }
                     }
                     .print-only { display: none; }
                 `}
@@ -355,6 +358,12 @@ export default function REIResult() {
                                             </div>
                                             <span className="text-zinc-300">Diagnóstico Completo</span>
                                         </div>
+                                        <div className="flex items-center gap-3 text-sm">
+                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${project?.scheduling_completed ? 'bg-revgreen' : 'bg-white/10'}`}>
+                                                {project?.scheduling_completed ? <Check className="w-3 h-3 text-black" /> : <div className="w-2 h-2 rounded-full bg-white" />}
+                                            </div>
+                                            <span className={project?.scheduling_completed ? "text-zinc-300" : "text-white font-bold"}>Agendamento Técnico</span>
+                                        </div>
                                         {plan ? (
                                             <div className="flex items-center gap-3 text-sm">
                                                 <div className="w-5 h-5 rounded-full bg-revgreen flex items-center justify-center">
@@ -363,41 +372,50 @@ export default function REIResult() {
                                                 <span className="text-zinc-300">Planejamento Gerado</span>
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-3 text-sm">
-                                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center animate-pulse">
-                                                    <div className="w-2 h-2 rounded-full bg-white" />
-                                                </div>
-                                                <span className="text-white font-medium">Gerar Planejamento Estratégico</span>
+                                            <div className="flex items-center gap-3 text-sm opacity-50">
+                                                <div className="w-5 h-5 rounded-full border border-white/20" />
+                                                <span className="text-zinc-500">Planejamento Gerado</span>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-3 text-sm opacity-50">
-                                            <div className="w-5 h-5 rounded-full border border-white/20" />
-                                            <span className="text-zinc-500">Call de Implementação</span>
-                                        </div>
                                     </div>
 
-                                    {plan ? (
-                                        <Button
-                                            onClick={handleViewPlan}
-                                            className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-wider py-6 text-xs mb-4"
-                                        >
-                                            Ver Planejamento <ArrowRight className="w-4 h-4 ml-2" />
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            onClick={handleGenerateStrategicPlan}
-                                            disabled={generatingPlan}
-                                            className="w-full bg-revgreen hover:bg-emerald-400 text-black font-black uppercase tracking-wider py-6 text-xs mb-4"
-                                        >
-                                            {generatingPlan ? (
-                                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>
-                                            ) : (
-                                                <>Desbloquear Plano Completo <ArrowRight className="w-4 h-4 ml-2" /></>
-                                            )}
-                                        </Button>
-                                    )}
+                                    {/* Action Buttons */}
+                                    <div className="space-y-3">
+                                        {/* Button 1: Schedule (Priority if not done) */}
+                                        {!project?.scheduling_completed && (
+                                            <Button
+                                                onClick={() => navigate(`/admin/jornada/${project.id}`)}
+                                                className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-wider py-6 text-xs"
+                                            >
+                                                Agendar Apresentação <ArrowRight className="w-4 h-4 ml-2" />
+                                            </Button>
+                                        )}
 
-                                    <p className="text-[10px] text-zinc-500 text-center">
+                                        {/* Button 2: Plan (If schedule done or just alternate action) */}
+                                        {plan ? (
+                                            <Button
+                                                onClick={handleViewPlan}
+                                                className="w-full bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-wider py-6 text-xs"
+                                                variant={project?.scheduling_completed ? "default" : "secondary"}
+                                            >
+                                                Ver Planejamento <ArrowRight className="w-4 h-4 ml-2" />
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={handleGenerateStrategicPlan}
+                                                disabled={generatingPlan || !project?.scheduling_completed}
+                                                className={`w-full font-black uppercase tracking-wider py-6 text-xs ${!project?.scheduling_completed ? 'opacity-50 cursor-not-allowed bg-zinc-800 text-zinc-500' : 'bg-revgreen hover:bg-emerald-400 text-black'}`}
+                                            >
+                                                {generatingPlan ? (
+                                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>
+                                                ) : (
+                                                    <>Desbloquear Plano Completo <ArrowRight className="w-4 h-4 ml-2" /></>
+                                                )}
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    <p className="text-[10px] text-zinc-500 text-center mt-4">
                                         Receba seu plano de 90 dias com roadmap e orçamento detalhado.
                                     </p>
                                 </div>

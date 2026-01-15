@@ -50,12 +50,11 @@ const BlogPostPage = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { toast } = useToast();
 
-  // Load posts from Supabase API and combine with static posts
+  // Load posts from Supabase API
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        // Fix author avatar path helper
         const getFixedAuthorAvatar = (path?: string | null) => {
           if (!path) return "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png";
           if (path.startsWith('http') || path.startsWith('/')) return path;
@@ -75,17 +74,6 @@ const BlogPostPage = () => {
 
         const apiPosts = await getAllPosts();
 
-        // Convert static posts to match the unified interface
-        const staticPostsWithContent: BlogPost[] = staticBlogPosts.map(post => ({
-          ...post,
-          id: post.id,
-          content: post.content || '',
-          author: {
-            ...post.author,
-            avatar: getFixedAuthorAvatar(post.author.avatar)
-          }
-        }));
-
         // Convert API posts to match the unified interface
         const formattedApiPosts: BlogPost[] = apiPosts.map(p => ({
           id: p.id,
@@ -93,61 +81,23 @@ const BlogPostPage = () => {
           slug: p.slug,
           excerpt: p.excerpt || '',
           content: cleanContent(p.content || ''),
-          category: p.category,
+          category: p.category || 'Geral',
           image: p.image || '',
-          author: p.author,
-          date: p.date || p.created_at, // Fallback to created_at if date is missing
+          author: {
+            name: p.author.name,
+            role: p.author.role,
+            avatar: getFixedAuthorAvatar(p.author.avatar)
+          },
+          date: p.date || p.created_at,
           readTime: p.read_time || '5 min',
-          featured: p.featured
+          featured: p.featured || false
         }));
 
-        // [CODEX] Merge Strategy: Database > Static (Primary key: slug)
-        // This ensures edits made in the Admin Panel (Supabase) override local static files.
-        // UPDATE: Enrich API posts with Local Metadata (Titles with HTML, Fixed Authors) to ensure Design Consistency
-        // [CODEX] Safe Merge Strategy: "Smart Authority"
-        // 1. Database is the source of truth for EDITS.
-        // 2. Static files are the source of truth for DESIGN (HTML Titles, Curated Images).
-        const enrichedApiPosts = formattedApiPosts.map(apiPost => {
-          const localMatch = staticPostsWithContent.find(local => local.slug === apiPost.slug);
-          if (localMatch) {
-            // DATABASE FIRST: If it's in the DB, it's an intended edit.
-            // We only use static files for things that are NULL in the DB.
-            return {
-              ...apiPost,
-              // If title in DB is just common text, but local has HTML <span>, keep HTML unless DB title is significantly different
-              title: (apiPost.title.length > 5 && !apiPost.title.includes('<span'))
-                ? (apiPost.title === localMatch.title.replace(/<[^>]*>?/gm, "") ? localMatch.title : apiPost.title)
-                : apiPost.title,
-
-              // Priority: DB Image > Local Image > Framework Fallback
-              // If DB image is null, it means it was explicitly cleared in Admin
-              image: apiPost.image === null ? '' : (apiPost.image || localMatch.image),
-
-              // Content: Always DB if not empty
-              content: apiPost.content || localMatch.content,
-
-              // Excerpt: DB First
-              excerpt: apiPost.excerpt || localMatch.excerpt
-            };
-          }
-          return apiPost;
-        });
-
-        const apiSlugs = new Set(enrichedApiPosts.map(p => p.slug));
-        const staticPostsToAdd = staticPostsWithContent.filter(p => !apiSlugs.has(p.slug));
-
-        const allPosts = [...enrichedApiPosts, ...staticPostsToAdd];
-        setPosts(allPosts);
+        setPosts(formattedApiPosts);
         setError(null);
       } catch (err) {
-        console.error("Erro ao carregar posts da API, usando apenas posts estáticos:", err);
-        // If API fails, use only static posts
-        const postsWithContent = staticBlogPosts.map(post => ({
-          ...post,
-          content: post.content || ''
-        }));
-        setPosts(postsWithContent);
-        setError(null);
+        console.error("Erro ao carregar posts da API:", err);
+        setError("Não foi possível carregar o artigo. Por favor, tente novamente mais tarde.");
       } finally {
         setIsLoading(false);
       }

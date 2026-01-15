@@ -224,6 +224,91 @@ export default function Step3Desafios({ form }: Step3Props) {
                     )}
                 </div>
 
+                {/* --- SEÇÃO DE PERSONA (FEEDBACK) --- */}
+                <div className="pt-8 border-t border-zinc-200">
+                    <h3 className="text-sm font-black uppercase tracking-wider text-black mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-black rounded-sm"></span>
+                        Mapeamento de Persona
+                    </h3>
+
+                    {/* Dor Principal */}
+                    <div className="space-y-3 mb-6">
+                        <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                            Dor Principal (Descrição Profunda)
+                        </Label>
+                        <p className="text-xs text-zinc-500">
+                            Não diga apenas "falta de vendas". Descreva o sentimento: frustração com agências, medo de não bater meta, pressão de investidores...
+                        </p>
+                        <textarea
+                            {...form.register('painDescription')}
+                            className="w-full min-h-[100px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                            placeholder="Descreva a dor emocional e prática..."
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        {/* Gatilho */}
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                                Gatilho de Compra
+                            </Label>
+                            <p className="text-[10px] text-zinc-500 mb-1">
+                                O que acontece na vida dele que o faz buscar solução AGORA?
+                            </p>
+                            <textarea
+                                {...form.register('buyingTrigger')}
+                                className="w-full min-h-[80px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                                placeholder="Ex: Recebeu investimento, perdeu diretor de vendas..."
+                            />
+                        </div>
+
+                        {/* Ganho Pessoal */}
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                                Ganho Pessoal (Benefício Direto)
+                            </Label>
+                            <p className="text-[10px] text-zinc-500 mb-1">
+                                O que ele ganha pessoalmente com o sucesso do projeto?
+                            </p>
+                            <textarea
+                                {...form.register('wiifm')}
+                                className="w-full min-h-[80px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                                placeholder="Ex: Promoção, bônus, reconhecimento, paz de espírito..."
+                            />
+                        </div>
+                    </div>
+
+                    {/* Mensagem Chave */}
+                    <div className="space-y-3 mb-6">
+                        <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                            Mensagem Chave (A Grande Promessa)
+                        </Label>
+                        <p className="text-xs text-zinc-500">
+                            Se você pudesse falar apenas uma frase para ele, qual seria?
+                        </p>
+                        <input
+                            {...form.register('keyMessage')}
+                            className="w-full h-12 p-4 border border-zinc-200 focus:border-black transition-colors text-sm bg-white"
+                            placeholder="Ex: Transforme seu time de vendas em uma máquina previsível em 90 dias."
+                        />
+                    </div>
+
+                    {/* Palavras-chave */}
+                    <div className="space-y-3">
+                        <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                            Palavras-chave de Intenção (SEO/Ads)
+                        </Label>
+                        <p className="text-xs text-zinc-500">
+                            O que ele digita no Google ou LinkedIn quando está procurando solução?
+                        </p>
+                        <textarea
+                            {...form.register('keywords')}
+                            className="w-full min-h-[80px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
+                            placeholder="Ex: consultoria de vendas b2b, como estruturar outbound, ferramenta de prospecção..."
+                        />
+                    </div>
+                </div>
+
                 {/* PERGUNTAS ABERTAS ESTRATÉGICAS */}
                 <div className="pt-8 border-t border-zinc-200">
                     <h3 className="text-sm font-black uppercase tracking-wider text-black mb-6 flex items-center gap-2">

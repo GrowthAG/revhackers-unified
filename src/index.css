@@ -23,11 +23,16 @@
     --input: 0 0% 20%;
 
     --radius: 0px;
-    /* 0px - Brutalist/Sharp */
+    /* 0px - Brutalist/Sharp - Mantendo o padrão industrial rigoroso */
   }
 }
 
 @layer base {
+  * {
+    @apply border-border;
+    border-radius: var(--radius) !important;
+  }
+
   html {
     /* Base font size for rem calculations. Default is 16px */
     font-size: 16px;
@@ -39,11 +44,8 @@
   }
 
   /* Standardized Typography System */
-  /* Using rem units implies dependence on root font-size. Tailwind uses rems by default. */
-
   h1 {
     @apply font-bold tracking-tight md:tracking-tighter text-balance;
-    /* Base style, size should be set by utility classes or specific page context if different */
   }
 
   h2 {
@@ -223,17 +225,42 @@ p {
   /* Cinza médio legível */
 }
 
-/* 3. ALINHAR HEADLINES - Removing restrictive globals to allow component-level control */
-h1,
-h2,
-h3 {
-  /* Default behaviors should be controlled by utility classes */
-}
+/* 3. ALINHAR HEADLINES - Configurações globais restauradas no bloco @layer base principal */
 
-/* Native Select Styling */
+/* Native Select Styling - Industrial & Functional */
 select {
   appearance: menulist !important;
   cursor: pointer !important;
   background-color: white !important;
   color: black !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  height: 2.5rem !important;
+  outline: none !important;
+}
+
+select:focus {
+  border-color: #03FC3B !important;
+  box-shadow: 0 0 0 1px #03FC3B !important;
+}
+
+/* Print Optimization */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset background perfs for printing if needed */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure main content takes full width */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
 }

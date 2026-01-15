@@ -8,10 +8,10 @@ interface ProjectTimelineProps {
 
 export function ProjectTimeline({ currentStage, reiDate, planDate }: ProjectTimelineProps) {
     const stages = [
-        { icon: CheckCircle2, label: 'Kickoff & Diagnóstico', status: 'Concluído' },
-        { icon: Calendar, label: 'Agendamento', status: 'Pendente' },
-        { icon: Map, label: 'Planejamento', status: 'Bloqueado' },
-        { icon: Rocket, label: 'Go Live', status: 'Futuro' }
+        { icon: CheckCircle2, label: 'Embarque & Handoff', status: 'Concluído' },
+        { icon: Calendar, label: 'Estratégia & Kickoff', status: 'Pendente' },
+        { icon: Map, label: 'Adoção & Execução', status: 'Bloqueado' },
+        { icon: Rocket, label: 'Valor & Expansão', status: 'Futuro' }
     ];
 
     return (
@@ -36,8 +36,8 @@ export function ProjectTimeline({ currentStage, reiDate, planDate }: ProjectTime
                     return (
                         <div key={index} className="relative z-10 flex flex-col items-center gap-3 bg-white px-4">
                             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isActive || isCompleted
-                                    ? 'bg-black border-black text-white'
-                                    : 'bg-white border-zinc-200 text-zinc-300'
+                                ? 'bg-black border-black text-white'
+                                : 'bg-white border-zinc-200 text-zinc-300'
                                 } ${isActive ? 'scale-110 shadow-lg' : ''}`}>
                                 <Icon size={16} strokeWidth={isActive || isCompleted ? 2 : 2} />
                             </div>

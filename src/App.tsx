@@ -80,6 +80,7 @@ import Settings from "./pages/admin/Settings";
 import AdminMaterials from "./pages/admin/AdminMaterials";
 import AdminClients from "./pages/admin/AdminClients";
 import ClientForm from "./pages/admin/ClientForm";
+import AdminIntegrations from "./pages/admin/AdminIntegrations";
 
 import AdminMaterialNew from "./pages/admin/AdminMaterialNew";
 import AdminMaterialEdit from "./pages/admin/AdminMaterialEdit";
@@ -96,15 +97,20 @@ import DiagnosticView from "./pages/admin/DiagnosticView";
 // Admin - REI Projects
 import AdminREIProjects from "./pages/admin/AdminREIProjects";
 import REIProjectForm from "./pages/admin/REIProjectForm";
+import GlobalDashboard from "./pages/admin/GlobalDashboard";
 
 import REIDashboard from "./pages/REIDashboard";
 import REIOnboarding from "./pages/REIOnboarding";
 import StrategyPlanning from "./pages/admin/StrategyPlanning";
 import GrowthCronograma from "./pages/admin/GrowthCronograma";
 import OrchestratedOnboarding from "./pages/admin/OrchestratedOnboarding";
+import LiveStrategicPlan from "./pages/admin/LiveStrategicPlan";
+import LiveResultsReport from "./pages/admin/LiveResultsReport";
+import ProjectDetails from "./pages/admin/ProjectDetails";
 
 import StrategicPlanGenerator from "./pages/admin/StrategicPlanGenerator";
 import StrategicPlanPresentation from "./pages/client/StrategicPlanPresentation";
+import ClientProjectHub from "./pages/client/ClientProjectHub";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import SchedulingSuccess from "./pages/SchedulingSuccess";
@@ -113,6 +119,7 @@ import { AIProvider } from "./context/AIContext";
 import AdminAgentBuilder from "./pages/admin/AdminAgentBuilder";
 import AdminAgents from "./pages/admin/AdminAgents";
 import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
+import KnowledgeDocument from "./pages/admin/KnowledgeDocument";
 import AdminAIChat from "./pages/admin/AdminAIChat";
 import AdminProposals from "./pages/admin/AdminProposals";
 import AdminProposalNew from "./pages/admin/AdminProposalNew";
@@ -202,14 +209,18 @@ const App = () => (
               <Route path="/rei-consulting" element={<ReiConsulting />} />
               <Route path="/rei-founder" element={<ReiFounder />} />
 
+
               {/* Redirect /dashboard to /admin (unified GROWTHHUB) */}
               <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
               {/* Admin Management - GROWTHHUB */}
-              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<ProtectedRoute><GlobalDashboard /></ProtectedRoute>} />
               <Route path="/admin/rei" element={<ProtectedRoute><AdminREIProjects /></ProtectedRoute>} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
+              <Route path="/admin/strategic-plan/:projectId" element={<ProtectedRoute><LiveStrategicPlan /></ProtectedRoute>} />
+              <Route path="/admin/resultados/:projectId" element={<ProtectedRoute><LiveResultsReport /></ProtectedRoute>} />
 
               <Route path="/admin/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
@@ -241,26 +252,30 @@ const App = () => (
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/rei/:id" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
 
-              {/* Admin - Sync */}
               <Route path="/admin/sync" element={<ProtectedRoute><AdminSync /></ProtectedRoute>} />
               <Route path="/admin/estrategia" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
               <Route path="/admin/estrategia/:id" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
               <Route path="/admin/cronograma" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               <Route path="/admin/cronograma/:id" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
+              {/* Unified Project Workspace */}
+              <Route path="/admin/projects/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
+              {/* Legacy Redirects */}
               <Route path="/admin/jornada" element={<Navigate to="/admin/rei" replace />} />
-              <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
+              <Route path="/admin/jornada/:id" element={<Navigate to="/admin/projects/:id" replace />} />
 
               {/* Admin - Diagnostic View (The Voice) */}
               <Route path="/admin/diagnostico/:id" element={<ProtectedRoute><DiagnosticView /></ProtectedRoute>} />
 
               {/* Admin - Strategic Plan Generator */}
               <Route path="/admin/planejamento/:reiProjectId" element={<ProtectedRoute><StrategicPlanGenerator /></ProtectedRoute>} />
+              <Route path="/admin/integrations" element={<ProtectedRoute><AdminIntegrations /></ProtectedRoute>} />
 
               {/* Admin - AI Agents */}
               <Route path="/admin/agents" element={<ProtectedRoute><AdminAgents /></ProtectedRoute>} />
               <Route path="/admin/agents/builder" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
               <Route path="/admin/agents/builder/:id" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
               <Route path="/admin/knowledge" element={<ProtectedRoute><AdminKnowledgeBase /></ProtectedRoute>} />
+              <Route path="/admin/knowledge/:libId/doc/:docId" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
               <Route path="/admin/ai-chat" element={<ProtectedRoute><ErrorBoundary><AdminAIChat /></ErrorBoundary></ProtectedRoute>} />
 
               {/* Admin - Proposals (Deal Rooms) */}
@@ -270,6 +285,7 @@ const App = () => (
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />
+              <Route path="/hub/:id" element={<ClientProjectHub />} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

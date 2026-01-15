@@ -22,102 +22,92 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
     const stack = diagnostic.stack || [];
 
-    // Helper for subtle status
-    function getStatusColor(score: number) {
-        if (score >= 90) return 'text-black';
-        if (score >= 50) return 'text-zinc-600';
-        return 'text-zinc-400';
-    }
-
-    const marketIntel = plan.market_intelligence || null;
-
     return (
-        <div className="space-y-12">
-            {/* Context Mirror - Feedback on REI Responses */}
+        <div className="py-20 space-y-32">
+            {/* Section Header */}
+            <div className="text-center space-y-6">
+                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none">
+                    Diagnóstico
+                </h2>
+                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
+                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
+                    Strategic Context & Data Analysis
+                </p>
+            </div>
+
+            {/* Context Mirror Modules */}
             {context && (
-                <div className="animate-in fade-in slide-in-from-top-5 duration-700">
-                    <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 mb-6">
-                        <Target className="w-6 h-6 text-black" />
-                        <h3 className="text-xl font-semibold text-black">Reflexo do Contexto</h3>
-                    </div>
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {[
+                        { label: 'Segment', value: context.segment },
+                        { label: 'Primary Goal', value: context.objective },
+                        { label: 'Digital Maturity', value: context.maturity },
+                        { label: 'Constraints', value: context.restrictions },
+                    ].map((item, i) => (
+                        <div key={i} className="bg-black border border-zinc-900 p-8 rounded-xl hover:border-revgreen/50 transition-all group relative overflow-hidden">
+                            <div className="absolute left-0 top-0 w-1 h-full bg-revgreen/30 group-hover:bg-revgreen transition-colors"></div>
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block mb-4 group-hover:text-revgreen transition-colors">{item.label}</span>
+                            <p className="text-xl font-black text-white uppercase tracking-tight">{item.value}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        {[
-                            { label: 'Segmento', value: context.segment },
-                            { label: 'Objetivo Principal', value: context.objective },
-                            { label: 'Maturidade Digital', value: context.maturity },
-                            { label: 'Restrições / Budget', value: context.restrictions },
-                        ].map((item, i) => (
-                            <div key={i} className="bg-zinc-50 border border-zinc-200 p-4 rounded-lg">
-                                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block mb-1">{item.label}</span>
-                                <p className="text-sm font-bold text-black">{item.value}</p>
+            {/* Signals & Risks Intensity Grid */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                {/* Strategic Signals */}
+                <div className="space-y-8">
+                    <h4 className="text-xs font-black text-revgreen uppercase tracking-[0.4em] flex items-center gap-3">
+                        <TrendingUp size={16} /> Strategic Signals
+                    </h4>
+                    <div className="space-y-4">
+                        {signals.map((signal: any, i: number) => (
+                            <div key={i} className="p-8 bg-black border border-zinc-900 rounded-xl relative overflow-hidden group hover:border-revgreen/30 transition-all">
+                                <div className="absolute left-0 top-0 w-1 h-full bg-revgreen animate-pulse"></div>
+                                <p className="text-base md:text-xl font-black text-white uppercase tracking-tighter leading-none mb-2">{signal.text}</p>
+                                <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">{signal.impact}</p>
                             </div>
                         ))}
                     </div>
                 </div>
-            )}
 
-            {/* Strategic Signals & Risks */}
-            {(signals.length > 0 || risks.length > 0) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {signals.length > 0 && (
-                        <div>
-                            <h4 className="text-sm font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Lightbulb className="w-4 h-4" /> Sinais Estratégicos
-                            </h4>
-                            <div className="space-y-3">
-                                {signals.map((signal: any, i: number) => (
-                                    <div key={i} className={`p-4 rounded-lg border flex items-start gap-3 bg-white ${signal.type === 'positive' ? 'border-l-4 border-l-black border-zinc-200' :
-                                        signal.type === 'negative' ? 'border-l-4 border-l-zinc-300 border-zinc-200' :
-                                            'border-zinc-200'
-                                        }`}>
-                                        <div>
-                                            <p className="text-sm font-bold text-black leading-tight">{signal.text}</p>
-                                            <p className="text-xs text-zinc-500 mt-1">{signal.impact}</p>
-                                        </div>
-                                    </div>
-                                ))}
+                {/* Risk Matrix */}
+                <div className="space-y-8">
+                    <h4 className="text-xs font-black text-zinc-500 uppercase tracking-[0.4em] flex items-center gap-3">
+                        <AlertTriangle size={16} /> Risk Analysis
+                    </h4>
+                    <div className="space-y-4">
+                        {risks.map((risk: any, i: number) => (
+                            <div key={i} className="p-8 bg-black border border-zinc-900 rounded-xl relative overflow-hidden group hover:border-zinc-700 transition-all">
+                                <div className="absolute left-0 top-0 w-1 h-full bg-zinc-800 group-hover:bg-zinc-600"></div>
+                                <p className="text-base font-black text-white uppercase tracking-tight mb-3 italic">{risk.text}</p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-zinc-900">
+                                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Protocol:</span>
+                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">"{risk.mitigation}"</span>
+                                </div>
                             </div>
-                        </div>
-                    )}
-
-                    {risks.length > 0 && (
-                        <div>
-                            <h4 className="text-sm font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <AlertTriangle className="w-4 h-4" /> Matriz de Riscos
-                            </h4>
-                            <div className="space-y-3">
-                                {risks.map((risk: any, i: number) => (
-                                    <div key={i} className="p-4 bg-white border border-zinc-200 rounded-lg shadow-sm border-l-4 border-l-zinc-300">
-                                        <p className="text-sm font-bold text-zinc-900 mb-1">{risk.text}</p>
-                                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-zinc-400">
-                                            <span>Mitigação:</span>
-                                            <span className="text-zinc-600">{risk.mitigation}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                        ))}
+                    </div>
                 </div>
-            )}
+            </div>
 
-            {/* Strategic Decisions */}
+            {/* Decisions Banner */}
             {decisions.length > 0 && (
-                <div className="animate-in fade-in slide-in-from-bottom-5 duration-700">
-                    <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 mb-6">
-                        <Zap className="w-6 h-6 text-black" />
-                        <h3 className="text-xl font-semibold text-black">Decisões Mandatórias</h3>
+                <div className="max-w-7xl mx-auto space-y-12 pt-16">
+                    <div className="flex items-center justify-between border-b border-zinc-900 pb-8">
+                        <h3 className="text-4xl md:text-6xl font-black text-white tracking-tighter shadow-sm">Decisões Mandatórias</h3>
+                        <Zap className="text-revgreen animate-pulse" size={32} />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {decisions.map((decision: any, i: number) => (
-                            <div key={i} className="bg-black text-white p-6 rounded-xl hover:translate-y-[-4px] transition-transform duration-300">
-                                <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">Pilar: {decision.basedOn?.join(' + ')}</div>
-                                <h4 className="text-lg font-bold mb-3">{decision.title}</h4>
-                                <p className="text-sm text-zinc-400 leading-relaxed mb-4">{decision.recommendation}</p>
-                                <div className="pt-4 border-t border-white/10">
-                                    <span className="text-[10px] font-bold text-revgreen uppercase tracking-widest">Lógica RH: {decision.ruleApplied}</span>
+                            <div key={i} className="bg-black border border-zinc-800 p-10 rounded-xl group hover:border-white transition-all duration-500 relative overflow-hidden">
+                                <div className="absolute left-0 top-0 w-1 h-full bg-white opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4 group-hover:text-revgreen transition-colors">{decision.basedOn?.join(' + ')}</span>
+                                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight mb-4">{decision.title}</h4>
+                                <p className="text-sm text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors">{decision.recommendation}</p>
+                                <div className="mt-8 pt-6 border-t border-zinc-900">
+                                    <span className="text-[9px] font-black text-revgreen uppercase tracking-widest border border-revgreen/20 px-3 py-1 rounded-full">{decision.ruleApplied}</span>
                                 </div>
                             </div>
                         ))}
@@ -125,139 +115,48 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 </div>
             )}
 
-            {/* Original Technical Diagnostics (Site Audit) */}
+            {/* Technical Hub */}
             {scores && scores.performance > 0 && (
-                <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200">
-                    <div className="border-b border-zinc-200 pb-6 mb-8">
-                        <h2 className="text-2xl font-semibold text-black mb-2">
-                            🔍 Auditoria Técnica (Site)
-                        </h2>
-                        <p className="text-zinc-500 text-sm">
-                            Análise de infraestrutura via PageSpeed Insights.
-                        </p>
-                    </div>
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-zinc-950 border border-zinc-900 rounded-[3rem] p-12 overflow-hidden relative">
+                        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                            <BarChart size={400} className="text-white" />
+                        </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        {Object.entries(scores).map(([key, value]: [string, any]) => (
-                            <div key={key} className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-black transition-colors">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 rounded-lg bg-zinc-50 flex items-center justify-center border border-zinc-100">
-                                        {key === 'performance' && <TrendingUp className="w-5 h-5 text-black" />}
-                                        {key === 'seo' && <Eye className="w-5 h-5 text-black" />}
-                                        {key === 'accessibility' && <CheckCircle className="w-5 h-5 text-black" />}
-                                        {key === 'bestPractices' && <Zap className="w-5 h-5 text-black" />}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-zinc-400 uppercase font-black tracking-widest">{key}</p>
-                                        <p className={`text-2xl font-bold ${getStatusColor(value)}`}>
-                                            {value}
-                                        </p>
-                                    </div>
+                        <div className="relative z-10 space-y-16">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                                <div>
+                                    <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em] block mb-2">Technical Audit</span>
+                                    <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">Infrastructure & SEO Lab</h3>
                                 </div>
-                                <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full bg-black`}
-                                        style={{ width: `${value}%` }}
-                                    ></div>
-                                </div>
+                                <p className="text-zinc-500 font-medium max-w-sm uppercase tracking-widest text-right hidden md:block">
+                                    Real-time analysis powered by Lighthouse V10.3 Engine.
+                                </p>
                             </div>
-                        ))}
-                    </div>
 
-                    {stack.length > 0 && (
-                        <div>
-                            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Stack Tecnológica</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {stack.map((tech: string, index: number) => (
-                                    <span key={index} className="px-3 py-1 bg-white text-zinc-800 text-[10px] font-bold rounded-md border border-zinc-200 uppercase tracking-wider">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                                {Object.entries(scores).map(([key, value]: [string, any]) => (
+                                    <div key={key} className="space-y-4">
+                                        <div className="flex justify-between items-end border-b border-zinc-900 pb-2">
+                                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{key}</span>
+                                            <span className={`text-4xl font-black ${value >= 90 ? 'text-revgreen shadow-[0_0_20px_rgba(3,252,59,0.3)]' : 'text-white'}`}>{value}</span>
+                                        </div>
+                                        <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
+                                            <div className="h-full bg-revgreen" style={{ width: `${value}%` }}></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="pt-8 flex flex-wrap gap-4">
+                                {stack.map((tech: string, i: number) => (
+                                    <span key={i} className="px-6 py-2 bg-black border border-zinc-900 text-[10px] font-black text-white rounded-full uppercase tracking-widest hover:border-revgreen transition-colors">
                                         {tech}
                                     </span>
                                 ))}
                             </div>
                         </div>
-                    )}
-                </div>
-            )}
-
-            {/* Market Intelligence */}
-            {marketIntel && (
-                <div className="animate-in fade-in slide-in-from-bottom-5 duration-700 bg-zinc-50 p-8 rounded-2xl border border-zinc-200">
-                    <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 mb-8">
-                        <Globe className="w-6 h-6 text-black" />
-                        <h3 className="text-xl font-semibold text-black">Inteligência de Mercado (AI)</h3>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white border border-zinc-200 p-6 rounded-xl shadow-sm">
-                            <h4 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <BarChart className="w-4 h-4" /> Market Sizing
-                            </h4>
-                            <div className="space-y-4">
-                                {['tam', 'sam', 'som'].map((metric) => (
-                                    <div key={metric}>
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter block">{metric.toUpperCase()}</span>
-                                        <p className="text-sm font-bold text-black">{marketIntel.market_sizing?.[metric] || 'N/A'}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-white border border-zinc-200 p-6 rounded-xl shadow-sm">
-                            <h4 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4" /> Tendências
-                            </h4>
-                            <ul className="space-y-3">
-                                {marketIntel.industry_trends?.map((trend: string, i: number) => (
-                                    <li key={i} className="text-sm text-zinc-700 flex items-start gap-2">
-                                        <div className="w-1.5 h-1.5 bg-black rounded-full mt-1.5 shrink-0" />
-                                        {trend}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="bg-black text-white p-6 rounded-xl shadow-xl flex flex-col justify-between">
-                            <div>
-                                <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Zap className="w-4 h-4 text-revgreen" /> Conselho Tático
-                                </h4>
-                                <p className="text-sm font-medium leading-relaxed italic text-zinc-200">
-                                    "{marketIntel.strategic_advice}"
-                                </p>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-white/10 text-[10px] uppercase font-black text-zinc-500 tracking-widest">
-                                AI Analysis Protocol // V2.0
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="p-6 bg-white border border-zinc-200 rounded-xl">
-                        <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Info className="w-4 h-4" /> Benchmarks Competitivos
-                        </h4>
-                        <div className="flex flex-wrap gap-3">
-                            {marketIntel.competitor_benchmarks?.map((bench: string, i: number) => (
-                                <div key={i} className="px-4 py-2 bg-zinc-50 border border-zinc-100 text-[10px] font-black text-zinc-800 rounded-lg uppercase tracking-tight">
-                                    {bench}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Empty State - Ultra Minimalist */}
-            {!context && (!scores || scores.performance === 0) && !marketIntel && (
-                <div className="py-20 text-center border-2 border-black">
-                    <div className="w-16 h-16 mx-auto mb-6 border border-zinc-300 rounded-full flex items-center justify-center">
-                        <Target className="w-6 h-6 text-zinc-400" />
-                    </div>
-                    <h3 className="text-xl font-medium text-black mb-2">
-                        Diagnóstico Pendente
-                    </h3>
-                    <p className="text-zinc-500 text-sm max-w-xs mx-auto">
-                        Os dados do diagnóstico serão exibidos após a análise.
-                    </p>
                 </div>
             )}
         </div>

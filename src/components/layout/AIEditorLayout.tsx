@@ -14,7 +14,7 @@ interface AIEditorLayoutProps {
 }
 
 const AIEditorLayout = ({ children, title, description, onSave, saving, actions, sidebarContent }: AIEditorLayoutProps) => {
-    const [showAI, setShowAI] = useState(true);
+    const [showAI, setShowAI] = useState(false);
 
     return (
         <div className="flex h-[calc(100vh-60px)] overflow-hidden bg-[#fafafa]">

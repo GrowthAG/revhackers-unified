@@ -2,19 +2,39 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import AdminLayout from "@/components/layout/AdminLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Search, FileText, ExternalLink, Copy, Trash2, Edit2, Folder, ChevronRight, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { APP_CONFIG } from "@/config/constants";
+
+// UI Components
+import AdminLayout from "@/components/layout/AdminLayout";
+import AdminPageLayout from "@/components/layout/AdminPageLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    Plus, Search, FileText, ExternalLink, Copy, Trash2, Edit2,
+    Folder, ChevronRight, ChevronDown, Rocket, CheckCircle2, Clock,
+    MoreHorizontal, Filter
+} from "lucide-react";
+
+// Types
+interface Proposal {
+    id: string;
+    created_at: string;
+    title: string;
+    client_name: string;
+    client_logo?: string;
+    client_email?: string;
+    slug: string;
+    status: string;
+    // Add other fields as needed
+}
 
 const AdminProposals = () => {
     const navigate = useNavigate();
@@ -30,20 +50,20 @@ const AdminProposals = () => {
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
-            return data;
+            return data as unknown as Proposal[];
         },
     });
 
+    // Actions
     const handleDelete = async (id: string) => {
-        if (!confirm("Tem certeza que deseja excluir esta página?")) return;
-
+        if (!confirm("Tem certeza que deseja excluir esta proposta?")) return;
         try {
             const { error } = await supabase.from("proposals").delete().eq("id", id);
             if (error) throw error;
-            toast.success("Página excluída com sucesso");
+            toast.success("Proposta excluída com sucesso");
             refetch();
         } catch (error) {
-            toast.error("Erro ao excluir página");
+            toast.error("Erro ao excluir proposta");
         }
     };
 
@@ -59,7 +79,6 @@ const AdminProposals = () => {
 
     const handleDeleteClient = async (clientName: string) => {
         if (!confirm(`Tem certeza que deseja excluir TODAS as propostas de "${clientName}"? Esta ação não pode ser desfeita.`)) return;
-
         try {
             const { error } = await supabase.from("proposals").delete().eq("client_name", clientName);
             if (error) throw error;
@@ -67,14 +86,12 @@ const AdminProposals = () => {
             refetch();
         } catch (error) {
             toast.error("Erro ao excluir cliente");
-            console.error(error);
         }
     };
 
     const handleRenameClient = async (oldName: string) => {
         const newName = prompt("Novo nome do cliente:", oldName);
         if (!newName || newName === oldName) return;
-
         try {
             const { error } = await supabase.from("proposals").update({ client_name: newName }).eq("client_name", oldName);
             if (error) throw error;
@@ -82,18 +99,16 @@ const AdminProposals = () => {
             refetch();
         } catch (error) {
             toast.error("Erro ao renomear cliente");
-            console.error(error);
         }
     };
 
+    // Stats & Grouping
     const groupedProposals = useMemo(() => {
         if (!proposals) return {};
-
         const filtered = proposals.filter((proposal) =>
-            proposal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            proposal.client_name.toLowerCase().includes(searchTerm.toLowerCase())
+            (proposal.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+            (proposal.client_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
         );
-
         return filtered.reduce((acc, proposal) => {
             const client = proposal.client_name || "Sem Cliente";
             if (!acc[client]) acc[client] = [];
@@ -102,143 +117,209 @@ const AdminProposals = () => {
         }, {} as Record<string, typeof proposals>);
     }, [proposals, searchTerm]);
 
+    const stats = useMemo(() => {
+        if (!proposals) return { total: 0, approved: 0, active: 0 };
+        return {
+            total: proposals.length,
+            approved: proposals.filter(p => p.status === 'approved').length,
+            active: proposals.filter(p => p.status !== 'approved').length
+        };
+    }, [proposals]);
+
     return (
         <AdminLayout>
-            <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Centro de Propostas</h1>
-                        <p className="text-zinc-500 mt-2">Crie propostas comerciais conectadas ao tl;dv.</p>
-                    </div>
+            <AdminPageLayout
+                title="Centro de Propostas"
+                description="Gerencie, crie e acompanhe propostas comerciais conectadas ao diagnóstico."
+                backTo="/admin"
+                maxWidth="7xl"
+                actions={
                     <Button
                         onClick={() => navigate("/admin/proposals/new")}
-                        className="bg-[#03FC3B] text-black hover:bg-[#02e635] font-bold rounded-full px-6"
+                        className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-widest text-xs h-12 px-8 rounded-sm no-print shadow-sm"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Nova Proposta
                     </Button>
-                </div>
-
-                <div className="bg-white border border-zinc-100 rounded-2xl shadow-sm overflow-hidden min-h-[500px]">
-                    <div className="p-4 border-b border-zinc-100 bg-zinc-50/50 flex gap-4">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                            <Input
-                                placeholder="Buscar por cliente, título ou tipo..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 bg-white border-zinc-200"
-                            />
+                }
+            >
+                {/* 1. Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                        <div>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Total de Propostas</p>
+                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.total}</h3>
+                        </div>
+                        <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
+                            <Rocket className="w-5 h-5 text-zinc-400 group-hover:text-white" />
                         </div>
                     </div>
+                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                        <div>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Propostas Aprovadas</p>
+                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.approved}</h3>
+                        </div>
+                        <div className="w-10 h-10 bg-green-50 flex items-center justify-center border border-green-100 group-hover:bg-[#03FC3B] group-hover:border-[#03FC3B] transition-colors">
+                            <CheckCircle2 className="w-5 h-5 text-green-600 group-hover:text-black" />
+                        </div>
+                    </div>
+                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                        <div>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Em Negociação</p>
+                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.active}</h3>
+                        </div>
+                        <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
+                            <Clock className="w-5 h-5 text-zinc-400 group-hover:text-white" />
+                        </div>
+                    </div>
+                </div>
 
-                    <div className="p-6 space-y-4">
-                        {isLoading ? (
-                            <div className="text-center text-zinc-500 py-12">Carregando Hub...</div>
-                        ) : Object.keys(groupedProposals).length === 0 ? (
-                            <div className="text-center text-zinc-500 py-12">Nenhum registro encontrado.</div>
-                        ) : (
-                            Object.entries(groupedProposals).map(([clientName, clientProposals]) => (
-                                <Collapsible
-                                    key={clientName}
-                                    open={openClients[clientName]}
-                                    onOpenChange={() => toggleClient(clientName)}
-                                    className="border border-zinc-100 rounded-xl bg-white shadow-sm overflow-hidden"
-                                >
-                                    <div className="flex items-center justify-between p-4 bg-zinc-50/30 hover:bg-zinc-50 transition-colors cursor-pointer" onClick={() => toggleClient(clientName)}>
-                                        <div className="flex items-center gap-3">
-                                            {clientProposals[0].client_logo ? (
-                                                <img src={clientProposals[0].client_logo} alt={clientName} className="w-8 h-8 rounded object-cover" />
-                                            ) : (
-                                                <div className="w-8 h-8 rounded bg-zinc-200 flex items-center justify-center">
-                                                    <Folder className="w-4 h-4 text-zinc-500" />
-                                                </div>
-                                            )}
-                                            <span className="font-semibold text-lg text-zinc-900">{clientName}</span>
-                                            <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 rounded-full px-2">
-                                                {clientProposals.length} items
-                                            </Badge>
+                {/* 2. Filters & Search */}
+                <div className="flex flex-col md:flex-row gap-4 mb-8 no-print">
+                    <div className="relative flex-grow max-w-md">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                        <Input
+                            placeholder="Buscar por cliente, título ou tipo..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="h-14 pl-12 bg-white border-zinc-200 rounded-sm focus-visible:ring-1 focus-visible:ring-black focus-visible:border-black text-sm transition-all placeholder:text-zinc-400 font-medium shadow-sm"
+                        />
+                    </div>
+                    {/* Add Filter Buttons if needed later */}
+                </div>
+
+                {/* 3. Proposals List (Grouped by Client) */}
+                <div className="space-y-6 min-h-[500px]">
+                    {isLoading ? (
+                        <div className="text-center py-20">
+                            <div className="w-10 h-10 border-4 border-zinc-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-zinc-400 text-xs uppercase tracking-widest">Carregando Hub...</p>
+                        </div>
+                    ) : Object.keys(groupedProposals).length === 0 ? (
+                        <div className="text-center py-20 border border-dashed border-zinc-200 bg-zinc-50/50">
+                            <p className="text-zinc-400 text-sm">Nenhuma proposta encontrada.</p>
+                        </div>
+                    ) : (
+                        Object.entries(groupedProposals).map(([clientName, clientProposals]) => (
+                            <Collapsible
+                                key={clientName}
+                                open={openClients[clientName]}
+                                onOpenChange={() => toggleClient(clientName)}
+                                className="bg-white border border-zinc-200 shadow-sm hover:shadow-md transition-all group overflow-hidden"
+                            >
+                                <div className="flex items-center justify-between p-6 cursor-pointer bg-white group-hover:bg-zinc-50/50 transition-colors" onClick={() => toggleClient(clientName)}>
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-12 h-12 flex items-center justify-center bg-zinc-100 text-zinc-500 font-bold text-lg rounded-none group-hover:bg-black group-hover:text-white transition-colors">
+                                            {clientName.substring(0, 2).toUpperCase()}
                                         </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-black uppercase tracking-tight">{clientName}</h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 rounded-none px-2 text-[10px] uppercase tracking-wide border border-zinc-200 h-5">
+                                                    {clientProposals.length} PROPOSTAS
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 no-print">
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-4">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleRenameClient(clientName); }}
-                                                title="Renomear Cliente"
+                                                className="h-8 w-8 hover:bg-zinc-200 rounded-none"
+                                                title="Renomear"
                                             >
-                                                <Edit2 className="w-4 h-4 text-zinc-400 hover:text-zinc-900" />
+                                                <Edit2 className="w-3.5 h-3.5 text-zinc-500" />
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteClient(clientName); }}
-                                                className="hover:bg-red-50 hover:text-red-500"
-                                                title="Excluir Cliente e Propostas"
+                                                className="h-8 w-8 hover:bg-red-50 hover:text-red-500 rounded-none"
+                                                title="Excluir Cliente"
                                             >
-                                                <Trash2 className="w-4 h-4 text-zinc-400" />
+                                                <Trash2 className="w-3.5 h-3.5" />
                                             </Button>
-                                            <CollapsibleTrigger asChild>
-                                                <Button variant="ghost" size="sm" className="w-9 h-9 p-0">
-                                                    {openClients[clientName] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                                                </Button>
-                                            </CollapsibleTrigger>
                                         </div>
+                                        <CollapsibleTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="w-8 h-8 p-0 rounded-none">
+                                                {openClients[clientName] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                            </Button>
+                                        </CollapsibleTrigger>
                                     </div>
+                                </div>
 
-                                    <CollapsibleContent>
-                                        <div className="p-2 space-y-2 bg-white">
-                                            {clientProposals.map((item) => (
-                                                <div key={item.id} className="flex items-center justify-between p-3 ml-11 rounded-lg hover:bg-zinc-50 border border-transparent hover:border-zinc-100 transition-all group">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="p-2 rounded-md bg-indigo-50 text-indigo-600">
-                                                            <FileText className="w-4 h-4" />
+                                <CollapsibleContent>
+                                    <div className="border-t border-zinc-100 bg-zinc-50/30">
+                                        {clientProposals.map((item) => (
+                                            <div key={item.id} className="flex items-center justify-between p-4 pl-[88px] hover:bg-white border-b border-zinc-100 last:border-0 transition-colors group/item">
+                                                <div className="flex items-center gap-4">
+                                                    <FileText className="w-4 h-4 text-zinc-400 group-hover/item:text-black transition-colors" />
+                                                    <div>
+                                                        <p className="font-semibold text-sm text-zinc-900">{item.title || "Sem Título"}</p>
+                                                        <div className="flex items-center gap-3 mt-1">
+                                                            <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                                                                Criado em {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                                                            </span>
+                                                            <span className={`text-[10px] font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-green-600' :
+                                                                item.status === 'sent' ? 'text-blue-600' : 'text-zinc-400'
+                                                                }`}>
+                                                                {item.status === 'approved' ? '● Aprovado' :
+                                                                    item.status === 'sent' ? '● Enviado' : '● Rascunho'}
+                                                            </span>
                                                         </div>
-                                                        <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-medium text-zinc-800">{item.title}</span>
-                                                                <Badge variant="outline" className="text-[10px] h-5 px-1.5 uppercase tracking-wide">
-                                                                    Proposta
-                                                                </Badge>
-                                                            </div>
-                                                            <div className="text-xs text-zinc-400 mt-0.5 flex items-center gap-2">
-                                                                <span>{new Date(item.created_at).toLocaleDateString('pt-BR')}</span>
-                                                                <span>•</span>
-                                                                <span className={`
-                                                                    ${item.status === 'approved' ? 'text-green-600' :
-                                                                        item.status === 'sent' ? 'text-blue-600' : 'text-zinc-500'}
-                                                                `}>
-                                                                    {item.status === 'approved' ? 'Aprovado' :
-                                                                        item.status === 'sent' ? 'Enviado' : 'Rascunho'}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopyLink(item.slug); }}>
-                                                            <Copy className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); window.open(`/p/${item.slug}`, '_blank'); }}>
-                                                            <ExternalLink className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); navigate(`/admin/proposals/edit/${item.id}`); }}>
-                                                            <Edit2 className="w-4 h-4 text-zinc-400 hover:text-zinc-900" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }} className="hover:bg-red-50 hover:text-red-500">
-                                                            <Trash2 className="w-4 h-4 text-zinc-400" />
-                                                        </Button>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </CollapsibleContent>
-                                </Collapsible>
-                            ))
-                        )}
-                    </div>
+
+                                                <div className="flex items-center gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity no-print pr-4">
+                                                    {/* Handoff Trigger */}
+                                                    {item.status === 'approved' && (
+                                                        <Button
+                                                            variant="default"
+                                                            size="sm"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate('/admin/rei/novo', {
+                                                                    state: {
+                                                                        handoffData: {
+                                                                            client_name: item.client_name,
+                                                                            client_email: item.client_email,
+                                                                            proposal_id: item.id
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }}
+                                                            className="h-8 text-[10px] uppercase font-bold tracking-wider rounded-sm bg-black hover:bg-zinc-800 text-white mr-2"
+                                                            title="Passar Bastão para CS"
+                                                        >
+                                                            <Rocket className="w-3 h-3 mr-2 text-revgreen" />
+                                                            Passar Bastão
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/admin/proposals/edit/${item.id}`); }} className="h-8 text-[10px] uppercase font-bold tracking-wider rounded-none bg-white hover:bg-black hover:text-white border-zinc-200">
+                                                        Editar
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopyLink(item.slug); }} className="h-8 w-8 hover:bg-zinc-200 rounded-none" title="Copiar Link">
+                                                        <Copy className="w-3.5 h-3.5 text-zinc-500" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); window.open(`/p/${item.slug}`, '_blank'); }} className="h-8 w-8 hover:bg-zinc-200 rounded-none" title="Visualizar">
+                                                        <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }} className="h-8 w-8 hover:bg-red-50 hover:text-red-500 rounded-none" title="Excluir">
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        ))
+                    )}
                 </div>
-            </div>
+            </AdminPageLayout>
         </AdminLayout>
     );
 };

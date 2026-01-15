@@ -20,7 +20,7 @@ const CaseTestimonial = ({ caseData }: CaseTestimonialProps) => {
           <img
             src={caseData.authorImage}
             alt={caseData.author}
-            className="w-12 h-12 rounded-full object-cover grayscale"
+            className="w-12 h-12 rounded-full object-cover"
           />
         )}
         <div>

@@ -54,188 +54,139 @@ const AdminPosts = () => {
 
     return (
         <AdminLayout>
-            <div className="h-[calc(100vh-60px)] flex bg-white font-sans">
-                {/* Sidebar List */}
-                <div className="w-80 border-r border-zinc-100 flex flex-col bg-zinc-50/50">
-                    <div className="p-4 space-y-4">
-                        <button
-                            onClick={() => navigate('/admin/posts/new')}
-                            className="w-full h-10 flex items-center justify-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-lg transition-all shadow-sm"
-                        >
-                            <Plus className="w-4 h-4" /> Novo Artigo
-                        </button>
+            <div className="min-h-screen bg-zinc-50/50 p-8 font-sans">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight flex items-center gap-2">
+                            <FileText className="w-6 h-6" /> CMS de Blog
+                        </h1>
+                        <p className="text-sm text-zinc-500 mt-1">
+                            Gerencie seus artigos de alta performance. ({filtered.length} total)
+                        </p>
+                    </div>
 
+                    <div className="flex items-center gap-3">
                         <div className="relative group">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 transition-colors" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Buscar artigos..."
-                                className="w-full h-10 pl-9 pr-3 text-[13px] bg-white border border-zinc-200 rounded-lg outline-none focus:border-zinc-300 focus:ring-1 focus:ring-zinc-100 transition-all placeholder:text-zinc-400"
+                                className="h-10 pl-9 pr-3 w-64 text-[13px] bg-white border border-zinc-200 rounded-sm outline-none focus:border-black focus:ring-1 focus:ring-black/5 transition-all placeholder:text-zinc-400 shadow-sm"
                             />
                         </div>
-                    </div>
-
-                    <div className="flex items-center justify-between px-6 py-2 border-b border-zinc-100/50 mx-2">
-                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                            Artigos ({filtered.length})
-                        </span>
-                        <button onClick={handleMigrate} className="text-[10px] flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-colors" title="Importar">
-                            <Download className="w-3 h-3" /> Importar
+                        <button
+                            onClick={handleMigrate}
+                            className="h-10 px-4 flex items-center gap-2 bg-white border border-zinc-200 hover:border-zinc-300 text-zinc-700 text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
+                            title="Importar do arquivo estático"
+                        >
+                            <Download className="w-4 h-4" /> Importar
                         </button>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
-                        {filtered.map(post => (
-                            <div
-                                key={post.id}
-                                onClick={() => setSelected(post)}
-                                className={`
-                                    relative p-4 rounded-xl cursor-pointer border transition-all duration-200 group
-                                    ${selected?.id === post.id
-                                        ? 'bg-white border-zinc-300 shadow-md ring-1 ring-zinc-50'
-                                        : 'bg-white border-zinc-100 hover:border-zinc-300 hover:shadow-sm'
-                                    }
-                                `}
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <span className={`
-                                        text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm border
-                                        ${selected?.id === post.id ? 'bg-black text-white border-black' : 'bg-zinc-100 text-zinc-500 border-zinc-200'}
-                                    `}>
-                                        {post.category || 'Geral'}
-                                    </span>
-                                    {post.published && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" title="Publicado" />
-                                    )}
-                                </div>
-
-                                <h3 className={`text-[13px] font-semibold leading-snug mb-1 line-clamp-2 ${selected?.id === post.id ? 'text-black' : 'text-zinc-700'}`}>
-                                    {post.title || 'Sem título'}
-                                </h3>
-
-                                <p className="text-[11px] text-zinc-400">
-                                    {new Date(post.created_at).toLocaleDateString()} · {post.published ? 'Publicado' : 'Rascunho'}
-                                </p>
-
-                                <button
-                                    onClick={(e) => handleDelete(post.id, e)}
-                                    className="absolute right-3 bottom-3 opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        ))}
-                        {filtered.length === 0 && (
-                            <div className="text-center py-12">
-                                <FileText className="w-8 h-8 text-zinc-200 mx-auto mb-2" />
-                                <p className="text-[11px] text-zinc-400">Nenhum artigo encontrado</p>
-                            </div>
-                        )}
+                        <button
+                            onClick={() => navigate('/admin/posts/new')}
+                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        >
+                            <Plus className="w-4 h-4" /> Novo Artigo
+                        </button>
                     </div>
                 </div>
 
-                {/* Main Preview View */}
-                <div className="flex-1 relative bg-white">
-                    {selected ? (
-                        <div className="absolute inset-0 overflow-y-auto">
-                            <div className="max-w-4xl mx-auto px-12 py-16">
-                                <div className="flex items-start justify-between mb-8 pb-8 border-b border-zinc-100">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-2 py-1 rounded-sm">
-                                                Postagem de Blog
-                                            </span>
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest ${selected.published ? 'text-green-600' : 'text-amber-500'}`}>
-                                                {selected.published ? '● Publicado' : '○ Rascunho'}
-                                            </span>
-                                        </div>
-                                        <h1 className="text-4xl font-black text-black tracking-tight leading-tight">
-                                            {selected.title}
-                                        </h1>
-                                        {selected.slug && (
-                                            <code className="text-xs text-zinc-400 bg-zinc-50 px-2 py-1 rounded font-mono">/{selected.slug}</code>
-                                        )}
+                {/* Grid Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filtered.map(post => (
+                        <div
+                            key={post.id}
+                            onClick={() => navigate(`/admin/posts/edit/${post.id}`)}
+                            className="group relative bg-white rounded-sm border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-[380px] cursor-pointer overflow-hidden"
+                        >
+                            {/* Image Cover */}
+                            <div className="h-48 bg-zinc-100 relative overflow-hidden">
+                                {(post.image || post.thumbnail) ? (
+                                    <img
+                                        src={post.image || post.thumbnail}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-zinc-50">
+                                        <FileText className="w-10 h-10 text-zinc-200" />
                                     </div>
-                                    <button
-                                        onClick={() => navigate(`/admin/posts/edit/${selected.id}`)}
-                                        className="shrink-0 flex items-center gap-2 px-6 py-3 bg-black hover:bg-zinc-800 text-white rounded-lg transition-all shadow-lg hover:shadow-xl group"
-                                    >
-                                        <Edit className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                        <span className="text-[11px] font-bold uppercase tracking-widest">Editar Artigo</span>
-                                    </button>
+                                )}
+                                <div className="absolute top-3 left-3 flex gap-2">
+                                    <span className={`
+                                        text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-sm shadow-sm backdrop-blur-md
+                                        ${post.published
+                                            ? 'bg-green-500/90 text-white'
+                                            : 'bg-amber-400/90 text-black'
+                                        }
+                                    `}>
+                                        {post.published ? 'Publicado' : 'Rascunho'}
+                                    </span>
                                 </div>
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                                    <div className="md:col-span-2 space-y-8">
-                                        {/* Cover */}
-                                        {(selected.image || selected.thumbnail) && (
-                                            <div className="rounded-xl overflow-hidden shadow-2xl border border-zinc-100 bg-zinc-50">
-                                                <img
-                                                    src={selected.image || selected.thumbnail}
-                                                    alt={selected.title}
-                                                    className="w-full h-auto object-cover"
-                                                />
-                                            </div>
-                                        )}
+                            {/* Content */}
+                            <div className="p-5 flex-1 flex flex-col">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2 block">
+                                    {post.category || 'Geral'}
+                                </span>
+                                <h3 className="text-lg font-bold text-zinc-900 leading-snug mb-2 line-clamp-2 group-hover:text-black transition-colors">
+                                    {post.title || 'Sem Título'}
+                                </h3>
+                                <p className="text-xs text-zinc-500 line-clamp-3 mb-4 flex-1 leading-relaxed">
+                                    {post.excerpt || 'Sem descrição.'}
+                                </p>
 
-                                        {/* Excerpt */}
-                                        {selected.excerpt && (
-                                            <p className="text-lg text-zinc-600 font-serif leading-relaxed italic border-l-4 border-zinc-900 pl-4 py-1">
-                                                {selected.excerpt}
-                                            </p>
-                                        )}
-
-                                        {/* Content Preview */}
-                                        <div className="prose prose-zinc prose-sm max-w-none">
-                                            <div dangerouslySetInnerHTML={{ __html: selected.content || '' }} />
+                                {/* Footer / Meta */}
+                                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between mt-auto">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-5 h-5 rounded-full bg-zinc-200 flex items-center justify-center text-[9px] font-bold text-zinc-500">
+                                            {(post.author?.full_name || 'R').charAt(0)}
                                         </div>
+                                        <span className="text-[10px] text-zinc-400 font-medium truncate max-w-[80px]">
+                                            {post.author?.full_name || 'RevHackers'}
+                                        </span>
                                     </div>
-
-                                    <div className="space-y-8">
-                                        {/* Info Sidebar */}
-                                        <div className="p-6 bg-zinc-50 rounded-xl border border-zinc-100 space-y-6">
-                                            <div>
-                                                <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Autor</h4>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-8 w-8 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-500">
-                                                        {(selected.author?.full_name || 'R').charAt(0)}
-                                                    </div>
-                                                    <span className="text-sm font-medium text-zinc-700">
-                                                        {selected.author?.full_name || 'Equipe RevHackers'}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="h-px bg-zinc-200" />
-
-                                            <div>
-                                                <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Data de Criação</h4>
-                                                <span className="text-xs text-zinc-600 font-mono">{new Date(selected.created_at).toLocaleDateString()}</span>
-                                            </div>
-
-                                            <div className="h-px bg-zinc-200" />
-
-                                            <div>
-                                                <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Categoria</h4>
-                                                <span className="text-xs text-zinc-600 font-medium bg-zinc-200 px-2 py-1 rounded-md">{selected.category || 'Geral'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <span className="text-[10px] text-zinc-300 font-mono">
+                                        {new Date(post.created_at).toLocaleDateString()}
+                                    </span>
                                 </div>
+                            </div>
+
+                            {/* Hover Actions */}
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
+                                <button
+                                    onClick={(e) => handleDelete(post.id, e)}
+                                    className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-sm backdrop-blur-md transition-colors"
+                                    title="Excluir"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/admin/posts/edit/${post.id}`);
+                                    }}
+                                    className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-lg"
+                                >
+                                    Editar
+                                </button>
                             </div>
                         </div>
-                    ) : (
-                        <div className="flex h-full items-center justify-center p-8 bg-zinc-50/30">
-                            <div className="text-center max-w-xs">
-                                <div className="w-16 h-16 bg-white border border-zinc-100 rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-6 transform rotate-3">
-                                    <FileText className="w-6 h-6 text-zinc-300" />
-                                </div>
-                                <h3 className="text-lg font-bold text-zinc-900 mb-2">Gerenciador de Artigos</h3>
-                                <p className="text-sm text-zinc-500 leading-relaxed">
-                                    Selecione um artigo na lista lateral para visualizar detalhes ou editar.
-                                </p>
-                            </div>
+                    ))}
+
+                    {filtered.length === 0 && (
+                        <div className="col-span-full py-20 text-center bg-white border border-dashed border-zinc-200 rounded-sm">
+                            <FileText className="w-12 h-12 text-zinc-200 mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-zinc-900">Nenhum artigo encontrado</h3>
+                            <p className="text-sm text-zinc-500 mb-6">Comece criando seu primeiro post de alta performance.</p>
+                            <button
+                                onClick={() => navigate('/admin/posts/new')}
+                                className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-800 transition-colors"
+                            >
+                                Criar Artigo
+                            </button>
                         </div>
                     )}
                 </div>

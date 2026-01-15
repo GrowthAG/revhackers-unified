@@ -1,6 +1,7 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { APP_CONFIG } from "@/config/constants";
 import PageLayout from '@/components/layout/PageLayout';
 import REIProjectCard from '@/components/rei/REIProjectCard';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,7 @@ const mockProjects: REIProject[] = [
         quarter: 'Q1',
         year: 2025,
         status: 'active',
-        analystEmail: 'analista@revhackers.com'
+        analystEmail: APP_CONFIG.EMAILS.ANALYST
     },
     {
         id: '2',
@@ -30,7 +31,7 @@ const mockProjects: REIProject[] = [
         quarter: 'Q4',
         year: 2024,
         status: 'active',
-        analystEmail: 'analista@revhackers.com'
+        analystEmail: APP_CONFIG.EMAILS.ANALYST
     },
     {
         id: '3',
@@ -41,7 +42,7 @@ const mockProjects: REIProject[] = [
         quarter: 'Q4',
         year: 2024,
         status: 'active',
-        analystEmail: 'analista@revhackers.com'
+        analystEmail: APP_CONFIG.EMAILS.ANALYST
     },
 ];
 

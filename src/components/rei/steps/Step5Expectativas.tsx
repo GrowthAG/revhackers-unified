@@ -69,18 +69,18 @@ export default function Step5Expectativas({ form }: Step5Props) {
                 {/* Expectativas */}
                 <div className="space-y-3">
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
-                        O que você espera do diagnóstico REI? * (múltipla escolha)
+                        O que você espera do diagnóstico? * (selecione pelo menos 1)
                     </Label>
                     <div className="space-y-2 border border-zinc-200 p-4 rounded-sm bg-white">
                         {expectativasOptions.map((option) => (
                             <div key={option.id} className="flex items-center space-x-3">
                                 <Checkbox
-                                    id={option.id}
+                                    id={`exp-${option.id}`}
                                     checked={expectativasSelecionadas.includes(option.id)}
                                     onCheckedChange={() => toggleExpectativa(option.id)}
                                 />
                                 <label
-                                    htmlFor={option.id}
+                                    htmlFor={`exp-${option.id}`}
                                     className="text-sm text-zinc-700 cursor-pointer"
                                 >
                                     {option.label}
@@ -124,54 +124,6 @@ export default function Step5Expectativas({ form }: Step5Props) {
                     )}
                 </div>
 
-                {/* Prontidão */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
-                        Você está pronto para implementar mudanças? *
-                    </Label>
-                    <Select
-                        onValueChange={(value) => form.setValue('prontidao', value)}
-                        value={form.watch('prontidao')}
-                    >
-                        <SelectTrigger className="bg-white border-zinc-200 h-12">
-                            <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="imediato">Sim, quero começar imediatamente</SelectItem>
-                            <SelectItem value="aprovacao">Sim, mas preciso de aprovação interna</SelectItem>
-                            <SelectItem value="explorando">Estou explorando opções</SelectItem>
-                            <SelectItem value="entender">Apenas quero entender melhor</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {form.formState.errors.prontidao && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.prontidao.message as string}</p>
-                    )}
-                </div>
-
-                {/* Quando Começar */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
-                        Quando você gostaria de começar? *
-                    </Label>
-                    <Select
-                        onValueChange={(value) => form.setValue('quandoComecar', value)}
-                        value={form.watch('quandoComecar')}
-                    >
-                        <SelectTrigger className="bg-white border-zinc-200 h-12">
-                            <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="esta-semana">Esta semana</SelectItem>
-                            <SelectItem value="este-mes">Este mês</SelectItem>
-                            <SelectItem value="proximo-trimestre">Próximo trimestre</SelectItem>
-                            <SelectItem value="nao-sei">Ainda não sei</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {form.formState.errors.quandoComecar && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.quandoComecar.message as string}</p>
-                    )}
-                </div>
-
                 {/* Observações */}
                 <div className="space-y-3">
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
@@ -186,10 +138,10 @@ export default function Step5Expectativas({ form }: Step5Props) {
 
                 <div className="bg-zinc-50 border border-zinc-200 p-4 border-l-4 border-l-black space-y-2">
                     <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide">
-                        <span className="font-bold text-black">Status:</span> Pronto para processamento.
+                        <span className="font-bold text-black">Status:</span> Pronto para processamento estratégico.
                     </p>
                     <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wide border-t border-zinc-200 pt-2">
-                        O envio deste diagnóstico habilita o agendamento da nossa Sessão Estratégica (Duração: 45min - 1h).
+                        O envio deste diagnóstico habilita o agendamento da Sessão Estratégica (Duração: 45min - 1h).
                     </p>
                 </div>
             </div>
