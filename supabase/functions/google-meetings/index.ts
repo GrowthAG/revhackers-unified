@@ -20,32 +20,31 @@ async function persistMeetings(meetings: any[]): Promise<void> {
     if (!meetings.length) return;
     const supabase = getSupabaseAdmin();
 
-    for (const m of meetings) {
-        const { error } = await supabase.from('client_meetings').upsert({
-            google_event_id: m.google_event_id,
-            title: m.title,
-            description: m.description || '',
-            meeting_type: m.meeting_type,
-            meeting_date: m.meeting_date,
-            duration_minutes: m.duration_minutes,
-            status: m.status || 'confirmed',
-            meet_link: m.meet_link,
-            video_url: m.video_url,
-            drive_file_id: m.drive_file_id,
-            thumbnail_url: m.thumbnail_url,
-            has_recording: !!m.drive_file_id,
-            client_name: m.client_name,
-            client_email: m.client_email,
-            client_contact_name: m.client_contact_name,
-            organizer_email: m.organizer_email || '',
-            attendees: m.attendees || [],
-            event_notes: m.event_notes || '',
-            synced_at: new Date().toISOString(),
-        }, { onConflict: 'google_event_id' });
+    const rows = meetings.map(m => ({
+        google_event_id: m.google_event_id,
+        title: m.title,
+        description: m.description || '',
+        meeting_type: m.meeting_type,
+        meeting_date: m.meeting_date,
+        duration_minutes: m.duration_minutes,
+        status: m.status || 'confirmed',
+        meet_link: m.meet_link,
+        video_url: m.video_url,
+        drive_file_id: m.drive_file_id,
+        thumbnail_url: m.thumbnail_url,
+        has_recording: !!m.drive_file_id,
+        client_name: m.client_name,
+        client_email: m.client_email,
+        client_contact_name: m.client_contact_name,
+        organizer_email: m.organizer_email || '',
+        attendees: m.attendees || [],
+        event_notes: m.event_notes || '',
+        synced_at: new Date().toISOString(),
+    }));
 
-        if (error) console.error(`[persist] Error for ${m.google_event_id}:`, error.message);
-    }
-    console.log(`[persist] Upserted ${meetings.length} meetings`);
+    const { error } = await supabase.from('client_meetings').upsert(rows, { onConflict: 'google_event_id' });
+    if (error) console.error('[persist] Batch upsert error:', error.message);
+    else console.log(`[persist] Upserted ${meetings.length} meetings`);
 }
 
 // ── OAuth2 helpers ─────────────────────────────────────────────────────────────
@@ -120,9 +119,9 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
 
 // ── Google API helpers ─────────────────────────────────────────────────────────
 async function fetchCalendarEvents(token: string, maxResults = 50): Promise<any[]> {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?` +
-        `maxResults=${maxResults}&orderBy=startTime&singleEvents=true&timeMin=${thirtyDaysAgo}` +
+        `maxResults=${maxResults}&orderBy=startTime&singleEvents=true&timeMin=${ninetyDaysAgo}` +
         `&q=meet.google.com`;
 
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -186,9 +185,16 @@ function matchRecordingToEvent(recordings: any[], events: any[]): any[] {
         const eventDate = new Date(event.start?.dateTime || event.start?.date).toISOString().slice(0, 10);
         const eventTitle = event.summary || 'Reunião';
 
-        const recording = recordings.find((r: any) =>
+        // Match recording: same date, and if multiple recordings on same day, try title match
+        const sameDayRecordings = recordings.filter((r: any) =>
             new Date(r.createdTime).toISOString().slice(0, 10) === eventDate
         );
+        const recording = sameDayRecordings.length === 1
+            ? sameDayRecordings[0]
+            : sameDayRecordings.find((r: any) => {
+                const recName = (r.name || '').toLowerCase();
+                return recName.includes(eventTitle.toLowerCase().slice(0, 15));
+            }) || sameDayRecordings[0] || null;
 
         const attendees = (event.attendees || []).filter((a: any) =>
             !INTERNAL_EMAILS.includes(a.email?.toLowerCase()) &&
