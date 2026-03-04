@@ -6,7 +6,7 @@ import {
     Handshake,
     Zap,
     Users,
-    Link2,
+
     FileText,
     BookOpen,
     Briefcase,
@@ -135,8 +135,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                 {renderMenuSection("Operacional", [
                     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
                     { icon: Handshake, label: 'Deal Rooms', path: '/admin/proposals' },
-                    { icon: Zap, label: 'Projetos', path: '/admin/rei' },
-                    { icon: Link2, label: 'Integrações', path: '/admin/integrations' },
+                    { icon: Users, label: 'Clientes', path: '/admin/rei' },
                     { icon: Users, label: 'Equipe', path: '/admin/users' }
                 ])}
 
