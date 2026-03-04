@@ -29,7 +29,7 @@ const SECTIONS = [
 ];
 
 export default function StrategicPlanPresentation() {
-    const { id } = useParams();
+    const { token: id } = useParams();
     const navigate = useNavigate();
     const { toast } = useToast();
     const [plan, setPlan] = useState<any>(null);
