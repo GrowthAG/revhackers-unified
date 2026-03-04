@@ -163,6 +163,138 @@ function getDriveEmbedUrl(fileId: string): string {
     return `https://drive.google.com/file/d/${fileId}/preview`;
 }
 
+// ── Drive Folder Organization ─────────────────────────────────────────────────
+// Structure:
+//   RevHackers Reuniões/
+//   ├── Propostas/          ← pre-sale (prospects)
+//   └── Clientes/           ← post-sale (after kickoff)
+//       ├── ClientName1/
+//       └── ClientName2/
+
+const ROOT_FOLDER_NAME = 'RevHackers Reuniões';
+const PROPOSTAS_FOLDER = 'Propostas';
+const CLIENTES_FOLDER = 'Clientes';
+
+// Cache folder IDs to avoid repeated API calls within same execution
+const folderCache: Record<string, string> = {};
+
+async function findOrCreateFolder(
+    token: string, name: string, parentId?: string
+): Promise<string> {
+    const cacheKey = `${parentId || 'root'}/${name}`;
+    if (folderCache[cacheKey]) return folderCache[cacheKey];
+
+    // Search for existing folder
+    let q = `mimeType='application/vnd.google-apps.folder' and name='${name}' and trashed=false`;
+    if (parentId) q += ` and '${parentId}' in parents`;
+
+    const searchRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)&pageSize=1`,
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (searchRes.ok) {
+        const data = await searchRes.json();
+        if (data.files?.length > 0) {
+            folderCache[cacheKey] = data.files[0].id;
+            return data.files[0].id;
+        }
+    }
+
+    // Create folder
+    const body: any = {
+        name,
+        mimeType: 'application/vnd.google-apps.folder',
+    };
+    if (parentId) body.parents = [parentId];
+
+    const createRes = await fetch('https://www.googleapis.com/drive/v3/files', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!createRes.ok) {
+        console.error(`[folders] Error creating "${name}":`, await createRes.text());
+        return '';
+    }
+
+    const folder = await createRes.json();
+    console.log(`[folders] Created "${name}" → ${folder.id}`);
+    folderCache[cacheKey] = folder.id;
+    return folder.id;
+}
+
+async function moveFileToFolder(token: string, fileId: string, folderId: string): Promise<boolean> {
+    try {
+        // Get current parents
+        const metaRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}?fields=parents`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!metaRes.ok) return false;
+        const meta = await metaRes.json();
+        const prevParents = (meta.parents || []).join(',');
+
+        // Move to new folder
+        const moveRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}?addParents=${folderId}&removeParents=${prevParents}`,
+            {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: '{}',
+            }
+        );
+        if (!moveRes.ok) {
+            console.error(`[folders] Move error for ${fileId}:`, await moveRes.text());
+            return false;
+        }
+        return true;
+    } catch (e: any) {
+        console.error(`[folders] Move exception for ${fileId}:`, e.message);
+        return false;
+    }
+}
+
+async function organizeRecordings(token: string, meetings: any[]): Promise<void> {
+    const recordingsToOrganize = meetings.filter((m: any) => m.drive_file_id && m.meeting_type !== 'outro');
+    if (recordingsToOrganize.length === 0) return;
+
+    // Setup root structure
+    const rootId = await findOrCreateFolder(token, ROOT_FOLDER_NAME);
+    if (!rootId) { console.error('[folders] Could not create root folder'); return; }
+
+    const propostasId = await findOrCreateFolder(token, PROPOSTAS_FOLDER, rootId);
+    const clientesId = await findOrCreateFolder(token, CLIENTES_FOLDER, rootId);
+
+    for (const m of recordingsToOrganize) {
+        try {
+            if (m.meeting_type === 'proposta') {
+                // Propostas → flat folder, no client subfolder
+                if (propostasId) {
+                    const moved = await moveFileToFolder(token, m.drive_file_id, propostasId);
+                    if (moved) console.log(`[folders] ${m.title} → Propostas/`);
+                }
+            } else {
+                // Kickoff, Planejamento, Review → Clientes/ClientName/
+                const clientName = m.client_name || 'Sem Nome';
+                if (clientesId) {
+                    const clientFolderId = await findOrCreateFolder(token, clientName, clientesId);
+                    if (clientFolderId) {
+                        const moved = await moveFileToFolder(token, m.drive_file_id, clientFolderId);
+                        if (moved) console.log(`[folders] ${m.title} → Clientes/${clientName}/`);
+                    }
+                }
+            }
+        } catch (e: any) {
+            console.error(`[folders] Error organizing ${m.title}:`, e.message);
+        }
+    }
+}
+
 async function fetchDriveRecordings(token: string): Promise<any[]> {
     const url = `https://www.googleapis.com/drive/v3/files?` +
         `q=${encodeURIComponent("mimeType='video/mp4' and fullText contains 'Meet Recording'")}` +
@@ -370,6 +502,11 @@ p { color:#71717a; }
                     .then(results => console.log(`[share] ${results.filter(Boolean).length}/${unsharedRecordings.length} shared`))
                     .catch(e => console.error('[share] Background error:', e.message));
             }
+
+            // Organizar gravações em pastas (background)
+            organizeRecordings(token, meetings)
+                .then(() => console.log('[folders] Organization complete'))
+                .catch(e => console.error('[folders] Background error:', e.message));
 
             // Persistir todas as reuniões no banco (async, não bloqueia resposta)
             persistMeetings(meetings).catch(e => console.error('[persist] Background error:', e.message));
