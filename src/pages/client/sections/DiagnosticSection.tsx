@@ -31,7 +31,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 </h2>
                 <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
                 <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Strategic Context & Data Analysis
+                    Análise Inicial
                 </p>
             </div>
 
@@ -39,10 +39,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             {context && (
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
                     {[
-                        { label: 'Segment', value: context.segment },
-                        { label: 'Primary Goal', value: context.objective },
-                        { label: 'Digital Maturity', value: context.maturity },
-                        { label: 'Constraints', value: context.restrictions },
+                        { label: 'Segmento', value: context.segment },
+                        { label: 'Objetivo', value: context.objective },
+                        { label: 'Maturidade', value: context.maturity },
+                        { label: 'Restrições', value: context.restrictions },
                     ].map((item, i) => (
                         <div key={i} className="bg-black border border-zinc-900 p-8 rounded-xl hover:border-revgreen/50 transition-all group relative overflow-hidden">
                             <div className="absolute left-0 top-0 w-1 h-full bg-revgreen/30 group-hover:bg-revgreen transition-colors"></div>
@@ -58,7 +58,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {/* Strategic Signals */}
                 <div className="space-y-8">
                     <h4 className="text-xs font-black text-revgreen uppercase tracking-[0.4em] flex items-center gap-3">
-                        <TrendingUp size={16} /> Strategic Signals
+                        <TrendingUp size={16} /> Sinais Estratégicos
                     </h4>
                     <div className="space-y-4">
                         {signals.map((signal: any, i: number) => (
@@ -74,7 +74,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {/* Risk Matrix */}
                 <div className="space-y-8">
                     <h4 className="text-xs font-black text-zinc-500 uppercase tracking-[0.4em] flex items-center gap-3">
-                        <AlertTriangle size={16} /> Risk Analysis
+                        <AlertTriangle size={16} /> Matriz de Riscos
                     </h4>
                     <div className="space-y-4">
                         {risks.map((risk: any, i: number) => (
@@ -82,7 +82,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 <div className="absolute left-0 top-0 w-1 h-full bg-zinc-800 group-hover:bg-zinc-600"></div>
                                 <p className="text-base font-black text-white uppercase tracking-tight mb-3 italic">{risk.text}</p>
                                 <div className="flex items-center gap-3 pt-4 border-t border-zinc-900">
-                                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Protocol:</span>
+                                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Mitigação:</span>
                                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">"{risk.mitigation}"</span>
                                 </div>
                             </div>
@@ -126,11 +126,11 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                         <div className="relative z-10 space-y-16">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                                 <div>
-                                    <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em] block mb-2">Technical Audit</span>
-                                    <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">Infrastructure & SEO Lab</h3>
+                                    <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em] block mb-2">Auditoria Técnica</span>
+                                    <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">Infraestrutura & Laboratório SEO</h3>
                                 </div>
                                 <p className="text-zinc-500 font-medium max-w-sm uppercase tracking-widest text-right hidden md:block">
-                                    Real-time analysis powered by Lighthouse V10.3 Engine.
+                                    Análise em tempo real com motor Lighthouse V10.3.
                                 </p>
                             </div>
 

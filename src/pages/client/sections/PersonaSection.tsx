@@ -35,8 +35,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                 </h2>
                 <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
                 <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Target Profile Analysis
-                </p>
+                    Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra.</p>
             </div>
 
             {/* Personas Slide Style */}
@@ -57,7 +56,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
                                     <div className="absolute bottom-6 left-6">
-                                        <div className="px-3 py-1 bg-revgreen text-black text-[8px] font-black uppercase tracking-widest rounded-full">Primary Target</div>
+                                        <div className="px-3 py-1 bg-revgreen text-black text-[8px] font-black uppercase tracking-widest rounded-full">Alvo Principal</div>
                                     </div>
                                 </div>
 
@@ -85,7 +84,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                                         <div className="space-y-6">
                                             <h4 className="text-[10px] font-black text-revgreen uppercase tracking-[0.3em] flex items-center gap-3">
                                                 <Zap size={14} className="animate-pulse" />
-                                                Strategic Nuance
+                                                Nuance Estratégica
                                             </h4>
                                             <p className="text-sm text-zinc-500 leading-relaxed font-medium">
                                                 {persona.historia_curta || `${persona.nome} é o principal stakeholder. Busca previsibilidade e agressividade controlada na escala.`}
@@ -94,9 +93,9 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
 
                                         <div className="grid grid-cols-2 gap-6">
                                             <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Pain Points</h4>
+                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Dores Principais</h4>
                                                 <ul className="space-y-2">
-                                                    {["Lack of Scale", "High CAC", "Team Gaps"].map(p => (
+                                                    {["Falta de escala", "CAC elevado", "Gaps no time"].map(p => (
                                                         <li key={p} className="text-[10px] text-white font-bold uppercase tracking-tighter flex items-center gap-2">
                                                             <div className="w-1 h-1 bg-revgreen rounded-full"></div> {p}
                                                         </li>
@@ -104,7 +103,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                                                 </ul>
                                             </div>
                                             <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Decision Hub</h4>
+                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Hub de Decisão</h4>
                                                 <div className="flex flex-wrap gap-2">
                                                     {["ROI", "Data", "Speed"].map(d => (
                                                         <span key={d} className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[8px] text-zinc-400 font-black uppercase rounded-sm">{d}</span>
@@ -121,15 +120,15 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                                 <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/behavior">
                                     <div className="absolute inset-0 bg-revgreen/5 opacity-0 group-hover/behavior:opacity-100 transition-opacity blur-3xl"></div>
                                     <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        Behavioral DNA
+                                        DNA Comportamental
                                         <BrainCircuit className="text-revgreen" size={16} />
                                     </h4>
                                     <div className="space-y-12">
                                         {[
-                                            { left: "Conservative", right: "Aggressive", value: 85 },
-                                            { left: "Analytical", right: "Creative", value: 45 },
-                                            { left: "Passive", right: "Active", value: 70 },
-                                            { left: "Lone Wolf", right: "Collaborative", value: 60 },
+                                            { left: "Conservador", right: "Agressivo", value: 85 },
+                                            { left: "Analítico", right: "Criativo", value: 45 },
+                                            { left: "Passivo", right: "Ativo", value: 70 },
+                                            { left: "Individualista", right: "Colaborativo", value: 60 },
                                         ].map((trait, i) => (
                                             <div key={i} className="space-y-4">
                                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
@@ -146,15 +145,15 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
 
                                 <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/channels">
                                     <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        Channel Penetration
+                                        Penetração de Canal
                                         <Radio className="text-revgreen" size={16} />
                                     </h4>
                                     <div className="space-y-10">
-                                        {["LinkedIn Search", "Meta Pattern Ads", "Direct Network", "WhatsApp Sales"].map((canal, i) => (
+                                        {["LinkedIn Search", "Meta Ads", "Rede Direta", "WhatsApp Vendas"].map((canal, i) => (
                                             <div key={canal} className="space-y-3">
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{canal}</span>
-                                                    <span className="text-[9px] font-black text-revgreen group-hover/channels:animate-pulse">Active</span>
+                                                    <span className="text-[9px] font-black text-revgreen group-hover/channels:animate-pulse">Ativo</span>
                                                 </div>
                                                 <div className="flex gap-1.5">
                                                     {[...Array(20)].map((_, idx) => (
@@ -177,7 +176,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                     <h2 className="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-none">
                         Benchmark
                     </h2>
-                    <p className="text-xs text-zinc-600 uppercase tracking-[0.4em] font-black">Market Intelligence Layer</p>
+                    <p className="text-xs text-zinc-600 uppercase tracking-[0.4em] font-black">Inteligência de Mercado</p>
                 </div>
 
                 <div className="bg-zinc-950 border border-zinc-900 rounded-[4rem] p-16 overflow-hidden relative group">
@@ -187,10 +186,10 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
 
                     <div className="grid md:grid-cols-4 gap-12 mb-20 relative z-10">
                         {[
-                            { label: "CAC Target", value: stats.cac_medio || "N/A", color: "text-revgreen" },
-                            { label: "Conversion Rate", value: stats.taxa_conversao || "2.4%", color: "text-white" },
-                            { label: "Sales Cycle", value: stats.ciclo_vendas || "21 Days", color: "text-white" },
-                            { label: "LTV:CAC Ratio", value: stats.ltv_cac_ratio || "4.1x", color: "text-revgreen" }
+                            { label: "Meta de CAC", value: stats.cac_medio || "N/A", color: "text-revgreen" },
+                            { label: "Taxa de Conversão", value: stats.taxa_conversao || "2.4%", color: "text-white" },
+                            { label: "Ciclo de Vendas", value: stats.ciclo_vendas || "21 Dias", color: "text-white" },
+                            { label: "Ratio LTV:CAC", value: stats.ltv_cac_ratio || "4.1x", color: "text-revgreen" }
                         ].map((s, i) => (
                             <div key={i} className="space-y-2 border-l border-zinc-900 pl-8">
                                 <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block">{s.label}</span>
@@ -214,7 +213,7 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
                                     </p>
                                     <div className="h-[1px] bg-zinc-900 w-full"></div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Aggressiveness</span>
+                                        <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Agressividade</span>
                                         <div className="flex gap-1.5">
                                             {[...Array(5)].map((_, i) => (
                                                 <div key={i} className={`w-2 h-2 rounded-full ${i < 4 ? 'bg-revgreen' : 'bg-zinc-900'}`}></div>
