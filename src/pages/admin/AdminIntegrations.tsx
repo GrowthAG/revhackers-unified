@@ -217,61 +217,6 @@ const AdminIntegrations = () => {
                             </div>
                         </div>
 
-                        {/* WhatsApp Business */}
-                        <div className="bg-white rounded-3xl border border-zinc-200 p-8 space-y-6 opacity-60">
-                            <div className="flex justify-between items-start">
-                                <div className="p-3 bg-zinc-50 rounded-2xl">
-                                    <MessageSquare className="text-zinc-400" size={24} />
-                                </div>
-                                <Badge variant="outline" className="bg-zinc-50 text-zinc-400 border-zinc-200 px-3 py-1 font-bold">
-                                    EM BREVE
-                                </Badge>
-                            </div>
-
-                            <div className="space-y-2">
-                                <h3 className="text-xl font-bold text-zinc-900">WhatsApp Business</h3>
-                                <p className="text-sm text-zinc-500 leading-relaxed">
-                                    Automação de follow-ups transacionais, lembretes de chamadas e orquestração de mensagens de alta conversão.
-                                </p>
-                            </div>
-
-                            <div className="pt-12 space-y-4 mt-auto">
-                                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                                    <div className="h-full w-[65%] bg-zinc-300" />
-                                </div>
-                                <div className="flex justify-between items-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                                    <span>Desenvolvimento v2.5</span>
-                                    <span>65% Concluído</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Funnels CRM */}
-                        <div className="bg-white rounded-3xl border border-zinc-200 p-8 space-y-6 opacity-60">
-                            <div className="flex justify-between items-start">
-                                <div className="p-3 bg-zinc-50 rounded-2xl">
-                                    <Zap className="text-zinc-400" size={24} />
-                                </div>
-                                <Badge variant="outline" className="bg-zinc-50 text-zinc-400 border-zinc-200 px-3 py-1 font-bold">
-                                    PLANEJADO
-                                </Badge>
-                            </div>
-
-                            <div className="space-y-2">
-                                <h3 className="text-xl font-bold text-zinc-900">Funnels CRM</h3>
-                                <p className="text-sm text-zinc-500 leading-relaxed">
-                                    Sincronização profunda de pipelines, capturas e automações de nutrição com o motor de vendas.
-                                </p>
-                            </div>
-
-                            <div className="pt-6 mt-auto">
-                                <div className="inline-flex items-center gap-3 bg-zinc-50 border border-zinc-100 px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                                    <Settings2 size={14} />
-                                    EM DESIGN TÉCNICO
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Security Card */}
                         <div className="bg-zinc-900 rounded-3xl p-8 space-y-6 flex flex-col justify-center text-white">
                             <div className="space-y-3">

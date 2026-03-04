@@ -114,13 +114,7 @@ import ClientProjectHub from "./pages/client/ClientProjectHub";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import SchedulingSuccess from "./pages/SchedulingSuccess";
-import { AIProvider } from "./context/AIContext";
-// AIChatSidebar removed - Chat now lives at /admin/ai-chat
-import AdminAgentBuilder from "./pages/admin/AdminAgentBuilder";
-import AdminAgents from "./pages/admin/AdminAgents";
-import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
-import KnowledgeDocument from "./pages/admin/KnowledgeDocument";
-import AdminAIChat from "./pages/admin/AdminAIChat";
+
 import AdminProposals from "./pages/admin/AdminProposals";
 import AdminProposalNew from "./pages/admin/AdminProposalNew";
 import AdminProposalEdit from "./pages/admin/AdminProposalEdit";
@@ -133,7 +127,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <AIProvider>
+          <>
             <Toaster />
             <Sonner />
             <ScrollToTop />
@@ -270,13 +264,7 @@ const App = () => (
               <Route path="/admin/planejamento/:reiProjectId" element={<ProtectedRoute><StrategicPlanGenerator /></ProtectedRoute>} />
               <Route path="/admin/integrations" element={<ProtectedRoute><AdminIntegrations /></ProtectedRoute>} />
 
-              {/* Admin - AI Agents */}
-              <Route path="/admin/agents" element={<ProtectedRoute><AdminAgents /></ProtectedRoute>} />
-              <Route path="/admin/agents/builder" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
-              <Route path="/admin/agents/builder/:id" element={<ProtectedRoute><ErrorBoundary><AdminAgentBuilder /></ErrorBoundary></ProtectedRoute>} />
-              <Route path="/admin/knowledge" element={<ProtectedRoute><AdminKnowledgeBase /></ProtectedRoute>} />
-              <Route path="/admin/knowledge/:libId/doc/:docId" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
-              <Route path="/admin/ai-chat" element={<ProtectedRoute><ErrorBoundary><AdminAIChat /></ErrorBoundary></ProtectedRoute>} />
+
 
               {/* Admin - Proposals (Deal Rooms) */}
               <Route path="/admin/proposals" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
@@ -290,7 +278,7 @@ const App = () => (
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </AIProvider>
+          </>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

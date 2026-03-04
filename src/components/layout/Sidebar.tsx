@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     ChevronLeft,
-    Sparkles,
-    LayoutGrid,
     LayoutDashboard,
     Handshake,
     Zap,
@@ -13,11 +11,10 @@ import {
     BookOpen,
     Briefcase,
     Settings,
-    LogOut,
-    Trash2
+    LogOut
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAI } from '@/context/AIContext';
+
 import { cn } from '@/lib/utils';
 
 interface MenuItem {
@@ -36,28 +33,12 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
     const location = useLocation();
     const { signOut } = useAuth();
-    const { sessions, deleteSession, renameSession } = useAI();
-    const [expandedId, setExpandedId] = useState<string | null>(null);
-    const [editingTitle, setEditingTitle] = useState("");
 
     const isActive = (path?: string) => {
         if (!path) return false;
         if (path === '/admin' && location.pathname === '/admin') return true;
         if (path !== '/admin') return location.pathname.startsWith(path);
         return false;
-    };
-
-    const handleRename = async (id: string) => {
-        if (editingTitle.trim() && editingTitle !== sessions.find(s => s.id === id)?.title) {
-            await renameSession(id, editingTitle.trim());
-        }
-        setExpandedId(null);
-    };
-
-    const handleDelete = async (id: string) => {
-        if (confirm('Deseja excluir permanentemente este chat?')) {
-            await deleteSession(id);
-        }
     };
 
     const renderMenuSection = (title: string, items: MenuItem[]) => (
@@ -165,83 +146,6 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                     { icon: Briefcase, label: 'Cases', path: '/admin/cases' }
                 ])}
 
-                <div className="mb-4">
-                    {isOpen && (
-                        <div className="px-5 mb-4 flex items-center justify-between">
-                            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] flex items-center gap-2">
-                                <Sparkles size={10} /> Intelligence
-                            </h3>
-                        </div>
-                    )}
-
-                    <div className="space-y-0.5">
-                        <div className="px-2">
-                            <Link
-                                to="/admin/agents"
-                                className={cn(
-                                    "flex items-center gap-3 py-2 px-3 transition-all",
-                                    location.pathname === '/admin/agents' ? "bg-zinc-900 text-white" : "text-zinc-300 hover:text-white"
-                                )}
-                            >
-                                <LayoutGrid size={16} />
-                                {isOpen && <span className="text-[14px] font-bold">Modelos de IA</span>}
-                            </Link>
-                        </div>
-
-                        {isOpen && (
-                            <div className="mt-6 px-5 space-y-2">
-                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Recentes</h4>
-                                {(sessions || []).slice(0, 5).map(session => (
-                                    <div key={session.id} className="group/item relative">
-                                        {expandedId === session.id ? (
-                                            <div className="flex items-center gap-2 py-1">
-                                                <input
-                                                    autoFocus
-                                                    className="bg-zinc-900 border border-zinc-800 text-xs text-white px-2 py-1 rounded w-full outline-none"
-                                                    value={editingTitle}
-                                                    onChange={(e) => setEditingTitle(e.target.value)}
-                                                    onBlur={() => handleRename(session.id)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') handleRename(session.id);
-                                                        if (e.key === 'Escape') setExpandedId(null);
-                                                    }}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center group/link truncate">
-                                                <Link
-                                                    to={`/admin/ai-chat?session=${session.id}`}
-                                                    className="flex items-center gap-2 py-1 text-[13px] text-zinc-300 hover:text-white transition-all truncate flex-1"
-                                                >
-                                                    <div className="w-1 h-1 rounded-full bg-zinc-800 flex-shrink-0" />
-                                                    <span className="truncate">{session.title}</span>
-                                                </Link>
-
-                                                <div className="flex items-center gap-1 opacity-0 group-hover/link:opacity-100 transition-opacity pr-1">
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingTitle(session.title);
-                                                            setExpandedId(session.id);
-                                                        }}
-                                                        className="p-1 hover:text-white text-zinc-600 transition-colors"
-                                                    >
-                                                        <Settings size={12} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(session.id)}
-                                                        className="p-1 hover:text-red-400 text-zinc-600 transition-colors"
-                                                    >
-                                                        <Trash2 size={12} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
             </nav>
 
             <div className="p-4 border-t border-zinc-900 space-y-2">
