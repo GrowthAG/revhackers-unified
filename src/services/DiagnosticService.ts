@@ -589,25 +589,46 @@ export class DiagnosticService {
     // Used by StrategicPlanGenerator when Perplexity AI is unavailable.
     // Builds structured persona/benchmark data from raw REI answers
     // so the plan never saves undefined to the database.
+    // IMPORTANT: These must work with BOTH optional text fields (icpDescription,
+    // concorrentes) AND the guaranteed checkbox/select fields (desafios,
+    // canaisAquisicao, segmento, tamanho, crm, metaCrescimento, etc.)
 
     /**
      * Builds a PersonaSection-compatible persona array from REI form answers.
-     * Uses: icpDescription, painDescription, buyingTrigger, wiifm, keyMessage,
-     *       segmento, tamanho, canaisAquisicao, desafios.
+     * Works with ANY combination of available fields — never returns empty.
      */
     static generatePersonasFromREI(answers: any): any[] {
         const icpDescription = (answers.icpDescription || '').trim();
-        const painDescription = (answers.painDescription || '').trim()
-            || (answers.desafios || []).join(', ');
+        const segment = answers.segmento === 'outro'
+            ? (answers.segmento_outro || 'B2B')
+            : (answers.segmento || answers.segmento_outro || 'B2B');
+        const tamanho = answers.tamanho || '';
+        const canais = answers.canaisAquisicao || [];
+        const desafios = answers.desafios || [];
+        const metaCrescimento = answers.metaCrescimento || answers.objetivoPrincipal || '';
+        const crm = answers.crm || '';
+        const processGap = (answers.processGap || '').trim();
         const buyingTrigger = (answers.buyingTrigger || '').trim();
         const wiifm = (answers.wiifm || '').trim();
         const keyMessage = (answers.keyMessage || '').trim();
-        const segment = answers.segmento || answers.segmento_outro || 'B2B';
-        const tamanho = answers.tamanho || '';
-        const canais = answers.canaisAquisicao || [];
 
-        // Nothing to build a meaningful persona from
-        if (!icpDescription && !painDescription) return [];
+        // Build pain from desafios checkboxes (these are always filled)
+        const desafioLabels: Record<string, string> = {
+            'leads': 'Gerar mais leads qualificados',
+            'conversao': 'Melhorar taxa de conversão',
+            'cac': 'Reduzir CAC (Custo de Aquisição)',
+            'ltv': 'Aumentar LTV (Lifetime Value)',
+            'escalar': 'Escalar operação de vendas',
+            'churn': 'Reduzir churn',
+            'previsibilidade': 'Previsibilidade de receita',
+        };
+        const painFromDesafios = desafios
+            .map((d: string) => desafioLabels[d] || d)
+            .join('. ');
+
+        const painDescription = (answers.painDescription || '').trim()
+            || painFromDesafios
+            || 'Dificuldade em escalar operação com previsibilidade de receita.';
 
         // Map REI channel values → display names
         const channelMap: Record<string, string> = {
@@ -615,8 +636,9 @@ export class DiagnosticService {
             'meta-ads': 'Instagram', 'meta_ads': 'Instagram', 'facebook': 'Facebook',
             'linkedin-ads': 'LinkedIn', 'linkedin_ads': 'LinkedIn', 'linkedin': 'LinkedIn',
             'email': 'E-mail', 'email-marketing': 'E-mail', 'email_marketing': 'E-mail',
-            'whatsapp': 'WhatsApp',
-            'youtube': 'YouTube',
+            'whatsapp': 'WhatsApp', 'youtube': 'YouTube',
+            'indicacoes': 'Indicações', 'eventos': 'Eventos', 'parcerias': 'Parcerias',
+            'outbound': 'Outbound', 'inbound': 'Inbound',
         };
         const mappedChannels: string[] = canais.length > 0
             ? [...new Set<string>(
@@ -624,9 +646,9 @@ export class DiagnosticService {
             )]
             : ['LinkedIn', 'E-mail', 'WhatsApp'];
 
-        // Infer decision-maker role from ICP description text
-        const icpLower = icpDescription.toLowerCase();
+        // Infer role from ICP text or segment
         let role = 'Decisor Estratégico';
+        const icpLower = icpDescription.toLowerCase();
         if (icpLower.includes('ceo') || icpLower.includes('founder') || icpLower.includes('fundador'))
             role = 'CEO / Founder';
         else if (icpLower.includes('cmo') || icpLower.includes('marketing'))
@@ -640,8 +662,33 @@ export class DiagnosticService {
         else if (icpLower.includes('gerente') || icpLower.includes('manager'))
             role = 'Gerente / Manager';
 
+        // Build context from available data
+        const tamanhoMap: Record<string, string> = {
+            'pre-seed': 'Pré-Seed / Early Stage',
+            'seed': 'Seed',
+            'serie-a': 'Série A',
+            'serie-b': 'Série B+',
+            'pme': 'PME',
+            'enterprise': 'Enterprise',
+        };
+        const tamanhoLabel = tamanhoMap[tamanho] || tamanho || '';
+        const crmLabel = crm === 'nenhum' ? 'sem CRM' : crm ? `usa ${crm.toUpperCase()}` : '';
+
         const companyContext = icpDescription
-            || `Empresa ${segment}${tamanho ? ` — porte ${tamanho}` : ''}`.trim();
+            || `Empresa ${segment}${tamanhoLabel ? ` — porte ${tamanhoLabel}` : ''}${crmLabel ? ` — ${crmLabel}` : ''}`;
+
+        const bio = icpDescription
+            || `Decisor do segmento ${segment}${tamanhoLabel ? ` (${tamanhoLabel})` : ''}, ${crmLabel || 'operação em estruturação'}. Foco: ${metaCrescimento || 'escalar receita com previsibilidade e eficiência operacional'}.`;
+
+        const triggerText = buyingTrigger
+            || (processGap ? `Gap operacional: ${processGap}` : '')
+            || 'Pressão por resultados concretos e metas não atingidas.';
+
+        const messageText = keyMessage
+            || `Estratégia integrada para ${metaCrescimento || 'crescimento sustentável'} em ${segment}.`;
+
+        const wiifmText = wiifm
+            || `${metaCrescimento || 'Crescimento mensurável'}, equipe alinhada e receita previsível.`;
 
         const persona = {
             name: 'Decisor Ideal (ICP)',
@@ -649,8 +696,7 @@ export class DiagnosticService {
             age: 38,
             location: 'Brasil',
             company_context: companyContext,
-            bio: icpDescription
-                || `Decisor do segmento ${segment} buscando escalar receita com previsibilidade e eficiência operacional.`,
+            bio,
             channels: mappedChannels,
             personality: {
                 analytical_creative: 40,
@@ -658,10 +704,10 @@ export class DiagnosticService {
                 reserved_extroverted: 50,
                 reactive_preventive: 45,
             },
-            pain: painDescription || 'Dificuldade em escalar operação com previsibilidade de receita.',
-            trigger: buyingTrigger || 'Pressão por resultados concretos e metas não atingidas.',
-            message: keyMessage || `Estratégia integrada para crescimento sustentável em ${segment}.`,
-            wiifm: wiifm || 'Crescimento mensurável, equipe alinhada e receita previsível.',
+            pain: painDescription,
+            trigger: triggerText,
+            message: messageText,
+            wiifm: wiifmText,
         };
 
         return [persona];
@@ -669,11 +715,17 @@ export class DiagnosticService {
 
     /**
      * Builds a BenchmarkSection-compatible competitor array from REI form answers.
-     * Uses: concorrentes (textarea), keywords.
+     * Uses concorrentes textarea if available, otherwise builds context-aware
+     * placeholder from segment + desafios so the section is never empty.
      */
     static generateBenchmarkFromREI(answers: any): any[] {
         const concorrentesText = (answers.concorrentes || '').trim();
-        if (!concorrentesText) return [];
+        const segment = answers.segmento === 'outro'
+            ? (answers.segmento_outro || 'B2B')
+            : (answers.segmento || answers.segmento_outro || 'B2B');
+        const desafios = answers.desafios || [];
+        const cacAtual = answers.cacAtual || '';
+        const ticketMedio = answers.ticketMedio || '';
 
         // Parse shared keywords from REI for top_keywords field
         const keywords: string[] = (answers.keywords || '')
@@ -682,29 +734,50 @@ export class DiagnosticService {
             .filter((k: string) => k.length > 1)
             .slice(0, 4);
 
-        // Split by comma, newline, or semicolon
-        const lines = concorrentesText
-            .split(/[,\n;]+/)
-            .map((s: string) => s.trim())
-            .filter((s: string) => s.length > 2);
+        // If concorrentes were listed, parse them
+        if (concorrentesText) {
+            const lines = concorrentesText
+                .split(/[,\n;]+/)
+                .map((s: string) => s.trim())
+                .filter((s: string) => s.length > 2);
 
-        return lines.slice(0, 5).map((line: string) => {
-            // Handle "Company Name (some description)" pattern
-            const match = line.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
-            const companyName = (match?.[1] || line).trim();
-            const description = (match?.[2] || '').trim();
+            return lines.slice(0, 5).map((line: string) => {
+                const match = line.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+                const companyName = (match?.[1] || line).trim();
+                const description = (match?.[2] || '').trim();
 
-            return {
-                company_name: companyName,
-                domain: '',
-                monthly_traffic: '—',
-                domain_authority: 0,
-                avg_cpc: '—',
-                top_keywords: keywords,
-                strengths: description || 'A ser aprofundado via pesquisa de mercado.',
-                weaknesses: 'Análise detalhada disponível com Deep Research de Benchmark.',
-            };
-        });
+                return {
+                    company_name: companyName,
+                    domain: '',
+                    monthly_traffic: '—',
+                    domain_authority: 0,
+                    avg_cpc: '—',
+                    top_keywords: keywords,
+                    strengths: description || 'A ser aprofundado via pesquisa de mercado.',
+                    weaknesses: 'Análise detalhada disponível com Deep Research de Benchmark.',
+                };
+            });
+        }
+
+        // No concorrentes listed — build context from desafios + metrics
+        const desafioTexts: string[] = [];
+        if (desafios.includes('cac')) desafioTexts.push(`CAC atual: ${cacAtual || 'a mensurar'}`);
+        if (desafios.includes('leads')) desafioTexts.push('Foco em geração de leads qualificados');
+        if (desafios.includes('conversao')) desafioTexts.push('Otimização de conversão no pipeline');
+        if (desafios.includes('escalar')) desafioTexts.push('Escalabilidade da operação de vendas');
+
+        return [{
+            company_name: `Benchmark ${segment}`,
+            domain: '',
+            monthly_traffic: '—',
+            domain_authority: 0,
+            avg_cpc: cacAtual || '—',
+            top_keywords: keywords.length > 0 ? keywords : [segment],
+            strengths: desafioTexts.length > 0
+                ? `Contexto do cliente: ${desafioTexts.join('. ')}.${ticketMedio ? ` Ticket médio: ${ticketMedio}.` : ''}`
+                : `Empresa ${segment} — análise de benchmark será aprofundada via Deep Research.`,
+            weaknesses: 'Análise competitiva detalhada disponível via "Gerar Inteligência de Mercado".',
+        }];
     }
 
     /**
@@ -712,7 +785,10 @@ export class DiagnosticService {
      * Uses: segmento.
      */
     static generateDefaultTrends(answers: any): string[] {
-        const segment = (answers.segmento || answers.segmento_outro || '').toLowerCase();
+        const raw = answers.segmento === 'outro'
+            ? (answers.segmento_outro || '')
+            : (answers.segmento || answers.segmento_outro || '');
+        const segment = raw.toLowerCase();
 
         if (segment.includes('saas') || segment.includes('software')) {
             return [
