@@ -605,22 +605,24 @@ export class DiagnosticService {
         const tamanho = answers.tamanho || '';
         const canais = answers.canaisAquisicao || [];
         const desafios = answers.desafios || [];
-        const metaCrescimento = answers.metaCrescimento || answers.objetivoPrincipal || '';
+        const metaCrescimento = answers.metaCrescimento || answers.objetivoPrincipal || 'crescimento';
         const crm = answers.crm || '';
         const processGap = (answers.processGap || '').trim();
         const buyingTrigger = (answers.buyingTrigger || '').trim();
         const wiifm = (answers.wiifm || '').trim();
         const keyMessage = (answers.keyMessage || '').trim();
+        const ticketMedio = answers.ticketMedio || '';
+        const cicloVendas = answers.cicloVendas || '';
 
-        // Build pain from desafios checkboxes (these are always filled)
+        // Build pain from desafios checkboxes
         const desafioLabels: Record<string, string> = {
-            'leads': 'Gerar mais leads qualificados',
-            'conversao': 'Melhorar taxa de conversão',
-            'cac': 'Reduzir CAC (Custo de Aquisição)',
-            'ltv': 'Aumentar LTV (Lifetime Value)',
-            'escalar': 'Escalar operação de vendas',
-            'churn': 'Reduzir churn',
-            'previsibilidade': 'Previsibilidade de receita',
+            'leads': 'Dificuldade em atrair clientes qualificados de forma previsível',
+            'conversao': 'Baixa conversão de prospects em clientes efetivos',
+            'cac': 'Custo de aquisição de clientes elevado em relação ao ticket',
+            'ltv': 'Retenção e recorrência abaixo do potencial',
+            'escalar': 'Operação comercial limitada — depende de poucos sellers',
+            'churn': 'Perda de clientes e receita recorrente',
+            'previsibilidade': 'Falta de previsibilidade no fluxo de receita mensal',
         };
         const painFromDesafios = desafios
             .map((d: string) => desafioLabels[d] || d)
@@ -628,9 +630,9 @@ export class DiagnosticService {
 
         const painDescription = (answers.painDescription || '').trim()
             || painFromDesafios
-            || 'Dificuldade em escalar operação com previsibilidade de receita.';
+            || 'Operação comercial sem previsibilidade e dependente de indicações.';
 
-        // Map REI channel values → display names
+        // Map channels
         const channelMap: Record<string, string> = {
             'google-ads': 'Google', 'google_ads': 'Google', 'seo': 'Google',
             'meta-ads': 'Instagram', 'meta_ads': 'Instagram', 'facebook': 'Facebook',
@@ -646,57 +648,91 @@ export class DiagnosticService {
             )]
             : ['LinkedIn', 'E-mail', 'WhatsApp'];
 
-        // Infer role from ICP text or segment
-        let role = 'Decisor Estratégico';
-        const icpLower = icpDescription.toLowerCase();
-        if (icpLower.includes('ceo') || icpLower.includes('founder') || icpLower.includes('fundador'))
-            role = 'CEO / Founder';
-        else if (icpLower.includes('cmo') || icpLower.includes('marketing'))
-            role = 'CMO / Head de Marketing';
-        else if (icpLower.includes('cro') || icpLower.includes('vendas') || icpLower.includes('comercial'))
-            role = 'CRO / Head de Vendas';
-        else if (icpLower.includes('cto') || icpLower.includes('tech') || icpLower.includes('produto'))
-            role = 'CTO / Head de Produto';
-        else if (icpLower.includes('diretor'))
-            role = 'Diretor(a)';
-        else if (icpLower.includes('gerente') || icpLower.includes('manager'))
-            role = 'Gerente / Manager';
+        // ── SMART PERSONA INFERENCE ──────────────────────────────────
+        // When icpDescription is not filled, infer WHO the business sells to
+        // based on the segment name and context
+        const segLower = segment.toLowerCase();
 
-        // Build context from available data
+        let personaName = 'Cliente Ideal';
+        let role = 'Decisor de Compra';
+        let inferredBio = '';
+
+        if (icpDescription) {
+            // ICP was filled — use it directly
+            personaName = 'Perfil ICP (informado)';
+            const icpLower = icpDescription.toLowerCase();
+            if (icpLower.includes('ceo') || icpLower.includes('founder')) role = 'CEO / Founder';
+            else if (icpLower.includes('cmo') || icpLower.includes('marketing')) role = 'CMO / Head de Marketing';
+            else if (icpLower.includes('cro') || icpLower.includes('vendas')) role = 'CRO / Head de Vendas';
+            else if (icpLower.includes('cto') || icpLower.includes('tech')) role = 'CTO / Head de Produto';
+            else if (icpLower.includes('diretor')) role = 'Diretor(a)';
+            else if (icpLower.includes('gerente')) role = 'Gerente / Manager';
+            inferredBio = icpDescription;
+        } else if (segLower.includes('consultoria financeira') || segLower.includes('financ')) {
+            // Financial consulting
+            if (segLower.includes('pessoa física') || segLower.includes('pf')) {
+                personaName = 'Profissional Liberal / Empresário';
+                role = 'Dono do Negócio / Autônomo';
+                inferredBio = `Profissional com renda acima da média que busca organizar vida financeira, proteger patrimônio e planejar crescimento. Conhece o básico de investimentos mas precisa de orientação estratégica personalizada.${ticketMedio ? ` Ticket médio de serviço: ${ticketMedio}.` : ''}`;
+            }
+            if (segLower.includes('pessoa jurídica') || segLower.includes('pj')) {
+                personaName = personaName === 'Profissional Liberal / Empresário'
+                    ? 'Empresário PF/PJ'
+                    : 'Gestor Financeiro Corporativo';
+                role = 'Sócio / Diretor Financeiro';
+                inferredBio = `Empreendedor ou gestor financeiro que busca ${metaCrescimento === 'manter' ? 'estabilidade e proteção de caixa' : 'escalar receita com controle financeiro'}. Valoriza consultoria que entrega resultado mensurável e confiança.${ticketMedio ? ` Ticket médio: ${ticketMedio}.` : ''}`;
+            }
+        } else if (segLower.includes('saas') || segLower.includes('software')) {
+            personaName = 'Head de Área / VP';
+            role = 'VP ou Head de Departamento';
+            inferredBio = `Executivo em empresa de tecnologia responsável por resultados de receita. Avalia ferramentas e serviços pelo ROI demonstrável. Ciclo de decisão ${cicloVendas || 'médio'}.${ticketMedio ? ` Budget: ${ticketMedio}.` : ''}`;
+        } else if (segLower.includes('educ') || segLower.includes('curso') || segLower.includes('treinamento')) {
+            personaName = 'Profissional em Desenvolvimento';
+            role = 'Profissional em Transição / Crescimento';
+            inferredBio = `Profissional que investe em qualificação para acelerar carreira ou migrar de área. Busca resultado prático e aplicável.${ticketMedio ? ` Investimento médio: ${ticketMedio}.` : ''}`;
+        } else if (segLower.includes('saúde') || segLower.includes('health') || segLower.includes('clínica') || segLower.includes('médic')) {
+            personaName = 'Paciente / Cliente de Saúde';
+            role = 'Profissional / Empresário';
+            inferredBio = `Pessoa com poder aquisitivo que busca serviços de saúde especializados. Valoriza reputação, conveniência e resultados comprovados.${ticketMedio ? ` Ticket médio: ${ticketMedio}.` : ''}`;
+        } else if (segLower.includes('juríd') || segLower.includes('advocacia') || segLower.includes('direito')) {
+            personaName = 'Cliente Jurídico';
+            role = 'Empresário / Executivo';
+            inferredBio = `Empreendedor ou executivo com necessidades jurídicas recorrentes. Busca segurança, proatividade e parceria de longo prazo.${ticketMedio ? ` Valor médio do contrato: ${ticketMedio}.` : ''}`;
+        } else {
+            // Generic B2B — still contextual
+            personaName = `Decisor em ${segment}`;
+            role = 'Decisor de Compra';
+            inferredBio = `Profissional do segmento ${segment} com poder de decisão sobre investimentos estratégicos. Busca parceiros que entreguem resultado concreto e previsível.${ticketMedio ? ` Ticket médio: ${ticketMedio}.` : ''}`;
+        }
+
         const tamanhoMap: Record<string, string> = {
-            'pre-seed': 'Pré-Seed / Early Stage',
-            'seed': 'Seed',
-            'serie-a': 'Série A',
-            'serie-b': 'Série B+',
-            'pme': 'PME',
-            'enterprise': 'Enterprise',
+            'pre-seed': 'Pré-Seed / Early Stage', 'seed': 'Seed',
+            'serie-a': 'Série A', 'serie-b': 'Série B+',
+            'pme': 'PME', 'enterprise': 'Enterprise',
         };
         const tamanhoLabel = tamanhoMap[tamanho] || tamanho || '';
         const crmLabel = crm === 'nenhum' ? 'sem CRM' : crm ? `usa ${crm.toUpperCase()}` : '';
 
         const companyContext = icpDescription
-            || `Empresa ${segment}${tamanhoLabel ? ` — porte ${tamanhoLabel}` : ''}${crmLabel ? ` — ${crmLabel}` : ''}`;
-
-        const bio = icpDescription
-            || `Decisor do segmento ${segment}${tamanhoLabel ? ` (${tamanhoLabel})` : ''}, ${crmLabel || 'operação em estruturação'}. Foco: ${metaCrescimento || 'escalar receita com previsibilidade e eficiência operacional'}.`;
+            || `${segment}${tamanhoLabel ? ` — ${tamanhoLabel}` : ''}${crmLabel ? ` — ${crmLabel}` : ''}`;
 
         const triggerText = buyingTrigger
-            || (processGap ? `Gap operacional: ${processGap}` : '')
-            || 'Pressão por resultados concretos e metas não atingidas.';
+            || (processGap ? `${processGap}` : '')
+            || 'Pressão por resultados e necessidade de estruturar operação comercial.';
 
         const messageText = keyMessage
-            || `Estratégia integrada para ${metaCrescimento || 'crescimento sustentável'} em ${segment}.`;
+            || `Método comprovado para ${metaCrescimento || 'crescimento sustentável'} no segmento ${segment}.`;
 
         const wiifmText = wiifm
-            || `${metaCrescimento || 'Crescimento mensurável'}, equipe alinhada e receita previsível.`;
+            || `Resultados mensuráveis, operação estruturada e previsibilidade de receita.`;
 
         const persona = {
-            name: 'Decisor Ideal (ICP)',
+            name: personaName,
             role,
             age: 38,
             location: 'Brasil',
             company_context: companyContext,
-            bio,
+            bio: inferredBio,
             channels: mappedChannels,
             personality: {
                 analytical_creative: 40,
