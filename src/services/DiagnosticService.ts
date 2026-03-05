@@ -264,39 +264,66 @@ export class DiagnosticService {
         const churn = answers.taxaChurn || '';
         const canais = (answers.canaisAquisicao || []).join(', ') || 'Não informados';
         const tamanho = answers.tamanho || '';
+        const observacoes = (answers.observacoes || '').trim();
+        const attempts = (answers.implementationAttempts || '').trim();
 
-        return {
-            pillars: [
-                {
-                    name: 'Contexto do Negócio',
-                    icon: 'building',
-                    items: [
-                        `Segmento: ${segment}`,
-                        tamanho ? `Porte da Empresa: ${tamanho}` : null,
-                        ticketMedio ? `Ticket Médio: ${ticketMedio}` : null,
-                        mrr ? `MRR Atual: ${mrr}` : null,
-                    ].filter(Boolean)
-                },
-                {
-                    name: 'Stack & Infraestrutura',
-                    icon: 'settings',
-                    items: [
-                        hasCRM ? `CRM Atual: ${crmName}` : 'Sem CRM implementado',
-                        `Canais de Aquisição: ${canais}`,
-                        churn ? `Taxa de Churn: ${churn}` : null,
-                    ].filter(Boolean)
-                },
-                {
-                    name: 'Diagnóstico Estratégico',
-                    icon: 'search',
-                    items: [
-                        `Objetivo Principal: ${objective}`,
-                        `Gargalo Identificado: ${bottleneck}`,
-                        `Maturidade Digital: ${hasCRM ? 'Intermediária (possui ferramentas)' : 'Inicial (sem ferramentas estruturadas)'}`,
-                    ]
-                }
-            ]
+        // Map select values to readable labels
+        const mrrLabels: Record<string, string> = {
+            'ate-50k': 'Até R$ 50k/mês', '50k-200k': 'R$ 50k–200k/mês',
+            '200k-500k': 'R$ 200k–500k/mês', '500k-1m': 'R$ 500k–1M/mês', 'acima-1m': 'Acima de R$ 1M/mês',
         };
+        const tamanhoLabels: Record<string, string> = {
+            'pre-seed': 'Pré-Seed / Early Stage', 'seed': 'Seed', 'serie-a': 'Série A',
+            'serie-b': 'Série B+', 'pme': 'PME', 'enterprise': 'Enterprise',
+        };
+        const churnLabels: Record<string, string> = {
+            '0-2': '0–2% (excelente)', '2-5': '2–5% (moderado)', '5-10': '5–10% (alto)', 'acima-10': 'Acima de 10% (crítico)',
+        };
+
+        const pillars: any[] = [
+            {
+                name: 'Contexto do Negócio',
+                icon: 'building',
+                items: [
+                    `Segmento: ${segment}`,
+                    tamanho ? `Porte: ${tamanhoLabels[tamanho] || tamanho}` : null,
+                    ticketMedio ? `Ticket Médio: ${ticketMedio}` : null,
+                    mrr ? `MRR Atual: ${mrrLabels[mrr] || mrr}` : null,
+                ].filter(Boolean)
+            },
+            {
+                name: 'Stack & Infraestrutura',
+                icon: 'settings',
+                items: [
+                    hasCRM ? `CRM Atual: ${crmName}` : 'Sem CRM implementado',
+                    `Canais de Aquisição: ${canais}`,
+                    churn ? `Taxa de Churn: ${churnLabels[churn] || churn}` : null,
+                ].filter(Boolean)
+            },
+            {
+                name: 'Diagnóstico Estratégico',
+                icon: 'search',
+                items: [
+                    `Objetivo Principal: ${objective}`,
+                    `Gargalo Identificado: ${bottleneck}`,
+                    `Maturidade Digital: ${hasCRM ? 'Intermediária (possui ferramentas)' : 'Inicial (sem ferramentas estruturadas)'}`,
+                ]
+            }
+        ];
+
+        // Add context pillar if observações or attempts exist
+        if (observacoes || attempts) {
+            const contextItems: string[] = [];
+            if (observacoes) contextItems.push(`Contexto: ${observacoes}`);
+            if (attempts) contextItems.push(`Tentativas Anteriores: ${attempts}`);
+            pillars.push({
+                name: 'Observações do Cliente',
+                icon: 'message-circle',
+                items: contextItems,
+            });
+        }
+
+        return { pillars };
     }
 
     private static generateMethodology(isB2B: boolean, currentChannels: string[], answers: any) {
@@ -362,6 +389,17 @@ export class DiagnosticService {
         const canais = answers.canaisAquisicao || [];
         const growthGoal = answers.metaCrescimento || '';
 
+        // Calculate real start date based on prazo
+        const now = new Date();
+        const prazoMap: Record<string, number> = {
+            'imediato': 7, 'proximo-mes': 30, '1-mes': 30,
+            '2-meses': 60, '3-meses': 90, 'sem-pressa': 45,
+        };
+        const daysOffset = prazoMap[prazo] || 14;
+        const startDate = new Date(now.getTime() + daysOffset * 24 * 60 * 60 * 1000);
+        const formatDate = (d: Date) => `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+        const addDays = (d: Date, days: number) => new Date(d.getTime() + days * 24 * 60 * 60 * 1000);
+
         // Ciclo 01: Embarque & Setup (Semana 1-2)
         const cycle1Items = ['Alinhamento de expectativas e Handoff comercial'];
         if (!hasCRM) {
@@ -376,7 +414,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 01',
-            title: 'Embarque & Setup (15 dias)',
+            title: `Embarque & Setup — ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
             items: cycle1Items
         });
 
@@ -397,7 +435,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 02',
-            title: 'Estratégia & Kickoff',
+            title: `Estratégia & Kickoff — ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 21))}`,
             items: cycle2Items
         });
 
@@ -419,7 +457,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 03',
-            title: 'Execução & Adoção',
+            title: `Execução & Adoção — ${formatDate(addDays(startDate, 22))} a ${formatDate(addDays(startDate, 70))}`,
             items: cycle3Items
         });
 
@@ -438,7 +476,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 04',
-            title: 'Valor & Expansão',
+            title: `Valor & Expansão — a partir de ${formatDate(addDays(startDate, 71))}`,
             items: cycle4Items
         });
 
@@ -452,15 +490,39 @@ export class DiagnosticService {
         const cacAtual = answers.cacAtual || '';
         const ltvAtual = answers.ltvAtual || '';
 
+        // Map growth goal IDs to readable labels
+        const growthLabels: Record<string, string> = {
+            'agressivo': 'Crescimento acelerado (>20% ao mês)',
+            'crescer': 'Crescimento consistente (10-20% ao mês)',
+            'moderado': 'Crescimento moderado e sustentável',
+            'manter': 'Manter e estabilizar a operação atual',
+            'escalar': 'Escalar operação com previsibilidade',
+            'dobrar': 'Dobrar a receita no período',
+        };
+
+        // Map expectation IDs to readable labels
+        const expectativaLabels: Record<string, string> = {
+            'oportunidades': 'Gerar mais oportunidades qualificadas',
+            'previsibilidade': 'Ter previsibilidade de receita mensal',
+            'escalar': 'Escalar a operação comercial',
+            'leads': 'Aumentar volume de leads qualificados',
+            'conversao': 'Melhorar taxa de conversão do pipeline',
+            'processos': 'Estruturar processos comerciais replicáveis',
+            'retenção': 'Melhorar retenção e reduzir churn',
+            'marca': 'Fortalecer posicionamento e autoridade da marca',
+            'dados': 'Tomar decisões baseadas em dados concretos',
+            'time': 'Montar e capacitar equipe comercial',
+        };
+
         const okrs = [
             { kr: 'Objetivo Estratégico', description: objective || 'Crescimento sustentável' },
-            { kr: 'Meta de Crescimento', description: growthGoal || 'A ser definida no kickoff' }
+            { kr: 'Meta de Crescimento', description: growthLabels[growthGoal?.toLowerCase()] || growthGoal || 'A ser definida no kickoff' }
         ];
 
-        // Add OKRs from expectations
+        // Add OKRs from expectations with readable labels
         if (expectativas.length > 0) {
             expectativas.slice(0, 3).forEach((exp: string, i: number) => {
-                okrs.push({ kr: `Expectativa ${i + 1}`, description: exp });
+                okrs.push({ kr: `Expectativa ${i + 1}`, description: expectativaLabels[exp] || exp });
             });
         }
 
@@ -587,42 +649,61 @@ export class DiagnosticService {
     private static generateBudget(budget: string, isB2B: boolean, answers: any) {
         const canais = answers.canaisAquisicao || [];
         const hasCRM = this.checkHasCRM(answers);
+        const orcamento = answers.orcamento || budget || '';
+
+        // Parse budget select value to number
+        const budgetMap: Record<string, number> = {
+            'ate-5k': 3000, 'ate-10k': 7000, '10k-25k': 15000,
+            '25k-50k': 35000, 'acima-50k': 75000,
+        };
+        const budgetLabels: Record<string, string> = {
+            'ate-5k': 'Até R$ 5.000/mês', 'ate-10k': 'Até R$ 10.000/mês',
+            '10k-25k': 'R$ 10.000–25.000/mês', '25k-50k': 'R$ 25.000–50.000/mês',
+            'acima-50k': 'Acima de R$ 50.000/mês',
+        };
+        const totalBudget = budgetMap[orcamento] || parseFloat(String(orcamento).replace(/[^0-9]/g, '')) || 5000;
+        const budgetLabel = budgetLabels[orcamento] || orcamento || 'Não informado';
+        const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
 
         // Build channel allocation based on ACTUAL declared channels
-        const channels = [];
+        const channels: { name: string; percentage: string; value: string }[] = [];
 
         if (!hasCRM) {
-            channels.push({ name: 'CRM & Infraestrutura (Prioridade)', percentage: '25%' });
+            channels.push({ name: 'CRM & Infraestrutura (Prioridade)', percentage: '25%', value: fmt(totalBudget * 0.25) });
         }
 
         if (canais.includes('Google Ads') || canais.includes('google_ads')) {
-            channels.push({ name: 'Google Ads', percentage: isB2B ? '25%' : '30%' });
+            const pct = isB2B ? 0.25 : 0.30;
+            channels.push({ name: 'Google Ads', percentage: `${Math.round(pct * 100)}%`, value: fmt(totalBudget * pct) });
         }
         if (canais.includes('Meta Ads') || canais.includes('meta_ads') || canais.includes('Facebook') || canais.includes('Instagram')) {
-            channels.push({ name: 'Meta Ads (Facebook/Instagram)', percentage: isB2B ? '20%' : '35%' });
+            const pct = isB2B ? 0.20 : 0.35;
+            channels.push({ name: 'Meta Ads (Facebook/Instagram)', percentage: `${Math.round(pct * 100)}%`, value: fmt(totalBudget * pct) });
         }
         if (canais.includes('LinkedIn') || canais.includes('linkedin')) {
-            channels.push({ name: 'LinkedIn Ads & Outreach', percentage: '25%' });
+            channels.push({ name: 'LinkedIn Ads & Outreach', percentage: '25%', value: fmt(totalBudget * 0.25) });
         }
         if (canais.includes('Email') || canais.includes('email') || canais.includes('E-mail')) {
-            channels.push({ name: 'E-mail Marketing & Automação', percentage: '15%' });
+            channels.push({ name: 'E-mail Marketing & Automação', percentage: '15%', value: fmt(totalBudget * 0.15) });
         }
 
         // Fallback if no channels were specified
         if (channels.length === 0) {
             if (isB2B) {
-                channels.push({ name: 'Ferramentas & Dados (Outbound)', percentage: '30%' });
-                channels.push({ name: 'Mídia Paga (LinkedIn/Google)', percentage: '40%' });
-                channels.push({ name: 'Conteúdo & Enablement', percentage: '30%' });
+                channels.push({ name: 'Ferramentas & Dados (Outbound)', percentage: '30%', value: fmt(totalBudget * 0.30) });
+                channels.push({ name: 'Mídia Paga (LinkedIn/Google)', percentage: '40%', value: fmt(totalBudget * 0.40) });
+                channels.push({ name: 'Conteúdo & Enablement', percentage: '30%', value: fmt(totalBudget * 0.30) });
             } else {
-                channels.push({ name: 'Meta Ads', percentage: '50%' });
-                channels.push({ name: 'Google Ads', percentage: '30%' });
-                channels.push({ name: 'Conteúdo & Orgânico', percentage: '20%' });
+                channels.push({ name: 'Meta Ads', percentage: '50%', value: fmt(totalBudget * 0.50) });
+                channels.push({ name: 'Google Ads', percentage: '30%', value: fmt(totalBudget * 0.30) });
+                channels.push({ name: 'Conteúdo & Orgânico', percentage: '20%', value: fmt(totalBudget * 0.20) });
             }
         }
 
         return {
-            annual_budget: budget,
+            annual_budget: budgetLabel,
+            monthly_budget: totalBudget,
+            monthly_budget_formatted: fmt(totalBudget),
             channels
         };
     }
