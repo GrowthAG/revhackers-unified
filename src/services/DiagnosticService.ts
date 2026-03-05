@@ -222,15 +222,15 @@ export class DiagnosticService {
         const channels = answers.canaisAquisicao || [];
         const growthGoal = answers.metaCrescimento || 'Não definida';
 
-        // 2. GENERATE MODULES
+        // 2. GENERATE MODULES (ALL receive full answers for real data)
         return {
             premises_data: this.generatePremises(segment, objective, bottlenecks, answers),
-            methodology_data: this.generateMethodology(isB2B, channels),
-            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, marketData),
-            goals_data: this.generateGoals(objective, growthGoal),
-            financial_projections: this.generateProjections(budget),
-            budget_data: this.generateBudget(budget, isB2B),
-            next_steps_data: this.generateNextSteps(hasCRM),
+            methodology_data: this.generateMethodology(isB2B, channels, answers),
+            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData),
+            goals_data: this.generateGoals(objective, growthGoal, answers),
+            financial_projections: this.generateProjections(budget, answers),
+            budget_data: this.generateBudget(budget, isB2B, answers),
+            next_steps_data: this.generateNextSteps(hasCRM, answers),
             market_intelligence: marketData || null
         };
     }
@@ -238,9 +238,7 @@ export class DiagnosticService {
     // --- HELPER LOGIC ---
 
     private static checkHasCRM(answers: any): boolean {
-        // Read from the actual REI field 'crm' (not 'ferramentasAtuais')
         const crmValue = (answers.crm || answers.crm_outro || '').toLowerCase().trim();
-        // Return true if they specified any CRM tool (not empty, not 'não', not 'nenhum')
         if (!crmValue || crmValue === 'nao' || crmValue === 'não' || crmValue === 'nenhum' || crmValue === 'nao_tenho' || crmValue === 'nao tenho' || crmValue === 'não tenho') return false;
         return true;
     }
@@ -252,7 +250,7 @@ export class DiagnosticService {
         return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || segment.includes('tecnologia') || segment.includes('consultoria') || segment.includes('software') || tamanho.includes('enterprise') || ticketMedio.includes('alto');
     }
 
-    // --- GENERATORS ---
+    // --- GENERATORS (ALL use real REI answers) ---
 
     private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any) {
         const crmName = answers.crm || answers.crm_outro || '';
@@ -297,40 +295,80 @@ export class DiagnosticService {
         };
     }
 
-    private static generateMethodology(isB2B: boolean, currentChannels: string[]) {
+    private static generateMethodology(isB2B: boolean, currentChannels: string[], answers: any) {
         const steps = [];
+        const desafios = answers.desafios || [];
+        const gargalo = answers.gargaloFunil || answers.gargaloFunil_outro || answers.gargalo || '';
+        const hasCRM = this.checkHasCRM(answers);
+        const crmName = answers.crm || answers.crm_outro || '';
+        const expectativas = answers.expectativas || [];
+        const areas = answers.areasPrioridade || [];
 
-        if (isB2B) {
-            steps.push({ name: 'ABM & Outreach', description: 'Foco em listas segmentadas e abordagem direta via LinkedIn/Cold Email.' });
-            steps.push({ name: 'Conteúdo de Autoridade', description: 'Whitepapers e Cases para nutrir decisores técnicos.' });
-            steps.push({ name: 'Sales Enablement', description: 'Materiais de apoio para o time comercial fechar contas complexas.' });
+        // Step 1: Based on CRM status
+        if (!hasCRM) {
+            steps.push({ name: 'Implementação de CRM', description: 'Seleção e configuração de CRM adequado ao porte e segmento da empresa. Sem CRM, toda estratégia de growth fica limitada.' });
         } else {
-            steps.push({ name: 'Tráfego de Alta Intenção', description: 'Google Ads e Meta Ads focados em conversão direta.' });
-            steps.push({ name: 'Otimização de Conversão (CRO)', description: 'Melhoria contínua da página de vendas.' });
-            steps.push({ name: 'Nutrição Automática', description: 'Sequências de email para recuperação de vendas.' });
+            steps.push({ name: `Otimização do ${crmName}`, description: `Auditoria e otimização do ${crmName} atual para garantir dados limpos, pipeline estruturado e automações funcionais.` });
         }
 
-        // Add channel specific nuance
-        if (currentChannels.includes('Google Ads')) {
-            steps.push({ name: 'Otimização Search', description: 'Refinamento de palavras-chave negativas e Quality Score.' });
+        // Step 2: Based on challenges identified
+        if (desafios.includes('Geração de Leads') || desafios.includes('geracao_leads')) {
+            steps.push({ name: 'Motor de Geração de Leads', description: 'Construção de funil de aquisição com landing pages, formulários inteligentes e lead scoring baseado no perfil ideal.' });
+        }
+        if (desafios.includes('Conversão') || desafios.includes('conversao') || gargalo.toLowerCase().includes('conversão') || gargalo.toLowerCase().includes('conversao')) {
+            steps.push({ name: 'Otimização de Conversão (CRO)', description: `Resolução do gargalo identificado: "${gargalo}". Testes A/B, melhoria de proposta de valor e redução de fricção no funil.` });
+        }
+        if (desafios.includes('Retenção') || desafios.includes('retencao') || desafios.includes('Churn')) {
+            steps.push({ name: 'Programa de Retenção', description: `Redução de churn${answers.taxaChurn ? ` (atual: ${answers.taxaChurn})` : ''} com onboarding estruturado, health score e playbooks de sucesso do cliente.` });
+        }
+
+        // Step 3: Based on declared channels
+        if (currentChannels.length > 0) {
+            const channelList = currentChannels.slice(0, 3).join(', ');
+            steps.push({ name: 'Escala dos Canais Existentes', description: `Otimização e escala dos canais já utilizados: ${channelList}. Foco em melhorar ROI antes de adicionar novos canais.` });
+        }
+
+        // Step 4: Based on priority areas
+        if (areas.includes('Automação') || areas.includes('automacao')) {
+            steps.push({ name: 'Automação de Processos', description: 'Implementação de workflows automatizados para nutrição, follow-up e tarefas repetitivas que consomem tempo da equipe.' });
+        }
+        if (areas.includes('Dados') || areas.includes('dados') || areas.includes('Analytics')) {
+            steps.push({ name: 'Dashboard & Analytics', description: 'Configuração de dashboards em tempo real com KPIs críticos: CAC, LTV, Pipeline, Conversão e ROI por canal.' });
+        }
+
+        // Fallback if no steps were generated
+        if (steps.length < 2) {
+            if (isB2B) {
+                steps.push({ name: 'ABM & Outreach', description: 'Account-Based Marketing com listas segmentadas e abordagem direta via LinkedIn e Cold Email.' });
+            } else {
+                steps.push({ name: 'Tráfego de Alta Intenção', description: 'Google Ads e Meta Ads focados em conversão direta.' });
+            }
+            steps.push({ name: 'Revenue Operations', description: 'Integração completa entre marketing, vendas e CS para visibilidade total do funil.' });
         }
 
         return { steps };
     }
 
-    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], marketData?: any) {
+    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], answers: any, marketData?: any) {
         const phases = [];
-        const market = marketData?.market || {};
-        const benchmark = marketData?.benchmark || {};
+        const market = marketData || {};
+        const crmName = answers.crm || answers.crm_outro || '';
+        const prazo = answers.prazo || answers.quandoComecar || '';
+        const areas = answers.areasPrioridade || [];
+        const canais = answers.canaisAquisicao || [];
+        const growthGoal = answers.metaCrescimento || '';
 
         // Ciclo 01: Embarque & Setup (Semana 1-2)
         const cycle1Items = ['Alinhamento de expectativas e Handoff comercial'];
         if (!hasCRM) {
-            cycle1Items.push('Implementação prioritária de CRM');
+            cycle1Items.push('Seleção e implementação prioritária de CRM');
         } else {
-            cycle1Items.push('Auditoria técnica e limpeza da base de dados');
+            cycle1Items.push(`Auditoria técnica do ${crmName} e limpeza da base de dados`);
         }
         cycle1Items.push('Configuração de DNS e Deliverability (SPF/DKIM/DMARC)');
+        if (answers.metricas && answers.metricas.length > 0) {
+            cycle1Items.push(`Definição de baseline das métricas: ${answers.metricas.slice(0, 3).join(', ')}`);
+        }
 
         phases.push({
             name: 'Ciclo 01',
@@ -340,14 +378,17 @@ export class DiagnosticService {
 
         // Ciclo 02: Estratégia & Kickoff (Semana 3)
         const cycle2Items = [
-            'Criação do Success Plan (Metodologia Donna Webber)',
-            'Reunião de Kickoff Estratégico com stakeholders',
-            `Análise competitiva de subnicho (Base: ${market.concorrentes_benchmark?.map((c: any) => c.nome).join(', ') || 'Mercado Geral'})`
+            'Criação do Success Plan personalizado',
+            'Reunião de Kickoff Estratégico com stakeholders'
         ];
+        if (market.competitor_benchmarks?.length > 0) {
+            cycle2Items.push(`Análise competitiva: ${market.competitor_benchmarks.slice(0, 3).map((c: any) => c.company_name || c.nome).join(', ')}`);
+        }
         if (isB2B) {
-            cycle2Items.push('Definição de ICP e Matriz de Objeções complexas');
-        } else {
-            cycle2Items.push('Mapeamento de jornada de compra B2C e gatilhos mentais');
+            cycle2Items.push('Definição de ICP e Matriz de Objeções');
+        }
+        if (growthGoal) {
+            cycle2Items.push(`Planejamento para atingir: ${growthGoal}`);
         }
 
         phases.push({
@@ -357,14 +398,20 @@ export class DiagnosticService {
         });
 
         // Ciclo 03: Execução & Adoção (Semana 4-10)
-        const cycle3Items = [
-            'Setup de campanhas de tração cirúrgica',
-            'Execução dos playbooks de Growth e Vendas'
-        ];
-        if (market.tendencias_2025) {
-            cycle3Items.push(`Implementação de tendência: ${market.tendencias_2025[0]?.titulo || 'IA Generativa'}`);
+        const cycle3Items = [];
+        if (canais.length > 0) {
+            cycle3Items.push(`Setup de campanhas nos canais: ${canais.slice(0, 3).join(', ')}`);
+        } else {
+            cycle3Items.push('Setup de campanhas de tração cirúrgica');
         }
-        cycle3Items.push(`Otimização baseada em Benchmarks (Target Conversão: ${benchmark.taxa_conversao || '2.5%'})`);
+        if (challenges.length > 0) {
+            const topChallenges = challenges.slice(0, 2).join(' e ');
+            cycle3Items.push(`Resolução prioritária: ${topChallenges}`);
+        }
+        if (areas.includes('Automação') || areas.includes('automacao')) {
+            cycle3Items.push('Implementação de automações de nurturing e follow-up');
+        }
+        cycle3Items.push('Otimização contínua baseada em dados e testes A/B');
 
         phases.push({
             name: 'Ciclo 03',
@@ -373,65 +420,165 @@ export class DiagnosticService {
         });
 
         // Ciclo 04: Valor & Expansão (Semana 11+)
+        const cycle4Items = [
+            'Revisão de ROI e QBR (Quarterly Business Review)',
+            'Ajuste de investimento para nova fase de escala'
+        ];
+        if (answers.taxaChurn) {
+            cycle4Items.push(`Meta de redução de churn de ${answers.taxaChurn} para patamar aceitável`);
+        }
+        if (answers.ltvAtual && answers.cacAtual) {
+            cycle4Items.push(`Otimizar relação LTV:CAC (atual: LTV ${answers.ltvAtual} / CAC ${answers.cacAtual})`);
+        }
+        cycle4Items.push('Expansão para novos canais ou verticais');
+
         phases.push({
             name: 'Ciclo 04',
             title: 'Valor & Expansão',
-            items: [
-                'Revisão de ROI e QBR (Quarterly Business Review)',
-                'Ajuste de investimento para nova fase de escala',
-                `Foco em LTV:CAC de ${benchmark.ltv_cac_ratio || '3:1'}`,
-                'Expansão para novos canais ou verticais'
-            ]
+            items: cycle4Items
         });
 
         return { phases };
     }
 
-    private static generateGoals(objective: string, growthGoal: string) {
-        return {
-            okrs: [
-                { kr: 'Objetivo Estratégico', description: objective },
-                { kr: 'Meta de Crescimento', description: growthGoal }
-            ],
-            month1_targets: [
-                { name: 'Setup de Infraestrutura', status: 'pending' },
-                { name: 'Validação de Canais de Aquisição', status: 'pending' }
-            ]
-        };
+    private static generateGoals(objective: string, growthGoal: string, answers: any) {
+        const expectativas = answers.expectativas || [];
+        const areas = answers.areasPrioridade || [];
+        const metricas = answers.metricas || [];
+        const cacAtual = answers.cacAtual || '';
+        const ltvAtual = answers.ltvAtual || '';
+
+        const okrs = [
+            { kr: 'Objetivo Estratégico', description: objective || 'Crescimento sustentável' },
+            { kr: 'Meta de Crescimento', description: growthGoal || 'A ser definida no kickoff' }
+        ];
+
+        // Add OKRs from expectations
+        if (expectativas.length > 0) {
+            expectativas.slice(0, 3).forEach((exp: string, i: number) => {
+                okrs.push({ kr: `Expectativa ${i + 1}`, description: exp });
+            });
+        }
+
+        const month1_targets = [];
+
+        // Based on priority areas
+        if (areas.length > 0) {
+            areas.forEach((area: string) => {
+                month1_targets.push({ name: `Setup: ${area}`, status: 'pending' });
+            });
+        } else {
+            month1_targets.push({ name: 'Setup de Infraestrutura', status: 'pending' });
+            month1_targets.push({ name: 'Validação de Canais de Aquisição', status: 'pending' });
+        }
+
+        // Based on metrics they track
+        if (metricas.length > 0) {
+            month1_targets.push({ name: `Definir baseline: ${metricas.slice(0, 2).join(', ')}`, status: 'pending' });
+        }
+
+        // CAC/LTV targets
+        if (cacAtual) {
+            month1_targets.push({ name: `Mapear CAC atual (declarado: ${cacAtual})`, status: 'pending' });
+        }
+        if (ltvAtual) {
+            month1_targets.push({ name: `Validar LTV atual (declarado: ${ltvAtual})`, status: 'pending' });
+        }
+
+        return { okrs, month1_targets };
     }
 
-    private static generateProjections(budget: string) {
+    private static generateProjections(budget: string, answers: any) {
+        const ticketMedio = answers.ticketMedio || '';
+        const mrr = answers.mrr || '';
+        const growthGoal = answers.metaCrescimento || '';
+        const cicloVendas = answers.cicloVendas || '';
+
         return {
-            note: `Projeções baseadas no budget declarado de ${budget}`,
+            note: `Projeções baseadas no budget declarado de ${budget}${ticketMedio ? `, ticket médio de ${ticketMedio}` : ''}${mrr ? ` e MRR atual de ${mrr}` : ''}.`,
+            context: {
+                budget,
+                ticket_medio: ticketMedio,
+                mrr_atual: mrr,
+                meta_crescimento: growthGoal,
+                ciclo_vendas: cicloVendas
+            },
             monthly_projections: [
-                { period: 'Mês 1', nmrr_total: 'Setup' },
-                { period: 'Mês 3', nmrr_total: 'Tração Inicial' },
-                { period: 'Mês 6', nmrr_total: 'Escala' }
+                { period: 'Mês 1', nmrr_total: 'Setup & Infraestrutura' },
+                { period: 'Mês 3', nmrr_total: 'Tração Inicial — Primeiros resultados mensuráveis' },
+                { period: 'Mês 6', nmrr_total: growthGoal ? `Meta: ${growthGoal}` : 'Escala — Otimização contínua' }
             ]
         };
     }
 
-    private static generateBudget(budget: string, isB2B: boolean) {
+    private static generateBudget(budget: string, isB2B: boolean, answers: any) {
+        const canais = answers.canaisAquisicao || [];
+        const hasCRM = this.checkHasCRM(answers);
+
+        // Build channel allocation based on ACTUAL declared channels
+        const channels = [];
+
+        if (!hasCRM) {
+            channels.push({ name: 'CRM & Infraestrutura (Prioridade)', percentage: '25%' });
+        }
+
+        if (canais.includes('Google Ads') || canais.includes('google_ads')) {
+            channels.push({ name: 'Google Ads', percentage: isB2B ? '25%' : '30%' });
+        }
+        if (canais.includes('Meta Ads') || canais.includes('meta_ads') || canais.includes('Facebook') || canais.includes('Instagram')) {
+            channels.push({ name: 'Meta Ads (Facebook/Instagram)', percentage: isB2B ? '20%' : '35%' });
+        }
+        if (canais.includes('LinkedIn') || canais.includes('linkedin')) {
+            channels.push({ name: 'LinkedIn Ads & Outreach', percentage: '25%' });
+        }
+        if (canais.includes('Email') || canais.includes('email') || canais.includes('E-mail')) {
+            channels.push({ name: 'E-mail Marketing & Automação', percentage: '15%' });
+        }
+
+        // Fallback if no channels were specified
+        if (channels.length === 0) {
+            if (isB2B) {
+                channels.push({ name: 'Ferramentas & Dados (Outbound)', percentage: '30%' });
+                channels.push({ name: 'Mídia Paga (LinkedIn/Google)', percentage: '40%' });
+                channels.push({ name: 'Conteúdo & Enablement', percentage: '30%' });
+            } else {
+                channels.push({ name: 'Meta Ads', percentage: '50%' });
+                channels.push({ name: 'Google Ads', percentage: '30%' });
+                channels.push({ name: 'Conteúdo & Orgânico', percentage: '20%' });
+            }
+        }
+
         return {
             annual_budget: budget,
-            channels: isB2B ? [
-                { name: 'Ferramentas & Dados (Outbound)', percentage: '30%' },
-                { name: 'Mídia Paga (LinkedIn/Google)', percentage: '40%' },
-                { name: 'Conteúdo & Enablement', percentage: '30%' }
-            ] : [
-                { name: 'Meta Ads', percentage: '50%' },
-                { name: 'Google Ads', percentage: '30%' },
-                { name: 'Creators/Influencers', percentage: '20%' }
-            ]
+            channels
         };
     }
 
-    private static generateNextSteps(hasCRM: boolean) {
+    private static generateNextSteps(hasCRM: boolean, answers: any) {
         const actions = [];
-        actions.push({ day: 'Imediato', action: 'Aprovação do Planejamento', done: false });
-        if (!hasCRM) actions.push({ day: 'Imediato', action: 'Seleção de CRM', done: false });
-        actions.push({ day: 'Dia 1', action: 'Onboarding do Time', done: false });
+        const crmName = answers.crm || answers.crm_outro || '';
+        const prazo = answers.quandoComecar || answers.prazo || '';
+        const areas = answers.areasPrioridade || [];
+
+        actions.push({ day: 'Imediato', action: 'Aprovação do Planejamento Estratégico', done: false });
+
+        if (!hasCRM) {
+            actions.push({ day: 'Imediato', action: 'Seleção e contratação de CRM', done: false });
+        } else {
+            actions.push({ day: 'Imediato', action: `Auditoria do ${crmName} e limpeza de dados`, done: false });
+        }
+
+        actions.push({ day: 'Dia 1', action: 'Onboarding do Time e acesso às ferramentas', done: false });
+
+        if (areas.length > 0) {
+            actions.push({ day: 'Semana 1', action: `Iniciar: ${areas[0]}`, done: false });
+        }
+
+        if (prazo) {
+            actions.push({ day: 'Referência', action: `Prazo desejado pelo cliente: ${prazo}`, done: false });
+        }
 
         return { week1_actions: actions };
     }
 }
+
