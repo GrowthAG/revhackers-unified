@@ -1,15 +1,17 @@
 import React, { Fragment, cloneElement } from 'react';
 import { EditableField } from '@/components/plan/PlanEditContext';
-import { Settings, Search, BarChart3, Handshake, Lock, ChevronRight } from 'lucide-react';
+import { Settings, Search, BarChart3, Handshake, Lock, ChevronRight, MessageCircle } from 'lucide-react';
 
 // ── Icon resolver ──────────────────────────────────────────────────────────
 function getIcon(iconName: string) {
     switch (iconName) {
         case 'building': return <Settings className="w-5 h-5" />;
+        case 'settings': return <Settings className="w-5 h-5" />;
         case 'search': return <Search className="w-5 h-5" />;
         case 'handshake': return <Handshake className="w-5 h-5" />;
         case 'lock': return <Lock className="w-5 h-5" />;
         case 'chart': return <BarChart3 className="w-5 h-5" />;
+        case 'message-circle': return <MessageCircle className="w-5 h-5" />;
         default: return <Settings className="w-5 h-5" />;
     }
 }
