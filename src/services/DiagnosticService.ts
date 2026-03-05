@@ -580,5 +580,163 @@ export class DiagnosticService {
 
         return { week1_actions: actions };
     }
+
+    // ── PUBLIC FALLBACK GENERATORS ──────────────────────────────────────────
+    // Used by StrategicPlanGenerator when Perplexity AI is unavailable.
+    // Builds structured persona/benchmark data from raw REI answers
+    // so the plan never saves undefined to the database.
+
+    /**
+     * Builds a PersonaSection-compatible persona array from REI form answers.
+     * Uses: icpDescription, painDescription, buyingTrigger, wiifm, keyMessage,
+     *       segmento, tamanho, canaisAquisicao, desafios.
+     */
+    static generatePersonasFromREI(answers: any): any[] {
+        const icpDescription = (answers.icpDescription || '').trim();
+        const painDescription = (answers.painDescription || '').trim()
+            || (answers.desafios || []).join(', ');
+        const buyingTrigger = (answers.buyingTrigger || '').trim();
+        const wiifm = (answers.wiifm || '').trim();
+        const keyMessage = (answers.keyMessage || '').trim();
+        const segment = answers.segmento || answers.segmento_outro || 'B2B';
+        const tamanho = answers.tamanho || '';
+        const canais = answers.canaisAquisicao || [];
+
+        // Nothing to build a meaningful persona from
+        if (!icpDescription && !painDescription) return [];
+
+        // Map REI channel values → display names
+        const channelMap: Record<string, string> = {
+            'google-ads': 'Google', 'google_ads': 'Google', 'seo': 'Google',
+            'meta-ads': 'Instagram', 'meta_ads': 'Instagram', 'facebook': 'Facebook',
+            'linkedin-ads': 'LinkedIn', 'linkedin_ads': 'LinkedIn', 'linkedin': 'LinkedIn',
+            'email': 'E-mail', 'email-marketing': 'E-mail', 'email_marketing': 'E-mail',
+            'whatsapp': 'WhatsApp',
+            'youtube': 'YouTube',
+        };
+        const mappedChannels: string[] = canais.length > 0
+            ? [...new Set<string>(
+                canais.slice(0, 5).map((c: string) => channelMap[c.toLowerCase()] || c)
+              )]
+            : ['LinkedIn', 'E-mail', 'WhatsApp'];
+
+        // Infer decision-maker role from ICP description text
+        const icpLower = icpDescription.toLowerCase();
+        let role = 'Decisor Estratégico';
+        if (icpLower.includes('ceo') || icpLower.includes('founder') || icpLower.includes('fundador'))
+            role = 'CEO / Founder';
+        else if (icpLower.includes('cmo') || icpLower.includes('marketing'))
+            role = 'CMO / Head de Marketing';
+        else if (icpLower.includes('cro') || icpLower.includes('vendas') || icpLower.includes('comercial'))
+            role = 'CRO / Head de Vendas';
+        else if (icpLower.includes('cto') || icpLower.includes('tech') || icpLower.includes('produto'))
+            role = 'CTO / Head de Produto';
+        else if (icpLower.includes('diretor'))
+            role = 'Diretor(a)';
+        else if (icpLower.includes('gerente') || icpLower.includes('manager'))
+            role = 'Gerente / Manager';
+
+        const companyContext = icpDescription
+            || `Empresa ${segment}${tamanho ? ` — porte ${tamanho}` : ''}`.trim();
+
+        const persona = {
+            name: 'Decisor Ideal (ICP)',
+            role,
+            age: 38,
+            location: 'Brasil',
+            company_context: companyContext,
+            bio: icpDescription
+                || `Decisor do segmento ${segment} buscando escalar receita com previsibilidade e eficiência operacional.`,
+            channels: mappedChannels,
+            personality: {
+                analytical_creative: 40,
+                passive_active: 65,
+                reserved_extroverted: 50,
+                reactive_preventive: 45,
+            },
+            pain: painDescription || 'Dificuldade em escalar operação com previsibilidade de receita.',
+            trigger: buyingTrigger || 'Pressão por resultados concretos e metas não atingidas.',
+            message: keyMessage || `Estratégia integrada para crescimento sustentável em ${segment}.`,
+            wiifm: wiifm || 'Crescimento mensurável, equipe alinhada e receita previsível.',
+        };
+
+        return [persona];
+    }
+
+    /**
+     * Builds a BenchmarkSection-compatible competitor array from REI form answers.
+     * Uses: concorrentes (textarea), keywords.
+     */
+    static generateBenchmarkFromREI(answers: any): any[] {
+        const concorrentesText = (answers.concorrentes || '').trim();
+        if (!concorrentesText) return [];
+
+        // Parse shared keywords from REI for top_keywords field
+        const keywords: string[] = (answers.keywords || '')
+            .split(/[,\n;]+/)
+            .map((k: string) => k.trim())
+            .filter((k: string) => k.length > 1)
+            .slice(0, 4);
+
+        // Split by comma, newline, or semicolon
+        const lines = concorrentesText
+            .split(/[,\n;]+/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 2);
+
+        return lines.slice(0, 5).map((line: string) => {
+            // Handle "Company Name (some description)" pattern
+            const match = line.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+            const companyName = (match?.[1] || line).trim();
+            const description = (match?.[2] || '').trim();
+
+            return {
+                company_name: companyName,
+                domain: '',
+                monthly_traffic: '—',
+                domain_authority: 0,
+                avg_cpc: '—',
+                top_keywords: keywords,
+                strengths: description || 'A ser aprofundado via pesquisa de mercado.',
+                weaknesses: 'Análise detalhada disponível com Deep Research de Benchmark.',
+            };
+        });
+    }
+
+    /**
+     * Returns segment-aware default industry trends when Perplexity AI is unavailable.
+     * Uses: segmento.
+     */
+    static generateDefaultTrends(answers: any): string[] {
+        const segment = (answers.segmento || answers.segmento_outro || '').toLowerCase();
+
+        if (segment.includes('saas') || segment.includes('software')) {
+            return [
+                'Product-Led Growth (PLG) como motor de aquisição: empresas SaaS que adotam PLG crescem 2x mais rápido',
+                'AI-native features viram commodity — diferencial migra para onboarding e time-to-value',
+                'Revenue Operations integrado (RevOps) reduz CAC em até 25% ao alinhar marketing, vendas e CS',
+            ];
+        }
+        if (segment.includes('fintech') || segment.includes('financ')) {
+            return [
+                'Open Finance amplia superfície de dados para personalização de ofertas e redução de inadimplência',
+                'Compliance-first como diferencial competitivo: empresas que investem em governança crescem mais confiantes',
+                'Embedded Finance: serviços financeiros dentro de plataformas não-financeiras ganham tração acelerada',
+            ];
+        }
+        if (segment.includes('cyber') || segment.includes('segurança')) {
+            return [
+                'Zero Trust Architecture vira padrão mínimo de segurança para empresas médias e grandes',
+                'Aumento de 300% em ataques de ransomware gera urgência e budget de segurança',
+                'Conformidade com LGPD e frameworks internacionais (ISO 27001) como gatilho de compra',
+            ];
+        }
+        // Generic B2B default
+        return [
+            'Automação de processos com IA generativa reduz custo operacional em 20–35% para empresas B2B',
+            'Revenue Operations integrado (RevOps) como vantagem competitiva — elimina silos entre marketing, vendas e CS',
+            'Personalização baseada em dados aumenta taxas de conversão em até 35% no pipeline',
+        ];
+    }
 }
 

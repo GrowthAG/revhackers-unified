@@ -226,8 +226,11 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
 
 // ── PersonaSection ────────────────────────────────────────────────────────
 export default function PersonaSection({ plan }: { plan: any }) {
-    const personas = (plan.persona_data || {}).personas || [];
+    const personaData = plan.persona_data || {};
+    const personas = personaData.personas || [];
     const displayPersonas = personas.length > 0 ? personas : defaultPersonas;
+    const isREIFallback = personaData._data_source === 'rei_fallback';
+    const isDefault = personas.length === 0;
 
     return (
         <div className="space-y-10">
@@ -243,6 +246,18 @@ export default function PersonaSection({ plan }: { plan: any }) {
                 <p className="text-zinc-500">
                     Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra.
                 </p>
+                {isREIFallback && !isDefault && (
+                    <div className="mt-3 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                        <p className="text-xs text-zinc-400">Persona construída com base no ICP declarado no REI — aprofundamento disponível via "Deep Personas"</p>
+                    </div>
+                )}
+                {isDefault && (
+                    <div className="mt-3 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <p className="text-xs text-zinc-400">Perfis de referência — personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

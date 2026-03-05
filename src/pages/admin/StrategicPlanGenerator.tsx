@@ -278,11 +278,30 @@ export default function StrategicPlanGenerator() {
                 ? `Oportunidades: ${(enrichmentResult.market.analise_swot_rapida.oportunidades || []).join('; ')}. Ameaças: ${(enrichmentResult.market.analise_swot_rapida.ameacas || []).join('; ')}.`
                 : 'Foco em eficiência operacional e decisões baseadas em dados.';
 
+            // ── REI-based fallbacks (used when Perplexity AI fails) ───────────
+            // These are built from real client answers — never undefined/hardcoded.
+            const reiFallbackPersonas = DiagnosticService.generatePersonasFromREI(answers);
+            const reiFallbackCompetitors = DiagnosticService.generateBenchmarkFromREI(answers);
+            const reiFallbackTrends = DiagnosticService.generateDefaultTrends(answers);
+
+            if (!aiSuccess) {
+                console.log(
+                    `[Generator] Perplexity unavailable. Using REI fallback: ${reiFallbackPersonas.length} persona(s), ${reiFallbackCompetitors.length} competitor(s).`
+                );
+            }
+
             // ── Build persona_data (for PersonaSection + BenchmarkSection) ────
+            // Priority: AI (Perplexity) > REI answers > undefined (frontend fallback)
             const personaData = {
-                personas: mappedPersonas.length > 0 ? mappedPersonas : undefined,
-                competitor_benchmarks: mappedCompetitors.length > 0 ? mappedCompetitors : undefined,
-                industry_trends: mappedTrends.length > 0 ? mappedTrends : undefined,
+                personas: mappedPersonas.length > 0
+                    ? mappedPersonas
+                    : (reiFallbackPersonas.length > 0 ? reiFallbackPersonas : undefined),
+                competitor_benchmarks: mappedCompetitors.length > 0
+                    ? mappedCompetitors
+                    : (reiFallbackCompetitors.length > 0 ? reiFallbackCompetitors : undefined),
+                industry_trends: mappedTrends.length > 0
+                    ? mappedTrends
+                    : reiFallbackTrends,
                 market_sizing: mappedMarketSizing,
                 strategic_advice: mappedAdvice,
                 avg_cac_benchmark: enrichmentResult.benchmark?.cac_medio || undefined,
@@ -290,6 +309,8 @@ export default function StrategicPlanGenerator() {
                     ? `Lead→SQL: ${enrichmentResult.benchmark.taxa_conversao || '—'} | Ciclo: ${enrichmentResult.benchmark.ciclo_vendas || '—'} | LTV:CAC: ${enrichmentResult.benchmark.ltv_cac_ratio || '—'}`
                     : undefined,
                 key_differentiators: enrichmentResult.market?.analise_swot_rapida?.oportunidades || undefined,
+                // Metadata: lets the frontend know where data came from
+                _data_source: aiSuccess ? 'ai_enriched' : 'rei_fallback',
             };
 
             // Fallback market context (used by DiagnosticService)

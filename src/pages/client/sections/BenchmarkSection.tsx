@@ -87,6 +87,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
     const conversionBenchmarks = data.conversion_benchmarks || mock?.conversion_benchmarks || '';
     const differentiators = (Array.isArray(data.key_differentiators) && data.key_differentiators.length > 0) ? data.key_differentiators : (mock?.key_differentiators || []);
     const hasRealData = Array.isArray(data.competitor_benchmarks) && data.competitor_benchmarks.length > 0;
+    const isREIFallback = data._data_source === 'rei_fallback';
 
     return (
         <div className="space-y-14">
@@ -106,6 +107,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                     <div className="mt-3 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                         <p className="text-xs text-zinc-400">Dados de referência para o segmento — atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
+                    </div>
+                )}
+                {hasRealData && isREIFallback && (
+                    <div className="mt-3 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                        <p className="text-xs text-zinc-400">Concorrentes informados pelo cliente — enriquecimento de mercado disponível via "Deep Benchmark"</p>
                     </div>
                 )}
             </div>
