@@ -67,7 +67,9 @@ export interface StrategicDecision {
 export class DiagnosticService {
 
     static generateDiagnosis(response: ReiResponse, marketData?: any): DiagnosticResult {
-        const answers = response.responses as Record<string, any>;
+        const rawResponses = response.responses as Record<string, any>;
+        // FIX: REI wizard wraps form data inside responses.form_data
+        const answers = rawResponses?.form_data || rawResponses || {};
         const plan_data = this.generatePlanFromResponse(response, marketData);
 
         // --- INTELLIGENCE LAYER (The Voice) ---
@@ -207,7 +209,9 @@ export class DiagnosticService {
 
 
     static generatePlanFromResponse(response: ReiResponse, marketData?: any): StrategicPlanData {
-        const answers = response.responses as Record<string, any>;
+        const rawResponses = response.responses as Record<string, any>;
+        // FIX: REI wizard wraps form data inside responses.form_data
+        const answers = rawResponses?.form_data || rawResponses || {};
 
         // 1. ANALYZE CONTEXT (using actual REI field names)
         const segment = answers.segmento || answers.segmento_outro || 'Generalista';
@@ -617,7 +621,7 @@ export class DiagnosticService {
         const mappedChannels: string[] = canais.length > 0
             ? [...new Set<string>(
                 canais.slice(0, 5).map((c: string) => channelMap[c.toLowerCase()] || c)
-              )]
+            )]
             : ['LinkedIn', 'E-mail', 'WhatsApp'];
 
         // Infer decision-maker role from ICP description text

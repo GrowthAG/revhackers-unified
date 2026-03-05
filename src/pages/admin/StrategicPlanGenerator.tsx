@@ -205,9 +205,14 @@ export default function StrategicPlanGenerator() {
                 return;
             }
 
-            const answers = latestResponse.responses as any;
-            const segment = answers.segmento || 'B2B';
-            const objective = answers.objetivoPrincipal || 'Crescimento';
+            const rawResponses = latestResponse.responses as any;
+            // FIX: REI wizard wraps form data inside responses.form_data
+            // Legacy responses may have flat structure, so fallback to rawResponses
+            const answers = rawResponses?.form_data || rawResponses || {};
+            const segment = answers.segmento || answers.segmento_outro || 'B2B';
+            const objective = answers.metaCrescimento || answers.objetivoPrincipal || 'Crescimento';
+            console.log('[Generator] answers keys:', Object.keys(answers));
+            console.log('[Generator] segment:', segment, '| Has icpDescription:', !!answers.icpDescription, '| Has concorrentes:', !!answers.concorrentes);
 
             // Try AI enrichment (non-blocking)
             let enrichmentResult: any = { benchmark: null, personas: null, market: null };
