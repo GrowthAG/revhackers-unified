@@ -30,7 +30,6 @@
 @layer base {
   * {
     @apply border-border;
-    border-radius: var(--radius) !important;
   }
 
   html {
@@ -186,24 +185,9 @@
   }
 }
 
-/* === CORREÇÕES OBRIGATÓRIAS (User Requested) === */
-
-/* 2. CORRIGIR CONTRASTE DE TEXTOS */
-/* 2. CORRIGIR CONTRASTE DE TEXTOS */
-.card-text,
-.description,
-p {
-  color: #000000 !important;
-  /* Pure Black for Max Contrast */
-}
-
-/* IMPORTANT: Override back to white for Dark Sections to prevent illegibility */
-.section-dark p,
-.bg-black p,
-.text-white p {
-  color: inherit !important;
-  /* Allows dark themes to work while keeping the global 'p' dark for white sections */
-}
+/* === CONTRASTE (scoped — sem !important global em p) === */
+/* Os componentes usam Tailwind utilities (text-black, text-zinc-500, text-white, etc.)
+   de forma explícita. Não forçamos cor globalmente para evitar quebrar dark sections. */
 
 @layer utilities {
 
@@ -221,8 +205,7 @@ p {
 
 .card-subtitle,
 .secondary-text {
-  color: #4a4a4a !important;
-  /* Cinza médio legível */
+  color: #4a4a4a;
 }
 
 /* 3. ALINHAR HEADLINES - Configurações globais restauradas no bloco @layer base principal */

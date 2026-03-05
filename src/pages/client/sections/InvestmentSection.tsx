@@ -1,208 +1,276 @@
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Wallet, Info, ArrowUpRight } from 'lucide-react';
+import { BarChart3, Zap, Target, Settings } from 'lucide-react';
 
-interface InvestmentSectionProps {
-    plan: any;
-    onBudgetChange?: (budget: any) => void;
+// ── Helpers ───────────────────────────────────────────────────────────────
+const P = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v);
+
+function getSegmentConfig(segment: string) {
+    const a = (segment || '').toLowerCase();
+    if (a.includes('saas') || a.includes('tech') || a.includes('crm')) return {
+        channels: [
+            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [5000, 15000], desc: 'Search fundo de funil + PMAX para captura de demanda ativa' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [3000, 8000], desc: 'Retargeting + lookalike para awareness e nutrição' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [2000, 6000], desc: 'Lead Gen Forms para decisores B2B de empresas-alvo' },
+        ],
+        fee: { label: 'Fee de Gestão RevHackers', range: [4500, 8000] },
+        tools: { label: 'Stack de Ferramentas (CRM + Automação)', range: [500, 2000] },
+        cac_benchmark: 'R$ 800–2.500', ltv_cac_target: '3:1 a 5:1', roas_target: '3x–6x em 90 dias', breakeven: 'Mês 2–3',
+    };
+    if (a.includes('ecommerce') || a.includes('e-commerce') || a.includes('loja') || a.includes('varejo')) return {
+        channels: [
+            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [5000, 20000], desc: 'Shopping + Search + PMAX para captura de demanda de compra' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [5000, 15000], desc: 'Catálogo dinâmico, lookalike de compradores e retargeting' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [0, 2000], desc: 'Opcional para B2B wholesale ou parcerias corporativas' },
+        ],
+        fee: { label: 'Fee de Gestão RevHackers', range: [4000, 9000] },
+        tools: { label: 'Stack de Ferramentas (CRM + Pixel + Analytics)', range: [300, 1200] },
+        cac_benchmark: 'R$ 30–200', ltv_cac_target: '3:1 a 5:1', roas_target: '4x–8x em 60 dias', breakeven: 'Mês 1–2',
+    };
+    // Default
+    return {
+        channels: [
+            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [3000, 12000], desc: 'Captura de demanda ativa — keywords de intenção de compra' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [2000, 8000], desc: 'Awareness, retargeting e geração de leads com criativos visuais' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [1500, 5000], desc: 'Posicionamento B2B e geração de oportunidades com decisores' },
+        ],
+        fee: { label: 'Fee de Gestão RevHackers', range: [3500, 7000] },
+        tools: { label: 'Stack de Ferramentas (CRM + Automação)', range: [400, 1500] },
+        cac_benchmark: 'R$ 500–2.000', ltv_cac_target: '3:1 a 5:1', roas_target: '3x–5x em 90 dias', breakeven: 'Mês 2–3',
+    };
 }
 
-const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(value);
-};
+export default function InvestmentSection({ plan, onBudgetChange }: { plan: any; onBudgetChange?: (data: any) => void }) {
+    const budgetData = plan.budget_data || {};
+    const segment = plan.diagnostic_data?.context_mirror?.segmento || plan.diagnostic_data?.context_mirror?.segment || plan.premises_data?.segmento || plan.premises_data?.segment || '';
+    const config = getSegmentConfig(segment);
 
-const parseCurrency = (value: string): number => {
-    if (!value) return 0;
-    const cleaned = value.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-    const num = parseFloat(cleaned);
-    return isNaN(num) ? 0 : num;
-};
-
-export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSectionProps) {
-    const budget = plan.budget_data || {};
-
-    const [channelBudgets, setChannelBudgets] = useState({
-        google_ads: budget.google_ads || 0,
-        meta_ads: budget.meta_ads || 0,
-        linkedin_ads: budget.linkedin_ads || 0,
-        tiktok_ads: budget.tiktok_ads || 0,
-        taboola: budget.taboola || 0,
-        outbrain: budget.outbrain || 0,
+    const [values, setValues] = useState<Record<string, number>>({
+        google_ads: budgetData.google_ads || 0,
+        meta_ads: budgetData.meta_ads || 0,
+        linkedin_ads: budgetData.linkedin_ads || 0,
     });
+    const [editing, setEditing] = useState<Record<string, string>>({});
+    const [focusedKey, setFocusedKey] = useState<string | null>(null);
 
-    const [inputValues, setInputValues] = useState<Record<string, string>>({
-        google_ads: budget.google_ads ? formatCurrency(budget.google_ads) : '',
-        meta_ads: budget.meta_ads ? formatCurrency(budget.meta_ads) : '',
-        linkedin_ads: budget.linkedin_ads ? formatCurrency(budget.linkedin_ads) : '',
-        tiktok_ads: budget.tiktok_ads ? formatCurrency(budget.tiktok_ads) : '',
-        taboola: budget.taboola ? formatCurrency(budget.taboola) : '',
-        outbrain: budget.outbrain ? formatCurrency(budget.outbrain) : '',
-    });
+    const totalMedia = Object.values(values).reduce((s, v) => s + v, 0);
+    const hasCustom = totalMedia > 0;
+    const channelsDisplay = config.channels.map(ch => ({
+        ...ch, value: values[ch.key] || 0, midpoint: Math.round((ch.recommended[0] + ch.recommended[1]) / 2),
+    }));
+    const mediaTotal = hasCustom ? totalMedia : channelsDisplay.reduce((s, c) => s + c.midpoint, 0);
+    const feeAvg = Math.round((config.fee.range[0] + config.fee.range[1]) / 2);
+    const toolsAvg = Math.round((config.tools.range[0] + config.tools.range[1]) / 2);
+    const grandTotal = mediaTotal + feeAvg + toolsAvg;
+    const barColors = ['bg-zinc-950', 'bg-zinc-600', 'bg-zinc-400'];
 
-    const channels = [
-        {
-            key: 'google_ads',
-            name: 'Google Ads',
-            color: 'bg-blue-600',
-            icon: 'G'
-        },
-        {
-            key: 'meta_ads',
-            name: 'Meta Ads',
-            color: 'bg-blue-500',
-            icon: 'M'
-        },
-        {
-            key: 'linkedin_ads',
-            name: 'LinkedIn Ads',
-            color: 'bg-sky-700',
-            icon: 'in'
-        },
-        {
-            key: 'tiktok_ads',
-            name: 'TikTok Ads',
-            color: 'bg-zinc-900',
-            icon: 'TT'
-        },
-        {
-            key: 'taboola',
-            name: 'Taboola',
-            color: 'bg-orange-600',
-            icon: 'T'
-        },
-        {
-            key: 'outbrain',
-            name: 'Outbrain',
-            color: 'bg-amber-600',
-            icon: 'O'
-        },
-    ];
-
-    const totalBudget = Object.values(channelBudgets).reduce((sum, val) => sum + val, 0);
-
-    const handleInputChange = (key: string, value: string) => {
-        setInputValues(prev => ({ ...prev, [key]: value }));
+    const handleChange = (key: string, val: string) => setEditing(prev => ({ ...prev, [key]: val.replace(/[^\d.,]/g, '') }));
+    const handleFocus = (key: string) => {
+        const v = values[key]; setEditing(prev => ({ ...prev, [key]: v > 0 ? String(v).replace('.', ',') : '' }));
+        setFocusedKey(key);
     };
-
-    const handleInputBlur = (key: string, value: string) => {
-        const numValue = parseCurrency(value);
-        const newBudgets = { ...channelBudgets, [key]: numValue };
-        setChannelBudgets(newBudgets);
-
-        setInputValues(prev => ({
-            ...prev,
-            [key]: numValue > 0 ? formatCurrency(numValue) : ''
-        }));
-
-        if (onBudgetChange) {
-            onBudgetChange({
-                ...newBudgets,
-                total: Object.values(newBudgets).reduce((sum, val) => sum + val, 0)
-            });
-        }
+    const handleBlur = (key: string) => {
+        const raw = (editing[key] || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+        const num = parseFloat(raw) || 0;
+        const newVals = { ...values, [key]: num };
+        setValues(newVals); setEditing(prev => ({ ...prev, [key]: '' })); setFocusedKey(null);
+        onBudgetChange?.({ ...newVals, total: Object.values(newVals).reduce((s, v) => s + v, 0) });
     };
 
     return (
-        <div className="space-y-24">
+        <div className="space-y-12">
             {/* Header */}
-            <div className="border-b border-zinc-100 pb-8">
-                <h2 className="text-4xl font-black text-black tracking-tighter uppercase mb-4">
-                    Investimento em Mídia
+            <div className="max-w-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-6 h-px bg-zinc-900" />
+                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Financeiro</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-4">
+                    Investimento<br /><span className="text-zinc-400">& Retorno</span>
                 </h2>
-                <p className="text-xl text-zinc-500 font-light max-w-3xl">
-                    Planejamento de alocação de capital em canais de tração pagos.
-                    <span className="block mt-2 text-black font-medium text-base">Os valores abaixo são sugestões iniciais baseadas no seu objetivo de escala.</span>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                    Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget.
                 </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-12">
-                {/* Channel Grid */}
-                <div className="lg:col-span-2 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {channels.map((channel) => {
-                            const inputVal = inputValues[channel.key as keyof typeof inputValues] || '';
-
-                            return (
-                                <div
-                                    key={channel.key}
-                                    className="group flex flex-col p-6 border border-zinc-200 rounded-3xl bg-white hover:border-black transition-all"
-                                >
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl text-white text-xs font-black shadow-sm ${channel.color}`}>
-                                                {channel.icon}
-                                            </div>
-                                            <span className="text-sm font-bold text-black uppercase tracking-wider">
-                                                {channel.name}
-                                            </span>
-                                        </div>
-                                        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-colors" />
-                                    </div>
-
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm font-bold">
-                                            R$
-                                        </span>
-                                        <Input
-                                            type="text"
-                                            value={inputVal}
-                                            onChange={(e) => handleInputChange(channel.key, e.target.value)}
-                                            onBlur={(e) => handleInputBlur(channel.key, e.target.value)}
-                                            placeholder="0,00"
-                                            className="pl-12 h-14 text-lg font-bold text-right border-zinc-100 bg-zinc-50/50 rounded-2xl focus:border-black focus:ring-0 focus:bg-white transition-all"
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
+            {/* Grand Total + KPIs */}
+            <div className="bg-zinc-950 p-8 md:p-10">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                    <div>
+                        <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold mb-2">Investimento Mensal Estimado</p>
+                        <p className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                            {P(grandTotal)}<span className="text-lg text-white/30 font-normal">/mês</span>
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-6 md:gap-8">
+                        <div className="text-center">
+                            <p className="text-xl font-bold text-[#00CC6A]">{config.roas_target}</p>
+                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">ROAS Target</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xl font-bold text-white">{config.breakeven}</p>
+                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">Break-Even</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xl font-bold text-white">{config.ltv_cac_target}</p>
+                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">LTV:CAC</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Summary Card */}
-                <div className="space-y-6">
-                    <div className="bg-black text-white p-10 rounded-3xl shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <Wallet className="w-24 h-24" />
-                        </div>
-
-                        <div className="relative z-10">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 block mb-2">
-                                Investimento Total Sugerido
-                            </span>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-light text-zinc-400">R$</span>
-                                <span className="text-6xl font-black tracking-tighter">
-                                    {formatCurrency(totalBudget)}
-                                </span>
+            {/* Distribution */}
+            <div>
+                <div className="flex items-center gap-3 mb-6">
+                    <BarChart3 className="w-5 h-5 text-black" />
+                    <h3 className="text-xl font-bold text-black">Distribuição por Canal</h3>
+                </div>
+                <div className="h-3 flex rounded-full overflow-hidden mb-8 bg-zinc-100">
+                    {channelsDisplay.map((ch, i) => {
+                        const val = hasCustom ? ch.value : ch.midpoint;
+                        const pct = mediaTotal > 0 ? (val / mediaTotal) * 100 : 33;
+                        return <div key={i} className={`${barColors[i]} transition-all duration-500`} style={{ width: `${pct}%` }} title={`${ch.name}: ${Math.round(pct)}%`} />;
+                    })}
+                </div>
+                <div className="space-y-4">
+                    {channelsDisplay.map((ch, i) => {
+                        const val = hasCustom ? ch.value : ch.midpoint;
+                        const pct = mediaTotal > 0 ? Math.round((val / mediaTotal) * 100) : 33;
+                        return (
+                            <div key={i} className="border border-zinc-200 hover:border-zinc-400 transition-colors">
+                                <div className="flex flex-col md:flex-row md:items-center gap-4 p-5">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-3 mb-1.5">
+                                            <div className={`w-2.5 h-2.5 rounded-full ${barColors[i]}`} />
+                                            <span className="text-lg font-semibold text-black">{ch.icon} {ch.name}</span>
+                                            <span className="text-xs text-zinc-400 font-mono">{pct}%</span>
+                                        </div>
+                                        <p className="text-[12px] text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
+                                    </div>
+                                    <div className="flex items-center gap-4 shrink-0">
+                                        <div className="text-right hidden md:block">
+                                            <p className="text-xs text-zinc-400 uppercase tracking-widest">Faixa Recomendada</p>
+                                            <p className="text-sm text-zinc-600 font-medium">{P(ch.recommended[0])} – {P(ch.recommended[1])}</p>
+                                        </div>
+                                        <div className="relative w-40">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">R$</span>
+                                            <input
+                                                type="text" inputMode="decimal"
+                                                value={focusedKey === ch.key ? (editing[ch.key] ?? '') : ch.value > 0 ? ch.value.toLocaleString('pt-BR') : ''}
+                                                onChange={e => handleChange(ch.key, e.target.value)}
+                                                onFocus={() => handleFocus(ch.key)}
+                                                onBlur={() => handleBlur(ch.key)}
+                                                placeholder={ch.midpoint.toLocaleString('pt-BR')}
+                                                className="pl-9 h-11 w-full text-right font-mono text-sm border border-zinc-200 focus:border-zinc-900 focus:ring-0 focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        );
+                    })}
+                </div>
+            </div>
 
-                            <div className="mt-12 pt-8 border-t border-zinc-800 space-y-4">
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-zinc-500 font-medium">Investimento Direto</span>
-                                    <span className="font-bold">100%</span>
+            {/* Fee + Tools */}
+            <div className="grid md:grid-cols-2 gap-4">
+                <div className="border border-zinc-200 p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Zap className="w-4 h-4 text-zinc-400" />
+                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.fee.label}</p>
+                    </div>
+                    <p className="text-2xl font-bold text-black mb-1">{P(config.fee.range[0])} – {P(config.fee.range[1])}</p>
+                    <p className="text-xs text-zinc-400">Setup, gestão de campanhas, otimização e relatórios</p>
+                </div>
+                <div className="border border-zinc-200 p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Settings className="w-4 h-4 text-zinc-400" />
+                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.tools.label}</p>
+                    </div>
+                    <p className="text-2xl font-bold text-black mb-1">{P(config.tools.range[0])} – {P(config.tools.range[1])}</p>
+                    <p className="text-xs text-zinc-400">CRM, automação de marketing, tracking e analytics</p>
+                </div>
+            </div>
+
+            {/* ROI Projection */}
+            <div className="bg-zinc-950 p-8">
+                <div className="flex items-center gap-3 mb-6">
+                    <Target className="w-4 h-4 text-[#00CC6A]" />
+                    <h3 className="text-lg font-bold text-white">Projeção de Retorno</h3>
+                </div>
+                <div className="grid md:grid-cols-4 gap-6">
+                    <div>
+                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">CAC Benchmark</p>
+                        <p className="text-xl font-bold text-white">{config.cac_benchmark}</p>
+                        <p className="text-xs text-white/30 mt-1">Custo por aquisição do segmento</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Leads Estimados/Mês</p>
+                        <p className="text-xl font-bold text-[#00CC6A]">{Math.round(mediaTotal / 150)}–{Math.round(mediaTotal / 60)}</p>
+                        <p className="text-xs text-white/30 mt-1">Baseado no investimento em mídia</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Revenue Potencial</p>
+                        <p className="text-xl font-bold text-white">{P(grandTotal * 2)}–{P(grandTotal * 4)}</p>
+                        <p className="text-xs text-white/30 mt-1">ROAS target {config.roas_target}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Break-Even</p>
+                        <p className="text-xl font-bold text-white">{config.breakeven}</p>
+                        <p className="text-xs text-white/30 mt-1">Tempo estimado para payback</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Próximos Passos + Retorno potential */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="bg-zinc-950 p-8">
+                    <p className="text-xs text-[#00CC6A] uppercase tracking-[0.2em] font-semibold mb-6">Próximos Passos</p>
+                    <div className="space-y-5">
+                        {[
+                            { n: '01', title: 'Aprovação', desc: 'Client assina o planejamento e autoriza o início', timing: 'Hoje' },
+                            { n: '02', title: 'Kick-Off', desc: 'Reunião de abertura + onboarding de acessos e contas', timing: 'Dia 1–3' },
+                            { n: '03', title: 'Fundação Live', desc: 'CRM, tracking e automações ativas. Campanhas preparadas.', timing: 'Dia 7–21' },
+                        ].map((step, i) => (
+                            <div key={i} className="flex items-start gap-4">
+                                <span className="text-zinc-700 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-white font-bold text-sm">{step.title}</p>
+                                        <span className="text-xs text-[#00CC6A] font-mono">{step.timing}</span>
+                                    </div>
+                                    <p className="text-zinc-500 text-xs mt-0.5">{step.desc}</p>
                                 </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-zinc-500 font-medium">Gestão Estratégica</span>
-                                    <span className="text-revgreen font-bold">Incluso no Fee</span>
-                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="border border-zinc-200 p-8 flex flex-col justify-between">
+                    <div>
+                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold mb-6">Potencial de Retorno</p>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                <span className="text-sm text-zinc-600">Investimento mensal</span>
+                                <span className="font-bold text-black font-mono">{P(grandTotal)}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                <span className="text-sm text-zinc-600">Revenue alvo (ROAS {config.roas_target})</span>
+                                <span className="font-bold text-black font-mono">{P(grandTotal * 3)}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                <span className="text-sm text-zinc-600">Payback estimado</span>
+                                <span className="font-bold text-black">{config.breakeven}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-zinc-600">LTV:CAC meta</span>
+                                <span className="font-bold text-[#00CC6A] text-lg">{config.ltv_cac_target}</span>
                             </div>
                         </div>
                     </div>
-
-                    <div className="bg-zinc-50 border border-zinc-100 p-8 rounded-3xl">
-                        <div className="flex gap-4">
-                            <Info className="w-5 h-5 text-zinc-400 shrink-0" />
-                            <p className="text-xs text-zinc-500 leading-relaxed font-light">
-                                Os valores aqui apresentados podem ser ajustados conforme a validação dos primeiros testes A/B e performance de conversão por canal.
-                            </p>
-                        </div>
+                    <div className="mt-6 pt-4 border-t border-zinc-200">
+                        <p className="text-xs text-zinc-300 text-center">Valores baseados em benchmarks do segmento • Ajuste os campos para personalizar</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-

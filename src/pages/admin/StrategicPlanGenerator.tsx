@@ -199,92 +199,96 @@ export default function StrategicPlanGenerator() {
                 .limit(1)
                 .maybeSingle();
 
-            if (latestResponse) {
-                const answers = latestResponse.responses as any;
-                const segment = answers.segmento || 'B2B';
-                const objective = answers.objetivoPrincipal || 'Crescimento';
+            if (!latestResponse) {
+                alert('Erro: Nenhuma resposta do REI encontrada para este projeto.');
+                setGenerating(false);
+                return;
+            }
 
+            const answers = latestResponse.responses as any;
+            const segment = answers.segmento || 'B2B';
+            const objective = answers.objetivoPrincipal || 'Crescimento';
+
+            // Try AI enrichment (non-blocking)
+            let enrichmentResult: any = { benchmark: null, personas: null, market: null };
+            let aiSuccess = false;
+
+            try {
                 console.log('Invoking StrategicEnrichmentService...');
-                const enrichmentResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
+                const aiResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
                     objective,
-                    rei_responses: answers // Passing full context!
+                    rei_responses: answers
                 });
 
-                if (enrichmentResult.error) {
-                    console.error('Enrichment error:', enrichmentResult.error);
-                    alert('Aviso: A inteligência artificial falhou, mas geraremos o plano base.');
-                } else {
+                if (aiResult.error) {
+                    console.warn('AI Enrichment returned error:', aiResult.error);
+                } else if (aiResult.benchmark || aiResult.personas || aiResult.market) {
+                    enrichmentResult = aiResult;
+                    aiSuccess = true;
                     setEnrichedData(enrichmentResult);
                 }
+            } catch (aiError) {
+                console.warn('AI Enrichment failed (non-blocking):', aiError);
+            }
 
-                // Generate Plan Structure
-                // Note: MarketIntelligenceService was mocked before, now we use the real data from enrichmentResult
-                // We map enrichmentResult back to what DiagnosticService expects if needed, or update DiagnosticService
-                // For now, we will merge it into the diagnostic_data
+            // Fallback market context (used by DiagnosticService)
+            const marketCtx = {
+                industry_trends: enrichmentResult.market?.tendencias_2025?.map((t: any) => t.titulo) || ['Automação de vendas', 'Revenue Operations', 'IA Generativa aplicada a vendas'],
+                competitor_benchmarks: [],
+                market_sizing: {
+                    tam: enrichmentResult.market?.tam_sam_som?.tam || 'A ser definido na pesquisa profunda',
+                    sam: enrichmentResult.market?.tam_sam_som?.sam || 'A ser definido na pesquisa profunda',
+                    som: enrichmentResult.market?.tam_sam_som?.som || 'A ser definido na pesquisa profunda'
+                },
+                personas: [],
+                strategic_advice: "Foco em eficiência operacional e decisões baseadas em dados."
+            };
 
-                // Mock legacy MarketData for DiagnosticService compatibility if needed, using new data
-                const marketCtx = {
-                    industry_trends: enrichmentResult.market?.tendencias_2025?.map(t => t.titulo) || [],
-                    competitor_benchmarks: [], // Legacy format mismatch, ignored for now
-                    market_sizing: {
-                        tam: enrichmentResult.market?.tam_sam_som?.tam || '',
-                        sam: enrichmentResult.market?.tam_sam_som?.sam || '',
-                        som: enrichmentResult.market?.tam_sam_som?.som || ''
-                    },
-                    personas: [], // Legacy format mismatch, ignored
-                    strategic_advice: "Foco em eficiência e dados."
-                };
+            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
+            const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
-                const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
-                const { plan_data, ...diagnosticContext } = fullDiagnostic;
+            // 3. Define Plan Data (Merging generated + enriched)
+            const finalPlanData = {
+                ...plan_data,
+                rei_project_id: reiProjectId,
+                client_id: clientId,
+                created_by: (await supabase.auth.getUser()).data.user?.id,
+                status: existingPlan ? existingPlan.status : 'draft',
+                diagnostic_data: {
+                    ...diagnosticContext,
+                    enriched_analysis: enrichmentResult
+                } as any
+            };
 
-                // 3. Define Plan Data (Merging generated + enriched)
-                const finalPlanData = {
-                    ...plan_data,
-                    rei_project_id: reiProjectId,
-                    client_id: clientId,
-                    created_by: (await supabase.auth.getUser()).data.user?.id,
-                    status: existingPlan ? existingPlan.status : 'draft',
-                    diagnostic_data: {
-                        ...diagnosticContext,
-                        enriched_analysis: enrichmentResult // Saving the GOLD (Rich Data)
-                    } as any // Force cast to match Supabase Json type
-                };
-
-                // 4. Upsert Plan
-                const { data: savedPlan, error: saveError } = await supabase
+            // 4. Save Plan (Insert or Update)
+            if (existingPlan) {
+                const { data: updated, error: upError } = await supabase
                     .from('strategic_plans')
-                    .upsert(finalPlanData as any) // upsert handles insert or update based on ID (if we included it)
-                // But here we need to handle insert vs update manually or use logic. 
-                // Let's strictly use UPDATE if exists, INSERT if not, to avoid ID issues.
+                    .update(finalPlanData)
+                    .eq('id', existingPlan.id)
+                    .select()
+                    .single();
+                if (upError) throw upError;
+                setExistingPlan(updated);
+            } else {
+                const { data: inserted, error: inError } = await supabase
+                    .from('strategic_plans')
+                    .insert(finalPlanData)
+                    .select()
+                    .single();
+                if (inError) throw inError;
+                setExistingPlan(inserted);
+            }
 
-                if (existingPlan) {
-                    const { data: updated, error: upError } = await supabase
-                        .from('strategic_plans')
-                        .update(finalPlanData)
-                        .eq('id', existingPlan.id)
-                        .select()
-                        .single();
-                    if (upError) throw upError;
-                    setExistingPlan(updated);
-                } else {
-                    const { data: inserted, error: inError } = await supabase
-                        .from('strategic_plans')
-                        .insert(finalPlanData)
-                        .select()
-                        .single();
-                    if (inError) throw inError;
-                    setExistingPlan(inserted);
-                }
-
+            if (aiSuccess) {
                 alert('✅ Planejamento estratégico gerado com Inteligência de Mercado!');
             } else {
-                alert('Erro: Nenhuma resposta do REI encontrada para este projeto.');
+                alert('✅ Planejamento base gerado! Para dados de mercado enriquecidos, configure a chave Perplexity AI nos secrets do Supabase.');
             }
 
         } catch (error) {
             console.error('Error generating plan:', error);
-            alert('Erro crítico ao gerar planejamento. Consulte o console.');
+            alert('Erro crítico ao gerar planejamento. Consulte o console para detalhes.');
         } finally {
             setGenerating(false);
         }

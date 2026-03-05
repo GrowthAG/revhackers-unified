@@ -106,7 +106,17 @@ export class StrategicEnrichmentService {
                 return { error: error.message };
             }
 
-            return data as StrategicEnrichmentResult;
+            // Edge Function returns { result: { benchmark, personas, market } }
+            // Handle both wrapped and flat response formats
+            const enrichmentData = data?.result || data;
+
+            // If the API returned an error message inside the data
+            if (enrichmentData?.error) {
+                console.warn('Enrichment returned error:', enrichmentData.error);
+                return { error: enrichmentData.error };
+            }
+
+            return enrichmentData as StrategicEnrichmentResult;
         } catch (e: any) {
             console.error('Strategic enrichment failed:', e);
             return { error: e.message || 'Unknown error' };

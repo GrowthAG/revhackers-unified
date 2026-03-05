@@ -1,232 +1,255 @@
-import React from 'react';
-import { User, Target, Zap, MessageSquare, TrendingUp, ShieldAlert, Heart, Radio, BrainCircuit } from 'lucide-react';
+import React, { useState } from 'react';
+import { EditableField, usePlanEdit } from '@/components/plan/PlanEditContext';
+import { MessageSquare, Mail, Instagram, Facebook, Globe, Youtube, Linkedin, Send } from 'lucide-react';
 
-interface PersonaSectionProps {
-    plan: any;
+// ── Female name list for avatar gender detection ──────────────────────────
+const femaleNames = ['maria', 'ana', 'mariana', 'juliana', 'fernanda', 'patricia', 'carla', 'claudia', 'lucia', 'beatriz', 'camila', 'amanda', 'priscila', 'gabriela', 'alessandra', 'bruna', 'larissa', 'natalia', 'leticia', 'aline'];
+
+function detectGender(name: string) {
+    const first = name.split(' ')[0].toLowerCase();
+    return femaleNames.some(f => first.includes(f)) ? 'women' : 'men';
 }
 
-export default function PersonaSection({ plan }: PersonaSectionProps) {
-    // Priority: 1. Deep Enriched Personas, 2. Old Market Intelligence, 3. Base Persona Data
-    const enriched = plan.diagnostic_data?.enriched_analysis?.personas?.personas;
-    const legacyMarket = plan.market_intelligence?.personas;
-    const basePersona = plan.persona_data;
+function nameToIndex(name: string, idx: number) {
+    let hash = idx * 7;
+    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 70;
+    return Math.abs(hash) + 1;
+}
 
-    let personas = [];
-    if (enriched && Array.isArray(enriched)) {
-        personas = enriched;
-    } else if (legacyMarket && Array.isArray(legacyMarket)) {
-        personas = legacyMarket;
-    } else if (basePersona) {
-        personas = [basePersona];
+// ── Persona Avatar ────────────────────────────────────────────────────────
+function PersonaAvatar({ name, index }: { name: string; index: number }) {
+    const gender = detectGender(name);
+    const imgIdx = nameToIndex(name, index);
+    const url = `https://randomuser.me/api/portraits/${gender}/${imgIdx}.jpg`;
+    const initial = name?.charAt(0) || '?';
+    const [error, setError] = useState(false);
+
+    if (error) {
+        return (
+            <div className="w-14 h-14 rounded-full bg-zinc-700 border-2 border-zinc-600 flex items-center justify-center shrink-0">
+                <span className="text-white text-xl font-black">{initial}</span>
+            </div>
+        );
     }
 
-    const benchmarks = plan.diagnostic_data?.enriched_analysis?.benchmark?.concorrentes_benchmark ||
-        plan.market_intelligence?.concorrentes_benchmark ||
-        plan.market_intelligence?.competitor_benchmarks || [];
+    return (
+        <img
+            src={url}
+            alt={name}
+            className="w-14 h-14 rounded-full object-cover shrink-0 border-2 border-white/20"
+            onError={() => setError(true)}
+        />
+    );
+}
 
-    const stats = plan.diagnostic_data?.enriched_analysis?.benchmark || {};
+// ── Channel Icon Resolver ─────────────────────────────────────────────────
+function resolveChannel(channel: string) {
+    const lower = channel.toLowerCase().trim();
+    if (lower.includes('whatsapp')) return { icon: <MessageSquare className="w-3.5 h-3.5" />, label: 'WhatsApp' };
+    if (lower.includes('linkedin')) return { icon: <Linkedin className="w-3.5 h-3.5" />, label: 'LinkedIn' };
+    if (lower.includes('email') || lower.includes('e-mail')) return { icon: <Mail className="w-3.5 h-3.5" />, label: 'E-mail' };
+    if (lower.includes('instagram')) return { icon: <Instagram className="w-3.5 h-3.5" />, label: 'Instagram' };
+    if (lower.includes('facebook')) return { icon: <Facebook className="w-3.5 h-3.5" />, label: 'Facebook' };
+    if (lower.includes('google')) return { icon: <Globe className="w-3.5 h-3.5" />, label: 'Google' };
+    if (lower.includes('youtube')) return { icon: <Youtube className="w-3.5 h-3.5" />, label: 'YouTube' };
+    return { icon: <Send className="w-3.5 h-3.5" />, label: channel };
+}
+
+// ── Trait Slider ──────────────────────────────────────────────────────────
+function TraitSlider({ left, right, value, personaIndex, traitKey }: {
+    left: string; right: string; value: number; personaIndex: number; traitKey: string;
+}) {
+    const { isEditing, setField, getField } = usePlanEdit();
+    const path = `persona_data.personas.${personaIndex}.personality.${traitKey}`;
+    const rawVal = getField(path);
+    const v = rawVal !== '' && !isNaN(Number(rawVal)) ? Number(rawVal) : value;
+
+    if (isEditing) {
+        return (
+            <div className="flex items-center gap-2 text-xs">
+                <style>{`
+          .trait-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 99px; background: #e4e4e7; outline: none; cursor: pointer; }
+          .trait-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #09090b; border: 2px solid #00CC6A; cursor: grab; transition: transform 0.15s; }
+          .trait-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.3); }
+        `}</style>
+                <span className="w-20 text-right text-zinc-500 leading-tight">{left}</span>
+                <div className="flex-1 relative py-1">
+                    <input type="range" min="0" max="100" value={v} onChange={e => setField(path, e.target.value)} className="trait-slider w-full" />
+                </div>
+                <span className="w-20 text-zinc-500 leading-tight">{right}</span>
+                <span className="w-6 text-right font-mono text-xs text-[#00CC6A] shrink-0">{v}</span>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-40 py-20">
-            {/* Section Header */}
-            <div className="text-center space-y-6">
-                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none uppercase">
-                    Persona
-                </h2>
-                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
-                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra.</p>
+        <div className="flex items-center gap-2 text-xs">
+            <span className={`w-20 text-right ${v < 40 ? 'text-zinc-800 font-semibold' : 'text-zinc-400'}`}>{left}</span>
+            <div className="flex-1 h-1 bg-zinc-100 rounded-full relative">
+                <div className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-zinc-900 rounded-full shadow-sm transition-all" style={{ left: `calc(${v}% - 5px)` }} />
             </div>
+            <span className={`w-20 ${v > 60 ? 'text-zinc-800 font-semibold' : 'text-zinc-400'}`}>{right}</span>
+        </div>
+    );
+}
 
-            {/* Personas Slide Style */}
-            {personas.map((persona: any, index: number) => (
-                <div key={index} className="max-w-7xl mx-auto relative group">
-                    <div className="grid lg:grid-cols-12 gap-12 items-start">
-                        {/* Persona Main Card */}
-                        <div className="lg:col-span-12 space-y-12">
-                            <div className="border border-zinc-900 bg-black rounded-[3rem] p-12 flex flex-col md:flex-row gap-16 items-center md:items-start group/card transition-all duration-700 relative overflow-hidden active:scale-[0.99]">
-                                <div className="absolute left-0 top-0 w-2 h-full bg-revgreen/20 group-hover/card:bg-revgreen transition-all duration-700"></div>
+// ── Default Personas ──────────────────────────────────────────────────────
+const defaultPersonas = [
+    {
+        name: 'Ricardo Mendes', age: 44, role: 'CEO / Founder B2B',
+        company_context: 'Empresa B2B com 50 a 200 colaboradores', location: 'São Paulo, SP',
+        bio: 'Ricardo lidera a operação comercial e precisa de previsibilidade de receita. Está exausto de ferramentas fragmentadas e dashboards que nunca batem.',
+        channels: ['E-mail', 'WhatsApp', 'Google', 'LinkedIn'],
+        personality: { analytical_creative: 25, passive_active: 70, reserved_extroverted: 55, reactive_preventive: 35 },
+        pain: 'Churn alto e não sabe por quê. Dados fragmentados entre 5 ferramentas sem visão unificada.',
+        trigger: 'MRR estagnado por 3 meses ou queda de NPS abaixo de 7.',
+        message: 'Transforme dados dispersos em receita previsível com um sistema único de Revenue Operations.',
+        wiifm: 'Dormir tranquilo sabendo exatamente de onde vem o lucro e o prejuízo.',
+    },
+    {
+        name: 'Mariana Costa', age: 38, role: 'Head de Vendas',
+        company_context: 'Scale-up ou mid-market em crescimento acelerado', location: 'Belo Horizonte, MG',
+        bio: 'Mariana lidera o time de vendas e lida com pipeline invisível e follow-up manual. Quer previsibilidade de quota e automações que funcionem.',
+        channels: ['WhatsApp', 'LinkedIn', 'E-mail'],
+        personality: { analytical_creative: 50, passive_active: 80, reserved_extroverted: 65, reactive_preventive: 40 },
+        pain: 'Time perde 40% do tempo em tarefas manuais que não geram receita. CRM não é usado.',
+        trigger: 'Metas não batidas por 2 trimestres e pressão da diretoria.',
+        message: 'Automatize o que não vende e libere seu time para fechar contratos maiores.',
+        wiifm: 'Bater meta e ser reconhecida sem trabalhar mais horas.',
+    },
+    {
+        name: 'Felipe Rodrigues', age: 33, role: 'Head de Marketing e Growth',
+        company_context: 'SaaS B2B com investimento em marketing digital', location: 'Curitiba, PR',
+        bio: 'Felipe é responsável por gerar leads e está sob pressão constante de CAC. Investe em tráfego pago mas não consegue rastrear o impacto real.',
+        channels: ['LinkedIn', 'Google', 'Instagram', 'E-mail'],
+        personality: { analytical_creative: 70, passive_active: 75, reserved_extroverted: 60, reactive_preventive: 55 },
+        pain: 'Não consegue provar ROI das campanhas para justificar budget para a diretoria.',
+        trigger: 'Corte de budget iminente ou troca de gestão questionando resultados.',
+        message: 'Rastreamento ponta a ponta do lead ao contrato fechado em dashboards que qualquer diretoria entende.',
+        wiifm: 'Budget aprovado, promoção e reconhecimento técnico pelo time.',
+    },
+];
 
-                                {/* Photo Container */}
-                                <div className="w-64 h-80 rounded-3xl border border-zinc-900 overflow-hidden shrink-0 shadow-2xl relative group/img">
-                                    <img
-                                        src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&background=03FC3B&color=000`}
-                                        alt={persona.nome}
-                                        className="w-full h-full object-cover grayscale group-hover/img:grayscale-0 group-hover/img:scale-110 transition-all duration-1000"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                                    <div className="absolute bottom-6 left-6">
-                                        <div className="px-3 py-1 bg-revgreen text-black text-[8px] font-black uppercase tracking-widest rounded-full">Alvo Principal</div>
-                                    </div>
-                                </div>
+// ── PersonaCard ───────────────────────────────────────────────────────────
+function PersonaCard({ persona, index }: { persona: any; index: number }) {
+    const p = persona;
+    const channels = p.channels || ['LinkedIn', 'E-mail', 'WhatsApp'];
+    const personality = p.personality || { analytical_creative: 50, passive_active: 50, reserved_extroverted: 50, reactive_preventive: 50 };
 
-                                <div className="flex-1 space-y-10 pt-4">
-                                    <div className="space-y-4 text-center md:text-left">
-                                        <h3 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.8]">
-                                            {persona.nome}
-                                        </h3>
-                                        <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                                            <span className="px-4 py-2 bg-revgreen/10 border border-revgreen/20 text-revgreen text-[10px] font-black uppercase tracking-widest rounded-full">{persona.cargo}</span>
-                                            <div className="h-1 w-1 bg-zinc-800 rounded-full"></div>
-                                            <span className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">{persona.localizacao || 'BRASIL'}</span>
-                                            <div className="h-1 w-1 bg-zinc-800 rounded-full"></div>
-                                            <span className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">AGE: {persona.idade || 'N/A'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="max-w-3xl">
-                                        <p className="text-2xl text-zinc-400 font-medium leading-tight italic border-l-2 border-revgreen/30 pl-8 group-hover/card:border-revgreen transition-colors duration-700">
-                                            "{persona.bio_curta || 'Perfil estratégico focado em resultados e eficiência operacional.'}"
-                                        </p>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-12 pt-4">
-                                        <div className="space-y-6">
-                                            <h4 className="text-[10px] font-black text-revgreen uppercase tracking-[0.3em] flex items-center gap-3">
-                                                <Zap size={14} className="animate-pulse" />
-                                                Nuance Estratégica
-                                            </h4>
-                                            <p className="text-sm text-zinc-500 leading-relaxed font-medium">
-                                                {persona.historia_curta || `${persona.nome} é o principal stakeholder. Busca previsibilidade e agressividade controlada na escala.`}
-                                            </p>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Dores Principais</h4>
-                                                <ul className="space-y-2">
-                                                    {["Falta de escala", "CAC elevado", "Gaps no time"].map(p => (
-                                                        <li key={p} className="text-[10px] text-white font-bold uppercase tracking-tighter flex items-center gap-2">
-                                                            <div className="w-1 h-1 bg-revgreen rounded-full"></div> {p}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                            <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Hub de Decisão</h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {["ROI", "Data", "Speed"].map(d => (
-                                                        <span key={d} className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[8px] text-zinc-400 font-black uppercase rounded-sm">{d}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Personality Pulse System */}
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/behavior">
-                                    <div className="absolute inset-0 bg-revgreen/5 opacity-0 group-hover/behavior:opacity-100 transition-opacity blur-3xl"></div>
-                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        DNA Comportamental
-                                        <BrainCircuit className="text-revgreen" size={16} />
-                                    </h4>
-                                    <div className="space-y-12">
-                                        {[
-                                            { left: "Conservador", right: "Agressivo", value: 85 },
-                                            { left: "Analítico", right: "Criativo", value: 45 },
-                                            { left: "Passivo", right: "Ativo", value: 70 },
-                                            { left: "Individualista", right: "Colaborativo", value: 60 },
-                                        ].map((trait, i) => (
-                                            <div key={i} className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                                    <span className="text-zinc-700">{trait.left}</span>
-                                                    <span className="text-white">{trait.right}</span>
-                                                </div>
-                                                <div className="h-[2px] bg-zinc-900 relative">
-                                                    <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-revgreen rounded-full shadow-[0_0_20px_rgba(3,252,59,1)] scale-100 group-hover/behavior:scale-125 transition-transform" style={{ left: `${trait.value}%` }}></div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/channels">
-                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        Penetração de Canal
-                                        <Radio className="text-revgreen" size={16} />
-                                    </h4>
-                                    <div className="space-y-10">
-                                        {["LinkedIn Search", "Meta Ads", "Rede Direta", "WhatsApp Vendas"].map((canal, i) => (
-                                            <div key={canal} className="space-y-3">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{canal}</span>
-                                                    <span className="text-[9px] font-black text-revgreen group-hover/channels:animate-pulse">Ativo</span>
-                                                </div>
-                                                <div className="flex gap-1.5">
-                                                    {[...Array(20)].map((_, idx) => (
-                                                        <div key={idx} className={`h-4 flex-1 rounded-sm transition-all duration-500 ${idx < (16 - i * 3) ? 'bg-revgreen/80 group-hover/channels:bg-revgreen' : 'bg-zinc-900'}`}></div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+    return (
+        <div className="flex flex-col bg-white border border-zinc-200 overflow-hidden h-full">
+            {/* Dark header with avatar */}
+            <div className="bg-zinc-950 p-5">
+                <div className="flex items-start gap-4 mb-3">
+                    <div className="shrink-0">
+                        <PersonaAvatar name={p.name} index={index} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <div className="block mb-1">
+                            <EditableField path={`persona_data.personas.${index}.name`} className="text-white font-black text-lg leading-tight block" placeholder={p.name} />
+                        </div>
+                        <div className="block mb-1.5">
+                            <EditableField path={`persona_data.personas.${index}.role`} className="text-[#00CC6A] text-sm font-semibold uppercase tracking-wide block" placeholder={p.role} />
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                            {p.age && <EditableField path={`persona_data.personas.${index}.age`} className="text-zinc-500 text-xs" placeholder={`${p.age} anos`} />}
+                            {p.age && p.location && <span className="text-zinc-600">·</span>}
+                            {p.location && <EditableField path={`persona_data.personas.${index}.location`} className="text-zinc-500 text-xs" placeholder={p.location} />}
                         </div>
                     </div>
                 </div>
-            ))}
+                {p.company_context && (
+                    <EditableField path={`persona_data.personas.${index}.company_context`} className="text-zinc-400 text-xs border-t border-zinc-800 pt-3 block" placeholder={p.company_context} />
+                )}
+            </div>
 
-            {/* Benchmarks Section */}
-            <div className="max-w-7xl mx-auto space-y-20 pt-20 border-t border-zinc-900">
-                <div className="text-center space-y-6">
-                    <h2 className="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-none">
-                        Benchmark
-                    </h2>
-                    <p className="text-xs text-zinc-600 uppercase tracking-[0.4em] font-black">Inteligência de Mercado</p>
+            {/* Bio */}
+            {p.bio && (
+                <div className="px-5 pt-4 pb-0">
+                    <EditableField path={`persona_data.personas.${index}.bio`} className="text-zinc-500 text-xs leading-relaxed" placeholder={p.bio} multiline />
                 </div>
+            )}
 
-                <div className="bg-zinc-950 border border-zinc-900 rounded-[4rem] p-16 overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
-                        <TrendingUp size={400} />
-                    </div>
+            {/* Pain + Trigger */}
+            <div className="grid grid-cols-2 gap-3 p-4">
+                <div className="bg-zinc-50 border border-zinc-200 rounded p-3">
+                    <p className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-1.5">😤 Dor Principal</p>
+                    <EditableField path={`persona_data.personas.${index}.pain`} className="text-xs text-zinc-800 leading-relaxed font-medium" placeholder={p.pain} multiline />
+                </div>
+                <div className="bg-zinc-50 border border-zinc-200 rounded p-3">
+                    <p className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-1.5">⚡ Evento Crítico</p>
+                    <EditableField path={`persona_data.personas.${index}.trigger`} className="text-xs text-zinc-800 leading-relaxed font-medium" placeholder={p.trigger} multiline />
+                </div>
+            </div>
 
-                    <div className="grid md:grid-cols-4 gap-12 mb-20 relative z-10">
-                        {[
-                            { label: "Meta de CAC", value: stats.cac_medio || "N/A", color: "text-revgreen" },
-                            { label: "Taxa de Conversão", value: stats.taxa_conversao || "2.4%", color: "text-white" },
-                            { label: "Ciclo de Vendas", value: stats.ciclo_vendas || "21 Dias", color: "text-white" },
-                            { label: "Ratio LTV:CAC", value: stats.ltv_cac_ratio || "4.1x", color: "text-revgreen" }
-                        ].map((s, i) => (
-                            <div key={i} className="space-y-2 border-l border-zinc-900 pl-8">
-                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block">{s.label}</span>
-                                <p className={`text-4xl font-black ${s.color} uppercase tracking-tighter`}>{s.value}</p>
-                            </div>
-                        ))}
+            {/* Message + WIIFM */}
+            <div className="px-4 pb-3 space-y-2">
+                <div className="p-3 bg-black rounded">
+                    <div className="flex items-center gap-1.5 mb-1">
+                        <MessageSquare className="w-3 h-3 text-[#00CC6A]" />
+                        <p className="text-xs font-bold text-[#00CC6A] uppercase tracking-widest">Mensagem que Converte</p>
                     </div>
+                    <EditableField path={`persona_data.personas.${index}.message`} className="text-xs text-white font-semibold italic" placeholder={p.message} multiline />
+                </div>
+                {p.wiifm && (
+                    <div className="p-2.5 border border-zinc-200 rounded">
+                        <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-0.5">O que ele ganha</p>
+                        <EditableField path={`persona_data.personas.${index}.wiifm`} className="text-xs text-zinc-600" placeholder={p.wiifm} />
+                    </div>
+                )}
+            </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8 relative z-10">
-                        {benchmarks.slice(0, 3).map((bench: any, idx: number) => (
-                            <div key={idx} className="bg-black border border-zinc-900 p-10 rounded-[2.5rem] hover:border-revgreen/50 transition-all duration-700 group/bench">
-                                <div className="flex justify-between items-start mb-8">
-                                    <h4 className="text-2xl font-black text-white uppercase tracking-tighter group-hover/bench:text-revgreen transition-colors">
-                                        {bench.nome || bench.company_name}
-                                    </h4>
-                                    <ShieldAlert size={20} className="text-zinc-800 group-hover/bench:text-revgreen transition-all" />
-                                </div>
-                                <div className="space-y-6">
-                                    <p className="text-sm text-zinc-500 font-medium leading-relaxed">
-                                        {bench.diferencial || bench.strategy_insight || "Principal competidor na camada de serviços high-ticket."}
-                                    </p>
-                                    <div className="h-[1px] bg-zinc-900 w-full"></div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Agressividade</span>
-                                        <div className="flex gap-1.5">
-                                            {[...Array(5)].map((_, i) => (
-                                                <div key={i} className={`w-2 h-2 rounded-full ${i < 4 ? 'bg-revgreen' : 'bg-zinc-900'}`}></div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            {/* Personality Traits */}
+            <div className="px-4 pb-3">
+                <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">Perfil</p>
+                <div className="space-y-2">
+                    <TraitSlider left="Analítico" right="Criativo" value={personality.analytical_creative ?? 50} personaIndex={index} traitKey="analytical_creative" />
+                    <TraitSlider left="Passivo" right="Ativo" value={personality.passive_active ?? 50} personaIndex={index} traitKey="passive_active" />
+                    <TraitSlider left="Reservado" right="Extrovertido" value={personality.reserved_extroverted ?? 50} personaIndex={index} traitKey="reserved_extroverted" />
+                    <TraitSlider left="Reativo" right="Preventivo" value={personality.reactive_preventive ?? 50} personaIndex={index} traitKey="reactive_preventive" />
+                </div>
+            </div>
+
+            {/* Channels */}
+            <div className="mt-auto border-t border-zinc-100 px-4 py-3 flex items-center gap-3">
+                <p className="text-xs text-zinc-400 uppercase tracking-widest">Canais:</p>
+                <div className="flex gap-2">
+                    {channels.slice(0, 5).map((ch: string, i: number) => {
+                        const resolved = resolveChannel(ch);
+                        return <span key={i} className="text-zinc-500" title={resolved.label}>{resolved.icon}</span>;
+                    })}
                 </div>
             </div>
         </div>
     );
 }
 
+// ── PersonaSection ────────────────────────────────────────────────────────
+export default function PersonaSection({ plan }: { plan: any }) {
+    const personas = (plan.persona_data || {}).personas || [];
+    const displayPersonas = personas.length > 0 ? personas : defaultPersonas;
+
+    return (
+        <div className="space-y-10">
+            <div className="max-w-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-6 h-px bg-zinc-900" />
+                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Quem Compramos</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-4">
+                    Persona &<br />
+                    <span className="text-zinc-400">Tomadores de Decisão</span>
+                </h2>
+                <p className="text-zinc-500">
+                    Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {displayPersonas.slice(0, 3).map((persona: any, i: number) => (
+                    <PersonaCard key={i} persona={persona} index={i} />
+                ))}
+            </div>
+        </div>
+    );
+}
