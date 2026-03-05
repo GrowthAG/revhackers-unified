@@ -66,8 +66,21 @@ export default function StrategicPlanPresentation() {
     const isPresentation = params.get('present') === '1';
     const [isEditing, setIsEditing] = useState(params.get('edit') === '1');
     const [sidebarOpen, setSidebarOpen] = useState(!isPresentation);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const scrollToTop = () => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const toggleFullscreen = useCallback(async () => {
+        try {
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch (err) {
+            console.warn('Fullscreen not supported:', err);
+        }
+    }, []);
 
     const onPlanUpdate = (updated: any) => setPlan(updated);
 
@@ -120,10 +133,18 @@ export default function StrategicPlanPresentation() {
             if (tag === 'textarea' || tag === 'input') return;
             if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setCurrentIndex(i => Math.min(i + 1, sections.length - 1)); scrollToTop(); }
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setCurrentIndex(i => Math.max(i - 1, 0)); scrollToTop(); }
+            if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); }
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [sections.length, showSign, showRejectModal]);
+    }, [sections.length, showSign, showRejectModal, toggleFullscreen]);
+
+    // Fullscreen change listener
+    useEffect(() => {
+        const handler = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener('fullscreenchange', handler);
+        return () => document.removeEventListener('fullscreenchange', handler);
+    }, []);
 
     async function loadPlan() {
         if (!token) { setLoading(false); return; }
@@ -328,15 +349,24 @@ export default function StrategicPlanPresentation() {
             <EditToolbar />
 
             <div className={`min-h-screen bg-white flex ${isEditing ? 'pt-10' : ''}`}>
-                {/* Sidebar toggle (always visible) */}
+                {/* Controls when sidebar is collapsed */}
                 {!sidebarOpen && (
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="fixed top-3 left-3 z-40 bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm print:hidden"
-                        title="Abrir menu"
-                    >
-                        <PanelLeftOpen className="w-4 h-4 text-zinc-500" />
-                    </button>
+                    <div className="fixed top-3 left-3 z-40 flex items-center gap-1 print:hidden">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm"
+                            title="Abrir menu"
+                        >
+                            <PanelLeftOpen className="w-4 h-4 text-zinc-500" />
+                        </button>
+                        <button
+                            onClick={toggleFullscreen}
+                            className="bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm"
+                            title={isFullscreen ? 'Sair da tela cheia (F)' : 'Tela cheia (F)'}
+                        >
+                            {isFullscreen ? <Minimize2 className="w-4 h-4 text-zinc-500" /> : <Maximize2 className="w-4 h-4 text-zinc-500" />}
+                        </button>
+                    </div>
                 )}
 
                 {/* Sidebar nav */}
@@ -346,20 +376,26 @@ export default function StrategicPlanPresentation() {
                         <div className="flex items-center justify-between mb-3">
                             <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-5 w-auto" />
                             <div className="flex items-center gap-1">
-                                {/* Edit mode toggle (only for admin via ?edit param) */}
-                                {params.get('edit') !== null && (
-                                    <button
-                                        onClick={() => setIsEditing(prev => !prev)}
-                                        title={isEditing ? 'Sair do modo edição' : 'Editar plano'}
-                                        className={`p-1.5 transition-colors ${isEditing ? 'bg-[#00CC6A]/10 text-[#00CC6A]' : 'text-zinc-400 hover:text-zinc-600'}`}
-                                    >
-                                        <Pencil className="w-3.5 h-3.5" />
-                                    </button>
-                                )}
+                                {/* Edit mode toggle – always visible */}
+                                <button
+                                    onClick={() => setIsEditing(prev => !prev)}
+                                    title={isEditing ? 'Sair do modo edição' : 'Modo Editor'}
+                                    className={`p-1.5 transition-colors rounded ${isEditing ? 'bg-[#00CC6A]/10 text-[#00CC6A]' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                                {/* Fullscreen toggle */}
+                                <button
+                                    onClick={toggleFullscreen}
+                                    title={isFullscreen ? 'Sair da tela cheia (F)' : 'Tela cheia (F)'}
+                                    className="p-1.5 text-zinc-400 hover:text-zinc-600 transition-colors rounded"
+                                >
+                                    {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                                </button>
                                 {/* Sidebar collapse */}
                                 <button
                                     onClick={() => setSidebarOpen(false)}
-                                    title="Tela cheia"
+                                    title="Recolher menu"
                                     className="p-1.5 text-zinc-400 hover:text-zinc-600 transition-colors"
                                 >
                                     <PanelLeftClose className="w-3.5 h-3.5" />

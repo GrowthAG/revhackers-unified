@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Loader2, ArrowRight } from 'lucide-react';
+import { Check, Loader2, ArrowRight, Smartphone } from 'lucide-react';
 
 const defaultSteps = [
     { day: 'Dia 1', category: 'Reunião Kick-Off', description: 'Alinhamento de expectativas, acesso aos sistemas e coleta de materiais.' },
@@ -20,6 +20,12 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
     const implSteps = plan.diagnostic_data?.implementation_steps || [];
     const nextSteps = implSteps.length > 0 ? implSteps : (plan.next_steps_data?.week1_actions || []);
     const steps = nextSteps.length > 0 ? nextSteps : defaultSteps;
+
+    // QR code URL for mobile access
+    const planUrl = plan.access_token
+        ? `${window.location.origin}/plan/${plan.access_token}`
+        : window.location.href.split('?')[0];
+    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=180x180&chl=${encodeURIComponent(planUrl)}&choe=UTF-8&chld=M|1`;
 
     const isApproved = status === 'approved';
     const isRejected = status === 'revision_requested' || status === 'rejected';
@@ -65,6 +71,43 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         </div>
                     );
                 })}
+            </div>
+
+            {/* QR Code – Mobile access */}
+            <div className="border border-zinc-200 overflow-hidden">
+                <div className="flex flex-col md:flex-row items-center gap-0">
+                    {/* QR Panel */}
+                    <div className="bg-zinc-50 flex flex-col items-center justify-center p-8 md:p-10 shrink-0 border-b md:border-b-0 md:border-r border-zinc-200">
+                        <img
+                            src={qrUrl}
+                            alt="QR Code para acesso mobile"
+                            className="w-[140px] h-[140px]"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                    </div>
+                    {/* Info */}
+                    <div className="p-8 flex-1">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Smartphone className="w-4 h-4 text-zinc-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Acesse pelo celular</p>
+                        </div>
+                        <h4 className="text-lg font-bold text-black mb-2">Compartilhe com seu time</h4>
+                        <p className="text-sm text-zinc-500 leading-relaxed mb-4">
+                            Escaneie o QR code para abrir este planejamento direto no smartphone ou envie o link para quem precisa revisar.
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <code className="text-xs text-zinc-400 font-mono bg-zinc-100 px-3 py-2 flex-1 truncate block">
+                                {planUrl}
+                            </code>
+                            <button
+                                onClick={() => navigator.clipboard?.writeText(planUrl).then(() => alert('Link copiado!')).catch(() => {})}
+                                className="text-xs px-3 py-2 border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-black transition-colors shrink-0"
+                            >
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Approval CTA */}
