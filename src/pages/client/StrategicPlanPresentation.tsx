@@ -435,15 +435,20 @@ export default function StrategicPlanPresentation() {
                     </div>
                 </div>
 
-                {/* Main content */}
-                <div ref={scrollRef} className="flex-1 overflow-y-auto h-screen">
-                    <div className="max-w-5xl mx-auto px-8 md:px-16 py-12 md:py-20">
-                        {renderSection()}
+                {/* Main content — 16:9 slide format */}
+                <div ref={scrollRef} className="flex-1 overflow-y-auto h-screen bg-zinc-100 flex flex-col">
+                    {/* Slide container */}
+                    <div className="flex-1 flex items-center justify-center p-4 md:p-8">
+                        <div className="w-full bg-white shadow-2xl overflow-y-auto" style={{ aspectRatio: '16/9', maxHeight: 'calc(100vh - 6rem)', maxWidth: '1400px' }}>
+                            <div className="h-full overflow-y-auto px-10 md:px-16 py-10 md:py-14">
+                                {renderSection()}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Bottom nav */}
                     {currentSectionId !== 'approval' && (
-                        <div className="border-t border-zinc-200 px-8 md:px-16 py-6 flex items-center justify-between print:hidden">
+                        <div className="shrink-0 bg-white border-t border-zinc-200 px-8 md:px-16 py-4 flex items-center justify-between print:hidden">
                             <button onClick={goPrev} disabled={currentIndex === 0} className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
                                 <ArrowLeft className="w-4 h-4" /> Anterior
                             </button>
