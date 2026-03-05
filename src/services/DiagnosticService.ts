@@ -71,18 +71,21 @@ export class DiagnosticService {
         const plan_data = this.generatePlanFromResponse(response, marketData);
 
         // --- INTELLIGENCE LAYER (The Voice) ---
-        const segment = answers.segmento || 'Generalista';
-        const objective = answers.objetivoPrincipal || 'Crescimento';
+        const segment = answers.segmento || answers.segmento_outro || 'Generalista';
+        const objective = answers.metaCrescimento || answers.objetivoPrincipal || 'Crescimento';
         const hasCRM = this.checkHasCRM(answers);
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
+        const ticketMedio = answers.ticketMedio || '';
+        const tamanho = answers.tamanho || '';
+        const crmName = answers.crm || answers.crm_outro || '';
 
-        // 1. Context Mirror
+        // 1. Context Mirror (using REAL REI data)
         const context_mirror = {
             segment,
             objective,
-            maturity: hasCRM ? 'Intermediária (Possui CRM)' : 'Inicial (Sem CRM)',
-            restrictions: `Budget: ${budget}`
+            maturity: hasCRM ? `Intermediária (CRM: ${crmName})` : 'Inicial (Sem CRM)',
+            restrictions: `Budget: ${budget}${ticketMedio ? ` | Ticket Médio: ${ticketMedio}` : ''}${tamanho ? ` | Porte: ${tamanho}` : ''}`
         };
 
         // 2. Signals
@@ -204,25 +207,24 @@ export class DiagnosticService {
 
 
     static generatePlanFromResponse(response: ReiResponse, marketData?: any): StrategicPlanData {
-        const answers = response.responses as Record<string, any>; // The raw answers
+        const answers = response.responses as Record<string, any>;
 
-        // 1. ANALYZE CONTEXT (The "Brain")
-        const segment = answers.segmento || 'Generalista';
-        const objective = answers.objetivoPrincipal || 'Crescimento';
+        // 1. ANALYZE CONTEXT (using actual REI field names)
+        const segment = answers.segmento || answers.segmento_outro || 'Generalista';
+        const objective = answers.metaCrescimento || answers.objetivoPrincipal || 'Crescimento';
         const hasCRM = this.checkHasCRM(answers);
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
 
-        // Extract specific GTM data 
-        // DATA LINKING: We explicitly capture these to show "Based on X" later
+        // Extract specific GTM data from REAL REI fields
         const challenges = answers.desafios || [];
-        const bottlenecks = answers.gargalo || answers.gargaloFunil || 'Não identificado';
+        const bottlenecks = answers.gargaloFunil || answers.gargaloFunil_outro || answers.gargalo || answers.gargalo_outro || 'Não identificado';
         const channels = answers.canaisAquisicao || [];
         const growthGoal = answers.metaCrescimento || 'Não definida';
 
         // 2. GENERATE MODULES
         return {
-            premises_data: this.generatePremises(segment, objective, bottlenecks, answers), // Pass full answers for linking
+            premises_data: this.generatePremises(segment, objective, bottlenecks, answers),
             methodology_data: this.generateMethodology(isB2B, channels),
             roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, marketData),
             goals_data: this.generateGoals(objective, growthGoal),
@@ -236,36 +238,59 @@ export class DiagnosticService {
     // --- HELPER LOGIC ---
 
     private static checkHasCRM(answers: any): boolean {
-        // Simple heuristic: check if they mentioned a CRM name or "Sim" to tool questions
-        const tools = (answers.ferramentasAtuais || answers.crm || '').toLowerCase();
-        return tools.includes('active') || tools.includes('rd station') || tools.includes('pipedrive') || tools.includes('hubspot') || tools.includes('salesforce') || tools.length > 3;
+        // Read from the actual REI field 'crm' (not 'ferramentasAtuais')
+        const crmValue = (answers.crm || answers.crm_outro || '').toLowerCase().trim();
+        // Return true if they specified any CRM tool (not empty, not 'não', not 'nenhum')
+        if (!crmValue || crmValue === 'nao' || crmValue === 'não' || crmValue === 'nenhum' || crmValue === 'nao_tenho' || crmValue === 'nao tenho' || crmValue === 'não tenho') return false;
+        return true;
     }
 
     private static checkIsB2B(answers: any): boolean {
-        const segment = (answers.segmento || '').toLowerCase();
-        const idealCustomer = (answers.clienteIdeal || '').toLowerCase();
-        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || idealCustomer.includes('empresas') || idealCustomer.includes('corporativo');
+        const segment = (answers.segmento || answers.segmento_outro || '').toLowerCase();
+        const tamanho = (answers.tamanho || '').toLowerCase();
+        const ticketMedio = (answers.ticketMedio || '').toLowerCase();
+        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || segment.includes('tecnologia') || segment.includes('consultoria') || segment.includes('software') || tamanho.includes('enterprise') || ticketMedio.includes('alto');
     }
 
     // --- GENERATORS ---
 
     private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any) {
+        const crmName = answers.crm || answers.crm_outro || '';
+        const hasCRM = this.checkHasCRM(answers);
+        const ticketMedio = answers.ticketMedio || '';
+        const mrr = answers.mrr || '';
+        const churn = answers.taxaChurn || '';
+        const canais = (answers.canaisAquisicao || []).join(', ') || 'Não informados';
+        const tamanho = answers.tamanho || '';
+
         return {
             pillars: [
                 {
-                    name: 'Contexto',
+                    name: 'Contexto do Negócio',
                     icon: 'building',
                     items: [
-                        `Segmento: ${segment} (Baseado na resposta: "Qual seu segmento?")`,
-                        `Foco: ${objective} (Baseado na resposta: "Objetivo Principal")`
-                    ]
+                        `Segmento: ${segment}`,
+                        tamanho ? `Porte da Empresa: ${tamanho}` : null,
+                        ticketMedio ? `Ticket Médio: ${ticketMedio}` : null,
+                        mrr ? `MRR Atual: ${mrr}` : null,
+                    ].filter(Boolean)
                 },
                 {
-                    name: 'Diagnóstico',
+                    name: 'Stack & Infraestrutura',
+                    icon: 'settings',
+                    items: [
+                        hasCRM ? `CRM Atual: ${crmName}` : 'Sem CRM implementado',
+                        `Canais de Aquisição: ${canais}`,
+                        churn ? `Taxa de Churn: ${churn}` : null,
+                    ].filter(Boolean)
+                },
+                {
+                    name: 'Diagnóstico Estratégico',
                     icon: 'search',
                     items: [
-                        `Maturidade Digital: ${this.checkHasCRM(answers) ? 'Intermediária' : 'Inicial'} (Análise de Ferramentas)`,
-                        `Gargalo Principal: ${bottleneck}`
+                        `Objetivo Principal: ${objective}`,
+                        `Gargalo Identificado: ${bottleneck}`,
+                        `Maturidade Digital: ${hasCRM ? 'Intermediária (possui ferramentas)' : 'Inicial (sem ferramentas estruturadas)'}`,
                     ]
                 }
             ]
