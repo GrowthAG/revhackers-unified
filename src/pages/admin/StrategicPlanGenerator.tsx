@@ -247,18 +247,24 @@ export default function StrategicPlanGenerator() {
             const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
             const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
-            // 3. Define Plan Data (Merging generated + enriched)
+            // 3. Define Plan Data (only columns that exist in strategic_plans table)
+            // Destructure to exclude market_intelligence which is NOT a DB column
+            const { market_intelligence, ...dbSafePlanData } = plan_data;
+
             const finalPlanData = {
-                ...plan_data,
+                ...dbSafePlanData,
                 rei_project_id: reiProjectId,
                 client_id: clientId,
                 created_by: (await supabase.auth.getUser()).data.user?.id,
                 status: existingPlan ? existingPlan.status : 'draft',
                 diagnostic_data: {
                     ...diagnosticContext,
-                    enriched_analysis: enrichmentResult
+                    enriched_analysis: enrichmentResult,
+                    market_intelligence: market_intelligence || null
                 } as any
             };
+
+            console.log('Final plan data keys:', Object.keys(finalPlanData));
 
             // 4. Save Plan (Insert or Update)
             if (existingPlan) {

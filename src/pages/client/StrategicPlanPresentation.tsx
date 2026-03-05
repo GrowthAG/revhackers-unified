@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanEditProvider } from '@/components/plan/PlanEditContext';
-import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2 } from 'lucide-react';
+import { EditToolbar } from '@/components/plan/PlanEditContext';
 
 // Section imports
 import CoverSection from './sections/CoverSection';
@@ -60,6 +61,7 @@ export default function StrategicPlanPresentation() {
     const [rejecting, setRejecting] = useState(false);
     const [rejectSent, setRejectSent] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(!isPresentation);
 
     const scrollToTop = () => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -322,12 +324,48 @@ export default function StrategicPlanPresentation() {
                 </div>
             )}
 
-            <div className="min-h-screen bg-white flex">
+            {/* Edit Toolbar (only visible in edit mode) */}
+            <EditToolbar />
+
+            <div className={`min-h-screen bg-white flex ${isEditing ? 'pt-10' : ''}`}>
+                {/* Sidebar toggle (always visible) */}
+                {!sidebarOpen && (
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        className="fixed top-3 left-3 z-40 bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm print:hidden"
+                        title="Abrir menu"
+                    >
+                        <PanelLeftOpen className="w-4 h-4 text-zinc-500" />
+                    </button>
+                )}
+
                 {/* Sidebar nav */}
-                <div className="w-64 bg-zinc-50 border-r border-zinc-200 flex flex-col shrink-0 sticky top-0 h-screen overflow-y-auto print:hidden">
-                    {/* Logo */}
+                <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-zinc-50 border-r border-zinc-200 flex flex-col shrink-0 sticky top-0 h-screen overflow-hidden transition-all duration-300 print:hidden`}>
+                    {/* Header with controls */}
                     <div className="p-5 border-b border-zinc-200">
-                        <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-5 w-auto mb-3" />
+                        <div className="flex items-center justify-between mb-3">
+                            <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-5 w-auto" />
+                            <div className="flex items-center gap-1">
+                                {/* Edit mode toggle (only for admin via ?edit param) */}
+                                {params.get('edit') !== null && (
+                                    <button
+                                        onClick={() => setIsEditing(prev => !prev)}
+                                        title={isEditing ? 'Sair do modo edição' : 'Editar plano'}
+                                        className={`p-1.5 transition-colors ${isEditing ? 'bg-[#00CC6A]/10 text-[#00CC6A]' : 'text-zinc-400 hover:text-zinc-600'}`}
+                                    >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                                {/* Sidebar collapse */}
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    title="Tela cheia"
+                                    className="p-1.5 text-zinc-400 hover:text-zinc-600 transition-colors"
+                                >
+                                    <PanelLeftClose className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </div>
                         <p className="text-xs text-zinc-400 leading-snug truncate">{companyName}</p>
                         <div className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium mt-2 ${badge.cls}`}>
                             {badge.label}
@@ -335,12 +373,12 @@ export default function StrategicPlanPresentation() {
                     </div>
 
                     {/* Nav items */}
-                    <div className="flex-1 py-3">
+                    <div className="flex-1 py-3 overflow-y-auto">
                         {sections.map((s, i) => {
                             const isActive = i === currentIndex;
                             const isPast = i < currentIndex;
                             return (
-                                <button key={s.id} onClick={() => { setCurrentIndex(i); scrollToTop(); }} className={`w-full flex items-center gap-3 px-5 py-2.5 text-left text-sm transition-colors ${isActive ? 'bg-zinc-200/70 text-black font-semibold' : isPast ? 'text-zinc-500 hover:bg-zinc-100' : 'text-zinc-400 hover:bg-zinc-100'}`}>
+                                <button key={s.id} onClick={() => { setCurrentIndex(i); scrollToTop(); }} className={`w-full flex items-center gap-3 px-5 py-2.5 text-left text-sm transition-colors whitespace-nowrap ${isActive ? 'bg-zinc-200/70 text-black font-semibold' : isPast ? 'text-zinc-500 hover:bg-zinc-100' : 'text-zinc-400 hover:bg-zinc-100'}`}>
                                     <span className={`shrink-0 ${isActive ? 'text-black' : isPast ? 'text-zinc-400' : 'text-zinc-300'}`}>{s.icon}</span>
                                     <span className="truncate">{s.name}</span>
                                     {isPast && <Check className="w-3 h-3 text-[#00CC6A] shrink-0 ml-auto" />}
