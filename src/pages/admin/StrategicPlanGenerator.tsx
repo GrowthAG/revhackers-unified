@@ -231,28 +231,85 @@ export default function StrategicPlanGenerator() {
                 console.warn('AI Enrichment failed (non-blocking):', aiError);
             }
 
+            // ── Map Perplexity personas → PersonaSection format ──────────────
+            const mappedPersonas = (enrichmentResult.personas?.personas || []).map((p: any, i: number) => ({
+                name: p.nome || `Persona ${i + 1}`,
+                role: p.cargo || 'Decisor',
+                age: p.idade ? parseInt(p.idade) : (35 + i * 5),
+                location: 'Brasil',
+                company_context: p.empresa_tipo || segment,
+                bio: p.bio_curta || '',
+                channels: p.canais_favoritos || ['LinkedIn', 'E-mail', 'WhatsApp'],
+                personality: {
+                    analytical_creative: 30 + (i * 20),
+                    passive_active: 60 + (i * 10),
+                    reserved_extroverted: 45 + (i * 15),
+                    reactive_preventive: 40 + (i * 10)
+                },
+                pain: (p.dores_principais || []).join('. ') || 'A ser detalhado na consultoria.',
+                trigger: (p.gatilhos_mentais || []).slice(0, 2).join('. ') || 'Pressão por resultados.',
+                message: p.pitch_elevador || (p.ganhos_desejados || []).join(' — ') || 'Mensagem a ser definida.',
+                wiifm: (p.ganhos_desejados || []).slice(0, 2).join('. ') || 'Resultado concreto e mensurável.',
+            }));
+
+            // ── Map Perplexity market → BenchmarkSection format ──────────────
+            const mappedCompetitors = (enrichmentResult.market?.concorrentes_benchmark || []).map((c: any) => ({
+                company_name: c.nome || 'Concorrente',
+                domain: c.url || '',
+                monthly_traffic: '—',
+                domain_authority: 0,
+                avg_cpc: '—',
+                top_keywords: [],
+                strengths: c.pontos_fortes || '',
+                weaknesses: c.pontos_fracos || '',
+            }));
+
+            const mappedTrends = (enrichmentResult.market?.tendencias_2025 || []).map((t: any) =>
+                typeof t === 'string' ? t : `${t.titulo}: ${t.descricao || t.impacto || ''}`
+            );
+
+            const mappedMarketSizing = {
+                tam: enrichmentResult.market?.tam_sam_som?.tam || 'A ser definido na pesquisa profunda',
+                sam: enrichmentResult.market?.tam_sam_som?.sam || 'A ser definido na pesquisa profunda',
+                som: enrichmentResult.market?.tam_sam_som?.som || 'A ser definido na pesquisa profunda',
+            };
+
+            const mappedAdvice = enrichmentResult.market?.analise_swot_rapida
+                ? `Oportunidades: ${(enrichmentResult.market.analise_swot_rapida.oportunidades || []).join('; ')}. Ameaças: ${(enrichmentResult.market.analise_swot_rapida.ameacas || []).join('; ')}.`
+                : 'Foco em eficiência operacional e decisões baseadas em dados.';
+
+            // ── Build persona_data (for PersonaSection + BenchmarkSection) ────
+            const personaData = {
+                personas: mappedPersonas.length > 0 ? mappedPersonas : undefined,
+                competitor_benchmarks: mappedCompetitors.length > 0 ? mappedCompetitors : undefined,
+                industry_trends: mappedTrends.length > 0 ? mappedTrends : undefined,
+                market_sizing: mappedMarketSizing,
+                strategic_advice: mappedAdvice,
+                avg_cac_benchmark: enrichmentResult.benchmark?.cac_medio || undefined,
+                conversion_benchmarks: enrichmentResult.benchmark
+                    ? `Lead→SQL: ${enrichmentResult.benchmark.taxa_conversao || '—'} | Ciclo: ${enrichmentResult.benchmark.ciclo_vendas || '—'} | LTV:CAC: ${enrichmentResult.benchmark.ltv_cac_ratio || '—'}`
+                    : undefined,
+                key_differentiators: enrichmentResult.market?.analise_swot_rapida?.oportunidades || undefined,
+            };
+
             // Fallback market context (used by DiagnosticService)
             const marketCtx = {
-                industry_trends: enrichmentResult.market?.tendencias_2025?.map((t: any) => t.titulo) || ['Automação de vendas', 'Revenue Operations', 'IA Generativa aplicada a vendas'],
-                competitor_benchmarks: [],
-                market_sizing: {
-                    tam: enrichmentResult.market?.tam_sam_som?.tam || 'A ser definido na pesquisa profunda',
-                    sam: enrichmentResult.market?.tam_sam_som?.sam || 'A ser definido na pesquisa profunda',
-                    som: enrichmentResult.market?.tam_sam_som?.som || 'A ser definido na pesquisa profunda'
-                },
-                personas: [],
-                strategic_advice: "Foco em eficiência operacional e decisões baseadas em dados."
+                industry_trends: mappedTrends.length > 0 ? mappedTrends : ['Automação de vendas', 'Revenue Operations', 'IA Generativa aplicada a vendas'],
+                competitor_benchmarks: mappedCompetitors,
+                market_sizing: mappedMarketSizing,
+                personas: mappedPersonas,
+                strategic_advice: mappedAdvice,
             };
 
             const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
             const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
             // 3. Define Plan Data (only columns that exist in strategic_plans table)
-            // Destructure to exclude market_intelligence which is NOT a DB column
             const { market_intelligence, ...dbSafePlanData } = plan_data;
 
             const finalPlanData = {
                 ...dbSafePlanData,
+                persona_data: personaData,
                 rei_project_id: reiProjectId,
                 client_id: clientId,
                 created_by: (await supabase.auth.getUser()).data.user?.id,
