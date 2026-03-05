@@ -335,6 +335,30 @@ const ReiHubPage = () => {
                                 </span>
                             </div>
                         </motion.div>
+
+                        {/* Card 5: Site & Landing Pages */}
+                        <motion.div
+                            variants={itemAnim}
+                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => !creatingProject && handleSelectType('site')}
+                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
+                        >
+                            <div>
+                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
+                                    <Globe className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+                                </div>
+                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Site & Landing Pages</h3>
+                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
+                                    Presença Digital
+                                </p>
+                            </div>
+                            <div className="relative mt-auto flex justify-end">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
+                                </span>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>

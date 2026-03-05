@@ -158,32 +158,6 @@ export default function Step3Desafios({ form }: Step3Props) {
                     )}
                 </div>
 
-                {/* Métrica Principal */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
-                        Qual métrica é mais importante para você? *
-                    </Label>
-                    <Select
-                        onValueChange={(value) => form.setValue('metricaPrincipal', value)}
-                        value={form.watch('metricaPrincipal')}
-                    >
-                        <SelectTrigger className="bg-white border-zinc-200 h-12">
-                            <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="leads">Número de leads</SelectItem>
-                            <SelectItem value="conversao">Taxa de conversão</SelectItem>
-                            <SelectItem value="cac">CAC (Custo de Aquisição)</SelectItem>
-                            <SelectItem value="ltv">LTV (Lifetime Value)</SelectItem>
-                            <SelectItem value="mrr">Receita recorrente (MRR/ARR)</SelectItem>
-                            <SelectItem value="roi">ROI geral</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {form.formState.errors.metricaPrincipal && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.metricaPrincipal.message as string}</p>
-                    )}
-                </div>
-
                 {/* Gargalo no Funil */}
                 <div className="space-y-3">
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">

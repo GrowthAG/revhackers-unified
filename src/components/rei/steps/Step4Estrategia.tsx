@@ -191,43 +191,6 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     </div>
                 </div>
 
-                {/* Gargalo */}
-                <div className="space-y-3">
-                    <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
-                        Qual o principal gargalo na sua operação? *
-                    </Label>
-                    <Select
-                        onValueChange={(value) => form.setValue('gargalo', value)}
-                        value={form.watch('gargalo')}
-                    >
-                        <SelectTrigger className="bg-white border-zinc-200 h-12">
-                            <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="falta-leads">Falta de leads</SelectItem>
-                            <SelectItem value="leads-nao-qualificados">Leads não qualificados</SelectItem>
-                            <SelectItem value="baixa-conversao">Baixa conversão de vendas</SelectItem>
-                            <SelectItem value="processo-lento">Processo de vendas lento</SelectItem>
-                            <SelectItem value="falta-previsibilidade">Falta de previsibilidade</SelectItem>
-                            <SelectItem value="churn-alto">Churn alto</SelectItem>
-                            <SelectItem value="falta-dados">Falta de dados/métricas</SelectItem>
-                            <SelectItem value="outro">Outro (Descreva)</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {form.watch('gargalo') === 'outro' && (
-                        <div className="animate-in fade-in slide-in-from-top-2">
-                            <input
-                                {...form.register('gargalo_outro')}
-                                placeholder="Qual outro gargalo?"
-                                className="w-full h-12 p-3 bg-white border border-zinc-200 focus:border-black outline-none transition-colors rounded-none placeholder:text-zinc-400 text-sm"
-                            />
-                        </div>
-                    )}
-                    {form.formState.errors.gargalo && (
-                        <p className="text-red-500 text-xs">{form.formState.errors.gargalo.message as string}</p>
-                    )}
-                </div>
-
                 {/* CAC Atual */}
                 <div className="space-y-3">
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
