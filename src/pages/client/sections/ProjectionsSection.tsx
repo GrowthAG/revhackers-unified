@@ -157,7 +157,7 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
             </div>
 
             <p className="text-xs text-zinc-300 text-center pt-2">
-                Projeções baseadas em benchmarks de mercado. Resultados reais dependem de execução e contexto específico do projeto.
+                {plan.financial_projections?.note || 'Projeções baseadas em benchmarks de mercado. Resultados reais dependem de execução e contexto específico do projeto.'}
             </p>
         </div>
     );
