@@ -493,25 +493,94 @@ export class DiagnosticService {
     }
 
     private static generateProjections(budget: string, answers: any) {
-        const ticketMedio = answers.ticketMedio || '';
-        const mrr = answers.mrr || '';
+        const ticketMedioRaw = answers.ticketMedio || '';
+        const mrrSelect = answers.mrr || '';
         const growthGoal = answers.metaCrescimento || '';
         const cicloVendas = answers.cicloVendas || '';
+        const cacAtual = answers.cacAtual || '';
+        const churnRate = answers.taxaChurn || '';
+        const ltvAtual = answers.ltvAtual || '';
+        const orcamento = answers.orcamento || budget || '';
+
+        // ── Parse REI select values into real numbers ──────────────────
+        const mrrMap: Record<string, number> = {
+            'ate-50k': 35000, '50k-200k': 100000, '200k-500k': 300000,
+            '500k-1m': 700000, 'acima-1m': 1500000,
+        };
+        const budgetMap: Record<string, number> = {
+            'ate-5k': 3000, 'ate-10k': 7000, '10k-25k': 15000,
+            '25k-50k': 35000, 'acima-50k': 75000,
+        };
+        const churnMap: Record<string, number> = {
+            '0-2': 1, '2-5': 3.5, '5-10': 7.5, 'acima-10': 15,
+        };
+        const ltvMap: Record<string, number> = {
+            'menor-5k': 3500, '5k-20k': 12000, '20k-100k': 50000, 'acima-100k': 150000,
+        };
+
+        const currentMRR = mrrMap[mrrSelect] || parseFloat(String(mrrSelect).replace(/[^0-9]/g, '')) || 8000;
+        const monthlyBudget = budgetMap[orcamento] || parseFloat(String(orcamento).replace(/[^0-9]/g, '')) || 5000;
+        const churn = (churnMap[churnRate] || 3) / 100;
+        const ltv = ltvMap[ltvAtual] || 0;
+
+        // Parse ticket médio (e.g. "R$ 3.500,00" → 3500)
+        const ticketNum = parseFloat(String(ticketMedioRaw).replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+        const ticketMedio = ticketNum > 0 ? ticketNum : (currentMRR > 0 ? Math.round(currentMRR / 10) : 1500);
+
+        // Parse CAC (e.g. "R$ 500,00" → 500 or "alto" → estimate)
+        const cacNum = parseFloat(String(cacAtual).replace(/[R$\s.]/g, '').replace(',', '.'));
+        const estimatedCAC = !isNaN(cacNum) && cacNum > 0 ? cacNum : Math.round(ticketMedio * 0.25);
+
+        // ── Growth rate based on metaCrescimento ────────────────────────
+        const growthRates: Record<string, number> = {
+            'agressivo': 0.20, 'crescer': 0.15, 'moderado': 0.10, 'manter': 0.05,
+            'escalar': 0.18, 'dobrar': 0.25,
+        };
+        const monthlyGrowth = growthRates[growthGoal.toLowerCase()] || 0.12;
+
+        // ── Calculate 6 months of projections ──────────────────────────
+        const months = 6;
+        const monthly_projections = [];
+        let runningMRR = currentMRR;
+
+        for (let i = 0; i < months; i++) {
+            // Month 1 = setup, lower growth
+            const effectiveGrowth = i === 0 ? monthlyGrowth * 0.3 : monthlyGrowth;
+            const churnLoss = Math.round(runningMRR * churn);
+            const newRevenue = Math.round(runningMRR * effectiveGrowth);
+            runningMRR = runningMRR - churnLoss + newRevenue;
+
+            const newClients = ticketMedio > 0 ? Math.max(1, Math.round(newRevenue / ticketMedio)) : 0;
+            const leadsNeeded = Math.round(newClients * 5); // 20% conversion assumption
+
+            monthly_projections.push({
+                month: `Mês ${i + 1}`,
+                label: `M${i + 1}`,
+                mrr: Math.round(runningMRR),
+                mrr_formatted: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(runningMRR),
+                leads: leadsNeeded,
+                new_clients: newClients,
+                churn_loss: churnLoss,
+                cac: estimatedCAC,
+            });
+        }
 
         return {
-            note: `Projeções baseadas no budget declarado de ${budget}${ticketMedio ? `, ticket médio de ${ticketMedio}` : ''}${mrr ? ` e MRR atual de ${mrr}` : ''}.`,
+            current_mrr: currentMRR,
+            ticket_medio: ticketMedio,
+            cac_estimado: estimatedCAC,
+            churn_mensal: churn,
+            meta_crescimento: growthGoal,
+            total_months: months,
+            note: `Projeções calculadas com base no MRR atual (~${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(currentMRR)}), ticket médio de ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(ticketMedio)}, CAC estimado de ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(estimatedCAC)} e churn de ${(churn * 100).toFixed(1)}%.`,
             context: {
-                budget,
-                ticket_medio: ticketMedio,
-                mrr_atual: mrr,
+                budget: orcamento,
+                ticket_medio: ticketMedioRaw,
+                mrr_atual: mrrSelect,
                 meta_crescimento: growthGoal,
-                ciclo_vendas: cicloVendas
+                ciclo_vendas: cicloVendas,
             },
-            monthly_projections: [
-                { period: 'Mês 1', nmrr_total: 'Setup & Infraestrutura' },
-                { period: 'Mês 3', nmrr_total: 'Tração Inicial — Primeiros resultados mensuráveis' },
-                { period: 'Mês 6', nmrr_total: growthGoal ? `Meta: ${growthGoal}` : 'Escala — Otimização contínua' }
-            ]
+            monthly_projections,
         };
     }
 
@@ -894,38 +963,38 @@ export class DiagnosticService {
      * Uses: segmento.
      */
     static generateDefaultTrends(answers: any): string[] {
-    const raw = answers.segmento === 'outro'
-        ? (answers.segmento_outro || '')
-        : (answers.segmento || answers.segmento_outro || '');
-    const segment = raw.toLowerCase();
+        const raw = answers.segmento === 'outro'
+            ? (answers.segmento_outro || '')
+            : (answers.segmento || answers.segmento_outro || '');
+        const segment = raw.toLowerCase();
 
-    if (segment.includes('saas') || segment.includes('software')) {
+        if (segment.includes('saas') || segment.includes('software')) {
+            return [
+                'Product-Led Growth (PLG) como motor de aquisição: empresas SaaS que adotam PLG crescem 2x mais rápido',
+                'AI-native features viram commodity — diferencial migra para onboarding e time-to-value',
+                'Revenue Operations integrado (RevOps) reduz CAC em até 25% ao alinhar marketing, vendas e CS',
+            ];
+        }
+        if (segment.includes('fintech') || segment.includes('financ')) {
+            return [
+                'Open Finance amplia superfície de dados para personalização de ofertas e redução de inadimplência',
+                'Compliance-first como diferencial competitivo: empresas que investem em governança crescem mais confiantes',
+                'Embedded Finance: serviços financeiros dentro de plataformas não-financeiras ganham tração acelerada',
+            ];
+        }
+        if (segment.includes('cyber') || segment.includes('segurança')) {
+            return [
+                'Zero Trust Architecture vira padrão mínimo de segurança para empresas médias e grandes',
+                'Aumento de 300% em ataques de ransomware gera urgência e budget de segurança',
+                'Conformidade com LGPD e frameworks internacionais (ISO 27001) como gatilho de compra',
+            ];
+        }
+        // Generic B2B default
         return [
-            'Product-Led Growth (PLG) como motor de aquisição: empresas SaaS que adotam PLG crescem 2x mais rápido',
-            'AI-native features viram commodity — diferencial migra para onboarding e time-to-value',
-            'Revenue Operations integrado (RevOps) reduz CAC em até 25% ao alinhar marketing, vendas e CS',
+            'Automação de processos com IA generativa reduz custo operacional em 20–35% para empresas B2B',
+            'Revenue Operations integrado (RevOps) como vantagem competitiva — elimina silos entre marketing, vendas e CS',
+            'Personalização baseada em dados aumenta taxas de conversão em até 35% no pipeline',
         ];
     }
-    if (segment.includes('fintech') || segment.includes('financ')) {
-        return [
-            'Open Finance amplia superfície de dados para personalização de ofertas e redução de inadimplência',
-            'Compliance-first como diferencial competitivo: empresas que investem em governança crescem mais confiantes',
-            'Embedded Finance: serviços financeiros dentro de plataformas não-financeiras ganham tração acelerada',
-        ];
-    }
-    if (segment.includes('cyber') || segment.includes('segurança')) {
-        return [
-            'Zero Trust Architecture vira padrão mínimo de segurança para empresas médias e grandes',
-            'Aumento de 300% em ataques de ransomware gera urgência e budget de segurança',
-            'Conformidade com LGPD e frameworks internacionais (ISO 27001) como gatilho de compra',
-        ];
-    }
-    // Generic B2B default
-    return [
-        'Automação de processos com IA generativa reduz custo operacional em 20–35% para empresas B2B',
-        'Revenue Operations integrado (RevOps) como vantagem competitiva — elimina silos entre marketing, vendas e CS',
-        'Personalização baseada em dados aumenta taxas de conversão em até 35% no pipeline',
-    ];
-}
 }
 

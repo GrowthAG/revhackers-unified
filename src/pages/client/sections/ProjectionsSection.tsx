@@ -11,19 +11,30 @@ function getContractMonths(plan: any) {
 
 function getBaseMRR(plan: any) {
     const fp = plan.financial_projections;
+    // New format: generateProjections now stores current_mrr directly
     if (fp?.current_mrr && fp.current_mrr > 0) return fp.current_mrr;
     if (plan.budget_data?.current_mrr > 0) return plan.budget_data.current_mrr;
+
+    // Parse REI select-box MRR values
     const answers = plan.diagnostic_data?.answers || plan.premises_data?.answers || {};
+    const mrr = answers.mrr || fp?.context?.mrr_atual || '';
+    const mrrMap: Record<string, number> = {
+        'ate-50k': 35000, '50k-200k': 100000, '200k-500k': 300000,
+        '500k-1m': 700000, 'acima-1m': 1500000,
+    };
+    if (mrrMap[mrr]) return mrrMap[mrr];
+
+    // Try parsing as number
+    const num = parseFloat(String(mrr).replace(/[^0-9,]/g, '').replace(',', '.'));
+    if (!isNaN(num) && num > 0) return num;
+
+    // Try annual revenue
     const annual = answers.faturamentoAnual || answers.annualRevenue || answers.faturamento || '';
     if (annual) {
-        const num = parseFloat(String(annual).replace(/[^0-9,]/g, '').replace(',', '.'));
-        if (!isNaN(num) && num > 0) return Math.round(num / 12);
+        const aNum = parseFloat(String(annual).replace(/[^0-9,]/g, '').replace(',', '.'));
+        if (!isNaN(aNum) && aNum > 0) return Math.round(aNum / 12);
     }
-    const mrr = answers.mrr || '';
-    if (mrr) {
-        const num = parseFloat(String(mrr).replace(/[^0-9,]/g, '').replace(',', '.'));
-        if (!isNaN(num) && num > 0) return num;
-    }
+
     return 8000;
 }
 
@@ -32,6 +43,7 @@ function buildProjections(plan: any) {
     const fp = plan.financial_projections;
     const monthly = fp?.monthly_projections;
 
+    // Use pre-calculated projections from DiagnosticService (new format)
     if (Array.isArray(monthly) && monthly.length > 0 && monthly.some((m: any) => (m.mrr || 0) > 0)) {
         return monthly.slice(0, months).map((m: any) => ({
             label: m.month || m.label || 'Mês',
@@ -41,13 +53,14 @@ function buildProjections(plan: any) {
         }));
     }
 
+    // Fallback: generate from base MRR
     const base = getBaseMRR(plan);
-    const growthRate = 1.42;
+    const growthRate = 1.15; // More conservative than old 1.42
     return Array.from({ length: months }, (_, i) => ({
         label: `Mês ${i + 1}`,
-        leads: Math.round(40 * Math.pow(1.28, i * 0.7)),
-        mrr: Math.round(base * Math.pow(growthRate, i * 0.7)),
-        display: formatBRL(Math.round(base * Math.pow(growthRate, i * 0.7))),
+        leads: Math.round(20 * Math.pow(1.2, i)),
+        mrr: Math.round(base * Math.pow(growthRate, i * 0.8)),
+        display: formatBRL(Math.round(base * Math.pow(growthRate, i * 0.8))),
     }));
 }
 
