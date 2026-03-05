@@ -1,20 +1,54 @@
-import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe } from 'lucide-react';
+import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe, ChevronDown, Loader2, Calendar } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { createReiProject } from '@/api/reiProjects';
-import { REIType } from '@/types/rei';
-import PageLayout from '@/components/layout/PageLayout';
-import Section from '@/components/ui/Section';
 import { useAuth } from '@/contexts/AuthContext';
-import { motion } from 'framer-motion';
-import { getReiProjectsByClientEmail, ReiProject } from '@/api/reiProjects';
+import PageLayout from '@/components/layout/PageLayout';
+import type { REIType } from '@/components/rei/REIWizard';
+import { createReiProject, getReiProjectsByClientEmail, ReiProject } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
-import { Loader2, Calendar } from 'lucide-react';
 
-// Subcomponent for Existing Projects
-const MyProjectsSection = ({ userEmail }: { userEmail?: string | undefined }) => {
-    const navigate = useNavigate();
+// ── Type definitions ────────────────────────────────────────────────────
+const REI_TYPES: { value: REIType; label: string; subtitle: string; icon: JSX.Element; steps: string }[] = [
+    {
+        value: 'consulting',
+        label: 'Consultoria 360°',
+        subtitle: 'Diagnóstico completo de receita, operação comercial e posicionamento estratégico.',
+        icon: <Target className="w-4 h-4" />,
+        steps: 'Contexto → Desafios → Estratégia → Expectativas',
+    },
+    {
+        value: 'dev',
+        label: 'Dev Web & Design',
+        subtitle: 'Briefing técnico para projetos de desenvolvimento, landing pages e plataformas digitais.',
+        icon: <Code className="w-4 h-4" />,
+        steps: 'Briefing Técnico → Contexto → Expectativas',
+    },
+    {
+        value: 'founder',
+        label: 'Founder Led Sales',
+        subtitle: 'Protocolo de autoridade pessoal e posicionamento do fundador como motor de vendas.',
+        icon: <Crown className="w-4 h-4" />,
+        steps: 'Identidade → Posicionamento → Expectativas',
+    },
+    {
+        value: 'funnel',
+        label: 'Funnels & CRM',
+        subtitle: 'Diagnóstico da máquina de vendas: funis, automações, CRM e jornada de conversão.',
+        icon: <Database className="w-4 h-4" />,
+        steps: 'Estratégia → Objetivos → Expectativas',
+    },
+    {
+        value: 'site',
+        label: 'Site & Landing Pages',
+        subtitle: 'Briefing focado em presença digital: site institucional, LP de alta conversão.',
+        icon: <Globe className="w-4 h-4" />,
+        steps: 'Tech Briefing → Expectativas',
+    },
+];
+
+// ── My Projects Section ─────────────────────────────────────────────────
+function MyProjectsSection({ userEmail }: { userEmail?: string }) {
     const [projects, setProjects] = useState<ReiProject[]>([]);
     const [loading, setLoading] = useState(true);
 
