@@ -61,13 +61,13 @@ export default function StrategicPlanPresentation() {
     const [rejecting, setRejecting] = useState(false);
     const [rejectSent, setRejectSent] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    const params = new URLSearchParams(location.search);
+    const isPresentation = params.get('present') === '1';
+    const [isEditing, setIsEditing] = useState(params.get('edit') === '1');
     const [sidebarOpen, setSidebarOpen] = useState(!isPresentation);
 
     const scrollToTop = () => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const params = new URLSearchParams(location.search);
-    const [isEditing, setIsEditing] = useState(params.get('edit') === '1');
-    const isPresentation = params.get('present') === '1';
 
     const onPlanUpdate = (updated: any) => setPlan(updated);
 
