@@ -228,18 +228,35 @@ export default function Step2Contexto({ form }: Step2Props) {
 
                 {/* --- NOVOS CAMPOS ESTRATÉGICOS (FEEDBACK) --- */}
 
-                {/* Concorrentes */}
+                {/* Concorrentes - 3 campos estruturados */}
                 <div className="space-y-3 pt-6 border-t border-zinc-100">
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Principais Concorrentes
                     </Label>
                     <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
-                        Liste os 3-5 principais players que você enfrenta nas negociações.
+                        Informe até 3 concorrentes que você enfrenta. Se souber o site, preencha também.
                     </p>
+                    <div className="space-y-3">
+                        {[1, 2, 3].map((n) => (
+                            <div key={n} className="grid grid-cols-2 gap-3">
+                                <input
+                                    {...form.register(`concorrente${n}_nome`)}
+                                    className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm bg-white"
+                                    placeholder={`Concorrente ${n} — Nome da empresa`}
+                                />
+                                <input
+                                    {...form.register(`concorrente${n}_site`)}
+                                    className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm font-mono bg-white"
+                                    placeholder={`www.exemplo.com.br`}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    {/* Campo legado para compatibilidade */}
                     <textarea
                         {...form.register('concorrentes')}
-                        className="w-full min-h-[100px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
-                        placeholder="Ex: Concorrente A (Preço baixo), Concorrente B (Líder de mercado)..."
+                        className="w-full min-h-[60px] p-3 border border-zinc-100 focus:border-black transition-colors resize-none text-xs text-zinc-400 bg-zinc-50"
+                        placeholder="Ou liste aqui separado por vírgulas (ex: Empresa A, Empresa B, Empresa C)"
                     />
                 </div>
 

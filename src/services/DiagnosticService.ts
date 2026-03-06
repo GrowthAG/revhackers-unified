@@ -960,10 +960,9 @@ export class DiagnosticService {
 
     /**
      * Builds 3 BenchmarkSection-compatible competitor entries.
-     * Uses concorrentes textarea if available, otherwise generates segment-specific profiles.
+     * Priority: structured fields > legacy textarea > segment fallback.
      */
     static generateBenchmarkFromREI(answers: any): any[] {
-        const concorrentesText = (answers.concorrentes || '').trim();
         const segment = answers.segmento === 'outro'
             ? (answers.segmento_outro || 'B2B')
             : (answers.segmento || answers.segmento_outro || 'B2B');
@@ -977,23 +976,43 @@ export class DiagnosticService {
         };
         const avgCpc = cacLabels[cacSelect] || '—';
 
-        // If concorrentes were listed, parse them
-        if (concorrentesText) {
+        // 1. Check structured fields first (concorrente1_nome, concorrente1_site, etc.)
+        const structured: Array<{ name: string; site: string }> = [];
+        for (let n = 1; n <= 3; n++) {
+            const nome = (answers[`concorrente${n}_nome`] || '').trim();
+            const site = (answers[`concorrente${n}_site`] || '').trim();
+            if (nome) structured.push({ name: nome, site });
+        }
+
+        // 2. Fallback: legacy textarea (comma/newline separated)
+        const concorrentesText = (answers.concorrentes || '').trim();
+        if (structured.length === 0 && concorrentesText) {
             const lines = concorrentesText.split(/[,\n;]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 2);
-            const parsed = lines.slice(0, 3).map((line: string, i: number) => {
+            lines.slice(0, 3).forEach((line: string) => {
                 const match = line.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
-                const name = (match?.[1] || line).trim();
+                structured.push({
+                    name: (match?.[1] || line).trim(),
+                    site: (match?.[2] || '').trim(),
+                });
+            });
+        }
+
+        // 3. If we have any competitor names, build entries from them
+        if (structured.length > 0) {
+            const parsed = structured.slice(0, 3).map((c, i) => {
+                const cleanSite = c.site.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
                 return {
-                    company_name: name,
-                    domain: `${name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com.br`,
-                    monthly_traffic: ['32K', '18K', '12K'][i] || '—',
-                    domain_authority: [35, 28, 22][i] || 0,
+                    company_name: c.name,
+                    domain: cleanSite || `${c.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com.br`,
+                    monthly_traffic: ['—', '—', '—'][i],
+                    domain_authority: 0,
                     avg_cpc: avgCpc,
                     top_keywords: this.getSegmentKeywords(segLower).slice(0, 3),
-                    strengths: (match?.[2] || '').trim() || `Player consolidado no mercado de ${segment.split(',')[0].trim()}.`,
-                    weaknesses: 'Dados de tráfego e keywords disponíveis via "Gerar Inteligência de Mercado".',
+                    strengths: `Player do segmento — análise aprofundada via "Gerar Inteligência de Mercado".`,
+                    weaknesses: 'Dados de tráfego e keywords serão preenchidos pelo Deep Research.',
                 };
             });
+            // Fill to 3 if needed
             while (parsed.length < 3) {
                 parsed.push({
                     company_name: `Concorrente ${parsed.length + 1} (a identificar)`,
@@ -1006,7 +1025,7 @@ export class DiagnosticService {
             return parsed;
         }
 
-        // No concorrentes — generate 3 contextual competitor profiles per segment
+        // 4. No concorrentes at all — generate segment-specific fallback profiles
         const profiles = this.getSegmentCompetitors(segLower, segment);
         const keywords = this.getSegmentKeywords(segLower);
 
@@ -1021,6 +1040,9 @@ export class DiagnosticService {
             weaknesses: p.weaknesses,
         }));
     }
+
+
+
 
     /** Returns segment-specific competitor profiles */
     private static getSegmentCompetitors(segLower: string, segment: string): Array<{ name: string; domain: string; traffic: string; da: number; strengths: string; weaknesses: string }> {
