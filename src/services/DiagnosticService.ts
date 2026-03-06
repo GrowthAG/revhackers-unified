@@ -64,6 +64,62 @@ export interface StrategicDecision {
     implication: string;
 }
 
+// ── Central Label Maps for REI Select Fields ────────────────────────────────
+const LABEL_MAPS: Record<string, Record<string, string>> = {
+    desafios: {
+        'leads': 'Gerar mais leads qualificados', 'conversao': 'Melhorar taxa de conversão',
+        'cac': 'Reduzir CAC', 'ltv': 'Aumentar LTV', 'escalar': 'Escalar operação de vendas',
+        'churn': 'Reduzir churn', 'previsibilidade': 'Previsibilidade de receita',
+    },
+    canaisAquisicao: {
+        'google-ads': 'Google Ads', 'meta-ads': 'Meta Ads (Facebook/Instagram)',
+        'linkedin-ads': 'LinkedIn Ads', 'seo': 'SEO/Conteúdo', 'outbound': 'Outbound (Cold email/LinkedIn)',
+        'indicacoes': 'Indicações/Referral', 'parcerias': 'Parcerias', 'eventos': 'Eventos',
+    },
+    metricas: {
+        'cac': 'CAC (Custo de Aquisição)', 'ltv': 'LTV (Lifetime Value)', 'churn': 'Churn Rate',
+        'mrr': 'MRR/ARR', 'conversao': 'Taxa de conversão', 'payback': 'Payback period',
+        'nao-acompanho': 'Não acompanha métricas',
+    },
+    gargaloFunil: {
+        'topo-volume': 'Topo: Volume baixo de leads', 'topo-qualidade': 'Topo: Leads desqualificados',
+        'meio-followup': 'Meio: Sem resposta do lead', 'meio-processo': 'Meio: Leads estagnados no pipeline',
+        'fundo-fechamento': 'Fundo: Taxa de fechamento baixa', 'pos-churn': 'Pós-venda: Churn alto',
+        'dados-cegueira': 'Cegueira de Dados', 'outro': 'Outro',
+    },
+    crm: {
+        'hubspot': 'HubSpot', 'funnels': 'Funnels', 'rd-station': 'RD Station',
+        'salesforce': 'Salesforce', 'pipedrive': 'Pipedrive', 'activecampaign': 'ActiveCampaign',
+        'nao-utilizo': 'Não utiliza CRM', 'outro': 'Outro',
+    },
+    metaCrescimento: {
+        '2x': '2x (dobrar receita)', '3x': '3x (triplicar receita)', '5x': '5x ou mais',
+        'manter': 'Manter e otimizar', 'nao-planejado': 'Sem meta definida',
+    },
+    timeGrowth: {
+        'nao-tenho': 'Sem time dedicado', '1-2': '1–2 pessoas', '3-5': '3–5 pessoas',
+        '6-10': '6–10 pessoas', '10-plus': '10+ pessoas',
+    },
+    ltvAtual: {
+        'nao-sei': 'Não acompanha', 'menor-5k': '< R$ 5.000', '5k-20k': 'R$ 5.000–R$ 20.000',
+        '20k-50k': 'R$ 20.000–R$ 50.000', 'maior-50k': '> R$ 50.000',
+    },
+    cacAtual: {
+        'nao-sei': 'Não acompanha', 'menor-500': '< R$ 500', '500-2k': 'R$ 500–R$ 2.000',
+        '2k-5k': 'R$ 2.000–R$ 5.000', 'maior-5k': '> R$ 5.000', 'acima-5k': '> R$ 5.000',
+    },
+};
+
+/** Maps a raw ID to its label. Falls back to the raw value if not found. */
+function mapLabel(field: string, id: string): string {
+    return LABEL_MAPS[field]?.[id] || id;
+}
+
+/** Maps an array of IDs to labels. */
+function mapLabels(field: string, ids: string[]): string[] {
+    return ids.map(id => mapLabel(field, id));
+}
+
 export class DiagnosticService {
 
     static generateDiagnosis(response: ReiResponse, marketData?: any): DiagnosticResult {
@@ -80,7 +136,7 @@ export class DiagnosticService {
         const budget = answers.orcamento || 'Não informado';
         const ticketMedio = answers.ticketMedio || '';
         const tamanho = answers.tamanho || '';
-        const crmName = answers.crm || answers.crm_outro || '';
+        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
 
         // 1. Context Mirror (using REAL REI data)
         const context_mirror = {
@@ -222,7 +278,8 @@ export class DiagnosticService {
 
         // Extract specific GTM data from REAL REI fields
         const challenges = answers.desafios || [];
-        const bottlenecks = answers.gargaloFunil || answers.gargaloFunil_outro || answers.gargalo || answers.gargalo_outro || 'Não identificado';
+        const bottlenecksRaw = answers.gargaloFunil || answers.gargalo || '';
+        const bottlenecks = bottlenecksRaw === 'outro' ? (answers.gargaloFunil_outro || answers.gargalo_outro || 'Outro') : mapLabel('gargaloFunil', bottlenecksRaw) || 'Não identificado';
         const channels = answers.canaisAquisicao || [];
         const growthGoal = answers.metaCrescimento || 'Não definida';
 
@@ -257,12 +314,12 @@ export class DiagnosticService {
     // --- GENERATORS (ALL use real REI answers) ---
 
     private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any) {
-        const crmName = answers.crm || answers.crm_outro || '';
+        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const hasCRM = this.checkHasCRM(answers);
         const ticketMedio = answers.ticketMedio || '';
         const mrr = answers.mrr || '';
         const churn = answers.taxaChurn || '';
-        const canais = (answers.canaisAquisicao || []).join(', ') || 'Não informados';
+        const canais = mapLabels('canaisAquisicao', answers.canaisAquisicao || []).join(', ') || 'Não informados';
         const tamanho = answers.tamanho || '';
         const observacoes = (answers.observacoes || '').trim();
         const attempts = (answers.implementationAttempts || '').trim();
@@ -329,9 +386,10 @@ export class DiagnosticService {
     private static generateMethodology(isB2B: boolean, currentChannels: string[], answers: any) {
         const steps = [];
         const desafios = answers.desafios || [];
-        const gargalo = answers.gargaloFunil || answers.gargaloFunil_outro || answers.gargalo || '';
+        const gargaloRaw = answers.gargaloFunil || answers.gargalo || '';
+        const gargalo = gargaloRaw === 'outro' ? (answers.gargaloFunil_outro || answers.gargalo_outro || '') : mapLabel('gargaloFunil', gargaloRaw);
         const hasCRM = this.checkHasCRM(answers);
-        const crmName = answers.crm || answers.crm_outro || '';
+        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const expectativas = answers.expectativas || [];
         const areas = answers.areasPrioridade || [];
 
@@ -343,14 +401,23 @@ export class DiagnosticService {
         }
 
         // Step 2: Based on challenges identified
-        if (desafios.includes('Geração de Leads') || desafios.includes('geracao_leads')) {
+        if (desafios.includes('leads')) {
             steps.push({ name: 'Motor de Geração de Leads', description: 'Construção de funil de aquisição com landing pages, formulários inteligentes e lead scoring baseado no perfil ideal.' });
         }
-        if (desafios.includes('Conversão') || desafios.includes('conversao') || gargalo.toLowerCase().includes('conversão') || gargalo.toLowerCase().includes('conversao')) {
+        if (desafios.includes('conversao') || gargalo.toLowerCase().includes('conversão') || gargalo.toLowerCase().includes('fechamento')) {
             steps.push({ name: 'Otimização de Conversão (CRO)', description: `Resolução do gargalo identificado: "${gargalo}". Testes A/B, melhoria de proposta de valor e redução de fricção no funil.` });
         }
-        if (desafios.includes('Retenção') || desafios.includes('retencao') || desafios.includes('Churn')) {
+        if (desafios.includes('churn') || desafios.includes('ltv')) {
             steps.push({ name: 'Programa de Retenção', description: `Redução de churn${answers.taxaChurn ? ` (atual: ${answers.taxaChurn})` : ''} com onboarding estruturado, health score e playbooks de sucesso do cliente.` });
+        }
+        if (desafios.includes('cac')) {
+            steps.push({ name: 'Otimização de CAC', description: `Redução do Custo de Aquisição${answers.cacAtual ? ` (atual: ${mapLabel('cacAtual', answers.cacAtual)})` : ''} com melhoria de targeting, quality score e automação de nutrição.` });
+        }
+        if (desafios.includes('escalar')) {
+            steps.push({ name: 'Escala da Operação', description: 'Processos e automações para escalar a máquina comercial sem aumentar proporcionalmente custo e equipe.' });
+        }
+        if (desafios.includes('previsibilidade')) {
+            steps.push({ name: 'Previsibilidade de Receita', description: 'Dashboard de pipeline, forecasting e modelo de projeção baseado em taxas históricas de conversão por etapa.' });
         }
 
         // Step 3: Based on declared channels
@@ -383,7 +450,7 @@ export class DiagnosticService {
     private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], answers: any, marketData?: any) {
         const phases = [];
         const market = marketData || {};
-        const crmName = answers.crm || answers.crm_outro || '';
+        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const prazo = answers.prazo || answers.quandoComecar || '';
         const areas = answers.areasPrioridade || [];
         const canais = answers.canaisAquisicao || [];
@@ -409,7 +476,7 @@ export class DiagnosticService {
         }
         cycle1Items.push('Configuração de DNS e Deliverability (SPF/DKIM/DMARC)');
         if (answers.metricas && answers.metricas.length > 0) {
-            cycle1Items.push(`Definição de baseline das métricas: ${answers.metricas.slice(0, 3).join(', ')}`);
+            cycle1Items.push(`Definição de baseline das métricas: ${mapLabels('metricas', answers.metricas.slice(0, 3)).join(', ')}`);
         }
 
         phases.push({
@@ -470,7 +537,7 @@ export class DiagnosticService {
             cycle4Items.push(`Meta de redução de churn de ${answers.taxaChurn} para patamar aceitável`);
         }
         if (answers.ltvAtual && answers.cacAtual) {
-            cycle4Items.push(`Otimizar relação LTV:CAC (atual: LTV ${answers.ltvAtual} / CAC ${answers.cacAtual})`);
+            cycle4Items.push(`Otimizar relação LTV:CAC (atual: LTV ${mapLabel('ltvAtual', answers.ltvAtual)} / CAC ${mapLabel('cacAtual', answers.cacAtual)})`);
         }
         cycle4Items.push('Expansão para novos canais ou verticais');
 
@@ -548,7 +615,7 @@ export class DiagnosticService {
             month1_targets.push({ name: `Mapear CAC atual (declarado: ${cacAtual})`, status: 'pending' });
         }
         if (ltvAtual) {
-            month1_targets.push({ name: `Validar LTV atual (declarado: ${ltvAtual})`, status: 'pending' });
+            month1_targets.push({ name: `Validar LTV atual (declarado: ${mapLabel('ltvAtual', ltvAtual)})`, status: 'pending' });
         }
 
         return { okrs, month1_targets };
@@ -710,7 +777,7 @@ export class DiagnosticService {
 
     private static generateNextSteps(hasCRM: boolean, answers: any) {
         const actions = [];
-        const crmName = answers.crm || answers.crm_outro || '';
+        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const prazo = answers.quandoComecar || answers.prazo || '';
         const areas = answers.areasPrioridade || [];
 
