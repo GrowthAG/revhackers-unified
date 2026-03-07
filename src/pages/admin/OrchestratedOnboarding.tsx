@@ -13,7 +13,9 @@ import {
     Code,
     Crown,
     Clock,
-    FileText
+    FileText,
+    Database,
+    Globe
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -199,17 +201,25 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                             <h2 className="text-xl font-black uppercase tracking-widest text-white mb-2">Selecione o Protocolo</h2>
                                             <p className="text-xs text-zinc-400">Escolha a profundidade da análise para este projeto.</p>
                                         </div>
-                                        <div className="grid grid-cols-3 divide-x divide-zinc-100">
-                                            <div className="p-12 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=consulting`)}>
+                                        <div className="grid grid-cols-5 divide-x divide-zinc-100">
+                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=consulting`)}>
                                                 <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-16 h-16 bg-white border border-zinc-100 flex items-center justify-center mb-12 text-black group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Target size={24} strokeWidth={1} />
+                                                <div className="w-14 h-14 bg-white border border-zinc-100 flex items-center justify-center mb-8 text-black group-hover:bg-black group-hover:text-white transition-colors mx-auto">
+                                                    <Target size={22} strokeWidth={1} />
                                                 </div>
-                                                <h3 className="text-xl font-black uppercase tracking-ultratight text-center mb-4 text-black">Consultoria 360º</h3>
-                                                <p className="text-[10px] text-zinc-400 text-center leading-relaxed mb-6 uppercase tracking-widest">Diagnóstico Completo</p>
+                                                <h3 className="text-sm font-black uppercase tracking-tight text-center mb-3 text-black">Consultoria 360º</h3>
+                                                <p className="text-[10px] text-zinc-400 text-center leading-relaxed mb-4 uppercase tracking-widest">Diagnóstico Completo</p>
                                                 <div className="text-center">
                                                     <Badge className="bg-zinc-100 text-zinc-500 group-hover:bg-black group-hover:text-white text-[9px] uppercase tracking-widest transition-colors">Recomendado</Badge>
                                                 </div>
+                                            </div>
+                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=funnel`)}>
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
+                                                    <Database size={20} />
+                                                </div>
+                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Funnels & CRM</h3>
+                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Máquina de Vendas</p>
                                             </div>
                                             <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=dev`)}>
                                                 <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -218,6 +228,14 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                                 </div>
                                                 <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Dev Web & Design</h3>
                                                 <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Briefing Técnico</p>
+                                            </div>
+                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=site`)}>
+                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
+                                                    <Globe size={20} />
+                                                </div>
+                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Site & LPs</h3>
+                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Presença Digital</p>
                                             </div>
                                             <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=founder`)}>
                                                 <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
