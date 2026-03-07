@@ -643,7 +643,7 @@ export default function StrategicPlanPresentation() {
                         </div>
                     ) : (
                         <div ref={sectionRef} className="flex-1 overflow-y-auto">
-                            <div className="max-w-5xl mx-auto px-8 py-10">
+                            <div className="max-w-7xl mx-auto px-8 py-10">
                                 <div key={currentSectionId} className="animate-in fade-in duration-300">
                                     {renderSection()}
                                 </div>
@@ -919,7 +919,7 @@ export default function StrategicPlanPresentation() {
                     ) : (
                         /* OUTRAS SEÇÕES: container padded com breadcrumb */
                         <main ref={mainRef} className="flex-1">
-                            <div className="max-w-5xl mx-auto px-6 py-8 md:py-10">
+                            <div className="max-w-7xl mx-auto px-8 lg:px-12 py-8 md:py-12">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-3">
                                         {currentSection > 0 && (
@@ -949,7 +949,7 @@ export default function StrategicPlanPresentation() {
 
                     {/* ── RODAPÉ DE NAVEGAÇÃO ───────────────────────────────────────── */}
                     <footer className="sticky bottom-0 border-t border-zinc-100 bg-white/90 backdrop-blur-md z-40">
-                        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+                        <div className="max-w-7xl mx-auto px-8 lg:px-12 py-4 flex items-center justify-between">
                             <button
                                 onClick={handlePrev}
                                 disabled={currentSection === 0}

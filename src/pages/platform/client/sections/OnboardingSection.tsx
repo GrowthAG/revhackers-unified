@@ -34,9 +34,8 @@ export default function OnboardingSection({ plan }: { plan: any }) {
                     <span className="w-8 h-[2px] bg-black" />
                     EXECUÇÃO
                 </div>
-                <h2 className="text-5xl lg:text-6xl font-black text-zinc-900 tracking-tighter leading-[0.95]">
-                    Cronograma<br />
-                    <span className="text-zinc-300">90 Dias</span>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Cronograma <span className="text-zinc-300">90 Dias</span>
                 </h2>
                 <p className="text-zinc-500 text-base max-w-2xl">
                     Tabela semanal com ações, responsáveis e entrega por fase — tudo que será executado nos primeiros 90 dias.

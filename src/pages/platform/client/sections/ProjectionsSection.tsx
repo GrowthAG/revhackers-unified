@@ -53,20 +53,23 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
     ];
 
     return (
-        <div className="py-20 space-y-32">
+        <div className="space-y-12 py-8">
             {/* Section Header */}
-            <div className="text-center space-y-6">
-                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none uppercase">
-                    Projeções
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="w-8 h-[2px] bg-black" />
+                    RESULTADOS ESPERADOS
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Projeção de <span className="text-zinc-300">Crescimento</span>
                 </h2>
-                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
-                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Operational Growth Forecast
+                <p className="text-zinc-500 text-base max-w-2xl">
+                    Estimativa baseada no diagnóstico e nas médias do segmento — <strong>horizonte de 6 meses</strong>.
                 </p>
             </div>
 
             {/* Timeline Cards */}
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {timeline.map((item: any, index: number) => (
                     <div
                         key={index}
@@ -97,7 +100,7 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xl font-black text-white leading-none">{item.metricas.leads}</p>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Qualified Leads</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Leads Qualificados</p>
                                 </div>
                             </div>
 
@@ -108,7 +111,7 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xl font-black text-white leading-none">{item.metricas.conversao}</p>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Conv. Target</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Meta Conversão</p>
                                 </div>
                             </div>
 
@@ -119,7 +122,7 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black text-white leading-none uppercase tracking-tighter">{item.metricas.maturidade}</p>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Operational Level</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Nível Operacional</p>
                                 </div>
                             </div>
                         </div>
@@ -127,7 +130,7 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
                         {index === timeline.length - 1 && (
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                                 <div className="p-1 px-4 rounded-full bg-revgreen text-[9px] font-black text-black tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(3,252,59,0.4)]">
-                                    Scale Goal
+                                    Meta de Escala
                                 </div>
                             </div>
                         )}
@@ -136,8 +139,8 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
             </div>
 
             {/* Disclaimer & Note */}
-            <div className="max-w-7xl mx-auto pt-20 border-t border-zinc-900">
-                <div className="bg-zinc-950 border border-zinc-900 p-12 rounded-[3rem] relative overflow-hidden group">
+            <div className="pt-10 border-t border-zinc-100">
+                <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-8 relative overflow-hidden">
                     <div className="absolute inset-0 bg-revgreen opacity-[0.02] group-hover:opacity-[0.05] transition-opacity"></div>
                     <div className="flex flex-col md:flex-row items-center gap-12 justify-between relative z-10">
                         <div className="flex items-center gap-10 max-w-2xl">
