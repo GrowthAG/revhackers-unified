@@ -23,67 +23,67 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
     const stack = diagnostic.stack || [];
 
     return (
-        <div className="py-20 space-y-32">
+        <div className="space-y-12 py-8">
             {/* Section Header */}
-            <div className="text-center space-y-6">
-                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none">
-                    Diagnóstico
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="w-8 h-[2px] bg-black" />
+                    DIAGNÓSTICO
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Análise <span className="text-zinc-300">Estratégica</span>
                 </h2>
-                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
-                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Strategic Context & Data Analysis
+                <p className="text-zinc-500 text-base max-w-2xl">
+                    Contexto, sinais de oportunidade, riscos mapeados e decisões fundamentadas no diagnóstico.
                 </p>
             </div>
 
             {/* Context Mirror Modules */}
             {context && (
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {[
-                        { label: 'Segment', value: context.segment },
-                        { label: 'Primary Goal', value: context.objective },
-                        { label: 'Digital Maturity', value: context.maturity },
-                        { label: 'Constraints', value: context.restrictions },
+                        { label: 'Segmento', value: context.segment },
+                        { label: 'Objetivo Principal', value: context.objective },
+                        { label: 'Maturidade Digital', value: context.maturity },
+                        { label: 'Restrições', value: context.restrictions },
                     ].map((item, i) => (
-                        <div key={i} className="bg-black border border-zinc-900 p-8 rounded-xl hover:border-revgreen/50 transition-all group relative overflow-hidden">
-                            <div className="absolute left-0 top-0 w-1 h-full bg-revgreen/30 group-hover:bg-revgreen transition-colors"></div>
-                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] block mb-4 group-hover:text-revgreen transition-colors">{item.label}</span>
-                            <p className="text-xl font-black text-white uppercase tracking-tight">{item.value}</p>
+                        <div key={i} className="bg-zinc-950 border border-zinc-200 p-6 rounded-xl hover:border-zinc-400 transition-all group">
+                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] block mb-2">{item.label}</span>
+                            <p className="text-base font-bold text-white">{item.value || '—'}</p>
                         </div>
                     ))}
                 </div>
             )}
 
             {/* Signals & Risks Intensity Grid */}
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-                {/* Strategic Signals */}
-                <div className="space-y-8">
-                    <h4 className="text-xs font-black text-revgreen uppercase tracking-[0.4em] flex items-center gap-3">
-                        <TrendingUp size={16} /> Strategic Signals
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Sinais Estratégicos */}
+                <div className="space-y-4">
+                    <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                        <TrendingUp size={14} /> Sinais Estratégicos
                     </h4>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {signals.map((signal: any, i: number) => (
-                            <div key={i} className="p-8 bg-black border border-zinc-900 rounded-xl relative overflow-hidden group hover:border-revgreen/30 transition-all">
-                                <div className="absolute left-0 top-0 w-1 h-full bg-revgreen animate-pulse"></div>
-                                <p className="text-base md:text-xl font-black text-white uppercase tracking-tighter leading-none mb-2">{signal.text}</p>
-                                <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">{signal.impact}</p>
+                            <div key={i} className="p-5 bg-white border border-zinc-200 rounded-xl hover:shadow-sm transition-all">
+                                <p className="text-sm font-bold text-zinc-900 mb-1">{signal.text}</p>
+                                <p className="text-xs text-zinc-400">{signal.impact}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Risk Matrix */}
-                <div className="space-y-8">
-                    <h4 className="text-xs font-black text-zinc-500 uppercase tracking-[0.4em] flex items-center gap-3">
-                        <AlertTriangle size={16} /> Risk Analysis
+                {/* Análise de Riscos */}
+                <div className="space-y-4">
+                    <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                        <AlertTriangle size={14} /> Análise de Riscos
                     </h4>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {risks.map((risk: any, i: number) => (
-                            <div key={i} className="p-8 bg-black border border-zinc-900 rounded-xl relative overflow-hidden group hover:border-zinc-700 transition-all">
-                                <div className="absolute left-0 top-0 w-1 h-full bg-zinc-800 group-hover:bg-zinc-600"></div>
-                                <p className="text-base font-black text-white uppercase tracking-tight mb-3 italic">{risk.text}</p>
-                                <div className="flex items-center gap-3 pt-4 border-t border-zinc-900">
-                                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Protocol:</span>
-                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">"{risk.mitigation}"</span>
+                            <div key={i} className="p-5 bg-white border border-zinc-200 rounded-xl hover:shadow-sm transition-all">
+                                <p className="text-sm font-bold text-zinc-900 mb-2">{risk.text}</p>
+                                <div className="flex items-center gap-2 pt-2 border-t border-zinc-100">
+                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Mitigação:</span>
+                                    <span className="text-xs text-zinc-500">{risk.mitigation}</span>
                                 </div>
                             </div>
                         ))}
@@ -93,22 +93,19 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             {/* Decisions Banner */}
             {decisions.length > 0 && (
-                <div className="max-w-7xl mx-auto space-y-12 pt-16">
-                    <div className="flex items-center justify-between border-b border-zinc-900 pb-8">
-                        <h3 className="text-4xl md:text-6xl font-black text-white tracking-tighter shadow-sm">Decisões Mandatórias</h3>
-                        <Zap className="text-revgreen animate-pulse" size={32} />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-zinc-900">Decisões Mandatórias</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {decisions.map((decision: any, i: number) => (
-                            <div key={i} className="bg-black border border-zinc-800 p-10 rounded-xl group hover:border-white transition-all duration-500 relative overflow-hidden">
-                                <div className="absolute left-0 top-0 w-1 h-full bg-white opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block mb-4 group-hover:text-revgreen transition-colors">{decision.basedOn?.join(' + ')}</span>
-                                <h4 className="text-2xl font-black text-white uppercase tracking-tighter leading-tight mb-4">{decision.title}</h4>
-                                <p className="text-sm text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors">{decision.recommendation}</p>
-                                <div className="mt-8 pt-6 border-t border-zinc-900">
-                                    <span className="text-[9px] font-black text-revgreen uppercase tracking-widest border border-revgreen/20 px-3 py-1 rounded-full">{decision.ruleApplied}</span>
-                                </div>
+                            <div key={i} className="bg-white border border-zinc-200 p-6 rounded-xl hover:shadow-md transition-all">
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">{decision.basedOn?.join(' + ')}</span>
+                                <h4 className="text-base font-bold text-zinc-900 mb-2">{decision.title}</h4>
+                                <p className="text-sm text-zinc-500 leading-relaxed">{decision.recommendation}</p>
+                                {decision.ruleApplied && (
+                                    <div className="mt-4 pt-3 border-t border-zinc-100">
+                                        <span className="text-[9px] font-bold text-[#00CC6A] uppercase tracking-widest">{decision.ruleApplied}</span>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -117,45 +114,42 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             {/* Technical Hub */}
             {scores && scores.performance > 0 && (
-                <div className="max-w-7xl mx-auto">
-                    <div className="bg-zinc-950 border border-zinc-900 rounded-[3rem] p-12 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                            <BarChart size={400} className="text-white" />
+                <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-8">
+                    <div className="space-y-6">
+                        <div>
+                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] block mb-1">Auditoria Técnica</span>
+                            <h3 className="text-xl font-bold text-zinc-900">Infraestrutura & SEO</h3>
                         </div>
 
-                        <div className="relative z-10 space-y-16">
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                                <div>
-                                    <span className="text-[10px] font-black text-revgreen uppercase tracking-[0.4em] block mb-2">Technical Audit</span>
-                                    <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">Infrastructure & SEO Lab</h3>
-                                </div>
-                                <p className="text-zinc-500 font-medium max-w-sm uppercase tracking-widest text-right hidden md:block">
-                                    Real-time analysis powered by Lighthouse V10.3 Engine.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                                {Object.entries(scores).map(([key, value]: [string, any]) => (
-                                    <div key={key} className="space-y-4">
-                                        <div className="flex justify-between items-end border-b border-zinc-900 pb-2">
-                                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{key}</span>
-                                            <span className={`text-4xl font-black ${value >= 90 ? 'text-revgreen shadow-[0_0_20px_rgba(3,252,59,0.3)]' : 'text-white'}`}>{value}</span>
-                                        </div>
-                                        <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
-                                            <div className="h-full bg-revgreen" style={{ width: `${value}%` }}></div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {Object.entries(scores).map(([key, value]: [string, any]) => {
+                                const labelMap: Record<string, string> = {
+                                    performance: 'Performance',
+                                    seo: 'SEO',
+                                    accessibility: 'Acessibilidade',
+                                    bestPractices: 'Boas Práticas',
+                                };
+                                return (
+                                    <div key={key} className="bg-white border border-zinc-100 rounded-xl p-4">
+                                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">{labelMap[key] || key}</span>
+                                        <span className={`text-3xl font-black ${value >= 90 ? 'text-[#00CC6A]' : 'text-zinc-900'}`}>{value}</span>
+                                        <div className="h-1 bg-zinc-100 rounded-full mt-2 overflow-hidden">
+                                            <div className="h-full bg-zinc-900" style={{ width: `${value}%` }} />
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                );
+                            })}
+                        </div>
 
-                            <div className="pt-8 flex flex-wrap gap-4">
+                        {stack.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-2">
                                 {stack.map((tech: string, i: number) => (
-                                    <span key={i} className="px-6 py-2 bg-black border border-zinc-900 text-[10px] font-black text-white rounded-full uppercase tracking-widest hover:border-revgreen transition-colors">
+                                    <span key={i} className="px-3 py-1.5 bg-white border border-zinc-100 text-[10px] font-bold text-zinc-600 rounded-lg uppercase tracking-widest">
                                         {tech}
                                     </span>
                                 ))}
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}

@@ -18,15 +18,18 @@ export default function PremisesSection({ plan }: PremisesSectionProps) {
     };
 
     return (
-        <div className="py-20 space-y-24">
+        <div className="space-y-12 py-8">
             {/* Section Header */}
-            <div className="border-b border-zinc-200 pb-12">
-                <h2 className="text-4xl font-black text-black tracking-tighter uppercase mb-4">
-                    Premissas Estratégicas
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="w-8 h-[2px] bg-black" />
+                    PREMISSAS
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Premissas <span className="text-zinc-300">Estratégicas</span>
                 </h2>
-                <p className="text-xl text-zinc-500 font-light max-w-3xl">
-                    Os pilares fundamentais que sustentam a orquestração do crescimento.
-                    <span className="block mt-2 text-black font-medium text-base">Foco em processos, tecnologia e previsibilidade.</span>
+                <p className="text-zinc-500 text-base max-w-2xl">
+                    Os pilares fundamentais que sustentam a orquestração do crescimento — processos, tecnologia e previsibilidade.
                 </p>
             </div>
 
@@ -62,27 +65,25 @@ export default function PremisesSection({ plan }: PremisesSectionProps) {
                 ))}
             </div>
 
-            {/* Steps Section */}
-            <div className="bg-zinc-50 border border-zinc-100 p-12 rounded-[2.5rem]">
-                <div className="flex flex-col lg:flex-row items-start lg:items-center gap-12">
-                    <div className="shrink-0 space-y-2">
-                        <h3 className="text-2xl font-black text-black uppercase tracking-tighter leading-none">Etapas do Projeto</h3>
-                        <p className="text-xs text-zinc-400 font-black uppercase tracking-widest">Roadmap de Execução</p>
+            {/* Etapas do Projeto */}
+            <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-8">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+                    <div className="shrink-0 space-y-1">
+                        <h3 className="text-lg font-bold text-zinc-900">Etapas do Projeto</h3>
+                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Roadmap de Execução</p>
                     </div>
 
-                    <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8 w-full">
-                        {[
-                            { number: '01', title: 'Processos', description: 'Mapeamento Cirúrgico' },
-                            { number: '02', title: 'Indicadores', description: 'Real-time Metrics' },
-                            { number: '03', title: 'Metas', description: 'Growth Targets' },
-                            { number: '04', title: 'Scale', description: 'Execution Engine' },
-                        ].map((etapa, index) => (
-                            <div key={index} className="space-y-3 group">
-                                <div className="text-4xl font-black text-zinc-200 group-hover:text-revgreen/20 transition-colors duration-500">{etapa.number}</div>
-                                <div className="space-y-1">
-                                    <h4 className="text-[11px] font-black text-black uppercase tracking-widest">{etapa.title}</h4>
-                                    <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-tight">{etapa.description}</p>
-                                </div>
+                    <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                        {(premises.steps || [
+                            { number: '01', title: 'Processos', description: 'Mapeamento e otimização' },
+                            { number: '02', title: 'Indicadores', description: 'Métricas em tempo real' },
+                            { number: '03', title: 'Metas', description: 'Objetivos de crescimento' },
+                            { number: '04', title: 'Escala', description: 'Motor de execução' },
+                        ]).map((etapa: any, index: number) => (
+                            <div key={index} className="space-y-2">
+                                <div className="text-3xl font-black text-zinc-200">{etapa.number || String(index + 1).padStart(2, '0')}</div>
+                                <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-widest">{etapa.title}</h4>
+                                <p className="text-[10px] text-zinc-400">{etapa.description}</p>
                             </div>
                         ))}
                     </div>

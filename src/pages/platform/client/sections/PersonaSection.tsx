@@ -27,206 +27,135 @@ export default function PersonaSection({ plan }: PersonaSectionProps) {
     const stats = plan.diagnostic_data?.enriched_analysis?.benchmark || {};
 
     return (
-        <div className="space-y-40 py-20">
+        <div className="space-y-12 py-8">
             {/* Section Header */}
-            <div className="text-center space-y-6">
-                <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-[-0.05em] select-none uppercase">
-                    Persona
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="w-8 h-[2px] bg-black" />
+                    PÚBLICO-ALVO
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Persona <span className="text-zinc-300">Estratégica</span>
                 </h2>
-                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
-                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Target Profile Analysis
+                <p className="text-zinc-500 text-base max-w-2xl">
+                    Perfil detalhado do decisor ideal, baseado no diagnóstico e inteligência de mercado.
                 </p>
             </div>
 
             {/* Personas Slide Style */}
             {personas.map((persona: any, index: number) => (
-                <div key={index} className="max-w-7xl mx-auto relative group">
-                    <div className="grid lg:grid-cols-12 gap-12 items-start">
-                        {/* Persona Main Card */}
-                        <div className="lg:col-span-12 space-y-12">
-                            <div className="border border-zinc-900 bg-black rounded-[3rem] p-12 flex flex-col md:flex-row gap-16 items-center md:items-start group/card transition-all duration-700 relative overflow-hidden active:scale-[0.99]">
-                                <div className="absolute left-0 top-0 w-2 h-full bg-revgreen/20 group-hover/card:bg-revgreen transition-all duration-700"></div>
+                <div key={index} className="border border-zinc-200 rounded-2xl p-8 space-y-8">
+                    <div className="flex flex-col md:flex-row gap-8 items-start">
+                        {/* Photo */}
+                        <div className="w-32 h-40 rounded-xl overflow-hidden shrink-0 bg-zinc-100">
+                            <img
+                                src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&background=09090b&color=fff&size=256`}
+                                alt={persona.nome}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
 
-                                {/* Photo Container */}
-                                <div className="w-64 h-80 rounded-3xl border border-zinc-900 overflow-hidden shrink-0 shadow-2xl relative group/img">
-                                    <img
-                                        src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&background=03FC3B&color=000`}
-                                        alt={persona.nome}
-                                        className="w-full h-full object-cover grayscale group-hover/img:grayscale-0 group-hover/img:scale-110 transition-all duration-1000"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                                    <div className="absolute bottom-6 left-6">
-                                        <div className="px-3 py-1 bg-revgreen text-black text-[8px] font-black uppercase tracking-widest rounded-full">Primary Target</div>
-                                    </div>
-                                </div>
-
-                                <div className="flex-1 space-y-10 pt-4">
-                                    <div className="space-y-4 text-center md:text-left">
-                                        <h3 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.8]">
-                                            {persona.nome}
-                                        </h3>
-                                        <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                                            <span className="px-4 py-2 bg-revgreen/10 border border-revgreen/20 text-revgreen text-[10px] font-black uppercase tracking-widest rounded-full">{persona.cargo}</span>
-                                            <div className="h-1 w-1 bg-zinc-800 rounded-full"></div>
-                                            <span className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">{persona.localizacao || 'BRASIL'}</span>
-                                            <div className="h-1 w-1 bg-zinc-800 rounded-full"></div>
-                                            <span className="text-xs text-zinc-500 font-bold uppercase tracking-[0.2em]">AGE: {persona.idade || 'N/A'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="max-w-3xl">
-                                        <p className="text-2xl text-zinc-400 font-medium leading-tight italic border-l-2 border-revgreen/30 pl-8 group-hover/card:border-revgreen transition-colors duration-700">
-                                            "{persona.bio_curta || 'Perfil estratégico focado em resultados e eficiência operacional.'}"
-                                        </p>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-12 pt-4">
-                                        <div className="space-y-6">
-                                            <h4 className="text-[10px] font-black text-revgreen uppercase tracking-[0.3em] flex items-center gap-3">
-                                                <Zap size={14} className="animate-pulse" />
-                                                Strategic Nuance
-                                            </h4>
-                                            <p className="text-sm text-zinc-500 leading-relaxed font-medium">
-                                                {persona.historia_curta || `${persona.nome} é o principal stakeholder. Busca previsibilidade e agressividade controlada na escala.`}
-                                            </p>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Pain Points</h4>
-                                                <ul className="space-y-2">
-                                                    {["Lack of Scale", "High CAC", "Team Gaps"].map(p => (
-                                                        <li key={p} className="text-[10px] text-white font-bold uppercase tracking-tighter flex items-center gap-2">
-                                                            <div className="w-1 h-1 bg-revgreen rounded-full"></div> {p}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                            <div className="space-y-3">
-                                                <h4 className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Decision Hub</h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {["ROI", "Data", "Speed"].map(d => (
-                                                        <span key={d} className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[8px] text-zinc-400 font-black uppercase rounded-sm">{d}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* Info */}
+                        <div className="flex-1 space-y-6">
+                            <div>
+                                <h3 className="text-2xl font-bold text-zinc-900">{persona.nome}</h3>
+                                <div className="flex flex-wrap gap-3 mt-2">
+                                    {persona.cargo && <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-medium rounded-lg">{persona.cargo}</span>}
+                                    {persona.localizacao && <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-medium rounded-lg">{persona.localizacao}</span>}
+                                    {persona.idade && <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-medium rounded-lg">{persona.idade} anos</span>}
                                 </div>
                             </div>
 
-                            {/* Personality Pulse System */}
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/behavior">
-                                    <div className="absolute inset-0 bg-revgreen/5 opacity-0 group-hover/behavior:opacity-100 transition-opacity blur-3xl"></div>
-                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        Behavioral DNA
-                                        <BrainCircuit className="text-revgreen" size={16} />
-                                    </h4>
-                                    <div className="space-y-12">
-                                        {[
-                                            { left: "Conservative", right: "Aggressive", value: 85 },
-                                            { left: "Analytical", right: "Creative", value: 45 },
-                                            { left: "Passive", right: "Active", value: 70 },
-                                            { left: "Lone Wolf", right: "Collaborative", value: 60 },
-                                        ].map((trait, i) => (
-                                            <div key={i} className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                                    <span className="text-zinc-700">{trait.left}</span>
-                                                    <span className="text-white">{trait.right}</span>
-                                                </div>
-                                                <div className="h-[2px] bg-zinc-900 relative">
-                                                    <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-revgreen rounded-full shadow-[0_0_20px_rgba(3,252,59,1)] scale-100 group-hover/behavior:scale-125 transition-transform" style={{ left: `${trait.value}%` }}></div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                            {(persona.bio_curta || persona.historia_curta) && (
+                                <p className="text-sm text-zinc-500 leading-relaxed border-l-2 border-zinc-200 pl-4 italic">
+                                    "{persona.bio_curta || persona.historia_curta}"
+                                </p>
+                            )}
 
-                                <div className="bg-black border border-zinc-900 rounded-[2rem] p-10 space-y-10 relative overflow-hidden group/channels">
-                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] flex items-center justify-between border-b border-zinc-900 pb-8">
-                                        Channel Penetration
-                                        <Radio className="text-revgreen" size={16} />
-                                    </h4>
-                                    <div className="space-y-10">
-                                        {["LinkedIn Search", "Meta Pattern Ads", "Direct Network", "WhatsApp Sales"].map((canal, i) => (
-                                            <div key={canal} className="space-y-3">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{canal}</span>
-                                                    <span className="text-[9px] font-black text-revgreen group-hover/channels:animate-pulse">Active</span>
-                                                </div>
-                                                <div className="flex gap-1.5">
-                                                    {[...Array(20)].map((_, idx) => (
-                                                        <div key={idx} className={`h-4 flex-1 rounded-sm transition-all duration-500 ${idx < (16 - i * 3) ? 'bg-revgreen/80 group-hover/channels:bg-revgreen' : 'bg-zinc-900'}`}></div>
-                                                    ))}
-                                                </div>
-                                            </div>
+                            {/* Dores & Gatilhos */}
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {persona.dores && persona.dores.length > 0 && (
+                                    <div>
+                                        <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Principais Dores</h4>
+                                        <ul className="space-y-2">
+                                            {persona.dores.map((dor: string, j: number) => (
+                                                <li key={j} className="text-sm text-zinc-600 flex items-start gap-2">
+                                                    <span className="w-1.5 h-1.5 bg-zinc-300 rounded-full mt-1.5 shrink-0" />
+                                                    {dor}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {persona.gatilhos && persona.gatilhos.length > 0 && (
+                                    <div>
+                                        <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Gatilhos de Decisão</h4>
+                                        <ul className="space-y-2">
+                                            {persona.gatilhos.map((g: string, j: number) => (
+                                                <li key={j} className="text-sm text-zinc-600 flex items-start gap-2">
+                                                    <span className="w-1.5 h-1.5 bg-[#00CC6A] rounded-full mt-1.5 shrink-0" />
+                                                    {g}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Canais Preferíveis */}
+                            {persona.canais && persona.canais.length > 0 && (
+                                <div>
+                                    <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Canais de Relacionamento</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {persona.canais.map((canal: string, j: number) => (
+                                            <span key={j} className="px-3 py-1.5 bg-zinc-50 border border-zinc-100 text-xs font-medium text-zinc-600 rounded-lg">{canal}</span>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
             ))}
 
-            {/* Benchmarks Section */}
-            <div className="max-w-7xl mx-auto space-y-20 pt-20 border-t border-zinc-900">
-                <div className="text-center space-y-6">
-                    <h2 className="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-none">
-                        Benchmark
-                    </h2>
-                    <p className="text-xs text-zinc-600 uppercase tracking-[0.4em] font-black">Market Intelligence Layer</p>
-                </div>
-
-                <div className="bg-zinc-950 border border-zinc-900 rounded-[4rem] p-16 overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 p-20 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
-                        <TrendingUp size={400} />
+            {/* Benchmarks */}
+            {benchmarks.length > 0 && (
+                <div className="space-y-6 pt-8 border-t border-zinc-100">
+                    <div>
+                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] block mb-1">Inteligência Competitiva</span>
+                        <h3 className="text-xl font-bold text-zinc-900">Benchmark de Mercado</h3>
                     </div>
 
-                    <div className="grid md:grid-cols-4 gap-12 mb-20 relative z-10">
-                        {[
-                            { label: "CAC Target", value: stats.cac_medio || "N/A", color: "text-revgreen" },
-                            { label: "Conversion Rate", value: stats.taxa_conversao || "2.4%", color: "text-white" },
-                            { label: "Sales Cycle", value: stats.ciclo_vendas || "21 Days", color: "text-white" },
-                            { label: "LTV:CAC Ratio", value: stats.ltv_cac_ratio || "4.1x", color: "text-revgreen" }
-                        ].map((s, i) => (
-                            <div key={i} className="space-y-2 border-l border-zinc-900 pl-8">
-                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest block">{s.label}</span>
-                                <p className={`text-4xl font-black ${s.color} uppercase tracking-tighter`}>{s.value}</p>
-                            </div>
-                        ))}
-                    </div>
+                    {/* Stats */}
+                    {(stats.cac_medio || stats.taxa_conversao || stats.ciclo_vendas) && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {[
+                                { label: 'CAC Médio', value: stats.cac_medio },
+                                { label: 'Taxa de Conversão', value: stats.taxa_conversao },
+                                { label: 'Ciclo de Vendas', value: stats.ciclo_vendas },
+                                { label: 'LTV:CAC', value: stats.ltv_cac_ratio },
+                            ].filter(s => s.value).map((s, i) => (
+                                <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-xl p-5">
+                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">{s.label}</span>
+                                    <p className="text-xl font-bold text-zinc-900">{s.value}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                    <div className="grid lg:grid-cols-3 gap-8 relative z-10">
+                    {/* Concorrentes */}
+                    <div className="grid lg:grid-cols-3 gap-4">
                         {benchmarks.slice(0, 3).map((bench: any, idx: number) => (
-                            <div key={idx} className="bg-black border border-zinc-900 p-10 rounded-[2.5rem] hover:border-revgreen/50 transition-all duration-700 group/bench">
-                                <div className="flex justify-between items-start mb-8">
-                                    <h4 className="text-2xl font-black text-white uppercase tracking-tighter group-hover/bench:text-revgreen transition-colors">
-                                        {bench.nome || bench.company_name}
-                                    </h4>
-                                    <ShieldAlert size={20} className="text-zinc-800 group-hover/bench:text-revgreen transition-all" />
-                                </div>
-                                <div className="space-y-6">
-                                    <p className="text-sm text-zinc-500 font-medium leading-relaxed">
-                                        {bench.diferencial || bench.strategy_insight || "Principal competidor na camada de serviços high-ticket."}
-                                    </p>
-                                    <div className="h-[1px] bg-zinc-900 w-full"></div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Aggressiveness</span>
-                                        <div className="flex gap-1.5">
-                                            {[...Array(5)].map((_, i) => (
-                                                <div key={i} className={`w-2 h-2 rounded-full ${i < 4 ? 'bg-revgreen' : 'bg-zinc-900'}`}></div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                            <div key={idx} className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-sm transition-all">
+                                <h4 className="text-base font-bold text-zinc-900 mb-2">{bench.nome || bench.company_name}</h4>
+                                <p className="text-sm text-zinc-500 leading-relaxed">
+                                    {bench.diferencial || bench.strategy_insight || '—'}
+                                </p>
                             </div>
                         ))}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

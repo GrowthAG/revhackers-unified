@@ -37,60 +37,53 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
         }, 1000);
     };
 
-    // Default steps if none provided
-    const defaultSteps = [
-        { day: 'DIA 1', action: 'Otimizar perfil LinkedIn (headline, banner, sobre) - foco Brasil' },
-        { day: 'DIA 1-2', action: 'Criar lista de 200+ empresas target (SP, RJ, BH tech)' },
-        { day: 'DIA 2-3', action: 'Escrever 5 templates de prospecao em portugues brasileiro' },
-        { day: 'DIA 3', action: 'Criar demo workspace do Funnels com dados brasileiros' },
-        { day: 'DIA 4-6', action: 'Publicar 4 posts no LinkedIn sobre dores brasileiras (WhatsApp, consolidacao)' },
-        { day: 'DIA 5-6', action: 'Criar lead magnet: "Checklist: Migrar de RD+Pipedrive para Funnels em 48h"' },
-        { day: 'DIA 6-7', action: 'Configurar Calendly + email sequences (5 sequencias)' },
-        { day: 'DIA 7', action: 'Iniciar outreach manual (10-15 conexoes/dia no LinkedIn)' },
-        { day: 'SEMANA 1', action: 'Agendar 3-5 discovery calls (meta minima)' },
-        { day: 'SEMANA 1', action: 'Documentar objecoes comuns e respostas (playbook)' },
-    ];
+    const defaultSteps: any[] = [];
 
     const steps = displaySteps.length > 0 ? displaySteps : defaultSteps;
 
     return (
-        <div className="py-20 space-y-32">
+        <div className="space-y-12 py-8">
             {/* Section Header */}
-            <div className="text-center space-y-6">
-                <h2 className="text-7xl md:text-[8rem] font-black text-white leading-[0.8] tracking-[-0.05em] uppercase select-none">
-                    Next <span className="text-revgreen">Steps</span>
+            <div className="space-y-4">
+                <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="w-8 h-[2px] bg-black" />
+                    PRÓXIMOS PASSOS
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Plano de <span className="text-zinc-300">Ação</span>
                 </h2>
-                <div className="w-40 h-[1px] bg-revgreen mx-auto shadow-[0_0_20px_rgba(3,252,59,0.5)]"></div>
-                <p className="text-sm md:text-base text-zinc-500 font-bold uppercase tracking-[0.4em]">
-                    Immediate Action Protocol
+                <p className="text-zinc-500 text-base max-w-2xl">
+                    Ações imediatas para iniciar a execução do planejamento.
                 </p>
             </div>
 
-            {/* Steps - Surgical V2 Grid */}
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
-                {steps.map((step: any, index: number) => {
-                    const title = step.title || step.action;
-                    const label = step.day || `STEP ${index + 1}`;
+            {steps.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {steps.map((step: any, index: number) => {
+                        const title = step.title || step.action;
+                        const label = step.day || `Passo ${index + 1}`;
 
-                    return (
-                        <div
-                            key={index}
-                            className="flex items-start gap-6 group"
-                        >
-                            <div className="w-12 h-12 rounded-full border border-zinc-900 bg-zinc-950 flex items-center justify-center flex-shrink-0 group-hover:border-revgreen transition-all shadow-[0_0_20px_rgba(3,252,59,0.05)]">
-                                <span className="text-xs font-black text-zinc-500 group-hover:text-revgreen">{String(index + 1).padStart(2, '0')}</span>
+                        return (
+                            <div key={index} className="flex items-start gap-4 p-4 border border-zinc-100 rounded-xl hover:shadow-sm transition-all">
+                                <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-xs font-bold text-zinc-500">{String(index + 1).padStart(2, '0')}</span>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-[#00CC6A] font-bold uppercase tracking-widest">{label}</p>
+                                    <p className="text-sm font-bold text-zinc-900">{title}</p>
+                                </div>
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] text-revgreen font-black uppercase tracking-[0.3em]">{label}</p>
-                                <p className="text-lg font-black text-white uppercase tracking-tight leading-tight">{title}</p>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="text-center py-12 text-zinc-400 border border-zinc-100 rounded-xl">
+                    <p className="text-sm font-medium">Ações serão definidas após a aprovação do planejamento.</p>
+                </div>
+            )}
 
             {/* Approval Console */}
-            <div className="max-w-4xl mx-auto pt-20 border-t border-zinc-900">
+            <div className="pt-8 border-t border-zinc-100">
                 {status === 'approved' ? (
                     <div className="text-center py-20 bg-zinc-950/50 border border-revgreen/20 rounded-[3rem] relative overflow-hidden group">
                         <div className="absolute inset-0 bg-revgreen/5 blur-[100px]"></div>
@@ -163,8 +156,8 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
             <Dialog open={showAdjustments} onOpenChange={setShowAdjustments}>
                 <DialogContent className="max-w-lg bg-zinc-950 border border-zinc-900 text-white rounded-[2rem] p-10">
                     <DialogHeader className="space-y-4">
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
-                            Technical Feedback
+                        <DialogTitle className="text-xl font-bold">
+                            Solicitar Ajustes
                         </DialogTitle>
                         <DialogDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">
                             Descreva os pontos de fricção para ajuste imediato.
