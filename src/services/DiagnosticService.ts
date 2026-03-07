@@ -108,6 +108,21 @@ const LABEL_MAPS: Record<string, Record<string, string>> = {
         'nao-sei': 'Não acompanha', 'menor-500': '< R$ 500', '500-2k': 'R$ 500–R$ 2.000',
         '2k-5k': 'R$ 2.000–R$ 5.000', 'maior-5k': '> R$ 5.000', 'acima-5k': '> R$ 5.000',
     },
+    taxaChurn: {
+        'nao-sei': 'Não acompanha', 'menor-2': '< 2% (excelente)', '2-5': '2–5% (bom)',
+        '5-10': '5–10% (atenção)', 'maior-10': '> 10% (crítico)',
+    },
+    areasPrioridade: {
+        'geracao-demanda': 'Geração de demanda', 'conversao-leads': 'Conversão de leads',
+        'retencao': 'Retenção de clientes', 'expansao': 'Expansão (upsell/cross-sell)',
+        'otimizacao-cac': 'Otimização de CAC', 'automacao': 'Automação de processos',
+        'analise-dados': 'Análise de dados',
+    },
+    expectativas: {
+        'oportunidades': 'Identificar oportunidades de crescimento', 'validar': 'Validar estratégia atual',
+        'novos-canais': 'Descobrir novos canais', 'otimizar-funil': 'Otimizar funil de vendas',
+        'reduzir-custos': 'Reduzir custos de aquisição', 'previsibilidade': 'Aumentar previsibilidade',
+    },
 };
 
 /** Maps a raw ID to its label. Falls back to the raw value if not found. */
@@ -281,7 +296,7 @@ export class DiagnosticService {
         const bottlenecksRaw = answers.gargaloFunil || answers.gargalo || '';
         const bottlenecks = bottlenecksRaw === 'outro' ? (answers.gargaloFunil_outro || answers.gargalo_outro || 'Outro') : mapLabel('gargaloFunil', bottlenecksRaw) || 'Não identificado';
         const channels = answers.canaisAquisicao || [];
-        const growthGoal = answers.metaCrescimento || 'Não definida';
+        const growthGoal = mapLabel('metaCrescimento', answers.metaCrescimento || '') || 'Não definida';
 
         // 2. GENERATE MODULES (ALL receive full answers for real data)
         return {
@@ -408,7 +423,7 @@ export class DiagnosticService {
             steps.push({ name: 'Otimização de Conversão (CRO)', description: `Resolução do gargalo identificado: "${gargalo}". Testes A/B, melhoria de proposta de valor e redução de fricção no funil.` });
         }
         if (desafios.includes('churn') || desafios.includes('ltv')) {
-            steps.push({ name: 'Programa de Retenção', description: `Redução de churn${answers.taxaChurn ? ` (atual: ${answers.taxaChurn})` : ''} com onboarding estruturado, health score e playbooks de sucesso do cliente.` });
+            steps.push({ name: 'Programa de Retenção', description: `Redução de churn${answers.taxaChurn ? ` (atual: ${mapLabel('taxaChurn', answers.taxaChurn)})` : ''} com onboarding estruturado, health score e playbooks de sucesso do cliente.` });
         }
         if (desafios.includes('cac')) {
             steps.push({ name: 'Otimização de CAC', description: `Redução do Custo de Aquisição${answers.cacAtual ? ` (atual: ${mapLabel('cacAtual', answers.cacAtual)})` : ''} com melhoria de targeting, quality score e automação de nutrição.` });
@@ -454,7 +469,7 @@ export class DiagnosticService {
         const prazo = answers.prazo || answers.quandoComecar || '';
         const areas = answers.areasPrioridade || [];
         const canais = answers.canaisAquisicao || [];
-        const growthGoal = answers.metaCrescimento || '';
+        const growthGoal = mapLabel('metaCrescimento', answers.metaCrescimento || '') || '';
 
         // Calculate real start date based on prazo
         const now = new Date();
@@ -534,7 +549,7 @@ export class DiagnosticService {
             'Ajuste de investimento para nova fase de escala'
         ];
         if (answers.taxaChurn) {
-            cycle4Items.push(`Meta de redução de churn de ${answers.taxaChurn} para patamar aceitável`);
+            cycle4Items.push(`Meta de redução de churn de ${mapLabel('taxaChurn', answers.taxaChurn)} para patamar aceitável`);
         }
         if (answers.ltvAtual && answers.cacAtual) {
             cycle4Items.push(`Otimizar relação LTV:CAC (atual: LTV ${mapLabel('ltvAtual', answers.ltvAtual)} / CAC ${mapLabel('cacAtual', answers.cacAtual)})`);
@@ -624,7 +639,8 @@ export class DiagnosticService {
     private static generateProjections(budget: string, answers: any) {
         const ticketMedioRaw = answers.ticketMedio || '';
         const mrrSelect = answers.mrr || '';
-        const growthGoal = answers.metaCrescimento || '';
+        const growthGoalRaw = answers.metaCrescimento || '';
+        const growthGoal = mapLabel('metaCrescimento', growthGoalRaw) || '';
         const cicloVendas = answers.cicloVendas || '';
         const cacAtual = answers.cacAtual || '';
         const churnRate = answers.taxaChurn || '';
@@ -637,14 +653,14 @@ export class DiagnosticService {
             '500k-1m': 700000, 'acima-1m': 1500000,
         };
         const budgetMap: Record<string, number> = {
-            'ate-5k': 3000, 'ate-10k': 7000, '10k-25k': 15000,
-            '25k-50k': 35000, 'acima-50k': 75000,
+            'ate-10k': 7000, '10k-30k': 18000, '30k-100k': 55000,
+            '100k-300k': 180000, 'acima-300k': 400000,
         };
         const churnMap: Record<string, number> = {
-            '0-2': 1, '2-5': 3.5, '5-10': 7.5, 'acima-10': 15,
+            'menor-2': 1, '2-5': 3.5, '5-10': 7.5, 'maior-10': 15, 'nao-sei': 3,
         };
         const ltvMap: Record<string, number> = {
-            'menor-5k': 3500, '5k-20k': 12000, '20k-100k': 50000, 'acima-100k': 150000,
+            'menor-5k': 3500, '5k-20k': 12000, '20k-50k': 35000, 'maior-50k': 80000,
         };
 
         const currentMRR = mrrMap[mrrSelect] || parseFloat(String(mrrSelect).replace(/[^0-9]/g, '')) || 8000;
@@ -656,16 +672,17 @@ export class DiagnosticService {
         const ticketNum = parseFloat(String(ticketMedioRaw).replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
         const ticketMedio = ticketNum > 0 ? ticketNum : (currentMRR > 0 ? Math.round(currentMRR / 10) : 1500);
 
-        // Parse CAC (e.g. "R$ 500,00" → 500 or "alto" → estimate)
-        const cacNum = parseFloat(String(cacAtual).replace(/[R$\s.]/g, '').replace(',', '.'));
-        const estimatedCAC = !isNaN(cacNum) && cacNum > 0 ? cacNum : Math.round(ticketMedio * 0.25);
+        // Parse CAC from select value to number
+        const cacMap: Record<string, number> = {
+            'menor-500': 350, '500-2k': 1000, '2k-5k': 3000, 'maior-5k': 7000, 'acima-5k': 7000,
+        };
+        const estimatedCAC = cacMap[cacAtual] || Math.round(ticketMedio * 0.25);
 
         // ── Growth rate based on metaCrescimento ────────────────────────
         const growthRates: Record<string, number> = {
-            'agressivo': 0.20, 'crescer': 0.15, 'moderado': 0.10, 'manter': 0.05,
-            'escalar': 0.18, 'dobrar': 0.25,
+            '2x': 0.15, '3x': 0.20, '5x': 0.25, 'manter': 0.05, 'nao-planejado': 0.10,
         };
-        const monthlyGrowth = growthRates[growthGoal.toLowerCase()] || 0.12;
+        const monthlyGrowth = growthRates[growthGoalRaw] || 0.12;
 
         // ── Calculate 6 months of projections ──────────────────────────
         const months = 6;
