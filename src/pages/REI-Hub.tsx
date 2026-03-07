@@ -1,64 +1,31 @@
-import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe, ChevronDown, Loader2, Calendar } from 'lucide-react';
+import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe, ChevronDown, Loader2, Calendar, Check } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import PageLayout from '@/components/layout/PageLayout';
-import type { REIType } from '@/components/rei/REIWizard';
+import type { REIType } from '@/types/rei';
 import { createReiProject, getReiProjectsByClientEmail, ReiProject } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
 
 // ── Type definitions ────────────────────────────────────────────────────
-const REI_TYPES: { value: REIType; label: string; subtitle: string; icon: JSX.Element; steps: string }[] = [
-    {
-        value: 'consulting',
-        label: 'Consultoria 360°',
-        subtitle: 'Diagnóstico completo de receita, operação comercial e posicionamento estratégico.',
-        icon: <Target className="w-4 h-4" />,
-        steps: 'Contexto → Desafios → Estratégia → Expectativas',
-    },
-    {
-        value: 'dev',
-        label: 'Dev Web & Design',
-        subtitle: 'Briefing técnico para projetos de desenvolvimento, landing pages e plataformas digitais.',
-        icon: <Code className="w-4 h-4" />,
-        steps: 'Briefing Técnico → Contexto → Expectativas',
-    },
-    {
-        value: 'founder',
-        label: 'Founder Led Sales',
-        subtitle: 'Protocolo de autoridade pessoal e posicionamento do fundador como motor de vendas.',
-        icon: <Crown className="w-4 h-4" />,
-        steps: 'Identidade → Posicionamento → Expectativas',
-    },
-    {
-        value: 'funnel',
-        label: 'Funnels & CRM',
-        subtitle: 'Diagnóstico da máquina de vendas: funis, automações, CRM e jornada de conversão.',
-        icon: <Database className="w-4 h-4" />,
-        steps: 'Estratégia → Objetivos → Expectativas',
-    },
-    {
-        value: 'site',
-        label: 'Site & Landing Pages',
-        subtitle: 'Briefing focado em presença digital: site institucional, LP de alta conversão.',
-        icon: <Globe className="w-4 h-4" />,
-        steps: 'Tech Briefing → Expectativas',
-    },
+const REI_TYPES: { value: REIType; label: string; subtitle: string; icon: JSX.Element }[] = [
+    { value: 'consulting', label: 'Consultoria 360°', subtitle: 'Diagnóstico completo de receita, operação comercial e Growth.', icon: <Target className="w-4 h-4" /> },
+    { value: 'funnel', label: 'Funnels & CRM', subtitle: 'Funis, automações, CRM e jornada de conversão.', icon: <Database className="w-4 h-4" /> },
+    { value: 'dev', label: 'Dev Web & Design', subtitle: 'Briefing técnico para sites, LPs e plataformas.', icon: <Code className="w-4 h-4" /> },
+    { value: 'site', label: 'Site & Landing Pages', subtitle: 'Presença digital: site institucional, LP de alta conversão.', icon: <Globe className="w-4 h-4" /> },
+    { value: 'founder', label: 'Founder Led Sales', subtitle: 'Posicionamento pessoal do fundador como motor de vendas.', icon: <Crown className="w-4 h-4" /> },
 ];
 
 // ── My Projects Section ─────────────────────────────────────────────────
 function MyProjectsSection({ userEmail }: { userEmail?: string }) {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState<ReiProject[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProjects = async () => {
-            if (!userEmail) {
-                setLoading(false);
-                return;
-            }
-
+            if (!userEmail) { setLoading(false); return; }
             try {
                 const data = await getReiProjectsByClientEmail(userEmail);
                 setProjects(data);
@@ -68,58 +35,40 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
                 setLoading(false);
             }
         };
-
         fetchProjects();
     }, [userEmail]);
 
-    if (loading) return null;
-
-    if (projects.length === 0) return null;
+    if (loading || projects.length === 0) return null;
 
     return (
-        <div className="mb-12">
-            <h2 className="text-lg font-black text-black uppercase tracking-tight mb-6 flex items-center gap-2">
-                <Database className="w-5 h-5" /> Meus Diagnósticos
+        <div className="mb-16">
+            <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                <Database className="w-3.5 h-3.5" /> Meus Diagnósticos
             </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-2">
                 {projects.map((project) => (
-                    <div key={project.id} className="bg-zinc-50 border border-zinc-200 p-6 rounded-sm hover:border-black transition-colors group">
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="text-[10px] font-bold uppercase tracking-widest bg-white border border-zinc-200 px-2 py-1 rounded-full">
-                                {project.type?.toUpperCase() || 'CONSULTING'}
+                    <div
+                        key={project.id}
+                        onClick={() => project.status === 'active' ? navigate(`/rei/resultado/${project.id}`) : navigate(`/rei/wizard?projectId=${project.id}`)}
+                        className="flex items-center justify-between p-5 bg-white border border-zinc-100 hover:border-black transition-all cursor-pointer group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className={`w-2 h-2 rounded-full ${project.status === 'active' ? 'bg-emerald-400' : 'bg-orange-400'}`} />
+                            <div>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                    {project.type?.toUpperCase() || 'CONSULTING'}
+                                </span>
+                                <p className="text-sm font-bold text-black">
+                                    {new Date(project.created_at).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                {project.status === 'active' ? 'Concluído' : 'Pendente'}
                             </span>
-                            {project.status === 'active' ? (
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-revgreen flex items-center gap-1">
-                                    <div className="w-2 h-2 rounded-full bg-revgreen animate-pulse" /> Concluído
-                                </span>
-                            ) : (
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-orange-500 flex items-center gap-1">
-                                    <div className="w-2 h-2 rounded-full bg-orange-500" /> Pendente
-                                </span>
-                            )}
+                            <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-colors" />
                         </div>
-
-                        <h3 className="text-xl font-bold text-black mb-2">
-                            {new Date(project.created_at).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-                        </h3>
-
-                        <div className="flex items-center gap-2 text-xs text-zinc-500 mb-6 font-medium">
-                            <Calendar className="w-3 h-3" /> Última atualização: {new Date(project.updated_at || project.created_at).toLocaleDateString('pt-BR')}
-                        </div>
-
-                        <Button
-                            onClick={() => {
-                                if (project.status === 'active') {
-                                    navigate(`/rei/resultado/${project.id}`);
-                                } else {
-                                    navigate(`/rei/wizard?projectId=${project.id}`);
-                                }
-                            }}
-                            className="w-full bg-white border border-black text-black hover:bg-black hover:text-revgreen uppercase tracking-widest text-xs font-bold"
-                        >
-                            {project.status === 'active' ? 'Ver Resultado' : 'Continuar'}
-                        </Button>
                     </div>
                 ))}
             </div>
@@ -127,279 +76,178 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
     );
 }
 
+// ── Main Page ────────────────────────────────────────────────────────────
 const ReiHubPage = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
-    const { user, userProfile } = useAuth(); // Get user context for header
+    const { user, userProfile } = useAuth();
     const [creatingProject, setCreatingProject] = useState(false);
+    const [selectedType, setSelectedType] = useState<REIType | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const [firstName, setFirstName] = useState<string>('');
 
-    // Set first name for header
     useEffect(() => {
-        if (userProfile?.full_name) {
-            const first = userProfile.full_name.split(' ')[0];
-            setFirstName(first);
-        } else if (user?.email) {
-            const emailName = user.email.split('@')[0];
-            setFirstName(emailName);
-        }
+        if (userProfile?.full_name) setFirstName(userProfile.full_name.split(' ')[0]);
+        else if (user?.email) setFirstName(user.email.split('@')[0]);
     }, [user, userProfile]);
 
-    const handleSelectType = async (type: REIType) => {
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
+
+    const handleStart = async () => {
+        if (!selectedType) {
+            toast({ title: 'Selecione um protocolo', description: 'Escolha o tipo de diagnóstico antes de iniciar.', variant: 'destructive' });
+            return;
+        }
+
         setCreatingProject(true);
-
         try {
-            // Criar projeto REI
+            const now = new Date();
+            const quarter = (['Q1', 'Q2', 'Q3', 'Q4'] as const)[Math.floor(now.getMonth() / 3)];
             const project = await createReiProject({
-                type: type,
-                client_email: user?.email || 'test@test.com', // Use logged user email or fallback
-                client_name: userProfile?.full_name || 'Test Client',
-                analyst_email: 'analyst@test.com',
+                type: selectedType,
+                client_email: user?.email || '',
+                client_name: userProfile?.full_name || '',
+                analyst_email: '',
                 status: 'pending',
-                quarter: getCurrentQuarter(),
-                year: new Date().getFullYear(),
-                next_rei_date: getNextQuarterDate()
+                quarter,
+                year: now.getFullYear(),
+                next_rei_date: new Date(now.getFullYear(), Math.ceil((now.getMonth() + 1) / 3) * 3, 0).toISOString(),
             });
-
-            toast({
-                title: "Projeto criado!",
-                description: "Redirecionando para o diagnóstico...",
-                className: "bg-revgreen border-none text-black"
-            });
-
-            // Redirecionar para wizard
+            toast({ title: 'Projeto criado!', description: 'Redirecionando para o diagnóstico...', className: 'bg-revgreen border-none text-black' });
             navigate(`/rei/wizard?projectId=${project.id}`);
         } catch (error) {
             console.error('Erro ao criar projeto:', error);
-            toast({
-                title: "Erro",
-                description: "Não foi possível criar o projeto. Tente novamente.",
-                variant: "destructive"
-            });
+            toast({ title: 'Erro', description: 'Não foi possível criar o projeto. Tente novamente.', variant: 'destructive' });
         } finally {
             setCreatingProject(false);
         }
     };
 
-    // Helper: Calcular quarter atual
-    const getCurrentQuarter = (): 'Q1' | 'Q2' | 'Q3' | 'Q4' => {
-        const month = new Date().getMonth() + 1;
-        if (month <= 3) return 'Q1';
-        if (month <= 6) return 'Q2';
-        if (month <= 9) return 'Q3';
-        return 'Q4';
-    };
-
-    // Helper: Calcular data do próximo quarter
-    const getNextQuarterDate = (): string => {
-        const now = new Date();
-        const currentQuarter = getCurrentQuarter();
-        const year = now.getFullYear();
-
-        const quarterEndDates = {
-            Q1: new Date(year, 2, 31),  // 31 de março
-            Q2: new Date(year, 5, 30),  // 30 de junho
-            Q3: new Date(year, 8, 30),  // 30 de setembro
-            Q4: new Date(year, 11, 31)  // 31 de dezembro
-        };
-
-        return quarterEndDates[currentQuarter].toISOString();
-    };
-
-    // Animation variants matching Admin Hub
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const itemAnim = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0 }
-    };
+    const selected = REI_TYPES.find(t => t.value === selectedType);
 
     return (
         <PageLayout>
             <div className="min-h-screen bg-white pt-40 pb-20 relative overflow-hidden">
-                {/* Decorative Background Elements */}
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
 
-                <div className="container-custom max-w-6xl mx-auto relative z-10">
+                <div className="container-custom max-w-3xl mx-auto relative z-10">
 
-                    {/* Header - Unified with Admin Hub */}
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-black/10 pb-8">
-                        <div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <Link to="/admin" className="flex items-center gap-2 group cursor-pointer transition-colors">
-                                    <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:border-black group-hover:bg-black transition-all">
-                                        <ArrowLeft className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors" />
-                                    </div>
-                                    <span className="text-[10px] uppercase tracking-widest font-bold text-zinc-400 group-hover:text-black transition-colors">Voltar ao Hub</span>
-                                </Link>
-                            </div>
-                            <h1 className="text-3xl md:text-4xl font-black text-black tracking-tighter uppercase leading-none">
-                                REI <span className="text-zinc-400">HUB</span>
-                            </h1>
-                            <p className="text-zinc-400 text-sm font-medium mt-4 tracking-wide uppercase">
-                                Revenue Engine Intelligence
-                            </p>
+                    {/* Header */}
+                    <div className="mb-16">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Link to="/admin" className="flex items-center gap-2 group cursor-pointer transition-colors">
+                                <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:border-black group-hover:bg-black transition-all">
+                                    <ArrowLeft className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors" />
+                                </div>
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-zinc-400 group-hover:text-black transition-colors">Voltar ao Hub</span>
+                            </Link>
                         </div>
-                        <div className="flex flex-col items-end mt-6 md:mt-0">
-                            <p className="text-right text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400 mb-1">
-                                Logado como
-                            </p>
-                            <p className="text-xl font-bold text-black border-l-2 border-revgreen pl-4">
-                                {firstName}
-                            </p>
-                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-black tracking-tighter uppercase leading-none mb-2">
+                            REI <span className="text-zinc-300">Hub</span>
+                        </h1>
+                        <p className="text-zinc-400 text-sm font-medium tracking-wide uppercase">
+                            Revenue Engine Intelligence — {firstName && `Olá, ${firstName}`}
+                        </p>
                     </div>
 
-                    {/* Meus Projetos Section */}
+                    {/* My Projects */}
                     <MyProjectsSection userEmail={user?.email} />
 
-                    <div className="flex items-center gap-2 mb-8 mt-12">
-                        <div className="h-px bg-zinc-200 flex-1"></div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">Novo Diagnóstico</span>
-                        <div className="h-px bg-zinc-200 flex-1"></div>
+                    {/* New Diagnostic Section */}
+                    <div className="border-t border-zinc-100 pt-12">
+                        <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-8">
+                            Novo Diagnóstico
+                        </h2>
+
+                        <div className="bg-white border border-zinc-200 p-8 md:p-12">
+                            {/* Protocol Dropdown */}
+                            <div className="mb-8">
+                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] block mb-3">
+                                    Protocolo
+                                </label>
+                                <div ref={dropdownRef} className="relative">
+                                    <button
+                                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                                        className={`w-full flex items-center justify-between p-4 border text-left transition-all ${dropdownOpen ? 'border-black' : 'border-zinc-200 hover:border-zinc-400'
+                                            } ${selected ? 'bg-white' : 'bg-zinc-50'}`}
+                                    >
+                                        {selected ? (
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 bg-black text-white flex items-center justify-center">
+                                                    {selected.icon}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-black uppercase tracking-tight">{selected.label}</p>
+                                                    <p className="text-xs text-zinc-400">{selected.subtitle}</p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <span className="text-sm text-zinc-400">Selecione o protocolo de análise...</span>
+                                        )}
+                                        <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {dropdownOpen && (
+                                        <div className="absolute top-full left-0 right-0 bg-white border border-zinc-200 border-t-0 z-50 shadow-xl animate-in fade-in slide-in-from-top-1 duration-150">
+                                            {REI_TYPES.map((type) => (
+                                                <button
+                                                    key={type.value}
+                                                    onClick={() => { setSelectedType(type.value); setDropdownOpen(false); }}
+                                                    className={`w-full flex items-center gap-4 p-4 text-left transition-all hover:bg-zinc-50 border-b border-zinc-50 last:border-b-0 ${selectedType === type.value ? 'bg-zinc-50' : ''
+                                                        }`}
+                                                >
+                                                    <div className={`w-8 h-8 flex items-center justify-center transition-colors ${selectedType === type.value ? 'bg-black text-white' : 'bg-zinc-100 text-zinc-500'
+                                                        }`}>
+                                                        {type.icon}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-black uppercase tracking-tight">{type.label}</p>
+                                                        <p className="text-xs text-zinc-400 truncate">{type.subtitle}</p>
+                                                    </div>
+                                                    {selectedType === type.value && (
+                                                        <Check className="w-4 h-4 text-black shrink-0" />
+                                                    )}
+                                                    {type.value === 'consulting' && selectedType !== type.value && (
+                                                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-0.5 shrink-0">Recomendado</span>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Start Button */}
+                            <Button
+                                onClick={handleStart}
+                                disabled={!selectedType || creatingProject}
+                                className="w-full bg-black text-white hover:bg-zinc-800 rounded-none h-14 uppercase text-xs font-black tracking-[0.3em] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                                {creatingProject ? (
+                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Criando...</>
+                                ) : (
+                                    <><ArrowRight className="w-4 h-4 mr-2" /> Iniciar Diagnóstico</>
+                                )}
+                            </Button>
+                        </div>
+
+                        {/* Helper text */}
+                        <p className="text-[10px] text-zinc-300 uppercase tracking-widest mt-4 text-center">
+                            Selecione o protocolo e clique em Iniciar para começar a análise
+                        </p>
                     </div>
-
-                    {/* REI Cards - Updated Grid & Motion */}
-                    <motion.div
-                        variants={container}
-                        initial="hidden"
-                        animate="show"
-                        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-                    >
-                        {/* Card 1: Consultoria */}
-                        <motion.div
-                            variants={itemAnim}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => !creatingProject && handleSelectType('consulting')}
-                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                        >
-                            <div>
-                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
-                                    <Target className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Consultoria 360º</h3>
-                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
-                                    Diagnóstico Completo
-                                </p>
-                            </div>
-                            <div className="relative mt-auto flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
-                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Card 2: Dev & Design */}
-                        <motion.div
-                            variants={itemAnim}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => !creatingProject && handleSelectType('dev')}
-                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                        >
-                            <div>
-                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
-                                    <Code className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Dev Web & Design</h3>
-                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
-                                    Briefing Técnico
-                                </p>
-                            </div>
-                            <div className="relative mt-auto flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
-                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Card 3: Founder Led Sales */}
-                        <motion.div
-                            variants={itemAnim}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => !creatingProject && handleSelectType('founder')}
-                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                        >
-                            <div>
-                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
-                                    <Crown className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Founder Led Sales</h3>
-                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
-                                    Protocolo de Autoridade
-                                </p>
-                            </div>
-                            <div className="relative mt-auto flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
-                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Card 4: Funnels & Automation */}
-                        <motion.div
-                            variants={itemAnim}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => !creatingProject && handleSelectType('funnel')}
-                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                        >
-                            <div>
-                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
-                                    <Database className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Funnels & CRM</h3>
-                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
-                                    Máquina de Vendas
-                                </p>
-                            </div>
-                            <div className="relative mt-auto flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
-                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Card 5: Site & Landing Pages */}
-                        <motion.div
-                            variants={itemAnim}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => !creatingProject && handleSelectType('site')}
-                            className={`group bg-white p-10 relative border border-zinc-100 hover:border-black transition-colors duration-300 z-0 hover:z-10 hover:shadow-xl shadow-sm flex flex-col justify-between h-[340px] ${creatingProject ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                        >
-                            <div>
-                                <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300 mb-8">
-                                    <Globe className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <h3 className="text-xl font-black text-black mb-3 uppercase tracking-tight group-hover:translate-x-1 transition-transform duration-300">Site & Landing Pages</h3>
-                                <p className="text-xs text-zinc-400 font-medium uppercase tracking-widest leading-relaxed group-hover:text-zinc-600 transition-colors">
-                                    Presença Digital
-                                </p>
-                            </div>
-                            <div className="relative mt-auto flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
-                                    {creatingProject ? 'Criando...' : 'Iniciar'} <ArrowRight className="w-4 h-4" />
-                                </span>
-                            </div>
-                        </motion.div>
-                    </motion.div>
                 </div>
             </div>
         </PageLayout>
     );
 };
-
-
 
 export default ReiHubPage;

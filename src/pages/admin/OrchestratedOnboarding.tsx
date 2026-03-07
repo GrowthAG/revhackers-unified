@@ -5,6 +5,7 @@ import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import {
     Check,
     ArrowLeft,
+    ArrowRight,
     Loader2,
     Zap,
     Target,
@@ -195,56 +196,38 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                         {latestResponse ? 'Atualizar Diagnóstico' : 'Iniciar Diagnóstico'}
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-3xl border-0 p-0 bg-transparent shadow-none">
+                                <DialogContent className="max-w-lg border-0 p-0 bg-transparent shadow-none">
                                     <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
-                                        <div className="bg-black p-8 text-center">
-                                            <h2 className="text-xl font-black uppercase tracking-widest text-white mb-2">Selecione o Protocolo</h2>
+                                        <div className="bg-black p-6 text-center">
+                                            <h2 className="text-lg font-black uppercase tracking-widest text-white mb-1">Selecione o Protocolo</h2>
                                             <p className="text-xs text-zinc-400">Escolha a profundidade da análise para este projeto.</p>
                                         </div>
-                                        <div className="grid grid-cols-5 divide-x divide-zinc-100">
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=consulting`)}>
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-14 h-14 bg-white border border-zinc-100 flex items-center justify-center mb-8 text-black group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Target size={22} strokeWidth={1} />
-                                                </div>
-                                                <h3 className="text-sm font-black uppercase tracking-tight text-center mb-3 text-black">Consultoria 360º</h3>
-                                                <p className="text-[10px] text-zinc-400 text-center leading-relaxed mb-4 uppercase tracking-widest">Diagnóstico Completo</p>
-                                                <div className="text-center">
-                                                    <Badge className="bg-zinc-100 text-zinc-500 group-hover:bg-black group-hover:text-white text-[9px] uppercase tracking-widest transition-colors">Recomendado</Badge>
-                                                </div>
-                                            </div>
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=funnel`)}>
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Database size={20} />
-                                                </div>
-                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Funnels & CRM</h3>
-                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Máquina de Vendas</p>
-                                            </div>
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=dev`)}>
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Code size={20} />
-                                                </div>
-                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Dev Web & Design</h3>
-                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Briefing Técnico</p>
-                                            </div>
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=site`)}>
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Globe size={20} />
-                                                </div>
-                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Site & LPs</h3>
-                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Presença Digital</p>
-                                            </div>
-                                            <div className="p-8 hover:bg-zinc-50 transition-colors group cursor-pointer relative" onClick={() => navigate(`/rei/wizard?projectId=${id}&type=founder`)}>
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-6 text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors mx-auto">
-                                                    <Crown size={20} />
-                                                </div>
-                                                <h3 className="text-sm font-black uppercase tracking-widest text-center mb-3 text-black">Founder Led Sales</h3>
-                                                <p className="text-[10px] text-zinc-500 text-center leading-relaxed mb-6">Posicionamento Pessoal</p>
-                                            </div>
+                                        <div className="divide-y divide-zinc-50">
+                                            {[
+                                                { type: 'consulting', label: 'Consultoria 360°', desc: 'Diagnóstico completo de receita e Growth', icon: <Target size={18} />, badge: 'Recomendado' },
+                                                { type: 'funnel', label: 'Funnels & CRM', desc: 'Funis, automações e jornada de conversão', icon: <Database size={18} /> },
+                                                { type: 'dev', label: 'Dev Web & Design', desc: 'Briefing técnico para sites e plataformas', icon: <Code size={18} /> },
+                                                { type: 'site', label: 'Site & Landing Pages', desc: 'Presença digital e LP de alta conversão', icon: <Globe size={18} /> },
+                                                { type: 'founder', label: 'Founder Led Sales', desc: 'Posicionamento pessoal do fundador', icon: <Crown size={18} /> },
+                                            ].map((item) => (
+                                                <button
+                                                    key={item.type}
+                                                    onClick={() => navigate(`/rei/wizard?projectId=${id}&type=${item.type}`)}
+                                                    className="w-full flex items-center gap-4 p-5 text-left hover:bg-zinc-50 transition-all group"
+                                                >
+                                                    <div className="w-10 h-10 bg-zinc-100 flex items-center justify-center text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors shrink-0">
+                                                        {item.icon}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-black uppercase tracking-tight">{item.label}</p>
+                                                        <p className="text-xs text-zinc-400">{item.desc}</p>
+                                                    </div>
+                                                    {item.badge && (
+                                                        <Badge className="bg-zinc-100 text-zinc-500 group-hover:bg-black group-hover:text-white text-[9px] uppercase tracking-widest transition-colors shrink-0">{item.badge}</Badge>
+                                                    )}
+                                                    <ArrowRight className="w-4 h-4 text-zinc-200 group-hover:text-black transition-colors shrink-0" />
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
                                 </DialogContent>
