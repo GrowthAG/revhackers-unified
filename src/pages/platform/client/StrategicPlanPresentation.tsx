@@ -94,7 +94,6 @@ import PremisesSection from './sections/PremisesSection';
 import PersonaSection from './sections/PersonaSection';
 import MethodologySection from './sections/MethodologySection';
 import OnboardingSection from './sections/OnboardingSection';
-import RoadmapSection from './sections/RoadmapSection';
 import GoalsSection from './sections/GoalsSection';
 import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
@@ -139,8 +138,7 @@ const ALL_SECTIONS = [
     { id: 'benchmark', name: 'Análise de Mercado', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'methodology', name: 'Metodologia', icon: <Microscope className="w-4 h-4" /> },
     { id: 'goals', name: 'Metas e Indicadores', icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'roadmap', name: 'Plano de Ação', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding', name: 'Primeiros 90 Dias', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'cronograma', name: 'Cronograma 90 Dias', icon: <Calendar className="w-4 h-4" /> },
     { id: 'projections', name: 'Projeções', icon: <DollarSign className="w-4 h-4" /> },
     { id: 'investment', name: 'Investimento', icon: <Wallet className="w-4 h-4" />, optional: true },
     { id: 'approval', name: 'Aprovação', icon: <Check className="w-4 h-4" /> },
@@ -539,8 +537,7 @@ export default function StrategicPlanPresentation() {
             case 'persona': return <PersonaSection plan={plan} />;
             case 'benchmark': return <BenchmarkSection plan={plan} />;
             case 'methodology': return <MethodologySection plan={plan} />;
-            case 'onboarding': return <OnboardingSection plan={plan} />;
-            case 'roadmap': return <RoadmapSection plan={plan} />;
+            case 'cronograma': return <OnboardingSection plan={plan} />;
             case 'goals': return <GoalsSection plan={plan} />;
             case 'projections': return <ProjectionsSection plan={plan} />;
             case 'investment': return <InvestmentSection plan={plan} />;
@@ -692,7 +689,7 @@ export default function StrategicPlanPresentation() {
                     </div>
                 </div>
             ) : (
-                <div className={`plan-presentation h-screen overflow-hidden bg-white font-sans flex flex-col ${isPlanEditMode ? 'pt-11' : ''}`}>
+                <div className={`plan-presentation min-h-screen bg-white font-sans flex flex-col ${isPlanEditMode ? 'pt-11' : ''}`}>
                     <PlanEditBar />
 
                     {/* Tela de sucesso pós-assinatura */}
@@ -864,7 +861,7 @@ export default function StrategicPlanPresentation() {
                     )}
 
                     {/* ── HEADER FIXO ──────────────────────────────────────────────── */}
-                    <header className="shrink-0 z-40 bg-white/90 backdrop-blur-md border-b border-zinc-100">
+                    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-zinc-100">
                         <div className="max-w-7xl mx-auto px-6">
                             <div className="flex items-center h-14 gap-6">
                                 <img
@@ -914,14 +911,14 @@ export default function StrategicPlanPresentation() {
                     {/* ── CONTEÚDO PRINCIPAL ───────────────────────────────────────── */}
                     {currentSectionId === 'cover' ? (
                         /* CAPA: full-screen sem container — preenche todo o espaço */
-                        <main ref={mainRef} className="flex-1 min-h-0 overflow-hidden flex flex-col">
-                            <div key="cover" className="flex-1 min-h-0 h-full animate-in fade-in duration-300">
+                        <main ref={mainRef} className="flex-1 flex flex-col">
+                            <div key="cover" className="flex-1 animate-in fade-in duration-300">
                                 <CoverSection plan={plan} client={client} />
                             </div>
                         </main>
                     ) : (
                         /* OUTRAS SEÇÕES: container padded com breadcrumb */
-                        <main ref={mainRef} className="flex-1 overflow-y-auto">
+                        <main ref={mainRef} className="flex-1">
                             <div className="max-w-5xl mx-auto px-6 py-8 md:py-10">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-3">
@@ -951,7 +948,7 @@ export default function StrategicPlanPresentation() {
 
 
                     {/* ── RODAPÉ DE NAVEGAÇÃO ───────────────────────────────────────── */}
-                    <footer className="shrink-0 border-t border-zinc-100 bg-white/90 backdrop-blur-md z-40">
+                    <footer className="sticky bottom-0 border-t border-zinc-100 bg-white/90 backdrop-blur-md z-40">
                         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
                             <button
                                 onClick={handlePrev}
