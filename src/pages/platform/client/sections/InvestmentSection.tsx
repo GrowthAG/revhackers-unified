@@ -133,19 +133,18 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
     };
 
     return (
-        <div className="space-y-16 py-8">
+        <div className="space-y-10 py-8">
             {/* Header */}
             <div className="space-y-4">
                 <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
                     <span className="w-8 h-[2px] bg-black" />
-                    INVESTIMENTO
+                    FINANCEIRO
                 </div>
-                <h2 className="text-5xl lg:text-6xl font-black text-zinc-900 tracking-tighter leading-[0.95]">
-                    Alocação de<br />
-                    <span className="text-zinc-300">Mídia</span>
+                <h2 className="text-4xl lg:text-5xl font-black text-zinc-900 tracking-tighter leading-none">
+                    Investimento <span className="text-zinc-300">& Retorno</span>
                 </h2>
                 <p className="text-zinc-500 text-base max-w-2xl">
-                    Sugestão de investimento mensal baseada no seu diagnóstico. Os valores são ajustáveis — o cliente define o investimento final.
+                    Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget.
                 </p>
             </div>
 
@@ -165,7 +164,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-12">
+            <div className="grid lg:grid-cols-3 gap-8">
                 {/* Channel Grid */}
                 <div className="lg:col-span-2 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
