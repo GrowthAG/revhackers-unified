@@ -120,11 +120,11 @@ export default function OnboardingSection({ plan }: { plan: any }) {
 
             {/* Milestone Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
+                {(onboarding.milestones || [
                     { cycle: '01', title: 'Setup & Integração', desc: 'Protocolo de transição, acessos liberados e setup técnico concluído.', weeks: 'Semanas 1-4' },
                     { cycle: '02', title: 'Ativação & Tração', desc: 'Campanhas ativas, CRM implementado e primeiros leads qualificados.', weeks: 'Semanas 5-8' },
                     { cycle: '03', title: 'Escala & Otimização', desc: 'Revisão de ROI, escala de budget e otimização de conversão.', weeks: 'Semanas 9-12' },
-                ].map((milestone, i) => (
+                ]).map((milestone: any, i: number) => (
                     <div key={i} className="p-8 bg-white border border-zinc-100 group hover:border-zinc-300 transition-all">
                         <div className="flex items-center gap-3 mb-4">
                             <span className="text-4xl font-black text-zinc-100 group-hover:text-zinc-200 transition-colors">{milestone.cycle}</span>

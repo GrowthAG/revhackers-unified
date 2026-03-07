@@ -71,11 +71,11 @@ export default function RoadmapSection({ plan }: RoadmapSectionProps) {
             {/* Key Milestones */}
             <div className="pt-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {[
+                    {(roadmap.milestones || [
                         { cycle: 'Ciclo 1', title: 'Integração & Lab', desc: 'Protocolo de transição e setup técnico concluídos.' },
                         { cycle: 'Ciclo 2', title: 'Plano de Sucesso', desc: 'Kickoff estratégico e ativação de canais secundários.' },
-                        { cycle: 'Ciclo 3', title: 'RevOps Expansion', desc: 'Revisão de ROI e escala de budget por performance.' },
-                    ].map((milestone, i) => (
+                        { cycle: 'Ciclo 3', title: 'Expansão RevOps', desc: 'Revisão de ROI e escala de budget por performance.' },
+                    ]).map((milestone: any, i: number) => (
                         <div key={i} className="p-10 bg-zinc-50 border border-zinc-100 rounded-3xl group hover:border-revgreen/30 transition-all shadow-sm">
                             <div className="text-3xl font-black text-zinc-200 group-hover:text-revgreen/20 transition-colors mb-4">{milestone.cycle}</div>
                             <h4 className="text-lg font-bold text-black tracking-tight mb-2">{milestone.title}</h4>

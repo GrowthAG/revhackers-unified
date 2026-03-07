@@ -156,8 +156,8 @@ export default function ProjectionsSection({ plan }: ProjectionsSectionProps) {
                         </div>
                         <div className="bg-black p-8 rounded-3xl border border-zinc-900 flex items-center gap-8 group-hover:border-revgreen/30 transition-all">
                             <div className="text-right">
-                                <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-1">Methodology Core</p>
-                                <p className="text-sm font-black text-white uppercase tracking-tight">RevHackers Historical Data</p>
+                                <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-1">Metodologia Base</p>
+                                <p className="text-sm font-black text-white uppercase tracking-tight">Dados Históricos RevHackers</p>
                             </div>
                             <BarChart3 className="w-8 h-8 text-revgreen" />
                         </div>

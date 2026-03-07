@@ -144,7 +144,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
                     Investimento <span className="text-zinc-300">& Retorno</span>
                 </h2>
                 <p className="text-zinc-500 text-base max-w-2xl">
-                    Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget.
+                    Distribuição de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu orçamento.
                 </p>
             </div>
 
@@ -186,7 +186,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: InvestmentSe
                                             </div>
                                             <div>
                                                 <span className="text-sm font-bold text-black block">{channel.name}</span>
-                                                <span className="text-[10px] text-zinc-400">{pct}% do budget</span>
+                                                <span className="text-[10px] text-zinc-400">{pct}% do orçamento</span>
                                             </div>
                                         </div>
                                         <ArrowUpRight className="w-4 h-4 text-zinc-200 group-hover:text-black transition-colors" />

@@ -148,7 +148,7 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                         <div className="h-6 w-px bg-zinc-200 mx-2" />
                         <Button variant="outline" size="sm" className="h-9 rounded-full text-xs" onClick={() => window.print()}>
                             <Printer size={14} className="mr-2" />
-                            PDF / Print
+                            PDF / Imprimir
                         </Button>
                         <Button variant="default" size="sm" className="h-9 rounded-full text-xs bg-zinc-900 hover:bg-zinc-800">
                             <Share2 size={14} className="mr-2" />
@@ -172,31 +172,30 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <MetricCard
                             title="Novos Leads (SQL)"
-                            value={cycleMetrics.leads || "124"}
-                            change="+12%"
-                            trend="up"
+                            value={cycleMetrics.leads || "—"}
+                            change={cycleMetrics.leads_change}
+                            trend={cycleMetrics.leads_trend}
                         />
                         <MetricCard
                             title="Custo Aquisição (CAC)"
-                            value={cycleMetrics.cac || "450"}
-                            prefix="R$ "
-                            change="-5%"
-                            trend="up"
+                            value={cycleMetrics.cac || "—"}
+                            prefix={cycleMetrics.cac ? "R$ " : ""}
+                            change={cycleMetrics.cac_change}
+                            trend={cycleMetrics.cac_trend}
                         />
                         <MetricCard
                             title="Receita Recorrente (MRR)"
-                            value={cycleMetrics.mrr || "85.000"}
-                            prefix="R$ "
-                            change="+8%"
-                            trend="up"
+                            value={cycleMetrics.mrr || "—"}
+                            prefix={cycleMetrics.mrr ? "R$ " : ""}
+                            change={cycleMetrics.mrr_change}
+                            trend={cycleMetrics.mrr_trend}
                         />
                         <MetricCard
                             title="Retorno (ROI)"
-                            value={cycleMetrics.roi || "3.5"}
-                            prefix=""
-                            change="+0.2"
-                            trend="up"
-                            suffix="x"
+                            value={cycleMetrics.roi || "—"}
+                            change={cycleMetrics.roi_change}
+                            trend={cycleMetrics.roi_trend}
+                            suffix={cycleMetrics.roi ? "x" : ""}
                         />
                     </div>
                 </div>
@@ -210,36 +209,50 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                         </h3>
 
                         <div className="space-y-8">
-                            <div>
-                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">O Que Funcionou (Highlights)</h4>
-                                <ul className="space-y-3">
-                                    <li className="flex gap-3 text-sm text-zinc-700">
-                                        <div className="min-w-[4px] h-4 bg-emerald-500 rounded-full mt-1" />
-                                        Implementação do Playbook de Outbound gerou 15 reuniões qualificadas na semana 2.
-                                    </li>
-                                    <li className="flex gap-3 text-sm text-zinc-700">
-                                        <div className="min-w-[4px] h-4 bg-emerald-500 rounded-full mt-1" />
-                                        Redução do ciclo de vendas em 20% após ajuste na etapa de Demo.
-                                    </li>
-                                </ul>
-                            </div>
+                            {content.cycles?.[cycle]?.highlights?.length > 0 ? (
+                                <div>
+                                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">O Que Funcionou (Highlights)</h4>
+                                    <ul className="space-y-3">
+                                        {content.cycles[cycle].highlights.map((item: string, i: number) => (
+                                            <li key={i} className="flex gap-3 text-sm text-zinc-700">
+                                                <div className="min-w-[4px] h-4 bg-emerald-500 rounded-full mt-1" />
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ) : null}
 
-                            <div>
-                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">Pontos de Atenção (Lowlights)</h4>
-                                <ul className="space-y-3">
-                                    <li className="flex gap-3 text-sm text-zinc-700">
-                                        <div className="min-w-[4px] h-4 bg-amber-500 rounded-full mt-1" />
-                                        Taxa de resposta no LinkedIn ainda abaixo da meta (12% vs 20%).
-                                    </li>
-                                </ul>
-                            </div>
+                            {content.cycles?.[cycle]?.lowlights?.length > 0 ? (
+                                <div>
+                                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">Pontos de Atenção</h4>
+                                    <ul className="space-y-3">
+                                        {content.cycles[cycle].lowlights.map((item: string, i: number) => (
+                                            <li key={i} className="flex gap-3 text-sm text-zinc-700">
+                                                <div className="min-w-[4px] h-4 bg-amber-500 rounded-full mt-1" />
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ) : null}
 
-                            <div>
-                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">Próximos Passos</h4>
-                                <p className="text-sm text-zinc-600 leading-relaxed">
-                                    Para o próximo ciclo, focaremos na otimização da cadência de e-mails para aumentar a taxa de conversão e iniciaremos os testes de canais pagos (LinkedIn Ads).
-                                </p>
-                            </div>
+                            {content.cycles?.[cycle]?.next_steps ? (
+                                <div>
+                                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wide mb-3">Próximos Passos</h4>
+                                    <p className="text-sm text-zinc-600 leading-relaxed">
+                                        {content.cycles[cycle].next_steps}
+                                    </p>
+                                </div>
+                            ) : null}
+
+                            {!content.cycles?.[cycle]?.highlights?.length && !content.cycles?.[cycle]?.lowlights?.length && !content.cycles?.[cycle]?.next_steps && (
+                                <div className="text-center py-12 text-zinc-400">
+                                    <BarChart3 className="w-10 h-10 mx-auto mb-4 opacity-20" />
+                                    <p className="text-sm font-medium">Nenhum dado cadastrado para este ciclo.</p>
+                                    <p className="text-xs mt-1">Os insights serão adicionados conforme o projeto avança.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -256,18 +269,20 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                             <div className="bg-white p-4 rounded-lg border border-zinc-200">
                                 <span className="text-xs text-zinc-500">Saúde do Projeto</span>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-sm font-medium text-zinc-900">Em Dia (On Track)</span>
+                                    <div className={`w-2 h-2 rounded-full ${content.cycles?.[cycle]?.health === 'risk' ? 'bg-amber-500' : content.cycles?.[cycle]?.health === 'critical' ? 'bg-red-500' : 'bg-emerald-500'} animate-pulse`} />
+                                    <span className="text-sm font-medium text-zinc-900">
+                                        {content.cycles?.[cycle]?.health === 'risk' ? 'Atenção' : content.cycles?.[cycle]?.health === 'critical' ? 'Crítico' : content.cycles?.[cycle]?.metrics?.leads ? 'Em Dia' : 'Aguardando Dados'}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                 <div className="flex justify-between text-xs text-zinc-500">
                                     <span>Progresso do Ciclo</span>
-                                    <span>75%</span>
+                                    <span>{content.cycles?.[cycle]?.progress || 0}%</span>
                                 </div>
                                 <div className="w-full bg-zinc-200 rounded-full h-1.5">
-                                    <div className="bg-zinc-900 h-1.5 rounded-full" style={{ width: '75%' }} />
+                                    <div className="bg-zinc-900 h-1.5 rounded-full" style={{ width: `${content.cycles?.[cycle]?.progress || 0}%` }} />
                                 </div>
                             </div>
 
