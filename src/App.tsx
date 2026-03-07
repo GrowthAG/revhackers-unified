@@ -110,6 +110,7 @@ import ProjectDetails from "./pages/admin/ProjectDetails";
 
 import StrategicPlanGenerator from "./pages/admin/StrategicPlanGenerator";
 import StrategicPlanPresentation from "./pages/client/StrategicPlanPresentation";
+import PlanSignPage from "./pages/platform/client/PlanSignPage";
 import ClientProjectHub from "./pages/client/ClientProjectHub";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -273,6 +274,7 @@ const App = () => (
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />
+              <Route path="/plan/:token/sign" element={<PlanSignPage />} />
               <Route path="/hub/:id" element={<ClientProjectHub />} />
 
               {/* 404 Route */}

@@ -588,17 +588,17 @@ export default function StrategicPlanPresentation() {
                             </p>
 
                             {/* QR para assinar no celular */}
-                            <div className="hidden md:flex items-center justify-center gap-4 mb-10 p-5 bg-zinc-50 border border-zinc-100 mx-auto max-w-xs">
+                            <div className="hidden md:flex items-center justify-center gap-4 mb-10 p-5 bg-zinc-50 border border-zinc-100 mx-auto max-w-xs rounded-xl">
                                 <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(`${window.location.origin}/plan/${plan.access_token}?sign=1`)}&bgcolor=f4f4f5&color=09090b&margin=1`}
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`${window.location.origin}/plan/${plan.access_token}/sign`)}&bgcolor=f4f4f5&color=09090b&margin=1`}
                                     alt="QR Assinatura"
-                                    width={64}
-                                    height={64}
+                                    width={80}
+                                    height={80}
                                     className="rounded"
                                 />
                                 <div className="text-left">
-                                    <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">Escanear para assinar</p>
-                                    <p className="text-xs text-zinc-400 mt-0.5">Abra no celular para aprovar</p>
+                                    <p className="text-xs text-zinc-700 font-bold">Assinar pelo celular</p>
+                                    <p className="text-[10px] text-zinc-400 mt-0.5">Escaneie o QR Code para aprovar no mobile — rápido e leve.</p>
                                 </div>
                             </div>
 
