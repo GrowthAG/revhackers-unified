@@ -16,24 +16,11 @@ import { getReiProjectById } from '@/api/reiProjects';
 import type { ReiProject } from '@/api/reiProjects';
 import OrchestratedOnboarding from '@/pages/admin/OrchestratedOnboarding';
 import LiveResultsReport from '@/pages/admin/LiveResultsReport';
-import SprintBoard from '@/pages/admin/SprintBoard';
+
 import { useToast } from '@/hooks/use-toast';
 import ProjectWiki from './ProjectWiki';
 
 // Placeholders for components to come
-const SprintBoardPlaceholder = () => (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
-        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4">
-            <Zap className="w-8 h-8 text-zinc-400" />
-        </div>
-        <h3 className="text-lg font-medium text-zinc-900">Sprint Board</h3>
-        <p className="text-sm text-zinc-500 max-w-sm mt-2">
-            O gestor de tarefas e sprints será carregado aqui.
-            <br />
-            (Em desenvolvimento: Fase de Kanban)
-        </p>
-    </div>
-);
 
 const DocumentVaultPlaceholder = () => (
     <div className="flex flex-col items-center justify-center h-[60vh] text-center border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
@@ -147,7 +134,15 @@ const ProjectDetails = () => {
                             <OrchestratedOnboarding projectId={project.id} embedded={true} />
                         </TabsContent>
                         <TabsContent value="execucao" className="m-0">
-                            <SprintBoard projectId={project.id} projectName={project.client_name} embedded={true} />
+                            <div className="flex flex-col items-center justify-center h-[60vh] text-center border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
+                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4">
+                                    <Zap className="w-8 h-8 text-zinc-400" />
+                                </div>
+                                <h3 className="text-lg font-medium text-zinc-900">Execução & Sprints</h3>
+                                <p className="text-sm text-zinc-500 max-w-sm mt-2">
+                                    As tarefas e sprints são gerenciadas no Notion.
+                                </p>
+                            </div>
                         </TabsContent>
                         <TabsContent value="biblioteca" className="m-0">
                             <ProjectWiki projectId={project.id} projectName={project.client_name} />
