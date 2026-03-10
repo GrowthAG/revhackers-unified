@@ -27,6 +27,7 @@ import StepCrmOps2TechStack from './steps/StepCrmOps2TechStack';
 import StepCrmOps3AquisicaoSLA from './steps/StepCrmOps3AquisicaoSLA';
 import StepCrmOps4Execucao from './steps/StepCrmOps4Execucao';
 import StepCrmOps5Retencao from './steps/StepCrmOps5Retencao';
+import ThankYouMessage from '@/components/shared/rei-form/ThankYouMessage';
 
 interface REIWizardProps {
     projectId: string;
@@ -156,6 +157,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     const [currentStep, setCurrentStep] = useState(1);
     const [direction, setDirection] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     const form = useForm<WizardFormData>({
         resolver: zodResolver(wizardSchema),
@@ -378,6 +380,8 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             // JOIN THE DOTS: Clear persistence
             localStorage.removeItem(`rei_wizard_data_${projectId}`);
 
+            setIsCompleted(true);
+
             toast({
                 title: "Diagnóstico Gerado",
                 description: "Gerando plano estratégico automaticamente...",
@@ -422,6 +426,14 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     };
 
     const CurrentComponent = currentStepConfig.component;
+
+    if (isCompleted) {
+        return (
+            <div className="max-w-4xl mx-auto py-12">
+                <ThankYouMessage />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -491,7 +503,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                         disabled={isSubmitting}
                         className="bg-black hover:bg-zinc-800 text-white border-0"
                     >
-                        {isSubmitting ? 'Salvando...' : currentStep === TOTAL_STEPS ? 'Gerar Diagnóstico' : 'Próximo'}
+                        {isSubmitting ? 'Salvando...' : currentStep === TOTAL_STEPS ? 'Enviar Diagnóstico' : 'Próximo'}
                         <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                 </div>

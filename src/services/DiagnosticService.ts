@@ -425,9 +425,20 @@ export class DiagnosticService {
     // --- GENERATORS (ALL use real REI answers) ---
 
     private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any, projectType?: string) {
-        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
+        let crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
+        if (projectType === 'crm_ops') {
+            const rawCRM = answers.revops_hub_central;
+            if (rawCRM && rawCRM.toLowerCase() !== 'nenhum' && rawCRM.toLowerCase() !== 'nao tenho' && rawCRM.toLowerCase() !== 'não tenho') {
+                crmName = rawCRM;
+            } else {
+                crmName = 'Não informado';
+            }
+        }
         const hasCRM = this.checkHasCRM(answers);
-        const ticketMedio = answers.ticketMedio || '';
+        let ticketMedio = answers.revops_ticket_medio || answers.ticketMedio || '';
+        if (ticketMedio && !ticketMedio.toLowerCase().includes('r$')) {
+            ticketMedio = `R$ ${ticketMedio}`;
+        }
         const mrr = answers.mrr || '';
         const churn = answers.taxaChurn || '';
         const canais = mapLabels('canaisAquisicao', answers.canaisAquisicao || []).join(', ') || 'Não informados';
@@ -461,11 +472,10 @@ export class DiagnosticService {
             const contextoItems = [
                 hasPipelines ? `Processos As-Is Mapeados (${answers.revops_custom_pipelines.length} Funis identificados)` : 'Processo de Vendas As-Is Mapeado',
             ];
-            if (hasCRM) contextoItems.push(`CRM Atual: ${crmName}`);
-            else contextoItems.push('CRM Atual: Não informado / Sem CRM mapeado');
+            contextoItems.push(`CRM Atual: ${crmName}`);
 
             if (answers.revops_segmento) contextoItems.push(`Segmento B2B: ${answers.revops_segmento}`);
-            if (answers.revops_ticket_medio) contextoItems.push(`Ticket Médio Estimado: ${answers.revops_ticket_medio}`);
+            if (ticketMedio) contextoItems.push(`Ticket Médio Estimado: ${ticketMedio}`);
             if (answers.revops_tamanho_time) contextoItems.push(`Time Comercial: ${answers.revops_tamanho_time}`);
             contextoItems.push(`Objetivo: ${objective}`);
 
