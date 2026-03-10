@@ -42,6 +42,16 @@ function getStatusBadge(status: string) {
     return { label: 'Enviado', cls: 'bg-zinc-100 text-zinc-500 border border-zinc-200' };
 }
 
+function getProjectLabel(pt?: string) {
+    if (pt === 'crm_ops') return 'CRM & RevOps';
+    if (pt === 'funnels_impl' || pt === 'site') return 'Site';
+    if (pt === 'founder') return 'Founder';
+    if (pt === 'content_seo') return 'SEO';
+    if (pt === 'consulting' || pt === 'full') return 'REI';
+    return 'REI';
+}
+
+
 export default function StrategicPlanPresentation() {
     const { token } = useParams<{ token: string }>();
     const location = useLocation();
@@ -86,10 +96,16 @@ export default function StrategicPlanPresentation() {
 
     // Filter sections based on project type
     const sections = NAV_SECTIONS.filter(s => {
-        if (s.id === 'investment') {
-            const pt = plan?.project_type || 'full';
-            return pt === 'full' || pt === 'content_seo' || !pt;
+        const pt = plan?.project_type || 'full';
+
+        if (s.id === 'investment' || s.id === 'projections') {
+            return pt === 'full' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
         }
+
+        if (s.id === 'persona' || s.id === 'benchmark') {
+            return pt !== 'crm_ops';
+        }
+
         return true;
     });
 
@@ -229,6 +245,7 @@ export default function StrategicPlanPresentation() {
     const isApproved = plan.status === 'approved';
     const isRejected = plan.status === 'revision_requested';
     const badge = getStatusBadge(plan.status || 'sent');
+    const typeLabel = getProjectLabel(plan?.project_type);
 
     // ── Section renderer ───────────────────────────────────────────────────
     const renderSection = () => {
@@ -263,7 +280,7 @@ export default function StrategicPlanPresentation() {
                     ) : (
                         <div className="max-w-md">
                             <h2 className="text-3xl font-bold text-black mb-3">Próximos Passos</h2>
-                            <p className="text-zinc-500 text-sm mb-8">Revise todas as seções e quando estiver pronto, assine digitalmente para autorizar o início.</p>
+                            <p className="text-zinc-500 text-sm mb-8">Revise todas as seções e quando estiver pronto, assine digitalmente para autorizar o início do Planejamento Estratégico {typeLabel}.</p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <button onClick={() => setShowRejectModal(true)} className="px-8 py-3 border border-zinc-300 text-zinc-500 text-sm font-medium hover:border-zinc-500 hover:text-black transition-colors">Solicitar Ajustes</button>
                                 <button onClick={() => setShowSign(true)} className="px-10 py-3 bg-zinc-950 text-white text-sm font-bold hover:bg-zinc-800 transition-colors flex items-center gap-2"><Check className="w-4 h-4" /> Assinar e Aprovar</button>
@@ -299,7 +316,7 @@ export default function StrategicPlanPresentation() {
                     <div className="bg-zinc-950 max-w-md w-full border border-zinc-800 p-8" onClick={e => e.stopPropagation()}>
                         <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-6 w-auto mb-8" />
                         <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Assinatura Digital</p>
-                        <h3 className="text-xl font-bold text-white mb-6">Aprovar Planejamento</h3>
+                        <h3 className="text-xl font-bold text-white mb-6">Aprovar Planejamento {typeLabel}</h3>
                         <div className="space-y-4 mb-6">
                             <div>
                                 <label className="text-xs text-zinc-500 uppercase tracking-widest block mb-2">Nome Completo</label>
@@ -329,7 +346,7 @@ export default function StrategicPlanPresentation() {
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowRejectModal(false)}>
                     <div className="bg-white max-w-lg w-full border border-zinc-200 p-6" onClick={e => e.stopPropagation()}>
                         <h3 className="text-lg font-bold mb-1">Solicitar Ajustes</h3>
-                        <p className="text-zinc-500 text-sm mb-4">Descreva o que precisa ser revisado no planejamento.</p>
+                        <p className="text-zinc-500 text-sm mb-4">Descreva o que precisa ser revisado no planejamento {typeLabel}.</p>
                         {rejectSent ? (
                             <div className="text-center py-6"><Check className="w-8 h-8 text-[#00CC6A] mx-auto mb-2" /><p className="text-black font-semibold">Solicitação enviada</p></div>
                         ) : (
@@ -348,116 +365,56 @@ export default function StrategicPlanPresentation() {
             {/* Edit Toolbar (only visible in edit mode) */}
             <EditToolbar />
 
-            <div className={`min-h-screen bg-white flex ${isEditing ? 'pt-10' : ''}`}>
-                {/* Controls when sidebar is collapsed */}
-                {!sidebarOpen && (
-                    <div className="fixed top-3 left-3 z-40 flex items-center gap-1 print:hidden">
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm"
-                            title="Abrir menu"
-                        >
-                            <PanelLeftOpen className="w-4 h-4 text-zinc-500" />
-                        </button>
-                        <button
-                            onClick={toggleFullscreen}
-                            className="bg-white border border-zinc-200 p-2 hover:bg-zinc-50 transition-colors shadow-sm"
-                            title={isFullscreen ? 'Sair da tela cheia (F)' : 'Tela cheia (F)'}
-                        >
-                            {isFullscreen ? <Minimize2 className="w-4 h-4 text-zinc-500" /> : <Maximize2 className="w-4 h-4 text-zinc-500" />}
-                        </button>
-                    </div>
-                )}
+            <div className="h-screen bg-zinc-950 flex flex-col items-center overflow-hidden">
+                {/* Floating Navigation Controls (Bottom Center) - Minimalist Fullscreen approach */}
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 p-2 rounded-2xl shadow-2xl print:hidden">
+                    <button
+                        onClick={goPrev}
+                        disabled={currentIndex === 0}
+                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Voltar"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
 
-                {/* Sidebar nav */}
-                <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-zinc-50 border-r border-zinc-200 flex flex-col shrink-0 sticky top-0 h-screen overflow-hidden transition-all duration-300 print:hidden`}>
-                    {/* Header with controls */}
-                    <div className="p-5 border-b border-zinc-200">
-                        <div className="flex items-center justify-between mb-3">
-                            <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-5 w-auto" />
-                            <div className="flex items-center gap-1">
-                                {/* Edit mode toggle – always visible */}
-                                <button
-                                    onClick={() => setIsEditing(prev => !prev)}
-                                    title={isEditing ? 'Sair do modo edição' : 'Modo Editor'}
-                                    className={`p-1.5 transition-colors rounded ${isEditing ? 'bg-[#00CC6A]/10 text-[#00CC6A]' : 'text-zinc-400 hover:text-zinc-600'}`}
-                                >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                </button>
-                                {/* Fullscreen toggle */}
-                                <button
-                                    onClick={toggleFullscreen}
-                                    title={isFullscreen ? 'Sair da tela cheia (F)' : 'Tela cheia (F)'}
-                                    className="p-1.5 text-zinc-400 hover:text-zinc-600 transition-colors rounded"
-                                >
-                                    {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                                </button>
-                                {/* Sidebar collapse */}
-                                <button
-                                    onClick={() => setSidebarOpen(false)}
-                                    title="Recolher menu"
-                                    className="p-1.5 text-zinc-400 hover:text-zinc-600 transition-colors"
-                                >
-                                    <PanelLeftClose className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        </div>
-                        <p className="text-xs text-zinc-400 leading-snug truncate">{companyName}</p>
-                        <div className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium mt-2 ${badge.cls}`}>
-                            {badge.label}
-                        </div>
+                    <div className="px-4 text-xs font-mono text-white font-semibold tracking-widest">
+                        {currentIndex + 1} <span className="text-zinc-600 mx-1">/</span> {sections.length}
                     </div>
 
-                    {/* Nav items */}
-                    <div className="flex-1 py-3 overflow-y-auto">
-                        {sections.map((s, i) => {
-                            const isActive = i === currentIndex;
-                            const isPast = i < currentIndex;
-                            return (
-                                <button key={s.id} onClick={() => { setCurrentIndex(i); scrollToTop(); }} className={`w-full flex items-center gap-3 px-5 py-2.5 text-left text-sm transition-colors whitespace-nowrap ${isActive ? 'bg-zinc-200/70 text-black font-semibold' : isPast ? 'text-zinc-500 hover:bg-zinc-100' : 'text-zinc-400 hover:bg-zinc-100'}`}>
-                                    <span className={`shrink-0 ${isActive ? 'text-black' : isPast ? 'text-zinc-400' : 'text-zinc-300'}`}>{s.icon}</span>
-                                    <span className="truncate">{s.name}</span>
-                                    {isPast && <Check className="w-3 h-3 text-[#00CC6A] shrink-0 ml-auto" />}
-                                </button>
-                            );
-                        })}
-                    </div>
+                    <button
+                        onClick={goNext}
+                        disabled={currentIndex === sections.length - 1}
+                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Avançar"
+                    >
+                        <ArrowRight className="w-5 h-5" />
+                    </button>
 
-                    {/* Progress */}
-                    <div className="p-5 border-t border-zinc-200">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-zinc-400 font-mono">{currentIndex + 1}/{sections.length}</span>
-                            <span className="text-xs text-zinc-400">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="w-full h-1 bg-zinc-200 overflow-hidden">
-                            <div className="h-full bg-zinc-900 transition-all duration-500" style={{ width: `${progress}%` }} />
-                        </div>
-                    </div>
+                    <div className="w-px h-6 bg-zinc-800 mx-2" />
+
+                    <button
+                        onClick={() => setIsEditing(prev => !prev)}
+                        className={`p-3 rounded-xl transition-all ${isEditing ? 'bg-[#00CC6A] text-black' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+                        title={isEditing ? 'Desativar Edição' : 'Ativar Edição'}
+                    >
+                        <Pencil className="w-5 h-5" />
+                    </button>
+
+                    <button
+                        onClick={toggleFullscreen}
+                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                        title="Tela Cheia"
+                    >
+                        {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                    </button>
                 </div>
 
-                {/* Main content — 16:9 slide format */}
-                <div ref={scrollRef} className="flex-1 overflow-y-auto h-screen bg-zinc-100 flex flex-col">
-                    {/* Slide container */}
-                    <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-                        <div className="w-full bg-white shadow-2xl overflow-y-auto" style={{ aspectRatio: '16/9', maxHeight: 'calc(100vh - 6rem)', maxWidth: '1400px' }}>
-                            <div className="h-full overflow-y-auto px-10 md:px-16 py-10 md:py-14">
-                                {renderSection()}
-                            </div>
-                        </div>
+                {/* Main content — Full Screen Format */}
+                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-zinc-950 flex flex-col relative scroll-smooth">
+                    {/* Slide container - Full bleed no margins */}
+                    <div className="w-full h-full flex flex-col">
+                        {renderSection()}
                     </div>
-
-                    {/* Bottom nav */}
-                    {currentSectionId !== 'approval' && (
-                        <div className="shrink-0 bg-white border-t border-zinc-200 px-8 md:px-16 py-4 flex items-center justify-between print:hidden">
-                            <button onClick={goPrev} disabled={currentIndex === 0} className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                                <ArrowLeft className="w-4 h-4" /> Anterior
-                            </button>
-                            <span className="text-xs text-zinc-300 font-mono">{currentIndex + 1} / {sections.length}</span>
-                            <button onClick={goNext} disabled={currentIndex === sections.length - 1} className="flex items-center gap-2 text-sm text-black font-semibold hover:text-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                                Próxima <ArrowRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
         </PlanEditProvider>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EditableField, usePlanEdit } from '@/components/plan/PlanEditContext';
 import { MessageSquare, Mail, Instagram, Facebook, Globe, Youtube, Linkedin, Send } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Female name list for avatar gender detection ──────────────────────────
 const femaleNames = ['maria', 'ana', 'mariana', 'juliana', 'fernanda', 'patricia', 'carla', 'claudia', 'lucia', 'beatriz', 'camila', 'amanda', 'priscila', 'gabriela', 'alessandra', 'bruna', 'larissa', 'natalia', 'leticia', 'aline'];
@@ -233,37 +234,36 @@ export default function PersonaSection({ plan }: { plan: any }) {
     const isDefault = personas.length === 0;
 
     return (
-        <div className="space-y-10">
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-6 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Quem Compramos</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-4">
-                    Persona &<br />
-                    <span className="text-zinc-400">Tomadores de Decisão</span>
-                </h2>
-                <p className="text-zinc-500">
-                    Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra.
-                </p>
-                {isREIFallback && !isDefault && (
-                    <div className="mt-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                        <p className="text-xs text-zinc-400">Persona construída com base no ICP declarado no REI — aprofundamento disponível via "Deep Personas"</p>
-                    </div>
-                )}
-                {isDefault && (
-                    <div className="mt-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                        <p className="text-xs text-zinc-400">Perfis de referência — personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
-                    </div>
-                )}
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <SectionHeader
+                    eyebrow="Quem Compramos"
+                    titleLine1="Persona &"
+                    titleLine2="Tomadores de Decisão"
+                    description="Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra."
+                />
             </div>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white flex flex-col">
+                <div className="mb-6 space-y-2">
+                    {isREIFallback && !isDefault && (
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Persona construída com base no ICP declarado no REI — aprofundamento disponível via "Deep Personas"</p>
+                        </div>
+                    )}
+                    {isDefault && (
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Perfis de referência — personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
+                        </div>
+                    )}
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {displayPersonas.slice(0, 3).map((persona: any, i: number) => (
-                    <PersonaCard key={i} persona={persona} index={i} />
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+                    {displayPersonas.slice(0, 3).map((persona: any, i: number) => (
+                        <PersonaCard key={i} persona={persona} index={i} />
+                    ))}
+                </div>
             </div>
         </div>
     );

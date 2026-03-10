@@ -1,0 +1,404 @@
+Gerando Diagnostico CRM Ops Mock...
+SUCESSO! Saida do plano:
+{
+  "premises_data": {
+    "pillars": [
+      {
+        "name": "Contexto do Cliente",
+        "icon": "building",
+        "items": [
+          "Processo de Vendas As-Is Mapeado",
+          "CRM Atual: Não informado/Sem CRM",
+          "Volume de Oportunidades: Não informado",
+          "Objetivo: Crescimento"
+        ]
+      },
+      {
+        "name": "Diagnóstico Operacional",
+        "icon": "search",
+        "items": [
+          "Lacunas de rastreamento e atribuição identificadas",
+          "Critérios de hand-off SDR para Closer mapeados",
+          "Catálogo de motivos de perda documentado",
+          "Integrações com ferramentas legadas mapeadas"
+        ]
+      },
+      {
+        "name": "Arquitetura & Governança",
+        "icon": "settings",
+        "items": [
+          "Pipelines estruturados (SDR / Closer / CS)",
+          "Propriedades obrigatórias por estágio definidas",
+          "Automações e Gatilhos de Mudança de Fase validados",
+          "Painel de Liderança (Visão executiva) desenhado"
+        ]
+      },
+      {
+        "name": "Compromissos Mútuos",
+        "icon": "handshake",
+        "items": [
+          "Disponibilidade do time para treinamentos operacionais",
+          "Acessos administrativos às ferramentas fornecidos em 48h",
+          "Aprovação da arquitetura de pipelines em até 3 dias úteis",
+          "Comprometimento da liderança com a adoção do sistema"
+        ]
+      }
+    ]
+  },
+  "methodology_data": {
+    "steps": [
+      {
+        "phase": "01",
+        "tagline": "Semana 1–2",
+        "name": "Auditoria & Arquitetura As-Is",
+        "description": "Levantamento minucioso do processo de vendas atual, vazamentos de pipeline e lacunas de dados que prejudicam a previsibilidade.",
+        "principles": [
+          "Mapeamento do processo de vendas As-Is",
+          "Auditoria de vazamentos de pipeline",
+          "Definição de propriedades obrigatórias"
+        ]
+      },
+      {
+        "phase": "02",
+        "tagline": "Semana 3–4",
+        "name": "Setup de Propriedades e Pipelines",
+        "description": "Configuração dos funis de negócio no CRM, mapeando propriedades essenciais (UTMs, Ticket Médio, Razões de Perda) para governança.",
+        "principles": [
+          "Criação do Funil Visual de Vendas",
+          "Padronização de UTMs e Atribuição",
+          "Catálogo de motivos de perda"
+        ]
+      },
+      {
+        "phase": "03",
+        "tagline": "Semana 5–6",
+        "name": "Integrações de Geração de Demanda",
+        "description": "Conexão nativa do CRM com canais de aquisição (Google, Meta Ads, Landing Pages, Whatsapp) eliminando entrada manual.",
+        "principles": [
+          "Integração com Landing Pages via API/Webhook",
+          "Conexão Nativa com Meta/Google Ads Leit",
+          "Enriquecimento de dados ativado"
+        ]
+      },
+      {
+        "phase": "04",
+        "tagline": "Semana 7–8",
+        "name": "Automação de Hand-off e SLA",
+        "description": "Workflows para roteamento de leads, alertas de estagnação e tarefas automatizadas reduzindo atrito entre Marketing e Vendas.",
+        "principles": [
+          "Passagem de bastão automática SDR para Closer",
+          "Alertas de estagnação de negócios para gestor",
+          "Roteamento Round-Robin de novos leads"
+        ]
+      },
+      {
+        "phase": "05",
+        "tagline": "Semana 9–12",
+        "name": "Adoção Organizacional",
+        "description": "Treinamento direcionado para os executivos focando em redução de cliques diários, painéis de visão e aculturamento data-driven.",
+        "principles": [
+          "Treinamento prático com a equipe de vendas",
+          "Criação de Dashboards individuais de performance",
+          "Dashboard macro para Diretoria"
+        ]
+      }
+    ]
+  },
+  "roadmap_data": {
+    "phases": [
+      {
+        "name": "Ciclo 01",
+        "title": "Arquitetura & Setup — 23/03 a 06/04",
+        "items": [
+          "Mapeamento As-Is dos processos de Vendas e Marketing",
+          "Ajuste ou Criação de Instância CRM Segura",
+          "Modelagem de Propriedades Customizadas e Razão de Perda",
+          "Setup do Pipeline de Oportunidades"
+        ]
+      },
+      {
+        "name": "Ciclo 02",
+        "title": "Integrações & Automação — 07/04 a 20/04",
+        "items": [
+          "Integração com Landing Pages, ERPs ou Forms Nativos",
+          "Roteamento automático Round-Robin ou por Lead Scoring",
+          "Views Personalizadas de Daily Report para Vendedores",
+          "Ajustes em Automações de Nurturing Early-Stage"
+        ]
+      },
+      {
+        "name": "Ciclo 03",
+        "title": "Cultural Drive & Onboarding — 21/04 a 04/05",
+        "items": [
+          "Workshops operacionais com a liderança e base comercial",
+          "Testes de carga com Mocks Reais de Vendas",
+          "Lançamento Oficial e SLA Hand-Off Definitivo",
+          "Playbooks operacionais para consulta"
+        ]
+      },
+      {
+        "name": "Ciclo 04",
+        "title": "Dados e Evolução Contínua — a partir de 05/05",
+        "items": [
+          "Construção de Dashboards de LTV vs CAC Preditivo",
+          "Monitoramento de Taxa de Conversão por Etapa do Funil",
+          "Revisão de Qualidade do Dado Inserido pela equipe",
+          "Refino das Lógicas Avançadas de RevOps"
+        ]
+      }
+    ]
+  },
+  "goals_data": {
+    "okrs": [
+      {
+        "objective": "Objetivo Estratégico do Período",
+        "label": "O",
+        "description": "Fundação de Operações Comerciais: Visibilidade, Atribuição e SLA",
+        "krs": [
+          {
+            "label": "RK 1",
+            "text": "Pipeline de Vendas 100% mapeado e espelhado no CRM",
+            "target": "Sem. 2"
+          },
+          {
+            "label": "RK 2",
+            "text": "Speed-to-lead (tempo de primeiro contato) reduzido a < 10 minutos",
+            "target": "Mês 2"
+          },
+          {
+            "label": "RK 3",
+            "text": "Taxa de conversão de Lead para Oportunidade aumentada em 20%",
+            "target": "Mês 3"
+          }
+        ]
+      },
+      {
+        "objective": "RK 1 — Higienização e Arquitetura",
+        "label": "01",
+        "krs": [
+          {
+            "label": "RK 1.1",
+            "text": "Auditoria de propriedades e unificação de cadastros concluída",
+            "target": "Sem. 2"
+          },
+          {
+            "label": "RK 1.2",
+            "text": "Criação de propriedades padronizadas (UTMs, Ticket, Segmento)",
+            "target": "Sem. 3"
+          },
+          {
+            "label": "RK 1.3",
+            "text": "Migração de histórico (se aplicável) e limpeza de duplicados",
+            "target": "Sem. 4"
+          }
+        ]
+      },
+      {
+        "objective": "RK 2 — Captação e Integração",
+        "label": "02",
+        "krs": [
+          {
+            "label": "RK 2.1",
+            "text": "Formulários do site e Landing Pages 100% integrados via API/Webhook",
+            "target": "Mês 1"
+          },
+          {
+            "label": "RK 2.2",
+            "text": "Entrada de leads automatizada (sem depender de planilhas manuais)",
+            "target": "Mês 1"
+          },
+          {
+            "label": "RK 2.3",
+            "text": "Enriquecimento de dados de empresas ativado no CRM",
+            "target": "Mês 2"
+          }
+        ]
+      },
+      {
+        "objective": "RK 3 — Roteamento e SLA Comercial",
+        "label": "03",
+        "krs": [
+          {
+            "label": "RK 3.1",
+            "text": "Regras de roteamento (Round-robin ou território) ativas",
+            "target": "Mês 2"
+          },
+          {
+            "label": "RK 3.2",
+            "text": "Alertas automáticos de estagnação de negócios para gestores",
+            "target": "Mês 2"
+          },
+          {
+            "label": "RK 3.3",
+            "text": "SLA de passagem de bastão (Handoff SDR -> Closer) validado",
+            "target": "Mês 3"
+          }
+        ]
+      },
+      {
+        "objective": "RK 4 — Adoção e Relatórios",
+        "label": "04",
+        "krs": [
+          {
+            "label": "RK 4.1",
+            "text": "100% dos vendedores utilizando o CRM diariamente",
+            "target": "Mês 2"
+          },
+          {
+            "label": "RK 4.2",
+            "text": "Dashboard executivo de Vendas operante (Pipeline Velocity, LTV, CAC)",
+            "target": "Mês 3"
+          },
+          {
+            "label": "RK 4.3",
+            "text": "Painéis individuais de produtividade para cada executivo ativos",
+            "target": "Mês 3"
+          }
+        ]
+      }
+    ],
+    "month1_targets": [
+      {
+        "name": "Setup Base do CRM e Pipelines Visuais",
+        "status": "pending"
+      },
+      {
+        "name": "Integração Nativa de Leads (Eliminar entrada manual)",
+        "status": "pending"
+      },
+      {
+        "name": "Onboarding com equipe comercial para adoção",
+        "status": "pending"
+      },
+      {
+        "name": "Construção da Visão Qualificada em Dashboard Inicial",
+        "status": "pending"
+      }
+    ]
+  },
+  "financial_projections": {
+    "current_mrr": 8000,
+    "ticket_medio": 800,
+    "cac_estimado": 200,
+    "churn_mensal": 0.03,
+    "meta_crescimento": "",
+    "total_months": 6,
+    "note": "Projeções calculadas com base no MRR atual (~R$ 8.000), ticket médio de R$ 800, CAC estimado de R$ 200 e churn de 3.0%.",
+    "context": {
+      "budget": "Não informado",
+      "ticket_medio": "",
+      "mrr_atual": "",
+      "meta_crescimento": "",
+      "ciclo_vendas": ""
+    },
+    "monthly_projections": [
+      {
+        "month": "Mês 1",
+        "label": "M1",
+        "mrr": 8048,
+        "mrr_formatted": "R$ 8.048",
+        "leads": 5,
+        "new_clients": 1,
+        "churn_loss": 240,
+        "cac": 200
+      },
+      {
+        "month": "Mês 2",
+        "label": "M2",
+        "mrr": 8773,
+        "mrr_formatted": "R$ 8.773",
+        "leads": 5,
+        "new_clients": 1,
+        "churn_loss": 241,
+        "cac": 200
+      },
+      {
+        "month": "Mês 3",
+        "label": "M3",
+        "mrr": 9563,
+        "mrr_formatted": "R$ 9.563",
+        "leads": 5,
+        "new_clients": 1,
+        "churn_loss": 263,
+        "cac": 200
+      },
+      {
+        "month": "Mês 4",
+        "label": "M4",
+        "mrr": 10424,
+        "mrr_formatted": "R$ 10.424",
+        "leads": 5,
+        "new_clients": 1,
+        "churn_loss": 287,
+        "cac": 200
+      },
+      {
+        "month": "Mês 5",
+        "label": "M5",
+        "mrr": 11362,
+        "mrr_formatted": "R$ 11.362",
+        "leads": 10,
+        "new_clients": 2,
+        "churn_loss": 313,
+        "cac": 200
+      },
+      {
+        "month": "Mês 6",
+        "label": "M6",
+        "mrr": 12384,
+        "mrr_formatted": "R$ 12.384",
+        "leads": 10,
+        "new_clients": 2,
+        "churn_loss": 341,
+        "cac": 200
+      }
+    ]
+  },
+  "budget_data": {
+    "annual_budget": "Não informado",
+    "monthly_budget": 5000,
+    "monthly_budget_formatted": "R$ 5.000",
+    "channels": [
+      {
+        "name": "Setup Enterprise / Taxas da Ferramenta CRM",
+        "percentage": "20%",
+        "value": "R$ 1.000"
+      },
+      {
+        "name": "Auditoria e Desenho Mapeamento As-Is (Tempo Hora)",
+        "percentage": "30%",
+        "value": "R$ 1.500"
+      },
+      {
+        "name": "Implantação, Automações e Build Operacional",
+        "percentage": "30%",
+        "value": "R$ 1.500"
+      },
+      {
+        "name": "Onboarding (Treinamentos Executivos e Comerciais)",
+        "percentage": "20%",
+        "value": "R$ 1.000"
+      }
+    ]
+  },
+  "next_steps_data": {
+    "week1_actions": [
+      {
+        "day": "Imediato",
+        "action": "Aprovação do Planejamento Estratégico",
+        "done": false
+      },
+      {
+        "day": "Imediato",
+        "action": "Seleção e contratação de CRM",
+        "done": false
+      },
+      {
+        "day": "Dia 1",
+        "action": "Onboarding do Time e acesso às ferramentas",
+        "done": false
+      }
+    ]
+  },
+  "market_intelligence": {}
+}

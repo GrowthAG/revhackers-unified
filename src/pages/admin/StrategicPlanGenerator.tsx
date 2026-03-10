@@ -33,6 +33,7 @@ export default function StrategicPlanGenerator() {
     const [enrichedData, setEnrichedData] = useState<StrategicEnrichmentResult | null>(null);
     const [editMode, setEditMode] = useState(false);
     const [editedData, setEditedData] = useState<any>(null);
+    const [errorLog, setErrorLog] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
@@ -164,28 +165,50 @@ export default function StrategicPlanGenerator() {
             let clientId = client?.id;
 
             if (!clientId || clientId === 'legacy-or-missing') {
-                const { data: existingClient } = await supabase
-                    .from('clients')
-                    .select('id')
-                    .eq('email', reiProject.client_email)
-                    .maybeSingle();
-
-                if (existingClient) {
-                    clientId = existingClient.id;
-                } else {
-                    const { data: newClient, error: createClientError } = await supabase
+                try {
+                    console.log('Buscando cliente pelo email do projeto:', reiProject.client_email);
+                    const { data: existingClient, error: fetchError } = await supabase
                         .from('clients')
-                        .insert({
-                            email: reiProject.client_email,
-                            name: reiProject.client_name,
-                            company: reiProject.client_company || reiProject.client_name,
-                            status: 'lead'
-                        })
                         .select('id')
-                        .single();
+                        .eq('email', reiProject.client_email)
+                        .maybeSingle();
 
-                    if (createClientError) throw createClientError;
-                    clientId = newClient.id;
+                    if (fetchError) {
+                        console.warn('Erro ao buscar cliente:', fetchError);
+                    }
+
+                    if (existingClient && existingClient.id) {
+                        clientId = existingClient.id;
+                        console.log('Cliente encontrado com ID:', clientId);
+                    } else {
+                        console.log('Cliente não encontrado. Criando novo cliente lead...');
+                        const { data: newClient, error: createClientError } = await supabase
+                            .from('clients')
+                            .insert({
+                                email: reiProject.client_email,
+                                name: reiProject.client_name || 'Cliente Sem Nome',
+                                company: reiProject.client_company || reiProject.client_name || 'Empresa Nova',
+                                status: 'lead'
+                            })
+                            .select('id')
+                            .single();
+
+                        if (createClientError) {
+                            console.error('Falha crítica ao criar cliente:', createClientError);
+                            // Se falhar a criação, use um fallback UUID para não travar o gerador (apenas para testes locais) ou aborte alertando o usuário.
+                            throw new Error(`Falha ao criar cliente atrelado: ${createClientError.message}`);
+                        }
+
+                        if (newClient) {
+                            clientId = newClient.id;
+                            console.log('Novo cliente criado com ID:', clientId);
+                        }
+                    }
+                } catch (clientCreationCatchError: any) {
+                    console.error('Erro na etapa 1 (Criação de Cliente):', clientCreationCatchError);
+                    alert(`Não foi possível gerar pois houve falha ao atrelar um Perfil de Cliente a este Projeto REI: ${clientCreationCatchError.message}`);
+                    setGenerating(false);
+                    return;
                 }
             }
 
@@ -327,7 +350,7 @@ export default function StrategicPlanGenerator() {
                 strategic_advice: mappedAdvice,
             };
 
-            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx);
+            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx, reiProject?.type);
             const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
             // 3. Define Plan Data (only columns that exist in strategic_plans table)
@@ -375,9 +398,9 @@ export default function StrategicPlanGenerator() {
                 alert('✅ Planejamento base gerado! Para dados de mercado enriquecidos, configure a chave Perplexity AI nos secrets do Supabase.');
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error generating plan:', error);
-            alert('Erro crítico ao gerar planejamento. Consulte o console para detalhes.');
+            setErrorLog(`Falha na Inserção SQL ou Montagem: ${error.message} \nDetalhes: ${JSON.stringify(error)}`);
         } finally {
             setGenerating(false);
         }
@@ -484,6 +507,13 @@ export default function StrategicPlanGenerator() {
                         )}
                     </div>
                 </div>
+
+                {errorLog && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md mb-8 shadow-sm">
+                        <h3 className="font-bold mb-2">Erro Crítico Reportado Pelo Sistema:</h3>
+                        <p className="whitespace-pre-wrap font-mono text-sm">{errorLog}</p>
+                    </div>
+                )}
 
                 {editMode && (
                     <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-8 flex items-center justify-between">

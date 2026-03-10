@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BarChart3, Zap, Target, Settings } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 const P = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v);
@@ -77,197 +78,198 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
     };
 
     return (
-        <div className="space-y-12">
-            {/* Header */}
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-6 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Financeiro</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-4">
-                    Investimento<br /><span className="text-zinc-400">& Retorno</span>
-                </h2>
-                <p className="text-zinc-500 text-sm leading-relaxed">
-                    Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget.
-                </p>
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <SectionHeader
+                    eyebrow="Financeiro"
+                    titleLine1="Investimento"
+                    titleLine2="& Retorno"
+                    description="Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget."
+                />
             </div>
 
-            {/* Grand Total + KPIs */}
-            <div className="bg-zinc-950 p-8 md:p-10">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div>
-                        <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold mb-2">Investimento Mensal Estimado</p>
-                        <p className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                            {P(grandTotal)}<span className="text-lg text-white/30 font-normal">/mês</span>
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-3 gap-6 md:gap-8">
-                        <div className="text-center">
-                            <p className="text-xl font-bold text-[#00CC6A]">{config.roas_target}</p>
-                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">ROAS Target</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-xl font-bold text-white">{config.breakeven}</p>
-                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">Break-Even</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-xl font-bold text-white">{config.ltv_cac_target}</p>
-                            <p className="text-xs text-white/40 uppercase tracking-widest mt-1">LTV:CAC</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-12">
 
-            {/* Distribution */}
-            <div>
-                <div className="flex items-center gap-3 mb-6">
-                    <BarChart3 className="w-5 h-5 text-black" />
-                    <h3 className="text-xl font-bold text-black">Distribuição por Canal</h3>
+                {/* Grand Total + KPIs */}
+                <div className="bg-white border border-zinc-200 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden group hover:border-zinc-300 transition-all duration-500">
+                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-zinc-100 rounded-full blur-[80px] pointer-events-none" />
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-2">Investimento Mensal Estimado</p>
+                            <p className="text-4xl md:text-5xl font-bold text-black tracking-tight">
+                                {P(grandTotal)}<span className="text-lg text-zinc-400 font-normal">/mês</span>
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-6 md:gap-8 border-t md:border-t-0 md:border-l border-zinc-200 pt-6 md:pt-0 md:pl-8">
+                            <div>
+                                <p className="text-xl font-bold text-black">{config.roas_target}</p>
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">ROAS Target</p>
+                            </div>
+                            <div>
+                                <p className="text-xl font-bold text-black">{config.breakeven}</p>
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">Break-Even</p>
+                            </div>
+                            <div>
+                                <p className="text-xl font-bold text-black">{config.ltv_cac_target}</p>
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">LTV:CAC</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="h-3 flex rounded-full overflow-hidden mb-8 bg-zinc-100">
-                    {channelsDisplay.map((ch, i) => {
-                        const val = hasCustom ? ch.value : ch.midpoint;
-                        const pct = mediaTotal > 0 ? (val / mediaTotal) * 100 : 33;
-                        return <div key={i} className={`${barColors[i]} transition-all duration-500`} style={{ width: `${pct}%` }} title={`${ch.name}: ${Math.round(pct)}%`} />;
-                    })}
-                </div>
-                <div className="space-y-4">
-                    {channelsDisplay.map((ch, i) => {
-                        const val = hasCustom ? ch.value : ch.midpoint;
-                        const pct = mediaTotal > 0 ? Math.round((val / mediaTotal) * 100) : 33;
-                        return (
-                            <div key={i} className="border border-zinc-200 hover:border-zinc-400 transition-colors">
-                                <div className="flex flex-col md:flex-row md:items-center gap-4 p-5">
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-3 mb-1.5">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${barColors[i]}`} />
-                                            <span className="text-lg font-semibold text-black">{ch.icon} {ch.name}</span>
-                                            <span className="text-xs text-zinc-400 font-mono">{pct}%</span>
+
+                {/* Distribution */}
+                <div>
+                    <div className="flex items-center gap-3 mb-6">
+                        <BarChart3 className="w-5 h-5 text-black" />
+                        <h3 className="text-xl font-bold text-black">Distribuição por Canal</h3>
+                    </div>
+                    <div className="h-3 flex rounded-full overflow-hidden mb-8 bg-zinc-100">
+                        {channelsDisplay.map((ch, i) => {
+                            const val = hasCustom ? ch.value : ch.midpoint;
+                            const pct = mediaTotal > 0 ? (val / mediaTotal) * 100 : 33;
+                            return <div key={i} className={`${barColors[i]} transition-all duration-500`} style={{ width: `${pct}%` }} title={`${ch.name}: ${Math.round(pct)}%`} />;
+                        })}
+                    </div>
+                    <div className="space-y-4">
+                        {channelsDisplay.map((ch, i) => {
+                            const val = hasCustom ? ch.value : ch.midpoint;
+                            const pct = mediaTotal > 0 ? Math.round((val / mediaTotal) * 100) : 33;
+                            return (
+                                <div key={i} className="border border-zinc-200 hover:border-zinc-400 transition-colors">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-4 p-5">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-3 mb-1.5">
+                                                <div className={`w-2.5 h-2.5 rounded-full ${barColors[i]}`} />
+                                                <span className="text-lg font-semibold text-black">{ch.icon} {ch.name}</span>
+                                                <span className="text-xs text-zinc-400 font-mono">{pct}%</span>
+                                            </div>
+                                            <p className="text-[12px] text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
                                         </div>
-                                        <p className="text-[12px] text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
-                                    </div>
-                                    <div className="flex items-center gap-4 shrink-0">
-                                        <div className="text-right hidden md:block">
-                                            <p className="text-xs text-zinc-400 uppercase tracking-widest">Faixa Recomendada</p>
-                                            <p className="text-sm text-zinc-600 font-medium">{P(ch.recommended[0])} – {P(ch.recommended[1])}</p>
-                                        </div>
-                                        <div className="relative w-40">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">R$</span>
-                                            <input
-                                                type="text" inputMode="decimal"
-                                                value={focusedKey === ch.key ? (editing[ch.key] ?? '') : ch.value > 0 ? ch.value.toLocaleString('pt-BR') : ''}
-                                                onChange={e => handleChange(ch.key, e.target.value)}
-                                                onFocus={() => handleFocus(ch.key)}
-                                                onBlur={() => handleBlur(ch.key)}
-                                                placeholder={ch.midpoint.toLocaleString('pt-BR')}
-                                                className="pl-9 h-11 w-full text-right font-mono text-sm border border-zinc-200 focus:border-zinc-900 focus:ring-0 focus:outline-none"
-                                            />
+                                        <div className="flex items-center gap-4 shrink-0">
+                                            <div className="text-right hidden md:block">
+                                                <p className="text-xs text-zinc-400 uppercase tracking-widest">Faixa Recomendada</p>
+                                                <p className="text-sm text-zinc-600 font-medium">{P(ch.recommended[0])} – {P(ch.recommended[1])}</p>
+                                            </div>
+                                            <div className="relative w-40">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">R$</span>
+                                                <input
+                                                    type="text" inputMode="decimal"
+                                                    value={focusedKey === ch.key ? (editing[ch.key] ?? '') : ch.value > 0 ? ch.value.toLocaleString('pt-BR') : ''}
+                                                    onChange={e => handleChange(ch.key, e.target.value)}
+                                                    onFocus={() => handleFocus(ch.key)}
+                                                    onBlur={() => handleBlur(ch.key)}
+                                                    placeholder={ch.midpoint.toLocaleString('pt-BR')}
+                                                    className="pl-9 h-11 w-full text-right font-mono text-sm border border-zinc-200 focus:border-zinc-900 focus:ring-0 focus:outline-none"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
 
-            {/* Fee + Tools */}
-            <div className="grid md:grid-cols-2 gap-4">
-                <div className="border border-zinc-200 p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Zap className="w-4 h-4 text-zinc-400" />
-                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.fee.label}</p>
+                {/* Fee + Tools */}
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="border border-zinc-200 p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Zap className="w-4 h-4 text-zinc-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.fee.label}</p>
+                        </div>
+                        <p className="text-2xl font-bold text-black mb-1">{P(config.fee.range[0])} – {P(config.fee.range[1])}</p>
+                        <p className="text-xs text-zinc-400">Setup, gestão de campanhas, otimização e relatórios</p>
                     </div>
-                    <p className="text-2xl font-bold text-black mb-1">{P(config.fee.range[0])} – {P(config.fee.range[1])}</p>
-                    <p className="text-xs text-zinc-400">Setup, gestão de campanhas, otimização e relatórios</p>
-                </div>
-                <div className="border border-zinc-200 p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Settings className="w-4 h-4 text-zinc-400" />
-                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.tools.label}</p>
+                    <div className="border border-zinc-200 p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Settings className="w-4 h-4 text-zinc-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.tools.label}</p>
+                        </div>
+                        <p className="text-2xl font-bold text-black mb-1">{P(config.tools.range[0])} – {P(config.tools.range[1])}</p>
+                        <p className="text-xs text-zinc-400">CRM, automação de marketing, tracking e analytics</p>
                     </div>
-                    <p className="text-2xl font-bold text-black mb-1">{P(config.tools.range[0])} – {P(config.tools.range[1])}</p>
-                    <p className="text-xs text-zinc-400">CRM, automação de marketing, tracking e analytics</p>
                 </div>
-            </div>
 
-            {/* ROI Projection */}
-            <div className="bg-zinc-950 p-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <Target className="w-4 h-4 text-[#00CC6A]" />
-                    <h3 className="text-lg font-bold text-white">Projeção de Retorno</h3>
-                </div>
-                <div className="grid md:grid-cols-4 gap-6">
-                    <div>
-                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">CAC Benchmark</p>
-                        <p className="text-xl font-bold text-white">{config.cac_benchmark}</p>
-                        <p className="text-xs text-white/30 mt-1">Custo por aquisição do segmento</p>
+                {/* ROI Projection */}
+                <div className="bg-white border border-zinc-200 rounded-3xl p-8 pt-10 shadow-sm relative overflow-hidden group hover:border-zinc-300 transition-all duration-500">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-center">
+                            <Target className="w-5 h-5 text-black" />
+                        </div>
+                        <h3 className="text-xl font-bold text-black">Projeção de Retorno</h3>
                     </div>
-                    <div>
-                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Leads Estimados/Mês</p>
-                        <p className="text-xl font-bold text-[#00CC6A]">{Math.round(mediaTotal / 150)}–{Math.round(mediaTotal / 60)}</p>
-                        <p className="text-xs text-white/30 mt-1">Baseado no investimento em mídia</p>
-                    </div>
-                    <div>
-                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Revenue Potencial</p>
-                        <p className="text-xl font-bold text-white">{P(grandTotal * 2)}–{P(grandTotal * 4)}</p>
-                        <p className="text-xs text-white/30 mt-1">ROAS target {config.roas_target}</p>
-                    </div>
-                    <div>
-                        <p className="text-xs text-white/40 uppercase tracking-widest mb-2">Break-Even</p>
-                        <p className="text-xl font-bold text-white">{config.breakeven}</p>
-                        <p className="text-xs text-white/30 mt-1">Tempo estimado para payback</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Próximos Passos + Retorno potential */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-zinc-950 p-8">
-                    <p className="text-xs text-[#00CC6A] uppercase tracking-[0.2em] font-semibold mb-6">Próximos Passos</p>
-                    <div className="space-y-5">
-                        {[
-                            { n: '01', title: 'Aprovação', desc: 'Client assina o planejamento e autoriza o início', timing: 'Hoje' },
-                            { n: '02', title: 'Kick-Off', desc: 'Reunião de abertura + onboarding de acessos e contas', timing: 'Dia 1–3' },
-                            { n: '03', title: 'Fundação Live', desc: 'CRM, tracking e automações ativas. Campanhas preparadas.', timing: 'Dia 7–21' },
-                        ].map((step, i) => (
-                            <div key={i} className="flex items-start gap-4">
-                                <span className="text-zinc-700 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-white font-bold text-sm">{step.title}</p>
-                                        <span className="text-xs text-[#00CC6A] font-mono">{step.timing}</span>
-                                    </div>
-                                    <p className="text-zinc-500 text-xs mt-0.5">{step.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="border border-zinc-200 p-8 flex flex-col justify-between">
-                    <div>
-                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold mb-6">Potencial de Retorno</p>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                                <span className="text-sm text-zinc-600">Investimento mensal</span>
-                                <span className="font-bold text-black font-mono">{P(grandTotal)}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                                <span className="text-sm text-zinc-600">Revenue alvo (ROAS {config.roas_target})</span>
-                                <span className="font-bold text-black font-mono">{P(grandTotal * 3)}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-                                <span className="text-sm text-zinc-600">Payback estimado</span>
-                                <span className="font-bold text-black">{config.breakeven}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-zinc-600">LTV:CAC meta</span>
-                                <span className="font-bold text-[#00CC6A] text-lg">{config.ltv_cac_target}</span>
-                            </div>
+                    <div className="grid md:grid-cols-4 gap-6 relative z-10">
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">CAC Benchmark</p>
+                            <p className="text-xl font-bold text-black">{config.cac_benchmark}</p>
+                            <p className="text-xs text-zinc-400 mt-1">Custo por aquisição do segmento</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Leads Estimados/Mês</p>
+                            <p className="text-xl font-bold text-black">{Math.round(mediaTotal / 150)}–{Math.round(mediaTotal / 60)}</p>
+                            <p className="text-xs text-zinc-400 mt-1">Baseado no investimento em mídia</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Revenue Potencial</p>
+                            <p className="text-xl font-bold text-black">{P(grandTotal * 2)}–{P(grandTotal * 4)}</p>
+                            <p className="text-xs text-zinc-400 mt-1">ROAS target {config.roas_target}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Break-Even</p>
+                            <p className="text-xl font-bold text-black">{config.breakeven}</p>
+                            <p className="text-xs text-zinc-400 mt-1">Tempo estimado para payback</p>
                         </div>
                     </div>
-                    <div className="mt-6 pt-4 border-t border-zinc-200">
-                        <p className="text-xs text-zinc-300 text-center">Valores baseados em benchmarks do segmento • Ajuste os campos para personalizar</p>
+                </div>
+
+                {/* Próximos Passos + Retorno potential */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-xs text-black uppercase tracking-[0.2em] font-semibold mb-6">Próximos Passos</p>
+                        <div className="space-y-5">
+                            {[
+                                { n: '01', title: 'Aprovação', desc: 'Client assina o planejamento e autoriza o início', timing: 'Hoje' },
+                                { n: '02', title: 'Kick-Off', desc: 'Reunião de abertura + onboarding de acessos e contas', timing: 'Dia 1–3' },
+                                { n: '03', title: 'Fundação Live', desc: 'CRM, tracking e automações ativas. Campanhas preparadas.', timing: 'Dia 7–21' },
+                            ].map((step, i) => (
+                                <div key={i} className="flex items-start gap-4">
+                                    <span className="text-zinc-300 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-black font-bold text-sm">{step.title}</p>
+                                            <span className="text-xs text-black font-mono">{step.timing}</span>
+                                        </div>
+                                        <p className="text-zinc-500 text-xs mt-0.5">{step.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="bg-zinc-50 border border-zinc-200 p-8 rounded-2xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold mb-6">Potencial de Retorno</p>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                    <span className="text-sm text-zinc-600">Investimento mensal</span>
+                                    <span className="font-bold text-black font-mono">{P(grandTotal)}</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                    <span className="text-sm text-zinc-600">Revenue alvo (ROAS {config.roas_target})</span>
+                                    <span className="font-bold text-black font-mono">{P(grandTotal * 3)}</span>
+                                </div>
+                                <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                                    <span className="text-sm text-zinc-600">Payback estimado</span>
+                                    <span className="font-bold text-black">{config.breakeven}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-zinc-600">LTV:CAC meta</span>
+                                    <span className="font-bold text-[#00CC6A] text-lg">{config.ltv_cac_target}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-zinc-200">
+                            <p className="text-xs text-zinc-300 text-center">Valores baseados em benchmarks do segmento • Ajuste os campos para personalizar</p>
+                        </div>
                     </div>
                 </div>
             </div>

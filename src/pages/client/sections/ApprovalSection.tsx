@@ -100,7 +100,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                                 {planUrl}
                             </code>
                             <button
-                                onClick={() => navigator.clipboard?.writeText(planUrl).then(() => alert('Link copiado!')).catch(() => {})}
+                                onClick={() => navigator.clipboard?.writeText(planUrl).then(() => alert('Link copiado!')).catch(() => { })}
                                 className="text-xs px-3 py-2 border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-black transition-colors shrink-0"
                             >
                                 Copiar
@@ -113,14 +113,14 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
             {/* Approval CTA */}
             <div className="mt-8">
                 {isApproved ? (
-                    <div className="bg-zinc-950 p-10 md:p-14 text-center">
-                        <div className="w-14 h-14 border border-[#00CC6A] rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Check className="w-6 h-6 text-[#00CC6A]" />
+                    <div className="bg-white border border-green-200 p-10 md:p-14 text-center rounded-2xl shadow-sm">
+                        <div className="w-16 h-16 bg-green-50 border border-[#00CC6A] rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Check className="w-8 h-8 text-[#00CC6A]" />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-2">Planejamento Aprovado</h3>
-                        <p className="text-white/50 text-sm max-w-sm mx-auto">Nossa equipe entrou em contato. Execução começa nas próximas 24h.</p>
-                        <div className="mt-8 pt-6 border-t border-white/10">
-                            <span className="text-xs text-white/20 uppercase tracking-widest">▲ RevHackers Growth Hub</span>
+                        <h3 className="text-2xl font-bold text-black mb-3">Planejamento Aprovado</h3>
+                        <p className="text-zinc-500 text-sm max-w-sm mx-auto">Nossa equipe entrou em contato. A execução começa nas próximas 24h.</p>
+                        <div className="mt-8 pt-6 border-t border-zinc-100">
+                            <span className="text-xs text-zinc-400 font-black uppercase tracking-widest">▲ RevHackers Growth Hub</span>
                         </div>
                     </div>
                 ) : isRejected ? (
@@ -129,25 +129,25 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         <p className="text-sm text-zinc-500">Nossa equipe está revisando suas observações e entrará em contato em breve.</p>
                     </div>
                 ) : (
-                    <div className="bg-zinc-950 overflow-hidden">
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
                         <div className="p-10 md:p-14 text-center">
-                            <p className="text-xs text-white/30 uppercase tracking-[0.2em] mb-4">Próximo Passo</p>
-                            <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">Pronto para começar?</h3>
-                            <p className="text-white/50 mb-10 max-w-md mx-auto text-sm leading-relaxed">
+                            <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-4">Próximo Passo</p>
+                            <h3 className="text-3xl md:text-4xl font-bold text-black mb-3">Pronto para começar?</h3>
+                            <p className="text-zinc-500 mb-10 max-w-md mx-auto text-sm leading-relaxed">
                                 Ao aprovar, você autoriza o início das ações descritas neste planejamento. Nossa equipe entra em ação em até 24h.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <button onClick={() => setShowReject(true)} disabled={approving} className="px-8 py-4 border border-white/20 text-white/60 text-sm font-medium hover:border-white/50 hover:text-white transition-colors disabled:opacity-30">
+                                <button onClick={() => setShowReject(true)} disabled={approving} className="px-8 py-4 bg-white border border-zinc-200 text-zinc-600 text-sm font-bold hover:bg-zinc-50 hover:text-black transition-colors disabled:opacity-30 rounded-lg">
                                     Solicitar Ajustes
                                 </button>
-                                <button onClick={onApprove} disabled={approving} className="px-10 py-4 bg-white text-black text-sm font-bold hover:bg-zinc-100 transition-colors disabled:opacity-40 flex items-center gap-2">
+                                <button onClick={onApprove} disabled={approving} className="px-10 py-4 bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-2 rounded-lg shadow-md">
                                     {approving ? (<><Loader2 className="w-4 h-4 animate-spin" /> Processando</>) : (<> Aprovar Execução <ArrowRight className="w-4 h-4" /></>)}
                                 </button>
                             </div>
                         </div>
-                        <div className="px-10 py-5 border-t border-white/10 flex items-center justify-between">
-                            <span className="text-xs text-white/20 uppercase tracking-widest font-bold">▲ RevHackers</span>
-                            <span className="text-xs text-white/20">Revenue Engine Intelligence™</span>
+                        <div className="px-10 py-5 bg-white border-t border-zinc-200 flex items-center justify-between">
+                            <span className="text-xs text-zinc-500 uppercase tracking-widest font-black">▲ RevHackers</span>
+                            <span className="text-xs text-zinc-400 font-bold">Revenue Engine Intelligence™</span>
                         </div>
                     </div>
                 )}
@@ -164,10 +164,10 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                             placeholder="Ex: Gostaria de ajustar o prazo do Mês 1, o nosso time ainda não tem SDR..."
                             className="w-full min-h-[120px] resize-none border border-zinc-200 focus:border-zinc-900 p-3 text-sm focus:outline-none"
                         />
-                        <div className="flex justify-end gap-3 mt-4">
-                            <button onClick={() => setShowReject(false)} className="px-5 py-2.5 border border-zinc-200 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors">Cancelar</button>
-                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-6 py-2.5 bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40">
-                                {sending ? 'Enviando...' : 'Enviar'}
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button onClick={() => setShowReject(false)} className="px-5 py-2.5 bg-zinc-50 border border-zinc-200 text-sm font-bold text-zinc-600 hover:bg-zinc-100 transition-colors rounded-lg">Cancelar</button>
+                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 rounded-lg shadow-sm">
+                                {sending ? 'Enviando...' : 'Enviar Feedback'}
                             </button>
                         </div>
                     </div>

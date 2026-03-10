@@ -1,6 +1,7 @@
 import React from 'react';
 import { EditableField } from '@/components/plan/PlanEditContext';
 import { User } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Default Roadmap Phases ────────────────────────────────────────────────
 const defaultPhases = [
@@ -59,78 +60,89 @@ const milestones = [
 ];
 
 export default function RoadmapSection({ plan }: { plan: any }) {
-    const phases = defaultPhases;
+    // Backend uses "name" and "items" (array of strings) instead of "period" and "tasks" (objects).
+    // Let's normalize data here gracefully without breaking editable fields (which bind blindly).
+    const rawPhases = plan?.roadmap_data?.phases || defaultPhases;
+
+    const phases = rawPhases.map((p: any) => ({
+        ...p,
+        period: p.period || p.name || 'Dia N',
+        owner: p.owner || 'Equipe',
+        output: p.output || 'A ser definido',
+        tasks: p.tasks ? p.tasks : (p.items || []).map((item: string) => ({ task: item, key: false }))
+    }));
 
     return (
-        <div className="space-y-10">
-            {/* Header */}
-            <div>
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-6 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Execução</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05]">
-                    Cronograma<br />
-                    <span className="text-zinc-400">90 Dias</span>
-                </h2>
-                <p className="text-zinc-500 text-sm mt-3">Tabela semanal com ações, responsáveis e entrega por fase</p>
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <SectionHeader
+                    eyebrow="Execução"
+                    titleLine1="Cronograma"
+                    titleLine2="90 Dias"
+                    description="Tabela semanal com ações, responsáveis e entrega por fase"
+                />
             </div>
 
-            {/* Table */}
-            <div className="border border-zinc-200 overflow-hidden">
-                {/* Header row */}
-                <div className="grid grid-cols-12 bg-zinc-950 text-white border-b border-white/10">
-                    <div className="col-span-2 px-5 py-3 text-xs uppercase tracking-widest font-bold border-r border-white/10">Período</div>
-                    <div className="col-span-5 px-5 py-3 text-xs uppercase tracking-widest font-bold border-r border-white/10">Ações</div>
-                    <div className="col-span-2 px-5 py-3 text-xs uppercase tracking-widest font-bold border-r border-white/10">Responsável</div>
-                    <div className="col-span-3 px-5 py-3 text-xs uppercase tracking-widest font-bold">Entrega</div>
-                </div>
-                {/* Rows */}
-                {phases.map((phase, i) => {
-                    const isOdd = i % 2 === 1;
-                    return (
-                        <div key={i} className={`grid grid-cols-12 border-t border-zinc-200 ${isOdd ? 'bg-zinc-50' : 'bg-white'}`}>
-                            <div className="col-span-2 px-5 py-5 border-r border-zinc-200">
-                                <span className="text-xs font-black text-zinc-400 uppercase tracking-widest block mb-1">{phase.period}</span>
-                                <EditableField path={`roadmap_data.phases.${i}.title`} className="text-base font-bold text-black leading-snug" placeholder={phase.title} />
-                            </div>
-                            <div className="col-span-5 px-5 py-5 border-r border-zinc-200">
-                                <ul className="space-y-2.5">
-                                    {phase.tasks.map((task, j) => (
-                                        <li key={j} className="flex items-start gap-2">
-                                            <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${task.key ? 'bg-[#00CC6A]' : 'bg-zinc-300'}`} />
-                                            <EditableField
-                                                path={`roadmap_data.phases.${i}.tasks.${j}.task`}
-                                                className={`text-sm leading-relaxed ${task.key ? 'text-zinc-900 font-semibold' : 'text-zinc-600'}`}
-                                                placeholder={task.task}
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="col-span-2 px-5 py-5 border-r border-zinc-200">
-                                <div className="flex items-center gap-1.5">
-                                    <User className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                                    <span className="text-xs text-zinc-500 font-medium leading-snug">{phase.owner}</span>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-10">
+
+                {/* Table */}
+                <div className="border border-zinc-200 overflow-hidden">
+                    {/* Header row */}
+                    <div className="grid grid-cols-12 bg-zinc-50 text-zinc-500 border-b border-zinc-200">
+                        <div className="col-span-2 px-5 py-3 text-xs uppercase tracking-widest font-black border-r border-zinc-200">Período</div>
+                        <div className="col-span-5 px-5 py-3 text-xs uppercase tracking-widest font-black border-r border-zinc-200">Ações</div>
+                        <div className="col-span-2 px-5 py-3 text-xs uppercase tracking-widest font-black border-r border-zinc-200">Responsável</div>
+                        <div className="col-span-3 px-5 py-3 text-xs uppercase tracking-widest font-black">Entrega</div>
+                    </div>
+                    {/* Rows */}
+                    {phases.map((phase, i) => {
+                        const isOdd = i % 2 === 1;
+                        return (
+                            <div key={i} className={`grid grid-cols-12 border-t border-zinc-200 ${isOdd ? 'bg-zinc-50' : 'bg-white'}`}>
+                                <div className="col-span-2 px-5 py-5 border-r border-zinc-200">
+                                    <span className="text-xs font-black text-zinc-400 uppercase tracking-widest block mb-1">{phase.period}</span>
+                                    <EditableField path={`roadmap_data.phases.${i}.title`} className="text-base font-bold text-black leading-snug" placeholder={phase.title} />
+                                </div>
+                                <div className="col-span-5 px-5 py-5 border-r border-zinc-200">
+                                    <ul className="space-y-2.5">
+                                        {phase.tasks.map((task: any, j: number) => (
+                                            <li key={j} className="flex items-start gap-2">
+                                                <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${task.key ? 'bg-[#00CC6A]' : 'bg-zinc-300'}`} />
+                                                <EditableField
+                                                    path={plan?.roadmap_data?.phases[i]?.items
+                                                        ? `roadmap_data.phases.${i}.items.${j}`
+                                                        : `roadmap_data.phases.${i}.tasks.${j}.task`}
+                                                    className={`text-sm leading-relaxed ${task.key ? 'text-zinc-900 font-semibold' : 'text-zinc-600'}`}
+                                                    placeholder={typeof task === 'string' ? task : task?.task}
+                                                />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="col-span-2 px-5 py-5 border-r border-zinc-200">
+                                    <div className="flex items-center gap-1.5">
+                                        <User className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                                        <span className="text-xs text-zinc-500 font-medium leading-snug">{phase.owner}</span>
+                                    </div>
+                                </div>
+                                <div className="col-span-3 px-5 py-5">
+                                    <EditableField path={`roadmap_data.phases.${i}.output`} className="text-xs text-zinc-500 leading-relaxed" placeholder={phase.output} multiline />
                                 </div>
                             </div>
-                            <div className="col-span-3 px-5 py-5">
-                                <EditableField path={`roadmap_data.phases.${i}.output`} className="text-xs text-zinc-500 leading-relaxed" placeholder={phase.output} multiline />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
 
-            {/* Milestones */}
-            <div className="grid grid-cols-5 gap-2">
-                {milestones.map((m, i) => (
-                    <div key={i} className={`p-4 ${m.destaque ? 'bg-zinc-950' : 'border border-zinc-200 bg-white'}`}>
-                        <span className={`font-mono text-xs font-bold block mb-1.5 ${m.destaque ? 'text-[#00CC6A]' : 'text-zinc-400'}`}>{m.dia}</span>
-                        <h4 className={`font-bold text-sm mb-1 leading-snug ${m.destaque ? 'text-white' : 'text-black'}`}>{m.titulo}</h4>
-                        <p className={`text-xs leading-relaxed ${m.destaque ? 'text-white/50' : 'text-zinc-500'}`}>{m.desc}</p>
-                    </div>
-                ))}
+                {/* Milestones */}
+                <div className="grid grid-cols-5 gap-3">
+                    {milestones.map((m, i) => (
+                        <div key={i} className={`p-5 rounded-xl transition-shadow ${m.destaque ? 'bg-black shadow-lg shadow-black/10' : 'border border-zinc-200 bg-white shadow-sm hover:shadow-md'}`}>
+                            <span className={`font-mono text-xs font-black uppercase tracking-widest block mb-1.5 ${m.destaque ? 'text-[#00CC6A]' : 'text-zinc-400'}`}>{m.dia}</span>
+                            <h4 className={`font-bold text-sm mb-1.5 leading-snug ${m.destaque ? 'text-white' : 'text-black'}`}>{m.titulo}</h4>
+                            <p className={`text-[11px] leading-relaxed ${m.destaque ? 'text-white/60' : 'text-zinc-500'}`}>{m.desc}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -81,7 +81,7 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
                                 <span className="text-xs font-black text-zinc-500 group-hover:text-revgreen">{String(index + 1).padStart(2, '0')}</span>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[10px] text-revgreen font-black uppercase tracking-[0.3em]">{label}</p>
+                                <p className="text-xs text-revgreen font-black uppercase tracking-[0.3em]">{label}</p>
                                 <p className="text-lg font-black text-white uppercase tracking-tight leading-tight">{title}</p>
                             </div>
                         </div>
@@ -131,7 +131,7 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
                         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                             <button
                                 onClick={() => setShowAdjustments(true)}
-                                className="px-12 py-4 border border-zinc-800 text-zinc-500 font-black uppercase tracking-[0.2em] text-[10px] rounded-full hover:border-white hover:text-white transition-all"
+                                className="px-12 py-4 border border-zinc-800 text-zinc-500 font-black uppercase tracking-[0.2em] text-xs rounded-full hover:border-white hover:text-white transition-all"
                                 disabled={approving}
                             >
                                 Solicitar Ajustes
@@ -166,7 +166,7 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
                         <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
                             Technical Feedback
                         </DialogTitle>
-                        <DialogDescription className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">
+                        <DialogDescription className="text-zinc-500 font-bold uppercase tracking-widest text-xs">
                             Descreva os pontos de fricção para ajuste imediato.
                         </DialogDescription>
                     </DialogHeader>
@@ -184,14 +184,14 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
                         <button
                             onClick={() => setShowAdjustments(false)}
                             disabled={submittingAdjustments}
-                            className="px-8 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
+                            className="px-8 py-3 text-xs font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
                         >
                             Cancelar
                         </button>
                         <button
                             onClick={handleRequestAdjustments}
                             disabled={!adjustmentNotes.trim() || submittingAdjustments}
-                            className="px-10 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all"
+                            className="px-10 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all"
                         >
                             {submittingAdjustments ? 'Transmitindo...' : 'Enviar Protocolo'}
                         </button>

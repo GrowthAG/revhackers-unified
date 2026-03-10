@@ -74,10 +74,10 @@ const AdminREIProjects = () => {
             });
             setSelectedIds([]);
             refetch();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: 'Erro na exclusão',
-                description: 'Alguns projetos não puderam ser excluídos.',
+                description: error?.message || 'Alguns projetos não puderam ser excluídos devido a dependências ou permissões.',
                 variant: 'destructive',
             });
         } finally {
@@ -98,10 +98,10 @@ const AdminREIProjects = () => {
                 description: `O projeto de ${clientName} foi removido.`,
             });
             refetch();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: 'Erro ao excluir projeto',
-                description: 'Ocorreu um erro ao tentar excluir o projeto.',
+                description: error?.message || 'Ocorreu um erro ao tentar excluir o projeto. Verifique dependências.',
                 variant: 'destructive',
             });
         } finally {
@@ -166,6 +166,7 @@ const AdminREIProjects = () => {
                                     </TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Cliente</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Empresa</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Tipo</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Status</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Período</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4 text-right pr-6">Ações</TableHead>
@@ -174,7 +175,7 @@ const AdminREIProjects = () => {
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-32 text-center">
+                                        <TableCell colSpan={7} className="h-32 text-center">
                                             <Loader2 className="h-6 w-6 animate-spin mx-auto text-zinc-400" />
                                         </TableCell>
                                     </TableRow>
@@ -196,6 +197,14 @@ const AdminREIProjects = () => {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_company || '-'}</div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest">
+                                                    {project.type === 'crm_ops' || project.type === 'CRM_CS_OPS' ? 'CRM & RevOps' :
+                                                        project.type === 'funnels_impl' ? 'Site & Funil' :
+                                                            project.type === 'founder' ? 'Founder' :
+                                                                project.type === 'content_seo' ? 'SEO' : '360º'}
+                                                </Badge>
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <span className={`text-[9px] font-black uppercase tracking-widest ${project.status === 'completed' ? 'text-revgreen' :
@@ -247,7 +256,7 @@ const AdminREIProjects = () => {
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-32 text-center text-zinc-400 text-xs uppercase tracking-widest">
+                                        <TableCell colSpan={7} className="h-32 text-center text-zinc-400 text-xs uppercase tracking-widest">
                                             Nenhum projeto encontrado.
                                         </TableCell>
                                     </TableRow>

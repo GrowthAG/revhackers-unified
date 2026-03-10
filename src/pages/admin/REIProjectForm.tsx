@@ -24,6 +24,7 @@ type FormData = {
     analyst_email: string;
     quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4';
     year: number;
+    type: string;
     next_rei_date: string;
 };
 
@@ -39,7 +40,8 @@ const REIProjectForm = () => {
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
         defaultValues: {
             year: new Date().getFullYear(),
-            quarter: 'Q1'
+            quarter: 'Q1',
+            type: 'crm_ops'
         }
     });
 
@@ -104,6 +106,7 @@ const REIProjectForm = () => {
                     setValue('analyst_email', project.analyst_email);
                     setValue('quarter', project.quarter as any);
                     setValue('year', project.year);
+                    setValue('type', project.type || 'crm_ops');
                     setValue('next_rei_date', project.next_rei_date.split('T')[0]);
                 } else {
                     toast({ title: 'Protocolo não encontrado', variant: 'destructive' });
@@ -187,7 +190,8 @@ const REIProjectForm = () => {
                 client_company: data.client_company || null,
                 analyst_email: data.analyst_email,
                 quarter: data.quarter,
-                year: data.year,
+                year: Number(data.year),
+                type: data.type,
                 next_rei_date: new Date(data.next_rei_date).toISOString(),
                 last_rei_date: new Date().toISOString()
             };
@@ -336,6 +340,26 @@ const REIProjectForm = () => {
                                     />
                                 </div>
 
+                                <div className="space-y-1.5">
+                                    <Label className={labelClasses}>Protocolo Contratado</Label>
+                                    <Select
+                                        value={watch('type')}
+                                        onValueChange={(value) => setValue('type', value)}
+                                    >
+                                        <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-none border-zinc-100 shadow-2xl">
+                                            <SelectItem value="crm_ops">CRM & RevOps</SelectItem>
+                                            <SelectItem value="funnels_impl">Site & Funnel Hub</SelectItem>
+                                            <SelectItem value="founder">Assessoria Founder</SelectItem>
+                                            <SelectItem value="content_seo">SEO & Autenticidade</SelectItem>
+                                            <SelectItem value="consulting">Consulting 360º</SelectItem>
+                                            <SelectItem value="training">Treinamento In-Company</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-1.5">
                                         <Label className={labelClasses}>Trimestre</Label>
@@ -360,7 +384,7 @@ const REIProjectForm = () => {
                                         <Input
                                             id="year"
                                             type="number"
-                                            {...register('year', { required: true })}
+                                            {...register('year', { required: true, valueAsNumber: true })}
                                             className={inputClasses}
                                         />
                                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, BarChart3, Target, ChevronRight, ChevronDown, ExternalLink, Lightbulb, PieChart } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Mock data for segments ────────────────────────────────────────────────
 const mockDataMap: Record<string, any> = {
@@ -90,157 +91,157 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
     const isREIFallback = data._data_source === 'rei_fallback';
 
     return (
-        <div className="space-y-14">
-            {/* Header */}
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-5">
-                    <div className="w-6 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Inteligência de Mercado</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05] mb-4">
-                    Benchmark<br /><span className="text-zinc-400">Competitivo</span>
-                </h2>
-                <p className="text-zinc-500 text-sm leading-relaxed">
-                    Tráfego, palavras-chave, canais de mídia e pontos fracos dos concorrentes, com links diretos para ver os anúncios ativos em Meta, Google e LinkedIn.
-                </p>
-                {!hasRealData && (
-                    <div className="mt-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                        <p className="text-xs text-zinc-400">Dados de referência para o segmento — atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
-                    </div>
-                )}
-                {hasRealData && isREIFallback && (
-                    <div className="mt-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                        <p className="text-xs text-zinc-400">Concorrentes informados pelo cliente — enriquecimento de mercado disponível via "Deep Benchmark"</p>
-                    </div>
-                )}
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <SectionHeader
+                    eyebrow="Inteligência de Mercado"
+                    titleLine1="Benchmark"
+                    titleLine2="Competitivo"
+                    description="Tráfego, palavras-chave, canais de mídia e pontos fracos dos concorrentes, com links diretos para ver os anúncios ativos em Meta, Google e LinkedIn."
+                />
             </div>
 
-            {/* Trends */}
-            {trends.length > 0 && (
-                <div>
-                    <div className="flex items-center gap-2 mb-5">
-                        <TrendingUp className="w-4 h-4 text-zinc-700" />
-                        <h3 className="text-lg font-bold text-black">Tendências do Segmento</h3>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        {trends.map((trend: string, i: number) => (
-                            <div key={i} className="border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
-                                <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
-                                <p className="text-sm text-zinc-800 leading-relaxed font-medium">{trend}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* CAC & Conversion */}
-            <div className="grid md:grid-cols-2 gap-4">
-                {cacBenchmark && (
-                    <div className="bg-zinc-950 p-7">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
-                            <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold">Benchmark CAC do Segmento</p>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-14">
+                <div className="space-y-2 -mt-6">
+                    {!hasRealData && (
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Dados de referência para o segmento — atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
                         </div>
-                        <p className="text-2xl font-bold text-white leading-tight">{cacBenchmark}</p>
-                    </div>
-                )}
-                {conversionBenchmarks && (
-                    <div className="border border-zinc-200 p-7">
-                        <div className="flex items-center gap-2 mb-3">
-                            <PieChart className="w-3.5 h-3.5 text-zinc-400" />
-                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Benchmarks de Conversão</p>
+                    )}
+                    {hasRealData && isREIFallback && (
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Concorrentes informados pelo cliente — enriquecimento de mercado disponível via "Deep Benchmark"</p>
                         </div>
-                        <p className="text-sm font-semibold text-zinc-800 leading-relaxed">{conversionBenchmarks}</p>
-                    </div>
-                )}
-            </div>
-
-            {/* Competitors Table */}
-            <div>
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <BarChart3 className="w-5 h-5 text-black" />
-                        <h3 className="text-xl font-bold text-black">Concorrentes Analisados</h3>
-                    </div>
-                    <span className="text-xs text-zinc-400 font-mono">{competitors.length} empresas</span>
+                    )}
                 </div>
-                <p className="text-xs text-zinc-400 mb-5">Clique em cada empresa para expandir métricas completas + links para ver anúncios ativos.</p>
-                <div className="border border-zinc-200 overflow-hidden">
-                    <div className="flex items-center gap-4 bg-zinc-950 px-5 py-3">
-                        <div className="w-9 shrink-0" />
-                        <div className="flex-1 text-xs text-zinc-500 uppercase tracking-widest font-semibold">Empresa / Concorrente</div>
-                        <div className="hidden md:flex items-center gap-5 shrink-0 text-xs text-zinc-600 uppercase tracking-widest font-semibold">
-                            <span className="w-20 text-center">Visitas/mês</span>
-                            <span className="w-8 text-center">DA</span>
-                            <span className="w-14 text-center">CPC Médio</span>
+
+                {/* Trends */}
+                {trends.length > 0 && (
+                    <div>
+                        <div className="flex items-center gap-2 mb-5">
+                            <TrendingUp className="w-4 h-4 text-zinc-700" />
+                            <h3 className="text-lg font-bold text-black">Tendências do Segmento</h3>
                         </div>
-                        <div className="w-4 shrink-0" />
-                    </div>
-                    {competitors.map((bench: any, i: number) => (
-                        <CompetitorRow key={i} bench={bench} index={i} />
-                    ))}
-                </div>
-                <p className="text-xs text-zinc-300 mt-2">* Dados estimados via IA e benchmarks de mercado. Valores aproximados para referência estratégica.</p>
-            </div>
-
-            {/* Market Sizing */}
-            {marketSizing && (
-                <div>
-                    <div className="flex items-center gap-2 mb-5">
-                        <PieChart className="w-4 h-4 text-zinc-700" />
-                        <h3 className="text-lg font-bold text-black">Tamanho de Mercado</h3>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        {[
-                            { label: 'TAM', subtitle: 'Mercado Total Disponível', value: marketSizing.tam, hint: 'Tamanho total do mercado endereçável' },
-                            { label: 'SAM', subtitle: 'Mercado Endereçável Servível', value: marketSizing.sam, hint: 'Parcela que você pode alcançar hoje' },
-                            { label: 'SOM', subtitle: 'Mercado Obtível Realista', value: marketSizing.som, hint: 'Fatia alcançável nos próximos 12 a 18 meses' },
-                        ].map(({ label, subtitle, value, hint }) => (
-                            <div key={label} className="border border-zinc-200 p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <span className="text-2xl font-bold text-black font-mono">{label}</span>
-                                        <p className="text-xs text-zinc-400 mt-0.5">{subtitle}</p>
-                                    </div>
-                                    <span className="text-xs text-zinc-300 text-right">{hint}</span>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            {trends.map((trend: string, i: number) => (
+                                <div key={i} className="border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
+                                    <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
+                                    <p className="text-sm text-zinc-800 leading-relaxed font-medium">{trend}</p>
                                 </div>
-                                <p className="text-sm text-zinc-700 font-medium leading-relaxed">{value}</p>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* CAC & Conversion */}
+                <div className="grid md:grid-cols-2 gap-4">
+                    {cacBenchmark && (
+                        <div className="bg-zinc-950 p-7">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
+                                <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold">Benchmark CAC do Segmento</p>
                             </div>
+                            <p className="text-2xl font-bold text-white leading-tight">{cacBenchmark}</p>
+                        </div>
+                    )}
+                    {conversionBenchmarks && (
+                        <div className="border border-zinc-200 p-7">
+                            <div className="flex items-center gap-2 mb-3">
+                                <PieChart className="w-3.5 h-3.5 text-zinc-400" />
+                                <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Benchmarks de Conversão</p>
+                            </div>
+                            <p className="text-sm font-semibold text-zinc-800 leading-relaxed">{conversionBenchmarks}</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Competitors Table */}
+                <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <BarChart3 className="w-5 h-5 text-black" />
+                            <h3 className="text-xl font-bold text-black">Concorrentes Analisados</h3>
+                        </div>
+                        <span className="text-xs text-zinc-400 font-mono">{competitors.length} empresas</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mb-5">Clique em cada empresa para expandir métricas completas + links para ver anúncios ativos.</p>
+                    <div className="border border-zinc-200 overflow-hidden">
+                        <div className="flex items-center gap-4 bg-zinc-950 px-5 py-3">
+                            <div className="w-9 shrink-0" />
+                            <div className="flex-1 text-xs text-zinc-500 uppercase tracking-widest font-semibold">Empresa / Concorrente</div>
+                            <div className="hidden md:flex items-center gap-5 shrink-0 text-xs text-zinc-600 uppercase tracking-widest font-semibold">
+                                <span className="w-20 text-center">Visitas/mês</span>
+                                <span className="w-8 text-center">DA</span>
+                                <span className="w-14 text-center">CPC Médio</span>
+                            </div>
+                            <div className="w-4 shrink-0" />
+                        </div>
+                        {competitors.map((bench: any, i: number) => (
+                            <CompetitorRow key={i} bench={bench} index={i} />
                         ))}
                     </div>
+                    <p className="text-xs text-zinc-300 mt-2">* Dados estimados via IA e benchmarks de mercado. Valores aproximados para referência estratégica.</p>
                 </div>
-            )}
 
-            {/* Strategic Advice */}
-            {advice && (
-                <div className="border-l-2 border-zinc-950 pl-6 py-1">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Lightbulb className="w-4 h-4 text-zinc-600" />
-                        <p className="text-xs text-zinc-400 uppercase tracking-widest font-semibold">Conselho Estratégico</p>
+                {/* Market Sizing */}
+                {marketSizing && (
+                    <div>
+                        <div className="flex items-center gap-2 mb-5">
+                            <PieChart className="w-4 h-4 text-zinc-700" />
+                            <h3 className="text-lg font-bold text-black">Tamanho de Mercado</h3>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            {[
+                                { label: 'TAM', subtitle: 'Mercado Total Disponível', value: marketSizing.tam, hint: 'Tamanho total do mercado endereçável' },
+                                { label: 'SAM', subtitle: 'Mercado Endereçável Servível', value: marketSizing.sam, hint: 'Parcela que você pode alcançar hoje' },
+                                { label: 'SOM', subtitle: 'Mercado Obtível Realista', value: marketSizing.som, hint: 'Fatia alcançável nos próximos 12 a 18 meses' },
+                            ].map(({ label, subtitle, value, hint }) => (
+                                <div key={label} className="border border-zinc-200 p-6">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div>
+                                            <span className="text-2xl font-bold text-black font-mono">{label}</span>
+                                            <p className="text-xs text-zinc-400 mt-0.5">{subtitle}</p>
+                                        </div>
+                                        <span className="text-xs text-zinc-300 text-right">{hint}</span>
+                                    </div>
+                                    <p className="text-sm text-zinc-700 font-medium leading-relaxed">{value}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <p className="text-base text-zinc-800 leading-relaxed font-medium">{advice}</p>
-                </div>
-            )}
+                )}
 
-            {/* Differentiators */}
-            {differentiators.length > 0 && (
-                <div className="bg-zinc-950 p-8 md:p-10">
-                    <div className="flex items-center gap-3 mb-8">
-                        <ChevronRight className="w-4 h-4 text-[#00CC6A]" />
-                        <h3 className="text-lg font-bold text-white">Suas Oportunidades de Diferenciação</h3>
+                {/* Strategic Advice */}
+                {advice && (
+                    <div className="border-l-2 border-zinc-950 pl-6 py-1">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Lightbulb className="w-4 h-4 text-zinc-600" />
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-semibold">Conselho Estratégico</p>
+                        </div>
+                        <p className="text-base text-zinc-800 leading-relaxed font-medium">{advice}</p>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {differentiators.map((diff: string, i: number) => (
-                            <div key={i} className="flex items-start gap-4">
-                                <span className="text-[#00CC6A] font-mono text-xs mt-1 shrink-0 font-bold">{String(i + 1).padStart(2, '0')}</span>
-                                <p className="text-sm text-white/70 leading-relaxed">{diff}</p>
-                            </div>
-                        ))}
+                )}
+
+                {/* Differentiators */}
+                {differentiators.length > 0 && (
+                    <div className="bg-zinc-950 p-8 md:p-10">
+                        <div className="flex items-center gap-3 mb-8">
+                            <ChevronRight className="w-4 h-4 text-[#00CC6A]" />
+                            <h3 className="text-lg font-bold text-white">Suas Oportunidades de Diferenciação</h3>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {differentiators.map((diff: string, i: number) => (
+                                <div key={i} className="flex items-start gap-4">
+                                    <span className="text-[#00CC6A] font-mono text-xs mt-1 shrink-0 font-bold">{String(i + 1).padStart(2, '0')}</span>
+                                    <p className="text-sm text-white/70 leading-relaxed">{diff}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }

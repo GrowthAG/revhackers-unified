@@ -1,6 +1,7 @@
 import React from 'react';
 import { EditableField } from '@/components/plan/PlanEditContext';
 import { Target } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Default OKRs ──────────────────────────────────────────────────────────
 const defaultOKRs = [
@@ -54,111 +55,157 @@ const horizonte12m = [
     { title: 'Consolidação', subtitle: 'Mês 9 – 12', metric: 'Liderança de Mercado', krs: ['Churn < 3%', 'Indicações como canal', 'Playbook documentado'] },
 ];
 
+const crmOKRs = [
+    {
+        objective: 'Objetivo Estratégico de CRM & RevOps', label: 'O',
+        description: 'Construir a infraestrutura de dados para previsibilidade e escala comercial',
+        krs: [
+            { label: 'RK 1', text: 'Mapeamento As-Is e Setup do CRM (Funil, SLA, e Motivos de Perda) concluído', target: 'Sem. 3' },
+            { label: 'RK 2', text: 'Pipeline com 100% de preenchimento dos campos obrigatórios por etapa', target: 'Mês 2' },
+            { label: 'RK 3', text: 'Governança ativa com análises de Win/Loss e conversão semanais', target: 'Mês 3' },
+        ],
+        dark: true,
+    },
+    {
+        objective: 'RK 1 — Infraestrutura e Visibilidade', label: '01',
+        krs: [
+            { label: 'RK 1.1', text: 'Pipelines customizados validados e publicados no CRM Central', target: 'Sem. 2' },
+            { label: 'RK 1.2', text: 'Rastreamento de origens (UTMs/Pixels) conectado às oportunidades', target: 'Sem. 3' },
+            { label: 'RK 1.3', text: 'Catálogo de motivos de perda padronizado e implementado', target: 'Sem. 3' },
+        ],
+    },
+    {
+        objective: 'RK 2 — Governança e Processos', label: '02',
+        krs: [
+            { label: 'RK 2.1', text: 'SLA de Hand-off Marketing > Vendas mapeado e metrificado no sistema', target: 'Mês 1' },
+            { label: 'RK 2.2', text: 'Alerta de estagnação de negócios (SLA de follow-up) programado', target: 'Mês 2' },
+            { label: 'RK 2.3', text: 'Reuniões de Pipeline Review utilizando painel visual padronizado', target: 'Mês 2' },
+        ],
+    },
+    {
+        objective: 'RK 3 — Conversão e Velocidade', label: '03',
+        krs: [
+            { label: 'RK 3.1', text: 'Aumento na taxa de avanço entre etapas finais através de automação', target: 'Mês 2' },
+            { label: 'RK 3.2', text: 'Redução do ciclo de vendas médio via acompanhamento e tarefas automatizadas', target: 'Mês 3' },
+            { label: 'RK 3.3', text: 'Identificação clara de gargalos de conversão por vendedor/origem', target: 'Contínuo' },
+        ],
+    },
+    {
+        objective: 'RK 4 — Adoção Organizacional', label: '04',
+        krs: [
+            { label: 'RK 4.1', text: 'Onboarding de usuários: 100% da equipe treinada nos padrões de entrada', target: 'Mês 1' },
+            { label: 'RK 4.2', text: 'Menos de 10% das oportunidades sem atividade por mais de 7 dias', target: 'Mês 2' },
+            { label: 'RK 4.3', text: 'Gestão visual da liderança utilizando dashboards em vez de planilhas', target: 'Contínuo' },
+        ],
+    },
+];
+
 export default function GoalsSection({ plan }: { plan: any }) {
     const okrs = (plan.goals_data || {}).okrs || [];
-    const displayOKRs = okrs.length > 0 ? okrs.map((o: any, i: number) => ({ ...(defaultOKRs[i] || {}), ...o })) : defaultOKRs;
+    const baseOKRs = plan?.project_type === 'crm_ops' ? crmOKRs : defaultOKRs;
+    const displayOKRs = okrs.length > 0 ? okrs.map((o: any, i: number) => ({ ...(baseOKRs[i] || {}), ...o })) : baseOKRs;
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <div className="flex items-center gap-2 mb-1">
-                    <div className="w-4 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Desempenho</span>
-                </div>
-                <h2 className="text-2xl font-bold text-black tracking-tight">
-                    OKRs & <span className="text-zinc-400">Indicadores</span>
-                </h2>
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <SectionHeader
+                    eyebrow="Desempenho"
+                    titleLine1="OKRs &"
+                    titleLine2="Indicadores"
+                />
             </div>
 
-            {/* Legend */}
-            <div className="grid grid-cols-3 gap-3">
-                {[
-                    { symbol: 'O', color: 'bg-zinc-950 text-white', symbolColor: 'text-[#00CC6A]', title: 'Objetivo', desc: 'Qualitativo e aspiracional. Define a direção do período.' },
-                    { symbol: 'RK', color: 'border border-zinc-200', symbolColor: 'text-zinc-300', title: 'Resultados-Chave', desc: 'Mensuráveis e estruturais. Estrutura, não valor monetário.' },
-                    { symbol: 'KPI', color: 'border border-zinc-200 bg-zinc-50', symbolColor: 'text-zinc-200', title: 'Indicadores', desc: 'Sinais de risco antecipados antes de afetar os objetivos.' },
-                ].map((item, i) => (
-                    <div key={i} className={`p-3 flex gap-3 items-start ${item.color}`}>
-                        <div className={`text-lg font-black shrink-0 ${item.symbolColor}`}>{item.symbol}</div>
-                        <div>
-                            <h4 className={`font-bold text-xs mb-0.5 ${item.color.includes('bg-zinc-950') ? 'text-white' : 'text-zinc-800'}`}>{item.title}</h4>
-                            <p className={`text-xs leading-relaxed ${item.color.includes('bg-zinc-950') ? 'text-zinc-400' : 'text-zinc-500'}`}>{item.desc}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-6">
 
-            {/* Main OKR (first one - dark) */}
-            {displayOKRs.slice(0, 1).map((okr: any, i: number) => (
-                <div key={i} className="bg-zinc-950 border border-zinc-800">
-                    <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/10">
-                        <div className="w-7 h-7 bg-[#00CC6A] text-black flex items-center justify-center font-black text-xs shrink-0">O</div>
-                        <div>
-                            <p className="text-xs text-[#00CC6A]/70 uppercase tracking-widest font-bold mb-0.5">Objetivo do Período</p>
-                            <EditableField path={`goals_data.okrs.${i}.description`} className="text-sm font-semibold text-white leading-snug" placeholder={okr.description} />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 divide-x divide-white/10">
-                        {(okr.krs || []).slice(0, 3).map((kr: any, j: number) => (
-                            <div key={j} className="px-4 py-3">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-black uppercase tracking-widest text-white/40">{kr.label}</span>
-                                    {kr.target && <span className="text-xs px-1.5 py-0.5 font-mono bg-white/10 text-white/50">{kr.target}</span>}
-                                </div>
-                                <EditableField path={`goals_data.okrs.${i}.krs.${j}.text`} className="text-xs text-white/75 leading-relaxed" placeholder={kr.text} multiline />
+                {/* Legend */}
+                <div className="grid grid-cols-3 gap-3">
+                    {[
+                        { symbol: 'O', color: 'bg-zinc-950 text-white', symbolColor: 'text-[#00CC6A]', title: 'Objetivo', desc: 'Qualitativo e aspiracional. Define a direção do período.' },
+                        { symbol: 'RK', color: 'border border-zinc-200', symbolColor: 'text-zinc-300', title: 'Resultados-Chave', desc: 'Mensuráveis e estruturais. Estrutura, não valor monetário.' },
+                        { symbol: 'KPI', color: 'border border-zinc-200 bg-zinc-50', symbolColor: 'text-zinc-200', title: 'Indicadores', desc: 'Sinais de risco antecipados antes de afetar os objetivos.' },
+                    ].map((item, i) => (
+                        <div key={i} className={`p-3 flex gap-3 items-start ${item.color}`}>
+                            <div className={`text-lg font-black shrink-0 ${item.symbolColor}`}>{item.symbol}</div>
+                            <div>
+                                <h4 className={`font-bold text-xs mb-0.5 ${item.color.includes('bg-zinc-950') ? 'text-white' : 'text-zinc-800'}`}>{item.title}</h4>
+                                <p className={`text-xs leading-relaxed ${item.color.includes('bg-zinc-950') ? 'text-zinc-400' : 'text-zinc-500'}`}>{item.desc}</p>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
 
-            {/* Secondary OKRs (2x2 grid) */}
-            <div className="grid grid-cols-2 gap-3">
-                {displayOKRs.slice(1, 5).map((okr: any, i: number) => (
-                    <div key={i} className="border border-zinc-200 bg-white">
-                        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100">
-                            <div className="w-7 h-7 bg-zinc-100 text-zinc-700 flex items-center justify-center font-black text-xs shrink-0">
-                                {okr.label || String(i + 1).padStart(2, '0')}
+                {/* Main OKR (first one - dark) */}
+                {displayOKRs.slice(0, 1).map((okr: any, i: number) => (
+                    <div key={i} className="bg-zinc-950 border border-zinc-800">
+                        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-white/10">
+                            <div className="w-7 h-7 bg-[#00CC6A] text-black flex items-center justify-center font-black text-xs shrink-0">O</div>
+                            <div>
+                                <p className="text-xs text-[#00CC6A]/70 uppercase tracking-widest font-bold mb-0.5">Objetivo do Período</p>
+                                <EditableField path={`goals_data.okrs.${i}.description`} className="text-sm font-semibold text-white leading-snug" placeholder={okr.description} />
                             </div>
-                            <EditableField path={`goals_data.okrs.${i + 1}.objective`} className="text-sm font-bold text-zinc-800 leading-tight" placeholder={okr.objective || okr.kr} />
                         </div>
-                        <div className="divide-y divide-zinc-50">
+                        <div className="grid grid-cols-3 divide-x divide-white/10">
                             {(okr.krs || []).slice(0, 3).map((kr: any, j: number) => (
-                                <div key={j} className="flex items-start gap-2.5 px-4 py-2.5">
-                                    <span className="text-xs font-black uppercase text-zinc-300 mt-0.5 shrink-0 w-10">{kr.label}</span>
-                                    <EditableField path={`goals_data.okrs.${i + 1}.krs.${j}.text`} className="text-xs text-zinc-600 leading-relaxed flex-1" placeholder={kr.text} />
-                                    {kr.target && <span className="text-xs px-1.5 py-0.5 bg-zinc-50 border border-zinc-100 text-zinc-400 font-mono shrink-0">{kr.target}</span>}
+                                <div key={j} className="px-4 py-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-black uppercase tracking-widest text-white/40">{kr.label}</span>
+                                        {kr.target && <span className="text-xs px-1.5 py-0.5 font-mono bg-white/10 text-white/50">{kr.target}</span>}
+                                    </div>
+                                    <EditableField path={`goals_data.okrs.${i}.krs.${j}.text`} className="text-xs text-white/75 leading-relaxed" placeholder={kr.text} multiline />
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
-            </div>
 
-            {/* 12-Month Horizon */}
-            <div className="bg-zinc-950 overflow-hidden">
-                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
-                    <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
-                    <span className="text-xs text-white/50 uppercase tracking-[0.2em] font-semibold">Horizonte de 12 Meses</span>
-                </div>
-                <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
-                    {horizonte12m.map((h, i) => (
-                        <div key={i} className="px-5 py-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <h4 className="text-white font-bold text-sm">{h.title}</h4>
-                                <span className="text-xs text-white/30 uppercase tracking-widest font-mono">{h.subtitle}</span>
+                {/* Secondary OKRs (2x2 grid) */}
+                <div className="grid grid-cols-2 gap-3">
+                    {displayOKRs.slice(1, 5).map((okr: any, i: number) => (
+                        <div key={i} className="border border-zinc-200 bg-white">
+                            <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100">
+                                <div className="w-7 h-7 bg-zinc-100 text-zinc-700 flex items-center justify-center font-black text-xs shrink-0">
+                                    {okr.label || String(i + 1).padStart(2, '0')}
+                                </div>
+                                <EditableField path={`goals_data.okrs.${i + 1}.objective`} className="text-sm font-bold text-zinc-800 leading-tight" placeholder={okr.objective || okr.kr} />
                             </div>
-                            <p className="text-[#00CC6A] text-xs font-bold mb-3">{h.metric}</p>
-                            <div className="space-y-1.5 pt-3 border-t border-white/10">
-                                {h.krs.map((kr, j) => (
-                                    <div key={j} className="flex items-start gap-2">
-                                        <div className="w-1 h-1 rounded-full bg-white/30 shrink-0 mt-1.5" />
-                                        <span className="text-xs text-white/60 leading-snug">{kr}</span>
+                            <div className="divide-y divide-zinc-50">
+                                {(okr.krs || []).slice(0, 3).map((kr: any, j: number) => (
+                                    <div key={j} className="flex items-start gap-2.5 px-4 py-2.5">
+                                        <span className="text-xs font-black uppercase text-zinc-300 mt-0.5 shrink-0 w-10">{kr.label}</span>
+                                        <EditableField path={`goals_data.okrs.${i + 1}.krs.${j}.text`} className="text-xs text-zinc-600 leading-relaxed flex-1" placeholder={kr.text} />
+                                        {kr.target && <span className="text-xs px-1.5 py-0.5 bg-zinc-50 border border-zinc-100 text-zinc-400 font-mono shrink-0">{kr.target}</span>}
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* 12-Month Horizon */}
+                <div className="bg-zinc-950 overflow-hidden">
+                    <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                        <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
+                        <span className="text-xs text-white/50 uppercase tracking-[0.2em] font-semibold">Horizonte de 12 Meses</span>
+                    </div>
+                    <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
+                        {horizonte12m.map((h, i) => (
+                            <div key={i} className="px-5 py-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h4 className="text-white font-bold text-sm">{h.title}</h4>
+                                    <span className="text-xs text-white/30 uppercase tracking-widest font-mono">{h.subtitle}</span>
+                                </div>
+                                <p className="text-[#00CC6A] text-xs font-bold mb-3">{h.metric}</p>
+                                <div className="space-y-1.5 pt-3 border-t border-white/10">
+                                    {h.krs.map((kr, j) => (
+                                        <div key={j} className="flex items-start gap-2">
+                                            <div className="w-1 h-1 rounded-full bg-white/30 shrink-0 mt-1.5" />
+                                            <span className="text-xs text-white/60 leading-snug">{kr}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

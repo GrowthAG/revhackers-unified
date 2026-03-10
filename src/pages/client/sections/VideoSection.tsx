@@ -45,44 +45,32 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
         : '';
 
     return (
-        <div className="relative flex flex-col h-full bg-zinc-950">
-            {/* Grid de fundo */}
-            <div
-                className="absolute inset-0 opacity-[0.025]"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)`,
-                    backgroundSize: '48px 48px'
-                }}
-            />
-
-            {/* Brilho decorativo */}
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#00FF85] rounded-full opacity-[0.04] blur-[120px] pointer-events-none" />
-
+        <div className="relative flex flex-col h-full bg-white">
             <div className="relative z-10 flex flex-col h-full p-8 md:p-12 lg:p-16">
 
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 bg-[#00FF85]/10 flex items-center justify-center rounded-lg">
-                        <Video className="w-5 h-5 text-[#00FF85]" />
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 flex items-center justify-center rounded-xl shadow-sm">
+                        <Video className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white tracking-tight">{label.title}</h2>
-                        <p className="text-xs text-zinc-500">{label.subtitle}</p>
+                        <h2 className="text-2xl font-black text-black tracking-tight">{label.title}</h2>
+                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">{label.subtitle}</p>
                     </div>
                 </div>
 
                 {/* Video Area */}
                 <div className="flex-1 flex flex-col justify-center">
                     {loading ? (
-                        <div className="w-full aspect-video bg-zinc-900 rounded-lg border border-zinc-800 flex items-center justify-center">
+                        <div className="w-full aspect-video bg-zinc-50 rounded-2xl border border-zinc-200 flex items-center justify-center">
                             <div className="flex items-center gap-3 text-zinc-500">
-                                <div className="w-5 h-5 border-2 border-zinc-600 border-t-transparent rounded-full animate-spin" />
-                                <span className="text-sm">Carregando gravação...</span>
+                                <div className="w-4 h-4 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
+                                <span className="text-xs font-bold uppercase tracking-widest">Carregando gravação...</span>
                             </div>
                         </div>
                     ) : embedUrl ? (
-                        <div className="space-y-4">
-                            <div className="w-full aspect-video bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden shadow-2xl shadow-black/40 group hover:border-zinc-700 transition-all duration-500">
+                        <div className="space-y-5">
+                            <div className="w-full aspect-video bg-zinc-100 rounded-2xl border border-zinc-200 overflow-hidden shadow-lg shadow-black/5 transition-all duration-500">
                                 <iframe
                                     src={embedUrl}
                                     className="w-full h-full"
@@ -94,27 +82,27 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                             </div>
 
                             {/* Meeting info */}
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <Play className="w-3.5 h-3.5 text-[#00FF85]" />
-                                    <span className="text-xs text-zinc-400">
+                            <div className="flex items-center justify-between px-2">
+                                <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200">
+                                    <Play className="w-3.5 h-3.5 text-black" />
+                                    <span className="text-xs font-black uppercase tracking-widest text-zinc-700">
                                         {meetingTitle || `${label.title} — ${company}`}
                                     </span>
                                 </div>
                                 {formattedDate && (
-                                    <span className="text-xs text-zinc-600">{formattedDate}</span>
+                                    <span className="text-xs uppercase tracking-widest font-black text-zinc-400">{formattedDate}</span>
                                 )}
                             </div>
                         </div>
                     ) : (
-                        <div className="w-full aspect-video bg-zinc-900/50 rounded-lg border border-dashed border-zinc-800 flex flex-col items-center justify-center gap-4">
-                            <div className="w-16 h-16 bg-zinc-800/50 flex items-center justify-center rounded-full">
-                                <Video className="w-8 h-8 text-zinc-700" />
+                        <div className="w-full aspect-video bg-zinc-50 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center gap-5">
+                            <div className="w-16 h-16 bg-white shadow-sm border border-zinc-200 flex items-center justify-center rounded-full">
+                                <Video className="w-7 h-7 text-zinc-400" />
                             </div>
                             <div className="text-center">
-                                <p className="text-sm text-zinc-500 font-medium">Gravação não disponível</p>
-                                <p className="text-xs text-zinc-600 mt-1">
-                                    A gravação será vinculada automaticamente após a reunião
+                                <p className="text-sm text-black font-black uppercase tracking-widest mb-1.5">Gravação não disponível</p>
+                                <p className="text-xs text-zinc-500 font-medium max-w-xs mx-auto">
+                                    A gravação será processada e vinculada a este painel automaticamente após a finalização da reunião no Google Meet
                                 </p>
                             </div>
                         </div>
@@ -122,10 +110,10 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center gap-2 mt-6 pt-4 border-t border-zinc-800/50">
-                    <div className="w-2 h-2 rounded-full bg-[#00FF85]/40" />
-                    <span className="text-[10px] text-zinc-600 uppercase tracking-[0.2em]">
-                        Gravação Google Meet — {company}
+                <div className="flex items-center gap-2 mt-8 pt-6 border-t border-zinc-200">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span className="text-xs text-zinc-500 font-black uppercase tracking-widest">
+                        Gravação Oficial / {company}
                     </span>
                 </div>
             </div>

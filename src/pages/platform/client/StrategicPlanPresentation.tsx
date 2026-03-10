@@ -100,7 +100,7 @@ import InvestmentSection from './sections/InvestmentSection';
 import NextStepsSection from './sections/NextStepsSection';
 import BenchmarkSection from './sections/BenchmarkSection';
 import VideoSection from './sections/VideoSection';
-import { PlanEditProvider, PlanEditBar } from '@/components/plan/PlanEditContext';
+import { PlanEditProvider, EditToolbar } from '@/components/plan/PlanEditContext';
 
 interface StrategicPlan {
     id: string;
@@ -152,6 +152,16 @@ function statusBadge(status: string) {
     return { label: 'Enviado', cls: 'bg-zinc-100 text-zinc-500 border border-zinc-200' };
 }
 
+function getProjectLabel(pt?: string) {
+    if (pt === 'crm_ops') return 'CRM';
+    if (pt === 'funnels_impl' || pt === 'site') return 'Site';
+    if (pt === 'founder') return 'Founder';
+    if (pt === 'content_seo') return 'SEO';
+    if (pt === 'consulting' || pt === 'full') return 'REI';
+    return 'REI';
+}
+
+
 export default function StrategicPlanPresentation() {
     const { token } = useParams<{ token: string }>();
     const location = useLocation();
@@ -188,12 +198,17 @@ export default function StrategicPlanPresentation() {
     };
 
     const sections = ALL_SECTIONS.filter(s => {
-        if (s.id === 'investment') {
+        if (s.id === 'investment' || s.id === 'projections') {
             const projType = plan?.project_type || 'full';
-            return projType === 'full' || projType === 'content_seo' || !projType;
-        }
-        return true;
-    });
+            return projType === 'full' || projType === 'funnels_impl' || projType === 'content_seo' || !projType;
+            if (s.id === 'persona' || s.id === 'benchmark') {
+                const projType = plan?.project_type || 'full';
+                return projType !== 'crm_ops';
+            }
+            return true;
+        });
+
+    const typeLabel = getProjectLabel(plan?.project_type);
 
     useEffect(() => { loadPlan(); }, [token]);
     useEffect(() => { if (plan && plan.status === 'sent') markAsViewed(); }, [plan?.id]);
@@ -387,7 +402,7 @@ export default function StrategicPlanPresentation() {
                             className="h-6 w-auto mx-auto mb-6"
                         />
                         <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Assinatura Digital</p>
-                        <h1 className="text-xl font-bold text-white">Planejamento Estratégico</h1>
+                        <h1 className="text-xl font-bold text-white">Planejamento Estratégico {typeLabel}</h1>
                         <p className="text-sm text-zinc-400 mt-1">{company}</p>
                     </div>
 
@@ -415,7 +430,7 @@ export default function StrategicPlanPresentation() {
                             {/* Documento referência */}
                             <div className="p-4 bg-zinc-900 border border-zinc-800 mb-6">
                                 <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Documento</p>
-                                <p className="font-semibold text-sm text-white">Planejamento Estratégico — {company}</p>
+                                <p className="font-semibold text-sm text-white">Planejamento Estratégico {typeLabel} — {company}</p>
                                 <p className="text-xs text-zinc-500 font-mono mt-1">
                                     {new Date(plan.created_at).toLocaleDateString('pt-BR')}
                                 </p>
@@ -582,7 +597,7 @@ export default function StrategicPlanPresentation() {
                         <div className="max-w-lg w-full">
                             <h2 className="text-3xl font-black text-zinc-900 mb-2">Aprovação do Planejamento</h2>
                             <p className="text-sm text-zinc-500 mb-10">
-                                Planejamento Estratégico — <strong className="text-zinc-700">{company}</strong>
+                                Planejamento Estratégico {typeLabel} — <strong className="text-zinc-700">{company}</strong>
                                 <span className="text-zinc-300 mx-2">•</span>
                                 {new Date(plan.created_at).toLocaleDateString('pt-BR')}
                             </p>
@@ -690,7 +705,7 @@ export default function StrategicPlanPresentation() {
                 </div>
             ) : (
                 <div className={`plan-presentation min-h-screen bg-white font-sans flex flex-col ${isPlanEditMode ? 'pt-11' : ''}`}>
-                    <PlanEditBar />
+                    <EditToolbar />
 
                     {/* Tela de sucesso pós-assinatura */}
                     {showSuccessOverlay && (
@@ -721,7 +736,7 @@ export default function StrategicPlanPresentation() {
                                     <div className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-200">
                                         <div>
                                             <p className="text-xs text-zinc-400 uppercase tracking-widest">Documento</p>
-                                            <p className="font-semibold text-sm text-black mt-0.5">Planejamento Estratégico — {company}</p>
+                                            <p className="font-semibold text-sm text-black mt-0.5">Planejamento Estratégico {typeLabel} — {company}</p>
                                         </div>
                                         <p className="text-xs text-zinc-400 font-mono">
                                             {new Date(plan.created_at).toLocaleDateString('pt-BR')}

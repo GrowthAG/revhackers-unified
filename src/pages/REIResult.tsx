@@ -208,14 +208,15 @@ export default function REIResult() {
     const type = project.type || 'CONSULTING';
 
     // Labels based on Type
-    const typeValid = (type === 'FOUNDER' || type === 'DEV' || type === 'CONSULTING' || type === 'FUNNEL' || type === 'SITE') ? type : 'CONSULTING';
+    const typeValid = (type.toUpperCase() === 'FOUNDER' || type.toUpperCase() === 'DEV' || type.toUpperCase() === 'CONSULTING' || type.toUpperCase() === 'FUNNEL' || type.toUpperCase() === 'SITE' || type.toUpperCase() === 'CRM_OPS') ? type.toUpperCase() : 'CONSULTING';
 
     const contentMap = {
         FOUNDER: { title: "Founder Authority", label: "Score de Autoridade" },
         DEV: { title: "Tech Audit", label: "Maturidade Digital" },
         CONSULTING: { title: "Revenue Scan", label: "Revenue Score" },
         FUNNEL: { title: "Sales Machine", label: "Eficiência de Funil" },
-        SITE: { title: "Site Performance", label: "Web Vitals Score" }
+        SITE: { title: "Site Performance", label: "Web Vitals Score" },
+        CRM_OPS: { title: "CRM & RevOps", label: "CRM Ops Score" }
     };
     const content = contentMap[typeValid as keyof typeof contentMap];
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Target } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 const formatBRL = (v: number) =>
@@ -74,91 +75,88 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
     const horizonLabel = months === 12 ? '12 meses' : months === 6 ? '6 meses' : `${months} meses`;
 
     return (
-        <div className="space-y-10">
-            {/* Header + KPIs */}
-            <div className="flex items-start justify-between gap-8">
-                <div className="shrink-0">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-6 h-px bg-zinc-900" />
-                        <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Resultados Esperados</span>
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight leading-[1.05]">
-                        Projeção de<br />
-                        <span className="text-zinc-400">Crescimento</span>
-                    </h2>
-                    <p className="text-zinc-500 text-sm mt-3">
-                        Estimativa baseada no diagnóstico e nas médias do segmento — <strong>horizonte de {horizonLabel}</strong>
-                    </p>
-                </div>
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
+                    <SectionHeader
+                        eyebrow="Resultados Esperados"
+                        titleLine1="Projeção de"
+                        titleLine2="Crescimento"
+                        description={`Estimativa baseada no diagnóstico e nas médias do segmento — horizonte de ${horizonLabel}`}
+                    />
 
-                <div className="grid grid-cols-2 gap-3 shrink-0">
-                    {[
-                        { label: `Receita no Mês ${months}`, value: last?.display || formatBRL(95000) },
-                        { label: `Leads no Mês ${months}`, value: `${last?.leads || 340} leads` },
-                        { label: 'Ponto de Equilíbrio', value: months <= 6 ? 'Mês 2 a 3' : 'Mês 3 a 4' },
-                        { label: `Receita no Mês ${Math.floor(months / 2)}`, value: mid?.display || formatBRL(32000) },
-                    ].map((kpi, i) => (
-                        <div key={i} className={`p-4 text-center min-w-32 ${i === 0 ? 'bg-zinc-950 text-white' : 'bg-zinc-100'}`}>
-                            <p className={`text-xl font-bold mb-0.5 ${i === 0 ? 'text-[#00CC6A]' : 'text-black'}`}>{kpi.value}</p>
-                            <p className={`text-xs uppercase tracking-widest leading-tight ${i === 0 ? 'text-white/40' : 'text-zinc-400'}`}>{kpi.label}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Charts */}
-            <div className="grid grid-cols-2 gap-8">
-                {/* MRR Bar Chart */}
-                <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-medium">Receita Mensal Recorrente por Mês</p>
-                        <div className="flex items-center gap-1.5 text-xs text-[#00CC6A]">
-                            <Target className="w-3 h-3" />
-                            <span className="font-semibold">{last?.display}</span>
-                        </div>
-                    </div>
-                    <div className="flex items-end gap-1.5 h-44">
-                        {data.map((d, i) => {
-                            const pct = maxMRR > 0 ? (d.mrr / maxMRR) * 100 : 0;
-                            const isLast = i === data.length - 1;
-                            return (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                                    <span className="text-xs text-zinc-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{d.display}</span>
-                                    <div className="w-full relative flex items-end" style={{ height: '8rem' }}>
-                                        <div className={`w-full transition-all duration-700 ${isLast ? 'bg-zinc-950' : 'bg-zinc-200 group-hover:bg-zinc-400'}`} style={{ height: `${Math.max(pct, 5)}%` }} />
-                                    </div>
-                                    <span className="text-xs text-zinc-400 font-medium">M{i + 1}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div className="h-px bg-zinc-200 mt-1" />
-                </div>
-
-                {/* Leads Pipeline */}
-                <div>
-                    <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-medium mb-4">Pipeline de Leads por Mês</p>
-                    <div className="space-y-2">
-                        {data.map((d, i) => {
-                            const pct = maxLeads > 0 ? (d.leads / maxLeads) * 100 : 0;
-                            const isLast = i === data.length - 1;
-                            return (
-                                <div key={i} className="flex items-center gap-3">
-                                    <span className="text-xs text-zinc-400 w-6 shrink-0 font-mono">M{i + 1}</span>
-                                    <div className="flex-1 h-6 bg-zinc-50 relative overflow-hidden border border-zinc-100">
-                                        <div className={`h-full transition-all duration-700 ${isLast ? 'bg-zinc-950' : 'bg-zinc-200'}`} style={{ width: `${Math.max(pct, 6)}%` }} />
-                                    </div>
-                                    <span className={`text-xs font-mono w-16 text-right shrink-0 ${isLast ? 'font-bold text-black' : 'text-zinc-500'}`}>{d.leads} leads</span>
-                                </div>
-                            );
-                        })}
+                    <div className="grid grid-cols-2 gap-3 shrink-0">
+                        {[
+                            { label: `Receita no Mês ${months}`, value: last?.display || formatBRL(95000) },
+                            { label: `Leads no Mês ${months}`, value: `${last?.leads || 340} leads` },
+                            { label: 'Ponto de Equilíbrio', value: months <= 6 ? 'Mês 2 a 3' : 'Mês 3 a 4' },
+                            { label: `Receita no Mês ${Math.floor(months / 2)}`, value: mid?.display || formatBRL(32000) },
+                        ].map((kpi, i) => (
+                            <div key={i} className={`p-4 text-center min-w-32 ${i === 0 ? 'bg-black text-white rounded-lg shadow-sm' : 'bg-white border border-zinc-200 rounded-lg shadow-sm'}`}>
+                                <p className={`text-xl font-bold mb-0.5 ${i === 0 ? 'text-[#00CC6A]' : 'text-black'}`}>{kpi.value}</p>
+                                <p className={`text-xs font-black uppercase tracking-widest leading-tight ${i === 0 ? 'text-white/60' : 'text-zinc-400'}`}>{kpi.label}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
-            <p className="text-xs text-zinc-300 text-center pt-2">
-                {plan.financial_projections?.note || 'Projeções baseadas em benchmarks de mercado. Resultados reais dependem de execução e contexto específico do projeto.'}
-            </p>
+            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-10">
+
+                {/* Charts */}
+                <div className="grid grid-cols-2 gap-8">
+                    {/* MRR Bar Chart */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-medium">Receita Mensal Recorrente por Mês</p>
+                            <div className="flex items-center gap-1.5 text-xs text-[#00CC6A]">
+                                <Target className="w-3 h-3" />
+                                <span className="font-semibold">{last?.display}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-end gap-2 h-64 mt-4">
+                            {data.map((d, i) => {
+                                const pct = maxMRR > 0 ? (d.mrr / maxMRR) * 100 : 0;
+                                const isLast = i === data.length - 1;
+                                return (
+                                    <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-2 group">
+                                        <span className="text-sm font-bold text-zinc-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{d.display}</span>
+                                        <div className="w-full max-w-[6rem] relative flex items-end flex-1">
+                                            <div className={`w-full transition-all duration-700 rounded-t-lg ${isLast ? 'bg-black shadow-xl shadow-black/20' : 'bg-zinc-200 group-hover:bg-zinc-300'}`} style={{ height: `${Math.max(pct, 5)}%` }} />
+                                        </div>
+                                        <span className={`text-xs font-black uppercase tracking-widest mt-1 ${isLast ? 'text-black' : 'text-zinc-400'}`}>M{i + 1}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className="h-px bg-zinc-200 mt-1" />
+                    </div>
+
+                    {/* Leads Pipeline */}
+                    <div>
+                        <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-medium mb-4">Pipeline de Leads por Mês</p>
+                        <div className="space-y-4 flex flex-col justify-end h-64 mt-4">
+                            {data.map((d, i) => {
+                                const pct = maxLeads > 0 ? (d.leads / maxLeads) * 100 : 0;
+                                const isLast = i === data.length - 1;
+                                return (
+                                    <div key={i} className="flex items-center gap-3 w-full">
+                                        <span className={`text-xs font-black uppercase tracking-widest w-8 text-right shrink-0 ${isLast ? 'text-black' : 'text-zinc-400'}`}>M{i + 1}</span>
+                                        <div className="flex-1 h-6 bg-zinc-50 relative overflow-hidden rounded-r-md">
+                                            <div className={`h-full transition-all duration-700 rounded-r-md ${isLast ? 'bg-black shadow-sm' : 'bg-zinc-200'}`} style={{ width: `${Math.max(pct, 6)}%` }} />
+                                        </div>
+                                        <span className={`text-sm uppercase font-black tracking-widest w-20 shrink-0 ${isLast ? 'text-black' : 'text-zinc-400'}`}>{d.leads} leads</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+
+                <p className="text-xs text-zinc-300 text-center pt-2">
+                    {plan.financial_projections?.note || 'Projeções baseadas em benchmarks de mercado. Resultados reais dependem de execução e contexto específico do projeto.'}
+                </p>
+            </div>
         </div>
     );
 }

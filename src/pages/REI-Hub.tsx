@@ -1,4 +1,4 @@
-import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe, ChevronDown, Loader2, Calendar, Check } from 'lucide-react';
+import { Target, Code, Crown, ArrowRight, ArrowLeft, Database, Globe, ChevronDown, Loader2, Calendar, Check, Zap } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 // ── Type definitions ────────────────────────────────────────────────────
 const REI_TYPES: { value: REIType; label: string; subtitle: string; icon: JSX.Element }[] = [
     { value: 'consulting', label: 'Consultoria 360°', subtitle: 'Diagnóstico completo de receita, operação comercial e Growth.', icon: <Target className="w-4 h-4" /> },
-    { value: 'funnel', label: 'Funnels & CRM', subtitle: 'Funis, automações, CRM e jornada de conversão.', icon: <Database className="w-4 h-4" /> },
+    { value: 'crm_ops', label: 'CRM & RevOps', subtitle: 'Estruturação de CRM, SLA de Vendas e Retenção.', icon: <Database className="w-4 h-4" /> },
+    { value: 'funnel', label: 'Funnels & Automação', subtitle: 'Funis, automações e jornada de conversão.', icon: <Zap className="w-4 h-4" /> },
     { value: 'dev', label: 'Dev Web & Design', subtitle: 'Briefing técnico para sites, LPs e plataformas.', icon: <Code className="w-4 h-4" /> },
     { value: 'site', label: 'Site & Landing Pages', subtitle: 'Presença digital: site institucional, LP de alta conversão.', icon: <Globe className="w-4 h-4" /> },
     { value: 'founder', label: 'Founder Led Sales', subtitle: 'Posicionamento pessoal do fundador como motor de vendas.', icon: <Crown className="w-4 h-4" /> },

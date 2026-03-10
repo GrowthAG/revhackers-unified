@@ -14,6 +14,8 @@ export class ReiScoringService {
                 return this.calculateFounderScore(data);
             case 'dev':
                 return this.calculateDevScore(data);
+            case 'crm_ops':
+                return this.calculateCrmScore(data);
             case 'consulting':
             default:
                 return this.calculateConsultingScore(data);
@@ -147,6 +149,57 @@ export class ReiScoringService {
                 dataScore < 50 ? "Identificamos lacunas na coleta de dados. Sem métricas claras, a tomada de decisão se torna arriscada." : "A infraestrutura de dados existe, agora o foco deve ser em refinar os dashboards para tomada de decisão diária.",
                 peopleScore < 50 ? "A estrutura do time parece enxuta para os objetivos de crescimento. Pode haver gargalos operacionais em breve." : "O dimensionamento da equipe está adequado para sustentar o crescimento projetado a curto prazo.",
                 processScore > 70 ? "Seus processos estão maduros, criando uma base sólida para escalar vendas sem quebrar a operação." : "Processos pouco definidos representam um risco de ruptura se o volume de vendas aumentar rapidamente."
+            ]
+        };
+    }
+
+    private static calculateCrmScore(data: any): ScoreResult {
+        let adoptionScore = 40;
+        let processScore = 40;
+        let dataScore = 30;
+        let automationsScore = 30;
+
+        // 1. CRM Setup Influence
+        const crm = data.crm || "";
+        if (crm.length > 3 && !crm.includes("nao-utilizo")) {
+            adoptionScore += 30;
+            dataScore += 20;
+        }
+
+        // 2. Pain / Challenge Influence
+        const desafios = data.desafios || [];
+        if (desafios.includes("conversao") || desafios.includes("previsibilidade")) {
+            processScore -= 10;
+        }
+        if (desafios.includes("escalar")) {
+            automationsScore -= 5;
+        }
+
+        // 3. Bottleneck Influence
+        const gargalo = data.gargaloFunil || data.gargalo || "";
+        if (gargalo.includes("meio-processo")) processScore -= 15;
+        if (gargalo.includes("dados-cegueira")) dataScore -= 20;
+        if (gargalo.includes("meio-followup")) automationsScore -= 15;
+
+        // 4. Metrics / KPIs Influence
+        const metrics = data.metricas && Array.isArray(data.metricas) ? data.metricas : [];
+        if (metrics.length > 4) dataScore += 30;
+        else if (metrics.length > 2) dataScore += 15;
+
+        const totalScore = Math.round((adoptionScore + processScore + dataScore + automationsScore) / 4);
+
+        return {
+            score: totalScore,
+            radarData: [
+                { label: "ADOÇÃO", value: Math.max(10, Math.min(100, adoptionScore)) },
+                { label: "PROCESSOS", value: Math.max(10, Math.min(100, processScore)) },
+                { label: "DADOS", value: Math.max(10, Math.min(100, dataScore)) },
+                { label: "AUTOMAÇÃO", value: Math.max(10, Math.min(100, automationsScore)) },
+            ],
+            insights: [
+                adoptionScore < 60 ? "A ferramenta não está sendo alimentada corretamente pelo time. O foco inicial deve ser reduzir a fricção de entrada e criar playbooks de uso." : "O time utiliza a ferramenta, agora o foco será enriquecer as propriedades capturadas no pipeline.",
+                dataScore < 50 ? "Identificamos cegueira de dados. Sem métricas rastreáveis, não há como otimizar conversão do meio do funil." : "A base de dados permite criar dashboards avançados para acelerar a previsibilidade de receita.",
+                automationsScore < 60 ? "Excesso de tarefas manuais no follow-up. Implementar fluxos de cadência e alertas liberará tempo produtivo dos vendedores." : "Sua automação base já está rodando, permitindo focar em lógicas complexas de lead scoring e roteamento."
             ]
         };
     }

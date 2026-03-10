@@ -136,76 +136,139 @@ function mapLabels(field: string, ids: string[]): string[] {
 }
 
 export class DiagnosticService {
+    /**
+     * Helper to safely convert incoming form elements that might be strings into Arrays.
+     * Prevents "x.forEach is not a function" crashes.
+     */
+    private static ensureArray(value: any): string[] {
+        if (!value) return [];
+        if (Array.isArray(value)) return value;
+        if (typeof value === 'string') return [value];
+        return [];
+    }
 
-    static generateDiagnosis(response: ReiResponse, marketData?: any): DiagnosticResult {
+    static generateDiagnosis(response: ReiResponse, marketData?: any, projectType?: string): DiagnosticResult {
         const rawResponses = response.responses as Record<string, any>;
         // FIX: REI wizard wraps form data inside responses.form_data
         const answers = rawResponses?.form_data || rawResponses || {};
-        const plan_data = this.generatePlanFromResponse(response, marketData);
+        const plan_data = this.generatePlanFromResponse(response, marketData, projectType);
 
         // --- INTELLIGENCE LAYER (The Voice) ---
-        const segment = answers.segmento || answers.segmento_outro || 'Generalista';
-        const objective = answers.metaCrescimento || answers.objetivoPrincipal || 'Crescimento';
+        const segment = answers.revops_segmento || answers.segmento || answers.segmento_outro || 'Generalista';
+        const objective = answers.metaCrescimento || answers.objetivoPrincipal || (projectType === 'crm_ops' ? 'Eficiência Operacional & Escala' : 'Crescimento');
         const hasCRM = this.checkHasCRM(answers);
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
-        const ticketMedio = answers.ticketMedio || '';
-        const tamanho = answers.tamanho || '';
-        const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
+        const ticketMedio = answers.revops_ticket_medio || answers.ticketMedio || '';
+        const tamanho = answers.revops_tamanho_time || answers.tamanho || '';
+
+        let crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
+        if (projectType === 'crm_ops') {
+            const rawCRM = answers.revops_hub_central;
+            if (rawCRM && rawCRM.toLowerCase() !== 'nenhum' && rawCRM !== 'Não tenho' && rawCRM !== '') {
+                crmName = rawCRM;
+            }
+        }
 
         // 1. Context Mirror (using REAL REI data)
+        const restrictionsText = projectType === 'crm_ops'
+            ? `${tamanho ? `Equipe: ${tamanho}` : 'Tamanho: Não informado'}${ticketMedio ? ` | Ticket: ${ticketMedio}` : ''}`
+            : `Budget: ${budget}${ticketMedio ? ` | Ticket: ${ticketMedio}` : ''}${tamanho ? ` | Equipe: ${tamanho}` : ''}`;
+
         const context_mirror = {
             segment,
             objective,
-            maturity: hasCRM ? `Intermediária (CRM: ${crmName})` : 'Inicial (Sem CRM)',
-            restrictions: `Budget: ${budget}${ticketMedio ? ` | Ticket Médio: ${ticketMedio}` : ''}${tamanho ? ` | Porte: ${tamanho}` : ''}`
+            maturity: hasCRM ? `Intermediária/Avançada (CRM: ${crmName})` : 'Inicial (Sem CRM Central)',
+            restrictions: restrictionsText
         };
 
         // 2. Signals
         const signals: DiagnosticSignal[] = [];
-        if (hasCRM) {
-            signals.push({ id: 's1', type: 'positive', text: 'Infraestrutura de dados existente', impact: 'Permite otimização rápida' });
+        if (projectType === 'crm_ops') {
+            if (hasCRM) {
+                signals.push({ id: 's1', type: 'positive', text: `Arquitetura inicial no ${crmName}`, impact: 'Tech Stack Base Pronta' });
+            } else {
+                signals.push({ id: 's2', type: 'negative', text: 'Operação sem CRM Central/Definido', impact: 'Cegueira sistêmica e vazamentos' });
+            }
+            if (answers.revops_sla_marketing_vendas) {
+                signals.push({ id: 's3', type: 'neutral', text: 'SLA Declarado Mapeado', impact: 'Requer avaliação de adesão no sistema' });
+            } else if (isB2B) {
+                signals.push({ id: 's3', type: 'neutral', text: 'Ciclo B2B Longo', impact: 'Exige forte rastreabilidade multi-touch' });
+            }
         } else {
-            signals.push({ id: 's2', type: 'negative', text: 'Ausência de CRM', impact: 'Cegueira de dados no funil' });
-        }
-        if (isB2B) {
-            signals.push({ id: 's3', type: 'neutral', text: 'Ciclo de Vendas B2B', impact: 'Necessidade de nutrição mais longa' });
+            if (hasCRM) {
+                signals.push({ id: 's1', type: 'positive', text: 'Infraestrutura de dados existente', impact: 'Permite otimização rápida' });
+            } else {
+                signals.push({ id: 's2', type: 'negative', text: 'Ausência de CRM', impact: 'Cegueira de dados no funil' });
+            }
+            if (isB2B) {
+                signals.push({ id: 's3', type: 'neutral', text: 'Ciclo de Vendas B2B', impact: 'Necessidade de nutrição mais longa' });
+            }
         }
 
         // 3. Risks
         const risks: DiagnosticRisk[] = [];
-        if (!hasCRM && objective === 'Escala Agressiva') {
-            risks.push({ id: 'r1', severity: 'high', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar media spend' });
-        }
-        if (budget === 'Baixo' && isB2B) {
-            risks.push({ id: 'r2', severity: 'medium', text: 'Budget insuficiente para Outbound', mitigation: 'Focar em Social Selling orgânico' });
+        if (projectType === 'crm_ops') {
+            if (!hasCRM) {
+                risks.push({ id: 'r1', severity: 'high', text: 'Maturidade de Dados Crítica', mitigation: 'Setup do CRM na semana 1 como marco principal' });
+            }
+            if (answers.revops_pipeline_stagnation) {
+                risks.push({ id: 'r2', severity: 'medium', text: 'SLA de Etapas e Follow-up solto', mitigation: 'Ativar alertas automáticos de SLA no CRM' });
+            } else {
+                risks.push({ id: 'r2', severity: 'medium', text: 'Pipelines Visuais sem Integração', mitigation: 'Mapeamento As-Is e integração de dados de marketing' });
+            }
+        } else {
+            if (!hasCRM && objective === 'Escala Agressiva') {
+                risks.push({ id: 'r1', severity: 'high', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar media spend' });
+            }
+            if (budget === 'Baixo' && isB2B) {
+                risks.push({ id: 'r2', severity: 'medium', text: 'Budget insuficiente para Outbound', mitigation: 'Focar em Social Selling orgânico' });
+            }
         }
 
         // 4. Decisions (Explicability)
         const decisions: StrategicDecision[] = [];
-        decisions.push({
-            title: 'Escolha de Canal',
-            recommendation: isB2B ? 'Foco em LinkedIn & Outbound' : 'Foco em Meta Ads & Google',
-            basedOn: ['Segmento', 'Ticket Médio'],
-            ruleApplied: isB2B ? 'IF B2B THEN Outbound' : 'IF B2C THEN Inbound',
-            implication: isB2B ? 'Necessidade de SDRs' : 'Necessidade de Copywriting forte'
-        });
-
-        if (!hasCRM) {
+        if (projectType === 'crm_ops') {
             decisions.push({
-                title: 'Prioridade de Implementação',
-                recommendation: 'Setup de CRM na Semana 0',
-                basedOn: ['Tech Stack'],
-                ruleApplied: 'NO CRM = BLOCKER',
-                implication: 'Atraso de 1 semana no Go-Live de campanhas'
+                title: 'Design de Governança',
+                recommendation: hasCRM ? `Otimização profunda do ${crmName}` : 'Seleção e Setup de CRM Ágil',
+                basedOn: ['Maturidade Tecnológica (Stack)'],
+                ruleApplied: hasCRM ? `IF EXISTE ${crmName} THEN OTIMIZAR` : 'IF NO_CRM THEN BLOQUEIO PARA MARKETING',
+                implication: hasCRM ? 'Treinamento sobre o novo fluxo visual' : 'Necessidade de onboarding de sistema'
             });
+            decisions.push({
+                title: 'Arquitetura de Dados',
+                recommendation: 'Automação de SLA e Required Fields',
+                basedOn: ['Complexidade e Estágios do Pipeline'],
+                ruleApplied: 'FORÇAR PREENCHIMENTO NO AVANÇO DE ETAPA',
+                implication: 'Vendedores não poderão avançar negócios sem dados.'
+            });
+        } else {
+            decisions.push({
+                title: 'Escolha de Canal',
+                recommendation: isB2B ? 'Foco em LinkedIn & Outbound' : 'Foco em Meta Ads & Google',
+                basedOn: ['Segmento', 'Ticket Médio'],
+                ruleApplied: isB2B ? 'IF B2B THEN Outbound' : 'IF B2C THEN Inbound',
+                implication: isB2B ? 'Necessidade de SDRs' : 'Necessidade de Copywriting forte'
+            });
+
+            if (!hasCRM) {
+                decisions.push({
+                    title: 'Prioridade de Implementação',
+                    recommendation: 'Setup de CRM na Semana 0',
+                    basedOn: ['Tech Stack'],
+                    ruleApplied: 'NO CRM = BLOCKER',
+                    implication: 'Atraso de 1 semana no Go-Live de campanhas'
+                });
+            }
         }
 
+
         // 5. Implementation Steps (Go Live)
-        const implementation_steps = this.generateImplementationSteps(hasCRM, isB2B, objective);
+        const implementation_steps = this.generateImplementationSteps(hasCRM, isB2B, objective, projectType);
 
         return {
-            summary: `Diagnóstico realizado para estratégia ${isB2B ? 'B2B' : 'B2C'}. Foco em: ${objective}.`,
+            summary: `Diagnóstico realizado para estratégia ${projectType === 'crm_ops' ? 'CRM & RevOps' : isB2B ? 'B2B' : 'B2C'}. Foco em: ${objective}.`,
             context_mirror,
             signals,
             risks,
@@ -216,10 +279,43 @@ export class DiagnosticService {
         };
     }
 
-    private static generateImplementationSteps(hasCRM: boolean, isB2B: boolean, objective: string): ImplementationStep[] {
+    private static generateImplementationSteps(hasCRM: boolean, isB2B: boolean, objective: string, projectType?: string): ImplementationStep[] {
         const steps: ImplementationStep[] = [];
 
-        // 1. INFRAESTRUTURA
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            steps.push({
+                category: 'Infraestrutura',
+                title: 'Mapeamento As-Is e Deal Pipelines',
+                description: 'Desenho visual das etapas de vendas, motivos de perda e gargalos atuais do funil de aquisição.',
+                priority: 'Alta',
+                estimated_time: '3 dias'
+            });
+            steps.push({
+                category: 'Infraestrutura',
+                title: 'Design de Propriedades Customizadas',
+                description: 'Criação de campos nativos no CRM para mapear Dados de Qualificação, UTMs, e SLA de Hand-off.',
+                priority: 'Alta',
+                estimated_time: '2 dias'
+            });
+            steps.push({
+                category: 'Automação',
+                title: 'Automação de Roteamento e Hand-off',
+                description: 'Criação de workflows para distribuir leads automaticamente e alertar o time em quebras de SLA.',
+                priority: 'Alta',
+                estimated_time: '4 dias'
+            });
+            steps.push({
+                category: 'Automação',
+                title: 'Treinamento Comercial e Playbooks',
+                description: 'Encontro executivo para Onboarding do time de vendas visando maximizar a adoção sistêmica.',
+                priority: 'Alta',
+                estimated_time: '2 dias'
+            });
+            return steps;
+        }
+
+        // 1. INFRAESTRUTURA (FLUXO PADRÃO)
         if (!hasCRM) {
             steps.push({
                 category: 'Infraestrutura',
@@ -279,7 +375,7 @@ export class DiagnosticService {
     }
 
 
-    static generatePlanFromResponse(response: ReiResponse, marketData?: any): StrategicPlanData {
+    static generatePlanFromResponse(response: ReiResponse, marketData?: any, projectType?: string): StrategicPlanData {
         const rawResponses = response.responses as Record<string, any>;
         // FIX: REI wizard wraps form data inside responses.form_data
         const answers = rawResponses?.form_data || rawResponses || {};
@@ -300,13 +396,13 @@ export class DiagnosticService {
 
         // 2. GENERATE MODULES (ALL receive full answers for real data)
         return {
-            premises_data: this.generatePremises(segment, objective, bottlenecks, answers),
-            methodology_data: this.generateMethodology(isB2B, channels, answers),
-            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData),
-            goals_data: this.generateGoals(objective, growthGoal, answers),
+            premises_data: this.generatePremises(segment, objective, bottlenecks, answers, projectType),
+            methodology_data: this.generateMethodology(isB2B, channels, answers, projectType),
+            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
+            goals_data: this.generateGoals(objective, growthGoal, answers, projectType),
             financial_projections: this.generateProjections(budget, answers),
-            budget_data: this.generateBudget(budget, isB2B, answers),
-            next_steps_data: this.generateNextSteps(hasCRM, answers),
+            budget_data: this.generateBudget(budget, isB2B, answers, projectType),
+            next_steps_data: this.generateNextSteps(hasCRM, answers, projectType),
             market_intelligence: marketData || null
         };
     }
@@ -314,21 +410,21 @@ export class DiagnosticService {
     // --- HELPER LOGIC ---
 
     private static checkHasCRM(answers: any): boolean {
-        const crmValue = (answers.crm || answers.crm_outro || '').toLowerCase().trim();
+        const crmValue = (answers.crm || answers.crm_outro || answers.revops_hub_central || '').toLowerCase().trim();
         if (!crmValue || crmValue === 'nao' || crmValue === 'não' || crmValue === 'nenhum' || crmValue === 'nao_tenho' || crmValue === 'nao tenho' || crmValue === 'não tenho') return false;
         return true;
     }
 
     private static checkIsB2B(answers: any): boolean {
-        const segment = (answers.segmento || answers.segmento_outro || '').toLowerCase();
-        const tamanho = (answers.tamanho || '').toLowerCase();
-        const ticketMedio = (answers.ticketMedio || '').toLowerCase();
-        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || segment.includes('tecnologia') || segment.includes('consultoria') || segment.includes('software') || tamanho.includes('enterprise') || ticketMedio.includes('alto');
+        const segment = (answers.segmento || answers.segmento_outro || answers.revops_segmento || '').toLowerCase();
+        const tamanho = (answers.tamanho || answers.revops_tamanho_time || '').toLowerCase();
+        const ticketMedio = (answers.ticketMedio || answers.revops_ticket_medio || '').toLowerCase();
+        return segment.includes('b2b') || segment.includes('tech') || segment.includes('saas') || segment.includes('tecnologia') || segment.includes('consultoria') || segment.includes('software') || tamanho.includes('ep') || tamanho.includes('enterprise') || ticketMedio.includes('alto');
     }
 
     // --- GENERATORS (ALL use real REI answers) ---
 
-    private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any) {
+    private static generatePremises(segment: string, objective: string, bottleneck: string, answers: any, projectType?: string) {
         const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const hasCRM = this.checkHasCRM(answers);
         const ticketMedio = answers.ticketMedio || '';
@@ -351,6 +447,98 @@ export class DiagnosticService {
         const churnLabels: Record<string, string> = {
             '0-2': '0–2% (excelente)', '2-5': '2–5% (moderado)', '5-10': '5–10% (alto)', 'acima-10': 'Acima de 10% (crítico)',
         };
+
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            const hasPipelines = Array.isArray(answers.revops_custom_pipelines) && answers.revops_custom_pipelines.length > 0;
+            const pipelinesList = hasPipelines
+                ? answers.revops_custom_pipelines.map((p: any) => p.name).join(', ')
+                : 'Pipelines estruturados (SDR / Closer / CS)';
+
+            const hasLostReasons = Array.isArray(answers.revops_lost_reasons) && answers.revops_lost_reasons.length > 0;
+            const lostReasonsCount = hasLostReasons ? answers.revops_lost_reasons.length : 0;
+
+            const contextoItems = [
+                hasPipelines ? `Processos As-Is Mapeados (${answers.revops_custom_pipelines.length} Funis identificados)` : 'Processo de Vendas As-Is Mapeado',
+            ];
+            if (hasCRM) contextoItems.push(`CRM Atual: ${crmName}`);
+            else contextoItems.push('CRM Atual: Não informado / Sem CRM mapeado');
+
+            if (answers.revops_segmento) contextoItems.push(`Segmento B2B: ${answers.revops_segmento}`);
+            if (answers.revops_ticket_medio) contextoItems.push(`Ticket Médio Estimado: ${answers.revops_ticket_medio}`);
+            if (answers.revops_tamanho_time) contextoItems.push(`Time Comercial: ${answers.revops_tamanho_time}`);
+            contextoItems.push(`Objetivo: ${objective}`);
+
+            const operacionalItems = [
+                'Lacunas de rastreamento e atribuição identificadas',
+            ];
+            if (hasLostReasons) {
+                operacionalItems.push(`Catálogo Mapeado: ${lostReasonsCount} motivos de perda (Lost Reasons) customizados`);
+            } else {
+                operacionalItems.push('Catálogo de motivos de perda padronizado');
+            }
+            if (answers.revops_win_loss_analysis) {
+                // Shorten win loss text if too long
+                const winLoss = answers.revops_win_loss_analysis.substring(0, 60).split(':')[0] || 'Governança W/L';
+                operacionalItems.push(`Governança de Win/Loss mapeada: ${winLoss}`);
+            } else {
+                operacionalItems.push('Análise de ciclo e quebra de conversão');
+            }
+            operacionalItems.push('Críterios de Hand-off entre áreas mapeados');
+
+            const arquiteturaItems = [
+                `Arquitetura de Pipelines: ${pipelinesList}`,
+                'Propriedades obrigatórias por estágio e validações',
+            ];
+            if (answers.revops_pipeline_stagnation) {
+                arquiteturaItems.push(`SLA e Estagnação de Pipeline: Definição de ${answers.revops_pipeline_stagnation}`);
+            } else {
+                arquiteturaItems.push('Automações e Gatilhos de Mudança de Fase');
+            }
+            arquiteturaItems.push('Painel de Liderança (Visão executiva) desenhado');
+
+            const crmPillars = [
+                {
+                    name: 'Contexto do Cliente',
+                    icon: 'building',
+                    items: contextoItems
+                },
+                {
+                    name: 'Diagnóstico Operacional',
+                    icon: 'search',
+                    items: operacionalItems
+                },
+                {
+                    name: 'Arquitetura & Governança',
+                    icon: 'settings',
+                    items: arquiteturaItems
+                },
+                {
+                    name: 'Compromissos Mútuos',
+                    icon: 'handshake',
+                    items: [
+                        'Disponibilidade do time para treinamentos operacionais',
+                        'Acessos administrativos às ferramentas fornecidos em 48h',
+                        'Aprovação da arquitetura de pipelines em até 3 dias úteis',
+                        'Comprometimento da liderança com a adoção do sistema'
+                    ]
+                }
+            ];
+
+            // Add context pillar if observacoes or attempts exist
+            if (observacoes || attempts) {
+                const contextItems: string[] = [];
+                if (observacoes) contextItems.push(`Contexto: ${observacoes}`);
+                if (attempts) contextItems.push(`Tentativas Anteriores: ${attempts}`);
+                crmPillars.push({
+                    name: 'Observações do Cliente',
+                    icon: 'message-circle',
+                    items: contextItems,
+                });
+            }
+
+            return { pillars: crmPillars };
+        }
 
         const pillars: any[] = [
             {
@@ -398,15 +586,51 @@ export class DiagnosticService {
         return { pillars };
     }
 
-    private static generateMethodology(isB2B: boolean, currentChannels: string[], answers: any) {
+    private static generateMethodology(isB2B: boolean, currentChannels: string[], answers: any, projectType?: string) {
         const steps = [];
-        const desafios = answers.desafios || [];
+
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            steps.push({
+                phase: '01', tagline: 'Semana 1–2',
+                name: 'Auditoria & Arquitetura As-Is',
+                description: 'Levantamento minucioso do processo de vendas atual, vazamentos de pipeline e lacunas de dados que prejudicam a previsibilidade.',
+                principles: ['Mapeamento do processo de vendas As-Is', 'Auditoria de vazamentos de pipeline', 'Definição de propriedades obrigatórias']
+            });
+            steps.push({
+                phase: '02', tagline: 'Semana 3–4',
+                name: 'Setup de Propriedades e Pipelines',
+                description: 'Configuração dos funis de negócio no CRM, mapeando propriedades essenciais (UTMs, Ticket Médio, Razões de Perda) para governança.',
+                principles: ['Criação do Funil Visual de Vendas', 'Padronização de UTMs e Atribuição', 'Catálogo de motivos de perda']
+            });
+            steps.push({
+                phase: '03', tagline: 'Semana 5–6',
+                name: 'Integrações de Geração de Demanda',
+                description: 'Conexão nativa do CRM com canais de aquisição (Google, Meta Ads, Landing Pages, Whatsapp) eliminando entrada manual.',
+                principles: ['Integração com Landing Pages via API/Webhook', 'Conexão Nativa com Meta/Google Ads Leit', 'Enriquecimento de dados ativado']
+            });
+            steps.push({
+                phase: '04', tagline: 'Semana 7–8',
+                name: 'Automação de Hand-off e SLA',
+                description: 'Workflows para roteamento de leads, alertas de estagnação e tarefas automatizadas reduzindo atrito entre Marketing e Vendas.',
+                principles: ['Passagem de bastão automática SDR para Closer', 'Alertas de estagnação de negócios para gestor', 'Roteamento Round-Robin de novos leads']
+            });
+            steps.push({
+                phase: '05', tagline: 'Semana 9–12',
+                name: 'Adoção Organizacional',
+                description: 'Treinamento direcionado para os executivos focando em redução de cliques diários, painéis de visão e aculturamento data-driven.',
+                principles: ['Treinamento prático com a equipe de vendas', 'Criação de Dashboards individuais de performance', 'Dashboard macro para Diretoria']
+            });
+            return { steps };
+        }
+
+        const desafios = this.ensureArray(answers.desafios);
         const gargaloRaw = answers.gargaloFunil || answers.gargalo || '';
         const gargalo = gargaloRaw === 'outro' ? (answers.gargaloFunil_outro || answers.gargalo_outro || '') : mapLabel('gargaloFunil', gargaloRaw);
         const hasCRM = this.checkHasCRM(answers);
         const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
-        const expectativas = answers.expectativas || [];
-        const areas = answers.areasPrioridade || [];
+        const expectativas = this.ensureArray(answers.expectativas);
+        const areas = this.ensureArray(answers.areasPrioridade);
 
         // Step 1: Based on CRM status
         if (!hasCRM) {
@@ -462,7 +686,7 @@ export class DiagnosticService {
         return { steps };
     }
 
-    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], answers: any, marketData?: any) {
+    private static generateRoadmap(hasCRM: boolean, isB2B: boolean, challenges: string[], answers: any, marketData?: any, projectType?: string) {
         const phases = [];
         const market = marketData || {};
         const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
@@ -481,6 +705,51 @@ export class DiagnosticService {
         const startDate = new Date(now.getTime() + daysOffset * 24 * 60 * 60 * 1000);
         const formatDate = (d: Date) => `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
         const addDays = (d: Date, days: number) => new Date(d.getTime() + days * 24 * 60 * 60 * 1000);
+
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            phases.push({
+                name: 'Ciclo 01',
+                title: `Arquitetura & Setup — ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
+                items: [
+                    'Mapeamento As-Is dos processos de Vendas e Marketing',
+                    'Ajuste ou Criação de Instância CRM Segura',
+                    'Modelagem de Propriedades Customizadas e Razão de Perda',
+                    'Setup do Pipeline de Oportunidades'
+                ]
+            });
+            phases.push({
+                name: 'Ciclo 02',
+                title: `Integrações & Automação — ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 28))}`,
+                items: [
+                    'Integração com Landing Pages, ERPs ou Forms Nativos',
+                    'Roteamento automático Round-Robin ou por Lead Scoring',
+                    'Views Personalizadas de Daily Report para Vendedores',
+                    'Ajustes em Automações de Nurturing Early-Stage'
+                ]
+            });
+            phases.push({
+                name: 'Ciclo 03',
+                title: `Cultural Drive & Onboarding — ${formatDate(addDays(startDate, 29))} a ${formatDate(addDays(startDate, 42))}`,
+                items: [
+                    'Workshops operacionais com a liderança e base comercial',
+                    'Testes de carga com Mocks Reais de Vendas',
+                    'Lançamento Oficial e SLA Hand-Off Definitivo',
+                    'Playbooks operacionais para consulta'
+                ]
+            });
+            phases.push({
+                name: 'Ciclo 04',
+                title: `Dados e Evolução Contínua — a partir de ${formatDate(addDays(startDate, 43))}`,
+                items: [
+                    'Construção de Dashboards de LTV vs CAC Preditivo',
+                    'Monitoramento de Taxa de Conversão por Etapa do Funil',
+                    'Revisão de Qualidade do Dado Inserido pela equipe',
+                    'Refino das Lógicas Avançadas de RevOps'
+                ]
+            });
+            return { phases };
+        }
 
         // Ciclo 01: Embarque & Setup (Semana 1-2)
         const cycle1Items = ['Alinhamento de expectativas e Handoff comercial'];
@@ -565,12 +834,68 @@ export class DiagnosticService {
         return { phases };
     }
 
-    private static generateGoals(objective: string, growthGoal: string, answers: any) {
-        const expectativas = answers.expectativas || [];
-        const areas = answers.areasPrioridade || [];
-        const metricas = answers.metricas || [];
+    private static generateGoals(objective: string, growthGoal: string, answers: any, projectType?: string) {
+        const expectativas = this.ensureArray(answers.expectativas);
+        const areas = this.ensureArray(answers.areasPrioridade);
+        const metricas = this.ensureArray(answers.metricas);
         const cacAtual = answers.cacAtual || '';
         const ltvAtual = answers.ltvAtual || '';
+
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            const okrs = [
+                {
+                    objective: 'Objetivo Estratégico do Período', label: 'O',
+                    description: 'Fundação de Operações Comerciais: Visibilidade, Atribuição e SLA',
+                    krs: [
+                        { label: 'RK 1', text: 'Pipeline de Vendas 100% mapeado e espelhado no CRM', target: 'Sem. 2' },
+                        { label: 'RK 2', text: 'Speed-to-lead (tempo de primeiro contato) reduzido a < 10 minutos', target: 'Mês 2' },
+                        { label: 'RK 3', text: 'Taxa de conversão de Lead para Oportunidade aumentada em 20%', target: 'Mês 3' }
+                    ]
+                },
+                {
+                    objective: 'RK 1 — Higienização e Arquitetura', label: '01',
+                    krs: [
+                        { label: 'RK 1.1', text: 'Auditoria de propriedades e unificação de cadastros concluída', target: 'Sem. 2' },
+                        { label: 'RK 1.2', text: 'Criação de propriedades padronizadas (UTMs, Ticket, Segmento)', target: 'Sem. 3' },
+                        { label: 'RK 1.3', text: 'Migração de histórico (se aplicável) e limpeza de duplicados', target: 'Sem. 4' }
+                    ]
+                },
+                {
+                    objective: 'RK 2 — Captação e Integração', label: '02',
+                    krs: [
+                        { label: 'RK 2.1', text: 'Formulários do site e Landing Pages 100% integrados via API/Webhook', target: 'Mês 1' },
+                        { label: 'RK 2.2', text: 'Entrada de leads automatizada (sem depender de planilhas manuais)', target: 'Mês 1' },
+                        { label: 'RK 2.3', text: 'Enriquecimento de dados de empresas ativado no CRM', target: 'Mês 2' }
+                    ]
+                },
+                {
+                    objective: 'RK 3 — Roteamento e SLA Comercial', label: '03',
+                    krs: [
+                        { label: 'RK 3.1', text: 'Regras de roteamento (Round-robin ou território) ativas', target: 'Mês 2' },
+                        { label: 'RK 3.2', text: 'Alertas automáticos de estagnação de negócios para gestores', target: 'Mês 2' },
+                        { label: 'RK 3.3', text: 'SLA de passagem de bastão (Handoff SDR -> Closer) validado', target: 'Mês 3' }
+                    ]
+                },
+                {
+                    objective: 'RK 4 — Adoção e Relatórios', label: '04',
+                    krs: [
+                        { label: 'RK 4.1', text: '100% dos vendedores utilizando o CRM diariamente', target: 'Mês 2' },
+                        { label: 'RK 4.2', text: 'Dashboard executivo de Vendas operante (Pipeline Velocity, LTV, CAC)', target: 'Mês 3' },
+                        { label: 'RK 4.3', text: 'Painéis individuais de produtividade para cada executivo ativos', target: 'Mês 3' }
+                    ]
+                }
+            ];
+
+            const month1_targets = [
+                { name: 'Setup Base do CRM e Pipelines Visuais', status: 'pending' },
+                { name: 'Integração Nativa de Leads (Eliminar entrada manual)', status: 'pending' },
+                { name: 'Onboarding com equipe comercial para adoção', status: 'pending' },
+                { name: 'Construção da Visão Qualificada em Dashboard Inicial', status: 'pending' }
+            ];
+
+            return { okrs, month1_targets };
+        }
 
         // Map growth goal IDs to readable labels
         const growthLabels: Record<string, string> = {
@@ -730,7 +1055,7 @@ export class DiagnosticService {
         };
     }
 
-    private static generateBudget(budget: string, isB2B: boolean, answers: any) {
+    private static generateBudget(budget: string, isB2B: boolean, answers: any, projectType?: string) {
         const canais = answers.canaisAquisicao || [];
         const hasCRM = this.checkHasCRM(answers);
         const orcamento = answers.orcamento || budget || '';
@@ -751,6 +1076,21 @@ export class DiagnosticService {
 
         // Build channel allocation based on ACTUAL declared channels
         const channels: { name: string; percentage: string; value: string }[] = [];
+
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            channels.push({ name: 'Licenças de Software (CRM, Enriquecimento, Assinaturas)', percentage: '20%', value: fmt(totalBudget * 0.20) });
+            channels.push({ name: 'Implementação e Setup (Horas de Engenharia de Dados)', percentage: '40%', value: fmt(totalBudget * 0.40) });
+            channels.push({ name: 'Consultoria RevOps (Modelagem de Processo As-Is / To-Be)', percentage: '25%', value: fmt(totalBudget * 0.25) });
+            channels.push({ name: 'Treinamento e Capacitação (Playbooks e Enablement Comercial)', percentage: '15%', value: fmt(totalBudget * 0.15) });
+
+            return {
+                annual_budget: budgetLabel,
+                monthly_budget: totalBudget,
+                monthly_budget_formatted: fmt(totalBudget),
+                channels
+            };
+        }
 
         if (!hasCRM) {
             channels.push({ name: 'CRM & Infraestrutura (Prioridade)', percentage: '25%', value: fmt(totalBudget * 0.25) });
@@ -792,12 +1132,24 @@ export class DiagnosticService {
         };
     }
 
-    private static generateNextSteps(hasCRM: boolean, answers: any) {
+    private static generateNextSteps(hasCRM: boolean, answers: any, projectType?: string) {
         const actions = [];
         const crmName = answers.crm === 'outro' ? (answers.crm_outro || 'Outro') : mapLabel('crm', answers.crm || '') || '';
         const prazo = answers.quandoComecar || answers.prazo || '';
         const areas = answers.areasPrioridade || [];
 
+        // ── FLUXO ESPECÍFICO CRM OPS ──
+        if (projectType === 'crm_ops') {
+            actions.push({ day: 'Imediato', action: 'Aprovação do Escopo do Projeto RevOps e SLA Mútuo', done: false });
+            actions.push({ day: 'Imediato', action: 'Assinatura das Licenças da Ferramenta CRM/Automação', done: false });
+            actions.push({ day: 'Dia 1', action: 'Concessão de Acessos Admin (Google Workspace, ERP, CRM Atual)', done: false });
+            actions.push({ day: 'Dia 2', action: 'Kick-off Call: Mapeamento do Processo Comercial AS-IS', done: false });
+            actions.push({ day: 'Dia 3', action: 'Aprovação do Desenho da Arquitetura do Funil / Motivos de Perda', done: false });
+
+            return { week1_actions: actions };
+        }
+
+        // --- FLUXO PADRÃO (GROWTH 360) ---
         actions.push({ day: 'Imediato', action: 'Aprovação do Planejamento Estratégico', done: false });
 
         if (!hasCRM) {

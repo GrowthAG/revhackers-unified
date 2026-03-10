@@ -97,6 +97,16 @@ export const updateREIProject = async (id: string, updates: Partial<REIProject>)
  * DELETAR PROJETO REI
  */
 export const deleteREIProject = async (id: string): Promise<boolean> => {
+    // 1. Delete associated client_documents
+    await supabase.from('client_documents').delete().eq('project_id', id);
+
+    // 2. Delete associated strategic_plans
+    await supabase.from('strategic_plans').delete().eq('rei_project_id', id);
+
+    // 3. Delete associated rei_responses
+    await supabase.from('rei_responses').delete().eq('project_id', id);
+
+    // 4. Finally delete the project
     const { error } = await supabase
         .from('rei_projects')
         .delete()

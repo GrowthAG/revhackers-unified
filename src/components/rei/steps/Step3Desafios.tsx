@@ -174,13 +174,13 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="topo-volume">Topo: Volume baixo de leads (preciso de mais)</SelectItem>
-                            <SelectItem value="topo-qualidade">Topo: Leads chegam desqualificados (lixo)</SelectItem>
-                            <SelectItem value="meio-followup">Meio: Comercial não consegue falar (sem resposta)</SelectItem>
+                            <SelectItem value="topo-volume">Topo: Volume baixo de leads</SelectItem>
+                            <SelectItem value="topo-qualidade">Topo: Leads não têm perfil adequado (desqualificados)</SelectItem>
+                            <SelectItem value="meio-followup">Meio: Dificuldade de contato (baixa taxa de resposta)</SelectItem>
                             <SelectItem value="meio-processo">Meio: Leads estagnados no pipeline (não avançam)</SelectItem>
-                            <SelectItem value="fundo-fechamento">Fundo: Taxa de fechamento baixa (perco p/ concorrência)</SelectItem>
-                            <SelectItem value="pos-churn">Pós-venda: Churn alto / Cliente não vê valor</SelectItem>
-                            <SelectItem value="dados-cegueira">Cegueira de Dados: Não sei onde está o problema</SelectItem>
+                            <SelectItem value="fundo-fechamento">Fundo: Taxa de fechamento abaixo do esperado</SelectItem>
+                            <SelectItem value="pos-churn">Pós-venda: Churn alto / Retenção baixa</SelectItem>
+                            <SelectItem value="dados-cegueira">Dados: Dificuldade de identificar a origem do problema</SelectItem>
                             <SelectItem value="outro">Outro (Especifique)</SelectItem>
                         </SelectContent>
                     </Select>
@@ -211,12 +211,12 @@ export default function Step3Desafios({ form }: Step3Props) {
                             Dor Principal (Descrição Profunda)
                         </Label>
                         <p className="text-xs text-zinc-500">
-                            Não diga apenas "falta de vendas". Descreva o sentimento: frustração com agências, medo de não bater meta, pressão de investidores...
+                            Descreva a sua principal dor além do óbvio. Como isso afeta o dia a dia da operação e os resultados da empresa?
                         </p>
                         <textarea
                             {...form.register('painDescription')}
                             className="w-full min-h-[100px] p-4 border border-zinc-200 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
-                            placeholder="Descreva a dor emocional e prática..."
+                            placeholder="Descreva a dor e os impactos práticos..."
                         />
                     </div>
 
@@ -273,7 +273,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                             Palavras-chave de Intenção (SEO/Ads)
                         </Label>
                         <p className="text-xs text-zinc-500">
-                            O que ele digita no Google ou LinkedIn quando está procurando solução?
+                            Como o seu cliente ideal costuma pesquisar por soluções como a sua?
                         </p>
                         <textarea
                             {...form.register('keywords')}
@@ -293,15 +293,15 @@ export default function Step3Desafios({ form }: Step3Props) {
                     {/* Gap de Processo */}
                     <div className="space-y-3 mb-6">
                         <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                            Qual PROCESSO está quebrado no seu crescimento? *
+                            Qual etapa do seu processo de crescimento apresenta mais gargalos? *
                         </Label>
                         <p className="text-xs text-zinc-500">
-                            Não queremos saber "preciso crescer mais". Queremos saber: qual processo operacional, de vendas, marketing ou produto está te impedindo de escalar?
+                            Descreva qual processo (operacional, de vendas, marketing ou produto) está dificultando a escala da sua operação no momento.
                         </p>
                         <textarea
                             {...form.register('processGap')}
                             className="w-full min-h-[120px] p-4 border border-zinc-300 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
-                            placeholder="Ex: Não temos processo estruturado de vendas. Cada vendedor faz do seu jeito, não temos playbook, não sabemos por que alguns fecham e outros não..."
+                            placeholder="Ex: Não temos processo estruturado de vendas. Cada vendedor tem uma rotina diferente, não temos playbook padronizado..."
                             maxLength={300}
                         />
                         <div className="text-xs text-zinc-400 text-right">
@@ -315,15 +315,15 @@ export default function Step3Desafios({ form }: Step3Props) {
                     {/* Tentativas de Implementação */}
                     <div className="space-y-3 mb-6">
                         <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                            O que você já tentou IMPLEMENTAR e travou? *
+                            O que você já tentou implementar e encontrou dificuldades? *
                         </Label>
                         <p className="text-xs text-zinc-500">
-                            Liste 2-3 iniciativas que você começou mas não conseguiu implementar completamente. O que travou?
+                            Liste 2-3 iniciativas que você começou, mas não conseguiu implementar ou manter com consistência.
                         </p>
                         <textarea
                             {...form.register('implementationAttempts')}
                             className="w-full min-h-[140px] p-4 border border-zinc-300 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
-                            placeholder="Ex: 1. CRM → Compramos mas ninguém usa, dados bagunçados&#10;2. Email nurturing → Criamos 2 emails e paramos, sem processo&#10;3. Onboarding → Sabemos que precisa mas não sabemos por onde começar..."
+                            placeholder="Ex: 1. CRM → Contratamos mas a equipe teve resistência no uso&#10;2. Fluxo de E-mail → Iniciamos mas não mantivemos constância&#10;3. Onboarding → Sabemos que precisa melhorar mas ainda é muito manual..."
                             maxLength={400}
                         />
                         <div className="text-xs text-zinc-400 text-right">
@@ -337,15 +337,15 @@ export default function Step3Desafios({ form }: Step3Props) {
                     {/* Restrição de Execução */}
                     <div className="space-y-3">
                         <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                            O que IMPEDE você de executar o que sabe que precisa fazer? *
+                            Qual o principal obstáculo para a execução dessas melhorias? *
                         </Label>
                         <p className="text-xs text-zinc-500">
-                            Não queremos "falta de tempo". Queremos saber: É falta de conhecimento técnico? Falta de mão de obra? Falta de processo?
+                            Tente ir além de 'falta de tempo'. É uma questão de conhecimento técnico, equipe reduzida ou ausência de processos estruturados?
                         </p>
                         <textarea
                             {...form.register('executionConstraint')}
                             className="w-full min-h-[120px] p-4 border border-zinc-300 focus:border-black transition-colors resize-none text-sm font-mono bg-white"
-                            placeholder="Ex: Sabemos que precisamos estruturar RevOps mas não temos ninguém no time com esse conhecimento. Precisamos de alguém para FAZER com a gente..."
+                            placeholder="Ex: Sabemos que precisamos de uma estrutura de RevOps, mas não temos o conhecimento interno para desenhar os processos integrados..."
                             maxLength={300}
                         />
                         <div className="text-xs text-zinc-400 text-right">

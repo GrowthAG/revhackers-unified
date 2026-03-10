@@ -25,7 +25,8 @@ export default function REIWizardPage() {
 
             try {
                 const project = await getReiProjectById(projectId);
-                setType(project.type as REIType);
+                console.log("[DEBUG REI_WIZ_PAGE] project details fetched:", JSON.stringify(project));
+                setType(project?.type as REIType);
             } catch (error) {
                 console.error('Erro ao carregar projeto:', error);
                 navigate('/rei-hub');

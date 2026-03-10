@@ -168,6 +168,32 @@ export const updateReiProject = async (
  * Isso também deleta todas as respostas associadas (CASCADE)
  */
 export const deleteReiProject = async (id: string): Promise<void> => {
+    // Helper para deletar e ignorar erros de "tabela inexistente" (42P01 / PGRST204)
+    const safeDelete = async (table: string, column: string) => {
+        const { error } = await supabase.from(table).delete().eq(column, id);
+        if (error && error.code !== '42P01' && !error.message?.includes('relation') && !error.message?.includes('does not exist')) {
+            console.warn(`Aviso ao excluir dependência ${table}:`, error.message);
+            // Non-blocking throw. We log to keep tracing but don't strictly halt unless necessary.
+        }
+    };
+
+    // 1. Limpar Documentos do Cliente (se a tabela existir)
+    await safeDelete('client_documents', 'project_id');
+
+    // 2. Limpar Planos Estratégicos
+    await safeDelete('strategic_plans', 'rei_project_id');
+
+    // 3. Limpar Reuniões Associadas ao case
+    await safeDelete('client_meetings', 'rei_project_id'); // Try clean up by project relation if added recently
+
+    // 4. Limpar Respostas do Formulário REI
+    const { error: err3 } = await supabase.from('rei_responses').delete().eq('project_id', id);
+    if (err3 && err3.code !== '42P01' && !err3.message?.includes('relation') && !err3.message?.includes('does not exist')) {
+        console.error('Error deleting rei_responses:', err3);
+        throw new Error(`Dependência bloqueia a exclusão (rei_responses): ${err3.message}`);
+    }
+
+    // 5. Exclusão Final do Projeto Raiz
     const { error } = await supabase
         .from('rei_projects')
         .delete()
@@ -175,7 +201,7 @@ export const deleteReiProject = async (id: string): Promise<void> => {
 
     if (error) {
         console.error('Error deleting REI project:', error);
-        throw error;
+        throw new Error(`A exclusão falhou com erro de Banco de Dados: ${error.message} (Cód: ${error.code})`);
     }
 };
 

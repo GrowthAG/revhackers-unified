@@ -21,6 +21,13 @@ import StepFounderLinkedIn from './steps/StepFounderLinkedIn';
 import StepFounderDeepDive from './steps/StepFounderDeepDive';
 import StepDevTechnical from './steps/StepDevTechnical';
 
+// Import dos Steps CRM Ops Exclusivos
+import StepCrmOps1Context from './steps/StepCrmOps1Context';
+import StepCrmOps2TechStack from './steps/StepCrmOps2TechStack';
+import StepCrmOps3AquisicaoSLA from './steps/StepCrmOps3AquisicaoSLA';
+import StepCrmOps4Execucao from './steps/StepCrmOps4Execucao';
+import StepCrmOps5Retencao from './steps/StepCrmOps5Retencao';
+
 interface REIWizardProps {
     projectId: string;
     type: REIType;
@@ -102,11 +109,44 @@ const wizardSchema = z.object({
     marketingMaterials: z.string().optional(),
 
     // Step 5 (Expectativas - Consulting)
-    expectativas: z.array(z.string()).min(1, 'Selecione pelo menos 1 expectativa'),
-    areasPrioridade: z.array(z.string()).min(1, 'Selecione pelo menos 1 área').max(3, 'Selecione no máximo 3 áreas'),
+    expectativas: z.array(z.string()).min(1, 'Selecione pelo menos 1 expectativa').optional(),
+    areasPrioridade: z.array(z.string()).min(1, 'Selecione pelo menos 1 área').max(3, 'Selecione no máximo 3 áreas').optional(),
     prontidao: z.string().optional(),
     quandoComecar: z.string().optional(),
     observacoes: z.string().optional(),
+
+    // --- CRM OPS FIELDS ---
+    revops_segmento: z.string().optional(),
+    revops_tamanho_time: z.string().optional(),
+    revops_ticket_medio: z.string().optional(),
+    revops_mrr_atual: z.string().optional(),
+    revops_cac_atual: z.string().optional(),
+    revops_sales_cycle_days: z.string().optional(),
+    revops_win_rate: z.string().optional(),
+    revops_hub_central: z.string().optional(),
+    revops_integracoes: z.string().optional(),
+    revops_tech_debt_cost: z.string().optional(),
+    revops_data_hygiene_owner: z.string().optional(),
+    revops_shadow_it_index: z.string().optional(),
+    revops_automacoes_core: z.string().optional(),
+    revops_icp_framework: z.string().optional(),
+    revops_lead_scoring: z.string().optional(),
+    revops_sla_marketing_vendas: z.string().optional(),
+    revops_routing_vip: z.string().optional(),
+    revops_speed_to_lead_sla: z.string().optional(),
+    revops_flow_cadencia: z.string().optional(),
+    revops_pipeline_stagnation: z.string().optional(),
+    revops_economic_buyer_mapped: z.string().optional(),
+    revops_cpq_friction: z.string().optional(),
+    revops_win_loss_analysis: z.string().optional(),
+    revops_forecasting_accuracy: z.string().optional(),
+    revops_onboarding_handoff: z.string().optional(),
+    revops_health_score_tracking: z.string().optional(),
+    revops_expansion_playbook: z.string().optional(),
+    revops_toxic_compensation: z.string().optional(),
+    // Arrays Complexos (Kanban & Lost Reasons)
+    revops_custom_pipelines: z.array(z.any()).optional(),
+    revops_custom_lost_reasons: z.array(z.any()).optional(),
 });
 
 type WizardFormData = z.infer<typeof wizardSchema>;
@@ -151,16 +191,25 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 { id: 'technical', title: 'Tech Briefing', component: StepDevTechnical, fields: ['projectType', 'primaryGoal', 'contentStatus'] },
                 { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
-        } else {
-            // Default: Consulting 360
+        } else if (type === 'crm_ops') {
             return [
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
-                { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho', 'ticketMedio', 'cicloVendas'] },
-                { id: 'desafios', title: 'Desafios & Objetivos', component: Step3Desafios, fields: ['desafios', 'metaCrescimento'] },
-                { id: 'estrategia', title: 'Estratégia Atual', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm', 'marketingMaterials'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
+                { id: 'crm_context', title: 'Contexto B2B', component: StepCrmOps1Context, fields: ['revops_segmento'] },
+                { id: 'crm_tech', title: 'Arquitetura e Stack', component: StepCrmOps2TechStack, fields: ['revops_hub_central'] },
+                { id: 'crm_sla', title: 'Aquisição e SLA', component: StepCrmOps3AquisicaoSLA, fields: ['revops_icp_framework'] },
+                { id: 'crm_exec', title: 'Execução de Vendas', component: StepCrmOps4Execucao, fields: ['revops_flow_cadencia', 'revops_custom_pipelines', 'revops_custom_lost_reasons'] },
+                { id: 'crm_retencao', title: 'Retenção e Expansão', component: StepCrmOps5Retencao, fields: ['revops_onboarding_handoff'] },
             ];
         }
+
+        // Default: Consulting 360
+        return [
+            { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
+            { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho', 'ticketMedio', 'cicloVendas'] },
+            { id: 'desafios', title: 'Desafios & Objetivos', component: Step3Desafios, fields: ['desafios', 'metaCrescimento'] },
+            { id: 'estrategia', title: 'Estratégia Atual', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm', 'marketingMaterials'] },
+            { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
+        ];
     };
 
     const flow = getFlowForType(type);
@@ -257,14 +306,31 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
 
             // 3. Webhook Trigger (Internal REI)
             try {
-                // Prepare a formatted summary for GHL/Email
+                // Prepare a formatted summary for GHL/Email/Notion
                 const formattedSummary = Object.entries(data)
                     .map(([key, value]) => {
                         const label = key.replace(/_/g, ' ').toUpperCase();
-                        const val = Array.isArray(value) ? value.join(', ') : value;
-                        return `${label}: ${val}`;
+
+                        // Handle complex arrays (like pipeline stages or loss reasons mapped in Step 4)
+                        if (Array.isArray(value)) {
+                            // Arrays of primitive strings
+                            if (value.length > 0 && typeof value[0] === 'string') {
+                                return `* ${label}:\n  - ${value.join('\n  - ')}`;
+                            }
+
+                            // Arrays of Objects (like CRM stages, loss reasons mappings)
+                            if (value.length > 0 && typeof value[0] === 'object') {
+                                const listDesc = value.map(v => JSON.stringify(v).replace(/["{}]/g, '').replace(/:/g, ': ')).join('\n  - ');
+                                return `* ${label}:\n  - ${listDesc}`;
+                            }
+
+                            return `* ${label}: (vazio)`;
+                        }
+
+                        // Handle simple strings
+                        return `* ${label}: ${value || 'Não informado'}`;
                     })
-                    .join('\n');
+                    .join('\n\n');
 
                 await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA', {
                     method: 'POST',
@@ -296,6 +362,17 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 console.log("✅ Post-REI enrichment triggered");
             } catch (enrichError) {
                 console.warn("Enrichment trigger failed (non-blocking):", enrichError);
+            }
+
+            // 5. Native Notion Integration
+            try {
+                const { supabase } = await import('@/integrations/supabase/client');
+                await supabase.functions.invoke('sync-notion-project', {
+                    body: { projectId, type, scoreResult, data }
+                });
+                console.log("✅ Custom Notion Webhook triggered");
+            } catch (notionError) {
+                console.error("Notion Webhook failed:", notionError);
             }
 
             // JOIN THE DOTS: Clear persistence
@@ -362,7 +439,8 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                                 type === 'dev' ? 'Dev Web & Design' :
                                     type === 'funnel' ? 'Funnels & Automação' :
                                         type === 'site' ? 'Site Score' :
-                                            'Consultoria 360º'
+                                            type === 'crm_ops' ? 'CRM & RevOps' :
+                                                'Consultoria 360º'
                         }</span>
                     </h1>
                 </div>

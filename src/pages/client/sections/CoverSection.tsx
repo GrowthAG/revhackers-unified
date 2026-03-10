@@ -14,37 +14,27 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
     });
 
     const companyName = client?.company || 'Cliente';
-    const isFunnels = plan.project_type === 'funnels_impl';
+    const pt = plan?.project_type || plan?.diagnostic_data?.submission_type || plan?.diagnostic_data?.enriched_analysis?.submission_type || 'full';
+    let typeLabel = 'REI';
+    if (pt === 'crm_ops' || pt === 'CRM_CS_OPS') typeLabel = 'CRM & RevOps';
+    else if (pt === 'funnels_impl' || pt === 'site') typeLabel = 'Site';
+    else if (pt === 'founder') typeLabel = 'Founder';
+    else if (pt === 'content_seo') typeLabel = 'SEO';
+    else if (pt === 'consulting' || pt === 'full') typeLabel = 'REI';
 
-    const eyebrow = isFunnels ? 'Implementação de Plataforma' : 'Estratégia de Crescimento';
-    const fullTitle = isFunnels ? 'Plano de Implementação Funnels' : 'Planejamento Estratégico de Crescimento';
-    const titleLine1 = isFunnels ? 'Plano de' : 'Planejamento';
-    const titleLine2 = isFunnels ? 'Implementação' : 'Estratégico';
-    const titleLine3 = isFunnels ? 'da Plataforma' : 'de Crescimento';
-    const methodology = isFunnels ? 'Onboarding Orquestrado™' : 'Revenue Engine Intelligence™';
+    const eyebrow = `Protocolo ${typeLabel}`;
+    const fullTitle = `Protocolo ${typeLabel}`;
+    const methodology = 'Revenue Engine Intelligence™';
 
     return (
         <div className="relative flex flex-col h-full bg-zinc-950">
-            {/* Grid background */}
-            <div
-                className="absolute inset-0 opacity-[0.035]"
-                style={{
-                    backgroundImage:
-                        'linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)',
-                    backgroundSize: '48px 48px',
-                }}
-            />
-            {/* Glow effects */}
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#00FF85] rounded-full opacity-[0.055] blur-[120px] pointer-events-none" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#00CC6A] rounded-full opacity-[0.035] blur-[140px] pointer-events-none" />
-
             <div className="relative z-10 flex flex-col h-full p-10 md:p-16 lg:p-20">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <img
                         src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
                         alt="RevHackers"
-                        className="h-9 md:h-11 w-auto brightness-0 invert"
+                        className="h-8 md:h-10 w-auto brightness-0 invert opacity-80"
                     />
                     <span className="text-xs text-zinc-500 uppercase tracking-[0.25em] font-medium">
                         {fullTitle}
@@ -63,30 +53,29 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                         </div>
                     )}
 
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="w-8 h-px bg-[#00FF85]" />
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-8 h-[2px] bg-white/20" />
                         <EditableField
                             path="cover_data.eyebrow"
-                            className="text-xs text-[#00FF85] uppercase tracking-[0.25em] font-semibold"
+                            className="text-xs text-zinc-500 font-black uppercase tracking-widest"
                             placeholder={eyebrow}
                         />
                     </div>
 
-                    <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.0] tracking-tight mb-10 max-w-4xl">
-                        {titleLine1}<br />
-                        <span className="text-[#00FF85]">{titleLine2}</span><br />
-                        {titleLine3}
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight mb-10 max-w-4xl">
+                        <span className="text-white">Planejamento</span><br />
+                        <span className="text-[#00CC6A]">Estratégico</span> <span className="text-white">{typeLabel}</span>
                     </h1>
 
-                    <div className="w-px h-14 bg-zinc-700 mb-10 ml-1" />
+                    <div className="w-[2px] h-10 bg-zinc-800 mb-8 ml-1" />
 
-                    <div className="space-y-2">
-                        <p className="text-zinc-500 text-sm uppercase tracking-[0.2em] font-medium">
+                    <div className="space-y-1">
+                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">
                             Preparado exclusivamente para
                         </p>
                         <EditableField
                             path="cover_data.company_override"
-                            className="text-white text-3xl md:text-4xl font-bold tracking-tight"
+                            className="text-white text-3xl md:text-4xl font-black tracking-tight"
                             placeholder={companyName}
                         />
                     </div>
@@ -95,19 +84,19 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                 {/* Footer */}
                 <div className="flex items-end justify-between pt-8 border-t border-zinc-800">
                     <div className="space-y-1">
-                        <p className="text-xs text-zinc-600 uppercase tracking-[0.2em]">Data</p>
-                        <p className="text-sm text-zinc-400 font-medium">{formattedDate}</p>
+                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Data</p>
+                        <p className="text-xs text-zinc-400 font-bold">{formattedDate}</p>
                     </div>
                     <div className="space-y-1 text-right">
-                        <p className="text-xs text-zinc-600 uppercase tracking-[0.2em]">Metodologia</p>
-                        <p className="text-sm text-zinc-400 font-medium">{methodology}</p>
+                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Metodologia</p>
+                        <p className="text-xs text-zinc-400 font-bold">{methodology}</p>
                     </div>
                 </div>
 
-                <div className="flex gap-1 mt-5">
-                    <div className="h-[2px] flex-1 bg-zinc-800 rounded-full" />
-                    <div className="h-[2px] flex-1 bg-zinc-700 rounded-full" />
-                    <div className="h-[2px] w-20 bg-[#00FF85] rounded-full" />
+                <div className="flex gap-1 mt-6">
+                    <div className="h-[3px] flex-1 bg-zinc-800 rounded-full" />
+                    <div className="h-[3px] flex-1 bg-zinc-900 rounded-full" />
+                    <div className="h-[3px] w-24 bg-white/20 rounded-full" />
                 </div>
             </div>
         </div>

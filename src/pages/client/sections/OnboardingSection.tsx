@@ -1,5 +1,7 @@
 import React from 'react';
 import { User, Zap, Settings, Repeat, Target, ChevronRight } from 'lucide-react';
+import SectionHeader from '@/components/plan/SectionHeader';
+import BowtieFunnel from '@/components/plan/BowtieFunnel';
 
 // ── Onboarding milestones ─────────────────────────────────────────────────
 const milestones = [
@@ -32,170 +34,82 @@ export default function OnboardingSection({ plan }: { plan: any }) {
     const filteredMilestones = milestones.filter(m => m.tipo === 'verdade' || m.tipo === 'review' || m.dia === 'Dia 01' || m.dia === 'Dia 07' || m.dia === 'Dia 21');
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-end justify-between gap-6">
-                <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-4 h-px bg-zinc-900" />
-                        <span className="text-xs text-zinc-400 uppercase tracking-[0.2em]">Metodologia de Entrega</span>
+        <div className="flex flex-col h-full bg-white overflow-hidden w-full">
+            <div className="flex-none p-5 md:p-8 lg:px-12 lg:pt-8 pb-0">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <SectionHeader
+                        eyebrow="Metodologia de Entrega"
+                        titleLine1="Onboarding"
+                        titleLine2="Orquestrado"
+                        description="Baseado na metodologia de Donna Weber: mais de 50% do churn acontece por onboarding deficiente. Cada touchpoint tem dono, prazo e resultado. Sem improvisos."
+                    />
+                    <div className="shrink-0 bg-zinc-950 px-5 py-3 text-right rounded-2xl border border-zinc-800">
+                        <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Ciclo de Entrega</p>
+                        <p className="text-3xl font-black text-[#00CC6A] leading-none mb-0.5">90</p>
+                        <p className="text-[11px] text-white/50 uppercase tracking-widest font-bold">Dias</p>
                     </div>
-                    <h2 className="text-2xl font-bold text-black tracking-tight">
-                        Onboarding <span className="text-zinc-400">Orquestrado</span>
-                    </h2>
-                    <p className="text-xs text-zinc-500 mt-1 max-w-lg leading-relaxed">
-                        Baseado na metodologia de Donna Weber: mais de 50% do churn acontece por onboarding deficiente. Cada touchpoint tem dono, prazo e resultado. Sem improvisos.
-                    </p>
-                </div>
-                <div className="shrink-0 bg-zinc-950 px-4 py-3 text-right">
-                    <p className="text-xs text-zinc-500 uppercase tracking-widest mb-0.5">Ciclo de Entrega</p>
-                    <p className="text-2xl font-black text-[#00CC6A]">90</p>
-                    <p className="text-xs text-white/40 uppercase tracking-widest">Dias</p>
                 </div>
             </div>
 
-            {/* Timeline strip */}
-            <div className="border border-zinc-100 overflow-hidden">
-                <div className="bg-zinc-950 px-4 py-2.5 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#00CC6A] animate-pulse" />
-                    <span className="text-xs text-white/40 uppercase tracking-widest font-medium">Sua Jornada — Do Kickoff à Expansão</span>
-                </div>
-                <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 divide-x divide-zinc-100">
-                    {milestones.map((m, i) => (
-                        <div key={i} className={`p-3 flex flex-col items-center text-center transition-colors group ${m.green ? 'bg-[#00CC6A]/5' : m.tipo === 'review' ? 'bg-zinc-950' : 'bg-white'}`}>
-                            <div className={`text-xs font-black px-2 py-0.5 mb-1.5 w-full text-center ${m.green ? 'bg-[#00CC6A] text-black' : m.tipo === 'review' ? 'bg-zinc-800 text-white/60' : 'bg-zinc-100 text-zinc-500'}`}>{m.dia}</div>
-                            <p className={`text-xs font-bold leading-tight ${m.tipo === 'review' ? 'text-white/70' : 'text-zinc-700'}`}>{m.nome}</p>
-                            {m.green && <div className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] mt-1" />}
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <div className="flex-1 p-5 md:p-8 lg:px-12 lg:pb-8 pt-0 max-w-[1600px] mx-auto w-full flex flex-col justify-center space-y-6">
 
-            {/* Detail cards */}
-            <div className="space-y-2">
-                {filteredMilestones.map((m, i) => (
-                    <div key={i} className={`flex gap-0 overflow-hidden border ${m.green ? 'border-[#00CC6A]/30' : m.tipo === 'review' ? 'border-zinc-900' : 'border-zinc-100'}`}>
-                        <div className={`shrink-0 w-20 flex flex-col items-center justify-center py-4 px-2 text-center ${m.green ? 'bg-[#00CC6A]' : m.tipo === 'review' ? 'bg-zinc-950' : 'bg-zinc-50'}`}>
-                            <span className={`text-xs font-mono uppercase tracking-widest ${m.green ? 'text-black/60' : m.tipo === 'review' ? 'text-zinc-500' : 'text-zinc-400'}`}>{m.dia}</span>
-                            <span className={`text-xs font-black leading-tight mt-0.5 ${m.green ? 'text-black' : m.tipo === 'review' ? 'text-white' : 'text-black'}`}>{m.nome}</span>
-                        </div>
-                        <div className="flex-1 flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-zinc-100">
-                            <div className="flex-1 p-3">
-                                <p className="text-xs text-zinc-500 leading-relaxed">{m.descricao}</p>
+                {/* Gráfico do Funil Gravatinha Customizado para Onboarding */}
+                <BowtieFunnel
+                    eyebrow="Estrutura do Onboarding"
+                    title="Jornada de 90 Dias"
+                    leftLabel="Análise"
+                    leftTitle="Organização & Setup"
+                    centerTitle="Ativação"
+                    rightLabel="Retenção"
+                    rightTitle="Adoção & Sucesso"
+                    bottomLeftTitle="Foco em Arrumar a Casa"
+                    bottomLeftDesc="Diagnosticamos vazamentos de pipeline, arrumamos a casa e montamos a fundação técnica baseada em dados reais."
+                    bottomRightTitle="Foco em Retenção e Tração"
+                    bottomRightDesc="Treinamento, milestones fixos e reviews estruturados para garantir resultados nos primeiros 15 dias e zero dependência no dia 90."
+                />
+
+                {/* Timeline strip */}
+                <div className="border border-zinc-100 overflow-hidden shrink-0 mt-6">
+                    <div className="bg-zinc-950 px-4 py-2 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-[#00CC6A] animate-pulse" />
+                        <span className="text-xs text-white/40 uppercase tracking-widest font-medium">Sua Jornada — Do Kickoff à Expansão</span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 divide-x divide-zinc-100">
+                        {milestones.map((m, i) => (
+                            <div key={i} className={`p-4 flex flex-col items-center justify-center text-center transition-colors group ${m.green ? 'bg-[#00CC6A]/5' : m.tipo === 'review' ? 'bg-zinc-950' : 'bg-white'}`}>
+                                <div className={`text-xs font-black px-3 py-1 mb-2 w-full text-center ${m.green ? 'bg-[#00CC6A] text-black' : m.tipo === 'review' ? 'bg-zinc-800 text-white/60' : 'bg-zinc-100 text-zinc-500'}`}>{m.dia}</div>
+                                <p className={`text-[13px] sm:text-sm font-bold leading-tight ${m.tipo === 'review' ? 'text-white/70' : 'text-zinc-700'}`}>{m.nome}</p>
+                                {m.green && <div className="w-2 h-2 rounded-full bg-[#00CC6A] mt-2" />}
                             </div>
-                            <div className="w-full md:w-64 p-3 bg-zinc-50">
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Você recebe</p>
-                                <p className="text-xs font-semibold text-black leading-snug mb-2">{m.entrega}</p>
-                                <div className="flex items-start gap-1.5">
-                                    <Target className="w-3 h-3 text-[#00CC6A] shrink-0 mt-0.5" />
-                                    <p className="text-xs text-zinc-600 leading-relaxed italic">{m.valor}</p>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Detail cards */}
+                <div className="space-y-2 mt-4 flex-1">
+                    {filteredMilestones.map((m, i) => (
+                        <div key={i} className={`flex gap-0 overflow-hidden border ${m.green ? 'border-[#00CC6A]/30' : m.tipo === 'review' ? 'border-zinc-900' : 'border-zinc-100'}`}>
+                            <div className={`shrink-0 w-24 flex flex-col items-center justify-center py-4 px-3 text-center ${m.green ? 'bg-[#00CC6A]' : m.tipo === 'review' ? 'bg-zinc-950' : 'bg-zinc-50'}`}>
+                                <span className={`text-[11px] font-mono uppercase tracking-widest ${m.green ? 'text-black/60' : m.tipo === 'review' ? 'text-zinc-500' : 'text-zinc-400'}`}>{m.dia}</span>
+                                <span className={`text-[13px] mt-0.5 font-black leading-tight ${m.green ? 'text-black' : m.tipo === 'review' ? 'text-white' : 'text-black'}`}>{m.nome}</span>
+                            </div>
+                            <div className="flex-1 flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-zinc-100">
+                                <div className="flex-1 px-4 py-3 flex items-center">
+                                    <p className="text-[13px] text-zinc-500 leading-snug font-medium">{m.descricao}</p>
+                                </div>
+                                <div className="w-full md:w-72 px-4 py-3 bg-zinc-50/50 flex flex-col justify-center">
+                                    <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Você recebe</p>
+                                    <p className="text-[13px] font-bold text-black leading-snug mb-2">{m.entrega}</p>
+                                    <div className="flex items-start gap-1.5">
+                                        <Target className="w-3.5 h-3.5 text-[#00CC6A] shrink-0 mt-0.5" />
+                                        <p className="text-[12px] text-zinc-600 leading-tight italic">{m.valor}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Phase accumulator */}
-            <div>
-                <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-3">O que você acumula a cada fase</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {phases.map((p, i) => (
-                        <div key={i} className={`border-l-4 ${p.cor} border border-zinc-100 p-3`}>
-                            <div className="flex items-center gap-1.5 mb-2">
-                                <span className="text-xs text-zinc-300 font-mono">{p.numero}</span>
-                                <span className="text-xs font-black uppercase tracking-widest text-black">{p.label}</span>
-                            </div>
-                            <ul className="space-y-1">
-                                {p.itens.map((item, j) => (
-                                    <li key={j} className="flex items-start gap-1.5 text-xs text-zinc-600">
-                                        <div className="w-1 h-1 rounded-full bg-zinc-300 shrink-0 mt-1" />
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
                     ))}
                 </div>
-            </div>
 
-            {/* Guarantees */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {guarantees.map((g, i) => (
-                    <div key={i} className="bg-zinc-950 p-4">
-                        <div className="w-7 h-7 bg-[#00CC6A]/10 border border-[#00CC6A]/20 flex items-center justify-center mb-3 text-[#00CC6A]">{g.icon}</div>
-                        <h4 className="text-xs font-bold text-white mb-1.5">{g.titulo}</h4>
-                        <p className="text-xs text-white/40 leading-relaxed">{g.desc}</p>
-                    </div>
-                ))}
-            </div>
-
-            {/* Day 90 Expansion */}
-            <div className="border border-[#00CC6A]/30 overflow-hidden">
-                <div className="bg-[#00CC6A] px-5 py-3 flex items-center justify-between">
-                    <div>
-                        <p className="text-xs text-black/60 uppercase tracking-widest font-bold">Dia 90 — A Regra de Expansão RevHackers</p>
-                        <h3 className="text-sm font-black text-black">Cada fim de ciclo é o começo do próximo nível</h3>
-                    </div>
-                    <Target className="w-5 h-5 text-black/60 shrink-0" />
-                </div>
-                <div className="bg-zinc-950 p-5">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <p className="text-xs text-[#00CC6A] uppercase tracking-widest font-bold mb-2">O que entregamos no Dia 90</p>
-                            <ul className="space-y-1.5">
-                                {['Playbook completo documentado', 'Relatório de resultado vs. OKRs', 'Mapa de oportunidades de expansão', 'Proposta de próximo ciclo'].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-xs text-white/70"><div className="w-1 h-1 rounded-full bg-[#00CC6A] shrink-0" />{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <p className="text-xs text-[#00CC6A] uppercase tracking-widest font-bold mb-2">Por que expandir faz sentido</p>
-                            <ul className="space-y-1.5">
-                                {['O sistema está funcionando — escalar é mais barato', 'Você já sabe o que funciona — sem curva de aprendizado', 'Cada novo caso de uso multiplica o ROI existente', 'Clientes que renowam crescem 3x mais rápido'].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-xs text-white/70"><div className="w-1 h-1 rounded-full bg-[#00CC6A]/40 shrink-0" />{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="border border-[#00CC6A]/20 p-4 flex flex-col justify-between">
-                            <div>
-                                <p className="text-xs text-[#00CC6A] uppercase tracking-widest font-bold mb-1.5">O que pode vir no Ciclo 2</p>
-                                <ul className="space-y-1">
-                                    {['Novas automações avançadas', 'Novos usuários e sub-times', 'Canais adicionais (WhatsApp, SMS, e-mail)', 'Relatórios personalizados e BI'].map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2 text-xs text-white/50"><ChevronRight className="w-2.5 h-2.5 text-[#00CC6A] shrink-0" />{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <p className="text-xs text-white/30 mt-3 italic">A proposta de expansão é apresentada no Dia 90 — sem pressão, com dados reais do que funcionou.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Commitments */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                    { lado: 'RevHackers', subtitulo: 'O que nos comprometemos', dark: true, itens: ['Primeiro resultado visível até o Dia 15 — sempre', 'Comunicação ativa: sem silêncio por mais de 48h', 'Cada review tem pauta, ata e próximos passos', 'Proposta de expansão apresentada no Dia 90 com dados', 'Entregáveis com qualidade antes do prazo combinado'] },
-                    { lado: 'Sua Equipe', subtitulo: 'O que precisamos de você', dark: false, itens: ['Ponto de contato disponível para aprovações em até 48h', 'Participação nos reviews mensais (mínimo 45 min)', 'Acesso às ferramentas e dados necessários para implementar', 'Feedback honesto sobre o que está e o que não está funcionando', 'Time disponível para treinamento na Semana 3'] },
-                ].map((side, i) => (
-                    <div key={i} className={`border p-4 ${side.dark ? 'bg-zinc-950 border-zinc-900' : 'bg-zinc-50 border-zinc-200'}`}>
-                        <div className="flex items-center gap-2 mb-3">
-                            <User className={`w-3.5 h-3.5 ${side.dark ? 'text-[#00CC6A]' : 'text-zinc-600'}`} />
-                            <div>
-                                <p className={`text-xs uppercase tracking-widest font-black ${side.dark ? 'text-[#00CC6A]' : 'text-zinc-700'}`}>{side.lado}</p>
-                                <p className={`text-xs ${side.dark ? 'text-white/30' : 'text-zinc-400'}`}>{side.subtitulo}</p>
-                            </div>
-                        </div>
-                        <ul className="space-y-1.5">
-                            {side.itens.map((item, j) => (
-                                <li key={j} className={`flex items-start gap-2 text-xs ${side.dark ? 'text-white/60' : 'text-zinc-600'}`}>
-                                    <Target className={`w-3 h-3 shrink-0 mt-0.5 ${side.dark ? 'text-[#00CC6A]' : 'text-zinc-400'}`} />
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
             </div>
         </div>
     );
