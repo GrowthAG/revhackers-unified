@@ -18,6 +18,29 @@ export default function StepCrmOps1Context({ form }: Props) {
                 </p>
             </div>
 
+            {/* Identificação */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="revops_empresa" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Nome da Empresa *</Label>
+                    <Input
+                        {...form.register('revops_empresa')}
+                        id="revops_empresa"
+                        className="bg-white border-zinc-200 text-black h-12"
+                        placeholder="Ex: Tunad, Acme Corp..."
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="revops_email" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">E-mail do Responsável *</Label>
+                    <Input
+                        {...form.register('revops_email')}
+                        id="revops_email"
+                        type="email"
+                        className="bg-white border-zinc-200 text-black h-12"
+                        placeholder="responsavel@empresa.com"
+                    />
+                </div>
+            </div>
+
             {/* Objetivo Principal */}
             <div className="space-y-2">
                 <Label htmlFor="revops_objetivo_principal" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual o principal objetivo desta implementação? *</Label>

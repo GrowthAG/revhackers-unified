@@ -161,58 +161,7 @@ export default function StrategicPlanGenerator() {
         setGenerating(true);
 
         try {
-            // 1. Resolve Client ID (RPC bypass)
-            let clientId = client?.id;
-
-            if (!clientId || clientId === 'legacy-or-missing') {
-                try {
-                    console.log('Buscando cliente pelo email do projeto:', reiProject.client_email);
-                    const { data: existingClient, error: fetchError } = await supabase
-                        .from('clients')
-                        .select('id')
-                        .eq('email', reiProject.client_email)
-                        .maybeSingle();
-
-                    if (fetchError) {
-                        console.warn('Erro ao buscar cliente:', fetchError);
-                    }
-
-                    if (existingClient && existingClient.id) {
-                        clientId = existingClient.id;
-                        console.log('Cliente encontrado com ID:', clientId);
-                    } else {
-                        console.log('Cliente não encontrado. Criando novo cliente lead...');
-                        const { data: newClient, error: createClientError } = await supabase
-                            .from('clients')
-                            .insert({
-                                email: reiProject.client_email,
-                                name: reiProject.client_name || 'Cliente Sem Nome',
-                                company: reiProject.client_company || reiProject.client_name || 'Empresa Nova',
-                                status: 'lead'
-                            })
-                            .select('id')
-                            .single();
-
-                        if (createClientError) {
-                            console.error('Falha crítica ao criar cliente:', createClientError);
-                            // Se falhar a criação, use um fallback UUID para não travar o gerador (apenas para testes locais) ou aborte alertando o usuário.
-                            throw new Error(`Falha ao criar cliente atrelado: ${createClientError.message}`);
-                        }
-
-                        if (newClient) {
-                            clientId = newClient.id;
-                            console.log('Novo cliente criado com ID:', clientId);
-                        }
-                    }
-                } catch (clientCreationCatchError: any) {
-                    console.error('Erro na etapa 1 (Criação de Cliente):', clientCreationCatchError);
-                    alert(`Não foi possível gerar pois houve falha ao atrelar um Perfil de Cliente a este Projeto REI: ${clientCreationCatchError.message}`);
-                    setGenerating(false);
-                    return;
-                }
-            }
-
-            // 2. Intelligence Enrichment
+            // 1. Fetch REI Responses first — needed for email resolution and CRM Ops normalization
             console.log('Fetching latest REI responses...');
             const { data: latestResponse } = await supabase
                 .from('rei_responses')
@@ -232,10 +181,98 @@ export default function StrategicPlanGenerator() {
             // FIX: REI wizard wraps form data inside responses.form_data
             // Legacy responses may have flat structure, so fallback to rawResponses
             const answers = rawResponses?.form_data || rawResponses || {};
-            const segment = answers.revops_segmento || answers.segmento || answers.segmento_outro || 'B2B';
-            const objective = answers.revops_objetivo_principal || answers.metaCrescimento || answers.objetivoPrincipal || (reiProject?.type === 'crm_ops' ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
+
+            // CRM Ops normalization: inject standard camelCase field names alongside revops_* so
+            // DiagnosticService (generateProjections, generateBudget, etc.) reads correct values
+            const isCrmOps = reiProject?.type === 'crm_ops';
+            const normalizedAnswers = isCrmOps ? {
+                ...answers,
+                // Financial metrics — DiagnosticService reads camelCase names
+                mrr: answers.revops_mrr_atual || answers.mrr || '',
+                ticketMedio: answers.revops_ticket_medio || answers.ticketMedio || '',
+                cacAtual: answers.revops_cac_atual || answers.cacAtual || '',
+                taxaChurn: answers.taxaChurn || '',
+                metaCrescimento: 'entre_20_e_50', // RevOps default: operational scale target
+                // Identity
+                segmento: answers.revops_segmento || answers.segmento || '',
+                empresa: answers.revops_empresa || '',
+                nomeEmpresa: answers.revops_empresa || '',
+                email: answers.revops_email || '',
+                // Competitors — DiagnosticService reads concorrente1_nome (snake_case, no prefix)
+                concorrente1_nome: answers.revops_concorrente1_nome || '',
+                concorrente1_site: answers.revops_concorrente1_site || '',
+                concorrente2_nome: answers.revops_concorrente2_nome || '',
+                concorrente2_site: answers.revops_concorrente2_site || '',
+                concorrente3_nome: answers.revops_concorrente3_nome || '',
+                concorrente3_site: answers.revops_concorrente3_site || '',
+            } : answers;
+
+            // diagnosticResponse: latestResponse rebuilt with normalized form_data so
+            // DiagnosticService.generateDiagnosis() reads correct fields for CRM Ops
+            const diagnosticResponse = isCrmOps
+                ? { ...latestResponse, responses: { ...latestResponse.responses, form_data: normalizedAnswers } }
+                : latestResponse;
+
+            // Effective client identity — CRM Ops stores email/company in form, not in rei_projects
+            const effectiveEmail = answers.revops_email || reiProject.client_email;
+            const effectiveCompany = answers.revops_empresa || reiProject.client_company || reiProject.client_name;
+            const effectiveName = reiProject.client_name || answers.revops_empresa || 'Cliente Sem Nome';
+
+            // 2. Resolve Client ID (RPC bypass)
+            let clientId = client?.id;
+
+            if (!clientId || clientId === 'legacy-or-missing') {
+                try {
+                    console.log('Buscando cliente pelo email:', effectiveEmail);
+                    const { data: existingClient, error: fetchError } = await supabase
+                        .from('clients')
+                        .select('id')
+                        .eq('email', effectiveEmail)
+                        .maybeSingle();
+
+                    if (fetchError) {
+                        console.warn('Erro ao buscar cliente:', fetchError);
+                    }
+
+                    if (existingClient && existingClient.id) {
+                        clientId = existingClient.id;
+                        console.log('Cliente encontrado com ID:', clientId);
+                    } else {
+                        console.log('Cliente não encontrado. Criando novo cliente lead...');
+                        const { data: newClient, error: createClientError } = await supabase
+                            .from('clients')
+                            .insert({
+                                email: effectiveEmail,
+                                name: effectiveName,
+                                company: effectiveCompany || effectiveName,
+                                status: 'lead'
+                            })
+                            .select('id')
+                            .single();
+
+                        if (createClientError) {
+                            console.error('Falha crítica ao criar cliente:', createClientError);
+                            throw new Error(`Falha ao criar cliente atrelado: ${createClientError.message}`);
+                        }
+
+                        if (newClient) {
+                            clientId = newClient.id;
+                            console.log('Novo cliente criado com ID:', clientId);
+                        }
+                    }
+                } catch (clientCreationCatchError: any) {
+                    console.error('Erro na etapa 1 (Criação de Cliente):', clientCreationCatchError);
+                    alert(`Não foi possível gerar pois houve falha ao atrelar um Perfil de Cliente a este Projeto REI: ${clientCreationCatchError.message}`);
+                    setGenerating(false);
+                    return;
+                }
+            }
+
+            // 3. Intelligence Enrichment
+            const segment = normalizedAnswers.segmento || normalizedAnswers.segmento_outro || 'B2B';
+            const objective = answers.revops_objetivo_principal || answers.metaCrescimento || answers.objetivoPrincipal || (isCrmOps ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
             console.log('[Generator] answers keys:', Object.keys(answers));
-            console.log('[Generator] segment:', segment, '| Has icpDescription:', !!answers.icpDescription, '| Has concorrentes:', !!answers.concorrentes);
+            console.log('[Generator] segment:', segment, '| isCrmOps:', isCrmOps, '| effectiveEmail:', effectiveEmail);
 
             // Try AI enrichment (non-blocking)
             let enrichmentResult: any = { benchmark: null, personas: null, market: null };
@@ -245,7 +282,7 @@ export default function StrategicPlanGenerator() {
                 console.log('Invoking StrategicEnrichmentService...');
                 const aiResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
                     objective,
-                    rei_responses: answers
+                    rei_responses: normalizedAnswers
                 });
 
                 if (aiResult.error) {
@@ -307,10 +344,11 @@ export default function StrategicPlanGenerator() {
                 : 'Foco em eficiência operacional e decisões baseadas em dados.';
 
             // ── REI-based fallbacks (used when Perplexity AI fails) ───────────
-            // These are built from real client answers — never undefined/hardcoded.
-            const reiFallbackPersonas = DiagnosticService.generatePersonasFromREI(answers);
-            const reiFallbackCompetitors = DiagnosticService.generateBenchmarkFromREI(answers);
-            const reiFallbackTrends = DiagnosticService.generateDefaultTrends(answers);
+            // These are built from real client answers — uses normalizedAnswers so CRM Ops
+            // fields (revops_*) are correctly mapped before DiagnosticService reads them.
+            const reiFallbackPersonas = DiagnosticService.generatePersonasFromREI(normalizedAnswers);
+            const reiFallbackCompetitors = DiagnosticService.generateBenchmarkFromREI(normalizedAnswers);
+            const reiFallbackTrends = DiagnosticService.generateDefaultTrends(normalizedAnswers);
 
             if (!aiSuccess) {
                 console.log(
@@ -375,7 +413,8 @@ export default function StrategicPlanGenerator() {
                 strategic_advice: mappedAdvice,
             };
 
-            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx, reiProject?.type, aiPlanData);
+            // diagnosticResponse: latestResponse with normalized form_data for CRM Ops compatibility
+            const fullDiagnostic = DiagnosticService.generateDiagnosis(diagnosticResponse, marketCtx, reiProject?.type, aiPlanData);
             const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
             // 3. Define Plan Data (only columns that exist in strategic_plans table)
