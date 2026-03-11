@@ -390,7 +390,19 @@ export class DiagnosticService {
             premises_data: aiPlanData?.pillars ? { pillars: aiPlanData.pillars } : this.generatePremises(segment, objective, bottlenecks, answers, projectType),
             methodology_data: aiPlanData?.methodology_steps ? { steps: aiPlanData.methodology_steps } : this.generateMethodology(isB2B, channels, answers, projectType),
             roadmap_data: aiPlanData?.roadmap_phases ? { phases: aiPlanData.roadmap_phases } : this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
-            goals_data: aiPlanData?.okrs ? { okrs: aiPlanData.okrs } : this.generateGoals(objective, growthGoal, answers, projectType),
+            goals_data: aiPlanData?.okrs ? {
+                okrs: aiPlanData.okrs.map((o: any) => ({
+                    ...o,
+                    // AI returns sub_results: string[] — map to krs format GoalsSection expects
+                    krs: Array.isArray(o.sub_results) && o.sub_results.length > 0
+                        ? o.sub_results.map((text: string, j: number) => ({
+                            label: `RK ${j + 1}`,
+                            text,
+                            target: o.timeline || 'Trimestre'
+                        }))
+                        : (o.krs || [])
+                }))
+            } : this.generateGoals(objective, growthGoal, answers, projectType),
             financial_projections: this.generateProjections(budget, answers),
             budget_data: this.generateBudget(budget, isB2B, answers, projectType),
             next_steps_data: this.generateNextSteps(hasCRM, answers, projectType),
