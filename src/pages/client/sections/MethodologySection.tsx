@@ -35,6 +35,29 @@ const defaultSteps = [
     },
 ];
 
+const crmSteps = [
+    {
+        phase: '01', name: 'Diagnóstico & Arquitetura', tagline: 'Semana 1–2',
+        description: 'Toda operação comercial eficiente começa com processos mapeados. Mapeamos os responsáveis, jornada e como o lead flui da atração ao fechamento. Com isso, desenhamos o Blueprint que reflete perfeitamente a sua operação Go-To-Market em vez de tentar amassar o seu processo numa caixa.',
+        principles: ['Entrevistas Diagnósticas com Liderança/Comercial', 'Desenho As-Is (atual) e To-Be (novo processo)', 'Definição de regras e SLAs de MKT/Vendas', 'Blueprint estrutural de todas as propriedades e etapas'],
+    },
+    {
+        phase: '02', name: 'Setup Hardcore do CRM', tagline: 'Semana 3–4',
+        description: 'Transportar o Blueprint para dentro do sistema (HubSpot/Pipedrive). Customizamos campos, formatamos os funis corretos e preparamos a plataforma para ser o ponto central da equipe. Nada de dados perdidos em planilhas.',
+        principles: ['Estruturação do Pipeline Master com regras de validação', 'Matriz de Lost-Reasons atrelada às métricas vitais', 'Rastreamentos (Pixels/Webhooks) conectados às Deals', 'Configuração limpa de relatórios de gestão visual'],
+    },
+    {
+        phase: '03', name: 'Automação & Redução de Atrito', tagline: 'Semana 5–6',
+        description: 'Transformar esforço manual repetitivo em gatilhos automáticos. Reduzimos o trabalho braçal de Vendas criando alertas internos, rodízio inteligente, passagem de bastão instantânea e follow-up base, removendo tarefas robóticas de mentes humanas.',
+        principles: ['Automação de Hand-off (Marketing > SDR > Closer)', 'Notificações de gargalos ou estagnação (Slack/App)', 'Rotinas de Data-Hygiene automáticas ativas', 'Estruturação de sequências comerciais padrão no CRM'],
+    },
+    {
+        phase: '04', name: 'Governança & Adoção', tagline: 'Semana 7–8',
+        description: 'O melhor sistema do mundo não converte se o seu time não preenche direito. Estruturamos os ciclos e garantimos adoção visceral estabelecendo umaWeekly Review de Pipeline oficial onde só um princípio impera: "se não tá no CRM, não existe".',
+        principles: ['Treinamento prático direto com Closers e SDRs', 'Auditoria de consistência e gaps da primeira semana', 'Implementação do Rito de Pipeline Review Semanal', 'Entrega final do SOP e Handover do playbook'],
+    },
+];
+
 // ── Differentials ─────────────────────────────────────────────────────────
 const differentials = [
     { icon: <Settings className="w-5 h-5" />, title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
@@ -43,40 +66,42 @@ const differentials = [
 ];
 
 export default function MethodologySection({ plan }: { plan: any }) {
-    const steps = (plan.methodology_data || {}).steps || [];
-    const displaySteps = steps.length > 0 ? steps : defaultSteps;
+    const isCRM = (plan?.rei_projects?.type || plan?.project_type) === 'crm_ops';
+    
+    // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda.
+    const displaySteps = isCRM ? crmSteps : defaultSteps;
 
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
-            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+            <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
                     eyebrow="Como fazemos"
                     titleLine1="Metodologia"
                     titleLine2="RevHackers™"
                 />
             </div>
-            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white">
+            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-4 w-full bg-white flex flex-col justify-start">
 
                 {/* 4 Phase Cards */}
-                <div className="grid grid-cols-2 gap-4 mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     {displaySteps.map((step: any, i: number) => {
                         const items = step.principles || step.tags || [];
                         return (
-                            <div key={i} className="p-6 bg-white border border-zinc-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <span className="font-mono text-4xl font-black text-zinc-100">
+                            <div key={i} className="p-8 bg-white border border-zinc-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-5 mb-5">
+                                    <span className="font-mono text-[2.75rem] leading-none font-black text-zinc-100">
                                         {step.phase || String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div>
-                                        <p className="text-xs uppercase tracking-widest font-black text-zinc-400">
+                                        <p className="text-[13px] uppercase tracking-widest font-black text-zinc-400">
                                             {step.tagline || ''}
                                         </p>
-                                        <h3 className="text-lg font-bold text-black mt-0.5">
+                                        <h3 className="text-xl md:text-2xl font-bold text-black mt-1 leading-tight">
                                             {step.name}
                                         </h3>
                                     </div>
                                 </div>
-                                <p className="text-sm leading-relaxed mb-6 text-zinc-500">
+                                <p className="text-[15px] leading-relaxed mb-6 text-zinc-500 font-medium">
                                     {step.description}
                                 </p>
                                 {items.length > 0 && (
@@ -99,15 +124,15 @@ export default function MethodologySection({ plan }: { plan: any }) {
                 </div>
 
                 {/* Differentials */}
-                <div className="grid md:grid-cols-3 gap-4 mt-6">
+                <div className="grid md:grid-cols-3 gap-6 mt-8">
                     {differentials.map((d, i) => (
-                        <div key={i} className="p-5 bg-zinc-50 border border-zinc-200 flex gap-3">
-                            <div className="w-8 h-8 bg-black text-white flex items-center justify-center shrink-0">
-                                {cloneElement(d.icon, { className: 'w-4 h-4' })}
+                        <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 rounded-xl shadow-sm">
+                            <div className="w-12 h-12 bg-black text-white flex items-center justify-center shrink-0 rounded-xl shadow-lg shadow-black/20">
+                                {cloneElement(d.icon, { className: 'w-6 h-6' })}
                             </div>
-                            <div>
-                                <h4 className="font-bold text-black text-sm mb-1">{d.title}</h4>
-                                <p className="text-xs text-zinc-500 leading-relaxed">{d.desc}</p>
+                            <div className="pt-2">
+                                <h4 className="font-bold text-black text-[17px] mb-2">{d.title}</h4>
+                                <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">{d.desc}</p>
                             </div>
                         </div>
                     ))}

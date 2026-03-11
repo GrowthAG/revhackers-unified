@@ -69,7 +69,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
 
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
-            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+            <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
                     eyebrow="Base Estratégica"
                     titleLine1="Premissas do"
@@ -77,54 +77,81 @@ export default function PremisesSection({ plan }: { plan: any }) {
                 />
             </div>
 
-            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-5">
+            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full bg-white space-y-8 flex flex-col justify-start">
 
                 {/* 2x2 Grid */}
-                <div className="grid grid-cols-2 gap-3">
-                    {pillars.slice(0, 4).map((pillar: any, i: number) => (
-                        <div
-                            key={i}
-                            className={`group border p-4 transition-all duration-300 ${i === 0 ? 'bg-zinc-950 border-zinc-900' : 'bg-zinc-50 border-zinc-200 hover:border-zinc-900'}`}
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className={`w-7 h-7 flex items-center justify-center ${i === 0 ? 'bg-[#00CC6A] text-black' : 'bg-zinc-950 text-white'}`}>
-                                    {cloneElement(getIcon(pillar.icon || 'target'), { className: 'w-3.5 h-3.5' })}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {pillars.slice(0, 4).map((pillar: any, i: number) => {
+                        const isQuotePillar = pillar.name === 'Observações do Cliente' || pillar.name === 'Dores Originais';
+                        const cardBg = isQuotePillar ? 'bg-white border-zinc-200 border-2 shadow-sm relative overflow-hidden' : 'bg-white border-zinc-200 hover:border-zinc-300 shadow-sm';
+                        const titleColor = 'text-zinc-900';
+                        const iconBg = isQuotePillar ? 'bg-zinc-50 text-[#00CC6A] border border-zinc-200' : (i === 0 ? 'bg-[#00CC6A] text-white border-none' : 'bg-zinc-50 text-zinc-900 border border-zinc-200');
+                        const itemBg = isQuotePillar ? 'bg-zinc-50 border border-zinc-100 mt-2 shadow-sm' : '';
+                        const bulletColor = 'bg-[#00CC6A]';
+                        const textColor = 'text-zinc-600 font-medium';
+
+                        return (
+                            <div
+                                key={i}
+                                className={`group border p-8 rounded-2xl shadow-sm transition-all duration-300 ${cardBg}`}
+                            >
+                                {isQuotePillar && (
+                                     <span className="absolute -top-4 -right-2 text-8xl text-black/5 font-serif leading-none rotate-6 pointer-events-none">"</span>
+                                )}
+
+                                <div className="flex items-center justify-between mb-6 relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 flex items-center justify-center rounded-xl shadow-inner ${iconBg}`}>
+                                            {cloneElement(getIcon(isQuotePillar ? 'message-circle' : pillar.icon || 'target'), { className: 'w-6 h-6' })}
+                                        </div>
+                                        {isQuotePillar && (
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A]">Transcrição Real</span>
+                                        )}
+                                    </div>
+                                    <span className="text-sm font-mono font-black text-zinc-300">
+                                        0{i + 1}
+                                    </span>
                                 </div>
-                                <span className={`text-xs font-mono ${i === 0 ? 'text-zinc-600' : 'text-zinc-300'}`}>
-                                    0{i + 1}
-                                </span>
-                            </div>
 
-                            <h3 className={`text-xs font-bold mb-2 ${i === 0 ? 'text-white' : 'text-black'}`}>
-                                <EditableField
-                                    path={`premises_data.pillars.${i}.name`}
-                                    className={`text-xs font-bold ${i === 0 ? 'text-white' : 'text-black'}`}
-                                    placeholder={pillar.name}
-                                />
-                            </h3>
-
-                            <ul className="space-y-1.5">
-                                {(pillar.items || []).map((item: string, j: number) => (
-                                    <li key={j} className="flex items-start gap-2">
-                                        <div className={`w-1 h-1 rounded-full mt-1.5 shrink-0 ${i === 0 ? 'bg-[#00CC6A]' : 'bg-zinc-900'}`} />
+                                <div className="relative z-10">
+                                    <h3 className={`text-xl font-bold mb-4 leading-tight ${titleColor}`}>
                                         <EditableField
-                                            path={`premises_data.pillars.${i}.items.${j}`}
-                                            className={`text-xs leading-relaxed ${i === 0 ? 'text-zinc-400' : 'text-zinc-600'}`}
-                                            placeholder={item}
+                                            path={`premises_data.pillars.${i}.name`}
+                                            className={`text-xl font-bold w-full truncate`}
+                                            placeholder={pillar.name}
                                         />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                                    </h3>
+
+                                    <ul className="space-y-3">
+                                        {(pillar.items || []).map((item: string, j: number) => (
+                                            <li key={j} className={`flex items-start gap-3 ${isQuotePillar ? `${itemBg} p-4 rounded-xl` : ''}`}>
+                                                <div className={`w-1.5 h-1.5 rounded-full mt-2 shrink-0 ${bulletColor}`} />
+                                                {isQuotePillar ? (
+                                                    <span className="text-xl font-serif italic text-amber-950/90 leading-tight">
+                                                        "{item}"
+                                                    </span>
+                                                ) : (
+                                                    <EditableField
+                                                        path={`premises_data.pillars.${i}.items.${j}`}
+                                                        className={`text-base leading-relaxed ${textColor}`}
+                                                        placeholder={item}
+                                                    />
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* 5 Etapas */}
-                <div className="bg-zinc-950 p-5">
-                    <p className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium mb-4">
+                <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm mt-4">
+                    <p className="text-[11px] text-zinc-400 uppercase tracking-[0.3em] font-black mb-6">
                         Nossa Abordagem em 5 Etapas
                     </p>
-                    <div className="flex gap-0">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-0">
                         {[
                             { number: '01', title: 'Diagnóstico', sub: 'Mapeamento completo' },
                             { number: '02', title: 'Fundação', sub: 'Revenue Stack' },
@@ -134,13 +161,13 @@ export default function PremisesSection({ plan }: { plan: any }) {
                         ].map((step, i, arr) => (
                             <Fragment key={i}>
                                 <div className="flex-1 py-2 px-4 first:pl-0 last:pr-0">
-                                    <span className="text-xs text-zinc-600 font-mono block mb-1">{step.number}</span>
-                                    <h4 className="text-white text-xs font-semibold mb-0.5">{step.title}</h4>
-                                    <p className="text-xs text-zinc-500">{step.sub}</p>
+                                    <span className="text-sm text-zinc-400 font-mono font-black block mb-2">{step.number}</span>
+                                    <h4 className="text-zinc-900 text-base font-bold mb-1">{step.title}</h4>
+                                    <p className="text-sm text-zinc-500 font-medium">{step.sub}</p>
                                 </div>
                                 {i < arr.length - 1 && (
-                                    <div className="flex items-center text-zinc-700 px-1">
-                                        <ChevronRight className="w-3 h-3" />
+                                    <div className="hidden md:flex items-center text-zinc-300 px-2">
+                                        <ChevronRight className="w-5 h-5" />
                                     </div>
                                 )}
                             </Fragment>

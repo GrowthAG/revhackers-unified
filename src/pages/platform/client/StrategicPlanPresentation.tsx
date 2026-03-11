@@ -117,6 +117,7 @@ interface StrategicPlan {
     status: string;
     created_at: string;
     access_token?: string;
+    rei_project_id?: string;
     project_type?: string;
 }
 
@@ -201,12 +202,13 @@ export default function StrategicPlanPresentation() {
         if (s.id === 'investment' || s.id === 'projections') {
             const projType = plan?.project_type || 'full';
             return projType === 'full' || projType === 'funnels_impl' || projType === 'content_seo' || !projType;
-            if (s.id === 'persona' || s.id === 'benchmark') {
-                const projType = plan?.project_type || 'full';
-                return projType !== 'crm_ops';
-            }
-            return true;
-        });
+        }
+        if (s.id === 'persona' || s.id === 'benchmark') {
+            const projType = plan?.project_type || 'full';
+            return projType !== 'crm_ops';
+        }
+        return true;
+    });
 
     const typeLabel = getProjectLabel(plan?.project_type);
 
@@ -246,18 +248,37 @@ export default function StrategicPlanPresentation() {
     async function loadPlan() {
         if (!token) { setLoading(false); return; }
         try {
-            const { data: planData, error } = await supabase
+            const { data: rawPlanData, error } = await supabase
                 .from('strategic_plans')
                 .select('*')
                 .eq('access_token', token)
                 .single();
             if (error) throw error;
-            setPlan(planData);
+            
+            const planData = rawPlanData as any;
+            
+            // Buscar o Client
             if (planData.client_id) {
                 const { data: clientData } = await supabase
                     .from('clients').select('*').eq('id', planData.client_id).single();
                 if (clientData) setClient(clientData);
             }
+
+            // Buscar Project Type da tabela pai se existir ligação (E preencher na RAM)
+            if (planData.rei_project_id) {
+                const { data: projectData } = await supabase
+                    .from('rei_projects')
+                    .select('*')
+                    .eq('id', planData.rei_project_id)
+                    .single();
+                
+                if (projectData && (projectData as any).project_type) {
+                    planData.project_type = (projectData as any).project_type;
+                }
+            }
+
+            setPlan(planData);
+
         } catch (err) {
             console.error('Erro ao carregar plano:', err);
         } finally {

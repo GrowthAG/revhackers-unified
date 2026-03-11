@@ -24,7 +24,7 @@ const SecureBooking = () => {
 
   return (
     <PageLayout>
-      <section className="py-12 bg-black text-white">
+      <section className="pt-32 pb-12 bg-black text-white">
         <div className="container-custom">
           <div className="text-center max-w-4xl mx-auto mb-8">
             <h1 className="text-5xl font-bold leading-tight mb-4">

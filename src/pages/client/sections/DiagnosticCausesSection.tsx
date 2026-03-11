@@ -29,68 +29,17 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
                     eyebrow="Diagnóstico"
-                    titleLine1="Análise"
-                    titleLine2="Estratégica"
-                    description="Contexto, sinais de oportunidade, riscos mapeados e decisões fundamentadas no diagnóstico."
+                    titleLine1="Causa"
+                    titleLine2="Raiz & Riscos"
+                    description="As origens ocultas dos sintomas atuais e o impacto caso não sejam mitigados imediatamente."
                 />
             </div>
             
             
             {/* Corpo do Relatório ocupando 100% da tela disponível (sem max-w restritivo central) */}
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full flex flex-col justify-start gap-8">
-                {/* Context Mirror Modules */}
-                {context && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-zinc-200 overflow-hidden bg-white rounded-2xl shadow-sm">
-                    {[
-                        { label: 'Segmento', value: context.segment },
-                        { label: 'Objetivo Principal', value: context.objective },
-                        { label: 'Maturidade Digital', value: context.maturity },
-                        { label: 'Restrições', value: context.restrictions },
-                    ].map((item, i) => (
-                        <div key={i} className={`p-6 ${i !== 3 ? 'border-b md:border-b-0 md:border-r border-zinc-200' : ''}`}>
-                            <span className="text-xs font-black text-zinc-400 uppercase tracking-widest block mb-2">{item.label}</span>
-                            <p className="text-base font-bold text-zinc-900 leading-snug">{item.value || '—'}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Signals & Risks Intensity Grid - Strict Branding (Dark Cards) */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                
-                {/* Sinais Estratégicos - Master Card */}
-                <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 px-6 py-5 border-b border-zinc-100 bg-zinc-50/50">
-                        <TrendingUp size={20} className="text-[#00CC6A]" />
-                        <h4 className="text-[13px] font-black text-zinc-900 uppercase tracking-[0.2em]">Sinais Estratégicos</h4>
-                    </div>
-                    
-                    <div className="flex flex-col divide-y divide-zinc-100 flex-1">
-                        {signals.map((signal: any, i: number) => {
-                            const isPositive = signal.type === 'positive';
-                            const isNegative = signal.type === 'negative';
-
-                            return (
-                                <div key={i} className="p-6 transition-colors hover:bg-zinc-50/50">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className={`mt-0.5 shrink-0 ${isPositive ? 'text-[#00CC6A]' : isNegative ? 'text-zinc-500' : 'text-zinc-500'}`}>
-                                            {isPositive ? <CheckCircle size={20} /> : isNegative ? <AlertTriangle size={20} /> : <Info size={20} />}
-                                        </div>
-                                        <div>
-                                            <p className="text-lg font-bold text-zinc-900 leading-snug tracking-tight mb-4">
-                                                "{signal.text}"
-                                            </p>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 w-fit shrink-0">Impacto Real</span>
-                                                <p className="text-sm font-medium text-zinc-500 leading-snug">{signal.impact}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+            {/* Risks Intensity Grid */}
+            <div className="max-w-5xl w-full mx-auto">
 
                 {/* Causas Raiz & Riscos - Master Card */}
                 <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
@@ -114,11 +63,11 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         </div>
                                     </div>
                                     
-                                    <div className="flex flex-col gap-2 mt-4 bg-zinc-50 p-5 rounded-xl border border-zinc-100 ml-0 sm:ml-10">
+                                    <div className="flex flex-col gap-2 mt-4 pl-6 md:pl-10 border-l-2 border-[#00CC6A]/30 sm:ml-10">
                                         <span className={`text-[10px] w-fit font-black uppercase tracking-widest block mb-1 ${isHigh ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>
                                             Estratégia de Mitigação
                                         </span>
-                                        <p className="text-[15px] font-semibold text-zinc-600 leading-relaxed">
+                                        <p className="text-[15px] font-medium text-zinc-600 leading-relaxed">
                                             {risk.mitigation}
                                         </p>
                                     </div>

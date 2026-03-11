@@ -28,7 +28,7 @@ export default function SectionHeader({
             <h2 className={`text-3xl md:text-[2.75rem] font-black tracking-tight leading-[1.05] mb-2 flex items-center justify-center gap-3 ${light ? 'text-white' : 'text-black'}`}>
                 {titleLine1}
                 {titleLine2 && (titleLine2 === 'RevHackers™' || titleLine2 === 'RevHackers') ? (
-                    <img src="https://assets.cdn.filesafe.space/oFTw9DcsKRUj6xCiq4mb/media/67f6fe8fd496febea9a9ad8e.png" alt="RevHackers" className="h-7 md:h-9 object-contain" />
+                    <img src="https://assets.cdn.filesafe.space/oFTw9DcsKRUj6xCiq4mb/media/67f6fe8fd496febea9a9ad8e.png" alt="RevHackers" className="h-[72px] md:h-[90px] lg:h-[110px] shrink-0 object-contain ml-4 mt-1" />
                 ) : (
                     titleLine2 && <span className={light ? 'text-zinc-400' : 'text-zinc-400'}>{titleLine2}</span>
                 )}

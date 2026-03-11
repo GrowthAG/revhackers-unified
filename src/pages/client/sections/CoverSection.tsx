@@ -6,6 +6,13 @@ interface CoverSectionProps {
     client: any;
 }
 
+// Utilitário para limpar Razões Sociais e manter apenas o Nome Fantasia
+const cleanCompanyName = (name: string) => {
+    if (!name) return 'Cliente';
+    // Remove sufixos jurídicos comuns no Brasil/EUA usando limites de palavras
+    return name.replace(/\b(LTDA\.?|S\.?A\.?|S\/A|ME|EPP|EI|EIRELI|INC\.?|LLC\.?|LTD\.?)\b/gi, '').trim();
+};
+
 export default function CoverSection({ plan, client }: CoverSectionProps) {
     const formattedDate = new Date(plan.created_at).toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -13,10 +20,10 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
         year: 'numeric',
     });
 
-    const companyName = client?.company || 'Cliente';
-    const pt = plan?.project_type || plan?.diagnostic_data?.submission_type || plan?.diagnostic_data?.enriched_analysis?.submission_type || 'full';
+    const companyName = cleanCompanyName(client?.company);
+    const pt = plan?.rei_projects?.type || plan?.project_type || plan?.diagnostic_data?.submission_type || plan?.diagnostic_data?.enriched_analysis?.submission_type || 'full';
     let typeLabel = 'REI';
-    if (pt === 'crm_ops' || pt === 'CRM_CS_OPS') typeLabel = 'CRM & RevOps';
+    if (pt === 'crm_ops' || pt === 'CRM_CS_OPS') typeLabel = 'CRM';
     else if (pt === 'funnels_impl' || pt === 'site') typeLabel = 'Site';
     else if (pt === 'founder') typeLabel = 'Founder';
     else if (pt === 'content_seo') typeLabel = 'SEO';

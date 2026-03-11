@@ -40,50 +40,52 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             {/* Context Mirror Modules */}
             {context && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-zinc-200 overflow-hidden bg-white">
                     {[
                         { label: 'Segmento', value: context.segment },
                         { label: 'Objetivo Principal', value: context.objective },
                         { label: 'Maturidade Digital', value: context.maturity },
                         { label: 'Restrições', value: context.restrictions },
                     ].map((item, i) => (
-                        <div key={i} className="bg-zinc-950 border border-zinc-200 p-6 rounded-xl hover:border-zinc-400 transition-all group">
-                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] block mb-2">{item.label}</span>
-                            <p className="text-base font-bold text-white">{item.value || '—'}</p>
+                        <div key={i} className={`p-6 ${i !== 3 ? 'border-b md:border-b-0 md:border-r border-zinc-200' : ''}`}>
+                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block mb-1">{item.label}</span>
+                            <p className="text-[13px] font-bold text-zinc-900 leading-snug">{item.value || '—'}</p>
                         </div>
                     ))}
                 </div>
             )}
 
             {/* Signals & Risks Intensity Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-zinc-200 overflow-hidden bg-white">
                 {/* Sinais Estratégicos */}
-                <div className="space-y-4">
-                    <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                        <TrendingUp size={14} /> Sinais Estratégicos
-                    </h4>
-                    <div className="space-y-3">
+                <div className="border-b md:border-b-0 md:border-r border-zinc-200">
+                    <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-2">
+                        <TrendingUp size={14} className="text-zinc-400" />
+                        <h4 className="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Sinais Estratégicos</h4>
+                    </div>
+                    <div className="divide-y divide-zinc-100">
                         {signals.map((signal: any, i: number) => (
-                            <div key={i} className="p-5 bg-white border border-zinc-200 rounded-xl hover:shadow-sm transition-all">
-                                <p className="text-sm font-bold text-zinc-900 mb-1">{signal.text}</p>
-                                <p className="text-xs text-zinc-400">{signal.impact}</p>
+                            <div key={i} className="p-6">
+                                <p className="text-[13px] font-bold text-zinc-900 mb-1">{signal.text}</p>
+                                <p className="text-xs text-zinc-500">{signal.impact}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Análise de Riscos */}
-                <div className="space-y-4">
-                    <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                        <AlertTriangle size={14} /> Análise de Riscos
-                    </h4>
-                    <div className="space-y-3">
+                <div>
+                     <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200 flex items-center gap-2">
+                        <AlertTriangle size={14} className="text-amber-500" />
+                        <h4 className="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Análise de Riscos</h4>
+                    </div>
+                    <div className="divide-y divide-zinc-100">
                         {risks.map((risk: any, i: number) => (
-                            <div key={i} className="p-5 bg-white border border-zinc-200 rounded-xl hover:shadow-sm transition-all">
-                                <p className="text-sm font-bold text-zinc-900 mb-2">{risk.text}</p>
-                                <div className="flex items-center gap-2 pt-2 border-t border-zinc-100">
-                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Mitigação:</span>
-                                    <span className="text-xs text-zinc-500">{risk.mitigation}</span>
+                            <div key={i} className="p-6">
+                                <p className="text-[13px] font-bold text-zinc-900 mb-2">{risk.text}</p>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 rounded-sm">Mitigação</span>
+                                    <span className="text-xs text-zinc-600 leading-tight">{risk.mitigation}</span>
                                 </div>
                             </div>
                         ))}
@@ -93,17 +95,22 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             {/* Decisions Banner */}
             {decisions.length > 0 && (
-                <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-zinc-900">Decisões Mandatórias</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                        <span className="w-8 h-[2px] bg-black" />
+                        DECISÕES MANDATÓRIAS
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-zinc-200 bg-white overflow-hidden">
                         {decisions.map((decision: any, i: number) => (
-                            <div key={i} className="bg-white border border-zinc-200 p-6 rounded-xl hover:shadow-md transition-all">
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">{decision.basedOn?.join(' + ')}</span>
-                                <h4 className="text-base font-bold text-zinc-900 mb-2">{decision.title}</h4>
-                                <p className="text-sm text-zinc-500 leading-relaxed">{decision.recommendation}</p>
+                            <div key={i} className={`p-6 flex flex-col justify-between ${i !== 2 ? 'border-b md:border-b-0 md:border-r border-zinc-200' : ''}`}>
+                                <div>
+                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block mb-2">{decision.basedOn?.join(' + ')}</span>
+                                    <h4 className="text-[13px] font-bold text-zinc-900 mb-2 leading-tight">{decision.title}</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed mb-4">{decision.recommendation}</p>
+                                </div>
                                 {decision.ruleApplied && (
-                                    <div className="mt-4 pt-3 border-t border-zinc-100">
-                                        <span className="text-[9px] font-bold text-[#00CC6A] uppercase tracking-widest">{decision.ruleApplied}</span>
+                                    <div className="pt-3 border-t border-zinc-100">
+                                        <span className="text-[9px] font-bold text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-1 rounded-sm uppercase tracking-widest block w-fit">{decision.ruleApplied}</span>
                                     </div>
                                 )}
                             </div>

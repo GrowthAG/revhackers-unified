@@ -34,9 +34,9 @@ export default function BowtieFunnel({
                 <h3 className="text-2xl font-black text-black">{title}</h3>
             </div>
 
-            <div className="relative max-w-5xl mx-auto flex items-stretch justify-center h-[300px]">
+            <div className="relative max-w-5xl mx-auto flex items-stretch justify-center min-h-[250px] md:h-[300px]">
                 {/* Lado Esquerdo */}
-                <div className="flex-1 flex flex-col justify-between items-end relative" style={{ clipPath: 'polygon(0 0, 100% 40%, 100% 60%, 0 100%)', backgroundColor: '#f4f4f5' }}>
+                <div className="flex-1 flex flex-col justify-between items-end relative" style={{ clipPath: 'polygon(0 0, 100% 25%, 100% 75%, 0 100%)', backgroundColor: '#f4f4f5' }}>
                     <div className="absolute inset-0 flex flex-col justify-center items-center pr-12">
                         <span className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">{leftLabel}</span>
                         <span className="text-sm font-bold text-black">{leftTitle}</span>
@@ -44,15 +44,15 @@ export default function BowtieFunnel({
                 </div>
 
                 {/* Centro: O Nó */}
-                <div className="w-16 bg-black z-10 flex items-center justify-center transform scale-y-110 shadow-xl rounded-sm">
-                    <span className="text-white text-[10px] uppercase font-black tracking-widest -rotate-90 whitespace-nowrap">{centerTitle}</span>
+                <div className="w-16 h-36 md:h-44 self-center bg-black z-10 flex items-center justify-center shadow-2xl rounded-sm">
+                    <span className="text-white text-xs uppercase font-black tracking-widest -rotate-90 whitespace-nowrap">{centerTitle}</span>
                 </div>
 
                 {/* Lado Direito */}
-                <div className="flex-1 flex flex-col justify-between items-start relative" style={{ clipPath: 'polygon(0 40%, 100% 0, 100% 100%, 0 60%)', backgroundColor: '#00FF85' }}>
+                <div className="flex-1 flex flex-col justify-between items-start relative" style={{ clipPath: 'polygon(0 25%, 100% 0, 100% 100%, 0 75%)', backgroundColor: '#00FF85' }}>
                     <div className="absolute inset-0 flex flex-col justify-center items-center pl-12">
                         <span className="text-xs font-black uppercase tracking-widest text-black/60 mb-1">{rightLabel}</span>
-                        <span className="text-sm font-bold text-black">{rightTitle}</span>
+                        <span className="text-sm font-bold text-black text-center">{rightTitle}</span>
                     </div>
                 </div>
             </div>

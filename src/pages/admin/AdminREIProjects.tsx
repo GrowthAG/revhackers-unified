@@ -29,6 +29,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from "@/components/ui/checkbox";
 
+// Utilitário para limpar Razões Sociais e manter apenas o Nome Fantasia
+const cleanCompanyName = (name: string) => {
+    if (!name) return 'Cliente';
+    return name.replace(/\b(LTDA\.?|S\.?A\.?|S\/A|ME|EPP|EI|EIRELI|INC\.?|LLC\.?|LTD\.?)\b/gi, '').trim();
+};
+
 const AdminREIProjects = () => {
     const { projects, loading, error, refetch } = useReiProjects();
     const { toast } = useToast();
@@ -164,8 +170,8 @@ const AdminREIProjects = () => {
                                             onCheckedChange={(checked) => handleSelectAll(!!checked)}
                                         />
                                     </TableHead>
-                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Cliente</TableHead>
-                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Empresa</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Empresa (Fantasia)</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Contato</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Tipo</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Status</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Período</TableHead>
@@ -193,10 +199,10 @@ const AdminREIProjects = () => {
                                                 />
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{project.client_name}</div>
+                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{cleanCompanyName(project.client_company || project.client_name)}</div>
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_company || '-'}</div>
+                                                <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_name || '-'}</div>
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest">

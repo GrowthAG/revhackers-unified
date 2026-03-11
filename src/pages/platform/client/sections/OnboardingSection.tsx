@@ -85,7 +85,7 @@ export default function OnboardingSection({ plan }: { plan: any }) {
                                         {items.map((item: string, j: number) => (
                                             <li key={j} className="flex items-start gap-2 text-sm text-zinc-700">
                                                 <CheckCircle2 className="w-4 h-4 text-zinc-300 mt-0.5 flex-shrink-0" />
-                                                <span>{item}</span>
+                                                <span>{typeof item === 'string' ? item : (item as any)?.task || (item as any)?.item || JSON.stringify(item)}</span>
                                             </li>
                                         ))}
                                     </ul>

@@ -14,12 +14,21 @@ serve(async (req) => {
     try {
         const payload = await req.json();
         const { projectId, type, data } = payload;
+        // Extract env variables and strictly format as UUIDs for Notion Endpoint
+        const formatNotionId = (id: string | undefined): string => {
+            if (!id) return '';
+            const cleanId = id.replace(/-/g, '');
+            if (cleanId.length === 32) {
+                return `${cleanId.substring(0, 8)}-${cleanId.substring(8, 12)}-${cleanId.substring(12, 16)}-${cleanId.substring(16, 20)}-${cleanId.substring(20, 32)}`;
+            }
+            return id;
+        };
 
         // 2. Fetch Secrets
-        const notionApiKey = Deno.env.get('NOTION_API_KEY');
-        const dbClientsId = Deno.env.get('NOTION_DB_CLIENTS');
-        const dbSprintsId = Deno.env.get('NOTION_DB_SPRINTS');
-        const dbTasksId = Deno.env.get('NOTION_DB_TASKS');
+        const notionApiKey = Deno.env.get('NOTION_API_KEY')?.trim() || '';
+        const dbClientsId = formatNotionId(Deno.env.get('NOTION_DB_CLIENTS')?.trim());
+        const dbSprintsId = formatNotionId(Deno.env.get('NOTION_DB_SPRINTS')?.trim());
+        const dbTasksId = formatNotionId(Deno.env.get('NOTION_DB_TASKS')?.trim());
 
         if (!notionApiKey) {
             throw new Error('As váriaveis de Integração do Notion não foram configuradas.');
@@ -55,38 +64,47 @@ serve(async (req) => {
         const clientEmail = data.email || `temp-${projectId}@client.com`;
         const companyName = data.company_name || data.client_company || `Cliente (Pendente Nome) - ${projectId}`; // No nosso REI às vezes o nome via da base de projects 
 
-        // Busca se já existe um cliente
-        let clientPageId = '';
+        // Array para coletar erros
+        const syncErrors: string[] = [];
 
-        // 1.1 Se o banco Cliente Existir
-        if (dbClientsId) {
-            const searchClients = await notionPost(`/databases/${dbClientsId}/query`, {
-                filter: {
-                    property: "Nome", // ATENÇÃO: Supomos que a coluna de nome no quadro de Clientes se chama "Nome"
-                    title: {
-                        contains: companyName
+        // Helper universal para tentar propriedades de Título customizadas (bypass do Notion)
+        const createPageWithFallback = async (dbId: string, titleProps: string[], titleContent: string, extraPayload: any = {}) => {
+            let lastErr: any;
+            for (const prop of titleProps) {
+                try {
+                    const payload = {
+                        parent: { database_id: dbId },
+                        properties: { [prop]: { title: [{ text: { content: titleContent } }] } },
+                        ...extraPayload
+                    };
+                    return await notionPost('/pages', payload);
+                } catch (e: any) {
+                    lastErr = e;
+                    // Se o erro for de propriedade não encontrada, prossegue para a próxima tentativa do array
+                    if (e.message?.includes('not a property that exists') || e.message?.includes('validation_error')) {
+                        continue;
                     }
+                    // Se a database inteira não existir, interrompe o fallback imediatamente, pois não vai funfar com nenhuma prop
+                    throw e;
                 }
-            });
+            }
+            throw new Error(`As propriedades [${titleProps.join(', ')}] não foram encontradas na Base ${dbId}. Erro Notion Final: ${lastErr?.message}`);
+        };
 
-            if (searchClients.results && searchClients.results.length > 0) {
-                clientPageId = searchClients.results[0].id;
-                console.log(`Cliente encontrado: ${clientPageId}`);
-            } else {
-                // Cria novo cliente
-                console.log(`Criando novo Cliente...`);
-                const newClient = await notionPost('/pages', {
-                    parent: { database_id: dbClientsId },
-                    properties: {
-                        "Name": { // Try standard 'Name' first
-                            title: [{ text: { content: companyName } }]
-                        },
-                        "Status": {
-                            select: { name: "Ativo" } // Based on the screenshot "Ativo" is a status
-                        }
-                    }
-                });
+        // Cria novo cliente diretamente
+        let clientPageId = '';
+        if (dbClientsId) {
+            console.log(`Criando novo Cliente...`);
+            try {
+                const newClient = await createPageWithFallback(
+                    dbClientsId,
+                    ["Nome", "Name", "Cliente", "Projeto", "Company", "Title", "Empresa"],
+                    companyName
+                );
                 clientPageId = newClient.id;
+            } catch (e: any) {
+                console.error("Falha fatal ao criar cliente novo:", e);
+                syncErrors.push(`Cliente Error: ${e.message}`);
             }
         }
 
@@ -95,30 +113,19 @@ serve(async (req) => {
         // ==========================================
         let sprintPageId = '';
         if (dbSprintsId) {
-            console.log(`Criando nova Sprint (Onboarding 90)...`);
+            console.log(`Criando nova Sprint...`);
             const sprintName = `${companyName.toUpperCase()} - Sprint 1 (Onboarding)`;
-            const newSprintPayload: any = {
-                parent: { database_id: dbSprintsId },
-                properties: {
-                    "Name": { // Presumindo nome padrão
-                        title: [{ text: { content: sprintName } }]
-                    },
-                    "Status": {
-                        select: { name: "Ativo" } // Baseado na cor AZUL do print
-                    }
-                }
-            };
-
-            // Linkar com o cliente se a relation (Relation) existir
-            if (clientPageId) {
-                // Nome padrão da property que liga Sprint com Cliente (no print está listado embaixo de REVHACKER - pode ser "Cliente" ou "Projetos")
-                newSprintPayload.properties["Cliente"] = {
-                    relation: [{ id: clientPageId }]
-                };
+            try {
+                const newSprint = await createPageWithFallback(
+                    dbSprintsId,
+                    ["Sprint", "Sprints", "Nome", "Name", "Projeto", "Title"],
+                    sprintName
+                );
+                sprintPageId = newSprint.id;
+            } catch (e: any) {
+                console.error("Erro ao criar Sprint:", e);
+                syncErrors.push(`Sprint Error: ${e.message}`);
             }
-
-            const newSprint = await notionPost('/pages', newSprintPayload);
-            sprintPageId = newSprint.id;
         }
 
 
@@ -197,28 +204,26 @@ serve(async (req) => {
                 });
             }
 
-            const newTaskPayload: any = {
-                parent: { database_id: dbTasksId },
-                properties: {
-                    "Tarefa": { // Nome da coluna Tarefa do print "Tarefas por Status"
-                        title: [{ text: { content: taskTitle } }]
-                    },
-                    "Status": {
-                        status: { name: "Backlog" } // Usa a property Status vermelho Backlog do Notion
-                    }
-                },
-                children: childrenBlocks
-            };
-
-            if (clientPageId) {
-                newTaskPayload.properties["Cliente"] = { relation: [{ id: clientPageId }] };
+            try {
+                const extraPayload = { children: childrenBlocks };
+                const newTask = await createPageWithFallback(
+                    dbTasksId,
+                    ["Tarefa", "Name", "Nome", "Task", "Title", "Projeto"],
+                    taskTitle,
+                    extraPayload
+                );
+                console.log(`Task criada com sucesso: ${newTask.id}`);
+            } catch (e: any) {
+                console.error("Erro absoluto ao criar Task:", e);
+                syncErrors.push(`Task Error: ${e.message}`);
             }
-            if (sprintPageId) {
-                newTaskPayload.properties["Sprints"] = { relation: [{ id: sprintPageId }] }; // Linka com a task da Sprint
-            }
+        }
 
-            const newTask = await notionPost('/pages', newTaskPayload);
-            console.log(`Task criada com sucesso: ${newTask.id}`);
+        if (syncErrors.length > 0) {
+            return new Response(
+                JSON.stringify({ error: 'Partial or total failure linking with Notion', details: syncErrors }),
+                { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+            );
         }
 
         return new Response(

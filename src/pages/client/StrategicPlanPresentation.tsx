@@ -2,19 +2,26 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanEditProvider } from '@/components/plan/PlanEditContext';
-import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2 } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb } from 'lucide-react';
 import { EditToolbar } from '@/components/plan/PlanEditContext';
+import { QRCodeSVG } from 'qrcode.react';
 
 // Section imports
 import CoverSection from './sections/CoverSection';
-import DiagnosticSection from './sections/DiagnosticSection';
+import DiagnosticSymptomsSection from './sections/DiagnosticSymptomsSection';
+import DiagnosticCausesSection from './sections/DiagnosticCausesSection';
+import ThesisSection from './sections/ThesisSection';
 import PremisesSection from './sections/PremisesSection';
 import PersonaSection from './sections/PersonaSection';
 import BenchmarkSection from './sections/BenchmarkSection';
 import MethodologySection from './sections/MethodologySection';
 import GoalsSection from './sections/GoalsSection';
-import RoadmapSection from './sections/RoadmapSection';
-import OnboardingSection from './sections/OnboardingSection';
+import RoadmapMacroSection from './sections/RoadmapMacroSection';
+import OnboardingKickoffSection from './sections/OnboardingKickoffSection';
+import OnboardingSetupSection from './sections/OnboardingSetupSection';
+import OnboardingTrainingSection from './sections/OnboardingTrainingSection';
+import OnboardingAdoptionSection from './sections/OnboardingAdoptionSection';
+import OnboardingHandoverSection from './sections/OnboardingHandoverSection';
 import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
 import ApprovalSection from './sections/ApprovalSection';
@@ -23,13 +30,19 @@ import ApprovalSection from './sections/ApprovalSection';
 const NAV_SECTIONS = [
     { id: 'cover', name: 'Capa', icon: <FileText className="w-4 h-4" /> },
     { id: 'premises', name: 'Premissas', icon: <Target className="w-4 h-4" /> },
-    { id: 'diagnostic', name: 'Diagnóstico', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'diagnostic_causes', name: 'Causa Raiz', icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: 'thesis', name: 'Tese de Crescimento', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'persona', name: 'Persona', icon: <Users className="w-4 h-4" /> },
     { id: 'benchmark', name: 'Análise de Mercado', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'methodology', name: 'Metodologia', icon: <Settings className="w-4 h-4" /> },
     { id: 'goals', name: 'Metas e Indicadores', icon: <Target className="w-4 h-4" /> },
-    { id: 'roadmap', name: 'Plano de Ação', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding', name: 'Primeiros 90 Dias', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'roadmap_macro', name: 'Marcos do Projeto', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_kickoff', name: 'Alinhamento & Kickoff', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_setup', name: 'Setup & Arquitetura', icon: <Settings className="w-4 h-4" /> },
+    { id: 'onboarding_training', name: 'Treinamento & Go-Live', icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'onboarding_adoption', name: 'Adoção & Mapeamento', icon: <Target className="w-4 h-4" /> },
+    { id: 'onboarding_handover', name: 'Handover & Escala', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'projections', name: 'Projeções', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'investment', name: 'Investimento', icon: <DollarSign className="w-4 h-4" />, optional: true },
     { id: 'approval', name: 'Aprovação', icon: <Check className="w-4 h-4" /> },
@@ -43,12 +56,12 @@ function getStatusBadge(status: string) {
 }
 
 function getProjectLabel(pt?: string) {
-    if (pt === 'crm_ops') return 'CRM & RevOps';
-    if (pt === 'funnels_impl' || pt === 'site') return 'Site';
+    if (pt === 'crm_ops') return 'Máquina de Vendas';
+    if (pt === 'funnels_impl' || pt === 'site') return 'Site & Funil';
     if (pt === 'founder') return 'Founder';
     if (pt === 'content_seo') return 'SEO';
-    if (pt === 'consulting' || pt === 'full') return 'REI';
-    return 'REI';
+    if (pt === 'consulting' || pt === 'full') return 'Estratégico';
+    return 'Estratégico';
 }
 
 
@@ -96,7 +109,7 @@ export default function StrategicPlanPresentation() {
 
     // Filter sections based on project type
     const sections = NAV_SECTIONS.filter(s => {
-        const pt = plan?.project_type || 'full';
+        const pt = plan?.rei_projects?.type || 'full';
 
         if (s.id === 'investment' || s.id === 'projections') {
             return pt === 'full' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
@@ -165,7 +178,7 @@ export default function StrategicPlanPresentation() {
     async function loadPlan() {
         if (!token) { setLoading(false); return; }
         try {
-            const { data, error } = await supabase.from('strategic_plans').select('*').eq('access_token', token).single();
+            const { data, error } = await supabase.from('strategic_plans').select('*, rei_projects(type)').eq('access_token', token).single();
             if (error) throw error;
             setPlan(data);
             if (data.client_id) {
@@ -245,47 +258,77 @@ export default function StrategicPlanPresentation() {
     const isApproved = plan.status === 'approved';
     const isRejected = plan.status === 'revision_requested';
     const badge = getStatusBadge(plan.status || 'sent');
-    const typeLabel = getProjectLabel(plan?.project_type);
+    const typeLabel = getProjectLabel(plan?.rei_projects?.type || plan?.project_type);
+    
+    // Gerar URL do QR Code (garante que puxe a url base certa e adicione ?sign=1 para disparar o modal no celular)
+    const signUrl = `${window.location.origin}/plan/${token}?sign=1`;
 
     // ── Section renderer ───────────────────────────────────────────────────
     const renderSection = () => {
         switch (currentSectionId) {
             case 'cover': return <CoverSection plan={plan} client={client} />;
-            case 'diagnostic': return <DiagnosticSection plan={plan} />;
+            case 'diagnostic_symptoms': return <DiagnosticSymptomsSection plan={plan} />;
+            case 'diagnostic_causes': return <DiagnosticCausesSection plan={plan} />;
+            case 'thesis': return <ThesisSection plan={plan} />;
             case 'premises': return <PremisesSection plan={plan} />;
             case 'persona': return <PersonaSection plan={plan} />;
             case 'benchmark': return <BenchmarkSection plan={plan} />;
             case 'methodology': return <MethodologySection plan={plan} />;
-            case 'onboarding': return <OnboardingSection plan={plan} />;
-            case 'roadmap': return <RoadmapSection plan={plan} />;
+            case 'roadmap_macro': return <RoadmapMacroSection plan={plan} />;
+            case 'onboarding_kickoff': return <OnboardingKickoffSection plan={plan} />;
+            case 'onboarding_setup': return <OnboardingSetupSection plan={plan} />;
+            case 'onboarding_training': return <OnboardingTrainingSection plan={plan} />;
+            case 'onboarding_adoption': return <OnboardingAdoptionSection plan={plan} />;
+            case 'onboarding_handover': return <OnboardingHandoverSection plan={plan} />;
             case 'goals': return <GoalsSection plan={plan} />;
             case 'projections': return <ProjectionsSection plan={plan} />;
             case 'investment': return <InvestmentSection plan={plan} />;
             case 'approval': return (
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-                    <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-8 w-auto mb-10 opacity-40" />
+                <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
+                    <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-8 w-auto mb-12 opacity-40" />
                     {isApproved ? (
                         <div className="max-w-md">
                             <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center mx-auto mb-6 rounded-full"><Check className="w-8 h-8 text-[#00CC6A]" /></div>
                             <h2 className="text-3xl font-bold text-black mb-3">Planejamento Aprovado</h2>
                             <p className="text-zinc-500 text-sm mb-2">Assinado por <strong>{plan.next_steps_data?.approved_by_name || 'cliente'}</strong></p>
-                            <p className="text-zinc-400 text-xs">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
-                            <div className="mt-10 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-300 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
+                            <p className="text-zinc-500 text-sm">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
+                            <div className="mt-12 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-400 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
                         </div>
                     ) : isRejected ? (
                         <div className="max-w-md">
-                            <h2 className="text-2xl font-bold text-black mb-3">Revisão Solicitada</h2>
-                            <p className="text-zinc-500 text-sm">Nossa equipe está revisando suas observações e entrará em contato em breve.</p>
+                            <h2 className="text-2xl font-bold text-black mb-3">Ajuste Solicitado</h2>
+                            <p className="text-zinc-500 text-sm">Nossa equipe está revisando suas observações e entrará em contato em breve para refinar o plano.</p>
                         </div>
                     ) : (
-                        <div className="max-w-md">
-                            <h2 className="text-3xl font-bold text-black mb-3">Próximos Passos</h2>
-                            <p className="text-zinc-500 text-sm mb-8">Revise todas as seções e quando estiver pronto, assine digitalmente para autorizar o início do Planejamento Estratégico {typeLabel}.</p>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <button onClick={() => setShowRejectModal(true)} className="px-8 py-3 border border-zinc-300 text-zinc-500 text-sm font-medium hover:border-zinc-500 hover:text-black transition-colors">Solicitar Ajustes</button>
-                                <button onClick={() => setShowSign(true)} className="px-10 py-3 bg-zinc-950 text-white text-sm font-bold hover:bg-zinc-800 transition-colors flex items-center gap-2"><Check className="w-4 h-4" /> Assinar e Aprovar</button>
+                        <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
+                            {/* Left Side: Copy */}
+                            <div>
+                                <h2 className="text-4xl font-black text-zinc-900 mb-4 tracking-tight">Autorização e Assinatura</h2>
+                                <p className="text-lg text-zinc-500 mb-10 leading-relaxed font-medium">Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.</p>
+                                
+                                <div className="flex flex-col sm:flex-row items-center gap-4">
+                                    <button onClick={() => setShowSign(true)} className="w-full sm:w-auto px-10 py-4 bg-zinc-900 text-white text-[15px] font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-xl shadow-zinc-900/20">
+                                        <Check className="w-5 h-5" /> Assinar Agora
+                                    </button>
+                                    <button onClick={() => setShowRejectModal(true)} className="w-full sm:w-auto px-8 py-4 border border-zinc-200 text-zinc-600 text-[15px] font-bold rounded-xl hover:border-zinc-300 hover:bg-zinc-50 transition-colors">
+                                        Solicitar Ajuste
+                                    </button>
+                                </div>
                             </div>
-                            <div className="mt-10 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-300 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
+                            
+                            {/* Right Side: QR Code Area */}
+                            <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center">
+                                <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-zinc-400 mb-6 border border-zinc-100">
+                                    <Smartphone className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
+                                <p className="text-sm text-zinc-500 mb-8 font-medium">Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.</p>
+                                
+                                <div className="p-4 bg-white border border-zinc-100 rounded-2xl shadow-sm">
+                                    <QRCodeSVG value={signUrl} size={180} level="M" fgColor="#09090b" />
+                                </div>
+                                <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#00CC6A] mt-6 bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">Válido Assinatura Digital</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -365,52 +408,52 @@ export default function StrategicPlanPresentation() {
             {/* Edit Toolbar (only visible in edit mode) */}
             <EditToolbar />
 
-            <div className="h-screen bg-zinc-950 flex flex-col items-center overflow-hidden">
+            <div className="h-screen bg-white flex flex-col items-center overflow-hidden">
                 {/* Floating Navigation Controls (Bottom Center) - Minimalist Fullscreen approach */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 p-2 rounded-2xl shadow-2xl print:hidden">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-lg shadow-zinc-200/50 print:hidden transition-all duration-300 hover:bg-white">
                     <button
                         onClick={goPrev}
                         disabled={currentIndex === 0}
-                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Voltar"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-4 h-4" />
                     </button>
 
-                    <div className="px-4 text-xs font-mono text-white font-semibold tracking-widest">
-                        {currentIndex + 1} <span className="text-zinc-600 mx-1">/</span> {sections.length}
+                    <div className="px-3 text-[11px] font-mono text-zinc-900 font-bold tracking-widest">
+                        {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
                     </div>
 
                     <button
                         onClick={goNext}
                         disabled={currentIndex === sections.length - 1}
-                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Avançar"
                     >
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="w-4 h-4" />
                     </button>
 
-                    <div className="w-px h-6 bg-zinc-800 mx-2" />
+                    <div className="w-px h-5 bg-zinc-200 mx-1" />
 
                     <button
                         onClick={() => setIsEditing(prev => !prev)}
-                        className={`p-3 rounded-xl transition-all ${isEditing ? 'bg-[#00CC6A] text-black' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
+                        className={`p-2.5 rounded-xl transition-all ${isEditing ? 'bg-zinc-900 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}`}
                         title={isEditing ? 'Desativar Edição' : 'Ativar Edição'}
                     >
-                        <Pencil className="w-5 h-5" />
+                        <Pencil className="w-4 h-4" />
                     </button>
 
                     <button
                         onClick={toggleFullscreen}
-                        className="p-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
                         title="Tela Cheia"
                     >
-                        {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                 </div>
 
                 {/* Main content — Full Screen Format */}
-                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-zinc-950 flex flex-col relative scroll-smooth">
+                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth">
                     {/* Slide container - Full bleed no margins */}
                     <div className="w-full h-full flex flex-col">
                         {renderSection()}

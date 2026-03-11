@@ -341,6 +341,30 @@ export default function StrategicPlanGenerator() {
                 _data_source: aiSuccess ? 'ai_enriched' : 'rei_fallback',
             };
 
+            // ── AI Base Generation (GPT-4o via Edge Function) ──
+            let aiPlanData = null;
+            let aiBaseSuccess = false;
+            try {
+                console.log('Invoking Base AI Generation (GPT-4o)...');
+                const { data: baseAiData, error: baseAiError } = await supabase.functions.invoke('generate-strategic-plan', {
+                    body: {
+                        rei_responses: answers,
+                        segment: segment,
+                        objective: objective,
+                        isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers)
+                    }
+                });
+
+                if (baseAiError) {
+                    console.warn('Base AI generation error:', baseAiError);
+                } else if (baseAiData?.result) {
+                    aiPlanData = baseAiData.result;
+                    aiBaseSuccess = true;
+                }
+            } catch (err) {
+                console.warn('Failed to call Base AI Generation (GPT-4o):', err);
+            }
+
             // Fallback market context (used by DiagnosticService)
             const marketCtx = {
                 industry_trends: mappedTrends.length > 0 ? mappedTrends : ['Automação de vendas', 'Revenue Operations', 'IA Generativa aplicada a vendas'],
@@ -350,7 +374,7 @@ export default function StrategicPlanGenerator() {
                 strategic_advice: mappedAdvice,
             };
 
-            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx, reiProject?.type);
+            const fullDiagnostic = DiagnosticService.generateDiagnosis(latestResponse, marketCtx, reiProject?.type, aiPlanData);
             const { plan_data, ...diagnosticContext } = fullDiagnostic;
 
             // 3. Define Plan Data (only columns that exist in strategic_plans table)
@@ -366,7 +390,8 @@ export default function StrategicPlanGenerator() {
                 diagnostic_data: {
                     ...diagnosticContext,
                     enriched_analysis: enrichmentResult,
-                    market_intelligence: market_intelligence || null
+                    market_intelligence: market_intelligence || null,
+                    ai_base_success: aiBaseSuccess // Flag for debugging
                 } as any
             };
 

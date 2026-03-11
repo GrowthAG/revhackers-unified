@@ -147,11 +147,11 @@ export class DiagnosticService {
         return [];
     }
 
-    static generateDiagnosis(response: ReiResponse, marketData?: any, projectType?: string): DiagnosticResult {
+    static generateDiagnosis(response: ReiResponse, marketData?: any, projectType?: string, aiPlanData?: any): DiagnosticResult {
         const rawResponses = response.responses as Record<string, any>;
         // FIX: REI wizard wraps form data inside responses.form_data
         const answers = rawResponses?.form_data || rawResponses || {};
-        const plan_data = this.generatePlanFromResponse(response, marketData, projectType);
+        const plan_data = this.generatePlanFromResponse(response, marketData, projectType, aiPlanData);
 
         // --- INTELLIGENCE LAYER (The Voice) ---
         const segment = answers.revops_segmento || answers.segmento || answers.segmento_outro || 'Generalista';
@@ -170,12 +170,17 @@ export class DiagnosticService {
             }
         }
 
-        // 1. Context Mirror (using REAL REI data)
+        // 1. Context Mirror (using REAL REI data or AI)
         const restrictionsText = projectType === 'crm_ops'
             ? `${tamanho ? `Equipe: ${tamanho}` : 'Tamanho: Não informado'}${ticketMedio ? ` | Ticket: ${ticketMedio}` : ''}`
             : `Budget: ${budget}${ticketMedio ? ` | Ticket: ${ticketMedio}` : ''}${tamanho ? ` | Equipe: ${tamanho}` : ''}`;
 
-        const context_mirror = {
+        // Fallback strategy: ensure segment and objective are ALWAYS present
+        const context_mirror = aiPlanData?.context_mirror ? {
+            ...aiPlanData.context_mirror,
+            segment: aiPlanData.context_mirror.segment || segment,
+            objective: aiPlanData.context_mirror.objective || objective
+        } : {
             segment,
             objective,
             maturity: hasCRM ? `Intermediária/Avançada (CRM: ${crmName})` : 'Inicial (Sem CRM Central)',
@@ -183,82 +188,68 @@ export class DiagnosticService {
         };
 
         // 2. Signals
-        const signals: DiagnosticSignal[] = [];
-        if (projectType === 'crm_ops') {
-            if (hasCRM) {
-                signals.push({ id: 's1', type: 'positive', text: `Arquitetura inicial no ${crmName}`, impact: 'Tech Stack Base Pronta' });
+        let signals: DiagnosticSignal[] = aiPlanData?.signals || [];
+        if (!signals.length) {
+            if (projectType === 'crm_ops') {
+                const hasPipelines = Array.isArray(answers.revops_custom_pipelines) && answers.revops_custom_pipelines.length > 0;
+                const pipelineCount = hasPipelines ? answers.revops_custom_pipelines.length : 0;
+                
+                if (hasCRM) signals.push({ id: 's1', type: 'positive', text: `Arquitetura inicial presente no ${crmName}`, impact: 'Base tecnológica pré-existente diminui atrito de infraestrutura.' });
+                else signals.push({ id: 's2', type: 'negative', text: 'Operação de Vendas Desestruturada', impact: 'Falta de Controle Central resulta em vazamentos no funil comercial.' });
+                
+                if (hasPipelines) {
+                    signals.push({ id: 'spipe', type: 'neutral', text: `${pipelineCount} Fun${pipelineCount > 1 ? 'is' : 'il'} de Negócios Mapeado${pipelineCount > 1 ? 's' : ''}`, impact: `Mapeamento As-Is indicou a existência de ${answers.revops_custom_pipelines.map((p: any) => p.name).join(', ')}.`});
+                }
+
+                if (answers.revops_sla_marketing_vendas) signals.push({ id: 's3', type: 'neutral', text: 'Critério de MQL/SQL Declarado', impact: 'Exige validação das réguas de hand-off para garantir alinhamento entre áreas.' });
+                else if (isB2B) signals.push({ id: 's3', type: 'neutral', text: 'Ciclo B2B Complexo', impact: 'O ticket e o fechamento B2B exigem rastreabilidade avançada e automação de SLAs.' });
             } else {
-                signals.push({ id: 's2', type: 'negative', text: 'Operação sem CRM Central/Definido', impact: 'Cegueira sistêmica e vazamentos' });
-            }
-            if (answers.revops_sla_marketing_vendas) {
-                signals.push({ id: 's3', type: 'neutral', text: 'SLA Declarado Mapeado', impact: 'Requer avaliação de adesão no sistema' });
-            } else if (isB2B) {
-                signals.push({ id: 's3', type: 'neutral', text: 'Ciclo B2B Longo', impact: 'Exige forte rastreabilidade multi-touch' });
-            }
-        } else {
-            if (hasCRM) {
-                signals.push({ id: 's1', type: 'positive', text: 'Infraestrutura de dados existente', impact: 'Permite otimização rápida' });
-            } else {
-                signals.push({ id: 's2', type: 'negative', text: 'Ausência de CRM', impact: 'Cegueira de dados no funil' });
-            }
-            if (isB2B) {
-                signals.push({ id: 's3', type: 'neutral', text: 'Ciclo de Vendas B2B', impact: 'Necessidade de nutrição mais longa' });
+                if (hasCRM) signals.push({ id: 's1', type: 'positive', text: 'Infraestrutura de Dados Presente', impact: 'Permite Escala e Otimização Rápida' });
+                else signals.push({ id: 's2', type: 'negative', text: 'Ausência de CRM', impact: 'Cegueira Operacional' });
+                if (isB2B) signals.push({ id: 's3', type: 'neutral', text: 'Jornada B2B', impact: 'Necessidade Múltipla de Nutrição' });
             }
         }
 
         // 3. Risks
-        const risks: DiagnosticRisk[] = [];
-        if (projectType === 'crm_ops') {
-            if (!hasCRM) {
-                risks.push({ id: 'r1', severity: 'high', text: 'Maturidade de Dados Crítica', mitigation: 'Setup do CRM na semana 1 como marco principal' });
-            }
-            if (answers.revops_pipeline_stagnation) {
-                risks.push({ id: 'r2', severity: 'medium', text: 'SLA de Etapas e Follow-up solto', mitigation: 'Ativar alertas automáticos de SLA no CRM' });
+        let risks: DiagnosticRisk[] = aiPlanData?.risks || [];
+        if (!risks.length) {
+            if (projectType === 'crm_ops') {
+                const hasLostReasons = Array.isArray(answers.revops_lost_reasons) && answers.revops_lost_reasons.length > 0;
+                const lostCount = hasLostReasons ? answers.revops_lost_reasons.length : 0;
+
+                if (!hasCRM) risks.push({ id: 'r1', severity: 'high', text: 'Maturidade de Dados Crítica (Cegueira Analítica)', mitigation: 'Setup obrigatório da fundação do CRM na semana 1 como marco principal do projeto.' });
+                
+                if (answers.revops_pipeline_stagnation) {
+                    risks.push({ id: 'r2', severity: 'medium', text: `Gargalo: Regras de Estagnação Ausentes ou Fracas`, mitigation: `Desenhar alertas e automações no CRM para evitar o apodrecimento de deals baseado no cenário descrito: "${answers.revops_pipeline_stagnation.substring(0, 50)}..."` });
+                } else {
+                    risks.push({ id: 'r2', severity: 'medium', text: 'Pipelines Visuais mas sem Governança', mitigation: 'Mapeamento As-Is dos estágios e imposição de propriedades obrigatórias por fase.' });
+                }
+
+                if (hasLostReasons) {
+                    risks.push({ id: 'rlost', severity: 'medium', text: `${lostCount} Motivos de Perda Estruturais sem Matriz de Win/Loss`, mitigation: `Criar relatórios de conversão invertida agrupando as objeções (${answers.revops_lost_reasons.slice(0, 3).map((l: any) => l.reason).join(', ')}...) para loop de feedback com produto/marketing.` });
+                } else if (answers.revops_win_loss_analysis) {
+                     risks.push({ id: 'rwinloss', severity: 'medium', text: 'Cultura de Win/Loss não está retroalimentando o Pipeline', mitigation: 'Institucionalizar o processo de Loss Reason auditável para entender onde o Lead escapa.' });
+                }
             } else {
-                risks.push({ id: 'r2', severity: 'medium', text: 'Pipelines Visuais sem Integração', mitigation: 'Mapeamento As-Is e integração de dados de marketing' });
-            }
-        } else {
-            if (!hasCRM && objective === 'Escala Agressiva') {
-                risks.push({ id: 'r1', severity: 'high', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar media spend' });
-            }
-            if (budget === 'Baixo' && isB2B) {
-                risks.push({ id: 'r2', severity: 'medium', text: 'Budget insuficiente para Outbound', mitigation: 'Focar em Social Selling orgânico' });
+                if (!hasCRM && objective === 'Escala Agressiva') risks.push({ id: 'r1', severity: 'high', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar o Spend em Ads' });
+                if (budget === 'Baixo' && isB2B) risks.push({ id: 'r2', severity: 'medium', text: 'Budget insuficiente para Paid Media', mitigation: 'Focar em Social Selling e Outbound' });
             }
         }
 
         // 4. Decisions (Explicability)
-        const decisions: StrategicDecision[] = [];
-        if (projectType === 'crm_ops') {
-            decisions.push({
-                title: 'Design de Governança',
-                recommendation: hasCRM ? `Otimização profunda do ${crmName}` : 'Seleção e Setup de CRM Ágil',
-                basedOn: ['Maturidade Tecnológica (Stack)'],
-                ruleApplied: hasCRM ? `IF EXISTE ${crmName} THEN OTIMIZAR` : 'IF NO_CRM THEN BLOQUEIO PARA MARKETING',
-                implication: hasCRM ? 'Treinamento sobre o novo fluxo visual' : 'Necessidade de onboarding de sistema'
-            });
-            decisions.push({
-                title: 'Arquitetura de Dados',
-                recommendation: 'Automação de SLA e Required Fields',
-                basedOn: ['Complexidade e Estágios do Pipeline'],
-                ruleApplied: 'FORÇAR PREENCHIMENTO NO AVANÇO DE ETAPA',
-                implication: 'Vendedores não poderão avançar negócios sem dados.'
-            });
-        } else {
-            decisions.push({
-                title: 'Escolha de Canal',
-                recommendation: isB2B ? 'Foco em LinkedIn & Outbound' : 'Foco em Meta Ads & Google',
-                basedOn: ['Segmento', 'Ticket Médio'],
-                ruleApplied: isB2B ? 'IF B2B THEN Outbound' : 'IF B2C THEN Inbound',
-                implication: isB2B ? 'Necessidade de SDRs' : 'Necessidade de Copywriting forte'
-            });
-
-            if (!hasCRM) {
+        let decisions: StrategicDecision[] = aiPlanData?.decisions || [];
+        if (!decisions.length) {
+            if (projectType === 'crm_ops') {
                 decisions.push({
-                    title: 'Prioridade de Implementação',
-                    recommendation: 'Setup de CRM na Semana 0',
-                    basedOn: ['Tech Stack'],
-                    ruleApplied: 'NO CRM = BLOCKER',
-                    implication: 'Atraso de 1 semana no Go-Live de campanhas'
+                    title: 'Design de Governança',
+                    recommendation: hasCRM ? `Otimização do ${crmName}` : 'Implementação de CRM',
+                    basedOn: ['Maturidade'], ruleApplied: 'Diretriz Arquitetura', implication: 'Período obrigatório de adequação'
+                });
+            } else {
+                decisions.push({
+                    title: 'Estratégia de Aquisição',
+                    recommendation: isB2B ? 'Foco em Prospecção ' : 'Foco em Anúncios',
+                    basedOn: ['Modelo', 'Ticket'], ruleApplied: 'Abordagem Direta', implication: 'Requer estrutura'
                 });
             }
         }
@@ -268,7 +259,7 @@ export class DiagnosticService {
         const implementation_steps = this.generateImplementationSteps(hasCRM, isB2B, objective, projectType);
 
         return {
-            summary: `Diagnóstico realizado para estratégia ${projectType === 'crm_ops' ? 'CRM & RevOps' : isB2B ? 'B2B' : 'B2C'}. Foco em: ${objective}.`,
+            summary: aiPlanData?.summary || `Diagnóstico realizado para estratégia ${projectType === 'crm_ops' ? 'CRM & RevOps' : isB2B ? 'B2B' : 'B2C'}. Foco em: ${objective}.`,
             context_mirror,
             signals,
             risks,
@@ -375,7 +366,7 @@ export class DiagnosticService {
     }
 
 
-    static generatePlanFromResponse(response: ReiResponse, marketData?: any, projectType?: string): StrategicPlanData {
+    static generatePlanFromResponse(response: ReiResponse, marketData?: any, projectType?: string, aiPlanData?: any): StrategicPlanData {
         const rawResponses = response.responses as Record<string, any>;
         // FIX: REI wizard wraps form data inside responses.form_data
         const answers = rawResponses?.form_data || rawResponses || {};
@@ -396,10 +387,10 @@ export class DiagnosticService {
 
         // 2. GENERATE MODULES (ALL receive full answers for real data)
         return {
-            premises_data: this.generatePremises(segment, objective, bottlenecks, answers, projectType),
-            methodology_data: this.generateMethodology(isB2B, channels, answers, projectType),
-            roadmap_data: this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
-            goals_data: this.generateGoals(objective, growthGoal, answers, projectType),
+            premises_data: aiPlanData?.pillars ? { pillars: aiPlanData.pillars } : this.generatePremises(segment, objective, bottlenecks, answers, projectType),
+            methodology_data: aiPlanData?.methodology_steps ? { steps: aiPlanData.methodology_steps } : this.generateMethodology(isB2B, channels, answers, projectType),
+            roadmap_data: aiPlanData?.roadmap_phases ? { phases: aiPlanData.roadmap_phases } : this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
+            goals_data: aiPlanData?.okrs ? { okrs: aiPlanData.okrs } : this.generateGoals(objective, growthGoal, answers, projectType),
             financial_projections: this.generateProjections(budget, answers),
             budget_data: this.generateBudget(budget, isB2B, answers, projectType),
             next_steps_data: this.generateNextSteps(hasCRM, answers, projectType),

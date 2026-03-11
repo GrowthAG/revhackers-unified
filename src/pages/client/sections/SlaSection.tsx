@@ -11,6 +11,7 @@ interface SlaSectionProps {
 export default function SlaSection({ plan, client }: SlaSectionProps) {
     const isCrmOps = plan?.diagnostic_data?.enriched_analysis?.submission_type === 'CRM_CS_OPS' ||
         plan?.diagnostic_data?.submission_type === 'CRM_CS_OPS' ||
+        plan?.rei_projects?.type === 'crm_ops' ||
         plan?.project_type === 'crm_ops';
 
     return (
