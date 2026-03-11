@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanEditProvider } from '@/components/plan/PlanEditContext';
-import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
 import { EditToolbar } from '@/components/plan/PlanEditContext';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -22,9 +22,9 @@ import OnboardingSetupSection from './sections/OnboardingSetupSection';
 import OnboardingTrainingSection from './sections/OnboardingTrainingSection';
 import OnboardingAdoptionSection from './sections/OnboardingAdoptionSection';
 import OnboardingHandoverSection from './sections/OnboardingHandoverSection';
+import SlaSection from './sections/SlaSection';
 import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
-import ApprovalSection from './sections/ApprovalSection';
 
 // ── Navigation ────────────────────────────────────────────────────────────
 const NAV_SECTIONS = [
@@ -43,6 +43,7 @@ const NAV_SECTIONS = [
     { id: 'onboarding_training', name: 'Treinamento & Go-Live', icon: <Briefcase className="w-4 h-4" /> },
     { id: 'onboarding_adoption', name: 'Adoção & Mapeamento', icon: <Target className="w-4 h-4" /> },
     { id: 'onboarding_handover', name: 'Handover & Escala', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'sla', name: 'Regras do Jogo', icon: <ShieldCheck className="w-4 h-4" /> },
     { id: 'projections', name: 'Projeções', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'investment', name: 'Investimento', icon: <DollarSign className="w-4 h-4" />, optional: true },
     { id: 'approval', name: 'Aprovação', icon: <Check className="w-4 h-4" /> },
@@ -280,6 +281,7 @@ export default function StrategicPlanPresentation() {
             case 'onboarding_training': return <OnboardingTrainingSection plan={plan} />;
             case 'onboarding_adoption': return <OnboardingAdoptionSection plan={plan} />;
             case 'onboarding_handover': return <OnboardingHandoverSection plan={plan} />;
+            case 'sla': return <SlaSection plan={plan} client={client} />;
             case 'goals': return <GoalsSection plan={plan} />;
             case 'projections': return <ProjectionsSection plan={plan} />;
             case 'investment': return <InvestmentSection plan={plan} />;
