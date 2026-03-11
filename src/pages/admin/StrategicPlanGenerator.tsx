@@ -382,6 +382,7 @@ export default function StrategicPlanGenerator() {
 
             const finalPlanData = {
                 ...dbSafePlanData,
+                onboarding_data: aiPlanData?.onboarding_data || null,
                 persona_data: personaData,
                 rei_project_id: reiProjectId,
                 client_id: clientId,
