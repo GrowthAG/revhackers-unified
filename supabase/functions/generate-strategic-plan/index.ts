@@ -10,6 +10,7 @@ interface GenerateParams {
   segment?: string;
   objective?: string;
   isB2B?: boolean;
+  projectType?: string;
 }
 
 serve(async (req: Request) => {
@@ -18,7 +19,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { rei_responses, segment, objective, isB2B }: GenerateParams = await req.json();
+    const { rei_responses, segment, objective, isB2B, projectType }: GenerateParams = await req.json();
 
     if (!rei_responses) {
       throw new Error('rei_responses is required');
@@ -53,7 +54,7 @@ serve(async (req: Request) => {
 
     const cleanResponses = sanitizeAnswers(rei_responses);
     const scoringContext = rei_responses.radar_data ? `Radar de Maturidade: ${JSON.stringify(rei_responses.radar_data)}` : '';
-    const isCrmOps = objective?.includes('CRM') || objective?.includes('RevOps') || objective?.includes('Operações');
+    const isCrmOps = projectType === 'crm_ops' || objective?.includes('CRM') || objective?.includes('RevOps') || objective?.includes('Operações');
 
     // --- INTEGRATION: Notion Transcript Search ---
     let transcriptText = "";
@@ -195,7 +196,7 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
     { "name": "Ciclo 01", "title": "Setup Específico (Mês 1)", "items": ["Ação 1 cirúrgica contra a dor Y", "Ação 2", "Ação 3"] }
   ],
   "okrs": [
-    { "description": "Destruir dor X (Objective)", "timeline": "Trimestre", "sub_results": ["Métrica KR atrelada", "KR tático", "KR 3"] }
+    { "objective": "Nome do objetivo principal", "description": "Destruir dor X (Objective)", "timeline": "Trimestre", "sub_results": ["Métrica KR atrelada", "KR tático", "KR 3"] }
   ],
   "onboarding_data": {
     "kickoff": {

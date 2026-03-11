@@ -232,8 +232,8 @@ export default function StrategicPlanGenerator() {
             // FIX: REI wizard wraps form data inside responses.form_data
             // Legacy responses may have flat structure, so fallback to rawResponses
             const answers = rawResponses?.form_data || rawResponses || {};
-            const segment = answers.segmento || answers.segmento_outro || 'B2B';
-            const objective = answers.metaCrescimento || answers.objetivoPrincipal || 'Crescimento';
+            const segment = answers.revops_segmento || answers.segmento || answers.segmento_outro || 'B2B';
+            const objective = answers.revops_objetivo_principal || answers.metaCrescimento || answers.objetivoPrincipal || (reiProject?.type === 'crm_ops' ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
             console.log('[Generator] answers keys:', Object.keys(answers));
             console.log('[Generator] segment:', segment, '| Has icpDescription:', !!answers.icpDescription, '| Has concorrentes:', !!answers.concorrentes);
 
@@ -351,7 +351,8 @@ export default function StrategicPlanGenerator() {
                         rei_responses: answers,
                         segment: segment,
                         objective: objective,
-                        isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers)
+                        isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
+                        projectType: reiProject?.type || 'consulting'
                     }
                 });
 
