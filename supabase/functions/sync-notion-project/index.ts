@@ -61,8 +61,9 @@ serve(async (req) => {
         // ==========================================
         // ETAPA 1: CRIAR OU ENCONTRAR O CLIENTE 
         // ==========================================
-        const clientEmail = data.email || `temp-${projectId}@client.com`;
-        const companyName = data.company_name || data.client_company || `Cliente (Pendente Nome) - ${projectId}`; // No nosso REI às vezes o nome via da base de projects 
+        // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
+        const clientEmail = data.revops_email || data.email || `temp-${projectId}@client.com`;
+        const companyName = data.revops_empresa || data.company_name || data.client_company || data.companyName || `Cliente (Pendente Nome) - ${projectId}`;
 
         // Array para coletar erros
         const syncErrors: string[] = [];

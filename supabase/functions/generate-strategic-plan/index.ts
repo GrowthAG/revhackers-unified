@@ -64,8 +64,9 @@ serve(async (req: Request) => {
     if (NOTION_API_KEY) {
         try {
             // Find contact identifiers to query Notion
-            const contactEmail = cleanResponses.email || cleanResponses.email_responsavel || cleanResponses.contato || '';
-            const companyName = cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || '';
+            // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
+            const contactEmail = cleanResponses.revops_email || cleanResponses.email || cleanResponses.email_responsavel || cleanResponses.contato || '';
+            const companyName = cleanResponses.revops_empresa || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || '';
             const searchQuery = contactEmail || companyName;
 
             console.log('[generate-strategic-plan] Initiating Notion Transcript Search for:', searchQuery);
