@@ -93,16 +93,19 @@ serve(async (req) => {
         };
 
         // Cria novo cliente diretamente
+        // NOTION_DB_CLIENTS deve apontar para o data source "🏢 Projetos" (filho do Spaces db)
+        // Título da propriedade nesse data source é "Cliente"
         let clientPageId = '';
         if (dbClientsId) {
-            console.log(`Criando novo Cliente...`);
+            console.log(`Criando novo Cliente: ${companyName} (${clientEmail})`);
             try {
                 const newClient = await createPageWithFallback(
                     dbClientsId,
-                    ["Nome", "Name", "Cliente", "Projeto", "Company", "Title", "Empresa"],
+                    ["Cliente", "Nome", "Name", "Projeto", "Company", "Title", "Empresa"],
                     companyName
                 );
                 clientPageId = newClient.id;
+                console.log(`Cliente criado: ${newClient.id}`);
             } catch (e: any) {
                 console.error("Falha fatal ao criar cliente novo:", e);
                 syncErrors.push(`Cliente Error: ${e.message}`);
