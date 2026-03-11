@@ -39,6 +39,7 @@ interface REIWizardProps {
 const wizardSchema = z.object({
     // Step 1 (Comum)
     email: z.string().email('Email inválido'),
+    website_url: z.string().optional(),
 
     // --- FOUNDER PROTOCOL FIELDS ---
     linkedin_url: z.string().optional(),
@@ -117,7 +118,14 @@ const wizardSchema = z.object({
     observacoes: z.string().optional(),
 
     // --- CRM OPS FIELDS ---
+    revops_objetivo_principal: z.string().optional(),
     revops_segmento: z.string().optional(),
+    revops_concorrente1_nome: z.string().optional(),
+    revops_concorrente1_site: z.string().optional(),
+    revops_concorrente2_nome: z.string().optional(),
+    revops_concorrente2_site: z.string().optional(),
+    revops_concorrente3_nome: z.string().optional(),
+    revops_concorrente3_site: z.string().optional(),
     revops_tamanho_time: z.string().optional(),
     revops_ticket_medio: z.string().optional(),
     revops_mrr_atual: z.string().optional(),
@@ -143,6 +151,7 @@ const wizardSchema = z.object({
     revops_forecasting_accuracy: z.string().optional(),
     revops_onboarding_handoff: z.string().optional(),
     revops_health_score_tracking: z.string().optional(),
+    revops_nrr_percentage: z.string().optional(),
     revops_expansion_playbook: z.string().optional(),
     revops_toxic_compensation: z.string().optional(),
     // Arrays Complexos (Kanban & Lost Reasons)

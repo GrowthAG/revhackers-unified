@@ -1,6 +1,6 @@
 import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Mail } from 'lucide-react';
+import { Mail, Globe } from 'lucide-react';
 
 interface Step1Props {
     form: UseFormReturn<any>;
@@ -44,6 +44,20 @@ export default function Step1Identificacao({ form, onEmailBlur }: Step1Props) {
                         {form.formState.errors.email.message as string}
                     </p>
                 )}
+            </div>
+
+            <div className="space-y-3">
+                <label className="text-sm font-bold text-zinc-700 uppercase tracking-wider flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    Website da Empresa
+                </label>
+                <Input
+                    {...form.register('website_url')}
+                    type="url"
+                    placeholder="https://suaempresa.com.br"
+                    className="bg-white border-zinc-200 text-black focus:border-black h-12 text-base font-mono"
+                />
+                <p className="text-[10px] text-zinc-400 uppercase tracking-wide">Usado para enriquecer o diagnóstico com dados públicos do mercado.</p>
             </div>
 
             <div className="bg-zinc-50 border border-zinc-200 p-4 flex items-start gap-3">

@@ -155,7 +155,7 @@ export class DiagnosticService {
 
         // --- INTELLIGENCE LAYER (The Voice) ---
         const segment = answers.revops_segmento || answers.segmento || answers.segmento_outro || 'Generalista';
-        const objective = answers.metaCrescimento || answers.objetivoPrincipal || (projectType === 'crm_ops' ? 'Eficiência Operacional & Escala' : 'Crescimento');
+        const objective = answers.revops_objetivo_principal || answers.metaCrescimento || answers.objetivoPrincipal || (projectType === 'crm_ops' ? 'Eficiência Operacional & Escala' : 'Crescimento');
         const hasCRM = this.checkHasCRM(answers);
         const isB2B = this.checkIsB2B(answers);
         const budget = answers.orcamento || 'Não informado';
@@ -176,15 +176,18 @@ export class DiagnosticService {
             : `Budget: ${budget}${ticketMedio ? ` | Ticket: ${ticketMedio}` : ''}${tamanho ? ` | Equipe: ${tamanho}` : ''}`;
 
         // Fallback strategy: ensure segment and objective are ALWAYS present
+        const websiteUrl = answers.website_url || null;
         const context_mirror = aiPlanData?.context_mirror ? {
             ...aiPlanData.context_mirror,
             segment: aiPlanData.context_mirror.segment || segment,
-            objective: aiPlanData.context_mirror.objective || objective
+            objective: aiPlanData.context_mirror.objective || objective,
+            ...(websiteUrl && { website_url: websiteUrl }),
         } : {
             segment,
             objective,
             maturity: hasCRM ? `Intermediária/Avançada (CRM: ${crmName})` : 'Inicial (Sem CRM Central)',
-            restrictions: restrictionsText
+            restrictions: restrictionsText,
+            ...(websiteUrl && { website_url: websiteUrl }),
         };
 
         // 2. Signals
@@ -481,6 +484,8 @@ export class DiagnosticService {
             if (ticketMedio) contextoItems.push(`Ticket Médio Estimado: ${ticketMedio}`);
             if (answers.revops_tamanho_time) contextoItems.push(`Time Comercial: ${answers.revops_tamanho_time}`);
             contextoItems.push(`Objetivo: ${objective}`);
+            const competidoresCrm = [1, 2, 3].map(n => answers[`revops_concorrente${n}_nome`]).filter(Boolean);
+            if (competidoresCrm.length) contextoItems.push(`Concorrentes: ${competidoresCrm.join(', ')}`);
 
             const operacionalItems = [
                 'Lacunas de rastreamento e atribuição identificadas',

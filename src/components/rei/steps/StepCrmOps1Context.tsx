@@ -18,6 +18,18 @@ export default function StepCrmOps1Context({ form }: Props) {
                 </p>
             </div>
 
+            {/* Objetivo Principal */}
+            <div className="space-y-2">
+                <Label htmlFor="revops_objetivo_principal" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual o principal objetivo desta implementação? *</Label>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">O que você precisa construir, migrar ou organizar? Seja direto.</p>
+                <textarea
+                    {...form.register('revops_objetivo_principal')}
+                    id="revops_objetivo_principal"
+                    className="w-full min-h-[90px] p-3 bg-white border border-zinc-200 focus:border-black transition-colors resize-none text-sm outline-none"
+                    placeholder="Ex: Migrar do HubSpot para Funnels, padronizar o funil de pré-vendas e automatizar follow-ups. Time de 5 SDRs + 3 Closers hoje sem processo."
+                />
+            </div>
+
             <div className="space-y-2">
                 <Label htmlFor="revops_segmento" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual o seu segmento de atuação principal? *</Label>
                 <Input
@@ -86,6 +98,28 @@ export default function StepCrmOps1Context({ form }: Props) {
                     className="bg-white border-zinc-200 text-black h-12"
                     placeholder="Ex: 20%"
                 />
+            </div>
+
+            {/* Concorrentes */}
+            <div className="space-y-3 pt-6 border-t border-zinc-100">
+                <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Principais Concorrentes</Label>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Informe até 3 concorrentes. Se souber o site, preencha também.</p>
+                <div className="space-y-3">
+                    {[1, 2, 3].map((n) => (
+                        <div key={n} className="grid grid-cols-2 gap-3">
+                            <input
+                                {...form.register(`revops_concorrente${n}_nome` as any)}
+                                className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm bg-white outline-none h-12"
+                                placeholder={`Concorrente ${n} — Nome`}
+                            />
+                            <input
+                                {...form.register(`revops_concorrente${n}_site` as any)}
+                                className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm font-mono bg-white outline-none h-12"
+                                placeholder="www.exemplo.com.br"
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
 
         </div>
