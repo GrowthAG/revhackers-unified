@@ -193,10 +193,14 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
     { "phase": "01", "tagline": "Semana 1-2", "name": "Fundação / Setup", "description": "Táticas duras que faremos na semana 1 usando os nomes reais das ferramentas citadas (se aplicável).", "principles": ["Tática exata 1", "Tática exata 2"] }
   ],
   "roadmap_phases": [
-    { "name": "Ciclo 01", "title": "Setup Específico (Mês 1)", "items": ["Ação 1 cirúrgica contra a dor Y", "Ação 2", "Ação 3"] }
+    { "name": "Ciclo 01", "title": "Setup Específico (Mês 1-2)", "items": ["Ação 1 cirúrgica contra a dor principal", "Ação 2 baseada no contexto real", "Ação 3 com ferramenta específica"] },
+    { "name": "Ciclo 02", "title": "Execução e Ajustes (Mês 3-4)", "items": ["Ação 1 de execução concreta", "Ação 2 com métrica mensurável", "Ação 3 de consolidação"] },
+    { "name": "Ciclo 03", "title": "Escala e Previsibilidade (Mês 5-6)", "items": ["Ação 1 de escala", "Ação 2 de automação avançada", "Ação 3 de medição e revisão"] }
   ],
   "okrs": [
-    { "objective": "Nome do objetivo principal", "description": "Destruir dor X (Objective)", "timeline": "Trimestre", "sub_results": ["Métrica KR atrelada", "KR tático", "KR 3"] }
+    { "objective": "Nome do objetivo estratégico 1", "description": "O que este OKR resolve de concreto (Objective)", "timeline": "Trimestre 1", "sub_results": ["KR 1 com número específico", "KR 2 tático mensurável", "KR 3 com prazo"] },
+    { "objective": "Nome do objetivo estratégico 2", "description": "O que este OKR resolve de concreto (Objective)", "timeline": "Trimestre 2", "sub_results": ["KR 1 com número específico", "KR 2 tático mensurável", "KR 3 com prazo"] },
+    { "objective": "Nome do objetivo estratégico 3", "description": "O que este OKR resolve de concreto (Objective)", "timeline": "Trimestre 3", "sub_results": ["KR 1 com número específico", "KR 2 tático mensurável", "KR 3 com prazo"] }
   ],
   "onboarding_data": {
     "kickoff": {
@@ -231,7 +235,9 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
   }
 }
 
-CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onbarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".
+CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 3 itens em pillars, e pelo menos 2 itens em methodology_steps. Arrays com apenas 1 item serão considerados inválidos.
+
+CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onboarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".
 
 CRITICAL_RULE_BRANDING: NUNCA mencione "GoHighLevel", "GHL" ou "HighLevel". Sempre que propor, mencionar ou estruturar a infraestrutura de CRM, o único nome oficial que deve ser utilizado no planejamento é "Funnels".
 CRITICAL_RULE_SPECIFICITY: OBRIGATÓRIO Citar nomes de ferramentas e palavras exatas do cliente. PROIBIDO USAR AS PALAVRAS GENÉRICAS COMO "potencializar", "sinergia", "otimizar processos" SEM explicar como. Você será penalizado se produzir texto vago. Entregue APENAS o JSON válido.`;
