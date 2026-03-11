@@ -204,8 +204,8 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
             ];
         } else if (type === 'crm_ops') {
             return [
-                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
-                { id: 'crm_context', title: 'Contexto B2B', component: StepCrmOps1Context, fields: ['revops_segmento'] },
+                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email', 'website_url'] },
+                { id: 'crm_context', title: 'Contexto B2B', component: StepCrmOps1Context, fields: ['revops_segmento', 'revops_empresa', 'revops_email', 'revops_objetivo_principal'] },
                 { id: 'crm_tech', title: 'Arquitetura e Stack', component: StepCrmOps2TechStack, fields: ['revops_hub_central'] },
                 { id: 'crm_sla', title: 'Aquisição e SLA', component: StepCrmOps3AquisicaoSLA, fields: ['revops_icp_framework'] },
                 { id: 'crm_exec', title: 'Execução de Vendas', component: StepCrmOps4Execucao, fields: ['revops_flow_cadencia', 'revops_custom_pipelines', 'revops_custom_lost_reasons'] },

@@ -126,7 +126,7 @@ export default function StepCrmOps1Context({ form }: Props) {
             {/* Concorrentes */}
             <div className="space-y-3 pt-6 border-t border-zinc-100">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Principais Concorrentes</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Informe até 3 concorrentes. Se souber o site, preencha também.</p>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Informe até 3 concorrentes da sua operação de vendas. Se souber o site, preencha também (Obrigatório para Benchmark de IA).</p>
                 <div className="space-y-3">
                     {[1, 2, 3].map((n) => (
                         <div key={n} className="grid grid-cols-2 gap-3">
@@ -138,7 +138,7 @@ export default function StepCrmOps1Context({ form }: Props) {
                             <input
                                 {...form.register(`revops_concorrente${n}_site` as any)}
                                 className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm font-mono bg-white outline-none h-12"
-                                placeholder="www.exemplo.com.br"
+                                placeholder={`exemplo.com.br`}
                             />
                         </div>
                     ))}

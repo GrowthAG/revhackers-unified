@@ -6,7 +6,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-    // 1. Handle CORS preflight options
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
@@ -14,231 +13,244 @@ serve(async (req) => {
     try {
         const payload = await req.json();
         const { projectId, type, data } = payload;
-        // Extract env variables and strictly format as UUIDs for Notion Endpoint
-        const formatNotionId = (id: string | undefined): string => {
-            if (!id) return '';
-            const cleanId = id.replace(/-/g, '');
-            if (cleanId.length === 32) {
-                return `${cleanId.substring(0, 8)}-${cleanId.substring(8, 12)}-${cleanId.substring(12, 16)}-${cleanId.substring(16, 20)}-${cleanId.substring(20, 32)}`;
-            }
-            return id;
-        };
 
-        // 2. Fetch Secrets
+        // 1. Secrets
         const notionApiKey = Deno.env.get('NOTION_API_KEY')?.trim() || '';
-        const dbClientsId = formatNotionId(Deno.env.get('NOTION_DB_CLIENTS')?.trim());
-        const dbSprintsId = formatNotionId(Deno.env.get('NOTION_DB_SPRINTS')?.trim());
-        const dbTasksId = formatNotionId(Deno.env.get('NOTION_DB_TASKS')?.trim());
+        const dbClientsId = Deno.env.get('NOTION_DB_CLIENTS')?.trim() || '';
+        const dbSprintsId = Deno.env.get('NOTION_DB_SPRINTS')?.trim() || '';
+        const dbTasksId = Deno.env.get('NOTION_DB_TASKS')?.trim() || '';
 
         if (!notionApiKey) {
-            throw new Error('As váriaveis de Integração do Notion não foram configuradas.');
+            throw new Error('NOTION_API_KEY não configurada.');
         }
 
-        console.log(`[Notion Sync] Processing project ${projectId} of type ${type}`);
+        console.log(`[Notion Sync] project=${projectId} type=${type}`);
 
-        // --- 3. Notion API Helpers ---
-        // Funções auxiliares para montar as Requests POST do Notion
-        const notionPost = async (endpoint: string, body: any) => {
+        // 2. Extract client info — CRM Ops usa revops_* prefix, demais usam camelCase/snake
+        const clientEmail = data.revops_email || data.email || `temp-${projectId}@client.com`;
+        const companyName = data.revops_empresa || data.company_name || data.client_company
+            || data.companyName || `Cliente - ${projectId}`;
+
+        const syncErrors: string[] = [];
+
+        // 3. Notion API helper
+        // notionVersion: '2022-06-28' para DBs simples, '2025-09-03' para multi-source (Clientes)
+        const notionPost = async (endpoint: string, body: any, notionVersion = '2022-06-28') => {
             const response = await fetch(`https://api.notion.com/v1${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${notionApiKey}`,
                     'Content-Type': 'application/json',
-                    'Notion-Version': '2025-09-03'
+                    'Notion-Version': notionVersion,
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) {
                 const errText = await response.text();
-                throw new Error(`Notion API Error (${endpoint}): ${errText}`);
+                throw new Error(`Notion API Error [${response.status}] (${endpoint}): ${errText}`);
             }
             return await response.json();
         };
 
-        const notionSearch = async (body: any) => notionPost('/search', body);
+        // Child data source ID do banco "🏢 Projetos" (dentro do multi-source Spaces/Clientes)
+        // Necessário para criar páginas com Notion-Version 2025-09-03
+        const DB_CLIENTS_CHILD_SOURCE = '2f6bdc72-e039-81da-b2b7-000beb70fc16';
 
         // ==========================================
-        // ETAPA 1: CRIAR OU ENCONTRAR O CLIENTE 
+        // ETAPA 1: CRIAR CLIENTE
+        // DB: 🏢 Spaces (Clientes) — prop título: "Cliente"
         // ==========================================
-        // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
-        const clientEmail = data.revops_email || data.email || `temp-${projectId}@client.com`;
-        const companyName = data.revops_empresa || data.company_name || data.client_company || data.companyName || `Cliente (Pendente Nome) - ${projectId}`;
-
-        // Array para coletar erros
-        const syncErrors: string[] = [];
-
-        // Helper universal para tentar propriedades de Título customizadas (bypass do Notion)
-        const createPageWithFallback = async (dbId: string, titleProps: string[], titleContent: string, extraPayload: any = {}) => {
-            let lastErr: any;
-            for (const prop of titleProps) {
-                try {
-                    const payload = {
-                        parent: { database_id: dbId },
-                        properties: { [prop]: { title: [{ text: { content: titleContent } }] } },
-                        ...extraPayload
-                    };
-                    return await notionPost('/pages', payload);
-                } catch (e: any) {
-                    lastErr = e;
-                    // Se o erro for de propriedade não encontrada, prossegue para a próxima tentativa do array
-                    if (e.message?.includes('not a property that exists') || e.message?.includes('validation_error')) {
-                        continue;
-                    }
-                    // Se a database inteira não existir, interrompe o fallback imediatamente, pois não vai funfar com nenhuma prop
-                    throw e;
-                }
-            }
-            throw new Error(`As propriedades [${titleProps.join(', ')}] não foram encontradas na Base ${dbId}. Erro Notion Final: ${lastErr?.message}`);
-        };
-
-        // Cria novo cliente diretamente
-        // NOTION_DB_CLIENTS deve apontar para o data source "🏢 Projetos" (filho do Spaces db)
-        // Título da propriedade nesse data source é "Cliente"
         let clientPageId = '';
         if (dbClientsId) {
-            console.log(`Criando novo Cliente: ${companyName} (${clientEmail})`);
+            console.log(`Criando Cliente: ${companyName}`);
             try {
-                const newClient = await createPageWithFallback(
-                    dbClientsId,
-                    ["Cliente", "Nome", "Name", "Projeto", "Company", "Title", "Empresa"],
-                    companyName
-                );
-                clientPageId = newClient.id;
-                console.log(`Cliente criado: ${newClient.id}`);
+                // O banco Clientes é multi-source → requer Notion-Version 2025-09-03
+                // e usa o child data source ID como database_id
+                const clientPage = await notionPost('/pages', {
+                    parent: { database_id: DB_CLIENTS_CHILD_SOURCE },
+                    properties: {
+                        "Cliente": { title: [{ text: { content: companyName } }] },
+                        "Status": { status: { name: "Ativo" } },
+                    },
+                }, '2025-09-03');
+                clientPageId = clientPage.id;
+                console.log(`✅ Cliente criado: ${clientPageId}`);
             } catch (e: any) {
-                console.error("Falha fatal ao criar cliente novo:", e);
+                console.error("Erro ao criar Cliente:", e.message);
                 syncErrors.push(`Cliente Error: ${e.message}`);
             }
         }
 
         // ==========================================
-        // ETAPA 2: CRIAR A SPRINT
+        // ETAPA 2: CRIAR SPRINT (vinculada ao Cliente)
+        // DB: 🗓️ Sprints — prop título: "Sprint"
+        // Relações: Cliente → Clientes DB
         // ==========================================
         let sprintPageId = '';
         if (dbSprintsId) {
-            console.log(`Criando nova Sprint...`);
+            console.log(`Criando Sprint para ${companyName}...`);
             const sprintName = `${companyName.toUpperCase()} - Sprint 1 (Onboarding)`;
+
+            const sprintProperties: Record<string, any> = {
+                "Sprint": { title: [{ text: { content: sprintName } }] },
+                "Status": { status: { name: "Planejado" } },
+                "Número": { number: 1 },
+                "Meta da Sprint": {
+                    rich_text: [{ text: { content: `Onboarding e setup inicial para ${companyName}` } }]
+                },
+            };
+
+            // Vincula ao cliente se foi criado com sucesso
+            if (clientPageId) {
+                sprintProperties["Cliente"] = { relation: [{ id: clientPageId }] };
+            }
+
             try {
-                const newSprint = await createPageWithFallback(
-                    dbSprintsId,
-                    ["Sprint", "Sprints", "Nome", "Name", "Projeto", "Title"],
-                    sprintName
-                );
+                const newSprint = await notionPost('/pages', {
+                    parent: { database_id: dbSprintsId },
+                    properties: sprintProperties,
+                });
                 sprintPageId = newSprint.id;
+                console.log(`✅ Sprint criada: ${sprintPageId}`);
             } catch (e: any) {
-                console.error("Erro ao criar Sprint:", e);
+                console.error("Erro ao criar Sprint:", e.message);
                 syncErrors.push(`Sprint Error: ${e.message}`);
             }
         }
 
-
         // ==========================================
-        // ETAPA 3: CRIAR AS TASKS COM RESUMO
+        // ETAPA 3: CRIAR TASK (vinculada à Sprint + Cliente)
+        // DB: ✅ Tasks — prop título: "Tarefa"
+        // Relações: Sprint → Sprints DB, Cliente → Clientes DB
         // ==========================================
         if (dbTasksId) {
-            console.log(`Criando Task de Review e Onboarding...`);
+            console.log(`Criando Task de Onboarding...`);
 
-            // Mapeando Títulos Baseados no Tipo
             const taskTitles: Record<string, string> = {
-                'crm_ops': "Onboarding Técnico e Setup de CRM",
-                'funnel': "Setup de Funil e Automação",
-                'dev': "Projeto e Briefing de Dev",
-                'founder': "Onboarding Founder Protocol",
-                'site': "Site Score Analysis",
+                'crm_ops': 'Onboarding Técnico e Setup de CRM',
+                'funnel': 'Setup de Funil e Automação',
+                'dev': 'Projeto e Briefing de Dev',
+                'founder': 'Onboarding Founder Protocol',
+                'site': 'Site Score Analysis',
             };
-            const taskTitle = taskTitles[type] || "Onboarding e Planejamento";
+            const taskTitle = taskTitles[type] || 'Onboarding e Planejamento';
 
-            // Formatando o payload text completo em Bullet points textuais simples
+            // Formata dados do formulário como bullet points legíveis
             const formattedLines = Object.entries(data).map(([key, value]) => {
                 const label = key.replace(/_/g, ' ').toUpperCase();
                 if (Array.isArray(value)) {
-                    if (value.length > 0 && typeof value[0] === 'string') {
-                        return `* ${label}:\n  - ${value.join('\n  - ')}`;
+                    if (value.length === 0) return `• ${label}: (vazio)`;
+                    if (typeof value[0] === 'string') {
+                        return `• ${label}:\n  - ${(value as string[]).join('\n  - ')}`;
                     }
-                    if (value.length > 0 && typeof value[0] === 'object') {
-                        const listDesc = value.map(v => JSON.stringify(v).replace(/["{}]/g, '').replace(/:/g, ': ')).join('\n  - ');
-                        return `* ${label}:\n  - ${listDesc}`;
+                    if (typeof value[0] === 'object') {
+                        const desc = value.map(v =>
+                            JSON.stringify(v).replace(/["{}\[\]]/g, '').replace(/:/g, ': ')
+                        ).join('\n  - ');
+                        return `• ${label}:\n  - ${desc}`;
                     }
-                    return `* ${label}: (vazio)`;
+                    return `• ${label}: (vazio)`;
                 }
-                return `* ${label}: ${value || 'Não informado'}`;
+                return `• ${label}: ${value || 'Não informado'}`;
             });
 
-            // Preparando blocos do Notion, respeitando o limite da API (Max 2000 chars por RichText)
+            // Monta blocos de conteúdo respeitando limite de 2000 chars por rich_text
             const childrenBlocks: any[] = [
                 {
                     object: 'block',
                     type: 'heading_2',
                     heading_2: {
-                        rich_text: [{ type: 'text', text: { content: "Resumo do Formulário REI" } }]
-                    }
+                        rich_text: [{ type: 'text', text: { content: '📋 Resumo do Formulário REI' } }],
+                    },
                 },
                 {
                     object: 'block',
                     type: 'paragraph',
                     paragraph: {
-                        rich_text: [{ type: 'text', text: { content: `Este projeto foi prospectado na modalidade ${type}. Abaixo os dados de onboarding mapeados:` } }]
-                    }
-                }
+                        rich_text: [{
+                            type: 'text',
+                            text: { content: `Projeto prospectado na modalidade "${type}". Dados coletados no onboarding:` },
+                        }],
+                    },
+                },
             ];
 
-            // Acumulando as linhas em chunks de até 1800 caracteres e empurrando como blocos de parágrafos adicionais
-            let currentChunk = "";
+            // Chunks de até 1800 chars para não exceder limite da API
+            let currentChunk = '';
             for (const line of formattedLines) {
                 if (currentChunk.length + line.length > 1800) {
                     childrenBlocks.push({
                         object: 'block',
                         type: 'paragraph',
-                        paragraph: {
-                            rich_text: [{ type: 'text', text: { content: currentChunk } }]
-                        }
+                        paragraph: { rich_text: [{ type: 'text', text: { content: currentChunk } }] },
                     });
-                    currentChunk = "";
+                    currentChunk = '';
                 }
-                currentChunk += line + "\n\n";
+                currentChunk += line + '\n\n';
             }
             if (currentChunk) {
                 childrenBlocks.push({
                     object: 'block',
                     type: 'paragraph',
-                    paragraph: {
-                        rich_text: [{ type: 'text', text: { content: currentChunk } }]
-                    }
+                    paragraph: { rich_text: [{ type: 'text', text: { content: currentChunk } }] },
                 });
             }
 
+            const taskProperties: Record<string, any> = {
+                "Tarefa": { title: [{ text: { content: taskTitle } }] },
+                "Status": { status: { name: "Backlog" } },
+                "Prioridade": { select: { name: "🟠 Alta" } },
+                "Tipo": { select: { name: "📋 Reunião" } },
+            };
+
+            // Vincula ao sprint e ao cliente se existirem
+            if (sprintPageId) {
+                taskProperties["Sprint"] = { relation: [{ id: sprintPageId }] };
+            }
+            if (clientPageId) {
+                taskProperties["Cliente"] = { relation: [{ id: clientPageId }] };
+            }
+
             try {
-                const extraPayload = { children: childrenBlocks };
-                const newTask = await createPageWithFallback(
-                    dbTasksId,
-                    ["Tarefa", "Name", "Nome", "Task", "Title", "Projeto"],
-                    taskTitle,
-                    extraPayload
-                );
-                console.log(`Task criada com sucesso: ${newTask.id}`);
+                const newTask = await notionPost('/pages', {
+                    parent: { database_id: dbTasksId },
+                    properties: taskProperties,
+                    children: childrenBlocks,
+                });
+                console.log(`✅ Task criada: ${newTask.id}`);
             } catch (e: any) {
-                console.error("Erro absoluto ao criar Task:", e);
+                console.error("Erro ao criar Task:", e.message);
                 syncErrors.push(`Task Error: ${e.message}`);
             }
         }
 
+        // Retorna resultado
         if (syncErrors.length > 0) {
             return new Response(
-                JSON.stringify({ error: 'Partial or total failure linking with Notion', details: syncErrors }),
-                { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+                JSON.stringify({
+                    error: 'Partial or total failure syncing with Notion',
+                    details: syncErrors,
+                    partial: { clientPageId, sprintPageId },
+                }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 },
             );
         }
 
         return new Response(
-            JSON.stringify({ success: true, message: 'Sync with Notion Complete' }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+            JSON.stringify({
+                success: true,
+                message: 'Sync with Notion complete',
+                clientPageId,
+                sprintPageId,
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
         );
 
     } catch (error: any) {
-        console.error("Erro no Webhook Nativo:", error.message);
+        console.error('Erro fatal no Notion Sync:', error.message);
         return new Response(JSON.stringify({ error: error.message }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,
         });
     }
