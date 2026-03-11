@@ -43,9 +43,15 @@ export default function StepCrmOps2TechStack({ form }: Props) {
                         </Label>
                     </div>
                     <div className="flex items-start space-x-3">
-                        <RadioGroupItem value="frankenstein" id="int-2" className="mt-1" />
+                        <RadioGroupItem value="hub_satelites" id="int-2" className="mt-1" />
                         <Label htmlFor="int-2" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
-                            <strong className="text-black block">Ferramentas separadas:</strong> utilizamos várias ferramentas conectadas (ex: via Zapier/Make) ou de forma manual.
+                            <strong className="text-black block">Hub central + ferramentas satélites:</strong> temos uma plataforma principal (CRM/Funil) e ferramentas especializadas ao redor (prospecção, enriquecimento, telefonia), sem integração automática completa.
+                        </Label>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="frankenstein" id="int-3" className="mt-1" />
+                        <Label htmlFor="int-3" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
+                            <strong className="text-black block">Ferramentas separadas:</strong> utilizamos várias ferramentas conectadas (ex: via Zapier/Make) ou de forma manual, sem um hub central definido.
                         </Label>
                     </div>
                 </RadioGroup>

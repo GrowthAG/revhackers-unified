@@ -135,9 +135,15 @@ export default function StepCrmOps4Execucao({ form }: Props) {
                             </Label>
                         </div>
                         <div className="flex items-start space-x-3">
+                            <RadioGroupItem value="analise_informal" id="wl-2b" className="mt-1" />
+                            <Label htmlFor="wl-2b" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
+                                <strong className="text-black block">Análise Ativa mas Informal:</strong> Revisamos transcrições/calls e usamos os aprendizados para ajustar produto e pitch, mas sem processo padronizado ou taxonomia no CRM.
+                            </Label>
+                        </div>
+                        <div className="flex items-start space-x-3">
                             <RadioGroupItem value="auditado" id="wl-3" className="mt-1" />
                             <Label htmlFor="wl-3" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
-                                <strong className="text-black block">Auditoria Ativa:</strong> Gestão ouvida ligações perdidas com frequência e consolida inteligência para Marketing e Produto.
+                                <strong className="text-black block">Auditoria Ativa:</strong> Gestão ouve ligações perdidas com frequência e consolida inteligência para Marketing e Produto de forma estruturada.
                             </Label>
                         </div>
                     </RadioGroup>
@@ -158,9 +164,15 @@ export default function StepCrmOps4Execucao({ form }: Props) {
                             </Label>
                         </div>
                         <div className="flex items-start space-x-3">
+                            <RadioGroupItem value="fora_do_crm" id="fc-1b" className="mt-1" />
+                            <Label htmlFor="fc-1b" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
+                                <strong className="text-black block">Processo existe fora do CRM:</strong> a gestão tem visibilidade e estimativas próprias, mas o CRM não reflete o forecast real (planilha, memória ou reunião semanal).
+                            </Label>
+                        </div>
+                        <div className="flex items-start space-x-3">
                             <RadioGroupItem value="ponderado" id="fc-2" className="mt-1" />
                             <Label htmlFor="fc-2" className="text-zinc-500 font-normal leading-relaxed cursor-pointer text-sm">
-                                <strong className="text-black block">Probabilidade Ponderada:</strong> O Pipeline é limpo, mas a previsão vem multiplicando o valor pela probabilidade da etapa (ex: 50% de R$ 10k = R$ 5k previstos).
+                                <strong className="text-black block">Probabilidade Ponderada:</strong> O Pipeline é limpo e a previsão vem multiplicando o valor pela probabilidade da etapa (ex: 50% de R$ 10k = R$ 5k previstos).
                             </Label>
                         </div>
                         <div className="flex items-start space-x-3">

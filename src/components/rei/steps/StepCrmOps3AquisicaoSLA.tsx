@@ -39,7 +39,11 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="sim_ativo" id="ls-sim" />
-                        <Label htmlFor="ls-sim" className="text-zinc-700 font-normal cursor-pointer text-sm">Sim, classificamos com base no perfil (ex: cargo) e no comportamento de engajamento.</Label>
+                        <Label htmlFor="ls-sim" className="text-zinc-700 font-normal cursor-pointer text-sm">Sim, automatizado: o sistema classifica com base no perfil (ex: cargo) e comportamento de engajamento.</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="manual_framework" id="ls-manual" />
+                        <Label htmlFor="ls-manual" className="text-zinc-700 font-normal cursor-pointer text-sm">Sim, mas manualmente: aplicamos um framework de qualificação (ex: BANT) na abordagem, sem pontuação automática configurada no sistema.</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="nao_existe" id="ls-nao" />
@@ -67,6 +71,10 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
                     onValueChange={(value) => form.setValue('revops_routing_vip', value)}
                     className="space-y-3"
                 >
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="owner_direto" id="rt-owner" />
+                        <Label htmlFor="rt-owner" className="text-zinc-700 font-normal cursor-pointer text-sm">Direto ao responsável: o inbound chega para uma pessoa específica (sócio/owner), sem sistema de fila ou distribuição automática.</Label>
+                    </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="direcionamento_inteligente" id="rt-sim" />
                         <Label htmlFor="rt-sim" className="text-zinc-700 font-normal cursor-pointer text-sm">Distribuição inteligente: perfis mais decisivos são direcionados para os vendedores mais experientes.</Label>
@@ -100,7 +108,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="unknown" id="s-nao-sei" />
-                        <Label htmlFor="s-nao-sei" className="text-zinc-700 font-normal cursor-pointer text-sm">Não temos como rastrear essa métrica facilmente no momento.</Label>
+                        <Label htmlFor="s-nao-sei" className="text-zinc-700 font-normal cursor-pointer text-sm">Não medimos formalmente — respondemos assim que o lead chega, mas sem SLA definido.</Label>
                     </div>
                 </RadioGroup>
             </div>
