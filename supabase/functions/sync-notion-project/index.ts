@@ -31,20 +31,16 @@ serve(async (req) => {
         const companyName = data.revops_empresa || data.company_name || data.client_company
             || data.companyName || `Cliente - ${projectId}`;
 
-        // Erros críticos (Sprint/Task) bloqueiam o retorno 200
-        // Erros não-críticos (Cliente) são logados mas não bloqueiam
         const criticalErrors: string[] = [];
-        const softErrors: string[] = [];
 
         // 3. Notion API helper
-        // notionVersion: '2022-06-28' para DBs simples, '2025-09-03' para multi-source (Clientes)
-        const notionPost = async (endpoint: string, body: any, notionVersion = '2022-06-28') => {
+        const notionPost = async (endpoint: string, body: any) => {
             const response = await fetch(`https://api.notion.com/v1${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${notionApiKey}`,
                     'Content-Type': 'application/json',
-                    'Notion-Version': notionVersion,
+                    'Notion-Version': '2022-06-28',
                 },
                 body: JSON.stringify(body),
             });
@@ -56,58 +52,11 @@ serve(async (req) => {
             return await response.json();
         };
 
-        // Multi-source database requer API version "2025-09-03" e requer a inserção 
-        // direcionada a um dos child_data_source_ids (já que databases fundidos não suportam inserção raiz).
-        const MULTI_SOURCE_CHILD_AIDS = [
-            "2f6bdc72-e039-81da-b2b7-000beb70fc16",
-            "a1ebec89-b01c-4472-b918-f1046379be44",
-            "31fbdc72-e039-808f-87ed-000b1985f1c9"
-        ];
-
         // ==========================================
-        // ETAPA 1: CRIAR CLIENTE
-        // DB: 🏢 Spaces (Clientes) — prop título: "Cliente"
-        // ==========================================
-        let clientPageId = '';
-        if (dbClientsId) {
-            console.log(`Criando Cliente: ${companyName}`);
-            try {
-                // O banco Clientes é multi-source → requer Notion-Version 2025-09-03
-                let attemptError = null;
-                for (const childId of MULTI_SOURCE_CHILD_AIDS) {
-                    try {
-                        console.log(`Tentando criar Cliente no child data source: ${childId}`);
-                        const clientPage = await notionPost('/pages', {
-                            parent: { database_id: childId },
-                            properties: {
-                                "Cliente": { title: [{ text: { content: companyName } }] },
-                                "Status": { status: { name: "Ativo" } },
-                            },
-                        }, '2025-09-03');
-                        
-                        clientPageId = clientPage.id;
-                        console.log(`✅ Cliente criado no db ${childId} - ID: ${clientPageId}`);
-                        attemptError = null;
-                        break; // Se deu certo, interrompe o loop
-                    } catch (e: any) {
-                        attemptError = e.message;
-                        console.warn(`Fallback falhou no child DB ${childId}:`, e.message);
-                    }
-                }
-                
-                if (!clientPageId && attemptError) {
-                    // Erro de cliente é SOFT — não bloqueia Sprint/Task
-                    console.warn(`⚠️ Cliente não criado (sem acesso ao DB). Sprint continuará sem vínculo de cliente.`);
-                    softErrors.push(`Cliente (soft): ${attemptError}`);
-                }
-            } catch (e: any) {
-                console.warn("Cliente não criado (soft error):", e.message);
-                softErrors.push(`Cliente (soft): ${e.message}`);
-            }
-        }
-
-        // ==========================================
-        // ETAPA 2: CRIAR SPRINT (vinculada ao Cliente)
+        // ETAPA 1: CRIAR SPRINT
+        // DB: 🗓️ Sprints — prop título: "Sprint"
+        // Nota: Clients DB não tem acesso via integração — sprint fica sem vínculo de cliente
+        // Para ativar: compartilhar banco Clientes com a integração em notion.so/2f6bdc72e03981f68061e78e390f5f6a
         // DB: 🗓️ Sprints — prop título: "Sprint"
         // Relações: Cliente → Clientes DB
         // ==========================================
@@ -124,11 +73,6 @@ serve(async (req) => {
                     rich_text: [{ text: { content: `Onboarding e setup inicial para ${companyName}` } }]
                 },
             };
-
-            // Vincula ao cliente se foi criado com sucesso
-            if (clientPageId) {
-                sprintProperties["Cliente"] = { relation: [{ id: clientPageId }] };
-            }
 
             try {
                 const newSprint = await notionPost('/pages', {
@@ -228,12 +172,8 @@ serve(async (req) => {
                 "Tipo": { select: { name: "📋 Reunião" } },
             };
 
-            // Vincula ao sprint e ao cliente se existirem
             if (sprintPageId) {
                 taskProperties["Sprint"] = { relation: [{ id: sprintPageId }] };
-            }
-            if (clientPageId) {
-                taskProperties["Cliente"] = { relation: [{ id: clientPageId }] };
             }
 
             try {
@@ -253,24 +193,13 @@ serve(async (req) => {
         // Sprint é o mínimo necessário — se criou Sprint, é sucesso
         if (criticalErrors.length > 0 && !sprintPageId) {
             return new Response(
-                JSON.stringify({
-                    error: 'Falha ao criar Sprint e Task no Notion',
-                    details: criticalErrors,
-                    soft_warnings: softErrors,
-                }),
+                JSON.stringify({ error: 'Falha ao criar Sprint no Notion', details: criticalErrors }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 },
             );
         }
 
         return new Response(
-            JSON.stringify({
-                success: true,
-                message: sprintPageId ? 'Sprint e Task criados com sucesso' : 'Sync parcial — verificar logs',
-                clientPageId: clientPageId || null,
-                sprintPageId,
-                // Avisa se cliente não foi linkado (sem bloquear)
-                warnings: softErrors.length > 0 ? softErrors : undefined,
-            }),
+            JSON.stringify({ success: true, sprintPageId }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
         );
 
