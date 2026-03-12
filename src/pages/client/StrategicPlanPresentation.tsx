@@ -27,26 +27,31 @@ import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
 
 // ── Navigation ────────────────────────────────────────────────────────────
+// ── Section order reflects the narrative arc:
+// 1. Show you listened (Context Mirror / Diagnosis) → 2. Show the problem (Causes) →
+// 3. Show the solution (Thesis) → 4. Show the agreements (Premises) →
+// 5. Show the plan (Methodology, OKRs, Roadmap) → 6. Show the execution (Onboarding) →
+// 7. Close (Investment → Approval)
 const NAV_SECTIONS = [
-    { id: 'cover', name: 'Capa', icon: <FileText className="w-4 h-4" /> },
-    { id: 'premises', name: 'Premissas', icon: <Target className="w-4 h-4" /> },
-    { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'diagnostic_causes', name: 'Causa Raiz', icon: <AlertTriangle className="w-4 h-4" /> },
-    { id: 'thesis', name: 'Tese de Crescimento', icon: <Lightbulb className="w-4 h-4" /> },
-    { id: 'persona', name: 'Persona', icon: <Users className="w-4 h-4" /> },
-    { id: 'benchmark', name: 'Análise de Mercado', icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'methodology', name: 'Metodologia', icon: <Settings className="w-4 h-4" /> },
-    { id: 'goals', name: 'Metas e Indicadores', icon: <Target className="w-4 h-4" /> },
-    { id: 'roadmap_macro', name: 'Marcos do Projeto', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding_kickoff', name: 'Alinhamento & Kickoff', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding_setup', name: 'Setup & Arquitetura', icon: <Settings className="w-4 h-4" /> },
-    { id: 'onboarding_training', name: 'Treinamento & Go-Live', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'onboarding_adoption', name: 'Adoção & Mapeamento', icon: <Target className="w-4 h-4" /> },
-    { id: 'onboarding_handover', name: 'Handover & Escala', icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'sla', name: 'Regras do Jogo', icon: <ShieldCheck className="w-4 h-4" /> },
-    { id: 'projections', name: 'Projeções', icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'investment', name: 'Investimento', icon: <DollarSign className="w-4 h-4" />, optional: true },
-    { id: 'approval', name: 'Aprovação', icon: <Check className="w-4 h-4" /> },
+    { id: 'cover',               name: 'Capa',                   icon: <FileText className="w-4 h-4" /> },
+    { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário',      icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'diagnostic_causes',   name: 'Causa Raiz',              icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: 'thesis',              name: 'Tese de Crescimento',     icon: <Lightbulb className="w-4 h-4" /> },
+    { id: 'premises',            name: 'Premissas',               icon: <Target className="w-4 h-4" /> },
+    { id: 'persona',             name: 'Persona',                 icon: <Users className="w-4 h-4" /> },
+    { id: 'benchmark',           name: 'Análise de Mercado',      icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'methodology',         name: 'Metodologia',             icon: <Settings className="w-4 h-4" /> },
+    { id: 'goals',               name: 'Metas e Indicadores',     icon: <Target className="w-4 h-4" /> },
+    { id: 'roadmap_macro',       name: 'Marcos do Projeto',       icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     icon: <Settings className="w-4 h-4" /> },
+    { id: 'onboarding_training', name: 'Treinamento & Go-Live',   icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'onboarding_adoption', name: 'Adoção & Mapeamento',     icon: <Target className="w-4 h-4" /> },
+    { id: 'onboarding_handover', name: 'Handover & Escala',       icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'sla',                 name: 'Regras do Jogo',          icon: <ShieldCheck className="w-4 h-4" /> },
+    { id: 'projections',         name: 'Projeções',               icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'investment',          name: 'Investimento',            icon: <DollarSign className="w-4 h-4" /> },
+    { id: 'approval',            name: 'Aprovação',               icon: <Check className="w-4 h-4" /> },
 ];
 
 function getStatusBadge(status: string) {
@@ -110,12 +115,17 @@ export default function StrategicPlanPresentation() {
 
     // Filter sections based on project type
     const sections = NAV_SECTIONS.filter(s => {
-        const pt = plan?.rei_projects?.type || 'full';
+        const pt = plan?.rei_projects?.type || plan?.project_type || 'full';
 
-        if (s.id === 'investment' || s.id === 'projections') {
-            return pt === 'full' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
+        // Projections only for growth/funnel types (requires media investment data)
+        if (s.id === 'projections') {
+            return pt === 'full' || pt === 'consulting' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
         }
 
+        // Investment shown for ALL types — each type has its own view (media vs. service fee)
+        // if (s.id === 'investment') → always visible
+
+        // Persona and Benchmark: not shown for CRM (irrelevant for process implementation)
         if (s.id === 'persona' || s.id === 'benchmark') {
             return pt !== 'crm_ops';
         }

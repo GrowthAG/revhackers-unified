@@ -54,7 +54,10 @@ serve(async (req: Request) => {
 
     const cleanResponses = sanitizeAnswers(rei_responses);
     const scoringContext = rei_responses.radar_data ? `Radar de Maturidade: ${JSON.stringify(rei_responses.radar_data)}` : '';
-    const isCrmOps = projectType === 'crm_ops' || objective?.includes('CRM') || objective?.includes('RevOps') || objective?.includes('Operações');
+    // Type detection — use only projectType field (string matching is fragile and causes false positives)
+    const isCrmOps  = projectType === 'crm_ops';
+    const isFounder = projectType === 'founder';
+    const isDev     = projectType === 'dev' || projectType === 'site';
 
     // --- INTEGRATION: Notion Transcript Search ---
     let transcriptText = "";
@@ -135,17 +138,34 @@ serve(async (req: Request) => {
     // --- END INTEGRATION ---
 
 
-    let strategicContext = `Crie um plano estratégico altamente tático e contextualizado (90 dias ou 3 meses). 
-Você DEVE basear cada insight, cada risco e cada etapa do roadmap ESPECIFICAMENTE e ESTRITAMENTE nas dores relatadas nas respostas e na transcrição da call. 
-LEI IMUTÁVEL: NUNCA crie cenários genéricos de "aumentar vendas" ou "melhorar processos". Cite QUAIS processos estão ruins segundo o cliente. Diga QUANTO é o budget, QUAL ferramenta eles usam atualmente, QUAL é o tamanho do time.`;
+    let strategicContext = `Crie um plano estratégico de Growth altamente tático e contextualizado (90 dias).
+Você DEVE basear cada insight, cada risco e cada etapa do roadmap ESPECIFICAMENTE nas dores relatadas nas respostas e na transcrição da call.
+LEI IMUTÁVEL: NUNCA crie cenários genéricos de "aumentar vendas" ou "melhorar processos". Cite QUAIS processos estão ruins segundo o cliente. Diga QUANTO é o budget, QUAL ferramenta eles usam atualmente, QUAL é o tamanho do time.
+Estruture o plano em 3 ciclos de 30 dias: Fundação → Execução → Escala. Os OKRs devem ter metas de CAC, LTV e ROAS onde aplicável.`;
 
     if (isCrmOps) {
       strategicContext = `Crie um Roadmap cirúrgico focado EXATAMENTE em 90 DIAS de implementação de RevOps/CRM "World-Class".
 O roadmap deve transformar o caos atual (vide respostas e transcrição) em uma máquina previsível:
-1. Mês 1 (Fundação Operacional): Centralizar os dados fragmentados do cliente e mapear processos (As-Is).
-2. Mês 2 (SLA e Automações): Speed to lead e automação do processo comercial.
-3. Mês 3 (Governança e Retenção): Dashboards de performance e Onboarding do CS.
-LEI IMUTÁVEL: Seja ABSURDAMENTE específico. Se o cliente na transcrição reclamou de leads frios, coloque uma etapa "Filtro de Leads Frios" e não um genérico "Qualificação de Leads". Nomeie as ferramentas e gargalos textuais relatados!`;
+1. Mês 1 (Fundação Operacional): Centralizar os dados fragmentados do cliente, mapear processos As-Is e configurar o Blueprint do CRM.
+2. Mês 2 (SLA e Automações): Speed to lead, automação de Hand-off MKT→SDR→Closer e dashboards de pipeline.
+3. Mês 3 (Governança e Retenção): Rito de Pipeline Review semanal, Data Hygiene e Onboarding do CS.
+LEI IMUTÁVEL: Seja ABSURDAMENTE específico. Se o cliente reclamou de leads frios, escreva "Filtro de Leads Frios com Lead Scoring no Funnels". Nomeie TODAS as ferramentas, cargos e gargalos citados. Os OKRs devem ter métricas de Win Rate, Velocidade do Pipeline e % de preenchimento do CRM.`;
+    } else if (isFounder) {
+      strategicContext = `Crie um Protocolo de Autoridade Digital e Personal Branding para EXATAMENTE 90 dias no LinkedIn.
+ATENÇÃO CRÍTICA: Este é um Founder Protocol — o cliente é o produto. NÃO é um plano de empresa. Não crie OKRs de "aumentar vendas da empresa" ou "implementar CRM". O foco é 100% na pessoa, na audiência e na conversão de autoridade em oportunidade.
+Estruture em 3 fases:
+1. Mês 1 (Posicionamento e Identidade): Definir nicho de autoridade, POV único, ICP do perfil pessoal. Calibrar bio, headline, conteúdo fixado e banner do LinkedIn com base nos dados do cliente.
+2. Mês 2 (Máquina de Conteúdo): Cadência 3x/semana, formatos de alto alcance (carrossel, text post, vídeo curto), estratégia de comentários em contas âncora do nicho.
+3. Mês 3 (Loop de Conversão): Transformar audiência em pipeline — conexões estratégicas no ICP, DM ativo, convites para palestras, parcerias com criadores.
+LEI IMUTÁVEL: Cite o nicho exato do founder, o ICP do perfil (cargo, empresa, segmento), os canais e formatos que ele mencionou. Os OKRs devem ter metas de impressões/mês, seguidores qualificados, conexões de 1º grau no ICP e inbounds via DM. NÃO use métricas de "engajamento genérico". Os pillars devem ser: Contexto Atual do Perfil / Posicionamento e Conteúdo / Alvos de Autoridade.`;
+    } else if (isDev) {
+      strategicContext = `Crie um Roadmap de Entrega de Projeto Digital para EXATAMENTE 6 semanas (não 90 dias).
+ATENÇÃO CRÍTICA: Este é um projeto de desenvolvimento/site — NÃO é um plano de growth contínuo. Não crie OKRs de geração de demanda ou funil de vendas. O foco é ENTREGA com qualidade, prazo e resultado técnico mensurável.
+Estruture em 3 fases:
+1. Fase 1 — Briefing e Arquitetura (Semana 1): Definir escopo técnico, sitemap, stack tecnológica, referências visuais. Wireframe aprovado antes de qualquer linha de código.
+2. Fase 2 — Desenvolvimento e Integrações (Semana 2–4): Codificar páginas prioritárias, integrar ferramentas (CRM, Analytics, formulários), revisão de copy e testes internos de performance e responsividade.
+3. Fase 3 — QA, Lançamento e Handover (Semana 5–6): Rodada de feedback do cliente, ajustes finais, go-live controlado, configuração de DNS, treinamento de uso e entrega do repositório.
+LEI IMUTÁVEL: Cite QUAIS páginas serão entregues, QUAL stack foi escolhida, QUAL meta de performance (LCP < 2.5s, GTmetrix ≥ 90). Os OKRs devem ser entregáveis concretos: wireframe aprovado, páginas em produção, Core Web Vitals no verde, handover documentado. Os pillars devem ser: Escopo e Arquitetura / Stack e Integrações / Performance e Entrega.`;
     }
 
     const prompt = `Você é o Diretor Estratégico "World-Class" de Growth & RevOps na RevHackers.
@@ -173,8 +193,10 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
 {
   "summary": "Resumo executivo cirúrgico atacando a dor principal (1-2 frases).",
   "context_mirror": {
-    "maturity": "Maturidade (ex: Inicial, Intermediária, Avançada)",
-    "restrictions": "Restrições LITERAIS de time, ferramentas ou orçamento baseadas nas respostas."
+    "segment": "Segmento ou nicho exato de atuação do cliente conforme as respostas (ex: SaaS B2B, E-commerce de moda, Consultor Independente de RH)",
+    "objective": "Objetivo principal declarado pelo cliente nas respostas — direto e específico (ex: Implementar CRM com rastreamento completo em 90 dias)",
+    "maturity": "Maturidade operacional/digital (ex: Inicial, Intermediária, Avançada) — baseada nas ferramentas e processos descritos",
+    "restrictions": "Restrições LITERAIS de time, ferramentas ou orçamento extraídas diretamente das respostas e transcrição."
   },
   "signals": [
     { "type": "positive"|"negative"|"neutral", "text": "Citação ou sinal CLARO E ESPECÍFICO do cliente (Jamais genérico)", "impact": "Impacto real e numérico na operação" }

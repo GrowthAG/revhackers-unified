@@ -1,5 +1,5 @@
 import React, { Fragment, cloneElement } from 'react';
-import { Settings, Zap, Target, Repeat, ChevronRight } from 'lucide-react';
+import { Settings, Zap, Target, Repeat, FileText, Users, BarChart3, Code2, Gauge } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Pipeline stages ───────────────────────────────────────────────────────
@@ -58,26 +58,111 @@ const crmSteps = [
     },
 ];
 
-// ── Differentials ─────────────────────────────────────────────────────────
-const differentials = [
-    { icon: <Settings className="w-5 h-5" />, title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
-    { icon: <Repeat className="w-5 h-5" />, title: 'Bowtie Revenue Loop', desc: 'Da atração ao fechamento ao sucesso do cliente — cada etapa conectada e medida.' },
-    { icon: <Target className="w-5 h-5" />, title: 'Onboarding como Vantagem', desc: 'O primeiro resultado entregue em 15 dias determina o LTV. Cada touchpoint tem dono e prazo.' },
+// ── Founder steps ─────────────────────────────────────────────────────────
+const founderSteps = [
+    {
+        phase: '01', name: 'Posicionamento & Identidade', tagline: 'Semana 1–2',
+        description: 'Antes de postar, precisamos saber quem você é para quem importa. Definimos o nicho de autoridade, o ponto de vista único (POV) e o ICP do perfil pessoal — quem você quer atrair, qual problema você resolve e por que você e não outro.',
+        principles: ['Definição do nicho de autoridade e POV único', 'ICP do perfil: cargo, segmento e dor do seguidor ideal', 'Bio, headline e banner do LinkedIn otimizados', 'Conteúdo fixado que posiciona antes do primeiro post'],
+    },
+    {
+        phase: '02', name: 'Conteúdo Âncora', tagline: 'Semana 3–6',
+        description: 'Criamos os primeiros posts de alto impacto — carrosséis de autoridade, text posts de opinião e stories de bastidor — para testar formatos, calibrar a voz e gerar os primeiros dados reais de alcance e engajamento do ICP.',
+        principles: ['3 formatos testados: carrossel, text post, vídeo curto', 'Estratégia de comentários em contas âncora do nicho', 'Análise de alcance por formato para dobrar no que funciona', 'Primeiros inbounds qualificados ou conexões de 1º grau no ICP'],
+    },
+    {
+        phase: '03', name: 'Cadência & Volume', tagline: 'Semana 7–10',
+        description: 'Máquina rodando: 3 publicações semanais consistentes, rotina de comentários estratégicos e nutrição da audiência. Nessa fase a consistência supera a perfeição — quem publica sem parar vence quem publica o post perfeito uma vez.',
+        principles: ['Cadência de 3x/semana consolidada e sistematizada', 'Banco de conteúdo com 2 semanas de buffer', 'Comentários diários em 5–10 posts de contas âncora', 'Review de métricas quinzenal para ajuste de pauta'],
+    },
+    {
+        phase: '04', name: 'Loop de Conversão', tagline: 'Semana 11–12',
+        description: 'Transformamos audiência em oportunidade. Com autoridade estabelecida, ativamos o loop: seguidores viram conexões, conexões viram conversas, conversas viram chamadas — tudo originado de conteúdo, sem cold outreach.',
+        principles: ['DM estratégico: abordagem baseada em engajamento real', 'Convites para podcast, evento ou parceria (inbound de autoridade)', 'Newsletter ou grupo fechado para leads mais quentes', 'Revisão final: 1 inbound qualificado = payback do protocolo'],
+    },
 ];
 
+// ── Dev steps ──────────────────────────────────────────────────────────────
+const devSteps = [
+    {
+        phase: '01', name: 'Briefing & Arquitetura', tagline: 'Semana 1',
+        description: 'Nenhuma linha de código antes da estrutura aprovada. Mapeamos o objetivo de cada página, criamos o sitemap, definimos a stack tecnológica e entregamos o wireframe para aprovação — o rascunho que evita retrabalho caro.',
+        principles: ['Sitemap completo com objetivo de conversão por página', 'Wireframe (baixa fidelidade) aprovado pelo cliente', 'Stack definida: framework, CMS, hosting, analytics', 'Metas de performance estabelecidas como critério de aceite'],
+    },
+    {
+        phase: '02', name: 'Design & Copy', tagline: 'Semana 2–3',
+        description: 'UI de alta fidelidade construída sobre o wireframe aprovado. O design segue mobile-first e os textos são revisados para conversão — não apenas para informar. A identidade visual é aplicada antes do desenvolvimento.',
+        principles: ['UI de alta fidelidade no Figma, mobile-first', 'Copy revisado: headline, CTA e proposta de valor por seção', 'Aprovação de design antes de entrar em código', 'Assets exportados e organizados para handoff de dev'],
+    },
+    {
+        phase: '03', name: 'Desenvolvimento & Integrações', tagline: 'Semana 3–5',
+        description: 'Código escrito sobre design aprovado. Integramos todas as ferramentas necessárias (CRM, formulários, analytics, pixels) e garantimos que o site funciona em todos os dispositivos antes de qualquer cliente ver.',
+        principles: ['Desenvolvimento responsivo e acessível (WCAG básico)', 'Integrações: CRM, formulários, Google Analytics, pixels de rastreamento', 'Testes cross-browser e cross-device antes da entrega', 'Core Web Vitals monitorados desde o primeiro build'],
+    },
+    {
+        phase: '04', name: 'QA & Lançamento', tagline: 'Semana 6',
+        description: 'Rodada de feedback estruturada com o cliente, ajustes finais, go-live controlado com configuração de DNS e SSL, e handover completo com documentação de uso para o cliente operar sem dependência.',
+        principles: ['Revisão final com checklist de 40+ pontos de QA', 'Configuração de DNS, SSL, redirects e sitemap XML', 'Treinamento de uso do CMS pelo cliente', 'Entrega: repositório, credenciais, documentação de manutenção'],
+    },
+];
+
+// ── Differentials por tipo ────────────────────────────────────────────────
+const differentialsByType: Record<string, { icon: React.ReactElement; title: string; desc: string }[]> = {
+    crm_ops: [
+        { icon: <FileText className="w-5 h-5" />, title: 'Processo Documentado', desc: 'Tudo que construímos vira SOP interno do cliente. A operação continua sem depender da RevHackers.' },
+        { icon: <Users className="w-5 h-5" />, title: 'Adoção Garantida', desc: 'O melhor sistema do mundo falha se o time não preenche. Treinamos até a adoção ser visceral.' },
+        { icon: <BarChart3 className="w-5 h-5" />, title: 'Governança Ativa', desc: 'Pipeline Review semanal como rito obrigatório. Se não está no CRM, não existe.' },
+    ],
+    founder: [
+        { icon: <Target className="w-5 h-5" />, title: 'Posicionamento Cirúrgico', desc: 'Nicho, POV e headline definidos antes de qualquer postagem. A clareza de quem você é atrai o cliente certo.' },
+        { icon: <Zap className="w-5 h-5" />, title: 'Máquina de Conteúdo', desc: 'Cadência sustentável de 3x/semana que converte autoridade em audiência qualificada — sem burnout criativo.' },
+        { icon: <Repeat className="w-5 h-5" />, title: 'Loop de Conversão', desc: 'Da audiência ao pipeline: DM estratégico, inbound qualificado e convites de palestra originados do conteúdo.' },
+    ],
+    dev: [
+        { icon: <Code2 className="w-5 h-5" />, title: 'Arquitetura Primeiro', desc: 'Sitemap, wireframe e aprovação antes de qualquer linha de código. Sem surpresas no meio do projeto.' },
+        { icon: <Zap className="w-5 h-5" />, title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão — não por ordem alfabética. Resultado visível toda semana.' },
+        { icon: <Gauge className="w-5 h-5" />, title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto — não bônus. Entregamos o que prometemos.' },
+    ],
+    default: [
+        { icon: <Settings className="w-5 h-5" />, title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
+        { icon: <Repeat className="w-5 h-5" />, title: 'Bowtie Revenue Loop', desc: 'Da atração ao fechamento ao sucesso do cliente — cada etapa conectada e medida.' },
+        { icon: <Target className="w-5 h-5" />, title: 'Onboarding como Vantagem', desc: 'O primeiro resultado entregue em 15 dias determina o LTV. Cada touchpoint tem dono e prazo.' },
+    ],
+};
+
 export default function MethodologySection({ plan }: { plan: any }) {
-    const isCRM = (plan?.rei_projects?.type || plan?.project_type) === 'crm_ops';
-    
-    // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda.
-    const displaySteps = isCRM ? crmSteps : defaultSteps;
+    const projectType = plan?.rei_projects?.type || plan?.project_type || 'default';
+
+    // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda por cliente.
+    const stepsMap: Record<string, typeof defaultSteps> = {
+        crm_ops: crmSteps,
+        founder: founderSteps,
+        dev:     devSteps,
+        site:    devSteps,
+    };
+    const displaySteps = stepsMap[projectType] || defaultSteps;
+    const differentials = differentialsByType[projectType] || differentialsByType['default'];
+
+    const eyebrowByType: Record<string, string> = {
+        crm_ops: 'Protocolo CRM',
+        founder: 'Protocolo Founder',
+        dev:     'Protocolo de Entrega',
+        site:    'Protocolo de Entrega',
+    };
+    const titleLine2ByType: Record<string, string> = {
+        crm_ops: 'RevHackers™',
+        founder: 'Founder™',
+        dev:     'Dev™',
+        site:    'Dev™',
+    };
 
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
-                    eyebrow="Como fazemos"
+                    eyebrow={eyebrowByType[projectType] || 'Como fazemos'}
                     titleLine1="Metodologia"
-                    titleLine2="RevHackers™"
+                    titleLine2={titleLine2ByType[projectType] || 'RevHackers™'}
                 />
             </div>
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-4 w-full bg-white flex flex-col justify-start">

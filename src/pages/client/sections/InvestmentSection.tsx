@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart3, Zap, Target, Settings } from 'lucide-react';
+import { BarChart3, Zap, Target, Settings, ArrowRight } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -40,10 +40,168 @@ function getSegmentConfig(segment: string) {
     };
 }
 
+// ── Service investment config (CRM / Founder / Dev) ───────────────────────
+interface ServiceItem  { name: string; range: [number, number]; per: string; desc: string }
+interface ServiceROI   { label: string; value: string; note: string }
+interface ServiceStep  { n: string; title: string; desc: string; timing: string }
+interface ServiceConfig {
+    headline: string; description: string;
+    items: ServiceItem[]; roi: ServiceROI[]; nextSteps: ServiceStep[];
+}
+function getServiceConfig(projectType: string): ServiceConfig | null {
+    if (projectType === 'crm_ops') return {
+        headline: 'Investimento de Implementação',
+        description: 'Fee de implementação + licenças de plataforma para os 90 dias de projeto.',
+        items: [
+            { name: 'Fee de Implementação RevHackers', range: [4500, 8000], per: '/mês', desc: 'Diagnóstico, setup, automações, treinamento e governança de pipeline' },
+            { name: 'Licenças de Plataforma (Funnels/CRM)', range: [400, 900], per: '/mês', desc: 'CRM, automação de marketing e analytics integrados' },
+        ],
+        roi: [
+            { label: 'Redução de Ciclo de Venda', value: '20–40%', note: 'Automação de follow-up e qualificação com lead scoring' },
+            { label: 'Win Rate', value: '+15–25%', note: 'Pipeline disciplinado com SLA de Hand-off MKT→Vendas' },
+            { label: 'Dados no CRM', value: '100%', note: 'Governança ativa: se não está no CRM, não existe' },
+            { label: 'Break-Even', value: 'Mês 2', note: 'Payback via aumento direto de conversão do comercial' },
+        ],
+        nextSteps: [
+            { n: '01', title: 'Kickoff', desc: 'Mapeamento As-Is e definição do Blueprint do CRM', timing: 'Semana 1' },
+            { n: '02', title: 'Setup do CRM', desc: 'Pipeline, propriedades, automações e integrações', timing: 'Semana 2–4' },
+            { n: '03', title: 'Go-Live', desc: 'Time treinado, sistema em produção, governança ativa', timing: 'Semana 5–6' },
+        ],
+    };
+    if (projectType === 'founder') return {
+        headline: 'Investimento no Protocolo',
+        description: 'Fee de acompanhamento estratégico para construção de autoridade e audiência qualificada no LinkedIn.',
+        items: [
+            { name: 'Fee de Acompanhamento RevHackers', range: [2500, 4500], per: '/mês', desc: 'Estratégia de posicionamento, pauta, distribuição e conversão via LinkedIn' },
+            { name: 'Ferramentas de Conteúdo', range: [100, 300], per: '/mês', desc: 'Canva Pro, agendador de posts, analytics de perfil' },
+        ],
+        roi: [
+            { label: 'Crescimento de Audiência', value: '3–5x', note: 'Seguidores qualificados dentro do ICP definido' },
+            { label: 'Inbound via DM', value: '4–12/mês', note: 'Oportunidades originadas de conteúdo, sem cold outreach' },
+            { label: 'Impressões Mensais', value: '+200%', note: 'Com cadência de 3x/semana e comentários estratégicos' },
+            { label: 'Break-Even', value: '1 deal', note: 'Um único cliente via inbound cobre todo o investimento' },
+        ],
+        nextSteps: [
+            { n: '01', title: 'Posicionamento', desc: 'Nicho, POV, bio e headline do LinkedIn definidos', timing: 'Semana 1' },
+            { n: '02', title: 'Primeiros Conteúdos', desc: 'Posts âncora de autoridade, testes de formato', timing: 'Semana 2–4' },
+            { n: '03', title: 'Máquina Ativa', desc: 'Cadência consolidada e Loop de Conversão operando', timing: 'Semana 8–12' },
+        ],
+    };
+    if (projectType === 'dev' || projectType === 'site') return {
+        headline: 'Investimento no Projeto',
+        description: 'Fee de desenvolvimento com entrega em sprints, performance garantida e handover completo.',
+        items: [
+            { name: 'Fee de Desenvolvimento e Design', range: [8000, 25000], per: 'projeto', desc: 'UX/UI, desenvolvimento, integrações, QA, go-live e handover documentado' },
+            { name: 'Manutenção Mensal (opcional)', range: [500, 1500], per: '/mês', desc: 'Atualizações, monitoramento de performance e otimizações pós-lançamento' },
+        ],
+        roi: [
+            { label: 'Core Web Vitals', value: 'LCP < 2.5s', note: 'Performance como critério de aceite do projeto' },
+            { label: 'GTmetrix Score', value: '≥ 90', note: 'Carregamento otimizado em todos os dispositivos' },
+            { label: 'Conversão Estimada', value: '+30–80%', note: 'vs. site anterior, baseado em benchmarks do segmento' },
+            { label: 'Prazo', value: '6 semanas', note: 'Da aprovação do wireframe ao go-live em produção' },
+        ],
+        nextSteps: [
+            { n: '01', title: 'Briefing & Wireframe', desc: 'Sitemap, estrutura aprovada e referências visuais', timing: 'Semana 1' },
+            { n: '02', title: 'Design & Dev', desc: 'UI, código, integrações e responsividade', timing: 'Semana 2–5' },
+            { n: '03', title: 'QA & Go-Live', desc: 'Testes, ajustes finais e lançamento controlado', timing: 'Semana 6' },
+        ],
+    };
+    return null; // Use existing growth/media investment view
+}
+
 export default function InvestmentSection({ plan, onBudgetChange }: { plan: any; onBudgetChange?: (data: any) => void }) {
+    const projectType = plan?.rei_projects?.type || plan?.project_type || '';
+    const serviceConfig = getServiceConfig(projectType);
+
     const budgetData = plan.budget_data || {};
     const segment = plan.diagnostic_data?.context_mirror?.segmento || plan.diagnostic_data?.context_mirror?.segment || plan.premises_data?.segmento || plan.premises_data?.segment || '';
     const config = getSegmentConfig(segment);
+
+    // ── Service-based investment view (CRM / Founder / Dev) ─────────────────
+    if (serviceConfig) {
+        const totalMin = serviceConfig.items.reduce((s, i) => s + i.range[0], 0);
+        const totalMax = serviceConfig.items.reduce((s, i) => s + i.range[1], 0);
+        return (
+            <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+                <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                    <SectionHeader
+                        eyebrow="Financeiro"
+                        titleLine1={serviceConfig.headline}
+                        description={serviceConfig.description}
+                    />
+                </div>
+                <div className="flex-1 p-6 md:p-10 lg:p-12 pt-8 max-w-[1400px] mx-auto w-full bg-white space-y-8">
+
+                    {/* Investment Items */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {serviceConfig.items.map((item, i) => (
+                            <div key={i} className="border border-zinc-200 p-7 rounded-2xl shadow-sm">
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-3">{item.name}</p>
+                                <p className="text-3xl font-black text-black tracking-tight mb-1">
+                                    {P(item.range[0])}
+                                    {item.range[1] > item.range[0] && <span className="text-zinc-400"> – {P(item.range[1])}</span>}
+                                    <span className="text-sm text-zinc-400 font-normal ml-1">{item.per}</span>
+                                </p>
+                                <p className="text-[13px] text-zinc-500 leading-relaxed mt-2">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* ROI Grid */}
+                    <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm">
+                        <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-6">Resultados Esperados</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {serviceConfig.roi.map((r, i) => (
+                                <div key={i} className={i === serviceConfig.roi.length - 1 ? 'md:border-l md:border-zinc-100 md:pl-6' : ''}>
+                                    <p className="text-2xl font-black text-black tracking-tight mb-1" style={i === 0 ? { color: '#00CC6A' } : {}}>{r.value}</p>
+                                    <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-1">{r.label}</p>
+                                    <p className="text-[12px] text-zinc-400 leading-snug">{r.note}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Next Steps + Total */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="border border-zinc-200 p-7 rounded-2xl shadow-sm">
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-6">Próximos Passos</p>
+                            <div className="space-y-5">
+                                {serviceConfig.nextSteps.map((step, i) => (
+                                    <div key={i} className="flex items-start gap-4">
+                                        <span className="text-zinc-200 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
+                                        <div className="flex-1">
+                                            <div className="flex items-center justify-between">
+                                                <p className="text-black font-bold text-sm">{step.title}</p>
+                                                <span className="text-xs text-zinc-400 font-mono">{step.timing}</span>
+                                            </div>
+                                            <p className="text-zinc-500 text-xs mt-0.5">{step.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="bg-zinc-950 p-7 rounded-2xl flex flex-col justify-between">
+                            <div>
+                                <p className="text-xs text-zinc-500 uppercase tracking-widest font-black mb-6">Investimento Total Estimado</p>
+                                <p className="text-4xl font-black text-white tracking-tight">
+                                    {P(totalMin)}
+                                    {totalMax > totalMin && <span className="text-zinc-500"> – {P(totalMax)}</span>}
+                                </p>
+                                <p className="text-sm text-zinc-500 mt-2">{serviceConfig.items[0].per === 'projeto' ? 'Valor único do projeto' : '/mês · faturado mensalmente'}</p>
+                            </div>
+                            <div className="mt-8 pt-6 border-t border-zinc-800">
+                                <div className="flex items-center gap-2 text-[#00CC6A]">
+                                    <ArrowRight className="w-4 h-4" />
+                                    <span className="text-sm font-black uppercase tracking-widest">Aprovação → Início em 48h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        );
+    }
 
     const [values, setValues] = useState<Record<string, number>>({
         google_ads: budgetData.google_ads || 0,
