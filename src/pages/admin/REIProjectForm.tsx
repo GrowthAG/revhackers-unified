@@ -206,6 +206,20 @@ const REIProjectForm = () => {
                 toast({ title: 'Novo Protocolo Iniciado' });
 
                 if (res && res.id) {
+                    // Fase 1: cria Sprint no Notion imediatamente (não bloqueia navegação)
+                    supabase.functions.invoke('sync-notion-project', {
+                        body: {
+                            phase: 'setup',
+                            projectId: res.id,
+                            type: data.type,
+                            companyName: data.client_company || data.client_name,
+                            clientName: data.client_name,
+                        }
+                    }).then(({ error }) => {
+                        if (error) console.warn('[Notion Setup] Falhou (não crítico):', error);
+                        else console.log('[Notion Setup] Sprint criada no Notion');
+                    });
+
                     navigate(`/admin/jornada/${res.id}`);
                     return;
                 }

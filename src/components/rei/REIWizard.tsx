@@ -375,15 +375,15 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 console.warn("Enrichment trigger failed (non-blocking):", enrichError);
             }
 
-            // 5. Native Notion Integration
+            // 5. Native Notion Integration — Fase 2: enriquece Sprint + cria Task
             try {
                 const { supabase } = await import('@/integrations/supabase/client');
                 await supabase.functions.invoke('sync-notion-project', {
-                    body: { projectId, type, scoreResult, data }
+                    body: { phase: 'enrich', projectId, type, scoreResult, data }
                 });
-                console.log("✅ Custom Notion Webhook triggered");
+                console.log("✅ Notion Enrich triggered");
             } catch (notionError) {
-                console.error("Notion Webhook failed:", notionError);
+                console.error("Notion Enrich failed:", notionError);
             }
 
             // JOIN THE DOTS: Clear persistence
