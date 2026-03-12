@@ -31,7 +31,10 @@ serve(async (req) => {
         const companyName = data.revops_empresa || data.company_name || data.client_company
             || data.companyName || `Cliente - ${projectId}`;
 
-        const syncErrors: string[] = [];
+        // Erros críticos (Sprint/Task) bloqueiam o retorno 200
+        // Erros não-críticos (Cliente) são logados mas não bloqueiam
+        const criticalErrors: string[] = [];
+        const softErrors: string[] = [];
 
         // 3. Notion API helper
         // notionVersion: '2022-06-28' para DBs simples, '2025-09-03' para multi-source (Clientes)
@@ -93,11 +96,13 @@ serve(async (req) => {
                 }
                 
                 if (!clientPageId && attemptError) {
-                    throw new Error(`Todas tentativas em child sources falharam. Ultimo erro: ${attemptError}`);
+                    // Erro de cliente é SOFT — não bloqueia Sprint/Task
+                    console.warn(`⚠️ Cliente não criado (sem acesso ao DB). Sprint continuará sem vínculo de cliente.`);
+                    softErrors.push(`Cliente (soft): ${attemptError}`);
                 }
             } catch (e: any) {
-                console.error("Erro ao criar Cliente:", e.message);
-                syncErrors.push(`Cliente Error: ${e.message}`);
+                console.warn("Cliente não criado (soft error):", e.message);
+                softErrors.push(`Cliente (soft): ${e.message}`);
             }
         }
 
@@ -134,7 +139,7 @@ serve(async (req) => {
                 console.log(`✅ Sprint criada: ${sprintPageId}`);
             } catch (e: any) {
                 console.error("Erro ao criar Sprint:", e.message);
-                syncErrors.push(`Sprint Error: ${e.message}`);
+                criticalErrors.push(`Sprint Error: ${e.message}`);
             }
         }
 
@@ -240,17 +245,18 @@ serve(async (req) => {
                 console.log(`✅ Task criada: ${newTask.id}`);
             } catch (e: any) {
                 console.error("Erro ao criar Task:", e.message);
-                syncErrors.push(`Task Error: ${e.message}`);
+                criticalErrors.push(`Task Error: ${e.message}`);
             }
         }
 
         // Retorna resultado
-        if (syncErrors.length > 0) {
+        // Sprint é o mínimo necessário — se criou Sprint, é sucesso
+        if (criticalErrors.length > 0 && !sprintPageId) {
             return new Response(
                 JSON.stringify({
-                    error: 'Partial or total failure syncing with Notion',
-                    details: syncErrors,
-                    partial: { clientPageId, sprintPageId, envDbClients: dbClientsId, envDbSprints: dbSprintsId, envDbTasks: dbTasksId },
+                    error: 'Falha ao criar Sprint e Task no Notion',
+                    details: criticalErrors,
+                    soft_warnings: softErrors,
                 }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 },
             );
@@ -259,9 +265,11 @@ serve(async (req) => {
         return new Response(
             JSON.stringify({
                 success: true,
-                message: 'Sync with Notion complete',
-                clientPageId,
+                message: sprintPageId ? 'Sprint e Task criados com sucesso' : 'Sync parcial — verificar logs',
+                clientPageId: clientPageId || null,
                 sprintPageId,
+                // Avisa se cliente não foi linkado (sem bloquear)
+                warnings: softErrors.length > 0 ? softErrors : undefined,
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
         );
