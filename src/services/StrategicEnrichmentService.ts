@@ -85,6 +85,7 @@ export class StrategicEnrichmentService {
             objective?: string;
             isB2B?: boolean;
             rei_responses?: any; // The full diagnostic context
+            competitors?: { nome: string, url?: string }[];
         }
     ): Promise<StrategicEnrichmentResult> {
         try {
@@ -97,7 +98,8 @@ export class StrategicEnrichmentService {
                     ticket: options?.ticket,
                     objective: options?.objective,
                     isB2B: options?.isB2B ?? true,
-                    rei_responses: options?.rei_responses
+                    rei_responses: options?.rei_responses,
+                    competitors: options?.competitors
                 }
             });
 
@@ -133,6 +135,7 @@ export class StrategicEnrichmentService {
             objective?: string;
             isB2B?: boolean;
             rei_responses?: any;
+            competitors?: { nome: string, url?: string }[];
         }
     ): Promise<StrategicEnrichmentResult> {
         return this.enrich(segment, 'all', options);

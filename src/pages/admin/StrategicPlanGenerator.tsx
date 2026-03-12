@@ -274,6 +274,12 @@ export default function StrategicPlanGenerator() {
             console.log('[Generator] answers keys:', Object.keys(answers));
             console.log('[Generator] segment:', segment, '| isCrmOps:', isCrmOps, '| effectiveEmail:', effectiveEmail);
 
+            // Extract competitors from REI context if any (from Gap 2 addition)
+            const competitorsList: { nome: string, url?: string }[] = [];
+            if (normalizedAnswers.concorrente1_nome) competitorsList.push({ nome: normalizedAnswers.concorrente1_nome, url: normalizedAnswers.concorrente1_site });
+            if (normalizedAnswers.concorrente2_nome) competitorsList.push({ nome: normalizedAnswers.concorrente2_nome, url: normalizedAnswers.concorrente2_site });
+            if (normalizedAnswers.concorrente3_nome) competitorsList.push({ nome: normalizedAnswers.concorrente3_nome, url: normalizedAnswers.concorrente3_site });
+            
             // Try AI enrichment (non-blocking)
             let enrichmentResult: any = { benchmark: null, personas: null, market: null };
             let aiSuccess = false;
@@ -282,7 +288,8 @@ export default function StrategicPlanGenerator() {
                 console.log('Invoking StrategicEnrichmentService...');
                 const aiResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
                     objective,
-                    rei_responses: normalizedAnswers
+                    rei_responses: normalizedAnswers,
+                    competitors: competitorsList.length > 0 ? competitorsList : undefined
                 });
 
                 if (aiResult.error) {

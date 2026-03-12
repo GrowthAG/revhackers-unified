@@ -53,9 +53,13 @@ serve(async (req) => {
             return await response.json();
         };
 
-        // Child data source ID do banco "🏢 Projetos" (dentro do multi-source Spaces/Clientes)
-        // Necessário para criar páginas com Notion-Version 2025-09-03
-        const DB_CLIENTS_CHILD_SOURCE = '2f6bdc72-e039-81da-b2b7-000beb70fc16';
+        // Multi-source database requer API version "2025-09-03" e requer a inserção 
+        // direcionada a um dos child_data_source_ids (já que databases fundidos não suportam inserção raiz).
+        const MULTI_SOURCE_CHILD_AIDS = [
+            "2f6bdc72-e039-81da-b2b7-000beb70fc16",
+            "a1ebec89-b01c-4472-b918-f1046379be44",
+            "31fbdc72-e039-808f-87ed-000b1985f1c9"
+        ];
 
         // ==========================================
         // ETAPA 1: CRIAR CLIENTE
@@ -66,16 +70,31 @@ serve(async (req) => {
             console.log(`Criando Cliente: ${companyName}`);
             try {
                 // O banco Clientes é multi-source → requer Notion-Version 2025-09-03
-                // e usa o child data source ID como database_id
-                const clientPage = await notionPost('/pages', {
-                    parent: { database_id: DB_CLIENTS_CHILD_SOURCE },
-                    properties: {
-                        "Cliente": { title: [{ text: { content: companyName } }] },
-                        "Status": { status: { name: "Ativo" } },
-                    },
-                }, '2025-09-03');
-                clientPageId = clientPage.id;
-                console.log(`✅ Cliente criado: ${clientPageId}`);
+                let attemptError = null;
+                for (const childId of MULTI_SOURCE_CHILD_AIDS) {
+                    try {
+                        console.log(`Tentando criar Cliente no child data source: ${childId}`);
+                        const clientPage = await notionPost('/pages', {
+                            parent: { database_id: childId },
+                            properties: {
+                                "Cliente": { title: [{ text: { content: companyName } }] },
+                                "Status": { status: { name: "Ativo" } },
+                            },
+                        }, '2025-09-03');
+                        
+                        clientPageId = clientPage.id;
+                        console.log(`✅ Cliente criado no db ${childId} - ID: ${clientPageId}`);
+                        attemptError = null;
+                        break; // Se deu certo, interrompe o loop
+                    } catch (e: any) {
+                        attemptError = e.message;
+                        console.warn(`Fallback falhou no child DB ${childId}:`, e.message);
+                    }
+                }
+                
+                if (!clientPageId && attemptError) {
+                    throw new Error(`Todas tentativas em child sources falharam. Ultimo erro: ${attemptError}`);
+                }
             } catch (e: any) {
                 console.error("Erro ao criar Cliente:", e.message);
                 syncErrors.push(`Cliente Error: ${e.message}`);
@@ -231,7 +250,7 @@ serve(async (req) => {
                 JSON.stringify({
                     error: 'Partial or total failure syncing with Notion',
                     details: syncErrors,
-                    partial: { clientPageId, sprintPageId },
+                    partial: { clientPageId, sprintPageId, envDbClients: dbClientsId, envDbSprints: dbSprintsId, envDbTasks: dbTasksId },
                 }),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 },
             );
