@@ -33,15 +33,17 @@ serve(async (req) => {
 
         const criticalErrors: string[] = [];
 
-        // 3. Notion API helper
+        // 3. Notion API helpers
+        const notionHeaders = {
+            'Authorization': `Bearer ${notionApiKey}`,
+            'Content-Type': 'application/json',
+            'Notion-Version': '2022-06-28',
+        };
+
         const notionPost = async (endpoint: string, body: any) => {
             const response = await fetch(`https://api.notion.com/v1${endpoint}`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${notionApiKey}`,
-                    'Content-Type': 'application/json',
-                    'Notion-Version': '2022-06-28',
-                },
+                headers: notionHeaders,
                 body: JSON.stringify(body),
             });
 
@@ -53,12 +55,48 @@ serve(async (req) => {
         };
 
         // ==========================================
+        // ETAPA 0: BUSCAR CLIENTE EXISTENTE NO NOTION
+        // Estratégia: search API busca páginas pelo nome da empresa.
+        // Se encontrar uma página cujo parent seja o banco Clientes,
+        // usamos o ID dela para criar as relações em Sprint e Task.
+        // Isso funciona com a API atual (2022-06-28) sem precisar criar cliente novo.
+        // ==========================================
+        let clientPageId = '';
+
+        if (dbClientsId && companyName) {
+            console.log(`Buscando cliente existente: "${companyName}"...`);
+            try {
+                const searchResult = await notionPost('/search', {
+                    query: companyName,
+                    filter: { value: 'page', property: 'object' },
+                    page_size: 10,
+                });
+
+                // Normaliza ID do banco Clientes para comparação (remove hífens)
+                const normalizedClientsId = dbClientsId.replace(/-/g, '');
+
+                const match = searchResult?.results?.find((page: any) => {
+                    const parentDbId = (page.parent?.database_id || '').replace(/-/g, '');
+                    return parentDbId === normalizedClientsId;
+                });
+
+                if (match) {
+                    clientPageId = match.id;
+                    console.log(`✅ Cliente encontrado no Notion: ${clientPageId}`);
+                } else {
+                    console.log(`ℹ️ Cliente não encontrado no Notion — Sprint/Task criados sem vínculo de cliente.`);
+                    console.log(`   Dica: Crie o cliente "${companyName}" manualmente no banco Clientes para habilitar o vínculo.`);
+                }
+            } catch (e: any) {
+                // Search error não é crítico — continua sem clientPageId
+                console.warn(`⚠️ Busca de cliente falhou (não crítico): ${e.message}`);
+            }
+        }
+
+        // ==========================================
         // ETAPA 1: CRIAR SPRINT
         // DB: 🗓️ Sprints — prop título: "Sprint"
-        // Nota: Clients DB não tem acesso via integração — sprint fica sem vínculo de cliente
-        // Para ativar: compartilhar banco Clientes com a integração em notion.so/2f6bdc72e03981f68061e78e390f5f6a
-        // DB: 🗓️ Sprints — prop título: "Sprint"
-        // Relações: Cliente → Clientes DB
+        // Relações: Cliente → Clientes DB (vincula se cliente foi encontrado)
         // ==========================================
         let sprintPageId = '';
         if (dbSprintsId) {
@@ -74,13 +112,18 @@ serve(async (req) => {
                 },
             };
 
+            // Vincula cliente se encontrado via search
+            if (clientPageId) {
+                sprintProperties["Cliente"] = { relation: [{ id: clientPageId }] };
+            }
+
             try {
                 const newSprint = await notionPost('/pages', {
                     parent: { database_id: dbSprintsId },
                     properties: sprintProperties,
                 });
                 sprintPageId = newSprint.id;
-                console.log(`✅ Sprint criada: ${sprintPageId}`);
+                console.log(`✅ Sprint criada: ${sprintPageId}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
             } catch (e: any) {
                 console.error("Erro ao criar Sprint:", e.message);
                 criticalErrors.push(`Sprint Error: ${e.message}`);
@@ -88,7 +131,7 @@ serve(async (req) => {
         }
 
         // ==========================================
-        // ETAPA 3: CRIAR TASK (vinculada à Sprint + Cliente)
+        // ETAPA 2: CRIAR TASK (vinculada à Sprint + Cliente)
         // DB: ✅ Tasks — prop título: "Tarefa"
         // Relações: Sprint → Sprints DB, Cliente → Clientes DB
         // ==========================================
@@ -176,13 +219,18 @@ serve(async (req) => {
                 taskProperties["Sprint"] = { relation: [{ id: sprintPageId }] };
             }
 
+            // Vincula cliente se encontrado via search
+            if (clientPageId) {
+                taskProperties["Cliente"] = { relation: [{ id: clientPageId }] };
+            }
+
             try {
                 const newTask = await notionPost('/pages', {
                     parent: { database_id: dbTasksId },
                     properties: taskProperties,
                     children: childrenBlocks,
                 });
-                console.log(`✅ Task criada: ${newTask.id}`);
+                console.log(`✅ Task criada: ${newTask.id}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
             } catch (e: any) {
                 console.error("Erro ao criar Task:", e.message);
                 criticalErrors.push(`Task Error: ${e.message}`);
@@ -199,7 +247,7 @@ serve(async (req) => {
         }
 
         return new Response(
-            JSON.stringify({ success: true, sprintPageId }),
+            JSON.stringify({ success: true, sprintPageId, clientPageId: clientPageId || null }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
         );
 
