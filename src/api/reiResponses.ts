@@ -167,37 +167,8 @@ export const calculateMaturity = (responses: Record<string, any>): {
     };
 };
 
-/**
- * SALVAR DIAGNÓSTICO COMPLETO
- * Função helper que calcula maturity e salva
- * Versão 1.0 - Com context, source e versionamento
- */
-export const saveReiDiagnostic = async (
-    projectId: string,
-    responses: Record<string, any>
-): Promise<ReiResponse | null> => {
-    const { totalScore, maturityLevel, maturityPercentage } = calculateMaturity(responses);
-
-    const responseData: ReiResponseInsert = {
-        project_id: projectId,
-        responses: responses as any, // JSONB
-
-        // Classificação (novos campos críticos)
-        context: 'internal',  // REI é sempre interno
-        source: 'rei',        // Origem: sistema REI
-
-        // Score e maturity
-        total_score: totalScore,
-        maturity_level: maturityLevel,
-        maturity_percentage: maturityPercentage,
-
-        // Versionamento
-        score_version: 'v1.0',
-        calculated_at: new Date().toISOString()
-    };
-
-    return await createReiResponse(responseData);
-};
+// NOTE: saveReiDiagnostic lives in reiProjects.ts (single source of truth)
+// Do NOT duplicate here — REIWizard imports from reiProjects.ts
 
 /**
  * COMPARAR EVOLUÇÃO

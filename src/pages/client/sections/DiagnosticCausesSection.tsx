@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 interface DiagnosticSectionProps {
@@ -54,18 +55,26 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
                                             {/* Content */}
                                             <div className="flex-1 p-6">
-                                                <p className="text-lg font-bold text-zinc-900 leading-snug tracking-tight mb-4">
-                                                    {risk.text}
-                                                </p>
+                                                <div className="mb-4">
+                                                    <EditableField
+                                                        path={`diagnostic_data.risks.${i}.text`}
+                                                        className="text-lg font-bold text-zinc-900 leading-snug tracking-tight"
+                                                        placeholder={risk.text}
+                                                        multiline
+                                                    />
+                                                </div>
                                                 <div className="flex items-start gap-3">
-                                                    <div className="w-[3px] h-full min-h-[2rem] bg-zinc-200 rounded-full shrink-0 mt-0.5" />
+                                                    <div className="w-[3px] h-full min-h-[2rem] bg-zinc-200 shrink-0 mt-0.5" />
                                                     <div>
-                                                        <span className={`text-[10px] font-bold uppercase tracking-widest block mb-1 ${isHigh ? 'text-zinc-900' : 'text-zinc-500'}`}>
+                                                        <span className={`text-[10px] font-black uppercase tracking-[0.25em] block mb-1 ${isHigh ? 'text-zinc-900' : 'text-zinc-500'}`}>
                                                             Estratégia de Mitigação
                                                         </span>
-                                                        <p className="text-[15px] font-medium text-zinc-500 leading-relaxed">
-                                                            {risk.mitigation}
-                                                        </p>
+                                                        <EditableField
+                                                            path={`diagnostic_data.risks.${i}.mitigation`}
+                                                            className="text-[15px] font-medium text-zinc-500 leading-relaxed"
+                                                            placeholder={risk.mitigation}
+                                                            multiline
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
@@ -92,8 +101,17 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-3">
                                             {(decision.basedOn || []).join(' + ')}
                                         </span>
-                                        <h4 className="text-lg font-bold text-white mb-2.5 leading-tight">{decision.title}</h4>
-                                        <p className="text-[15px] font-medium text-zinc-400 leading-relaxed">{decision.recommendation}</p>
+                                        <EditableField
+                                            path={`diagnostic_data.decisions.${i}.title`}
+                                            className="text-lg font-bold text-white mb-2.5 leading-tight block"
+                                            placeholder={decision.title}
+                                        />
+                                        <EditableField
+                                            path={`diagnostic_data.decisions.${i}.recommendation`}
+                                            className="text-[15px] font-medium text-zinc-400 leading-relaxed"
+                                            placeholder={decision.recommendation}
+                                            multiline
+                                        />
                                     </div>
                                     {decision.ruleApplied && (
                                         <div className="pt-5 mt-6 border-t border-zinc-800 flex items-center gap-2">
@@ -128,7 +146,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 return (
                                     <div key={key} className={`p-6 ${i !== arr.length - 1 ? 'border-r border-zinc-100' : ''}`}>
                                         <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-3">{labelMap[key] || key}</span>
-                                        <span className={`text-3xl font-bold block mb-2 ${value >= 90 ? 'text-[#00CC6A]' : 'text-zinc-900'}`}>{value}</span>
+                                        <span className={`text-3xl font-black block mb-2 ${value >= 90 ? 'text-[#00CC6A]' : 'text-zinc-900'}`}>{value}</span>
                                         <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
                                             <div className={`h-full rounded-full ${value >= 90 ? 'bg-[#00CC6A]' : 'bg-zinc-900'}`} style={{ width: `${value}%` }} />
                                         </div>

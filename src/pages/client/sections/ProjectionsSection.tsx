@@ -93,7 +93,7 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
                             { label: `Receita no Mês ${Math.floor(months / 2)}`, value: mid?.display || formatBRL(32000) },
                         ].map((kpi, i) => (
                             <div key={i} className={`p-4 text-center min-w-32 ${i === 0 ? 'bg-black text-white rounded-lg shadow-sm' : 'bg-white border border-zinc-200 rounded-lg shadow-sm'}`}>
-                                <p className={`text-xl font-bold mb-0.5 ${i === 0 ? 'text-[#00CC6A]' : 'text-black'}`}>{kpi.value}</p>
+                                <p className={`text-xl font-black mb-0.5 ${i === 0 ? 'text-[#00CC6A]' : 'text-black'}`}>{kpi.value}</p>
                                 <p className={`text-xs font-black uppercase tracking-widest leading-tight ${i === 0 ? 'text-white/60' : 'text-zinc-400'}`}>{kpi.label}</p>
                             </div>
                         ))}
@@ -122,7 +122,7 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
                                     <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-2 group">
                                         <span className="text-sm font-bold text-zinc-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{d.display}</span>
                                         <div className="w-full max-w-[6rem] relative flex items-end flex-1">
-                                            <div className={`w-full transition-all duration-700 rounded-t-lg ${isLast ? 'bg-black shadow-xl shadow-black/20' : 'bg-zinc-200 group-hover:bg-zinc-300'}`} style={{ height: `${Math.max(pct, 5)}%` }} />
+                                            <div className={`w-full transition-all duration-700 rounded-t-lg ${isLast ? 'bg-black shadow-sm' : 'bg-zinc-200 group-hover:bg-zinc-300'}`} style={{ height: `${Math.max(pct, 5)}%` }} />
                                         </div>
                                         <span className={`text-xs font-black uppercase tracking-widest mt-1 ${isLast ? 'text-black' : 'text-zinc-400'}`}>M{i + 1}</span>
                                     </div>

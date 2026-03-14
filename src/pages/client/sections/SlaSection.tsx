@@ -119,7 +119,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                         <div>
                             <h4 className="text-lg font-bold text-white tracking-tight flex items-center gap-3 mb-2">
                                 {isCrmOps ? 'SLA Inegociável de Higiene' : 'SLA Inegociável de Atendimento'}
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-0.5 rounded">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
                                     CRITICO
                                 </span>
                             </h4>

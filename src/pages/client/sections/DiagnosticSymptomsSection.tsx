@@ -1,4 +1,5 @@
 import React from 'react';
+import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 interface DiagnosticSectionProps {
@@ -34,8 +35,12 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 { label: 'Restrições', value: context.restrictions },
                             ].map((item, i) => (
                                 <div key={i} className={`p-7 md:p-8 ${i < 2 ? 'border-b border-zinc-800' : ''} ${i % 2 === 0 ? 'md:border-r border-zinc-800' : ''}`}>
-                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-3">{item.label}</span>
-                                    <p className="text-lg font-bold text-white leading-snug">{item.value || '—'}</p>
+                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.25em] block mb-3">{item.label}</span>
+                                    <EditableField
+                                        path={`diagnostic_data.context_mirror.${['segment', 'objective', 'maturity', 'restrictions'][i]}`}
+                                        className="text-lg font-bold text-white leading-snug"
+                                        placeholder={item.value || '—'}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -64,14 +69,24 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         </div>
 
                                         {/* Quote */}
-                                        <p className="text-[17px] font-bold text-zinc-900 leading-snug tracking-tight mb-auto pb-5">
-                                            "{signal.text}"
-                                        </p>
+                                        <div className="mb-auto pb-5">
+                                            <EditableField
+                                                path={`diagnostic_data.signals.${i}.text`}
+                                                className="text-[17px] font-bold text-zinc-900 leading-snug tracking-tight"
+                                                placeholder={signal.text}
+                                                multiline
+                                            />
+                                        </div>
 
                                         {/* Impact */}
                                         <div className="pt-4 border-t border-zinc-100">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1.5">Impacto Real</span>
-                                            <p className="text-sm font-medium text-zinc-500 leading-relaxed">{signal.impact}</p>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 block mb-1.5">Impacto Real</span>
+                                            <EditableField
+                                                path={`diagnostic_data.signals.${i}.impact`}
+                                                className="text-sm font-medium text-zinc-500 leading-relaxed"
+                                                placeholder={signal.impact}
+                                                multiline
+                                            />
                                         </div>
                                     </div>
                                 );

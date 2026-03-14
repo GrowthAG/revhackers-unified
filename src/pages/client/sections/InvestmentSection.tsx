@@ -9,9 +9,9 @@ function getSegmentConfig(segment: string) {
     const a = (segment || '').toLowerCase();
     if (a.includes('saas') || a.includes('tech') || a.includes('crm')) return {
         channels: [
-            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [5000, 15000], desc: 'Search fundo de funil + PMAX para captura de demanda ativa' },
-            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [3000, 8000], desc: 'Retargeting + lookalike para awareness e nutrição' },
-            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [2000, 6000], desc: 'Lead Gen Forms para decisores B2B de empresas-alvo' },
+            { key: 'google_ads', name: 'Google Ads', icon: 'search', recommended: [5000, 15000], desc: 'Search fundo de funil + PMAX para captura de demanda ativa' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: 'smartphone', recommended: [3000, 8000], desc: 'Retargeting + lookalike para awareness e nutrição' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: 'briefcase', recommended: [2000, 6000], desc: 'Lead Gen Forms para decisores B2B de empresas-alvo' },
         ],
         fee: { label: 'Fee de Gestão RevHackers', range: [4500, 8000] },
         tools: { label: 'Stack de Ferramentas (CRM + Automação)', range: [500, 2000] },
@@ -19,9 +19,9 @@ function getSegmentConfig(segment: string) {
     };
     if (a.includes('ecommerce') || a.includes('e-commerce') || a.includes('loja') || a.includes('varejo')) return {
         channels: [
-            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [5000, 20000], desc: 'Shopping + Search + PMAX para captura de demanda de compra' },
-            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [5000, 15000], desc: 'Catálogo dinâmico, lookalike de compradores e retargeting' },
-            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [0, 2000], desc: 'Opcional para B2B wholesale ou parcerias corporativas' },
+            { key: 'google_ads', name: 'Google Ads', icon: 'search', recommended: [5000, 20000], desc: 'Shopping + Search + PMAX para captura de demanda de compra' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: 'smartphone', recommended: [5000, 15000], desc: 'Catálogo dinâmico, lookalike de compradores e retargeting' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: 'briefcase', recommended: [0, 2000], desc: 'Opcional para B2B wholesale ou parcerias corporativas' },
         ],
         fee: { label: 'Fee de Gestão RevHackers', range: [4000, 9000] },
         tools: { label: 'Stack de Ferramentas (CRM + Pixel + Analytics)', range: [300, 1200] },
@@ -30,9 +30,9 @@ function getSegmentConfig(segment: string) {
     // Default
     return {
         channels: [
-            { key: 'google_ads', name: 'Google Ads', icon: '🔍', recommended: [3000, 12000], desc: 'Captura de demanda ativa — keywords de intenção de compra' },
-            { key: 'meta_ads', name: 'Meta Ads', icon: '📱', recommended: [2000, 8000], desc: 'Awareness, retargeting e geração de leads com criativos visuais' },
-            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: '💼', recommended: [1500, 5000], desc: 'Posicionamento B2B e geração de oportunidades com decisores' },
+            { key: 'google_ads', name: 'Google Ads', icon: 'search', recommended: [3000, 12000], desc: 'Captura de demanda ativa — keywords de intenção de compra' },
+            { key: 'meta_ads', name: 'Meta Ads', icon: 'smartphone', recommended: [2000, 8000], desc: 'Awareness, retargeting e geração de leads com criativos visuais' },
+            { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: 'briefcase', recommended: [1500, 5000], desc: 'Posicionamento B2B e geração de oportunidades com decisores' },
         ],
         fee: { label: 'Fee de Gestão RevHackers', range: [3500, 7000] },
         tools: { label: 'Stack de Ferramentas (CRM + Automação)', range: [400, 1500] },
@@ -135,9 +135,9 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     {/* Investment Items */}
                     <div className="grid md:grid-cols-2 gap-4">
                         {serviceConfig.items.map((item, i) => (
-                            <div key={i} className="border border-zinc-200 p-7 rounded-xl">
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-3">{item.name}</p>
-                                <p className="text-3xl font-bold text-black tracking-tight mb-1">
+                            <div key={i} className="border border-zinc-200 p-7 rounded-2xl">
+                                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-3">{item.name}</p>
+                                <p className="text-3xl font-black text-black tracking-tight mb-1">
                                     {P(item.range[0])}
                                     {item.range[1] > item.range[0] && <span className="text-zinc-400"> – {P(item.range[1])}</span>}
                                     <span className="text-sm text-zinc-400 font-normal ml-1">{item.per}</span>
@@ -180,10 +180,10 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                                 ))}
                             </div>
                         </div>
-                        <div className="bg-zinc-950 p-7 rounded-xl flex flex-col justify-between">
+                        <div className="bg-zinc-950 p-7 rounded-2xl flex flex-col justify-between">
                             <div>
-                                <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-6">Investimento Total Estimado</p>
-                                <p className="text-4xl font-bold text-white tracking-tight">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-[0.25em] font-black mb-6">Investimento Total Estimado</p>
+                                <p className="text-4xl font-black text-white tracking-tight">
                                     {P(totalMin)}
                                     {totalMax > totalMin && <span className="text-zinc-500"> – {P(totalMax)}</span>}
                                 </p>
@@ -253,7 +253,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-2">Investimento Mensal Estimado</p>
-                            <p className="text-4xl md:text-5xl font-bold text-black tracking-tight">
+                            <p className="text-4xl md:text-5xl font-black text-black tracking-tight">
                                 {P(grandTotal)}<span className="text-lg text-zinc-400 font-normal">/mês</span>
                             </p>
                         </div>

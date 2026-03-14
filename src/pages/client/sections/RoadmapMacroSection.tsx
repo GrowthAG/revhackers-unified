@@ -119,7 +119,7 @@ export default function RoadmapSection({ plan }: { plan: any }) {
 
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
-            <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
+            <div className="my-auto px-6 md:px-10 lg:px-14 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
                     eyebrow={eyebrowMap[projectType] || 'Execução Plena'}
                     titleLine1="Cronograma"
@@ -201,7 +201,7 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                                 {/* ── Phase Header ── */}
                                 <div className={`px-5 pt-5 pb-4 ${isLast ? '' : ''}`}>
                                     <div className="flex items-start justify-between mb-3">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2.5 py-1 rounded inline-block">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md inline-block">
                                             <EditableField
                                                 placeholder="Período"
                                                 path={`roadmap_data.phases.${index}.name`}

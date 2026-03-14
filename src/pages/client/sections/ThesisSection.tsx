@@ -1,4 +1,5 @@
 import React from 'react';
+import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Fallback thesis statements by type ────────────────────────────────────
@@ -73,11 +74,21 @@ export default function ThesisSection({ plan }: { plan: any }) {
 
                 {/* ── Thesis Statement ── */}
                 <div className="text-center max-w-3xl mx-auto mt-10 mb-12">
-                    <p className="text-xl md:text-[1.75rem] font-bold text-zinc-900 leading-[1.25] tracking-tight">
-                        {thesis.before}
-                        <span className="text-[#00CC6A]">{thesis.highlight}</span>
-                        {thesis.after}
-                    </p>
+                    <EditableField
+                        path="diagnostic_data.thesis_statement.before"
+                        className="text-xl md:text-[1.75rem] font-black text-zinc-900 leading-[1.25] tracking-tight inline"
+                        placeholder={thesis.before}
+                    />
+                    <EditableField
+                        path="diagnostic_data.thesis_statement.highlight"
+                        className="text-xl md:text-[1.75rem] font-black text-[#00CC6A] leading-[1.25] tracking-tight inline"
+                        placeholder={thesis.highlight}
+                    />
+                    <EditableField
+                        path="diagnostic_data.thesis_statement.after"
+                        className="text-xl md:text-[1.75rem] font-black text-zinc-900 leading-[1.25] tracking-tight inline"
+                        placeholder={thesis.after}
+                    />
                 </div>
 
                 {/* ── Divider ── */}
@@ -95,17 +106,28 @@ export default function ThesisSection({ plan }: { plan: any }) {
                                     <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest block mb-3">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
-                                    <h3 className="text-base font-bold text-zinc-900 mb-2.5">{pillar.title}</h3>
-                                    <p className="text-sm text-zinc-500 leading-relaxed font-medium">
-                                        {pillar.description}
-                                    </p>
+                                    <EditableField
+                                        path={`diagnostic_data.thesis_pillars.${i}.title`}
+                                        className="text-base font-bold text-zinc-900 mb-2.5 block"
+                                        placeholder={pillar.title}
+                                    />
+                                    <EditableField
+                                        path={`diagnostic_data.thesis_pillars.${i}.description`}
+                                        className="text-sm text-zinc-500 leading-relaxed font-medium"
+                                        placeholder={pillar.description}
+                                        multiline
+                                    />
 
                                     {pillar.actions && pillar.actions.length > 0 && (
                                         <ul className="mt-4 space-y-1.5">
                                             {pillar.actions.slice(0, 3).map((action: string, j: number) => (
                                                 <li key={j} className="flex items-start gap-2">
                                                     <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                                                    <span className="text-xs text-zinc-400 leading-snug">{action}</span>
+                                                    <EditableField
+                                                        path={`diagnostic_data.thesis_pillars.${i}.actions.${j}`}
+                                                        className="text-xs text-zinc-400 leading-snug"
+                                                        placeholder={action}
+                                                    />
                                                 </li>
                                             ))}
                                         </ul>

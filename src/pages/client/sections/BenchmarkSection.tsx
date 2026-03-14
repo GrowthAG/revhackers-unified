@@ -53,15 +53,15 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                 <div className="px-5 pb-5 pt-0 bg-zinc-50 border-t border-zinc-100">
                     <div className="grid md:grid-cols-2 gap-4 mt-3">
                         {bench.strengths && (
-                            <div><p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Pontos Fortes</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.strengths}</p></div>
+                            <div><p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1">Pontos Fortes</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.strengths}</p></div>
                         )}
                         {bench.weaknesses && (
-                            <div><p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Pontos Fracos</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.weaknesses}</p></div>
+                            <div><p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1">Pontos Fracos</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.weaknesses}</p></div>
                         )}
                     </div>
                     {bench.top_keywords && bench.top_keywords.length > 0 && (
                         <div className="mt-3">
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Keywords Principais</p>
+                            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1.5">Keywords Principais</p>
                             <div className="flex flex-wrap gap-1.5">
                                 {bench.top_keywords.map((kw: string, i: number) => (
                                     <span key={i} className="text-xs px-2 py-0.5 bg-zinc-200 text-zinc-600 font-mono">{kw}</span>
@@ -126,7 +126,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         </div>
                         <div className="grid md:grid-cols-3 gap-4">
                             {trends.map((trend: string, i: number) => (
-                                <div key={i} className="border border-zinc-200 p-5 rounded-xl">
+                                <div key={i} className="border border-zinc-200 p-5 rounded-2xl">
                                     <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
                                     <p className="text-sm text-zinc-800 leading-relaxed font-medium">{trend}</p>
                                 </div>
@@ -138,21 +138,21 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                 {/* CAC & Conversion */}
                 <div className="grid md:grid-cols-2 gap-4">
                     {cacBenchmark && (
-                        <div className="bg-zinc-950 p-7 rounded-xl">
+                        <div className="bg-zinc-950 p-7 rounded-2xl">
                             <div className="flex items-center gap-2 mb-3">
                                 <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
-                                <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold">Benchmark CAC do Segmento</p>
+                                <p className="text-[10px] text-[#00CC6A]/70 uppercase tracking-[0.25em] font-black">Benchmark CAC do Segmento</p>
                             </div>
-                            <p className="text-2xl font-bold text-white leading-tight">{cacBenchmark}</p>
+                            <p className="text-2xl font-black text-white leading-tight">{cacBenchmark}</p>
                         </div>
                     )}
                     {conversionBenchmarks && (
-                        <div className="border border-zinc-200 p-7 rounded-xl">
+                        <div className="border border-zinc-200 p-7 rounded-2xl">
                             <div className="flex items-center gap-2 mb-3">
                                 <PieChart className="w-3.5 h-3.5 text-zinc-400" />
-                                <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Benchmarks de Conversão</p>
+                                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black">Benchmarks de Conversão</p>
                             </div>
-                            <p className="text-sm font-semibold text-zinc-800 leading-relaxed">{conversionBenchmarks}</p>
+                            <p className="text-sm font-bold text-zinc-800 leading-relaxed">{conversionBenchmarks}</p>
                         </div>
                     )}
                 </div>
@@ -167,7 +167,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         <span className="text-xs text-zinc-400 font-mono">{competitors.length} empresas</span>
                     </div>
                     <p className="text-xs text-zinc-400 mb-5">Clique em cada empresa para expandir métricas completas + links para ver anúncios ativos.</p>
-                    <div className="border border-zinc-200 overflow-hidden rounded-xl">
+                    <div className="border border-zinc-200 overflow-hidden rounded-2xl">
                         <div className="flex items-center gap-4 bg-zinc-950 px-5 py-3">
                             <div className="w-9 shrink-0" />
                             <div className="flex-1 text-xs text-zinc-500 uppercase tracking-widest font-semibold">Empresa / Concorrente</div>
@@ -198,7 +198,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                                 { label: 'SAM', subtitle: 'Mercado Endereçável Servível', value: marketSizing.sam, hint: 'Parcela que você pode alcançar hoje' },
                                 { label: 'SOM', subtitle: 'Mercado Obtível Realista', value: marketSizing.som, hint: 'Fatia alcançável nos próximos 12 a 18 meses' },
                             ].map(({ label, subtitle, value, hint }) => (
-                                <div key={label} className="border border-zinc-200 p-6 rounded-xl">
+                                <div key={label} className="border border-zinc-200 p-6 rounded-2xl">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <span className="text-2xl font-bold text-black font-mono">{label}</span>
@@ -218,7 +218,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                     <div className="border-l-2 border-zinc-950 pl-6 py-1">
                         <div className="flex items-center gap-2 mb-3">
                             <Lightbulb className="w-4 h-4 text-zinc-600" />
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-semibold">Conselho Estratégico</p>
+                            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black">Conselho Estratégico</p>
                         </div>
                         <p className="text-base text-zinc-800 leading-relaxed font-medium">{advice}</p>
                     </div>
@@ -226,7 +226,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
 
                 {/* Differentiators */}
                 {differentiators.length > 0 && (
-                    <div className="bg-zinc-950 p-8 md:p-10 rounded-xl">
+                    <div className="bg-zinc-950 p-8 md:p-10 rounded-2xl">
                         <div className="flex items-center gap-3 mb-8">
                             <ChevronRight className="w-4 h-4 text-[#00CC6A]" />
                             <h3 className="text-lg font-bold text-white">Suas Oportunidades de Diferenciação</h3>

@@ -27,7 +27,7 @@ function PersonaAvatar({ name, index }: { name: string; index: number }) {
 
     if (error) {
         return (
-            <div className="w-14 h-14 rounded-full bg-zinc-700 border-2 border-zinc-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-full bg-zinc-700 border-2 border-zinc-600 flex items-center justify-center shrink-0">
                 <span className="text-white text-xl font-bold">{initial}</span>
             </div>
         );
@@ -37,7 +37,7 @@ function PersonaAvatar({ name, index }: { name: string; index: number }) {
         <img
             src={url}
             alt={name}
-            className="w-14 h-14 rounded-full object-cover shrink-0 border-2 border-white/20"
+            className="w-12 h-12 rounded-full object-cover shrink-0 border-2 border-white/20"
             onError={() => setError(true)}
         />
     );
@@ -138,7 +138,7 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
     const personality = p.personality || { analytical_creative: 50, passive_active: 50, reserved_extroverted: 50, reactive_preventive: 50 };
 
     return (
-        <div className="flex flex-col bg-white border border-zinc-200 rounded-xl overflow-hidden h-full">
+        <div className="flex flex-col bg-white border border-zinc-200 rounded-2xl overflow-hidden h-full">
             {/* Dark header with avatar */}
             <div className="bg-zinc-950 p-5">
                 <div className="flex items-start gap-4 mb-3">
