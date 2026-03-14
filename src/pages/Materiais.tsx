@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import Section from '@/components/ui/Section';
 import { Input } from '@/components/ui/input';
 import MaterialModal from '@/components/shared/MaterialModal';
+import SEO from '@/components/shared/SEO';
+import DarkHeroSection from '@/components/shared/DarkHeroSection';
 import BookingModal from '@/components/shared/BookingModal';
 import { removeEmojis } from '@/utils/stringUtils';
 // import { materialsData } from '@/data/materialsData'; // REMOVED: Usage of static data disabled.
@@ -66,8 +68,11 @@ const Materiais = () => {
     fetchMaterials();
   }, []);
 
-  // Pure Database Data
-  const materials = apiMaterials;
+  // Pure Database Data — filter out materials with Google Drive links (invalid)
+  const materials = apiMaterials.filter(m => {
+    const link = (m.link_material || '').toLowerCase();
+    return !link.includes('docs.google.com') && !link.includes('drive.google.com');
+  });
 
   const handleDownloadClick = (material: any) => {
     setSelectedMaterial(material);
@@ -98,52 +103,21 @@ const Materiais = () => {
 
   return (
     <PageLayout>
-      {/* 1. Dark Hero Header (Standardized with Blog) */}
-      <section className="bg-black py-24 md:py-32 relative overflow-hidden">
-        {/* Sophisticated Dark Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pointer-events-none" />
-
-        <div className="container-custom relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-white tracking-tight leading-[1.1]">
-              Materiais<span className="text-revgreen">.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-zinc-500 font-normal tracking-tight leading-relaxed max-w-2xl mx-auto">
-              Frameworks, checklists e playbooks para escalar sua operação de revenue.
-            </p>
-          </div>
-
-          <div className="max-w-xl mx-auto relative mb-20">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-zinc-500" />
-            <Input
-              type="search"
-              placeholder="BUSCAR MATERIAIS..."
-              className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-2xl text-xs font-bold uppercase tracking-widest"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 border-t border-zinc-900/50 pt-8 mt-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`text-[10px] uppercase tracking-[0.2em] font-bold font-sans transition-all duration-300 relative py-2 ${activeCategory === category
-                  ? "text-revgreen"
-                  : "text-zinc-500 hover:text-white"
-                  }`}
-              >
-                {category}
-                {activeCategory === category && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-revgreen" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SEO
+        title="Materiais"
+        description="Frameworks, checklists, playbooks e templates para escalar sua operação de revenue. Downloads gratuitos para profissionais B2B."
+        canonical="https://revhackers.com/materiais"
+      />
+      <DarkHeroSection
+        title="Materiais"
+        subtitle="Frameworks, checklists e playbooks para escalar sua operação de revenue."
+        searchPlaceholder="BUSCAR MATERIAIS..."
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        categories={categories}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+      />
 
       {/* Content Section (White Background) */}
       <section className="bg-white min-h-screen relative pb-24">
@@ -174,9 +148,9 @@ const Materiais = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredMaterials.map((material, index) => {
-                const type = material.type || "Geral";
+                const type = material.material_type || material.type || "Geral";
                 const IconComponent = IconMap[type] || FileText;
-                const title = material.title || "Sem título";
+                const title = material.material_name || material.title || "Sem título";
 
                 return (
                   <div

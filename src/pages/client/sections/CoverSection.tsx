@@ -64,7 +64,7 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                         <div className="w-8 h-[2px] bg-white/20" />
                         <EditableField
                             path="cover_data.eyebrow"
-                            className="text-xs text-zinc-500 font-black uppercase tracking-widest"
+                            className="text-xs text-zinc-500 font-bold uppercase tracking-widest"
                             placeholder={eyebrow}
                         />
                     </div>
@@ -82,7 +82,7 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                         </p>
                         <EditableField
                             path="cover_data.company_override"
-                            className="text-white text-3xl md:text-4xl font-black tracking-tight"
+                            className="text-white text-3xl md:text-4xl font-bold tracking-tight"
                             placeholder={companyName}
                         />
                     </div>

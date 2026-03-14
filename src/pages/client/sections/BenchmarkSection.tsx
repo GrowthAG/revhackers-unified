@@ -56,7 +56,7 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                             <div><p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Pontos Fortes</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.strengths}</p></div>
                         )}
                         {bench.weaknesses && (
-                            <div><p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Pontos Fracos</p><p className="text-xs text-red-500/80 leading-relaxed">{bench.weaknesses}</p></div>
+                            <div><p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">Pontos Fracos</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.weaknesses}</p></div>
                         )}
                     </div>
                     {bench.top_keywords && bench.top_keywords.length > 0 && (
@@ -105,13 +105,13 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                 <div className="space-y-2 -mt-6">
                     {!hasRealData && (
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Dados de referência para o segmento — atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
                         </div>
                     )}
                     {hasRealData && isREIFallback && (
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Concorrentes informados pelo cliente — enriquecimento de mercado disponível via "Deep Benchmark"</p>
                         </div>
                     )}
@@ -126,7 +126,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         </div>
                         <div className="grid md:grid-cols-3 gap-4">
                             {trends.map((trend: string, i: number) => (
-                                <div key={i} className="border border-zinc-200 p-5 hover:border-zinc-400 transition-colors">
+                                <div key={i} className="border border-zinc-200 p-5 rounded-xl">
                                     <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
                                     <p className="text-sm text-zinc-800 leading-relaxed font-medium">{trend}</p>
                                 </div>
@@ -138,7 +138,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                 {/* CAC & Conversion */}
                 <div className="grid md:grid-cols-2 gap-4">
                     {cacBenchmark && (
-                        <div className="bg-zinc-950 p-7">
+                        <div className="bg-zinc-950 p-7 rounded-xl">
                             <div className="flex items-center gap-2 mb-3">
                                 <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
                                 <p className="text-xs text-[#00CC6A]/70 uppercase tracking-[0.2em] font-semibold">Benchmark CAC do Segmento</p>
@@ -147,7 +147,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         </div>
                     )}
                     {conversionBenchmarks && (
-                        <div className="border border-zinc-200 p-7">
+                        <div className="border border-zinc-200 p-7 rounded-xl">
                             <div className="flex items-center gap-2 mb-3">
                                 <PieChart className="w-3.5 h-3.5 text-zinc-400" />
                                 <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Benchmarks de Conversão</p>
@@ -167,7 +167,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         <span className="text-xs text-zinc-400 font-mono">{competitors.length} empresas</span>
                     </div>
                     <p className="text-xs text-zinc-400 mb-5">Clique em cada empresa para expandir métricas completas + links para ver anúncios ativos.</p>
-                    <div className="border border-zinc-200 overflow-hidden">
+                    <div className="border border-zinc-200 overflow-hidden rounded-xl">
                         <div className="flex items-center gap-4 bg-zinc-950 px-5 py-3">
                             <div className="w-9 shrink-0" />
                             <div className="flex-1 text-xs text-zinc-500 uppercase tracking-widest font-semibold">Empresa / Concorrente</div>
@@ -198,7 +198,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                                 { label: 'SAM', subtitle: 'Mercado Endereçável Servível', value: marketSizing.sam, hint: 'Parcela que você pode alcançar hoje' },
                                 { label: 'SOM', subtitle: 'Mercado Obtível Realista', value: marketSizing.som, hint: 'Fatia alcançável nos próximos 12 a 18 meses' },
                             ].map(({ label, subtitle, value, hint }) => (
-                                <div key={label} className="border border-zinc-200 p-6">
+                                <div key={label} className="border border-zinc-200 p-6 rounded-xl">
                                     <div className="flex items-start justify-between mb-4">
                                         <div>
                                             <span className="text-2xl font-bold text-black font-mono">{label}</span>
@@ -226,7 +226,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
 
                 {/* Differentiators */}
                 {differentiators.length > 0 && (
-                    <div className="bg-zinc-950 p-8 md:p-10">
+                    <div className="bg-zinc-950 p-8 md:p-10 rounded-xl">
                         <div className="flex items-center gap-3 mb-8">
                             <ChevronRight className="w-4 h-4 text-[#00CC6A]" />
                             <h3 className="text-lg font-bold text-white">Suas Oportunidades de Diferenciação</h3>

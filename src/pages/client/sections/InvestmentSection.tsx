@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart3, Zap, Target, Settings, ArrowRight } from 'lucide-react';
+import { BarChart3, Zap, Settings, ArrowRight } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -57,15 +57,15 @@ function getServiceConfig(projectType: string): ServiceConfig | null {
             { name: 'Licenças de Plataforma (Funnels/CRM)', range: [400, 900], per: '/mês', desc: 'CRM, automação de marketing e analytics integrados' },
         ],
         roi: [
-            { label: 'Redução de Ciclo de Venda', value: '20–40%', note: 'Automação de follow-up e qualificação com lead scoring' },
-            { label: 'Win Rate', value: '+15–25%', note: 'Pipeline disciplinado com SLA de Hand-off MKT→Vendas' },
+            { label: 'Redução de Ciclo de Venda', value: '20–40%', note: 'Automação de acompanhamento e qualificação com lead scoring' },
+            { label: 'Taxa de Conversão', value: '+15–25%', note: 'Pipeline disciplinado com SLA de Passagem de Bastão MKT→Vendas' },
             { label: 'Dados no CRM', value: '100%', note: 'Governança ativa: se não está no CRM, não existe' },
-            { label: 'Break-Even', value: 'Mês 2', note: 'Payback via aumento direto de conversão do comercial' },
+            { label: 'Ponto de Equilíbrio', value: 'Mês 2', note: 'Retorno via aumento direto de conversão do comercial' },
         ],
         nextSteps: [
-            { n: '01', title: 'Kickoff', desc: 'Mapeamento As-Is e definição do Blueprint do CRM', timing: 'Semana 1' },
+            { n: '01', title: 'Kickoff', desc: 'Mapeamento do processo atual e definição do Projeto Técnico do CRM', timing: 'Semana 1' },
             { n: '02', title: 'Setup do CRM', desc: 'Pipeline, propriedades, automações e integrações', timing: 'Semana 2–4' },
-            { n: '03', title: 'Go-Live', desc: 'Time treinado, sistema em produção, governança ativa', timing: 'Semana 5–6' },
+            { n: '03', title: 'Entrada em Produção', desc: 'Time treinado, sistema operando, governança ativa', timing: 'Semana 5–6' },
         ],
     };
     if (projectType === 'founder') return {
@@ -79,7 +79,7 @@ function getServiceConfig(projectType: string): ServiceConfig | null {
             { label: 'Crescimento de Audiência', value: '3–5x', note: 'Seguidores qualificados dentro do ICP definido' },
             { label: 'Inbound via DM', value: '4–12/mês', note: 'Oportunidades originadas de conteúdo, sem cold outreach' },
             { label: 'Impressões Mensais', value: '+200%', note: 'Com cadência de 3x/semana e comentários estratégicos' },
-            { label: 'Break-Even', value: '1 deal', note: 'Um único cliente via inbound cobre todo o investimento' },
+            { label: 'Ponto de Equilíbrio', value: '1 deal', note: 'Um único cliente via inbound cobre todo o investimento' },
         ],
         nextSteps: [
             { n: '01', title: 'Posicionamento', desc: 'Nicho, POV, bio e headline do LinkedIn definidos', timing: 'Semana 1' },
@@ -89,21 +89,21 @@ function getServiceConfig(projectType: string): ServiceConfig | null {
     };
     if (projectType === 'dev' || projectType === 'site') return {
         headline: 'Investimento no Projeto',
-        description: 'Fee de desenvolvimento com entrega em sprints, performance garantida e handover completo.',
+        description: 'Fee de desenvolvimento com entrega em sprints, performance garantida e passagem de bastão completa.',
         items: [
-            { name: 'Fee de Desenvolvimento e Design', range: [8000, 25000], per: 'projeto', desc: 'UX/UI, desenvolvimento, integrações, QA, go-live e handover documentado' },
+            { name: 'Fee de Desenvolvimento e Design', range: [8000, 25000], per: 'projeto', desc: 'UX/UI, desenvolvimento, integrações, QA, lançamento e passagem de bastão documentada' },
             { name: 'Manutenção Mensal (opcional)', range: [500, 1500], per: '/mês', desc: 'Atualizações, monitoramento de performance e otimizações pós-lançamento' },
         ],
         roi: [
             { label: 'Core Web Vitals', value: 'LCP < 2.5s', note: 'Performance como critério de aceite do projeto' },
             { label: 'GTmetrix Score', value: '≥ 90', note: 'Carregamento otimizado em todos os dispositivos' },
             { label: 'Conversão Estimada', value: '+30–80%', note: 'vs. site anterior, baseado em benchmarks do segmento' },
-            { label: 'Prazo', value: '6 semanas', note: 'Da aprovação do wireframe ao go-live em produção' },
+            { label: 'Prazo', value: '6 semanas', note: 'Da aprovação do wireframe ao lançamento em produção' },
         ],
         nextSteps: [
             { n: '01', title: 'Briefing & Wireframe', desc: 'Sitemap, estrutura aprovada e referências visuais', timing: 'Semana 1' },
             { n: '02', title: 'Design & Dev', desc: 'UI, código, integrações e responsividade', timing: 'Semana 2–5' },
-            { n: '03', title: 'QA & Go-Live', desc: 'Testes, ajustes finais e lançamento controlado', timing: 'Semana 6' },
+            { n: '03', title: 'QA & Lançamento', desc: 'Testes, ajustes finais e lançamento controlado', timing: 'Semana 6' },
         ],
     };
     return null; // Use existing growth/media investment view
@@ -135,9 +135,9 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     {/* Investment Items */}
                     <div className="grid md:grid-cols-2 gap-4">
                         {serviceConfig.items.map((item, i) => (
-                            <div key={i} className="border border-zinc-200 p-7 rounded-2xl shadow-sm">
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-3">{item.name}</p>
-                                <p className="text-3xl font-black text-black tracking-tight mb-1">
+                            <div key={i} className="border border-zinc-200 p-7 rounded-xl">
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-3">{item.name}</p>
+                                <p className="text-3xl font-bold text-black tracking-tight mb-1">
                                     {P(item.range[0])}
                                     {item.range[1] > item.range[0] && <span className="text-zinc-400"> – {P(item.range[1])}</span>}
                                     <span className="text-sm text-zinc-400 font-normal ml-1">{item.per}</span>
@@ -148,13 +148,13 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     </div>
 
                     {/* ROI Grid */}
-                    <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm">
-                        <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-6">Resultados Esperados</p>
+                    <div className="bg-white border border-zinc-200 rounded-xl p-8">
+                        <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-6">Resultados Esperados</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                             {serviceConfig.roi.map((r, i) => (
                                 <div key={i} className={i === serviceConfig.roi.length - 1 ? 'md:border-l md:border-zinc-100 md:pl-6' : ''}>
-                                    <p className="text-2xl font-black text-black tracking-tight mb-1" style={i === 0 ? { color: '#00CC6A' } : {}}>{r.value}</p>
-                                    <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-1">{r.label}</p>
+                                    <p className="text-2xl font-bold text-black tracking-tight mb-1" style={i === 0 ? { color: '#00CC6A' } : {}}>{r.value}</p>
+                                    <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">{r.label}</p>
                                     <p className="text-[12px] text-zinc-400 leading-snug">{r.note}</p>
                                 </div>
                             ))}
@@ -163,12 +163,12 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
 
                     {/* Next Steps + Total */}
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div className="border border-zinc-200 p-7 rounded-2xl shadow-sm">
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-6">Próximos Passos</p>
+                        <div className="border border-zinc-200 p-7 rounded-xl">
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-6">Próximos Passos</p>
                             <div className="space-y-5">
                                 {serviceConfig.nextSteps.map((step, i) => (
                                     <div key={i} className="flex items-start gap-4">
-                                        <span className="text-zinc-200 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
+                                        <span className="text-zinc-200 font-bold font-mono text-2xl leading-none mt-0.5">{step.n}</span>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
                                                 <p className="text-black font-bold text-sm">{step.title}</p>
@@ -180,10 +180,10 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                                 ))}
                             </div>
                         </div>
-                        <div className="bg-zinc-950 p-7 rounded-2xl flex flex-col justify-between">
+                        <div className="bg-zinc-950 p-7 rounded-xl flex flex-col justify-between">
                             <div>
-                                <p className="text-xs text-zinc-500 uppercase tracking-widest font-black mb-6">Investimento Total Estimado</p>
-                                <p className="text-4xl font-black text-white tracking-tight">
+                                <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-6">Investimento Total Estimado</p>
+                                <p className="text-4xl font-bold text-white tracking-tight">
                                     {P(totalMin)}
                                     {totalMax > totalMin && <span className="text-zinc-500"> – {P(totalMax)}</span>}
                                 </p>
@@ -192,7 +192,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             <div className="mt-8 pt-6 border-t border-zinc-800">
                                 <div className="flex items-center gap-2 text-[#00CC6A]">
                                     <ArrowRight className="w-4 h-4" />
-                                    <span className="text-sm font-black uppercase tracking-widest">Aprovação → Início em 48h</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest">Aprovação → Início em 48h</span>
                                 </div>
                             </div>
                         </div>
@@ -249,11 +249,10 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
             <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-12">
 
                 {/* Grand Total + KPIs */}
-                <div className="bg-white border border-zinc-200 rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden group hover:border-zinc-300 transition-all duration-500">
-                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-zinc-100 rounded-full blur-[80px] pointer-events-none" />
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+                <div className="bg-white border border-zinc-200 rounded-xl p-8 md:p-10 overflow-hidden">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-black mb-2">Investimento Mensal Estimado</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-2">Investimento Mensal Estimado</p>
                             <p className="text-4xl md:text-5xl font-bold text-black tracking-tight">
                                 {P(grandTotal)}<span className="text-lg text-zinc-400 font-normal">/mês</span>
                             </p>
@@ -261,11 +260,11 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                         <div className="grid grid-cols-3 gap-6 md:gap-8 border-t md:border-t-0 md:border-l border-zinc-200 pt-6 md:pt-0 md:pl-8">
                             <div>
                                 <p className="text-xl font-bold text-black">{config.roas_target}</p>
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">ROAS Target</p>
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">ROAS Alvo</p>
                             </div>
                             <div>
                                 <p className="text-xl font-bold text-black">{config.breakeven}</p>
-                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">Break-Even</p>
+                                <p className="text-xs text-zinc-400 uppercase tracking-widest mt-1">Equilíbrio</p>
                             </div>
                             <div>
                                 <p className="text-xl font-bold text-black">{config.ltv_cac_target}</p>
@@ -293,12 +292,12 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             const val = hasCustom ? ch.value : ch.midpoint;
                             const pct = mediaTotal > 0 ? Math.round((val / mediaTotal) * 100) : 33;
                             return (
-                                <div key={i} className="border border-zinc-200 hover:border-zinc-400 transition-colors">
+                                <div key={i} className="border border-zinc-200 rounded-xl overflow-hidden">
                                     <div className="flex flex-col md:flex-row md:items-center gap-4 p-5">
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-1.5">
                                                 <div className={`w-2.5 h-2.5 rounded-full ${barColors[i]}`} />
-                                                <span className="text-lg font-semibold text-black">{ch.icon} {ch.name}</span>
+                                                <span className="text-lg font-semibold text-black">{ch.name}</span>
                                                 <span className="text-xs text-zinc-400 font-mono">{pct}%</span>
                                             </div>
                                             <p className="text-[12px] text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
@@ -330,18 +329,18 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
 
                 {/* Fee + Tools */}
                 <div className="grid md:grid-cols-2 gap-4">
-                    <div className="border border-zinc-200 p-6">
+                    <div className="border border-zinc-200 p-6 rounded-xl">
                         <div className="flex items-center gap-2 mb-3">
                             <Zap className="w-4 h-4 text-zinc-400" />
-                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.fee.label}</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-bold">{config.fee.label}</p>
                         </div>
                         <p className="text-2xl font-bold text-black mb-1">{P(config.fee.range[0])} – {P(config.fee.range[1])}</p>
                         <p className="text-xs text-zinc-400">Setup, gestão de campanhas, otimização e relatórios</p>
                     </div>
-                    <div className="border border-zinc-200 p-6">
+                    <div className="border border-zinc-200 p-6 rounded-xl">
                         <div className="flex items-center gap-2 mb-3">
                             <Settings className="w-4 h-4 text-zinc-400" />
-                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">{config.tools.label}</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-bold">{config.tools.label}</p>
                         </div>
                         <p className="text-2xl font-bold text-black mb-1">{P(config.tools.range[0])} – {P(config.tools.range[1])}</p>
                         <p className="text-xs text-zinc-400">CRM, automação de marketing, tracking e analytics</p>
@@ -349,11 +348,8 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                 </div>
 
                 {/* ROI Projection */}
-                <div className="bg-white border border-zinc-200 rounded-3xl p-8 pt-10 shadow-sm relative overflow-hidden group hover:border-zinc-300 transition-all duration-500">
+                <div className="bg-white border border-zinc-200 rounded-xl p-8 pt-10 overflow-hidden">
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-200 flex items-center justify-center">
-                            <Target className="w-5 h-5 text-black" />
-                        </div>
                         <h3 className="text-xl font-bold text-black">Projeção de Retorno</h3>
                     </div>
                     <div className="grid md:grid-cols-4 gap-6 relative z-10">
@@ -368,30 +364,30 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             <p className="text-xs text-zinc-400 mt-1">Baseado no investimento em mídia</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Revenue Potencial</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Receita Potencial</p>
                             <p className="text-xl font-bold text-black">{P(grandTotal * 2)}–{P(grandTotal * 4)}</p>
                             <p className="text-xs text-zinc-400 mt-1">ROAS target {config.roas_target}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Break-Even</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest mb-2">Ponto de Equilíbrio</p>
                             <p className="text-xl font-bold text-black">{config.breakeven}</p>
-                            <p className="text-xs text-zinc-400 mt-1">Tempo estimado para payback</p>
+                            <p className="text-xs text-zinc-400 mt-1">Tempo estimado para retorno</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Próximos Passos + Retorno potential */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white border border-zinc-200 p-8 rounded-xl">
                         <p className="text-xs text-black uppercase tracking-[0.2em] font-semibold mb-6">Próximos Passos</p>
                         <div className="space-y-5">
                             {[
-                                { n: '01', title: 'Aprovação', desc: 'Client assina o planejamento e autoriza o início', timing: 'Hoje' },
+                                { n: '01', title: 'Aprovação', desc: 'Cliente assina o planejamento e autoriza o início', timing: 'Hoje' },
                                 { n: '02', title: 'Kick-Off', desc: 'Reunião de abertura + onboarding de acessos e contas', timing: 'Dia 1–3' },
                                 { n: '03', title: 'Fundação Live', desc: 'CRM, tracking e automações ativas. Campanhas preparadas.', timing: 'Dia 7–21' },
                             ].map((step, i) => (
                                 <div key={i} className="flex items-start gap-4">
-                                    <span className="text-zinc-300 font-black font-mono text-2xl leading-none mt-0.5">{step.n}</span>
+                                    <span className="text-zinc-300 font-bold font-mono text-2xl leading-none mt-0.5">{step.n}</span>
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
                                             <p className="text-black font-bold text-sm">{step.title}</p>
@@ -403,7 +399,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             ))}
                         </div>
                     </div>
-                    <div className="bg-zinc-50 border border-zinc-200 p-8 rounded-2xl shadow-sm flex flex-col justify-between">
+                    <div className="bg-zinc-50 border border-zinc-200 p-8 rounded-xl flex flex-col justify-between">
                         <div>
                             <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold mb-6">Potencial de Retorno</p>
                             <div className="space-y-4">

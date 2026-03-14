@@ -1,73 +1,119 @@
 import React from 'react';
-import { Target, Zap, Rocket } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
-interface ThesisSectionProps {
-    plan: any;
-}
+// ── Fallback thesis statements by type ────────────────────────────────────
+const thesisFallback: Record<string, { before: string; highlight: string; after: string }> = {
+    crm_ops: {
+        before: 'Para escalar vendas sem perder margem, precisamos construir ',
+        highlight: 'Infraestrutura de Máquina',
+        after: '.',
+    },
+    founder: {
+        before: 'Para transformar expertise em autoridade de mercado, precisamos construir ',
+        highlight: 'Presença que Converte',
+        after: '.',
+    },
+    dev: {
+        before: 'Para transformar presença digital em conversão, precisamos entregar ',
+        highlight: 'Arquitetura de Performance',
+        after: '.',
+    },
+    default: {
+        before: 'Para escalar sem perder margem, precisamos substituir táticas isoladas por ',
+        highlight: 'Motor de Receita Integrado',
+        after: '.',
+    },
+};
 
-export default function ThesisSection({ plan }: ThesisSectionProps) {
-    const typeLabel = plan?.rei_projects?.type === 'crm_ops' ? 'Máquina de Vendas' : 'Growth & Escala';
-    
+// ── Fallback pillars by type ──────────────────────────────────────────────
+const fallbackPillarsByType: Record<string, { title: string; description: string }[]> = {
+    crm_ops: [
+        { title: 'Processos Claros', description: 'Centralizar dados, definir fases óbvias e acabar com a dependência de planilhas isoladas que atrasam a operação.' },
+        { title: 'Automação de Pico', description: 'Substituir trabalho braçal por automações invisíveis. Notificações, follow-ups e transições sem erro humano.' },
+        { title: 'Métricas & Governança', description: 'Dashboards que mostram onde o funil está vazando e custo de aquisição por etapa.' },
+    ],
+    founder: [
+        { title: 'Posicionamento Cirúrgico', description: 'Nicho de autoridade, POV único e headline que posicionam antes de publicar.' },
+        { title: 'Conteúdo de Autoridade', description: 'Formatos testados e cadência sustentável calibrados para o ICP.' },
+        { title: 'Loop de Conversão', description: 'Seguidores viram conexões, conexões viram conversas, conversas viram chamadas.' },
+    ],
+    dev: [
+        { title: 'Arquitetura Primeiro', description: 'Sitemap, wireframe e aprovação antes de qualquer linha de código.' },
+        { title: 'Entrega Incremental', description: 'Páginas entregues por prioridade de conversão. Resultado visível toda semana.' },
+        { title: 'Performance como Critério', description: 'LCP abaixo de 2.5s e GTmetrix acima de 90 são critérios de aceite.' },
+    ],
+    default: [
+        { title: 'Receita Previsível', description: 'Três fontes de demanda paralelas que funcionam mesmo quando uma falha.' },
+        { title: 'Ciclo Completo', description: 'Da atração ao fechamento ao sucesso do cliente, cada etapa conectada e medida.' },
+        { title: 'Onboarding como Vantagem', description: 'Primeiro resultado entregue em 15 dias. Cada touchpoint tem dono e prazo.' },
+    ],
+};
+
+// ── Component ─────────────────────────────────────────────────────────────
+export default function ThesisSection({ plan }: { plan: any }) {
+    const diagnostic = plan?.diagnostic_data || {};
+    const projectType = plan?.rei_projects?.type || plan?.project_type || 'default';
+
+    const aiPillars = diagnostic.thesis_pillars || [];
+    const fallback = fallbackPillarsByType[projectType] || fallbackPillarsByType.default;
+    const displayPillars = aiPillars.length >= 3 ? aiPillars.slice(0, 3) : fallback;
+
+    const planThesis = diagnostic.thesis_statement;
+    const typeFallback = thesisFallback[projectType] || thesisFallback.default;
+    const thesis = planThesis || typeFallback;
+
     return (
-        <div className="flex flex-col h-full bg-white overflow-y-auto w-full text-foreground">
-            {/* Header */}
-            <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
+        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+            <div className="my-auto px-6 md:px-10 lg:px-14 py-8 max-w-[1400px] mx-auto w-full">
                 <SectionHeader
                     eyebrow="Tese Estratégica"
-                    titleLine1="A Ponte"
-                    titleLine2="De Crescimento"
-                    description={`Nossa tese central de como transformar os desafios diagnosticados em alavancas de ${typeLabel}.`}
+                    titleLine1="Tese De"
+                    titleLine2="Crescimento"
                 />
-            </div>
 
-            {/* Content */}
-            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-6 w-full flex flex-col items-center justify-center">
-                <div className="max-w-5xl w-full">
-                    {/* Grande Declaração da Tese */}
-                    <div className="text-center mb-16 max-w-4xl mx-auto">
-                        <span className="text-4xl text-zinc-300 font-serif leading-none block mb-4">"</span>
-                        <h2 className="text-3xl md:text-5xl font-black text-zinc-900 leading-[1.1] tracking-tight mb-8">
-                            Para escalar suas vendas sem perder margem, precisamos parar de apagar incêndios e começar a construir <span className="text-[#00CC6A]">Infraestrutura de Máquina</span>.
-                        </h2>
-                        <div className="w-24 h-1 bg-zinc-900 mx-auto rounded-full" />
-                    </div>
+                {/* ── Thesis Statement ── */}
+                <div className="text-center max-w-3xl mx-auto mt-10 mb-12">
+                    <p className="text-xl md:text-[1.75rem] font-bold text-zinc-900 leading-[1.25] tracking-tight">
+                        {thesis.before}
+                        <span className="text-[#00CC6A]">{thesis.highlight}</span>
+                        {thesis.after}
+                    </p>
+                </div>
 
-                    {/* Os 3 Pilares da Solução */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left mt-20">
-                        {/* Pilar 1 */}
-                        <div className="relative group">
-                            <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center mb-6">
-                                <Target className="w-5 h-5 text-zinc-900" />
-                            </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-4">Processos Claros</h3>
-                            <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">
-                                Organizar o caos. Centralizar dados, definir fases óbvias e acabar com a dependência de planilhas isoladas que atrasam a operação e perdem oportunidades reais.
-                            </p>
-                        </div>
-                        
-                        {/* Pilar 2 */}
-                        <div className="relative group">
-                            <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center mb-6">
-                                <Zap className="w-5 h-5 text-zinc-900" />
-                            </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-4">Automação de Pico</h3>
-                            <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">
-                                Substituir trabalho braçal por automações invisíveis. Notificações, Follow-ups e transições de fase devem ocorrer sem erro humano, liberando o time para fechar negócios.
-                            </p>
-                        </div>
+                {/* ── Divider ── */}
+                <div className="h-px bg-zinc-200 max-w-4xl mx-auto mb-12" />
 
-                        {/* Pilar 3 */}
-                        <div className="relative group">
-                            <div className="w-12 h-12 bg-zinc-50 border border-[#00CC6A]/20 rounded-xl flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(0,204,106,0.1)]">
-                                <Rocket className="w-5 h-5 text-[#00CC6A]" />
-                            </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-4">Métricas & Governança</h3>
-                            <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">
-                                Decidir com base em números confiáveis. Implementar dashboards que mostram não só o quanto faturou, mas ONDE o funil está vazando dinheiro e CUSTO de aquisição por etapa.
-                            </p>
-                        </div>
-                    </div>
+                {/* ── Pillars — editorial layout ── */}
+                <div className="flex flex-col md:flex-row max-w-5xl mx-auto">
+                    {displayPillars.map((pillar: any, i: number) => {
+                        const isLast = i === displayPillars.length - 1;
+                        return (
+                            <React.Fragment key={i}>
+                                {i > 0 && <div className="hidden md:block w-px bg-zinc-100 shrink-0" />}
+                                {i > 0 && <div className="md:hidden h-px bg-zinc-100 w-full" />}
+                                <div className={`flex-1 py-6 md:py-0 md:px-8 first:md:pl-0 last:md:pr-0 ${i === 0 ? 'md:pr-8' : ''}`}>
+                                    <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest block mb-3">
+                                        {String(i + 1).padStart(2, '0')}
+                                    </span>
+                                    <h3 className="text-base font-bold text-zinc-900 mb-2.5">{pillar.title}</h3>
+                                    <p className="text-sm text-zinc-500 leading-relaxed font-medium">
+                                        {pillar.description}
+                                    </p>
+
+                                    {pillar.actions && pillar.actions.length > 0 && (
+                                        <ul className="mt-4 space-y-1.5">
+                                            {pillar.actions.slice(0, 3).map((action: string, j: number) => (
+                                                <li key={j} className="flex items-start gap-2">
+                                                    <span className="text-zinc-300 shrink-0 text-sm">/</span>
+                                                    <span className="text-xs text-zinc-400 leading-snug">{action}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            </React.Fragment>
+                        );
+                    })}
                 </div>
             </div>
         </div>

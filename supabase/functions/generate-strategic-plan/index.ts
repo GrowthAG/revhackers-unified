@@ -11,6 +11,7 @@ interface GenerateParams {
   objective?: string;
   isB2B?: boolean;
   projectType?: string;
+  projectId?: string;
 }
 
 serve(async (req: Request) => {
@@ -19,7 +20,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { rei_responses, segment, objective, isB2B, projectType }: GenerateParams = await req.json();
+    const { rei_responses, segment, objective, isB2B, projectType, projectId }: GenerateParams = await req.json();
 
     if (!rei_responses) {
       throw new Error('rei_responses is required');
@@ -69,8 +70,9 @@ serve(async (req: Request) => {
             // Find contact identifiers to query Notion
             // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
             const contactEmail = cleanResponses.revops_email || cleanResponses.email || cleanResponses.email_responsavel || cleanResponses.contato || '';
-            const companyName = cleanResponses.revops_empresa || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || '';
-            const searchQuery = contactEmail || companyName;
+            const companyName = cleanResponses.revops_empresa || cleanResponses.companyName || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || cleanResponses.projectName || '';
+            const founderName = cleanResponses.fullName || '';
+            const searchQuery = contactEmail || companyName || founderName;
 
             console.log('[generate-strategic-plan] Initiating Notion Transcript Search for:', searchQuery);
 
@@ -137,6 +139,44 @@ serve(async (req: Request) => {
     }
     // --- END INTEGRATION ---
 
+    // --- INTEGRATION: Client Reference Materials ---
+    let materialsContext = "";
+    if (projectId) {
+      try {
+        // @ts-ignore
+        const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+        // @ts-ignore
+        const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+        if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
+          const matRes = await fetch(
+            `${SUPABASE_URL}/rest/v1/rei_materials?project_id=eq.${projectId}&status=eq.ready&select=*`,
+            {
+              headers: {
+                'apikey': SUPABASE_SERVICE_KEY,
+                'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+              }
+            }
+          );
+
+          if (matRes.ok) {
+            const materials = await matRes.json();
+            console.log(`[generate-strategic-plan] Found ${materials.length} reference materials`);
+
+            for (const mat of materials) {
+              materialsContext += `\nMATERIAL: ${mat.original_name || 'Sem nome'} (Tipo: ${mat.material_type})`;
+              if (mat.description) materialsContext += `\nDescrição do cliente: ${mat.description}`;
+              if (mat.extracted_text) materialsContext += `\nConteúdo extraído:\n${mat.extracted_text.substring(0, 3000)}`;
+              if (mat.source_type === 'link' && mat.file_url) materialsContext += `\nLink: ${mat.file_url}`;
+              materialsContext += '\n---';
+            }
+          }
+        }
+      } catch (matError: any) {
+        console.warn('[generate-strategic-plan] Materials fetch failed (non-blocking):', matError.message);
+      }
+    }
+    // --- END MATERIALS INTEGRATION ---
 
     let strategicContext = `Crie um plano estratégico de Growth altamente tático e contextualizado (90 dias).
 Você DEVE basear cada insight, cada risco e cada etapa do roadmap ESPECIFICAMENTE nas dores relatadas nas respostas e na transcrição da call.
@@ -144,12 +184,12 @@ LEI IMUTÁVEL: NUNCA crie cenários genéricos de "aumentar vendas" ou "melhorar
 Estruture o plano em 3 ciclos de 30 dias: Fundação → Execução → Escala. Os OKRs devem ter metas de CAC, LTV e ROAS onde aplicável.`;
 
     if (isCrmOps) {
-      strategicContext = `Crie um Roadmap cirúrgico focado EXATAMENTE em 90 DIAS de implementação de RevOps/CRM "World-Class".
+      strategicContext = `Crie um Roadmap cirúrgico focado EXATAMENTE em 90 DIAS (3 meses) de implementação de RevOps/CRM de excelência.
 O roadmap deve transformar o caos atual (vide respostas e transcrição) em uma máquina previsível:
-1. Mês 1 (Fundação Operacional): Centralizar os dados fragmentados do cliente, mapear processos As-Is e configurar o Blueprint do CRM.
-2. Mês 2 (SLA e Automações): Speed to lead, automação de Hand-off MKT→SDR→Closer e dashboards de pipeline.
-3. Mês 3 (Governança e Retenção): Rito de Pipeline Review semanal, Data Hygiene e Onboarding do CS.
-LEI IMUTÁVEL: Seja ABSURDAMENTE específico. Se o cliente reclamou de leads frios, escreva "Filtro de Leads Frios com Lead Scoring no Funnels". Nomeie TODAS as ferramentas, cargos e gargalos citados. Os OKRs devem ter métricas de Win Rate, Velocidade do Pipeline e % de preenchimento do CRM.`;
+1. Mês 01 (Fundação Operacional): Centralizar os dados fragmentados do cliente, mapear processo atual e configurar o Projeto Técnico do CRM.
+2. Mês 02 (SLA e Automações): Velocidade de resposta ao lead, automação de Passagem de Bastão MKT→SDR→Closer e painéis de pipeline.
+3. Mês 03 (Governança e Retenção): Rito de Revisão de Pipeline semanal, Higiene de Dados e Onboarding do CS.
+LEI IMUTÁVEL: Seja ABSURDAMENTE específico. Se o cliente reclamou de leads frios, escreva "Filtro de Leads Frios com Lead Scoring no Funnels". Nomeie TODAS as ferramentas, cargos e gargalos citados. Os OKRs devem ter métricas de Taxa de Conversão, Velocidade do Pipeline e % de preenchimento do CRM.`;
     } else if (isFounder) {
       strategicContext = `Crie um Protocolo de Autoridade Digital e Personal Branding para EXATAMENTE 90 dias no LinkedIn.
 ATENÇÃO CRÍTICA: Este é um Founder Protocol — o cliente é o produto. NÃO é um plano de empresa. Não crie OKRs de "aumentar vendas da empresa" ou "implementar CRM". O foco é 100% na pessoa, na audiência e na conversão de autoridade em oportunidade.
@@ -168,9 +208,38 @@ Estruture em 3 fases:
 LEI IMUTÁVEL: Cite QUAIS páginas serão entregues, QUAL stack foi escolhida, QUAL meta de performance (LCP < 2.5s, GTmetrix ≥ 90). Os OKRs devem ser entregáveis concretos: wireframe aprovado, páginas em produção, Core Web Vitals no verde, handover documentado. Os pillars devem ser: Escopo e Arquitetura / Stack e Integrações / Performance e Entrega.`;
     }
 
+    // ── Knowledge Base: Strategic Frameworks ──
+    // Conceitos de livros de referência que fundamentam a metodologia RevHackers
+    let frameworkContext = `
+FRAMEWORK BASE — ONBOARDING ORQUESTRADO (Donna Weber):
+O onboarding é a jornada completa de levar o cliente ao sucesso — NÃO é apenas implementação técnica.
+6 etapas: Embarque → Passagem de Bastão → Kickoff → Adoção → Revisão → Expansão.
+Começa ANTES do fechamento da venda. A janela crítica são os primeiros 90 dias.
+Mais de 50% do churn está vinculado a onboarding deficiente.
+O Plano de Sucesso deve incluir: visão do cliente, resultados desejados, cronograma, papéis (RACI) e métricas.
+Cada etapa do onboarding_data que você gerar DEVE mapear para essas 6 fases.
+
+FRAMEWORK — VIESES COGNITIVOS (Kahneman):
+- Aversão à perda: mostre o custo de NÃO agir no diagnóstico (2x mais impactante que ganhos).
+- Ancoragem: apresente benchmarks do setor ANTES de mostrar os números do cliente.
+- Facilidade cognitiva: recomendações claras e diretas são mais persuasivas que textos longos.`;
+
+    if (!isFounder && !isDev) {
+      frameworkContext += `
+
+FRAMEWORK — RECEITA PREVISÍVEL (Aaron Ross):
+3 tipos de leads: Seeds (referral/orgânico) + Nets (inbound/marketing) + Spears (outbound/prospecção ativa).
+Especialização de funções: SDR (prospecta) → AE/Closer (fecha) → CS (retém e expande).
+7 erros fatais: atribuir prospecção a vendedores, não ter ICP definido, depender de um único canal, não rastrear métricas por etapa.
+O "Vale da Morte" é a transição de crescimento orgânico para crescimento previsível.
+Use esses conceitos ao estruturar geração de demanda, pipeline e OKRs do plano.`;
+    }
+
     const prompt = `Você é o Diretor Estratégico "World-Class" de Growth & RevOps na RevHackers.
 Acabamos de realizar o Onboarding/Diagnóstico (Kickoff) com um cliente.
 As respostas do diagnóstico (REI) fornecidas revelam os gargalos, o caos interno e as restrições da empresa.
+
+${frameworkContext}
 
 CONCEXTO DO CLIENTE:
 Segmento: ${segment || 'B2B'}
@@ -186,6 +255,17 @@ ${transcriptText ? `
 ${transcriptText}
 </TRANSCRIPT_CONTEXT>
 [CRÍTICO - ANTI-ALUCINAÇÃO]: O texto HTML <TRANSCRIPT_CONTEXT> é uma transcrição bruta (Discovery) e POSSUI ruído. Filtre o ruído, mas PRESERVE EXATAMENTE as dores factuais e citações diretas do cliente (Ex: "A gente gasta X", "Trocamos a plataforma Y", "Os vendedores não lançam as coisas no CRM").` : ''}
+
+${materialsContext ? `
+<MATERIAIS_REFERENCIA>
+${materialsContext}
+</MATERIAIS_REFERENCIA>
+[INSTRUÇÃO MATERIAIS]: O cliente forneceu materiais de referência próprios. Use-os ativamente:
+- Alinhe a linguagem do plano com frameworks e metodologias que o cliente já usa
+- Identifique gaps entre processos documentados nos materiais e o processo ideal
+- Referencie explicitamente os materiais nas recomendações (ex: "Conforme identificado no playbook de vendas fornecido...")
+- Baseia projeções e metas em dados reais encontrados nos materiais (não em benchmarks genéricos)
+- Se houver planilhas ou dados numéricos, extraia métricas reais para calibrar os OKRs` : ''}
 
 ${strategicContext}
 
@@ -208,17 +288,23 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
     { "title": "Decisão Arrojada", "recommendation": "O que vamos cortar ou implementar sem dó", "basedOn": ["Dado real 1", "Dado real 2"], "ruleApplied": "Framework técnico adotado (ex: MEDDPICC, Lead Scoring)", "implication": "Resultância dura na equipe ou tech stack" }
   ],
   "pillars": [
-    { "name": "Contexto Atual", "icon": "building", "items": ["Sintoma específico relatado 1", "Sintoma 2"] },
-    { "name": "Tech Stack Visado", "icon": "settings", "items": ["Fato sobre a Stack atual vs a Ideal"] },
-    { "name": "Alvos de Curto Prazo", "icon": "search", "items": ["Vencer a dor X", "Reduzir tempo na tela Y"] }
+    { "name": "Contexto Atual", "icon": "building", "items": ["Sintoma 1 específico relatado pelo cliente", "Sintoma 2 com dado numérico se disponível", "Restrição operacional citada na call", "Gap ou ineficiência mapeada no diagnóstico"] },
+    { "name": "Tech Stack Visado", "icon": "settings", "items": ["Ferramenta atual vs. ferramenta ideal", "Integração necessária específica", "Gap de rastreamento identificado", "Automação prioritária a implementar"] },
+    { "name": "Alvos de Curto Prazo", "icon": "search", "items": ["Alvo 1 com métrica ou prazo claro", "Alvo 2 baseado na dor principal", "Alvo 3 de quick win operacional", "Alvo 4 de resultado mensurável"] },
+    { "name": "Compromissos Mútuos", "icon": "handshake", "items": ["Reuniões de RAPT mensais — Revisão, Alinhamento, Prioridade, Tática", "Disponibilidade de materiais e aprovações em até 48h", "Acessos compartilhados a CRM, Ads e Analytics", "Compartilhamento de resultados para fechar o loop de atribuição"] }
+  ],
+  "thesis_pillars": [
+    { "icon": "Target", "title": "Nome do Pilar de Solução 1 — o mais urgente", "description": "Como EXATAMENTE este pilar resolve o gap diagnosticado — cite a ferramenta, o processo e a métrica alvo. 2-3 frases.", "actions": ["Ação concreta 1 com ferramenta nomeada", "Ação concreta 2 com prazo", "Ação concreta 3 com KPI"] },
+    { "icon": "Zap", "title": "Nome do Pilar de Solução 2", "description": "O segundo vetor de transformação — conecte ao segundo sinal ou risco diagnosticado.", "actions": ["Ação concreta 1", "Ação concreta 2", "Ação concreta 3"] },
+    { "icon": "Rocket", "title": "Nome do Pilar de Solução 3", "description": "O pilar de escala/consolidação — o que garante que os ganhos dos pilares 1 e 2 se mantenham.", "actions": ["Ação concreta 1", "Ação concreta 2", "Ação concreta 3"] }
   ],
   "methodology_steps": [
     { "phase": "01", "tagline": "Semana 1-2", "name": "Fundação / Setup", "description": "Táticas duras que faremos na semana 1 usando os nomes reais das ferramentas citadas (se aplicável).", "principles": ["Tática exata 1", "Tática exata 2"] }
   ],
   "roadmap_phases": [
-    { "name": "Ciclo 01", "title": "Setup Específico (Mês 1-2)", "items": ["Ação 1 cirúrgica contra a dor principal", "Ação 2 baseada no contexto real", "Ação 3 com ferramenta específica"] },
-    { "name": "Ciclo 02", "title": "Execução e Ajustes (Mês 3-4)", "items": ["Ação 1 de execução concreta", "Ação 2 com métrica mensurável", "Ação 3 de consolidação"] },
-    { "name": "Ciclo 03", "title": "Escala e Previsibilidade (Mês 5-6)", "items": ["Ação 1 de escala", "Ação 2 de automação avançada", "Ação 3 de medição e revisão"] }
+    { "name": "Ciclo 01", "title": "Fundação e Diagnóstico (Mês 01)", "items": ["Ação 1 cirúrgica contra a dor principal", "Ação 2 baseada no contexto real", "Ação 3 com ferramenta específica", "Ação 4 de configuração técnica"] },
+    { "name": "Ciclo 02", "title": "Execução e Automações (Mês 02)", "items": ["Ação 1 de execução concreta", "Ação 2 com métrica mensurável", "Ação 3 de automação e integração", "Ação 4 de treinamento da equipe"] },
+    { "name": "Ciclo 03", "title": "Governança e Escala (Mês 03)", "items": ["Ação 1 de governança operacional", "Ação 2 de revisão e otimização", "Ação 3 de documentação e passagem de bastão", "Ação 4 de consolidação de resultados"] }
   ],
   "okrs": [
     { "objective": "Nome do objetivo estratégico 1", "description": "O que este OKR resolve de concreto (Objective)", "timeline": "Trimestre 1", "sub_results": ["KR 1 com número específico", "KR 2 tático mensurável", "KR 3 com prazo"] },
@@ -227,43 +313,43 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
   ],
   "onboarding_data": {
     "kickoff": {
-      "main_title": "Frase de impacto inicial sobre o gargalo central deles.",
-      "subtitle": "Por que essa reunião de kickoff define o jogo para este cliente específico.",
-      "p1_title": "Título do Pilar 1", "p1_desc": "Descrição técnica 1...", "p1_output": "Nome do Entregável 1",
-      "p2_title": "Título do Pilar 2", "p2_desc": "Descrição técnica 2...", "p2_output": "Nome do Entregável 2",
-      "p3_title": "Título do Pilar 3", "p3_desc": "Descrição técnica 3...", "p3_output": "Nome do Entregável 3"
+      "main_title": "Frase cirúrgica sobre o gargalo central deste cliente — cite a dor exata relatada na call.",
+      "p1_title": "Nome do pilar do kickoff voltado ao problema principal (ex: Revisão do Funil de Vendas)", "p1_desc": "Descrição técnica conectada à realidade do cliente — cite ferramentas e processos mencionados.", "p1_output": "Entregável concreto (ex: Documento de Diagnóstico Operacional)",
+      "p2_title": "Nome do segundo pilar do kickoff (ex: Mapa de Responsáveis)", "p2_desc": "O que será definido e por quê, conectado ao contexto do diagnóstico.", "p2_output": "Entregável concreto (ex: Matriz de Responsabilidades Assinada)",
+      "p3_title": "Nome do terceiro pilar do kickoff (ex: Inventário de Acessos)", "p3_desc": "Ação concreta conectada à infraestrutura do cliente — cite plataformas mencionadas.", "p3_output": "Entregável concreto (ex: Cofre de Credenciais Preenchido)"
     },
     "setup": {
-      "main_title": "...", "subtitle": "...", 
-      "p1_title": "...", "p1_desc": "...", 
-      "p2_title": "...", "p2_desc": "...", 
-      "p3_title": "...", "p3_desc": "..."
+      "main_title": "Frase de impacto sobre a importância da fundação técnica para ESTE cliente.",
+      "p1_title": "Ação técnica principal de setup (ex: Estruturação do Pipeline no Funnels)", "p1_desc": "Descrição conectada aos processos e ferramentas do cliente — cite nomes reais.",
+      "p2_title": "Segunda ação de setup (ex: Integração de Canais de Entrada)", "p2_desc": "Descrição específica ao contexto do diagnóstico.",
+      "p3_title": "Terceira ação de setup (ex: Rastreamento de Ponta a Ponta)", "p3_desc": "Como implementamos o rastreamento com base na stack do cliente."
     },
     "training": {
-      "main_title": "...", "subtitle": "...", 
-      "p1_title": "...", "p1_desc": "...", 
-      "p2_title": "...", "p2_desc": "...", 
-      "p3_title": "...", "p3_desc": "..."
+      "main_title": "Frase sobre a importância da adoção da equipe para ESTE cliente.",
+      "p1_title": "Formato de treinamento (ex: Sessões Gravadas por Módulo)", "p1_desc": "Como o treinamento é entregue — conectado ao nível de maturidade do time.",
+      "p2_title": "Validação prática (ex: Simulação de Cenários Reais)", "p2_desc": "Como garantimos que o time absorveu — cenários baseados no dia a dia DELES.",
+      "p3_title": "Marco de transição (ex: Migração Definitiva do Processo Antigo)", "p3_desc": "O momento em que o sistema antigo morre — cite qual era o processo anterior."
     },
     "adoption": {
-      "main_title": "...", "subtitle": "...", 
-      "p1_title": "...", "p1_desc": "...", 
-      "p2_title": "...", "p2_desc": "..."
+      "main_title": "Frase sobre ajustes pós-treinamento conectada à realidade do cliente.",
+      "p1_title": "Monitoramento silencioso (ex: Auditoria de Preenchimento)", "p1_desc": "Como monitoramos a adoção real — cite os campos e etapas críticos deste cliente.",
+      "p2_title": "Ajustes estruturais (ex: Refinamento de Etapas de Funil)", "p2_desc": "Mudanças identificadas na prática — conectadas ao diagnóstico inicial."
     },
     "handover": {
-      "main_title": "...", "subtitle": "...", 
-      "p1_title": "...", "p1_desc": "...", 
-      "p2_title": "...", "p2_desc": "..."
+      "main_title": "Frase sobre a transição de bastão e autonomia do cliente.",
+      "p1_title": "Entregável de documentação (ex: Manual Operacional Completo)", "p1_desc": "O que é entregue para que o cliente opere sem dependência — cite as ferramentas.",
+      "p2_title": "Entregável de análise (ex: Relatório de Resultados dos 90 Dias)", "p2_desc": "Métricas e resultados consolidados — conectados aos OKRs definidos no kickoff."
     }
   }
 }
 
-CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 3 itens em pillars, e pelo menos 2 itens em methodology_steps. Arrays com apenas 1 item serão considerados inválidos.
+CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 4 itens em pillars (Contexto, Tech Stack, Alvos, Compromissos), EXATAMENTE 3 itens em thesis_pillars (os 3 pilares da tese de solução), e pelo menos 2 itens em methodology_steps. Arrays com apenas 1 item serão considerados inválidos.
 
 CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onboarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".
 
 CRITICAL_RULE_BRANDING: NUNCA mencione "GoHighLevel", "GHL" ou "HighLevel". Sempre que propor, mencionar ou estruturar a infraestrutura de CRM, o único nome oficial que deve ser utilizado no planejamento é "Funnels".
-CRITICAL_RULE_SPECIFICITY: OBRIGATÓRIO Citar nomes de ferramentas e palavras exatas do cliente. PROIBIDO USAR AS PALAVRAS GENÉRICAS COMO "potencializar", "sinergia", "otimizar processos" SEM explicar como. Você será penalizado se produzir texto vago. Entregue APENAS o JSON válido.`;
+CRITICAL_RULE_SPECIFICITY: OBRIGATÓRIO Citar nomes de ferramentas e palavras exatas do cliente. PROIBIDO USAR AS PALAVRAS GENÉRICAS COMO "potencializar", "sinergia", "otimizar processos" SEM explicar como. Você será penalizado se produzir texto vago. Entregue APENAS o JSON válido.
+CRITICAL_RULE_PORTUGUESE: TODO o conteúdo gerado DEVE ser 100% em PORTUGUÊS BRASILEIRO. PROIBIDO usar termos em inglês como "Blueprint", "Hand-off", "Go-Live", "Data Hygiene", "Pipeline Review", "Win Rate", "Speed to Lead", "Handover", "As-Is", "To-Be", "SOP", "Go-To-Market", "Break-Even", "Forecast", "Data-Driven", "Weekly Review". Use SEMPRE os equivalentes em português: "Projeto Técnico", "Passagem de Bastão", "Entrada em Produção", "Higiene de Dados", "Revisão de Pipeline", "Taxa de Conversão", "Velocidade de Resposta", "Processo Atual", "Processo Ideal", "Manual Operacional", "Estratégia de Entrada no Mercado", "Ponto de Equilíbrio", "Previsão de Receita", "Orientado por Dados", "Revisão Semanal". Acrônimos técnicos universais como CRM, SQL, MQL, ROAS, CAC, LTV, KPI, OKR, ICP, UTM são permitidos.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CalendarIcon, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -50,11 +50,11 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
     }
   };
 
-  const cleanExcerpt = () => {
-    const div = document.createElement('div');
-    div.innerHTML = post.excerpt || '';
-    return div.textContent || div.innerText || '';
-  };
+  // Strip HTML tags with regex instead of creating DOM elements
+  const cleanExcerpt = useMemo(() =>
+    (post.excerpt || '').replace(/<[^>]*>?/gm, ''),
+    [post.excerpt]
+  );
 
   return (
     <Link
@@ -92,22 +92,20 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
 
           {/* Excerpt - Clean & Minimal */}
           <p className="text-gray-500 text-xs font-medium uppercase tracking-wide line-clamp-3 mb-6 leading-relaxed">
-            {cleanExcerpt()}
+            {cleanExcerpt}
           </p>
 
           {/* Footer / Author - Ultra clean */}
           <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100">
             <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8 rounded-full border border-gray-100 p-0.5">
-                <AvatarImage
-                  src={post.author?.avatar}
-                  alt={post.author?.name}
-                  className="rounded-full object-cover"
+              <img
+                  src={post.author?.avatar || '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png'}
+                  alt={post.author?.name || 'Giulliano Alves'}
+                  className="w-8 h-8 rounded-full object-cover border border-gray-100"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png';
+                  }}
                 />
-                <AvatarFallback className="bg-zinc-100 text-zinc-400 text-[8px] font-bold">
-                  {post.author?.name?.charAt(0) || 'R'}
-                </AvatarFallback>
-              </Avatar>
               <div className="flex flex-col">
                 <span className="text-[9px] font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
                 <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{post.author?.role}</span>

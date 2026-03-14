@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EditableField, usePlanEdit } from '@/components/plan/PlanEditContext';
-import { MessageSquare, Mail, Instagram, Facebook, Globe, Youtube, Linkedin, Send } from 'lucide-react';
+import { MessageSquare, Mail, Instagram, Facebook, Globe, Youtube, Linkedin, Send, Flame, Zap } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Female name list for avatar gender detection ──────────────────────────
@@ -28,7 +28,7 @@ function PersonaAvatar({ name, index }: { name: string; index: number }) {
     if (error) {
         return (
             <div className="w-14 h-14 rounded-full bg-zinc-700 border-2 border-zinc-600 flex items-center justify-center shrink-0">
-                <span className="text-white text-xl font-black">{initial}</span>
+                <span className="text-white text-xl font-bold">{initial}</span>
             </div>
         );
     }
@@ -138,7 +138,7 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
     const personality = p.personality || { analytical_creative: 50, passive_active: 50, reserved_extroverted: 50, reactive_preventive: 50 };
 
     return (
-        <div className="flex flex-col bg-white border border-zinc-200 overflow-hidden h-full">
+        <div className="flex flex-col bg-white border border-zinc-200 rounded-xl overflow-hidden h-full">
             {/* Dark header with avatar */}
             <div className="bg-zinc-950 p-5">
                 <div className="flex items-start gap-4 mb-3">
@@ -147,7 +147,7 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="block mb-1">
-                            <EditableField path={`persona_data.personas.${index}.name`} className="text-white font-black text-lg leading-tight block" placeholder={p.name} />
+                            <EditableField path={`persona_data.personas.${index}.name`} className="text-white font-bold text-lg leading-tight block" placeholder={p.name} />
                         </div>
                         <div className="block mb-1.5">
                             <EditableField path={`persona_data.personas.${index}.role`} className="text-[#00CC6A] text-sm font-semibold uppercase tracking-wide block" placeholder={p.role} />
@@ -174,11 +174,11 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
             {/* Pain + Trigger */}
             <div className="grid grid-cols-2 gap-3 p-4">
                 <div className="bg-zinc-50 border border-zinc-200 rounded p-3">
-                    <p className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-1.5">😤 Dor Principal</p>
+                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5"><Flame className="w-3 h-3" /> Dor Principal</p>
                     <EditableField path={`persona_data.personas.${index}.pain`} className="text-xs text-zinc-800 leading-relaxed font-medium" placeholder={p.pain} multiline />
                 </div>
                 <div className="bg-zinc-50 border border-zinc-200 rounded p-3">
-                    <p className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-1.5">⚡ Evento Crítico</p>
+                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5"><Zap className="w-3 h-3" /> Evento Crítico</p>
                     <EditableField path={`persona_data.personas.${index}.trigger`} className="text-xs text-zinc-800 leading-relaxed font-medium" placeholder={p.trigger} multiline />
                 </div>
             </div>
@@ -247,13 +247,13 @@ export default function PersonaSection({ plan }: { plan: any }) {
                 <div className="mb-6 space-y-2">
                     {isREIFallback && !isDefault && (
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Persona construída com base no ICP declarado no REI — aprofundamento disponível via "Deep Personas"</p>
                         </div>
                     )}
                     {isDefault && (
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Perfis de referência — personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
                         </div>
                     )}

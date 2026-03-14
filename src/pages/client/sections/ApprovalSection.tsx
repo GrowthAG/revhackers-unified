@@ -7,7 +7,7 @@ const defaultSteps = [
     { day: 'Dia 3', category: 'Criação de Conteúdo', description: 'Briefing e produção dos primeiros criativos para campanhas iniciais.' },
     { day: 'Dia 5', category: 'Configuração de Campanhas', description: 'Estrutura de campanhas, audiências e orçamento segmentado por objetivo.' },
     { day: 'Dia 7', category: 'Validação de Tracking', description: 'Teste end-to-end: lead → CRM → conversão → relatório.' },
-    { day: 'Dia 10', category: 'Go Live', description: 'Todas as campanhas ativas. Monitoramento diário de CAC e conversão.' },
+    { day: 'Dia 10', category: 'Entrada em Produção', description: 'Todas as campanhas ativas. Monitoramento diário de CAC e conversão.' },
 ];
 
 export default function ApprovalSection({ plan, onApprove, onReject, approving, status }: {
@@ -113,14 +113,14 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
             {/* Approval CTA */}
             <div className="mt-8">
                 {isApproved ? (
-                    <div className="bg-white border border-green-200 p-10 md:p-14 text-center rounded-2xl shadow-sm">
+                    <div className="bg-white border border-green-200 p-10 md:p-14 text-center rounded-xl">
                         <div className="w-16 h-16 bg-green-50 border border-[#00CC6A] rounded-full flex items-center justify-center mx-auto mb-6">
                             <Check className="w-8 h-8 text-[#00CC6A]" />
                         </div>
                         <h3 className="text-2xl font-bold text-black mb-3">Planejamento Aprovado</h3>
                         <p className="text-zinc-500 text-sm max-w-sm mx-auto">Nossa equipe entrou em contato. A execução começa nas próximas 24h.</p>
                         <div className="mt-8 pt-6 border-t border-zinc-100">
-                            <span className="text-xs text-zinc-400 font-black uppercase tracking-widest">▲ RevHackers Growth Hub</span>
+                            <span className="text-xs text-zinc-400 font-bold uppercase tracking-widest">▲ RevHackers Growth Hub</span>
                         </div>
                     </div>
                 ) : isRejected ? (
@@ -129,9 +129,9 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         <p className="text-sm text-zinc-500">Nossa equipe está revisando suas observações e entrará em contato em breve.</p>
                     </div>
                 ) : (
-                    <div className="bg-zinc-50 border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden">
                         <div className="p-10 md:p-14 text-center">
-                            <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-4">Próximo Passo</p>
+                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Próximo Passo</p>
                             <h3 className="text-3xl md:text-4xl font-bold text-black mb-3">Pronto para começar?</h3>
                             <p className="text-zinc-500 mb-10 max-w-md mx-auto text-sm leading-relaxed">
                                 Ao aprovar, você autoriza o início das ações descritas neste planejamento. Nossa equipe entra em ação em até 24h.
@@ -146,7 +146,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                             </div>
                         </div>
                         <div className="px-10 py-5 bg-white border-t border-zinc-200 flex items-center justify-between">
-                            <span className="text-xs text-zinc-500 uppercase tracking-widest font-black">▲ RevHackers</span>
+                            <span className="text-xs text-zinc-500 uppercase tracking-widest font-bold">▲ RevHackers</span>
                             <span className="text-xs text-zinc-400 font-bold">Revenue Engine Intelligence™</span>
                         </div>
                     </div>

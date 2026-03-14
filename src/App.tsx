@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,119 +8,124 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import "./styles/article.css";
 
-// Pages
+// ─── Eager Imports (Critical Public Pages) ───────────────────────────
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
-import PublicDealRoom from "./pages/public/PublicDealRoom";
-import Diagnostico from "./pages/Diagnostico";
-import SupabaseDiagnostic from "./pages/SupabaseDiagnostic";
 import NotFound from "./pages/NotFound";
-import QuemSomos from "./pages/QuemSomos";
-import Servicos from "./pages/Servicos";
-import ServicosDetalhe from "./pages/ServicosDetalhe";
-import Cases from "./pages/Cases";
-import CasesDetalhe from "./pages/CasesDetalhe";
-import Downloads from "./pages/Downloads";
-import Materiais from "./pages/Materiais";
-import MaterialLanding from "./pages/MaterialLanding";
-import Metodologia from "./pages/Metodologia";
-import AdminPosts from "./pages/admin/AdminPosts";
-import AgendaDiagnostico from "./pages/AgendaDiagnostico";
-import Comunidade from "./pages/Comunidade";
-import Booking from "./pages/Booking";
-import Agenda from "./pages/Agenda";
-import PartnerDetail from "./pages/PartnerDetail";
-import PartnerEnics from "./pages/PartnerEnics";
-import TermosDeUso from "./pages/TermosDeUso";
-import Privacidade from "./pages/Privacidade";
-import ThankYou from "./pages/ThankYou";
-import SecureBooking from "./pages/SecureBooking";
-import CadastroParceiro from "./pages/CadastroParceiro";
-import PesquisaNPS from "./pages/PesquisaNPS";
-import ObrigadoNPS from "./pages/ObrigadoNPS";
-
-// Specialized Pages
-import AgendaLuna from "./pages/AgendaLuna";
-import AgendaGiulliano from "./pages/AgendaGiulliano";
-import AgendaLinkedin from "./pages/AgendaLinkedin";
-import AgendaKickoff from "./pages/AgendaKickoff";
-
-// REI Workflows
-import ReiHub from "./pages/REI-Hub";
-import ReiDev from "./pages/REI-Dev";
-import ReiConsulting from "./pages/REI-Consulting";
-import ReiFounder from "./pages/REI-Founder";
-import REIWizardPage from "./pages/REIWizardPage";
-import REIResult from "./pages/REIResult";
-import GrowthScore from "./pages/GrowthScore";
-import SiteScore from "./pages/SiteScore";
-import FounderScore from "./pages/FounderScore";
-import RevenueScore from "./pages/RevenueScore";
-import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import UpdatePassword from "./pages/auth/UpdatePassword";
-import CompleteProfile from "./pages/auth/CompleteProfile";
-import Dashboard from "./pages/Dashboard";
-import PublicDiagnosticResult from "./pages/PublicDiagnosticResult";
-import ClientOnboarding from "./pages/public/ClientOnboarding";
-import OnboardingSuccess from "./pages/public/OnboardingSuccess";
-
-// Admin Pages
-import Admin from "./pages/Admin";
-import AdminPostNew from "./pages/AdminPostNew";
-import AdminPostEdit from "./pages/AdminPostEdit";
-import AdminSettings from "./pages/AdminSettings";
-import ProfileSettings from "./pages/admin/ProfileSettings";
-import AdminUsers from "./pages/admin/AdminUsers";
-import Settings from "./pages/admin/Settings";
-
-
-// New Admin Content Management
-import AdminMaterials from "./pages/admin/AdminMaterials";
-import AdminClients from "./pages/admin/AdminClients";
-import ClientForm from "./pages/admin/ClientForm";
-import AdminIntegrations from "./pages/admin/AdminIntegrations";
-
-import AdminMaterialNew from "./pages/admin/AdminMaterialNew";
-import AdminMaterialEdit from "./pages/admin/AdminMaterialEdit";
-import AdminSync from './pages/admin/AdminSync';
-import FixMaterialsPage from "./pages/admin/FixMaterialsPage";
-import AdminCases from "./pages/admin/AdminCases";
-
-import AdminCaseNew from "./pages/admin/AdminCaseNew";
-import AdminCaseEdit from "./pages/admin/AdminCaseEdit";
-
-// New Admin View
-import DiagnosticView from "./pages/admin/DiagnosticView";
-
-// Admin - REI Projects
-import AdminREIProjects from "./pages/admin/AdminREIProjects";
-import REIProjectForm from "./pages/admin/REIProjectForm";
-import GlobalDashboard from "./pages/admin/GlobalDashboard";
-
-import REIDashboard from "./pages/REIDashboard";
-import REIOnboarding from "./pages/REIOnboarding";
-import StrategyPlanning from "./pages/admin/StrategyPlanning";
-import GrowthCronograma from "./pages/admin/GrowthCronograma";
-import OrchestratedOnboarding from "./pages/admin/OrchestratedOnboarding";
-import LiveStrategicPlan from "./pages/admin/LiveStrategicPlan";
-import LiveResultsReport from "./pages/admin/LiveResultsReport";
-import ProjectDetails from "./pages/admin/ProjectDetails";
-
-import StrategicPlanGenerator from "./pages/admin/StrategicPlanGenerator";
-import StrategicPlanPresentation from "./pages/client/StrategicPlanPresentation";
-import PlanSignPage from "./pages/platform/client/PlanSignPage";
-import ClientProjectHub from "./pages/client/ClientProjectHub";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import SchedulingSuccess from "./pages/SchedulingSuccess";
-
-import AdminProposals from "./pages/admin/AdminProposals";
-import AdminProposalNew from "./pages/admin/AdminProposalNew";
-import AdminProposalEdit from "./pages/admin/AdminProposalEdit";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
+
+// ─── Loading Fallback ────────────────────────────────────────────────
+const PageLoader = () => (
+  <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+    <div className="w-10 h-10 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
+  </div>
+);
+
+// ─── Lazy Imports (Code-Split Routes) ────────────────────────────────
+// Public Pages
+const PublicDealRoom = lazy(() => import("./pages/public/PublicDealRoom"));
+const Diagnostico = lazy(() => import("./pages/Diagnostico"));
+const SupabaseDiagnostic = lazy(() => import("./pages/SupabaseDiagnostic"));
+const QuemSomos = lazy(() => import("./pages/QuemSomos"));
+const Servicos = lazy(() => import("./pages/Servicos"));
+const ServicosDetalhe = lazy(() => import("./pages/ServicosDetalhe"));
+const Cases = lazy(() => import("./pages/Cases"));
+const CasesDetalhe = lazy(() => import("./pages/CasesDetalhe"));
+const Downloads = lazy(() => import("./pages/Downloads"));
+const Materiais = lazy(() => import("./pages/Materiais"));
+const MaterialLanding = lazy(() => import("./pages/MaterialLanding"));
+const Metodologia = lazy(() => import("./pages/Metodologia"));
+const AgendaDiagnostico = lazy(() => import("./pages/AgendaDiagnostico"));
+const Comunidade = lazy(() => import("./pages/Comunidade"));
+const Booking = lazy(() => import("./pages/Booking"));
+const Agenda = lazy(() => import("./pages/Agenda"));
+const PartnerDetail = lazy(() => import("./pages/PartnerDetail"));
+const PartnerEnics = lazy(() => import("./pages/PartnerEnics"));
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
+const Privacidade = lazy(() => import("./pages/Privacidade"));
+const ThankYou = lazy(() => import("./pages/ThankYou"));
+const SecureBooking = lazy(() => import("./pages/SecureBooking"));
+const CadastroParceiro = lazy(() => import("./pages/CadastroParceiro"));
+const PesquisaNPS = lazy(() => import("./pages/PesquisaNPS"));
+const ObrigadoNPS = lazy(() => import("./pages/ObrigadoNPS"));
+const ClientOnboarding = lazy(() => import("./pages/public/ClientOnboarding"));
+const OnboardingSuccess = lazy(() => import("./pages/public/OnboardingSuccess"));
+const MaterialUpload = lazy(() => import("./pages/public/MaterialUpload"));
+const PublicDiagnosticResult = lazy(() => import("./pages/PublicDiagnosticResult"));
+const SchedulingSuccess = lazy(() => import("./pages/SchedulingSuccess"));
+
+// Specialized Agenda Pages
+const AgendaLuna = lazy(() => import("./pages/AgendaLuna"));
+const AgendaGiulliano = lazy(() => import("./pages/AgendaGiulliano"));
+const AgendaLinkedin = lazy(() => import("./pages/AgendaLinkedin"));
+const AgendaKickoff = lazy(() => import("./pages/AgendaKickoff"));
+
+// Score Pages (Heavy — 21-70KB each)
+const GrowthScore = lazy(() => import("./pages/GrowthScore"));
+const SiteScore = lazy(() => import("./pages/SiteScore"));
+const FounderScore = lazy(() => import("./pages/FounderScore"));
+const RevenueScore = lazy(() => import("./pages/RevenueScore"));
+
+// REI Workflows (Heavy — 15-38KB each)
+const ReiHub = lazy(() => import("./pages/REI-Hub"));
+const ReiDev = lazy(() => import("./pages/REI-Dev"));
+const ReiConsulting = lazy(() => import("./pages/REI-Consulting"));
+const ReiFounder = lazy(() => import("./pages/REI-Founder"));
+const REIWizardPage = lazy(() => import("./pages/REIWizardPage"));
+const REIResult = lazy(() => import("./pages/REIResult"));
+const REIDashboard = lazy(() => import("./pages/REIDashboard"));
+const REIOnboarding = lazy(() => import("./pages/REIOnboarding"));
+
+// Auth Pages
+const Login = lazy(() => import("./pages/auth/Login"));
+const Signup = lazy(() => import("./pages/auth/Signup"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const UpdatePassword = lazy(() => import("./pages/auth/UpdatePassword"));
+const CompleteProfile = lazy(() => import("./pages/auth/CompleteProfile"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+// Admin Pages (Never loaded by public visitors)
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminPostNew = lazy(() => import("./pages/AdminPostNew"));
+const AdminPostEdit = lazy(() => import("./pages/AdminPostEdit"));
+const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const AdminPosts = lazy(() => import("./pages/admin/AdminPosts"));
+const ProfileSettings = lazy(() => import("./pages/admin/ProfileSettings"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const Settings = lazy(() => import("./pages/admin/Settings"));
+const AdminMaterials = lazy(() => import("./pages/admin/AdminMaterials"));
+const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
+const ClientForm = lazy(() => import("./pages/admin/ClientForm"));
+const AdminIntegrations = lazy(() => import("./pages/admin/AdminIntegrations"));
+const AdminMaterialNew = lazy(() => import("./pages/admin/AdminMaterialNew"));
+const AdminMaterialEdit = lazy(() => import("./pages/admin/AdminMaterialEdit"));
+const AdminSync = lazy(() => import("./pages/admin/AdminSync"));
+const FixMaterialsPage = lazy(() => import("./pages/admin/FixMaterialsPage"));
+const AdminCases = lazy(() => import("./pages/admin/AdminCases"));
+const AdminCaseNew = lazy(() => import("./pages/admin/AdminCaseNew"));
+const AdminCaseEdit = lazy(() => import("./pages/admin/AdminCaseEdit"));
+const DiagnosticView = lazy(() => import("./pages/admin/DiagnosticView"));
+const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
+const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
+const GlobalDashboard = lazy(() => import("./pages/admin/GlobalDashboard"));
+const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
+const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
+const OrchestratedOnboarding = lazy(() => import("./pages/admin/OrchestratedOnboarding"));
+const LiveStrategicPlan = lazy(() => import("./pages/admin/LiveStrategicPlan"));
+const LiveResultsReport = lazy(() => import("./pages/admin/LiveResultsReport"));
+const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
+const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
+const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
+const AdminProposalNew = lazy(() => import("./pages/admin/AdminProposalNew"));
+const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
+
+// Client Pages
+const StrategicPlanPresentation = lazy(() => import("./pages/client/StrategicPlanPresentation"));
+const PlanSignPage = lazy(() => import("./pages/platform/client/PlanSignPage"));
+const ClientProjectHub = lazy(() => import("./pages/client/ClientProjectHub"));
 
 const queryClient = new QueryClient();
 
@@ -132,6 +138,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <ScrollToTop />
+            <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
@@ -159,6 +166,7 @@ const App = () => (
               {/* Public Onboarding */}
               <Route path="/cadastro-cliente" element={<ClientOnboarding />} />
               <Route path="/onboarding/success" element={<OnboardingSuccess />} />
+              <Route path="/upload-materiais/:projectId" element={<MaterialUpload />} />
 
               {/* Legal & Feedback */}
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
@@ -280,6 +288,7 @@ const App = () => (
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
           </>
         </AuthProvider>
       </BrowserRouter>

@@ -45,9 +45,9 @@ const NAV_SECTIONS = [
     { id: 'roadmap_macro',       name: 'Marcos do Projeto',       icon: <Calendar className="w-4 h-4" /> },
     { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   icon: <Calendar className="w-4 h-4" /> },
     { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     icon: <Settings className="w-4 h-4" /> },
-    { id: 'onboarding_training', name: 'Treinamento & Go-Live',   icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'onboarding_training', name: 'Treinamento & Produção',   icon: <Briefcase className="w-4 h-4" /> },
     { id: 'onboarding_adoption', name: 'Adoção & Mapeamento',     icon: <Target className="w-4 h-4" /> },
-    { id: 'onboarding_handover', name: 'Handover & Escala',       icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'onboarding_handover', name: 'Passagem de Bastão',      icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'sla',                 name: 'Regras do Jogo',          icon: <ShieldCheck className="w-4 h-4" /> },
     { id: 'projections',         name: 'Projeções',               icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'investment',          name: 'Investimento',            icon: <DollarSign className="w-4 h-4" /> },
@@ -122,8 +122,10 @@ export default function StrategicPlanPresentation() {
             return pt === 'full' || pt === 'consulting' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
         }
 
-        // Investment shown for ALL types — each type has its own view (media vs. service fee)
-        // if (s.id === 'investment') → always visible
+        // Investment hidden for CRM/onboarding — o cliente já está em operação, não faz sentido falar em investimento
+        if (s.id === 'investment') {
+            return pt !== 'crm_ops';
+        }
 
         // Persona and Benchmark: not shown for CRM (irrelevant for process implementation)
         if (s.id === 'persona' || s.id === 'benchmark') {
@@ -246,7 +248,7 @@ export default function StrategicPlanPresentation() {
     if (loading) return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
             <div className="text-center">
-                <div className="w-12 h-12 border-2 border-zinc-700 border-t-[#00FF85] rounded-full animate-spin mx-auto mb-6" />
+                <div className="w-12 h-12 border-2 border-zinc-700 border-t-[#00CC6A] rounded-full animate-spin mx-auto mb-6" />
                 <p className="text-zinc-500 text-sm tracking-widest uppercase">Carregando planejamento</p>
             </div>
         </div>
@@ -319,7 +321,7 @@ export default function StrategicPlanPresentation() {
                                 <p className="text-lg text-zinc-500 mb-10 leading-relaxed font-medium">Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.</p>
                                 
                                 <div className="flex flex-col sm:flex-row items-center gap-4">
-                                    <button onClick={() => setShowSign(true)} className="w-full sm:w-auto px-10 py-4 bg-zinc-900 text-white text-[15px] font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-xl shadow-zinc-900/20">
+                                    <button onClick={() => setShowSign(true)} className="w-full sm:w-auto px-10 py-4 bg-zinc-900 text-white text-[15px] font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-sm">
                                         <Check className="w-5 h-5" /> Assinar Agora
                                     </button>
                                     <button onClick={() => setShowRejectModal(true)} className="w-full sm:w-auto px-8 py-4 border border-zinc-200 text-zinc-600 text-[15px] font-bold rounded-xl hover:border-zinc-300 hover:bg-zinc-50 transition-colors">
@@ -329,7 +331,7 @@ export default function StrategicPlanPresentation() {
                             </div>
                             
                             {/* Right Side: QR Code Area */}
-                            <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center">
+                            <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
                                 <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-zinc-400 mb-6 border border-zinc-100">
                                     <Smartphone className="w-6 h-6" />
                                 </div>
@@ -387,7 +389,7 @@ export default function StrategicPlanPresentation() {
                             </label>
                         </div>
                         <div className="space-y-3">
-                            <button onClick={handleApprove} disabled={!signName.trim() || !signEmail.trim() || !signAccepted || approving} className="w-full py-4 bg-[#00CC6A] text-black text-sm font-black hover:bg-[#00FF85] transition-colors disabled:opacity-25 flex items-center justify-center gap-2">
+                            <button onClick={handleApprove} disabled={!signName.trim() || !signEmail.trim() || !signAccepted || approving} className="w-full py-4 bg-[#00CC6A] text-black text-sm font-black hover:bg-[#00CC6A]/90 transition-colors disabled:opacity-25 flex items-center justify-center gap-2">
                                 <Check className="w-5 h-5" /> {approving ? 'Registrando...' : 'Assinar e Aprovar'}
                             </button>
                             <button onClick={() => setShowSign(false)} className="w-full py-3 border border-zinc-700 text-zinc-400 text-xs font-semibold hover:border-zinc-500 hover:text-white transition-colors">Voltar</button>
@@ -422,7 +424,7 @@ export default function StrategicPlanPresentation() {
 
             <div className="h-screen bg-white flex flex-col items-center overflow-hidden">
                 {/* Floating Navigation Controls (Bottom Center) - Minimalist Fullscreen approach */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-lg shadow-zinc-200/50 print:hidden transition-all duration-300 hover:bg-white">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-sm print:hidden transition-all duration-300 hover:bg-white">
                     <button
                         onClick={goPrev}
                         disabled={currentIndex === 0}

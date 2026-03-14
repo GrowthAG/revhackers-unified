@@ -8,6 +8,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { ExternalLink } from 'lucide-react';
 
 interface BookingModalProps {
     isOpen?: boolean;
@@ -17,62 +18,63 @@ interface BookingModalProps {
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 }
 
+const BOOKING_URL = "https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh";
+
 const BookingModal = ({ isOpen, onClose, triggerText = "Agendar Diagnóstico", className, variant = "default" }: BookingModalProps) => {
 
+    // When modal opens, auto-redirect to booking page
     useEffect(() => {
-        // Load the embed script dynamically when the component mounts or modal opens
-        // But since the iframe is always present when modal content is rendered, we can just ensure the script is loaded.
-        const scriptId = "revhackers-booking-script";
-        if (!document.getElementById(scriptId)) {
-            const script = document.createElement("script");
-            script.id = scriptId;
-            script.src = "https://pages.revhackers.com.br/js/form_embed.js";
-            script.type = "text/javascript";
-            script.async = true;
-            document.body.appendChild(script);
+        if (isOpen) {
+            window.open(BOOKING_URL, '_blank', 'noopener,noreferrer');
+            // Close the modal immediately since we opened in new tab
+            if (onClose) {
+                setTimeout(() => onClose(), 300);
+            }
         }
-    }, []);
+    }, [isOpen, onClose]);
 
+    // If used as a standalone button (no controlled isOpen/onClose)
+    if (!isOpen && onClose === undefined) {
+        return (
+            <Button
+                variant={variant}
+                className={className}
+                onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
+            >
+                {triggerText}
+            </Button>
+        );
+    }
+
+    // Controlled mode: show a minimal confirmation dialog instead of broken iframe
     return (
         <Dialog open={isOpen} onOpenChange={(open) => {
             if (!open && onClose) onClose();
         }}>
-            {!isOpen && onClose === undefined && (
-                <DialogTrigger asChild>
-                    <Button variant={variant} className={className}>
-                        {triggerText}
-                    </Button>
-                </DialogTrigger>
-            )}
-            <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 bg-white border-0 overflow-hidden">
-                <DialogHeader className="px-0 py-0 border-b border-gray-100 bg-black text-white shrink-0 z-10">
-                    <div className="flex items-center justify-between px-6 py-6">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] text-gray-400 font-mono">PROTOCOLO // ID-9090</span>
-                            <DialogTitle className="text-white font-bold text-sm uppercase tracking-[0.2em] mt-1">
-                                Sessão de Diagnóstico
-                            </DialogTitle>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-revgreen animate-pulse shadow-[0_0_8px_#03FC3B]"></div>
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-revgreen">
-                                Sistema Ativo
-                            </span>
-                        </div>
+            <DialogContent className="max-w-md p-8 bg-white border border-zinc-200 rounded-xl">
+                <div className="flex flex-col items-center text-center gap-5">
+                    <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center">
+                        <ExternalLink className="w-5 h-5 text-white" />
                     </div>
-                    {/* Progress Loader Simulation */}
-                    <div className="w-full h-0.5 bg-gray-900 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 h-full bg-revgreen w-1/3 animate-[shimmer_2s_infinite]"></div>
+                    <div>
+                        <h3 className="text-lg font-bold text-zinc-900 mb-1">Agendar Diagnostico</h3>
+                        <p className="text-sm text-zinc-500">A pagina de agendamento foi aberta em uma nova aba.</p>
                     </div>
-                </DialogHeader>
-                <div className="flex-1 w-full p-0 bg-white overflow-y-auto">
-                    <iframe
-                        src="https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh"
-                        style={{ width: '100%', border: 'none', minHeight: '1100px' }}
-                        scrolling="yes"
-                        id="E6Mw5guvWZc7ADFgxnJh_1766095834075"
-                        title="Agendar Diagnóstico"
-                    />
+                    <div className="flex gap-3 w-full">
+                        <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => onClose?.()}
+                        >
+                            Fechar
+                        </Button>
+                        <Button
+                            className="flex-1 bg-zinc-950 text-white hover:bg-zinc-800"
+                            onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
+                        >
+                            Abrir novamente
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

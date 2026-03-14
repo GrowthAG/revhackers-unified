@@ -5,8 +5,10 @@ import BlogHeader from '@/components/blog/BlogHeader';
 import BlogCard from '@/components/blog/BlogCard';
 import { Button } from '@/components/ui/button';
 import { Search, Filter, BookOpen } from 'lucide-react';
+import SEO from '@/components/shared/SEO';
 import { supabase } from '@/integrations/supabase/client';
 import { getArticleImageBySlug } from '@/components/blog/post/articles/utils/frameworkImages';
+import { blogPosts as staticBlogPosts } from '@/data/blogData';
 
 
 
@@ -78,9 +80,9 @@ const Blog = () => {
     fetchPosts();
   }, []);
 
-  // Format Supabase posts
+  // Format Supabase posts + merge with static blogData (deduplicate by slug, Supabase wins)
   const blogPosts = useMemo(() => {
-    return apiPosts.map(post => ({
+    const supabasePosts: BlogPost[] = apiPosts.map(post => ({
       id: post.id,
       title: post.title,
       slug: post.slug,
@@ -96,7 +98,33 @@ const Blog = () => {
       date: post.date || post.created_at,
       readTime: post.read_time || '5 min',
       featured: post.featured || false
-    })).sort((a, b) =>
+    }));
+
+    // Slugs already in Supabase
+    const supabaseSlugs = new Set(supabasePosts.map(p => p.slug));
+
+    // Static posts not yet synced to Supabase
+    const staticOnly: BlogPost[] = staticBlogPosts
+      .filter(p => !supabaseSlugs.has(p.slug))
+      .map(p => ({
+        id: `static-${p.id}`,
+        title: p.title.replace(/<span>|<\/span>/g, ''),
+        slug: p.slug,
+        excerpt: p.excerpt,
+        content: p.content || '',
+        category: p.category,
+        image: p.image || getArticleImageBySlug(p.slug) || undefined,
+        author: {
+          name: p.author.name,
+          role: p.author.role,
+          avatar: getFixedAuthorAvatar(p.author.avatar)
+        },
+        date: p.date,
+        readTime: p.readTime,
+        featured: p.featured || false
+      }));
+
+    return [...supabasePosts, ...staticOnly].sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [apiPosts]);
@@ -161,6 +189,11 @@ const Blog = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title="Blog"
+        description="Artigos sobre Growth, Revenue Operations, ABM, Automação e Tecnologia B2B. Estratégias avançadas para escalar sua operação de receita."
+        canonical="https://revhackers.com/blog"
+      />
       <BlogHeader
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
@@ -168,7 +201,8 @@ const Blog = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      <section className="py-12 bg-white min-h-screen relative">
+      <section className="pt-0 pb-12 bg-zinc-50 min-h-screen relative">
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black to-transparent pointer-events-none z-20" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
         <div className="container-custom relative z-10">

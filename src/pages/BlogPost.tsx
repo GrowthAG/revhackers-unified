@@ -10,6 +10,7 @@ import { getArticleImageBySlug, getFrameworkImage } from '@/components/blog/post
 import { getAllPosts, BlogPostWithAuthor } from '@/api/posts'; // Updated import
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import SEO from '@/components/shared/SEO';
 import { Badge } from '@/components/ui/badge';
 import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 import ContextualCTA from '@/components/blog/post/ContextualCTA';
@@ -93,7 +94,29 @@ const BlogPostPage = () => {
           featured: p.featured || false
         }));
 
-        setPosts(formattedApiPosts);
+        // Merge static posts not yet synced to Supabase
+        const apiSlugs = new Set(formattedApiPosts.map(p => p.slug));
+        const staticFallback: BlogPost[] = staticBlogPosts
+          .filter(p => !apiSlugs.has(p.slug))
+          .map(p => ({
+            id: `static-${p.id}`,
+            title: p.title.replace(/<span>|<\/span>/g, ''),
+            slug: p.slug,
+            excerpt: p.excerpt,
+            content: p.content || '',
+            category: p.category,
+            image: p.image || '',
+            author: {
+              name: p.author.name,
+              role: p.author.role,
+              avatar: getFixedAuthorAvatar(p.author.avatar)
+            },
+            date: p.date,
+            readTime: p.readTime,
+            featured: p.featured || false
+          }));
+
+        setPosts([...formattedApiPosts, ...staticFallback]);
         setError(null);
       } catch (err) {
         console.error("Erro ao carregar posts da API:", err);
@@ -232,6 +255,15 @@ const BlogPostPage = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title={post.title}
+        description={post.excerpt?.replace(/<[^>]*>?/gm, '').substring(0, 160) || 'Artigo RevHackers sobre Growth e Revenue Operations'}
+        canonical={`https://revhackers.com/blog/${post.slug}`}
+        image={resolvedImage || undefined}
+        type="article"
+        publishedTime={post.date}
+        author={post.author.name}
+      />
       {/* 1. Hero Section - Matching Landing Page EXACTLY (HeroSection.tsx) */}
       <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-24 pb-20 overflow-hidden bg-black">
         {/* Full-bleed high-impact background (Fixed: "sem imagem no banner") */}

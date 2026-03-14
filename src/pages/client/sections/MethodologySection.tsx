@@ -1,5 +1,4 @@
-import React, { Fragment, cloneElement } from 'react';
-import { Settings, Zap, Target, Repeat, FileText, Users, BarChart3, Code2, Gauge } from 'lucide-react';
+import React from 'react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Pipeline stages ───────────────────────────────────────────────────────
@@ -29,32 +28,32 @@ const defaultSteps = [
         principles: ['Momento de Verdade 1: ativação em 24h após fechamento', 'Momento de Verdade 2: primeiro resultado entregue em 15 dias', 'Momento de Verdade 3: review de resultados no dia 90', 'Automações de nurturing com cadência adaptada ao comportamento'],
     },
     {
-        phase: '04', name: 'Expansão & Revenue Engine', tagline: 'Mês 2 em diante',
-        description: 'Com dados reais de CAC, LTV, ROAS e churn, ativamos o loop de crescimento. O cliente que ativa, tem sucesso e se torna defensor. Esse defensor gera novos leads com custo zero — completando o Bowtie de receita.',
-        principles: ['Pipeline Velocity calculada e otimizada mensalmente', 'LTV:CAC acima de 3:1 como critério de escala', 'Expansão de conta: upsell e cross-sell no pipeline', 'Reviews mensais RAPT — Revisão, Alinhamento, Prioridade, Tática'],
+        phase: '04', name: 'Expansão & Motor de Receita', tagline: 'Mês 2 em diante',
+        description: 'Com dados reais de CAC, LTV, ROAS e churn, ativamos o ciclo de crescimento. O cliente que ativa, tem sucesso e se torna defensor. Esse defensor gera novos leads com custo zero — completando o ciclo completo de receita.',
+        principles: ['Velocidade de Pipeline calculada e otimizada mensalmente', 'LTV:CAC acima de 3:1 como critério de escala', 'Expansão de conta: upsell e cross-sell no pipeline', 'Revisões mensais RAPT — Revisão, Alinhamento, Prioridade, Tática'],
     },
 ];
 
 const crmSteps = [
     {
         phase: '01', name: 'Diagnóstico & Arquitetura', tagline: 'Semana 1–2',
-        description: 'Toda operação comercial eficiente começa com processos mapeados. Mapeamos os responsáveis, jornada e como o lead flui da atração ao fechamento. Com isso, desenhamos o Blueprint que reflete perfeitamente a sua operação Go-To-Market em vez de tentar amassar o seu processo numa caixa.',
-        principles: ['Entrevistas Diagnósticas com Liderança/Comercial', 'Desenho As-Is (atual) e To-Be (novo processo)', 'Definição de regras e SLAs de MKT/Vendas', 'Blueprint estrutural de todas as propriedades e etapas'],
+        description: 'Toda operação comercial eficiente começa com processos mapeados. Mapeamos os responsáveis, jornada e como o lead flui da atração ao fechamento. Com isso, desenhamos o Projeto Técnico que reflete perfeitamente a sua operação comercial em vez de tentar amassar o seu processo numa caixa.',
+        principles: ['Entrevistas Diagnósticas com Liderança/Comercial', 'Desenho do Processo Atual e Processo Ideal (novo fluxo)', 'Definição de regras e SLAs de MKT/Vendas', 'Projeto Técnico estrutural de todas as propriedades e etapas'],
     },
     {
-        phase: '02', name: 'Setup Hardcore do CRM', tagline: 'Semana 3–4',
-        description: 'Transportar o Blueprint para dentro do sistema (HubSpot/Pipedrive). Customizamos campos, formatamos os funis corretos e preparamos a plataforma para ser o ponto central da equipe. Nada de dados perdidos em planilhas.',
-        principles: ['Estruturação do Pipeline Master com regras de validação', 'Matriz de Lost-Reasons atrelada às métricas vitais', 'Rastreamentos (Pixels/Webhooks) conectados às Deals', 'Configuração limpa de relatórios de gestão visual'],
+        phase: '02', name: 'Setup Intensivo do CRM', tagline: 'Semana 3–4',
+        description: 'Transportar o Projeto Técnico para dentro do sistema. Customizamos campos, formatamos os funis corretos e preparamos a plataforma para ser o ponto central da equipe. Nada de dados perdidos em planilhas.',
+        principles: ['Estruturação do Pipeline Principal com regras de validação', 'Matriz de Motivos de Perda atrelada às métricas vitais', 'Rastreamentos (Pixels/Webhooks) conectados às Oportunidades', 'Configuração limpa de relatórios de gestão visual'],
     },
     {
         phase: '03', name: 'Automação & Redução de Atrito', tagline: 'Semana 5–6',
-        description: 'Transformar esforço manual repetitivo em gatilhos automáticos. Reduzimos o trabalho braçal de Vendas criando alertas internos, rodízio inteligente, passagem de bastão instantânea e follow-up base, removendo tarefas robóticas de mentes humanas.',
-        principles: ['Automação de Hand-off (Marketing > SDR > Closer)', 'Notificações de gargalos ou estagnação (Slack/App)', 'Rotinas de Data-Hygiene automáticas ativas', 'Estruturação de sequências comerciais padrão no CRM'],
+        description: 'Transformar esforço manual repetitivo em gatilhos automáticos. Reduzimos o trabalho braçal de Vendas criando alertas internos, rodízio inteligente, passagem de bastão instantânea e acompanhamento automático, removendo tarefas robóticas de mentes humanas.',
+        principles: ['Automação de Passagem de Bastão (Marketing > SDR > Closer)', 'Notificações de gargalos ou estagnação (Slack/App)', 'Rotinas de Higiene de Dados automáticas ativas', 'Estruturação de sequências comerciais padrão no CRM'],
     },
     {
         phase: '04', name: 'Governança & Adoção', tagline: 'Semana 7–8',
-        description: 'O melhor sistema do mundo não converte se o seu time não preenche direito. Estruturamos os ciclos e garantimos adoção visceral estabelecendo umaWeekly Review de Pipeline oficial onde só um princípio impera: "se não tá no CRM, não existe".',
-        principles: ['Treinamento prático direto com Closers e SDRs', 'Auditoria de consistência e gaps da primeira semana', 'Implementação do Rito de Pipeline Review Semanal', 'Entrega final do SOP e Handover do playbook'],
+        description: 'O melhor sistema do mundo não converte se o seu time não preenche direito. Estruturamos os ciclos e garantimos adoção visceral estabelecendo uma Revisão Semanal de Pipeline oficial onde só um princípio impera: "se não tá no CRM, não existe".',
+        principles: ['Treinamento prático direto com Closers e SDRs', 'Auditoria de consistência e lacunas da primeira semana', 'Implementação do Rito de Revisão de Pipeline Semanal', 'Entrega final do Manual Operacional e Passagem de Bastão do playbook'],
     },
 ];
 
@@ -92,7 +91,7 @@ const devSteps = [
     {
         phase: '02', name: 'Design & Copy', tagline: 'Semana 2–3',
         description: 'UI de alta fidelidade construída sobre o wireframe aprovado. O design segue mobile-first e os textos são revisados para conversão — não apenas para informar. A identidade visual é aplicada antes do desenvolvimento.',
-        principles: ['UI de alta fidelidade no Figma, mobile-first', 'Copy revisado: headline, CTA e proposta de valor por seção', 'Aprovação de design antes de entrar em código', 'Assets exportados e organizados para handoff de dev'],
+        principles: ['UI de alta fidelidade no Figma, mobile-first', 'Texto revisado: headline, CTA e proposta de valor por seção', 'Aprovação de design antes de entrar em código', 'Assets exportados e organizados para entrega ao desenvolvimento'],
     },
     {
         phase: '03', name: 'Desenvolvimento & Integrações', tagline: 'Semana 3–5',
@@ -101,32 +100,32 @@ const devSteps = [
     },
     {
         phase: '04', name: 'QA & Lançamento', tagline: 'Semana 6',
-        description: 'Rodada de feedback estruturada com o cliente, ajustes finais, go-live controlado com configuração de DNS e SSL, e handover completo com documentação de uso para o cliente operar sem dependência.',
-        principles: ['Revisão final com checklist de 40+ pontos de QA', 'Configuração de DNS, SSL, redirects e sitemap XML', 'Treinamento de uso do CMS pelo cliente', 'Entrega: repositório, credenciais, documentação de manutenção'],
+        description: 'Rodada de feedback estruturada com o cliente, ajustes finais, lançamento controlado com configuração de DNS e SSL, e passagem de bastão completa com documentação de uso para o cliente operar sem dependência.',
+        principles: ['Revisão final com checklist de 40+ pontos de QA', 'Configuração de DNS, SSL, redirecionamentos e sitemap XML', 'Treinamento de uso do CMS pelo cliente', 'Entrega: repositório, credenciais, documentação de manutenção'],
     },
 ];
 
 // ── Differentials por tipo ────────────────────────────────────────────────
-const differentialsByType: Record<string, { icon: React.ReactElement; title: string; desc: string }[]> = {
+const differentialsByType: Record<string, { title: string; desc: string }[]> = {
     crm_ops: [
-        { icon: <FileText className="w-5 h-5" />, title: 'Processo Documentado', desc: 'Tudo que construímos vira SOP interno do cliente. A operação continua sem depender da RevHackers.' },
-        { icon: <Users className="w-5 h-5" />, title: 'Adoção Garantida', desc: 'O melhor sistema do mundo falha se o time não preenche. Treinamos até a adoção ser visceral.' },
-        { icon: <BarChart3 className="w-5 h-5" />, title: 'Governança Ativa', desc: 'Pipeline Review semanal como rito obrigatório. Se não está no CRM, não existe.' },
+        { title: 'Processo Documentado', desc: 'Tudo que construímos vira Manual Operacional interno do cliente. A operação continua sem depender da RevHackers.' },
+        { title: 'Adoção Garantida', desc: 'O melhor sistema do mundo falha se o time não preenche. Treinamos até a adoção ser visceral.' },
+        { title: 'Governança Ativa', desc: 'Revisão de Pipeline semanal como rito obrigatório. Se não está no CRM, não existe.' },
     ],
     founder: [
-        { icon: <Target className="w-5 h-5" />, title: 'Posicionamento Cirúrgico', desc: 'Nicho, POV e headline definidos antes de qualquer postagem. A clareza de quem você é atrai o cliente certo.' },
-        { icon: <Zap className="w-5 h-5" />, title: 'Máquina de Conteúdo', desc: 'Cadência sustentável de 3x/semana que converte autoridade em audiência qualificada — sem burnout criativo.' },
-        { icon: <Repeat className="w-5 h-5" />, title: 'Loop de Conversão', desc: 'Da audiência ao pipeline: DM estratégico, inbound qualificado e convites de palestra originados do conteúdo.' },
+        { title: 'Posicionamento Cirúrgico', desc: 'Nicho, POV e headline definidos antes de qualquer postagem. A clareza de quem você é atrai o cliente certo.' },
+        { title: 'Máquina de Conteúdo', desc: 'Cadência sustentável de 3x/semana que converte autoridade em audiência qualificada — sem burnout criativo.' },
+        { title: 'Loop de Conversão', desc: 'Da audiência ao pipeline: DM estratégico, inbound qualificado e convites de palestra originados do conteúdo.' },
     ],
     dev: [
-        { icon: <Code2 className="w-5 h-5" />, title: 'Arquitetura Primeiro', desc: 'Sitemap, wireframe e aprovação antes de qualquer linha de código. Sem surpresas no meio do projeto.' },
-        { icon: <Zap className="w-5 h-5" />, title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão — não por ordem alfabética. Resultado visível toda semana.' },
-        { icon: <Gauge className="w-5 h-5" />, title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto — não bônus. Entregamos o que prometemos.' },
+        { title: 'Arquitetura Primeiro', desc: 'Sitemap, wireframe e aprovação antes de qualquer linha de código. Sem surpresas no meio do projeto.' },
+        { title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão — não por ordem alfabética. Resultado visível toda semana.' },
+        { title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto — não bônus. Entregamos o que prometemos.' },
     ],
     default: [
-        { icon: <Settings className="w-5 h-5" />, title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
-        { icon: <Repeat className="w-5 h-5" />, title: 'Bowtie Revenue Loop', desc: 'Da atração ao fechamento ao sucesso do cliente — cada etapa conectada e medida.' },
-        { icon: <Target className="w-5 h-5" />, title: 'Onboarding como Vantagem', desc: 'O primeiro resultado entregue em 15 dias determina o LTV. Cada touchpoint tem dono e prazo.' },
+        { title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
+        { title: 'Ciclo Completo de Receita', desc: 'Da atração ao fechamento ao sucesso do cliente — cada etapa conectada e medida.' },
+        { title: 'Onboarding como Vantagem', desc: 'O primeiro resultado entregue em 15 dias determina o LTV. Cada touchpoint tem dono e prazo.' },
     ],
 };
 
@@ -172,13 +171,13 @@ export default function MethodologySection({ plan }: { plan: any }) {
                     {displaySteps.map((step: any, i: number) => {
                         const items = step.principles || step.tags || [];
                         return (
-                            <div key={i} className="p-8 bg-white border border-zinc-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                            <div key={i} className="p-8 bg-white border border-zinc-200 rounded-xl">
                                 <div className="flex items-center gap-5 mb-5">
-                                    <span className="font-mono text-[2.75rem] leading-none font-black text-zinc-100">
+                                    <span className="font-mono text-[2.75rem] leading-none font-bold text-zinc-100">
                                         {step.phase || String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div>
-                                        <p className="text-[13px] uppercase tracking-widest font-black text-zinc-400">
+                                        <p className="text-[13px] uppercase tracking-widest font-bold text-zinc-400">
                                             {step.tagline || ''}
                                         </p>
                                         <h3 className="text-xl md:text-2xl font-bold text-black mt-1 leading-tight">
@@ -193,11 +192,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                     <div className="space-y-3">
                                         {items.map((item: string, j: number) => (
                                             <div key={j} className="flex items-start gap-3">
-                                                <div className="mt-1">
-                                                    <div className="w-5 h-5 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center shrink-0">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                                                    </div>
-                                                </div>
+                                                <span className="text-zinc-300 shrink-0 text-sm mt-0.5">/</span>
                                                 <span className="text-sm text-zinc-600 leading-snug">{item}</span>
                                             </div>
                                         ))}
@@ -211,10 +206,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                 {/* Differentials */}
                 <div className="grid md:grid-cols-3 gap-6 mt-8">
                     {differentials.map((d, i) => (
-                        <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 rounded-xl shadow-sm">
-                            <div className="w-12 h-12 bg-black text-white flex items-center justify-center shrink-0 rounded-xl shadow-lg shadow-black/20">
-                                {cloneElement(d.icon, { className: 'w-6 h-6' })}
-                            </div>
+                        <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 rounded-xl">
                             <div className="pt-2">
                                 <h4 className="font-bold text-black text-[17px] mb-2">{d.title}</h4>
                                 <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">{d.desc}</p>

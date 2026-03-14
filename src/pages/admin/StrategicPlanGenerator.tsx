@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Send, Eye, BrainCircuit, Loader2, Users, TrendingUp, Target, ShieldAlert, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, Send, Eye, BrainCircuit, Loader2, Users, TrendingUp, Target, ShieldAlert, BadgeCheck, FileText, ExternalLink, Link as LinkIcon, Copy, Check } from 'lucide-react';
 import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
 import { StrategicEnrichmentService, StrategicEnrichmentResult } from '@/services/StrategicEnrichmentService';
 import { DiagnosticService } from '@/services/DiagnosticService';
+import { getMaterialsByProject, ReiMaterial } from '@/api/reiMaterials';
 
 interface REIProject {
     id: string;
@@ -34,6 +35,8 @@ export default function StrategicPlanGenerator() {
     const [editMode, setEditMode] = useState(false);
     const [editedData, setEditedData] = useState<any>(null);
     const [errorLog, setErrorLog] = useState<string | null>(null);
+    const [materials, setMaterials] = useState<ReiMaterial[]>([]);
+    const [copiedLink, setCopiedLink] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -102,6 +105,10 @@ export default function StrategicPlanGenerator() {
                     setEnrichedData(diagData.enriched_analysis);
                 }
             }
+
+            // Load reference materials
+            const mats = await getMaterialsByProject(reiProjectId);
+            setMaterials(mats);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -269,8 +276,19 @@ export default function StrategicPlanGenerator() {
             }
 
             // 3. Intelligence Enrichment
-            const segment = normalizedAnswers.segmento || normalizedAnswers.segmento_outro || 'B2B';
-            const objective = answers.revops_objetivo_principal || answers.metaCrescimento || answers.objetivoPrincipal || (isCrmOps ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
+            // Segment resolution: each REI type uses different field names for sector/segment
+            const segment = normalizedAnswers.segmento
+                || normalizedAnswers.sector          // consulting REI
+                || normalizedAnswers.segmento_outro
+                || 'B2B';
+            // Objective resolution: each REI type uses different field names for primary goal
+            const objective = answers.revops_objetivo_principal   // crm_ops
+                || answers.results12Months                        // consulting
+                || answers.primaryGoal                            // dev
+                || answers.successVision                          // founder
+                || answers.metaCrescimento
+                || answers.objetivoPrincipal
+                || (isCrmOps ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
             console.log('[Generator] answers keys:', Object.keys(answers));
             console.log('[Generator] segment:', segment, '| isCrmOps:', isCrmOps, '| effectiveEmail:', effectiveEmail);
 
@@ -397,7 +415,8 @@ export default function StrategicPlanGenerator() {
                         segment: segment,
                         objective: objective,
                         isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
-                        projectType: reiProject?.type || 'consulting'
+                        projectType: reiProject?.type || 'consulting',
+                        projectId: reiProjectId
                     }
                 });
 
@@ -483,10 +502,30 @@ export default function StrategicPlanGenerator() {
         if (!reiProjectId || !reiProject) return;
         setIsDeepResearching(type);
         try {
-            const answers = (reiProject.data as any) || {};
-            const segment = answers.segmento || 'B2B';
-            const objective = answers.objetivoPrincipal || 'Crescimento';
-            const competitors = answers.concorrentes || [];
+            // Fetch actual REI responses (reiProject.data is null for most projects)
+            const { data: latestResp } = await supabase
+                .from('rei_responses')
+                .select('responses')
+                .eq('project_id', reiProjectId)
+                .order('completed_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            const rawResp = (latestResp?.responses as any) || {};
+            const answers = rawResp?.form_data || rawResp || {};
+
+            const isCrmType = reiProject?.type === 'crm_ops';
+            const segment = answers.revops_segmento || answers.sector || answers.segmento || 'B2B';
+            const objective = answers.revops_objetivo_principal || answers.results12Months || answers.primaryGoal || answers.successVision || 'Crescimento';
+
+            // Extract competitors from normalized fields
+            const competitors: { nome: string, url?: string }[] = [];
+            const cn1 = answers.revops_concorrente1_nome || answers.concorrente1_nome;
+            const cn2 = answers.revops_concorrente2_nome || answers.concorrente2_nome;
+            const cn3 = answers.revops_concorrente3_nome || answers.concorrente3_nome;
+            if (cn1) competitors.push({ nome: cn1, url: answers.revops_concorrente1_site || answers.concorrente1_site });
+            if (cn2) competitors.push({ nome: cn2, url: answers.revops_concorrente2_site || answers.concorrente2_site });
+            if (cn3) competitors.push({ nome: cn3, url: answers.revops_concorrente3_site || answers.concorrente3_site });
 
             const result = await StrategicEnrichmentService.researchIntelligence(type, segment, {
                 objective,
@@ -568,7 +607,7 @@ export default function StrategicPlanGenerator() {
                             </Button>
                         )}
                         {editMode ? (
-                            <Button onClick={handleSaveEdits} disabled={sending} className="bg-green-600 text-white hover:bg-green-700">
+                            <Button onClick={handleSaveEdits} disabled={sending} className="bg-zinc-900 text-white hover:bg-zinc-800">
                                 {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ShieldAlert className="w-4 h-4 mr-2" />}
                                 Salvar Alterações
                             </Button>
@@ -587,6 +626,63 @@ export default function StrategicPlanGenerator() {
                         <p className="whitespace-pre-wrap font-mono text-sm">{errorLog}</p>
                     </div>
                 )}
+
+                {/* Materials Section */}
+                <div className="bg-white border border-zinc-200 rounded-xl p-5 mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-zinc-400" />
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">
+                                Materiais do Cliente
+                            </h3>
+                            {materials.length > 0 && (
+                                <span className="text-[10px] font-bold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">
+                                    {materials.length}
+                                </span>
+                            )}
+                        </div>
+                        <button
+                            onClick={() => {
+                                const uploadUrl = `${window.location.origin}/upload-materiais/${reiProjectId}`;
+                                navigator.clipboard.writeText(uploadUrl);
+                                setCopiedLink(true);
+                                setTimeout(() => setCopiedLink(false), 2000);
+                            }}
+                            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors"
+                        >
+                            {copiedLink ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                            {copiedLink ? 'Link Copiado!' : 'Copiar Link de Upload'}
+                        </button>
+                    </div>
+
+                    {materials.length === 0 ? (
+                        <div className="text-center py-6 text-sm text-zinc-400">
+                            Nenhum material enviado ainda. Compartilhe o link de upload com o cliente.
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            {materials.map(mat => (
+                                <div key={mat.id} className="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 rounded-lg">
+                                    {mat.source_type === 'link' ? (
+                                        <ExternalLink className="w-4 h-4 text-zinc-400 shrink-0" />
+                                    ) : (
+                                        <FileText className="w-4 h-4 text-zinc-400 shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-zinc-900 truncate">{mat.original_name || 'Material'}</p>
+                                        {mat.description && <p className="text-[11px] text-zinc-400 truncate">{mat.description}</p>}
+                                    </div>
+                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider shrink-0">{mat.material_type}</span>
+                                    {mat.file_url && mat.source_type === 'link' && (
+                                        <a href={mat.file_url} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-600">
+                                            <LinkIcon className="w-3.5 h-3.5" />
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 {editMode && (
                     <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-8 flex items-center justify-between">
@@ -652,13 +748,13 @@ export default function StrategicPlanGenerator() {
                             <div className="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm">
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400 mb-4">Status do Plano</h3>
                                 <div className="flex items-center gap-2 mb-4">
-                                    <div className={`w-3 h-3 rounded-full ${existingPlan.status === 'sent' ? 'bg-blue-500' : 'bg-yellow-500'}`} />
+                                    <div className={`w-3 h-3 rounded-full ${existingPlan.status === 'sent' ? 'bg-[#00CC6A]' : 'bg-zinc-400'}`} />
                                     <span className="font-semibold capitalize text-black">{existingPlan.status === 'sent' ? 'Enviado ao Cliente' : 'Rascunho Interno'}</span>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <Button onClick={handlePreview} variant="outline" className="w-full justify-start"><Eye className="w-4 h-4 mr-2" /> Visualizar Página Pública</Button>
                                     {existingPlan.status === 'draft' && (
-                                        <Button onClick={handleSendToClient} disabled={sending} className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white">
+                                        <Button onClick={handleSendToClient} disabled={sending} className="w-full justify-start bg-zinc-900 hover:bg-zinc-800 text-white">
                                             {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />} Enviar para Cliente
                                         </Button>
                                     )}
@@ -725,7 +821,7 @@ export default function StrategicPlanGenerator() {
                                             <h4 className="font-bold text-black mb-3 flex items-center gap-2"><ShieldAlert size={16} /> SWOT Rápida</h4>
                                             <div className="space-y-3 text-sm">
                                                 <div>
-                                                    <span className="text-xs font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded mr-2">OPORTUNIDADES</span>
+                                                    <span className="text-xs font-bold bg-[#00CC6A]/10 text-[#00CC6A] px-2 py-0.5 rounded mr-2">OPORTUNIDADES</span>
                                                     {editMode ? (
                                                         <textarea
                                                             value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
@@ -737,7 +833,7 @@ export default function StrategicPlanGenerator() {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <span className="text-xs font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2">AMEAÇAS</span>
+                                                    <span className="text-xs font-bold bg-zinc-200 text-zinc-700 px-2 py-0.5 rounded mr-2">AMEAÇAS</span>
                                                     {editMode ? (
                                                         <textarea
                                                             value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}

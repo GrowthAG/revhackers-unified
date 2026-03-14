@@ -2,146 +2,107 @@
 import { useEffect } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Users, Zap, Calendar, Video, BookOpen, Trophy, GraduationCap, Repeat, Lightbulb } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MessageSquare, Users, Calendar, Video, BookOpen, GraduationCap, Repeat, Lightbulb, ArrowUpRight } from 'lucide-react';
 import Section from '@/components/ui/Section';
+import DarkHeroSection from '@/components/shared/DarkHeroSection';
 
 const Comunidade = () => {
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <PageLayout>
-      {/* Header - Industrial Dark */}
-      <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10">
+      {/* Hero — Standardized DarkHeroSection */}
+      <DarkHeroSection
+        title="Comunidade RevHackers"
+        subtitle="CONECTE-SE COM A ELITE DE REVENUE OPERATIONS, MARKETING E VENDAS DO BRASIL."
+      />
+
+      {/* CTA Bar */}
+      <Section variant="dark" className="py-12 bg-zinc-950 border-b border-zinc-900">
         <div className="container-custom text-center">
-          <div className="max-w-3xl mx-auto">
-            <span className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4 block">
-              Network
-            </span>
-            <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
-              Comunidade RevHackers
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed mb-12">
-              Conecte-se com a elite de Revenue Operations, Marketing e Vendas.
-              Compartilhe experiências, aprenda e cresça junto.
-            </p>
-            <a href="https://academy.revhackers.com.br/" target="_blank" rel="noopener noreferrer">
-              <Button
-                className="btn-green-flat h-14 px-8 text-sm"
-              >
-                Solicitar Acesso à Comunidade
-              </Button>
-            </a>
-          </div>
+          <a href="https://academy.revhackers.com.br/" target="_blank" rel="noopener noreferrer">
+            <Button className="btn-green-flat h-14 px-8 text-sm">
+              Solicitar Acesso à Comunidade
+            </Button>
+          </a>
         </div>
       </Section>
 
-      {/* Benefits Grid */}
-      <Section variant="light" className="py-20 bg-white">
+      {/* Benefits Grid — 3 Cards */}
+      <Section variant="dark" className="py-24 bg-black border-b border-zinc-900">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto mb-16 text-center">
-            <h2 className="text-3xl md:text-4xl font-normal mb-6 text-black tracking-tight">Por que participar?</h2>
+          <div className="max-w-4xl mx-auto mb-16">
+            <span className="font-mono text-xs text-zinc-500 uppercase tracking-[0.2em] mb-4 block">
+              // Por que participar
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter">
+              Uma rede que <span className="text-revgreen">acelera</span> resultados.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="bg-gray-50 border border-gray-100 p-8 rounded-sm text-center hover:border-revgreen transition-colors group">
-              <div className="mb-6 flex justify-center text-gray-400 group-hover:text-revgreen transition-colors">
-                <GraduationCap size={40} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { icon: GraduationCap, title: 'Aprendizado contínuo', desc: 'Acesso a conteúdos exclusivos, webinars e discussões com especialistas do mercado.' },
+              { icon: Repeat, title: 'Networking estratégico', desc: 'Conecte-se com profissionais do setor e amplie sua rede de contatos qualificados.' },
+              { icon: Lightbulb, title: 'Insights valiosos', desc: 'Descubra tendências, ferramentas e estratégias que estão transformando o mercado.' },
+            ].map((item, i) => (
+              <div key={i} className="group bg-zinc-900/30 border border-zinc-800 p-10 hover:border-revgreen/30 transition-all duration-500">
+                <div className="mb-8 text-zinc-600 group-hover:text-revgreen transition-colors duration-500">
+                  <item.icon size={36} strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white tracking-tight">{item.title}</h3>
+                <p className="text-zinc-500 font-light text-sm leading-relaxed">{item.desc}</p>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-black">Aprendizado contínuo</h3>
-              <p className="text-gray-500 font-light text-sm">
-                Acesso a conteúdos exclusivos, webinars e discussões com especialistas do mercado.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 border border-gray-100 p-8 rounded-sm text-center hover:border-revgreen transition-colors group">
-              <div className="mb-6 flex justify-center text-gray-400 group-hover:text-revgreen transition-colors">
-                <Repeat size={40} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-black">Networking</h3>
-              <p className="text-gray-500 font-light text-sm">
-                Conecte-se com profissionais do setor e amplie sua rede de contatos.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 border border-gray-100 p-8 rounded-sm text-center hover:border-revgreen transition-colors group">
-              <div className="mb-6 flex justify-center text-gray-400 group-hover:text-revgreen transition-colors">
-                <Lightbulb size={40} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-black">Insights valiosos</h3>
-              <p className="text-gray-500 font-light text-sm">
-                Descubra tendências, ferramentas e estratégias que estão transformando o mercado.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </Section>
 
-      {/* Features List */}
-      <Section variant="light" className="py-20 bg-gray-50 border-t border-gray-200">
+      {/* Features — Logo + List */}
+      <Section variant="dark" className="py-24 bg-zinc-950 border-b border-zinc-900">
         <div className="container-custom">
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
-              {/* Left Column: Visual/Decoration Replaced Image with Abstract */}
-              <div className="bg-white p-8 rounded-sm border border-gray-200">
-                <div className="aspect-square bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center">
-                  <Users className="w-24 h-24 text-gray-300" />
-                </div>
+              {/* Left Column: Logo */}
+              <div className="bg-black p-12 border border-zinc-800 flex items-center justify-center">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                  alt="RevHackers"
+                  className="w-64 md:w-80 h-auto opacity-80"
+                />
               </div>
 
               {/* Right Column: Content */}
-              <div className="space-y-12">
+              <div className="space-y-10">
                 <div>
-                  <h2 className="text-3xl font-bold mb-4 text-black">Benefícios Exclusivos</h2>
-                  <p className="text-gray-500 font-light">
-                    Uma plataforma completa para acelerar o crescimento da sua carreira.
-                  </p>
+                  <span className="font-mono text-xs text-zinc-500 uppercase tracking-[0.2em] mb-4 block">
+                    // Benefícios Exclusivos
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tighter">
+                    Plataforma completa para sua carreira<span className="text-revgreen">.</span>
+                  </h2>
                 </div>
 
-                <div className="space-y-8">
-                  <div className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-white border border-gray-200 rounded-sm flex items-center justify-center group-hover:border-revgreen transition-colors">
-                      <MessageSquare className="text-black group-hover:text-revgreen transition-colors" size={20} />
+                <div className="space-y-6">
+                  {[
+                    { icon: MessageSquare, title: 'Fóruns de discussão', desc: 'Conversas temáticas sobre os principais desafios de RevOps.' },
+                    { icon: Calendar, title: 'Meetups exclusivos', desc: 'Encontros presenciais e online com os melhores do mercado.' },
+                    { icon: Video, title: 'Bootcamps especializados', desc: 'Treinamentos intensivos para desenvolver habilidades práticas.' },
+                    { icon: BookOpen, title: 'Biblioteca de recursos', desc: 'Templates, playbooks e ferramentas validadas pela comunidade.' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex gap-4 group">
+                      <div className="flex-shrink-0 w-10 h-10 bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:border-revgreen/50 transition-colors">
+                        <item.icon className="text-zinc-500 group-hover:text-revgreen transition-colors" size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold mb-1 text-white">{item.title}</h3>
+                        <p className="text-zinc-500 text-sm font-light">{item.desc}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold mb-1 text-black">Fóruns de discussão</h3>
-                      <p className="text-gray-500 text-sm font-light">Conversas temáticas sobre os principais desafios de RevOps.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-white border border-gray-200 rounded-sm flex items-center justify-center group-hover:border-revgreen transition-colors">
-                      <Calendar className="text-black group-hover:text-revgreen transition-colors" size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold mb-1 text-black">Meetups exclusivos</h3>
-                      <p className="text-gray-500 text-sm font-light">Encontros presenciais e online com os melhores do mercado.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-white border border-gray-200 rounded-sm flex items-center justify-center group-hover:border-revgreen transition-colors">
-                      <Video className="text-black group-hover:text-revgreen transition-colors" size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold mb-1 text-black">Bootcamps especializados</h3>
-                      <p className="text-gray-500 text-sm font-light">Treinamentos intensivos para desenvolver habilidades práticas.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-white border border-gray-200 rounded-sm flex items-center justify-center group-hover:border-revgreen transition-colors">
-                      <BookOpen className="text-black group-hover:text-revgreen transition-colors" size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold mb-1 text-black">Biblioteca de recursos</h3>
-                      <p className="text-gray-500 text-sm font-light">Templates, playbooks e ferramentas validadas.</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
 
@@ -151,13 +112,13 @@ const Comunidade = () => {
       </Section>
 
       {/* Final CTA */}
-      <Section variant="dark" className="py-24 bg-black border-t border-white/10">
+      <Section variant="dark" className="py-24 bg-black border-t border-zinc-900">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-5xl font-normal mb-8 text-white tracking-tighter">
-              Faça parte da elite.
+            <h2 className="text-3xl md:text-5xl font-bold mb-8 text-white tracking-tighter">
+              Faça parte da elite<span className="text-revgreen">.</span>
             </h2>
-            <p className="text-xl text-gray-400 mb-12 font-light">
+            <p className="text-xl text-zinc-500 mb-12 font-light">
               Junte-se ao maior hub de profissionais de RevOps do Brasil.
             </p>
 

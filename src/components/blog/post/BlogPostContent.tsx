@@ -141,12 +141,14 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
 
         {/* Author Footer - Fixed Visuals */}
         <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-8 bg-zinc-50/50 p-8 rounded-2xl">
-          <Avatar className="w-24 h-24 border-4 border-white shadow-xl">
-            <AvatarImage src={fixedAvatar} alt={authorName} className="object-cover" />
-            <AvatarFallback className="bg-revgreen text-black font-black text-2xl">
-              {authorName.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <img
+              src={fixedAvatar}
+              alt={authorName}
+              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png';
+              }}
+            />
 
           <div className="flex-1 text-center md:text-left">
             <h4 className="text-2xl font-black text-black tracking-tighter mb-1 uppercase italic">{authorName}</h4>
