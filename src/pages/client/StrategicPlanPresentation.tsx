@@ -8,6 +8,8 @@ import { QRCodeSVG } from 'qrcode.react';
 
 // Section imports
 import CoverSection from './sections/CoverSection';
+import ExecutiveSummarySection from './sections/ExecutiveSummarySection';
+import CurrentVsFutureSection from './sections/CurrentVsFutureSection';
 import DiagnosticSymptomsSection from './sections/DiagnosticSymptomsSection';
 import DiagnosticCausesSection from './sections/DiagnosticCausesSection';
 import ThesisSection from './sections/ThesisSection';
@@ -23,6 +25,7 @@ import OnboardingTrainingSection from './sections/OnboardingTrainingSection';
 import OnboardingAdoptionSection from './sections/OnboardingAdoptionSection';
 import OnboardingHandoverSection from './sections/OnboardingHandoverSection';
 import SlaSection from './sections/SlaSection';
+import QuickWinsSection from './sections/QuickWinsSection';
 import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
 
@@ -34,8 +37,10 @@ import InvestmentSection from './sections/InvestmentSection';
 // 7. Close (Investment → Approval)
 const NAV_SECTIONS = [
     { id: 'cover',               name: 'Capa',                   icon: <FileText className="w-4 h-4" /> },
+    { id: 'executive_summary',   name: 'Resumo Executivo',        icon: <FileText className="w-4 h-4" /> },
     { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário',      icon: <BarChart3 className="w-4 h-4" /> },
     { id: 'diagnostic_causes',   name: 'Causa Raiz',              icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: 'current_vs_future',   name: 'Atual vs Futuro',         icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'thesis',              name: 'Tese de Crescimento',     icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'premises',            name: 'Premissas',               icon: <Target className="w-4 h-4" /> },
     { id: 'persona',             name: 'Persona',                 icon: <Users className="w-4 h-4" /> },
@@ -43,6 +48,7 @@ const NAV_SECTIONS = [
     { id: 'methodology',         name: 'Metodologia',             icon: <Settings className="w-4 h-4" /> },
     { id: 'goals',               name: 'Metas e Indicadores',     icon: <Target className="w-4 h-4" /> },
     { id: 'roadmap_macro',       name: 'Marcos do Projeto',       icon: <Calendar className="w-4 h-4" /> },
+    { id: 'quick_wins',          name: 'Primeiros 7 Dias',        icon: <Calendar className="w-4 h-4" /> },
     { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   icon: <Calendar className="w-4 h-4" /> },
     { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     icon: <Settings className="w-4 h-4" /> },
     { id: 'onboarding_training', name: 'Treinamento & Produção',   icon: <Briefcase className="w-4 h-4" /> },
@@ -280,14 +286,17 @@ export default function StrategicPlanPresentation() {
     const renderSection = () => {
         switch (currentSectionId) {
             case 'cover': return <CoverSection plan={plan} client={client} />;
+            case 'executive_summary': return <ExecutiveSummarySection plan={plan} />;
             case 'diagnostic_symptoms': return <DiagnosticSymptomsSection plan={plan} />;
             case 'diagnostic_causes': return <DiagnosticCausesSection plan={plan} />;
+            case 'current_vs_future': return <CurrentVsFutureSection plan={plan} />;
             case 'thesis': return <ThesisSection plan={plan} />;
             case 'premises': return <PremisesSection plan={plan} />;
             case 'persona': return <PersonaSection plan={plan} />;
             case 'benchmark': return <BenchmarkSection plan={plan} />;
             case 'methodology': return <MethodologySection plan={plan} />;
             case 'roadmap_macro': return <RoadmapMacroSection plan={plan} />;
+            case 'quick_wins': return <QuickWinsSection plan={plan} />;
             case 'onboarding_kickoff': return <OnboardingKickoffSection plan={plan} />;
             case 'onboarding_setup': return <OnboardingSetupSection plan={plan} />;
             case 'onboarding_training': return <OnboardingTrainingSection plan={plan} />;

@@ -272,6 +272,29 @@ ${strategicContext}
 Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com TÁTICAS AVANÇADAS, inferidas das respostas:
 {
   "summary": "Resumo executivo cirúrgico atacando a dor principal (1-2 frases).",
+  "executive_summary": {
+    "context": "1-2 frases descrevendo o contexto operacional EXATO do cliente — segmento, tamanho, maturidade digital. Baseado nas respostas reais.",
+    "problem": "1-2 frases definindo o problema central com dados concretos — cite dores literais da call/REI.",
+    "solution": "1-2 frases sobre a solução proposta pela RevHackers — cite a metodologia específica e ferramentas.",
+    "expected_outcome": "1-2 frases sobre o resultado esperado com métricas específicas — CAC, LTV, conversão, prazo."
+  },
+  "current_vs_future": {
+    "current": ["Estado atual 1 — situação real negativa extraída do diagnóstico", "Estado atual 2 — gap operacional citado pelo cliente", "Estado atual 3 — ferramenta ou processo deficiente mencionado", "Estado atual 4 — consequência financeira ou de performance", "Estado atual 5 — risco ou dependência não mitigada"],
+    "future": ["Estado futuro 1 — como ficará após a implementação", "Estado futuro 2 — melhoria operacional específica", "Estado futuro 3 — ferramenta ou processo implementado", "Estado futuro 4 — resultado financeiro ou de performance esperado", "Estado futuro 5 — autonomia ou governança conquistada"]
+  },
+  "quick_wins": [
+    { "day": "Dia 1", "action": "Ação concreta do primeiro dia — cite ferramenta e responsável", "outcome": "Resultado tangível entregue ao final do dia" },
+    { "day": "Dia 2", "action": "Ação do segundo dia", "outcome": "Entregável concreto" },
+    { "day": "Dia 3", "action": "Ação do terceiro dia", "outcome": "Entregável concreto" },
+    { "day": "Dia 4–5", "action": "Ação dos dias 4 e 5", "outcome": "Entregável concreto" },
+    { "day": "Dia 6", "action": "Ação do sexto dia", "outcome": "Entregável concreto" },
+    { "day": "Dia 7", "action": "Review + marco de conclusão da primeira semana", "outcome": "Confirmação de que a base está sólida" }
+  ],
+  "thesis_statement": {
+    "before": "Frase que antecede o highlight — contextualize a necessidade (ex: Para escalar vendas sem perder margem, precisamos construir)",
+    "highlight": "Conceito central da tese em 2-4 palavras destacadas (ex: Motor de Receita Integrado)",
+    "after": "Conclusão da frase (ex: .)"
+  },
   "context_mirror": {
     "segment": "Segmento ou nicho exato de atuação do cliente conforme as respostas (ex: SaaS B2B, E-commerce de moda, Consultor Independente de RH)",
     "objective": "Objetivo principal declarado pelo cliente nas respostas — direto e específico (ex: Implementar CRM com rastreamento completo em 90 dias)",
@@ -343,7 +366,8 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
   }
 }
 
-CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 4 itens em pillars (Contexto, Tech Stack, Alvos, Compromissos), EXATAMENTE 3 itens em thesis_pillars (os 3 pilares da tese de solução), e pelo menos 2 itens em methodology_steps. Arrays com apenas 1 item serão considerados inválidos.
+CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 4 itens em pillars (Contexto, Tech Stack, Alvos, Compromissos), EXATAMENTE 3 itens em thesis_pillars (os 3 pilares da tese de solução), pelo menos 2 itens em methodology_steps, EXATAMENTE 5 itens em current_vs_future.current e current_vs_future.future, e EXATAMENTE 6 itens em quick_wins. Arrays com apenas 1 item serão considerados inválidos.
+CRITICAL_RULE_EXECUTIVE_SUMMARY: O executive_summary DEVE ser ultra-cirúrgico — cada campo em 1-2 frases curtas e impactantes. O thesis_statement DEVE ser uma frase persuasiva e personalizada para ESTE cliente — NUNCA use a tese genérica. O quick_wins DEVE ter ações concretas dos primeiros 7 dias — o que acontece LITERALMENTE no Day 1, Day 2, etc. O current_vs_future DEVE contrastar o estado real atual (problemas) com o estado futuro (após a implementação) usando linguagem específica do diagnóstico.
 
 CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onboarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".
 

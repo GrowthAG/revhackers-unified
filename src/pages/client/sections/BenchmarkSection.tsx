@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, BarChart3, Target, ChevronRight, ChevronDown, ExternalLink, Lightbulb, PieChart } from 'lucide-react';
+import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Mock data for segments ────────────────────────────────────────────────
@@ -128,7 +129,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                             {trends.map((trend: string, i: number) => (
                                 <div key={i} className="border border-zinc-200 p-5 rounded-2xl">
                                     <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
-                                    <p className="text-sm text-zinc-800 leading-relaxed font-medium">{trend}</p>
+                                    <EditableField
+                                        path={`persona_data.industry_trends.${i}`}
+                                        className="text-sm text-zinc-800 leading-relaxed font-medium"
+                                        placeholder={trend}
+                                        multiline
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -220,7 +226,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                             <Lightbulb className="w-4 h-4 text-zinc-600" />
                             <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black">Conselho Estratégico</p>
                         </div>
-                        <p className="text-base text-zinc-800 leading-relaxed font-medium">{advice}</p>
+                        <EditableField
+                            path="persona_data.strategic_advice"
+                            className="text-base text-zinc-800 leading-relaxed font-medium"
+                            placeholder={advice}
+                            multiline
+                        />
                     </div>
                 )}
 
@@ -235,7 +246,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                             {differentiators.map((diff: string, i: number) => (
                                 <div key={i} className="flex items-start gap-4">
                                     <span className="text-[#00CC6A] font-mono text-xs mt-1 shrink-0 font-bold">{String(i + 1).padStart(2, '0')}</span>
-                                    <p className="text-sm text-white/70 leading-relaxed">{diff}</p>
+                                    <EditableField
+                                        path={`persona_data.key_differentiators.${i}`}
+                                        className="text-sm text-white/70 leading-relaxed"
+                                        placeholder={diff}
+                                        multiline
+                                    />
                                 </div>
                             ))}
                         </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Pipeline stages ───────────────────────────────────────────────────────
@@ -185,9 +186,12 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                         </h3>
                                     </div>
                                 </div>
-                                <p className="text-[15px] leading-relaxed mb-6 text-zinc-500 font-medium">
-                                    {step.description}
-                                </p>
+                                <EditableField
+                                    path={`methodology_data.steps.${i}.description`}
+                                    className="text-[15px] leading-relaxed mb-6 text-zinc-500 font-medium"
+                                    placeholder={step.description}
+                                    multiline
+                                />
                                 {items.length > 0 && (
                                     <div className="space-y-3">
                                         {items.map((item: string, j: number) => (
@@ -208,8 +212,17 @@ export default function MethodologySection({ plan }: { plan: any }) {
                     {differentials.map((d, i) => (
                         <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 rounded-xl">
                             <div className="pt-2">
-                                <h4 className="font-bold text-black text-[17px] mb-2">{d.title}</h4>
-                                <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">{d.desc}</p>
+                                <EditableField
+                                    path={`methodology_data.differentials.${i}.title`}
+                                    className="font-bold text-black text-[17px] mb-2 block"
+                                    placeholder={d.title}
+                                />
+                                <EditableField
+                                    path={`methodology_data.differentials.${i}.desc`}
+                                    className="text-[15px] text-zinc-500 leading-relaxed font-medium"
+                                    placeholder={d.desc}
+                                    multiline
+                                />
                             </div>
                         </div>
                     ))}
