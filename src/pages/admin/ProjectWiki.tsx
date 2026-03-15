@@ -109,7 +109,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                 <Button
                     onClick={handleInitializeWiki}
                     disabled={isCreating}
-                    className="bg-black text-white hover:bg-zinc-800 rounded-full px-8 h-12 font-bold uppercase tracking-widest text-xs shadow-lg shadow-zinc-200"
+                    className="bg-black text-white hover:bg-zinc-800 rounded-xl px-8 h-12 font-bold uppercase tracking-widest text-xs shadow-sm"
                 >
                     {isCreating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                     Inicializar Wiki
@@ -130,7 +130,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                 </div>
                 <Button
                     onClick={() => navigate(`/admin/knowledge/${wikiLibrary.id}/doc/new`)}
-                    className="bg-black text-white hover:bg-zinc-800 rounded-full px-6 h-10 font-bold uppercase tracking-widest text-xs shadow-md"
+                    className="bg-black text-white hover:bg-zinc-800 rounded-xl px-6 h-10 font-bold uppercase tracking-widest text-xs shadow-sm"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Novo Documento
@@ -143,7 +143,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                     <div
                         key={doc.id}
                         onClick={() => navigate(`/admin/knowledge/${wikiLibrary.id}/doc/${doc.id}`)}
-                        className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-100 transition-all cursor-pointer h-48 flex flex-col justify-between overflow-hidden"
+                        className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-zinc-300 hover:shadow-sm transition-all cursor-pointer h-48 flex flex-col justify-between overflow-hidden"
                     >
                         {/* Status/Meta Badge */}
                         <div className="flex justify-between items-start z-10 relative">
@@ -159,7 +159,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
 
                         {/* Content */}
                         <div className="z-10 relative">
-                            <h3 className="font-bold text-zinc-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                            <h3 className="font-bold text-zinc-900 mb-1 line-clamp-1 group-hover:text-zinc-600 transition-colors">
                                 {doc.title || doc.filename?.replace('.html', '')}
                             </h3>
                             <p className="text-xs text-zinc-400 line-clamp-2">

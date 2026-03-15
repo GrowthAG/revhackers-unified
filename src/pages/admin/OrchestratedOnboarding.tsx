@@ -192,7 +192,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             {project?.type ? (
                                 <Button
                                     onClick={() => navigate(`/rei/wizard?projectId=${id}&type=${project.type}`)}
-                                    className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 text-xs font-bold uppercase tracking-widest shadow-lg shadow-zinc-200"
+                                    className="bg-black text-white hover:bg-zinc-800 rounded-xl h-10 px-6 text-xs font-bold uppercase tracking-widest shadow-sm"
                                 >
                                     <Zap size={14} className="mr-2" />
                                     {latestResponse ? 'Atualizar Diagnóstico' : 'Iniciar Diagnóstico'}
@@ -200,14 +200,14 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             ) : (
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 text-xs font-bold uppercase tracking-widest shadow-lg shadow-zinc-200">
+                                        <Button className="bg-black text-white hover:bg-zinc-800 rounded-xl h-10 px-6 text-xs font-bold uppercase tracking-widest shadow-sm">
                                             <Zap size={14} className="mr-2" />
                                             {latestResponse ? 'Atualizar Diagnóstico' : 'Iniciar Diagnóstico'}
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-lg border-0 p-0 bg-transparent shadow-none">
-                                        <div className="bg-white rounded-lg overflow-hidden shadow-2xl">
-                                            <div className="bg-black p-6 text-center">
+                                        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-200">
+                                            <div className="bg-zinc-950 p-6 text-center rounded-t-2xl">
                                                 <h2 className="text-lg font-black uppercase tracking-widest text-white mb-1">Selecione o Protocolo</h2>
                                                 <p className="text-xs text-zinc-400">Escolha a profundidade da análise para este projeto.</p>
                                             </div>
@@ -223,9 +223,9 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                                     <button
                                                         key={item.type}
                                                         onClick={() => navigate(`/rei/wizard?projectId=${id}&type=${item.type}`)}
-                                                        className="w-full flex items-center gap-4 p-5 text-left hover:bg-zinc-50 transition-all group"
+                                                        className="w-full flex items-center gap-4 p-5 text-left hover:bg-zinc-50 transition-all group rounded-lg"
                                                     >
-                                                        <div className="w-10 h-10 bg-zinc-100 flex items-center justify-center text-zinc-500 group-hover:bg-black group-hover:text-white transition-colors shrink-0">
+                                                        <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center text-zinc-500 group-hover:bg-zinc-950 group-hover:text-white group-hover:border-zinc-950 transition-colors shrink-0">
                                                             {item.icon}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
@@ -386,14 +386,14 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                         <div className="flex justify-between items-center">
                             <SectionTitle>Agendamento de Apresentação</SectionTitle>
                             {(project as any)?.scheduling_completed && (
-                                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 rounded-none uppercase text-[9px] tracking-widest">
+                                <Badge className="bg-[#00CC6A]/10 text-[#00CC6A] hover:bg-[#00CC6A]/10 rounded-md uppercase text-[9px] font-black tracking-widest border-0">
                                     Agendamento Confirmado
                                 </Badge>
                             )}
                         </div>
 
                         <div className="bg-white border border-zinc-100 p-24 text-center min-h-[500px] flex flex-col items-center justify-center space-y-12">
-                            <div className="w-24 h-24 border border-zinc-100 flex items-center justify-center">
+                            <div className="w-24 h-24 border border-zinc-200 rounded-xl flex items-center justify-center">
                                 <Clock className={`w-8 h-8 ${project.scheduling_completed || project.status === 'active' ? 'text-black' : 'text-zinc-200'}`} strokeWidth={1} />
                             </div>
                             <div className="max-w-xl">
@@ -409,7 +409,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                     <Button
                                         onClick={confirmScheduling}
                                         disabled={project.scheduling_completed || project.status === 'active'}
-                                        className="bg-black text-white hover:bg-zinc-800 rounded-none h-16 px-12 uppercase text-xs font-black tracking-[0.3em] transition-all disabled:opacity-20"
+                                        className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl h-16 px-12 uppercase text-xs font-black tracking-[0.3em] transition-all disabled:opacity-20"
                                     >
                                         {project.scheduling_completed || project.status === 'active' ? 'CONCLUÍDO' : 'CONFIRMAR AGENDAMENTO'}
                                     </Button>
@@ -440,7 +440,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                 <p className="text-sm text-zinc-500 mb-8 leading-relaxed">O diagnóstico foi concluído. Agora, vamos estruturar o planejamento estratégico e o roteiro de implementação para o cliente.</p>
                                 <Button
                                     onClick={() => navigate(`/admin/planejamento/${id}`)}
-                                    className="bg-black text-white hover:bg-zinc-800 rounded-none h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-lg shadow-zinc-200 transition-all"
+                                    className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-sm transition-all"
                                 >
                                     Abrir Gerador de Planejamento
                                 </Button>
@@ -465,14 +465,111 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
             case 3: {
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        <SectionTitle>Go Live: Implementação Tática</SectionTitle>
-                        <div className="bg-white border border-zinc-200 p-8 text-center min-h-[400px] flex items-center justify-center">
-                            <div className="max-w-md">
-                                <Check className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-black text-black mb-4">Projeto em Execução</h3>
-                                <p className="text-sm text-zinc-500">O planejamento foi aprovado. Acompanhe a implementação das ações táticas.</p>
+                        <div className="flex justify-between items-end border-b border-zinc-100 pb-6">
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-widest text-black mb-1">
+                                    Fase 04: Go Live
+                                </h3>
+                                <p className="text-xs text-zinc-500 max-w-lg leading-relaxed">
+                                    O planejamento foi aprovado e o projeto está em execução. Use os atalhos abaixo para gerenciar a implementação.
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[#00CC6A] animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A]">
+                                    Em Execução
+                                </span>
                             </div>
                         </div>
+
+                        {/* Status Card */}
+                        <div className="bg-zinc-950 rounded-2xl p-8 md:p-10">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 border border-[#00CC6A]/20 rounded-xl flex items-center justify-center">
+                                    <Check className="w-5 h-5 text-[#00CC6A]" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A]">Projeto Ativo</p>
+                                    <p className="text-[10px] text-zinc-500">
+                                        Iniciado em {project?.created_at ? new Date(project.created_at).toLocaleDateString('pt-BR') : '—'}
+                                    </p>
+                                </div>
+                            </div>
+                            <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight mb-2">
+                                {project?.client_company || project?.client_name}
+                            </h3>
+                            <p className="text-sm text-zinc-500 font-medium">
+                                Ciclo {project?.quarter} {project?.year} · Implementação em andamento
+                            </p>
+                        </div>
+
+                        {/* Quick Actions Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button
+                                onClick={() => navigate(`/admin/planejamento/${id}`)}
+                                className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
+                            >
+                                <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:border-zinc-900 transition-colors">
+                                    <FileText className="w-4 h-4 text-zinc-900 group-hover:text-white transition-colors" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Plano Estratégico</p>
+                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Abrir gerador de planejamento e roadmap</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => window.open(`/project-hub/${id}`, '_blank')}
+                                className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
+                            >
+                                <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:border-zinc-900 transition-colors">
+                                    <Globe className="w-4 h-4 text-zinc-900 group-hover:text-white transition-colors" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Hub do Cliente</p>
+                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Página pública de acompanhamento</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    const parentTabs = document.querySelector('[data-state="active"][value="jornada"]');
+                                    if (parentTabs) {
+                                        // Navigate to biblioteca tab in parent
+                                        navigate(`/admin/projects/${id}?tab=biblioteca`);
+                                    }
+                                }}
+                                className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
+                            >
+                                <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:border-zinc-900 transition-colors">
+                                    <Database className="w-4 h-4 text-zinc-900 group-hover:text-white transition-colors" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Biblioteca</p>
+                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Wiki e documentos do projeto</p>
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* Diagnostic Summary */}
+                        {latestResponse && (
+                            <div className="border border-zinc-200 rounded-2xl p-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center">
+                                            <Target className="w-4 h-4 text-zinc-900" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Score do Diagnóstico</p>
+                                            <p className="text-lg font-black text-zinc-900">{Math.round(latestResponse.total_score)}%</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] text-zinc-400 font-medium">
+                                        {new Date(latestResponse.created_at).toLocaleDateString('pt-BR')}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             }
@@ -541,10 +638,10 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                         key={i}
                                         onClick={() => !isLocked && setCurrentStep(i)}
                                         disabled={isLocked}
-                                        className={`text-[10px] px-3 py-1.5 rounded-full transition-all ${isActive
+                                        className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all ${isActive
                                             ? 'bg-zinc-900 text-white'
                                             : isCompleted
-                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                                ? 'bg-[#00CC6A]/10 text-[#00CC6A] border border-[#00CC6A]/20'
                                                 : isLocked
                                                     ? 'bg-zinc-50 text-zinc-300 cursor-not-allowed'
                                                     : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
@@ -626,13 +723,13 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                             : locked
                                                 ? 'border-transparent text-zinc-300 cursor-not-allowed opacity-50'
                                                 : completed
-                                                    ? 'border-green-500 text-zinc-600 hover:bg-zinc-50'
+                                                    ? 'border-[#00CC6A] text-zinc-600 hover:bg-zinc-50'
                                                     : 'border-transparent text-zinc-400 hover:text-black hover:bg-zinc-50/50'
                                             }`}
                                     >
                                         <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-black border ${currentStep === i ? 'bg-black text-white border-black' :
                                             locked ? 'bg-zinc-100 text-zinc-300 border-zinc-200' :
-                                                completed ? 'bg-green-500 text-white border-green-500' :
+                                                completed ? 'bg-[#00CC6A] text-white border-[#00CC6A]' :
                                                     'border-zinc-200 text-zinc-300'
                                             }`}>
                                             {locked ? <Lock size={10} /> : completed ? <Check size={10} /> : i + 1}

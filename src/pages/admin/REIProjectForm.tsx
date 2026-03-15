@@ -308,7 +308,7 @@ const REIProjectForm = () => {
                                                 <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                                     <SelectValue placeholder="Selecione..." />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-none border-zinc-100 max-h-[250px] shadow-2xl">
+                                                <SelectContent className="rounded-xl border-zinc-100 max-h-[250px] shadow-sm">
                                                     {filterClients(clients).map(client => (
                                                         <SelectItem key={client.id} value={client.id} className="text-sm py-2 cursor-pointer">
                                                             {client.name} {client.company ? `— ${client.company}` : ''}
@@ -363,7 +363,7 @@ const REIProjectForm = () => {
                                         <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-zinc-100 shadow-2xl">
+                                        <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
                                             <SelectItem value="crm_ops">CRM & RevOps</SelectItem>
                                             <SelectItem value="funnels_impl">Site & Funnel Hub</SelectItem>
                                             <SelectItem value="founder">Assessoria Founder</SelectItem>
@@ -384,7 +384,7 @@ const REIProjectForm = () => {
                                             <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-none border-zinc-100 shadow-2xl">
+                                            <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
                                                 <SelectItem value="Q1">Q1 (Ciclo 1 - 0-90 dias)</SelectItem>
                                                 <SelectItem value="Q2">Q2 (Ciclo 2 - 91-180 dias)</SelectItem>
                                                 <SelectItem value="Q3">Q3 (Ciclo 3 - 181-270 dias)</SelectItem>

@@ -502,12 +502,12 @@ const KnowledgeDocumentEditor = () => {
                                                         i++;
                                                     }
                                                     elements.push(
-                                                        <div key={`banner-${i}`} className="my-6 bg-blue-50/50 border-l-4 border-blue-500 p-4 rounded-r-lg flex items-start gap-4">
-                                                            <div className="mt-1"><FileText className="w-5 h-5 text-blue-500" /></div>
+                                                        <div key={`banner-${i}`} className="my-6 bg-zinc-50 border-l-4 border-zinc-900 p-4 rounded-r-lg flex items-start gap-4">
+                                                            <div className="mt-1"><FileText className="w-5 h-5 text-zinc-900" /></div>
                                                             <div className="flex-1">
-                                                                <h4 className="font-bold text-blue-900 text-sm uppercase tracking-wider mb-1">Nota</h4>
-                                                                <div className="text-blue-800 text-sm leading-relaxed">
-                                                                    {bannerContent.length > 0 ? bannerContent.map((l, k) => <p key={k}>{l}</p>) : <p className="italic text-blue-400">Edite o texto...</p>}
+                                                                <h4 className="font-bold text-zinc-900 text-sm uppercase tracking-wider mb-1">Nota</h4>
+                                                                <div className="text-zinc-700 text-sm leading-relaxed">
+                                                                    {bannerContent.length > 0 ? bannerContent.map((l, k) => <p key={k}>{l}</p>) : <p className="italic text-zinc-400">Edite o texto...</p>}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -541,7 +541,7 @@ const KnowledgeDocumentEditor = () => {
                                                                 const match = part.match(/\[task:(.*?):(.*?)\]/);
                                                                 if (match) {
                                                                     return (
-                                                                        <span key={idx} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-medium text-sm border border-blue-100 cursor-pointer hover:bg-blue-100 transition-colors mx-1 align-middle">
+                                                                        <span key={idx} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 font-medium text-sm border border-zinc-200 cursor-pointer hover:bg-zinc-200 transition-colors mx-1 align-middle">
                                                                             <CheckSquare size={12} />
                                                                             <span className="truncate max-w-[200px]">{match[2]}</span>
                                                                         </span>
@@ -575,7 +575,7 @@ const KnowledgeDocumentEditor = () => {
                                 (commandType === 'mention' && filteredUsers.length > 0) ||
                                 (commandType === 'task') // Task handles its own empty state or filtering
                             ) && (
-                                    <div className="absolute top-20 left-10 z-50 w-64 bg-white rounded-xl shadow-2xl border border-zinc-100 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                                    <div className="absolute top-20 left-10 z-50 w-64 bg-white rounded-xl shadow-sm border border-zinc-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
                                         <div className="bg-zinc-50/50 px-3 py-2 border-b border-zinc-50">
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                                                 {commandType === 'slash' ? 'Comandos' : commandType === 'task' ? 'Vincular Tarefa' : 'Mencionar'}
@@ -585,7 +585,7 @@ const KnowledgeDocumentEditor = () => {
                                             {commandType === 'task' ? (
                                                 filteredTasks.length > 0 ? filteredTasks.map(task => (
                                                     <button key={task.id} onClick={() => insertText(`[task:${task.id}:${task.title}] `)} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg transition-colors group text-left border-b border-zinc-50 last:border-0 relative">
-                                                        <div className="w-1 absolute left-0 top-2 bottom-2 bg-blue-500 rounded-r-lg" />
+                                                        <div className="w-1 absolute left-0 top-2 bottom-2 bg-zinc-900 rounded-r-lg" />
                                                         <div className="pl-4">
                                                             <span className="text-sm font-bold text-zinc-800 group-hover:text-black block">{task.title}</span>
                                                             <span className="text-[10px] text-zinc-400 uppercase tracking-wider">{task.project_name}</span>

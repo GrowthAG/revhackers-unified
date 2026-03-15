@@ -85,7 +85,7 @@ const AdminCases = () => {
                         </button>
                         <button
                             onClick={() => navigate('/admin/cases/new')}
-                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
                         >
                             <Plus className="w-4 h-4" /> Novo Case
                         </button>
@@ -98,7 +98,7 @@ const AdminCases = () => {
                         <div
                             key={item.id}
                             onClick={() => navigate(`/admin/cases/edit/${item.id}`)}
-                            className="group relative bg-white rounded-sm border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-[320px] cursor-pointer overflow-hidden"
+                            className="group relative bg-white rounded-sm border border-zinc-200 hover:border-zinc-300 shadow-sm transition-all duration-300 flex flex-col h-[320px] cursor-pointer overflow-hidden"
                         >
                             {/* Header / Logo Area */}
                             <div className="h-32 bg-zinc-50 border-b border-zinc-100 flex items-center justify-center relative p-6">
@@ -115,8 +115,8 @@ const AdminCases = () => {
                                     <span className={`
                                         text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-sm shadow-sm backdrop-blur-md
                                         ${item.published
-                                            ? 'bg-green-500/90 text-white'
-                                            : 'bg-amber-400/90 text-black'
+                                            ? 'bg-[#00CC6A]/90 text-white'
+                                            : 'bg-zinc-200 text-zinc-700'
                                         }
                                     `}>
                                         {item.published ? 'Publicado' : 'Rascunho'}
@@ -134,7 +134,7 @@ const AdminCases = () => {
                                 </h3>
 
                                 {item.primary_metric && (
-                                    <div className="mb-4 flex items-center gap-2 text-green-600 bg-green-50 px-2 py-1.5 rounded-sm self-start">
+                                    <div className="mb-4 flex items-center gap-2 text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-1.5 rounded-sm self-start">
                                         <TrendingUp className="w-3 h-3" />
                                         <span className="text-[11px] font-bold">{item.primary_metric}</span>
                                     </div>
@@ -148,7 +148,7 @@ const AdminCases = () => {
                             </div>
 
                             {/* Hover Actions */}
-                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
                                 <button
                                     onClick={(e) => handleDelete(item.id, e)}
                                     className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-sm backdrop-blur-md transition-colors"
@@ -161,7 +161,7 @@ const AdminCases = () => {
                                         e.stopPropagation();
                                         navigate(`/admin/cases/edit/${item.id}`);
                                     }}
-                                    className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-lg"
+                                    className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-sm"
                                 >
                                     Editar
                                 </button>

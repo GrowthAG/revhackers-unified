@@ -100,7 +100,7 @@ const AdminClients = () => {
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Ativos</p>
-                                <p className="text-2xl font-black text-revgreen">{clients.filter(c => c.status === 'active').length}</p>
+                                <p className="text-2xl font-black text-[#00CC6A]">{clients.filter(c => c.status === 'active').length}</p>
                             </div>
                         </div>
                     </div>
@@ -129,7 +129,7 @@ const AdminClients = () => {
                                                     <td className="p-6">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-12 h-12 bg-black flex items-center justify-center shrink-0">
-                                                                <Building2 className="text-revgreen h-6 w-6" strokeWidth={1.5} />
+                                                                <Building2 className="text-[#00CC6A] h-6 w-6" strokeWidth={1.5} />
                                                             </div>
                                                             <div>
                                                                 <p className="text-sm font-black uppercase tracking-tight">{client.name}</p>
@@ -152,8 +152,8 @@ const AdminClients = () => {
                                                         </div>
                                                     </td>
                                                     <td className="p-6">
-                                                        <Badge className={`rounded-none text-[8px] font-black uppercase tracking-widest shadow-none ${client.status === 'active' ? 'bg-revgreen/10 text-revgreen' :
-                                                            client.status === 'onboarding' ? 'bg-zinc-100 text-zinc-400' : 'bg-red-50 text-red-400'
+                                                        <Badge className={`rounded-md text-[8px] font-black uppercase tracking-widest shadow-none border-0 ${client.status === 'active' ? 'bg-[#00CC6A]/10 text-[#00CC6A]' :
+                                                            client.status === 'onboarding' ? 'bg-zinc-100 text-zinc-500' : 'bg-zinc-50 text-zinc-400'
                                                             }`}>
                                                             {client.status}
                                                         </Badge>
@@ -165,7 +165,7 @@ const AdminClients = () => {
                                                                 size="icon"
                                                                 onClick={() => navigate(`/admin/rei?search=${client.email}`)}
                                                                 title="Ver Projetos REI"
-                                                                className="h-10 w-10 text-zinc-300 hover:text-revgreen hover:bg-black transition-all rounded-sm"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-[#00CC6A] hover:bg-black transition-all rounded-sm"
                                                             >
                                                                 <Zap size={16} />
                                                             </Button>
@@ -181,7 +181,7 @@ const AdminClients = () => {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => handleDelete(client.id, client.name)}
-                                                                className="h-10 w-10 text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all rounded-sm"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 transition-all rounded-sm"
                                                             >
                                                                 <Trash2 size={16} />
                                                             </Button>

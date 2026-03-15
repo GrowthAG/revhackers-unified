@@ -376,7 +376,7 @@ const AdminKnowledgeBase = () => {
                                         <div
                                             key={lib.id}
                                             onClick={() => handleSelectLibrary(lib)}
-                                            className="group relative bg-white border border-zinc-100 rounded-[28px] p-6 hover:border-zinc-300 hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
+                                            className="group relative bg-white border border-zinc-100 rounded-2xl p-6 hover:border-zinc-300 hover:shadow-sm transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
                                         >
                                             <div className="flex items-start justify-between mb-6">
                                                 <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500 border border-zinc-100/50">
@@ -385,7 +385,7 @@ const AdminKnowledgeBase = () => {
                                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                     <button
                                                         onClick={(e) => handleDeleteLibrary(lib.id, e)}
-                                                        className="w-8 h-8 bg-zinc-50 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 rounded-full transition-all"
+                                                        className="w-8 h-8 bg-zinc-50 hover:bg-zinc-900 hover:text-white flex items-center justify-center text-zinc-400 rounded-lg transition-all"
                                                     >
                                                         <Trash2 size={12} />
                                                     </button>
@@ -397,7 +397,7 @@ const AdminKnowledgeBase = () => {
                                                     {lib.is_global ? (
                                                         <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 border border-zinc-200">Global</span>
                                                     ) : (
-                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-500 border border-blue-100">Privada</span>
+                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 border border-zinc-200">Privada</span>
                                                     )}
                                                 </div>
                                                 <h3 className="text-lg font-bold text-black tracking-tight mb-2">{lib.name}</h3>
@@ -444,7 +444,7 @@ const AdminKnowledgeBase = () => {
                                         </div>
                                         <button
                                             onClick={() => handleRemoveDoc(doc.id)}
-                                            className="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                                            className="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -464,7 +464,7 @@ const AdminKnowledgeBase = () => {
                 {isCreateModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 sm:p-0">
                         <div className="absolute inset-0 bg-white/80 backdrop-blur-xl" onClick={() => setIsCreateModalOpen(false)} />
-                        <div className="relative bg-white border border-zinc-200 w-full max-w-lg rounded-[32px] shadow-2xl overflow-hidden p-8 animate-in fade-in zoom-in duration-300">
+                        <div className="relative bg-white border border-zinc-200 w-full max-w-lg rounded-2xl shadow-sm overflow-hidden p-8 animate-in fade-in zoom-in duration-300">
                             <div className="mb-8 text-center">
                                 <div className="w-12 h-12 bg-zinc-950 rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
                                     <Plus size={24} />
@@ -505,7 +505,7 @@ const AdminKnowledgeBase = () => {
                                     <Button
                                         disabled={isSubmitting}
                                         onClick={handleCreateLibrary}
-                                        className="flex-[2] rounded-full h-12 bg-black text-white font-bold hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-200"
+                                        className="flex-[2] rounded-xl h-12 bg-black text-white font-bold hover:bg-zinc-800 transition-all shadow-sm"
                                     >
                                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Criar Biblioteca'}
                                     </Button>

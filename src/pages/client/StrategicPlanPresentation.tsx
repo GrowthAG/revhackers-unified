@@ -62,7 +62,7 @@ const NAV_SECTIONS = [
 
 function getStatusBadge(status: string) {
     if (status === 'approved') return { label: 'Aprovado', cls: 'bg-[#00CC6A]/10 text-[#00CC6A] border border-[#00CC6A]/30' };
-    if (status === 'revision_requested') return { label: 'Revisão Solicitada', cls: 'bg-amber-50 text-amber-700 border border-amber-200' };
+    if (status === 'revision_requested') return { label: 'Revisão Solicitada', cls: 'bg-zinc-100 text-zinc-600 border border-zinc-300' };
     if (status === 'viewed') return { label: 'Visualizado', cls: 'bg-zinc-100 text-zinc-600 border border-zinc-200' };
     return { label: 'Enviado', cls: 'bg-zinc-100 text-zinc-500 border border-zinc-200' };
 }

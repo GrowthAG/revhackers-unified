@@ -276,15 +276,15 @@ export default function LiveStrategicPlan() {
                                                     <div key={idx} className="p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
                                                         <div className="flex items-center justify-between mb-2">
                                                             <h4 className="font-bold text-sm">{comp.nome}</h4>
-                                                            {comp.url && <a href={comp.url} target="_blank" className="text-[10px] text-blue-600 hover:underline">Ver Site</a>}
+                                                            {comp.url && <a href={comp.url} target="_blank" className="text-[10px] text-zinc-500 hover:text-zinc-900 hover:underline">Ver Site</a>}
                                                         </div>
                                                         <div className="space-y-2 text-xs">
                                                             <div className="flex gap-2">
-                                                                <span className="text-green-600 font-bold min-w-[12px]">+</span>
+                                                                <span className="text-[#00CC6A] font-bold min-w-[12px]">+</span>
                                                                 <span className="text-zinc-600">{comp.pontos_fortes}</span>
                                                             </div>
                                                             <div className="flex gap-2">
-                                                                <span className="text-red-500 font-bold min-w-[12px]">-</span>
+                                                                <span className="text-zinc-400 font-bold min-w-[12px]">-</span>
                                                                 <span className="text-zinc-600">{comp.pontos_fracos}</span>
                                                             </div>
                                                             {comp.diferencial && (
@@ -303,25 +303,25 @@ export default function LiveStrategicPlan() {
                                     {planData.market_data.analise_swot_rapida && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <h3 className="text-xs font-bold uppercase text-green-600 mb-3 tracking-wide flex items-center gap-2">
+                                                <h3 className="text-xs font-bold uppercase text-[#00CC6A] mb-3 tracking-wide flex items-center gap-2">
                                                     <Sparkles className="w-3 h-3" /> Oportunidades
                                                 </h3>
                                                 <ul className="space-y-2">
                                                     {planData.market_data.analise_swot_rapida.oportunidades?.map((item: string, i: number) => (
                                                         <li key={i} className="text-xs text-zinc-600 flex gap-2">
-                                                            <span className="text-green-400">•</span> {item}
+                                                            <span className="text-[#00CC6A]">•</span> {item}
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </div>
                                             <div>
-                                                <h3 className="text-xs font-bold uppercase text-red-500 mb-3 tracking-wide flex items-center gap-2">
+                                                <h3 className="text-xs font-bold uppercase text-zinc-500 mb-3 tracking-wide flex items-center gap-2">
                                                     <Target className="w-3 h-3" /> Ameaças
                                                 </h3>
                                                 <ul className="space-y-2">
                                                     {planData.market_data.analise_swot_rapida.ameacas?.map((item: string, i: number) => (
                                                         <li key={i} className="text-xs text-zinc-600 flex gap-2">
-                                                            <span className="text-red-400">•</span> {item}
+                                                            <span className="text-zinc-400">•</span> {item}
                                                         </li>
                                                     ))}
                                                 </ul>
@@ -467,8 +467,8 @@ export default function LiveStrategicPlan() {
                                 {planData.timeline?.map((cycle, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-4 rounded-sm border transition-all cursor-pointer ${cycle.status === 'completed' ? 'bg-green-50 border-green-200' :
-                                            cycle.status === 'in_progress' ? 'bg-blue-50 border-blue-200' :
+                                        className={`p-4 rounded-sm border transition-all cursor-pointer ${cycle.status === 'completed' ? 'bg-[#00CC6A]/10 border-[#00CC6A]/20' :
+                                            cycle.status === 'in_progress' ? 'bg-zinc-50 border-zinc-300' :
                                                 'bg-zinc-50 border-zinc-200'
                                             }`}
                                         onClick={() => {
@@ -495,10 +495,10 @@ export default function LiveStrategicPlan() {
                                             ))}
                                         </div>
                                         <div className="mt-3 flex items-center gap-2">
-                                            {cycle.status === 'completed' && <Check className="w-3 h-3 text-green-600" />}
-                                            {cycle.status === 'in_progress' && <Clock className="w-3 h-3 text-blue-600" />}
-                                            <span className={`text-[10px] uppercase tracking-wide ${cycle.status === 'completed' ? 'text-green-600' :
-                                                cycle.status === 'in_progress' ? 'text-blue-600' :
+                                            {cycle.status === 'completed' && <Check className="w-3 h-3 text-[#00CC6A]" />}
+                                            {cycle.status === 'in_progress' && <Clock className="w-3 h-3 text-zinc-900" />}
+                                            <span className={`text-[10px] uppercase tracking-wide ${cycle.status === 'completed' ? 'text-[#00CC6A]' :
+                                                cycle.status === 'in_progress' ? 'text-zinc-900' :
                                                     'text-zinc-400'
                                                 }`}>
                                                 {cycle.status === 'completed' ? 'Concluído' :
@@ -540,7 +540,7 @@ export default function LiveStrategicPlan() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
-                            className="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-sm shadow-lg flex items-center gap-3"
+                            className="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-sm shadow-sm flex items-center gap-3"
                         >
                             <span className="text-sm">Alterações não salvas</span>
                             <Button size="sm" variant="outline" className="bg-white text-black hover:bg-zinc-100" onClick={savePlan}>

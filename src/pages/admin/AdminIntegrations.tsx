@@ -113,7 +113,7 @@ const AdminIntegrations = () => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="h-1.5 w-1.5 rounded-full bg-revgreen" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#00CC6A]" />
                                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Configurações de Sistema</span>
                             </div>
                             <h1 className="text-4xl font-black tracking-tight text-zinc-900">
@@ -129,7 +129,7 @@ const AdminIntegrations = () => {
                                 <p className="text-sm font-bold text-zinc-900">Sistemas Operacionais</p>
                             </div>
                             <div className="h-10 w-10 bg-white rounded-xl border border-zinc-200 flex items-center justify-center shadow-sm">
-                                <Activity className="text-revgreen" size={20} />
+                                <Activity className="text-[#00CC6A]" size={20} />
                             </div>
                         </div>
                     </div>
@@ -138,15 +138,15 @@ const AdminIntegrations = () => {
                         {/* Google Workspace */}
                         <div className={cn(
                             "group relative bg-white rounded-3xl border transition-all duration-300 overflow-hidden",
-                            googleConnected ? "border-revgreen/30" : "border-zinc-200"
+                            googleConnected ? "border-[#00CC6A]/30" : "border-zinc-200"
                         )}>
                             <div className="p-8 space-y-6">
                                 <div className="flex justify-between items-start">
                                     <div className="p-3 bg-zinc-50 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                                        <Database className={googleConnected ? "text-revgreen" : "text-zinc-400"} size={24} />
+                                        <Database className={googleConnected ? "text-[#00CC6A]" : "text-zinc-400"} size={24} />
                                     </div>
                                     {googleConnected ? (
-                                        <Badge variant="outline" className="bg-revgreen/10 text-revgreen border-revgreen/20 px-3 py-1 font-bold">
+                                        <Badge variant="outline" className="bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20 px-3 py-1 font-bold">
                                             CONECTADO
                                         </Badge>
                                     ) : (
@@ -166,8 +166,8 @@ const AdminIntegrations = () => {
                                 {googleConnected && (
                                     <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-100">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-revgreen/10 flex items-center justify-center">
-                                                <ShieldCheck className="text-revgreen" size={16} />
+                                            <div className="w-8 h-8 rounded-full bg-[#00CC6A]/10 flex items-center justify-center">
+                                                <ShieldCheck className="text-[#00CC6A]" size={16} />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[10px] font-bold text-zinc-400 uppercase">Conta Principal</p>
@@ -187,7 +187,7 @@ const AdminIntegrations = () => {
                                             { label: "Camada de Segurança 2", active: googleConnected }
                                         ].map((f, i) => (
                                             <div key={i} className="flex items-center gap-2">
-                                                <div className={cn("w-1 h-1 rounded-full", f.active ? "bg-revgreen" : "bg-zinc-200")} />
+                                                <div className={cn("w-1 h-1 rounded-full", f.active ? "bg-[#00CC6A]" : "bg-zinc-200")} />
                                                 <span className={cn("text-[11px] font-medium", f.active ? "text-zinc-700" : "text-zinc-400")}>{f.label}</span>
                                             </div>
                                         ))}
@@ -200,7 +200,7 @@ const AdminIntegrations = () => {
                                             onClick={handleDisconnect}
                                             disabled={loading}
                                             variant="outline"
-                                            className="w-full h-12 rounded-xl border-zinc-200 text-zinc-500 hover:text-red-500 hover:border-red-200 transition-all font-bold"
+                                            className="w-full h-12 rounded-xl border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 transition-all font-bold"
                                         >
                                             Desconectar Integração
                                         </Button>
@@ -208,7 +208,7 @@ const AdminIntegrations = () => {
                                         <Button
                                             onClick={handleConnectGoogle}
                                             disabled={loading}
-                                            className="w-full h-12 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all font-bold shadow-lg"
+                                            className="w-full h-12 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all font-bold shadow-sm"
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={18} /> : "Autorizar Conexão"}
                                         </Button>
@@ -221,7 +221,7 @@ const AdminIntegrations = () => {
                         <div className="bg-zinc-900 rounded-3xl p-8 space-y-6 flex flex-col justify-center text-white">
                             <div className="space-y-3">
                                 <div className="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center mb-4">
-                                    <ShieldCheck className="text-revgreen" size={20} />
+                                    <ShieldCheck className="text-[#00CC6A]" size={20} />
                                 </div>
                                 <h3 className="text-xl font-bold">Seguranca de Dados</h3>
                                 <p className="text-sm text-zinc-400 leading-relaxed">

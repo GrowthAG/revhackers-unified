@@ -352,7 +352,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                                     type="button"
                                                     variant="destructive"
                                                     size="sm"
-                                                    className="h-7 text-[8px] font-bold tracking-widest uppercase rounded-none bg-red-600"
+                                                    className="h-7 text-[8px] font-bold tracking-widest uppercase rounded-none bg-zinc-900"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setValue('logo_url', '');
@@ -522,7 +522,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                     <SelectTrigger className="pl-12 h-12 bg-white border border-zinc-200 rounded-none focus:ring-0 focus:border-black text-sm font-bold text-black tracking-widest transition-colors hover:border-zinc-400">
                                         <SelectValue placeholder="SELECIONE O STATUS..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white border border-zinc-100 shadow-xl rounded-none">
+                                    <SelectContent className="bg-white border border-zinc-100 shadow-sm rounded-xl">
                                         <SelectItem value="onboarding" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Onboarding (Em andamento)</SelectItem>
                                         <SelectItem value="active" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Ativo (Em operação)</SelectItem>
                                         <SelectItem value="churned" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Churned (Cancelado)</SelectItem>

@@ -21,7 +21,7 @@ const ProfileSettings = () => {
         return (
             <AdminLayout>
                 <AdminPageLayout title="Meu Perfil" description="Acesso Restrito">
-                    <div className="bg-red-50 border border-red-200 text-red-800 p-8 text-center space-y-4">
+                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-800 p-8 text-center space-y-4">
                         <h2 className="text-xl font-bold">⚠️ MODO DE DESENVOLVIMENTO (DEV BYPASS)</h2>
                         <p>Você está usando um usuário simulado que NÃO tem permissão de escrita no banco de dados.</p>
                         <p className="font-bold">Para salvar fotos ou dados, você precisa fazer login com uma conta real.</p>

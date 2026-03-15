@@ -70,7 +70,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                         </div>
                     ) : embedUrl ? (
                         <div className="space-y-5">
-                            <div className="w-full aspect-video bg-zinc-100 rounded-2xl border border-zinc-200 overflow-hidden shadow-lg shadow-black/5 transition-all duration-500">
+                            <div className="w-full aspect-video bg-zinc-100 rounded-2xl border border-zinc-200 overflow-hidden shadow-sm transition-all duration-500">
                                 <iframe
                                     src={embedUrl}
                                     className="w-full h-full"
@@ -111,7 +111,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
 
                 {/* Footer */}
                 <div className="flex items-center gap-2 mt-8 pt-6 border-t border-zinc-200">
-                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
                     <span className="text-xs text-zinc-500 font-black uppercase tracking-widest">
                         Gravação Oficial / {company}
                     </span>

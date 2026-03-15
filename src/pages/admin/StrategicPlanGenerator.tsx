@@ -621,7 +621,7 @@ export default function StrategicPlanGenerator() {
                 </div>
 
                 {errorLog && (
-                    <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md mb-8 shadow-sm">
+                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 p-4 rounded-md mb-8 shadow-sm">
                         <h3 className="font-bold mb-2">Erro Crítico Reportado Pelo Sistema:</h3>
                         <p className="whitespace-pre-wrap font-mono text-sm">{errorLog}</p>
                     </div>
@@ -650,7 +650,7 @@ export default function StrategicPlanGenerator() {
                             }}
                             className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors"
                         >
-                            {copiedLink ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                            {copiedLink ? <Check className="w-3 h-3 text-[#00CC6A]" /> : <Copy className="w-3 h-3" />}
                             {copiedLink ? 'Link Copiado!' : 'Copiar Link de Upload'}
                         </button>
                     </div>
@@ -685,12 +685,12 @@ export default function StrategicPlanGenerator() {
                 </div>
 
                 {editMode && (
-                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-8 flex items-center justify-between">
+                    <div className="bg-zinc-50 border border-zinc-200 p-4 rounded-lg mb-8 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <ShieldAlert className="text-amber-600" />
+                            <ShieldAlert className="text-zinc-500" />
                             <div>
-                                <p className="text-sm font-bold text-amber-900">Modo de Edição Ativo</p>
-                                <p className="text-xs text-amber-700">Você está alterando os dados que serão exibidos para o cliente.</p>
+                                <p className="text-sm font-bold text-zinc-900">Modo de Edição Ativo</p>
+                                <p className="text-xs text-zinc-500">Você está alterando os dados que serão exibidos para o cliente.</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -904,7 +904,7 @@ export default function StrategicPlanGenerator() {
 
                                     <div className="grid md:grid-cols-3 gap-4">
                                         {(editMode ? editedData : enrichedData).personas.personas.map((persona: any, idx: number) => (
-                                            <div key={idx} className="group relative border border-zinc-200 rounded-xl overflow-hidden hover:shadow-lg transition-all pt-12 pb-6 px-6 text-center">
+                                            <div key={idx} className="group relative border border-zinc-200 rounded-xl overflow-hidden hover:shadow-sm transition-all pt-12 pb-6 px-6 text-center">
                                                 <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-zinc-100 to-white" />
                                                 <div className="relative w-20 h-20 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden mb-4">
                                                     <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}`} alt={persona.nome} className="w-full h-full object-cover" />
@@ -992,9 +992,9 @@ export default function StrategicPlanGenerator() {
 
                             {/* 3. Benchmarks */}
                             {enrichedData?.benchmark && (
-                                <div className="bg-zinc-900 text-white p-8 rounded-xl shadow-xl">
+                                <div className="bg-zinc-900 text-white p-8 rounded-xl shadow-sm">
                                     <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={20} className="text-revgreen" /></div>
+                                        <div className="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={20} className="text-[#00CC6A]" /></div>
                                         <div>
                                             <h2 className="text-xl font-bold">Benchmarks do Setor</h2>
                                             <p className="text-xs text-zinc-400 uppercase tracking-widest">Métricas de Referência</p>
@@ -1022,10 +1022,10 @@ export default function StrategicPlanGenerator() {
                                                     type="text"
                                                     value={editedData.benchmark.taxa_conversao}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, taxa_conversao: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-revgreen w-full"
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-[#00CC6A] w-full"
                                                 />
                                             ) : (
-                                                <p className="text-xl font-bold text-revgreen tracking-tight">{enrichedData.benchmark.taxa_conversao}</p>
+                                                <p className="text-xl font-bold text-[#00CC6A] tracking-tight">{enrichedData.benchmark.taxa_conversao}</p>
                                             )}
                                         </div>
                                         <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
@@ -1066,7 +1066,7 @@ export default function StrategicPlanGenerator() {
                                                 />
                                             ) : (
                                                 <p className="text-sm font-medium text-zinc-300 leading-relaxed">
-                                                    <span className="text-revgreen font-bold mr-2">Insight:</span>
+                                                    <span className="text-[#00CC6A] font-bold mr-2">Insight:</span>
                                                     {enrichedData.benchmark.comparativo_mercado}
                                                 </p>
                                             )}

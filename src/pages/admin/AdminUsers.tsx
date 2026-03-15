@@ -228,14 +228,14 @@ const AdminUsers = () => {
 
     const StatusBadge = ({ status }: { status: string }) => {
         const styles = {
-            active: "bg-emerald-50 text-emerald-700 border-emerald-100",
+            active: "bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20",
             inactive: "bg-zinc-50 text-zinc-500 border-zinc-100",
-            pending: "bg-amber-50 text-amber-700 border-amber-100"
+            pending: "bg-zinc-100 text-zinc-600 border-zinc-200"
         };
         const labels = { active: "Ativo", inactive: "Inativo", pending: "Pendente" };
 
         return (
-            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${styles[status as keyof typeof styles] || styles.pending}`}>
+            <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${styles[status as keyof typeof styles] || styles.pending}`}>
                 {labels[status as keyof typeof labels] || status}
             </span>
         );
@@ -338,13 +338,13 @@ const AdminUsers = () => {
                                                                 <MoreHorizontal className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-[160px] rounded-sm border-zinc-200 shadow-lg shadow-black/5 p-1 bg-white">
+                                                        <DropdownMenuContent align="end" className="w-[160px] rounded-sm border-zinc-200 shadow-sm p-1 bg-white">
                                                             <DropdownMenuLabel className="text-[10px] uppercase font-bold text-zinc-400 px-2 py-1.5">Gerenciar</DropdownMenuLabel>
                                                             <DropdownMenuItem onClick={() => handleEditClick(user)} className="text-xs font-medium rounded-sm px-2 py-1.5 focus:bg-zinc-100 cursor-pointer">
                                                                 <Edit2 className="mr-2 h-3.5 w-3.5" /> Editar
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator className="bg-zinc-100 my-1" />
-                                                            <DropdownMenuItem onClick={() => handleDeleteUser(user)} className="text-xs font-medium rounded-sm px-2 py-1.5 focus:bg-red-50 text-red-600 focus:text-red-700 cursor-pointer">
+                                                            <DropdownMenuItem onClick={() => handleDeleteUser(user)} className="text-xs font-medium rounded-sm px-2 py-1.5 focus:bg-zinc-100 text-zinc-500 focus:text-zinc-900 cursor-pointer">
                                                                 <Trash2 className="mr-2 h-3.5 w-3.5" /> Remover
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
@@ -397,7 +397,7 @@ const AdminUsers = () => {
 
                     {/* Invite Modal */}
                     <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
-                        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-xl rounded-sm gap-0">
+                        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-sm rounded-sm gap-0">
                             <DialogHeader className="px-6 py-6 border-b border-zinc-50">
                                 <DialogTitle className="text-lg font-bold text-zinc-900 tracking-tight">Convidar membro</DialogTitle>
                                 <DialogDescription className="text-xs text-zinc-500">
@@ -424,7 +424,7 @@ const AdminUsers = () => {
                                         <SelectTrigger className="h-10 border-zinc-200 rounded-sm focus:ring-1 focus:ring-black focus:border-black shadow-sm">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-sm border-zinc-200 shadow-lg bg-white">
+                                        <SelectContent className="rounded-sm border-zinc-200 shadow-sm bg-white">
                                             <SelectItem value="user">Membro</SelectItem>
                                             <SelectItem value="admin">Administrador</SelectItem>
                                         </SelectContent>
@@ -444,7 +444,7 @@ const AdminUsers = () => {
 
                     {/* Edit Modal */}
                     <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-xl rounded-sm gap-0">
+                        <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-white border border-zinc-200 shadow-sm rounded-sm gap-0">
                             <DialogHeader className="px-6 py-6 border-b border-zinc-50">
                                 <DialogTitle className="text-lg font-bold text-zinc-900 tracking-tight">Editar usuário</DialogTitle>
                             </DialogHeader>
@@ -468,7 +468,7 @@ const AdminUsers = () => {
                                                 <SelectTrigger className="h-10 border-zinc-200 rounded-sm shadow-sm focus:ring-1 focus:ring-black focus:border-black">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-sm bg-white shadow-lg border-zinc-200">
+                                                <SelectContent className="rounded-sm bg-white shadow-sm border-zinc-200">
                                                     <SelectItem value="user">Membro</SelectItem>
                                                     <SelectItem value="admin">Admin</SelectItem>
                                                     <SelectItem value="super_admin">Super Admin</SelectItem>
@@ -484,7 +484,7 @@ const AdminUsers = () => {
                                                 <SelectTrigger className="h-10 border-zinc-200 rounded-sm shadow-sm focus:ring-1 focus:ring-black focus:border-black">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-sm bg-white shadow-lg border-zinc-200">
+                                                <SelectContent className="rounded-sm bg-white shadow-sm border-zinc-200">
                                                     <SelectItem value="active">Ativo</SelectItem>
                                                     <SelectItem value="inactive">Inativo</SelectItem>
                                                 </SelectContent>

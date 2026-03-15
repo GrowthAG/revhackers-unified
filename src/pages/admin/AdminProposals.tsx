@@ -159,8 +159,8 @@ const AdminProposals = () => {
                             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Propostas Aprovadas</p>
                             <h3 className="text-4xl font-black text-black tracking-tight">{stats.approved}</h3>
                         </div>
-                        <div className="w-10 h-10 bg-green-50 flex items-center justify-center border border-green-100 group-hover:bg-[#03FC3B] group-hover:border-[#03FC3B] transition-colors">
-                            <CheckCircle2 className="w-5 h-5 text-green-600 group-hover:text-black" />
+                        <div className="w-10 h-10 bg-[#00CC6A]/10 flex items-center justify-center border border-[#00CC6A]/20 rounded-xl group-hover:bg-[#00CC6A] group-hover:border-[#00CC6A] transition-colors">
+                            <CheckCircle2 className="w-5 h-5 text-[#00CC6A] group-hover:text-white" />
                         </div>
                     </div>
                     <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
@@ -237,7 +237,7 @@ const AdminProposals = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteClient(clientName); }}
-                                                className="h-8 w-8 hover:bg-red-50 hover:text-red-500 rounded-none"
+                                                className="h-8 w-8 hover:bg-zinc-100 hover:text-zinc-900 rounded-none"
                                                 title="Excluir Cliente"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -263,8 +263,8 @@ const AdminProposals = () => {
                                                             <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
                                                                 Criado em {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                                             </span>
-                                                            <span className={`text-[10px] font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-green-600' :
-                                                                item.status === 'sent' ? 'text-blue-600' : 'text-zinc-400'
+                                                            <span className={`text-[10px] font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-[#00CC6A]' :
+                                                                item.status === 'sent' ? 'text-zinc-900' : 'text-zinc-400'
                                                                 }`}>
                                                                 {item.status === 'approved' ? '● Aprovado' :
                                                                     item.status === 'sent' ? '● Enviado' : '● Rascunho'}
@@ -294,7 +294,7 @@ const AdminProposals = () => {
                                                             className="h-8 text-[10px] uppercase font-bold tracking-wider rounded-sm bg-black hover:bg-zinc-800 text-white mr-2"
                                                             title="Passar Bastão para CS"
                                                         >
-                                                            <Rocket className="w-3 h-3 mr-2 text-revgreen" />
+                                                            <Rocket className="w-3 h-3 mr-2 text-[#00CC6A]" />
                                                             Passar Bastão
                                                         </Button>
                                                     )}
@@ -307,7 +307,7 @@ const AdminProposals = () => {
                                                     <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); window.open(`/p/${item.slug}`, '_blank'); }} className="h-8 w-8 hover:bg-zinc-200 rounded-none" title="Visualizar">
                                                         <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }} className="h-8 w-8 hover:bg-red-50 hover:text-red-500 rounded-none" title="Excluir">
+                                                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }} className="h-8 w-8 hover:bg-zinc-100 hover:text-zinc-900 rounded-none" title="Excluir">
                                                         <Trash2 className="w-3.5 h-3.5" />
                                                     </Button>
                                                 </div>

@@ -6,6 +6,58 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Check, Clock, Shield, FileText, LayoutTemplate, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
+// ── Scope items by project type ───────────────────────────────────────────
+const scopeByType: Record<string, string[]> = {
+    crm_ops: [
+        'Diagnóstico de Revenue Operations',
+        'Estruturação e Configuração do CRM',
+        'Automações de Pipeline e Follow-up',
+        'Playbook de Vendas & SLA de Passagem',
+        'Treinamento do Time no CRM',
+        'Dashboard de Métricas Comerciais',
+    ],
+    CRM_CS_OPS: [
+        'Diagnóstico de Revenue Operations',
+        'Estruturação e Configuração do CRM',
+        'Automações de Pipeline e Follow-up',
+        'Playbook de Vendas & SLA de Passagem',
+        'Treinamento do Time no CRM',
+        'Dashboard de Métricas Comerciais',
+    ],
+    founder: [
+        'Diagnóstico de Posicionamento Digital',
+        'Otimização de Perfil LinkedIn',
+        'Estratégia de Conteúdo & Calendário',
+        'Framework de Social Selling',
+        'Benchmark de Contas Âncora',
+        'Métricas de Engajamento & Conversão',
+    ],
+    dev: [
+        'Briefing Técnico Completo',
+        'Wireframes e Aprovação de UX',
+        'Design de Alta Fidelidade',
+        'Desenvolvimento Front-end & Back-end',
+        'Testes de Performance (LCP/GTmetrix)',
+        'Go Live e Monitoramento',
+    ],
+    funnels_impl: [
+        'Diagnóstico de Funil de Conversão',
+        'Estrutura de Landing Pages',
+        'Automações de Nutrição e Follow-up',
+        'Setup de Ads & Tracking',
+        'Otimização de Taxa de Conversão',
+        'Dashboard de Performance',
+    ],
+    default: [
+        'Diagnóstico de Receita Profundo (360º)',
+        'Roadmap de Implementação de 90 dias',
+        'Setup de CRM & Ferramentas de Vendas',
+        'Playbook de Vendas (V1)',
+        'Treinamento do Time Comercial',
+        'Dashboard de Métricas em Tempo Real',
+    ],
+};
+
 const ClientProjectHub = () => {
     const { id } = useParams();
     const [project, setProject] = useState<Partial<ReiProject> | null>(null);
@@ -88,7 +140,7 @@ const ClientProjectHub = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 border border-zinc-200">
+                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-100 border border-zinc-200">
                             <Clock className="w-3 h-3 text-zinc-500" />
                             <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-wider">
                                 Ciclo 1 • {new Date().getFullYear()}
@@ -96,8 +148,8 @@ const ClientProjectHub = () => {
                         </div>
                         <div className="w-px h-8 bg-zinc-200 hidden md:block" />
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Ativo</span>
+                            <div className="w-2 h-2 rounded-full bg-[#00CC6A] animate-pulse" />
+                            <span className="text-xs font-bold text-[#00CC6A] uppercase tracking-wider">Ativo</span>
                         </div>
                     </div>
                 </div>
@@ -110,12 +162,12 @@ const ClientProjectHub = () => {
                     {/* STATUS CARD */}
                     <div className="bg-white border border-zinc-200 rounded-2xl p-8 md:p-12 shadow-sm relative overflow-hidden">
                         <div className="relative z-10 max-w-2xl">
-                            <Badge className="bg-zinc-900 text-white hover:bg-zinc-800 border-0 uppercase tracking-widest text-[9px] mb-6 pl-2 pr-3 py-1.5 rounded-full font-medium">
+                            <Badge className="bg-zinc-900 text-white hover:bg-zinc-800 border-0 uppercase tracking-widest text-[9px] mb-6 pl-2 pr-3 py-1.5 rounded-md font-black">
                                 <span className="w-1.5 h-1.5 rounded-full bg-white mr-2" />
                                 Próxima Ação
                             </Badge>
 
-                            <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 tracking-tight mb-6 leading-[1.1]">
+                            <h2 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight mb-6 leading-[1.05]">
                                 {currentPhase === 'scheduling'
                                     ? 'Agendamento do Kickoff.'
                                     : 'Acompanhe a Execução.'}
@@ -130,14 +182,14 @@ const ClientProjectHub = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 {currentPhase === 'scheduling' ? (
                                     <Button
-                                        className="h-12 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm rounded-full shadow-lg shadow-zinc-200"
+                                        className="h-12 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm rounded-xl shadow-sm"
                                         onClick={() => window.open(project.analyst_email ? `mailto:${project.analyst_email}` : '#', '_blank')}
                                     >
                                         Falar com Analista <MessageSquare className="w-4 h-4 ml-2" />
                                     </Button>
                                 ) : (
                                     <Button
-                                        className="h-12 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm rounded-full shadow-lg shadow-zinc-200"
+                                        className="h-12 px-8 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm rounded-xl shadow-sm"
                                         onClick={() => project.analyst_email ? window.open(`mailto:${project.analyst_email}?subject=Agendar Apresentação Estratégica`, '_blank') : null}
                                     >
                                         Agendar Apresentação <Clock className="w-4 h-4 ml-2" />
@@ -146,15 +198,13 @@ const ClientProjectHub = () => {
                                 <Button
                                     variant="outline"
                                     onClick={handleViewSchedule}
-                                    className="h-12 px-8 bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 font-medium text-sm rounded-full"
+                                    className="h-12 px-8 bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 font-medium text-sm rounded-xl"
                                 >
                                     {planToken ? "Acessar Plano Realizado" : "Ver Cronograma"}
                                 </Button>
                             </div>
                         </div>
 
-                        {/* Decorative Background Elements */}
-                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-zinc-50 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl opacity-50 pointer-events-none" />
                     </div>
 
                     {/* 3. TIMELINE VISUALIZATION */}
@@ -180,7 +230,7 @@ const ClientProjectHub = () => {
                                         <span className={`text-[10px] font-bold uppercase tracking-widest ${item.status === 'active' ? 'text-zinc-900' : 'text-zinc-400'}`}>
                                             Fase {item.step}
                                         </span>
-                                        {item.status === 'done' && <div className="bg-emerald-100 text-emerald-700 p-1 rounded-full"><Check className="w-3 h-3" /></div>}
+                                        {item.status === 'done' && <div className="bg-[#00CC6A]/10 text-[#00CC6A] p-1 rounded-md"><Check className="w-3 h-3" /></div>}
                                     </div>
                                     <div>
                                         <h4 className={`font-bold text-sm leading-tight mb-1 ${item.status === 'active' ? 'text-zinc-900' : 'text-zinc-700'}`}>{item.title}</h4>
@@ -202,7 +252,7 @@ const ClientProjectHub = () => {
                             </p>
                             <div className="p-4 bg-white rounded-xl border border-zinc-200 shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center border border-zinc-200">
+                                    <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center border border-zinc-200">
                                         <FileText className="w-5 h-5 text-zinc-500" />
                                     </div>
                                     <div className="overflow-hidden">
@@ -211,7 +261,7 @@ const ClientProjectHub = () => {
                                             <p className="text-xs text-zinc-900 font-medium truncate" title={project.analyst_email || ''}>
                                                 {project.analyst_email || 'Não atribuído'}
                                             </p>
-                                            {project.analyst_email && <Check className="w-3 h-3 text-emerald-500" />}
+                                            {project.analyst_email && <Check className="w-3 h-3 text-[#00CC6A]" />}
                                         </div>
                                     </div>
                                 </div>
@@ -221,14 +271,7 @@ const ClientProjectHub = () => {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-sm">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {[
-                                        'Diagnóstico de Receita Profundo (360º)',
-                                        'Roadmap de Implementação de 90 dias',
-                                        'Setup de CRM & Ferramentas de Vendas',
-                                        'Playbook de Vendas (V1)',
-                                        'Treinamento do Time Comercial',
-                                        'Dashboard de Métricas em Tempo Real'
-                                    ].map((item, i) => (
+                                    {(scopeByType[project.type || 'default'] || scopeByType.default).map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 p-3 rounded-lg hover:bg-zinc-50 transition-colors">
                                             <div className="mt-0.5 bg-zinc-900 text-white rounded-full p-0.5 shrink-0">
                                                 <Check className="w-3 h-3" />

@@ -128,7 +128,7 @@ const AdminAgents = () => {
                     {/* List Header */}
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-sm animate-pulse" />
+                            <div className="w-1.5 h-1.5 bg-[#00CC6A] rounded-sm animate-pulse" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Ativos</span>
                         </div>
 
@@ -151,7 +151,7 @@ const AdminAgents = () => {
                                 <div
                                     key={agent.id}
                                     onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}
-                                    className="group relative bg-white border border-zinc-100 rounded-sm p-5 hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/50 transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
+                                    className="group relative bg-white border border-zinc-100 rounded-sm p-5 hover:border-zinc-300 hover:shadow-sm transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
                                 >
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="w-12 h-12 bg-zinc-50 rounded-sm flex items-center justify-center text-black group-hover:scale-105 transition-transform duration-500 border border-zinc-100/50">
@@ -166,7 +166,7 @@ const AdminAgents = () => {
                                             </button>
                                             <button
                                                 onClick={(e) => handleDelete(agent.id, e)}
-                                                className="w-8 h-8 bg-zinc-50 hover:bg-red-500 hover:text-white flex items-center justify-center text-zinc-400 rounded-sm transition-all"
+                                                className="w-8 h-8 bg-zinc-50 hover:bg-zinc-900 hover:text-white flex items-center justify-center text-zinc-400 rounded-sm transition-all"
                                             >
                                                 <Trash2 size={12} />
                                             </button>

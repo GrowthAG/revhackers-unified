@@ -537,9 +537,9 @@ const MetricCard = ({ label, value, subtypes, highlight = false, icon }: any) =>
 const StatusBadge = ({ status }: { status: string }) => {
     const styles = {
         todo: "bg-zinc-100 text-zinc-600 border-zinc-200",
-        in_progress: "bg-blue-50 text-blue-700 border-blue-200",
-        review: "bg-yellow-50 text-yellow-700 border-yellow-200",
-        done: "bg-green-50 text-green-700 border-green-200",
+        in_progress: "bg-zinc-100 text-zinc-900 border-zinc-300",
+        review: "bg-zinc-50 text-zinc-600 border-zinc-200",
+        done: "bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20",
     };
 
     const labels = {

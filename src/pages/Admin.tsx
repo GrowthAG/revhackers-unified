@@ -98,7 +98,7 @@ const Admin = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-green-500/50" />
+                <div className="w-1 h-1 rounded-full bg-[#00CC6A]/50" />
                 Projetos Ativos
               </h2>
             </div>
@@ -130,7 +130,7 @@ const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
     </div>
     <div className="flex items-baseline gap-2">
       <span className="text-3xl font-bold tracking-tight text-zinc-900 leading-none">{value}</span>
-      {highlight && value > 0 && <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />}
+      {highlight && value > 0 && <span className="flex h-2 w-2 rounded-full bg-[#00CC6A] animate-pulse" />}
     </div>
   </div>
 );
@@ -148,7 +148,7 @@ const ProjectRow = ({ project, navigate }: any) => (
         <h3 className="text-xs font-bold text-zinc-900">{project.client_name || 'Projeto sem nome'}</h3>
         <p className="text-[10px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1.5 uppercase tracking-wider">
           {project.status === 'active' ? (
-            <span className="inline-flex items-center gap-1 text-green-600 font-bold">
+            <span className="inline-flex items-center gap-1 text-[#00CC6A] font-bold">
               Em Execução
             </span>
           ) : (

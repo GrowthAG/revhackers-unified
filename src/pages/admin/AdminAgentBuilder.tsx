@@ -678,7 +678,7 @@ ${additionalInfo}
             className={`
                 flex-1 px-6 py-2.5 text-[13px] font-bold transition-all duration-300 rounded-full
                 ${activeTab === id
-                    ? 'bg-black text-white shadow-lg shadow-black/10'
+                    ? 'bg-black text-white shadow-sm'
                     : 'text-zinc-400 hover:text-black hover:bg-zinc-50'
                 }
             `}
@@ -697,7 +697,7 @@ ${additionalInfo}
         return (
             <button
                 onClick={() => setActiveKnowledgeModal(type)}
-                className="text-left p-6 bg-white border border-zinc-100 rounded-[24px] hover:border-zinc-200 hover:shadow-xl hover:shadow-black/5 transition-all group"
+                className="text-left p-6 bg-white border border-zinc-100 rounded-2xl hover:border-zinc-200 hover:shadow-sm transition-all group"
             >
                 <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform">
@@ -758,7 +758,7 @@ ${additionalInfo}
                             Preview do Motor
                         </span>
                         <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <span className="w-1.5 h-1.5 bg-[#00CC6A] rounded-full animate-pulse"></span>
                             <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Ativo</span>
                         </div>
                     </div>
@@ -785,7 +785,7 @@ ${additionalInfo}
             <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-zinc-50/30 scroll-smooth">
                 {testMessages.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-0 animate-in fade-in duration-700">
-                        <div className="w-16 h-16 bg-white border border-zinc-100 rounded-[28px] shadow-xl shadow-black/5 flex items-center justify-center mx-auto mb-6">
+                        <div className="w-16 h-16 bg-white border border-zinc-100 rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-6">
                             <Bot className="w-8 h-8 text-black" />
                         </div>
                         <p className="text-[13px] font-bold text-black uppercase tracking-widest">Aguardando Input</p>
@@ -799,7 +799,7 @@ ${additionalInfo}
                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group animate-in slide-in-from-bottom-2 duration-300`}>
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-bold shadow-sm ${msg.role === 'assistant' ? 'bg-black text-white' : 'bg-zinc-100'
                             }`}>
-                            {msg.role === 'assistant' ? <Cpu className="w-4 h-4 text-revgreen" /> : 'USER'}
+                            {msg.role === 'assistant' ? <Cpu className="w-4 h-4 text-[#00CC6A]" /> : 'USER'}
                         </div>
                         <div className={`max-w-[85%] text-[13px] leading-relaxed ${msg.role === 'assistant'
                             ? 'text-zinc-800 font-bold pt-1.5'
@@ -835,7 +835,7 @@ ${additionalInfo}
                     <button
                         type="submit"
                         disabled={!testInput.trim() || isLoading}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black text-white rounded-[18px] flex items-center justify-center hover:bg-zinc-800 disabled:opacity-30 transition-all shadow-lg shadow-black/10"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 disabled:opacity-30 transition-all shadow-sm"
                     >
                         <Send className="w-5 h-5" />
                     </button>
@@ -986,7 +986,7 @@ ${additionalInfo}
                                         </div>
                                         <button
                                             onClick={() => handleRemoveSource(source.id)}
-                                            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -1002,8 +1002,8 @@ ${additionalInfo}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-zinc-500">{file.name}</p>
-                                                <p className="text-[10px] text-revgreen font-bold flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-revgreen animate-pulse"></span>
+                                                <p className="text-[10px] text-[#00CC6A] font-bold flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] animate-pulse"></span>
                                                     CLIQUE EM SALVAR PARA ATIVAR
                                                 </p>
                                             </div>
@@ -1067,7 +1067,7 @@ ${additionalInfo}
                                         <div className={cn(
                                             "w-5 h-5 rounded-full flex items-center justify-center transition-all",
                                             agentLibraryIds.includes(lib.id)
-                                                ? "bg-revgreen text-black"
+                                                ? "bg-[#00CC6A] text-black"
                                                 : "bg-zinc-50 text-zinc-300 group-hover:text-zinc-900"
                                         )}>
                                             <Plus size={12} className={cn("transition-transform", agentLibraryIds.includes(lib.id) && "rotate-45")} />
@@ -1147,7 +1147,7 @@ ${additionalInfo}
                 {/* Modal for Knowledge Source */}
                 {activeKnowledgeModal && (
                     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-zinc-200">
+                        <div className="bg-white rounded-2xl w-full max-w-lg shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-zinc-200">
                             <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
                                 <h3 className="text-base font-bold text-zinc-900">{getModalContent().title}</h3>
                                 <button onClick={() => setActiveKnowledgeModal(null)} className="text-zinc-400 hover:text-zinc-900 transition-colors">

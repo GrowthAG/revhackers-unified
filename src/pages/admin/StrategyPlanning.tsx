@@ -60,7 +60,7 @@ const StrategyPlanning = () => {
     const PlanSection = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
         <section className="space-y-6">
             <h2 className="text-xs font-black uppercase tracking-[0.3em] text-black border-b border-zinc-100 pb-2 flex items-center gap-2">
-                <Icon size={14} className="text-revgreen" /> {title}
+                <Icon size={14} className="text-[#00CC6A]" /> {title}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {children}
@@ -71,7 +71,7 @@ const StrategyPlanning = () => {
     const PlanCard = ({ label, value, desc }: { label: string, value: string, desc?: string }) => (
         <div className="bg-white border border-zinc-100 p-8 hover:border-black transition-all group">
             <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">{label}</p>
-            <p className="text-lg font-black text-black uppercase tracking-tight mb-2 group-hover:text-revgreen transition-colors">{value}</p>
+            <p className="text-lg font-black text-black uppercase tracking-tight mb-2 group-hover:text-[#00CC6A] transition-colors">{value}</p>
             {desc && <p className="text-[10px] text-zinc-500 font-medium leading-relaxed uppercase">{desc}</p>}
         </div>
     );
@@ -128,7 +128,7 @@ const StrategyPlanning = () => {
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-zinc-800 pb-8 gap-4">
                             <div>
                                 <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">INVESTIMENTO EM MÍDIA</h3>
-                                <h2 className="text-4xl font-black uppercase tracking-tighter text-revgreen">ALOCAÇÃO DE BUDGET</h2>
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-[#00CC6A]">ALOCAÇÃO DE BUDGET</h2>
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
@@ -143,14 +143,14 @@ const StrategyPlanning = () => {
                                     id: 'google',
                                     name: 'Google Ads',
                                     logo: 'https://www.gstatic.com/images/branding/product/1x/ads_48dp.png',
-                                    color: 'bg-blue-500',
+                                    color: 'bg-zinc-900',
                                     defaultValue: 40
                                 },
                                 {
                                     id: 'meta',
                                     name: 'Meta Ads',
                                     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/50px-Facebook_Logo_%282019%29.png',
-                                    color: 'bg-blue-600',
+                                    color: 'bg-zinc-800',
                                     defaultValue: 35
                                 },
                                 {
@@ -178,7 +178,7 @@ const StrategyPlanning = () => {
                                             <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Performance</p>
                                         </div>
                                         <div className="ml-auto">
-                                            <div className={`w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-revgreen border-revgreen' : ''}`}>
+                                            <div className={`w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-[#00CC6A] border-[#00CC6A]' : ''}`}>
                                                 {platform.defaultValue > 0 && (
                                                     <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -210,7 +210,7 @@ const StrategyPlanning = () => {
                         {/* Summary */}
                         <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
                             <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
-                                Plataformas selecionadas: <span className="text-revgreen font-bold">3</span>
+                                Plataformas selecionadas: <span className="text-[#00CC6A] font-bold">3</span>
                             </p>
                             <p className="text-sm text-zinc-400">
                                 Distribuição recomendada baseada no diagnóstico REI
@@ -225,7 +225,7 @@ const StrategyPlanning = () => {
                             <h3 className="text-2xl font-black uppercase tracking-tight">Cronograma de Execução 90 Dias</h3>
                             <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Transformação do plano em tarefas operacionais de growth.</p>
                         </div>
-                        <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black rounded-none h-14 px-8 font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-none shrink-0">
+                        <Button asChild className="bg-black text-white hover:bg-[#00CC6A] hover:text-black rounded-none h-14 px-8 font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-none shrink-0">
                             <Link to={`/admin/cronograma/${id}`}>Visualizar Roadmap →</Link>
                         </Button>
                     </div>

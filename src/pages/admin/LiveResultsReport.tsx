@@ -32,7 +32,7 @@ const MetricCard = ({ title, value, change, trend, prefix = '', suffix = '' }: {
                 {prefix}{value}{suffix}
             </div>
             {change && (
-                <div className={`flex items-center text-xs font-medium px-2 py-1 rounded-full ${trend === 'up' ? 'bg-emerald-50 text-emerald-700' : trend === 'down' ? 'bg-rose-50 text-rose-700' : 'bg-zinc-100 text-zinc-600'}`}>
+                <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-md ${trend === 'up' ? 'bg-[#00CC6A]/10 text-[#00CC6A]' : trend === 'down' ? 'bg-zinc-100 text-zinc-500' : 'bg-zinc-100 text-zinc-600'}`}>
                     {trend === 'up' ? <ArrowUpRight size={14} className="mr-1" /> : trend === 'down' ? <ArrowDownRight size={14} className="mr-1" /> : null}
                     {change}
                 </div>
@@ -215,7 +215,7 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                                     <ul className="space-y-3">
                                         {content.cycles[cycle].highlights.map((item: string, i: number) => (
                                             <li key={i} className="flex gap-3 text-sm text-zinc-700">
-                                                <div className="min-w-[4px] h-4 bg-emerald-500 rounded-full mt-1" />
+                                                <div className="min-w-[4px] h-4 bg-[#00CC6A] rounded-full mt-1" />
                                                 {item}
                                             </li>
                                         ))}
@@ -229,7 +229,7 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                                     <ul className="space-y-3">
                                         {content.cycles[cycle].lowlights.map((item: string, i: number) => (
                                             <li key={i} className="flex gap-3 text-sm text-zinc-700">
-                                                <div className="min-w-[4px] h-4 bg-amber-500 rounded-full mt-1" />
+                                                <div className="min-w-[4px] h-4 bg-zinc-400 rounded-full mt-1" />
                                                 {item}
                                             </li>
                                         ))}
@@ -269,7 +269,7 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                             <div className="bg-white p-4 rounded-lg border border-zinc-200">
                                 <span className="text-xs text-zinc-500">Saúde do Projeto</span>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <div className={`w-2 h-2 rounded-full ${content.cycles?.[cycle]?.health === 'risk' ? 'bg-amber-500' : content.cycles?.[cycle]?.health === 'critical' ? 'bg-red-500' : 'bg-emerald-500'} animate-pulse`} />
+                                    <div className={`w-2 h-2 rounded-full ${content.cycles?.[cycle]?.health === 'risk' ? 'bg-zinc-400' : content.cycles?.[cycle]?.health === 'critical' ? 'bg-zinc-900' : 'bg-[#00CC6A]'} animate-pulse`} />
                                     <span className="text-sm font-medium text-zinc-900">
                                         {content.cycles?.[cycle]?.health === 'risk' ? 'Atenção' : content.cycles?.[cycle]?.health === 'critical' ? 'Crítico' : content.cycles?.[cycle]?.metrics?.leads ? 'Em Dia' : 'Aguardando Dados'}
                                     </span>
