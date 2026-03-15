@@ -4,10 +4,12 @@
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# External APIs
-VITE_PSI_API_KEY=your-google-pagespeed-insights-api-key
-PERPLEXITY_API_KEY=your-perplexity-api-key # Used in Edge Functions & Services
-SERP_API_KEY=your-serp-api-key # Optional - Planned for Market Intel
+# External APIs (managed via Supabase Dashboard → Edge Function Secrets)
+# GEMINI_API_KEY → analyze-diagnostic Edge Function
+# PSI_API_KEY → analyze-site, crux-benchmark Edge Functions
+# PERPLEXITY_API_KEY → market-intelligence, enrich-strategic-data Edge Functions
+# FIRECRAWL_API_KEY → research-intelligence Edge Function
+# Note: API keys are NOT exposed to the client-side bundle
 
 # Webhook URLs (Lead Destinations)
 VITE_WEBHOOK_URL=your-primary-webhook-url

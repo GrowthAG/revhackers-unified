@@ -19,9 +19,10 @@ serve(async (req) => {
             throw new Error('URL is required')
         }
 
-        // PSI API Key (Server-side) e fallback
-        // NOTA: Em produção, usar Deno.env.get('PSI_API_KEY')
-        const apiKey = Deno.env.get('PSI_API_KEY') || 'AIzaSyDfTlPc-qze8z_tBkL7i3z0SC-wSofvr7I';
+        const apiKey = Deno.env.get('PSI_API_KEY');
+        if (!apiKey) {
+            throw new Error('PSI_API_KEY not configured');
+        }
 
         console.log(`[Analyze Site] Analyzing ${url} with strategy ${strategy}...`)
 

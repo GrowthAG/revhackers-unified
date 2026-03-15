@@ -1,7 +1,5 @@
 
-import { StrategicPlanData } from "@/services/DiagnosticService";
-
-const PERPLEXITY_API_KEY = import.meta.env.VITE_PERPLEXITY_API_KEY;
+import { supabase } from '@/integrations/supabase/client';
 
 export interface MarketIntelligenceData {
     industry_trends: string[];
@@ -29,62 +27,13 @@ export interface MarketIntelligenceData {
 export class MarketIntelligenceService {
     static async fetchMarketData(segment: string, objective: string): Promise<MarketIntelligenceData> {
         try {
-            const response = await fetch('https://api.perplexity.ai/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.1-sonar-small-128k-online',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: `Você é um analista de inteligência de mercado sênior focado em B2B e SaaS. 
-                            Analise o segmento e objetivo fornecidos.
-                            Retorne APENAS um JSON válido (sem markdown) seguindo estritamente este esquema:
-                            {
-                                "industry_trends": ["Tendência 1", "Tendência 2"],
-                                "competitor_benchmarks": [
-                                    {"company_name": "Empresa A", "key_metric": "CAC estimado R$ X", "strategy_insight": "Usa estratégia Y"},
-                                    {"company_name": "Empresa B", "key_metric": "Ticket Médio", "strategy_insight": "Foco em Enterprise"},
-                                    {"company_name": "Empresa C", "key_metric": "Growth Rate", "strategy_insight": "PLG"}
-                                ],
-                                "market_sizing": {
-                                    "tam": "Descrição do Mercado Total",
-                                    "sam": "Descrição do Mercado Endereçável",
-                                    "som": "Descrição do Mercado que podemos capturar"
-                                },
-                                "personas": [
-                                    {
-                                        "name": "Nome da Persona 1",
-                                        "role": "Cargo (ex: Diretor Comercial)",
-                                        "pain": "Principal dor específica (ex: Falta de visibilidade)",
-                                        "trigger": "Gatilho de compra (ex: Troca de gestão)",
-                                        "message": "Pitch de 1 frase para essa persona",
-                                        "wiifm": "O que ela ganha pessoalmente (ex: Promoção, menos estresse)"
-                                    },
-                                    { "name": "Nome 2", "role": "Cargo 2", "pain": "Dor 2", "trigger": "Gatilho 2", "message": "Msg 2", "wiifm": "Ganho 2" },
-                                    { "name": "Nome 3", "role": "Cargo 3", "pain": "Dor 3", "trigger": "Gatilho 3", "message": "Msg 3", "wiifm": "Ganho 3" }
-                                ],
-                                "strategic_advice": "Um conselho matador em português focado em crescimento."
-                            }`
-                        },
-                        {
-                            role: 'user',
-                            content: `Segmento: ${segment}. Objetivo: ${objective}`
-                        }
-                    ]
-                })
+            const { data, error } = await supabase.functions.invoke('market-intelligence', {
+                body: { segment, objective }
             });
 
-            if (!response.ok) throw new Error('Market Intelligence API failed');
+            if (error) throw error;
 
-            const data = await response.json();
-            const content = data.choices[0].message.content;
-            const cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
-            return JSON.parse(cleanJson);
-
+            return data as MarketIntelligenceData;
         } catch (error) {
             console.warn("Market Intelligence Error - Returning Mock Data:", error);
             return {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-// import { supabase } from '@/integrations/supabase/client'; // Removido temporariamente para evitar erro de deploy
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Smartphone, Search, TrendingUp, ArrowRight, Download, Calendar, Mail, ShieldCheck, Gauge, Globe, Terminal, Activity, Check, Monitor, Wifi, Users, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -85,37 +85,6 @@ const SiteScore = () => {
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const insights = getDiagnosticInsights('site', score);
 
-    // DEBUG: Log da chave na inicialização e função de teste
-    useEffect(() => {
-        const key = import.meta.env.VITE_PSI_API_KEY;
-        console.log('🔑 PSI_API_KEY no início:', key ? `${key.substring(0, 15)}...` : '❌ VAZIA!');
-        console.log('🔑 Todas as variáveis VITE:', Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
-
-        // Função de teste acessível pelo console: window.testPSI()
-        (window as any).testPSI = async () => {
-            const apiKey = import.meta.env.VITE_PSI_API_KEY;
-            console.log('🧪 Testando API com chave:', apiKey ? `${apiKey.substring(0, 15)}...` : 'VAZIA!');
-
-            if (!apiKey) {
-                console.error('❌ ERRO: Chave VITE_PSI_API_KEY não encontrada!');
-                return;
-            }
-
-            const url = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://google.com&key=${apiKey}&category=performance&strategy=mobile`;
-            console.log('📡 URL de teste:', url.substring(0, 80) + '...');
-
-            try {
-                const response = await fetch(url);
-                console.log('📬 Status:', response.status, response.statusText);
-                const data = await response.json();
-                console.log('✅ Score recebido:', data?.lighthouseResult?.categories?.performance?.score);
-                return data;
-            } catch (e) {
-                console.error('❌ Erro no fetch:', e);
-            }
-        };
-        console.log('💡 Digite window.testPSI() no console para testar a API manualmente.');
-    }, []);
 
     // Estado do Protocolo e Logs
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -135,7 +104,6 @@ const SiteScore = () => {
         error?: boolean
     } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const PSI_API_KEY = import.meta.env.VITE_PSI_API_KEY || '';
     const [loadingStatus, setLoadingStatus] = useState('Iniciando análise...');
     const [progress, setProgress] = useState(0);
 
@@ -170,21 +138,16 @@ const SiteScore = () => {
         setLoadingStatus('Conectando ao Google PageSpeed Insights...');
 
         try {
-            if (!PSI_API_KEY) {
-                throw new Error("API Key não configurada. Adicione VITE_PSI_API_KEY ao .env");
-            }
-
             // Normaliza URL
             const finalUrl = url.startsWith('http') ? url : `https://${url}`;
 
             // CHECK FOR LOCALHOST (PSI cannot analyze localhost)
             if (finalUrl.includes('localhost') || finalUrl.includes('127.0.0.1')) {
-                console.warn("⚠️ Localhost detected. Skipping PSI API causing errors. Using Mock Data.");
+                console.warn("Localhost detected. Using Mock Data.");
 
                 setLoadingStatus('Ambiente de Desenvolvimento Detectado...');
-                await new Promise(r => setTimeout(r, 1500)); // Simulando delay
+                await new Promise(r => setTimeout(r, 1500));
 
-                // Mock Result for Localhost
                 const mockResult = {
                     mobile: { lighthouseResult: { categories: { performance: { score: 0.85 }, seo: { score: 0.92 } } } },
                     desktop: null,
@@ -210,95 +173,77 @@ const SiteScore = () => {
                 return;
             }
 
-            // 1. Fetch Mobile Strategy (Principal)
-            const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(finalUrl)}&key=${PSI_API_KEY}&category=PERFORMANCE&category=SEO&category=BEST_PRACTICES&strategy=MOBILE`;
-
+            // Call analyze-site Edge Function (API key managed server-side)
             setLoadingStatus('Auditando Core Web Vitals (Mobile)...');
 
-            // Add Timeout of 60s
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            const { data, error } = await supabase.functions.invoke('analyze-site', {
+                body: { url: finalUrl, strategy: 'mobile' }
+            });
 
-            try {
-                const response = await fetch(apiUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
+            if (error) throw new Error(error.message || 'Edge Function error');
+            if (data?.error) throw new Error(data.error?.message || JSON.stringify(data.error));
 
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData?.error?.message || `Erro API: ${response.status}`);
-                }
+            const lighthouse = data.lighthouseResult;
 
-                const data = await response.json();
-                const lighthouse = data.lighthouseResult;
+            setLoadingStatus('Processando Árvore de Renderização...');
+            await new Promise(r => setTimeout(r, 800));
 
-                // Simula loading de outras etapas enquanto processa
-                setLoadingStatus('Processando Árvore de Renderização...');
-                await new Promise(r => setTimeout(r, 800));
+            const score = Math.round((lighthouse?.categories?.performance?.score || 0) * 100);
+            const audits = lighthouse?.audits || {};
 
-                const score = Math.round((lighthouse.categories.performance.score || 0) * 100);
-                const audits = lighthouse.audits || {};
+            const lcp = audits['largest-contentful-paint']?.displayValue || "N/A";
+            const cls = audits['cumulative-layout-shift']?.displayValue || "N/A";
+            const tbt = audits['total-blocking-time']?.displayValue || "N/A";
 
-                // Extração de Métricas Reais
-                const lcp = audits['largest-contentful-paint']?.displayValue || "N/A";
-                const cls = audits['cumulative-layout-shift']?.displayValue || "N/A";
-                const tbt = audits['total-blocking-time']?.displayValue || "N/A";
+            const detectedTech = lighthouse?.stackPacks?.map((p: any) => p.title) || [];
 
-                const detectedTech = lighthouse.stackPacks?.map((p: any) => p.title) || [];
+            const realResults = {
+                mobile: data,
+                desktop: null,
+                techStack: detectedTech.length > 0 ? detectedTech : ["Tecnologia Web Padrão"],
+                pixels: ["Análise Profunda Pendente"],
+                vitals: { lcp, cls, tbt, score },
+                seoMetadata: {
+                    title: audits['document-title']?.details?.title || "Título não detectado",
+                    description: audits['meta-description']?.details?.items?.[0]?.description || "Descrição não encontrada",
+                },
+                compliance: {
+                    lgpd: audits['bf-cache']?.score === 1,
+                    privacy: url.includes('https'),
+                    security: url.includes('https')
+                },
+                crux: {
+                    lcp: data.loadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS?.percentile
+                        ? `${(data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS.percentile / 1000).toFixed(1)}s`
+                        : "N/A",
+                    cls: data.loadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile
+                        ? (data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100).toFixed(2)
+                        : "N/A",
+                    assessment: data.loadingExperience?.overall_category || "DADOS INSUFICIENTES"
+                },
+                error: false
+            };
 
-                const realResults = {
-                    mobile: data,
-                    desktop: null,
-                    techStack: detectedTech.length > 0 ? detectedTech : ["Tecnologia Web Padrão"],
-                    pixels: ["Análise Profunda Pendente"],
-                    vitals: { lcp, cls, tbt, score },
-                    seoMetadata: {
-                        title: audits['document-title']?.details?.title || "Título não detectado",
-                        description: audits['meta-description']?.details?.items?.[0]?.description || "Descrição não encontrada",
-                    },
-                    compliance: {
-                        lgpd: audits['bf-cache']?.score === 1,
-                        privacy: url.includes('https'),
-                        security: url.includes('https')
-                    },
-                    crux: {
-                        lcp: data.loadingExperience?.metrics?.LARGEST_CONTENTFUL_PAINT_MS?.percentile
-                            ? `${(data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS.percentile / 1000).toFixed(1)}s`
-                            : "N/A",
-                        cls: data.loadingExperience?.metrics?.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile
-                            ? (data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100).toFixed(2)
-                            : "N/A",
-                        assessment: data.loadingExperience?.overall_category || "DADOS INSUFICIENTES"
-                    },
-                    error: false
-                };
+            setPsiResults(realResults);
+            setProgress(100);
 
-                setPsiResults(realResults);
-                setProgress(100);
+            toast({
+                className: "bg-zinc-900 border-zinc-800 text-white",
+                title: "DIAGNÓSTICO REAL CONCLUÍDO",
+                description: `Auditoria oficial do Google finalizada. Score: ${score}`
+            });
 
-                toast({
-                    className: "bg-zinc-900 border-zinc-800 text-white",
-                    title: "DIAGNÓSTICO REAL CONCLUÍDO",
-                    description: `Auditoria oficial do Google finalizada. Score: ${score}`
-                });
-
-                setStep('results');
-
-            } catch (fetchError: any) {
-                if (fetchError.name === 'AbortError') {
-                    throw new Error("O site demorou muito para responder (Timeout).");
-                }
-                throw fetchError;
-            }
+            setStep('results');
 
         } catch (error: any) {
             console.error(error);
 
             let userMessage = "Falha ao conectar ao Google PSI.";
-            if (error.message.includes("FAILED_DOCUMENT_REQUEST") || error.message.includes("ERR_CONNECTION_FAILED")) {
+            if (error.message?.includes("FAILED_DOCUMENT_REQUEST") || error.message?.includes("ERR_CONNECTION_FAILED")) {
                 userMessage = "Não foi possível acessar o site. Verifique se a URL está correta e acessível publicamente.";
-            } else if (error.message.includes("400")) {
+            } else if (error.message?.includes("400")) {
                 userMessage = "URL inválida ou não encontrada.";
-            } else if (error.message.includes("500")) {
+            } else if (error.message?.includes("500")) {
                 userMessage = "Erro no servidor do Google. Tente novamente.";
             }
 
@@ -308,8 +253,6 @@ const SiteScore = () => {
                 description: userMessage
             });
 
-            // Em caso de erro, definimos um resultado de "Erro" para não mostrar 100 (ou mantemos o baseScore)
-            // Mas para UI não quebrar, vamos setar error flag
             setPsiResults({
                 error: true,
                 mobile: null, desktop: null, techStack: [], pixels: [],
@@ -331,14 +274,13 @@ const SiteScore = () => {
     // Benchmark Competitivo - Executado após resultados carregarem
     const runBenchmark = async () => {
         const validCompetitors = competitorUrls.filter(url => url.trim() !== '');
-        if (validCompetitors.length === 0 || !targetUrl || !PSI_API_KEY) return;
+        if (validCompetitors.length === 0 || !targetUrl) return;
 
         setIsBenchmarking(true);
         try {
             const result = await runCompetitiveBenchmark(
                 targetUrl,
                 validCompetitors,
-                PSI_API_KEY,
                 viewMode === 'mobile' ? 'PHONE' : 'DESKTOP'
             );
             setBenchmarkResult(result);
@@ -393,7 +335,7 @@ const SiteScore = () => {
             const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
             await submitPublicDiagnostic(
                 { ...data, phone: '' },
-                { answers, psi: psiResults ? 'captured' : 'failed', target_url: targetUrl, source: 'site-score' },
+                { answers, diagnostic_type: 'site', psi: psiResults ? 'captured' : 'failed', target_url: targetUrl, source: 'site-score' },
                 score,
                 { level: "Auditoria Técnica", description: "Diagnóstico Finalizado", action: "Revisão Recomendada", color: "revgreen" },
                 WEBHOOK_URL
@@ -577,7 +519,7 @@ const SiteScore = () => {
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
                                             className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
-                                                ? "bg-[#03FC3B] text-black border-[#03FC3B] shadow-[0_0_15px_rgba(3,252,59,0.4)] scale-[1.02]"
+                                                ? "bg-[#00CC6A] text-black border-[#00CC6A] shadow-[0_0_15px_rgba(0,204,106,0.4)] scale-[1.02]"
                                                 : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
@@ -663,7 +605,7 @@ const SiteScore = () => {
                 {/* GATE OVERLAY */}
                 {!hasSubmittedLead && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-in fade-in duration-300 overflow-y-auto">
-                        <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-2xl relative my-auto max-h-[90vh]">
+                        <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative my-auto max-h-[90vh]">
 
                             {/* Coluna Esquerda: Resultado (Visual) */}
                             <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
@@ -709,7 +651,7 @@ const SiteScore = () => {
                     {/* DASHBOARD HEADLINE - Adicionado por solicitação */}
                     <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto">
                         <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                            <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#03FC3B]"></span>
+                            <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#00CC6A]"></span>
                             <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
@@ -735,7 +677,7 @@ const SiteScore = () => {
                             {/* Header Row with Toggle */}
                             <div className="bg-zinc-950 p-6 border-b border-zinc-900 flex justify-between items-center bg-white/5">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewMode === 'mobile' ? 'bg-[#03FC3B]' : 'bg-blue-400'}`} />
+                                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewMode === 'mobile' ? 'bg-revgreen' : 'bg-zinc-400'}`} />
                                     <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">
                                         INFRAESTRUTURA // WEB VITALS
                                     </span>
@@ -874,7 +816,7 @@ const SiteScore = () => {
                                             Plano de Ação
                                         </h4>
                                         <p className="text-black text-base leading-relaxed font-semibold">
-                                            Sua prioridade técnica imediata é: <strong className="text-black bg-yellow-300 px-1">{insights.action}</strong>.
+                                            Sua prioridade técnica imediata é: <strong className="text-black bg-[#00CC6A]/20 px-1">{insights.action}</strong>.
                                             {score >= 90
                                                 ? " Mantenha o monitoramento ativo para preservar esta vantagem competitiva."
                                                 : " Ignorar estes ajustes resulta em perda direta de tráfego qualificado por fricção técnica."}
