@@ -134,9 +134,9 @@ serve(async (req) => {
             throw new Error('Missing required fields: clientUrl, competitorUrls');
         }
 
-        const apiKey = Deno.env.get('PSI_API_KEY');
+        const apiKey = Deno.env.get('PSI_API_KEY') || Deno.env.get('GOOGLE_API_KEY');
         if (!apiKey) {
-            throw new Error('PSI_API_KEY not configured');
+            throw new Error('PSI_API_KEY or GOOGLE_API_KEY not configured');
         }
 
         console.log(`[crux-benchmark] Client: ${clientUrl}, Competitors: ${competitorUrls.length}, formFactor: ${formFactor}`);
