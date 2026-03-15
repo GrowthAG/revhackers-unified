@@ -102,41 +102,61 @@ Responda APENAS O JSON.
 }
 
 // ============================================================
-// GEMINI API CALL
+// OPENAI API CALL (GPT-4o-mini — same pattern as generate-strategic-plan)
 // ============================================================
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-
-async function callGemini(apiKey: string, prompt: string): Promise<any> {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-        })
+            model: 'gpt-4o-mini',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Não adicione explicações.'
+                },
+                { role: 'user', content: prompt }
+            ],
+            temperature: 0.3,
+        }),
     });
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(errorData)}`);
+        throw new Error(`OpenAI API error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
 
     const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
 
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw new Error("No content in Gemini response");
+    if (!content) {
+        throw new Error('No content in OpenAI response');
     }
 
-    const textResponse = data.candidates[0].content.parts[0].text;
-    const cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+    let cleanContent = content.trim();
+
+    // Remove markdown code blocks if present
+    if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
+    if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
+    if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
+    cleanContent = cleanContent.trim();
 
     // Try to extract JSON object
-    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+    const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        cleanContent = jsonMatch[0];
     }
 
-    return JSON.parse(cleanJson);
+    try {
+        return JSON.parse(cleanContent);
+    } catch {
+        console.error('Failed to parse OpenAI response:', cleanContent.substring(0, 200));
+        throw new Error('Failed to parse AI response as JSON');
+    }
 }
 
 // ============================================================
@@ -155,9 +175,9 @@ serve(async (req) => {
             throw new Error('Missing required fields: type, answers, totalScore');
         }
 
-        const apiKey = Deno.env.get('GEMINI_API_KEY');
+        const apiKey = Deno.env.get('OPENAI_API_KEY');
         if (!apiKey) {
-            throw new Error('GEMINI_API_KEY not configured');
+            throw new Error('OPENAI_API_KEY not configured');
         }
 
         console.log(`[analyze-diagnostic] Processing ${type} analysis, score: ${totalScore}`);
@@ -168,7 +188,7 @@ serve(async (req) => {
         if (type === 'founder') {
             // FOUNDER PATH
             prompt = getFounderPrompt(linkedinUrl || '', answers, totalScore);
-            const parsed = await callGemini(apiKey, prompt);
+            const parsed = await callOpenAI(apiKey, prompt);
 
             // Validate and return only expected fields (no unsafe spread)
             result = {
@@ -184,7 +204,7 @@ serve(async (req) => {
             const diagnosticType = type as 'growth' | 'revenue';
             const contextMap = buildContextMap(diagnosticType, answers);
             prompt = getGrowthRevenuePrompt(diagnosticType, contextMap, totalScore);
-            const parsed = await callGemini(apiKey, prompt);
+            const parsed = await callOpenAI(apiKey, prompt);
 
             // Validate required fields
             if (!parsed.archetype || !parsed.headline || !parsed.strengths || !parsed.gaps || !parsed.immediateAction) {
