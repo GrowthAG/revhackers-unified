@@ -43,7 +43,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-2xl bg-white rounded-none shadow-2xl overflow-hidden border border-zinc-200"
+                className="relative w-full max-w-2xl bg-white rounded-none shadow-sm overflow-hidden border border-zinc-200"
             >
                 {/* Header Context */}
                 <div className="p-8 md:p-12 border-b border-zinc-100 flex justify-between items-start">
@@ -88,7 +88,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full h-20 bg-black text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-[0.3em] text-xs transition-all duration-500 shadow-2xl shadow-zinc-200"
+                                        className="w-full h-20 bg-black text-white hover:bg-zinc-800 font-black uppercase tracking-[0.3em] text-xs transition-all duration-500"
                                     >
                                         {isSubmitting ? 'VALIDANDO_CONTEXTO...' : 'LIBERAR AGENDAMENTO'} <ArrowRight className="ml-4 w-5 h-5" />
                                     </Button>
@@ -114,7 +114,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={() => setTimeout(() => setStep('success'), 2000)}
-                                        className="flex items-center justify-center gap-4 w-full h-20 bg-revgreen text-black font-black uppercase tracking-[0.3em] text-xs hover:bg-black hover:text-white transition-all duration-500"
+                                        className="flex items-center justify-center gap-4 w-full h-20 bg-zinc-900 text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-zinc-800 transition-all duration-500"
                                     >
                                         <Calendar className="w-5 h-5" /> ABRIR CALENDÁRIO OFICIAL
                                     </a>
@@ -132,8 +132,8 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="space-y-12 text-center py-12"
                             >
-                                <div className="w-24 h-24 bg-revgreen rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-revgreen/20">
-                                    <ClipboardCheck className="w-10 h-10 text-black" />
+                                <div className="w-24 h-24 bg-zinc-900 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                                    <ClipboardCheck className="w-10 h-10 text-white" />
                                 </div>
                                 <div className="space-y-4">
                                     <h3 className="text-4xl font-black text-black tracking-tighter italic uppercase">Solicitação Enviada</h3>

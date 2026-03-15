@@ -18,7 +18,7 @@ export const ScoreGauge = ({ score, label = "Diagnostic Score", description = "P
     // Determine color based on strict ranges
     const getColor = (s: number) => {
         // User requested "RevHackers Green" always, no yellow/warning states for the main gauge.
-        if (variant === 'dark') return '#03FC3B';
+        if (variant === 'dark') return '#00CC6A';
         return '#000000'; // Black on Light
     };
 

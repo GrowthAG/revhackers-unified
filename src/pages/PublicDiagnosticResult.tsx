@@ -121,10 +121,9 @@ export default function PublicDiagnosticResult() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* SCORE CARD (Left) */}
-                        <Card className="lg:col-span-5 bg-black text-white border-0 rounded-xl p-10 flex flex-col items-center justify-center relative shadow-2xl overflow-hidden min-h-[400px]">
-                            {/* Background decoration */}
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-revgreen to-transparent" />
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-800/20 via-black to-black pointer-events-none" />
+                        <Card className="lg:col-span-5 bg-zinc-950 text-white border border-zinc-900 rounded-2xl p-10 flex flex-col items-center justify-center relative shadow-sm overflow-hidden min-h-[400px]">
+                            {/* Top accent line */}
+                            <div className="absolute top-0 left-0 w-full h-[2px] bg-[#00CC6A]" />
 
                             <div className="relative z-10 text-center">
                                 {/* Circular Progress Mockup */}
@@ -149,9 +148,7 @@ export default function PublicDiagnosticResult() {
                         </Card>
 
                         {/* CONTEXT CARD (Right) */}
-                        <Card className="lg:col-span-7 bg-black text-white border-0 rounded-xl p-10 flex flex-col justify-between shadow-2xl relative overflow-hidden min-h-[400px]">
-                            {/* Background decoration */}
-                            <div className="absolute bottom-0 right-0 w-32 h-32 bg-revgreen/10 blur-[80px] rounded-full" />
+                        <Card className="lg:col-span-7 bg-zinc-950 text-white border border-zinc-900 rounded-2xl p-10 flex flex-col justify-between shadow-sm relative overflow-hidden min-h-[400px]">
 
                             <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-6">
@@ -184,7 +181,7 @@ export default function PublicDiagnosticResult() {
 
                             <div className="mt-8 relative z-10">
                                 <Button
-                                    className="w-full h-16 bg-revgreen hover:bg-revgreen/90 text-black text-sm md:text-base font-black uppercase tracking-widest rounded transition-all transform hover:-translate-y-1 shadow-[0_0_20px_rgba(35,255,50,0.3)]"
+                                    className="w-full h-16 bg-zinc-900 hover:bg-zinc-800 text-white text-sm md:text-base font-black uppercase tracking-widest rounded-xl border border-zinc-800 transition-all"
                                     onClick={() => window.open(`https://api.whatsapp.com/send?phone=5511999999999&text=Olá, fiz o diagnóstico da ${result.empresa} e meu score foi ${score}. Gostaria de entender o plano de ação: ${ctaText}`, '_blank')}
                                 >
                                     {ctaText} {ctaIcon}
@@ -204,8 +201,8 @@ export default function PublicDiagnosticResult() {
                         </Card>
                         <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">
                             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Dados</span>
-                            <span className={score > 50 ? "text-xs font-bold text-revgreen" : "text-xs font-bold text-red-500"}>
-                                {score > 50 ? 'CONFIÁVEL' : 'RISCO'}
+                            <span className={score > 50 ? "text-xs font-bold text-revgreen" : "text-xs font-bold text-zinc-400"}>
+                                {score > 50 ? 'CONFIÁVEL' : 'ATENÇÃO'}
                             </span>
                         </Card>
                         <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">

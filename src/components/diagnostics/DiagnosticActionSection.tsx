@@ -44,7 +44,7 @@ export const DiagnosticActionSection = ({
                                 }}
                                 target={onCtaClick ? undefined : "_blank"}
                                 rel={onCtaClick ? undefined : "noopener noreferrer"}
-                                className="group relative px-20 py-8 bg-black text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-[0.3em] text-[12px] transition-all duration-500 rounded-none overflow-hidden shadow-2xl shadow-zinc-200 cursor-pointer"
+                                className="group relative px-20 py-8 bg-zinc-900 text-white hover:bg-zinc-800 font-black uppercase tracking-[0.3em] text-[12px] transition-all duration-500 rounded-none overflow-hidden shadow-sm cursor-pointer"
                             >
                                 <span className="relative z-10 flex items-center gap-4">
                                     {ctaText} <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />

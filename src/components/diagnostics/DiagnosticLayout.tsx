@@ -51,7 +51,7 @@ export const DiagnosticLayout = ({
                                     <div className="flex items-center gap-3 animate-fade-in">
                                         <div className={cn(
                                             "w-1 h-1 rounded-full",
-                                            isDark ? "bg-revgreen shadow-[0_0_15px_rgba(3,252,59,0.8)]" : "bg-zinc-900"
+                                            isDark ? "bg-revgreen shadow-[0_0_15px_rgba(0,204,106,0.8)]" : "bg-zinc-900"
                                         )} />
                                         <span className="text-[10px] font-mono font-black uppercase tracking-[0.5em] text-zinc-400">
                                             RevHackers // Intelligence Unit

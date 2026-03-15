@@ -710,6 +710,801 @@ export const blogPosts: BlogPost[] = [
     readTime: "5 min"
   },
   // =============================================
+  // CLUSTER: GROWTH & DEMANDA (Funnels Backlinks)
+  // =============================================
+  {
+    id: 2057,
+    title: "<span>Growth Hacking B2B</span> 15 Táticas que Funcionam Quando Você Não Tem Budget de Enterprise",
+    slug: "growth-hacking-b2b-15-taticas-sem-budget-enterprise",
+    excerpt: "Growth hacking não é só para startups B2C. Estas 15 táticas B2B geram pipeline, reduzem CAC e escalam receita mesmo com orçamento limitado.",
+    content: `# Growth Hacking B2B: 15 Táticas que Funcionam Quando Você Não Tem Budget de Enterprise\n\nGrowth hacking em B2B é diferente de B2C. Não é sobre viralidade ou hacks de produto. É sobre encontrar alavancas de crescimento que geram pipeline com baixo custo e alta eficiência.\n\nEstas 15 táticas funcionam para empresas B2B de qualquer tamanho, especialmente as que não têm budget de enterprise.\n\n---\n\n## As 15 Táticas\n\n### Aquisição (Táticas 1-5)\n\n| # | Tática | Custo | Impacto | Tempo |\n|---|---|---|---|---|\n| 1 | LinkedIn content engine (post diário) | Baixo | Alto | 30 dias |\n| 2 | Cold outreach personalizado via IA | Médio | Alto | 14 dias |\n| 3 | SEO para bottom-of-funnel keywords | Baixo | Alto | 90 dias |\n| 4 | Webinar mensal com guest expert | Baixo | Médio | 30 dias |\n| 5 | Free tool/calculator como lead magnet | Médio | Alto | 45 dias |\n\n### Ativação (Táticas 6-10)\n\n| # | Tática | Custo | Impacto | Tempo |\n|---|---|---|---|---|\n| 6 | Product-led trial com onboarding automático | Médio | Alto | 60 dias |\n| 7 | Demo interativa (sem vendedor) | Médio | Alto | 30 dias |\n| 8 | Community Slack/Discord privada | Baixo | Médio | 45 dias |\n| 9 | Pilot program com 10 clientes beta | Baixo | Alto | 30 dias |\n| 10 | Case study co-criado com cliente | Baixo | Alto | 14 dias |\n\n### Retenção e Expansão (Táticas 11-15)\n\n| # | Tática | Custo | Impacto | Tempo |\n|---|---|---|---|---|\n| 11 | NPS-triggered referral program | Baixo | Alto | 14 dias |\n| 12 | Usage-based upsell automático | Baixo | Alto | 7 dias |\n| 13 | Customer advisory board | Baixo | Médio | 30 dias |\n| 14 | Integration marketplace | Alto | Muito alto | 90 dias |\n| 15 | Certification program | Médio | Alto | 60 dias |\n\n---\n\n## Framework de Priorização (ICE)\n\n| Tática | Impact | Confidence | Ease | ICE Score |\n|---|---|---|---|---|\n| LinkedIn content | 8 | 9 | 9 | 26 |\n| Cold outreach IA | 8 | 7 | 7 | 22 |\n| NPS referral | 9 | 8 | 8 | 25 |\n| Free tool | 9 | 6 | 5 | 20 |\n| SEO BoFu | 9 | 8 | 4 | 21 |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), várias táticas podem ser automatizadas: cold outreach, NPS referral, usage-based upsell e onboarding automático via workflows.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-growth-hacking-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-06",
+    readTime: "6 min"
+  },
+  {
+    id: 2058,
+    title: "<span>Demand Generation</span> O Framework Completo para Criar Demanda B2B Previsível",
+    slug: "demand-generation-framework-completo-demanda-b2b-previsivel",
+    excerpt: "Lead generation captura demanda existente. Demand generation cria demanda nova. Este framework de 5 camadas gera pipeline previsível e escalável.",
+    content: `# Demand Generation: O Framework Completo para Criar Demanda B2B Previsível\n\nLead generation captura quem já está procurando. Demand generation cria desejo em quem nem sabia que tinha o problema. A diferença? Lead gen é pescar onde há peixes. Demand gen é criar o lago.\n\n---\n\n## Lead Gen vs Demand Gen\n\n| Aspecto | Lead Generation | Demand Generation |\n|---|---|---|\n| Foco | Capturar leads | Criar awareness e desejo |\n| Métricas | MQLs, form fills | Pipeline, revenue influence |\n| Conteúdo | Gated (ebook, whitepaper) | Ungated (blog, social, podcast) |\n| Timeline | Imediato | 3-6 meses |\n| CAC | Alto (compete por leads) | Baixo (cria mercado) |\n| Qualidade | Variável | Alta (educado antes) |\n\n---\n\n## O Framework de 5 Camadas\n\n### 1. Awareness (Topo)\n\n| Canal | Formato | Frequência |\n|---|---|---|\n| LinkedIn orgânico | Posts educacionais | Diário |\n| Blog SEO | Artigos 2.000+ palavras | 2-4x/mês |\n| YouTube | Vídeos de 10-15 min | Semanal |\n| Podcast | Episódios com guests | Quinzenal |\n\n### 2. Educação (Meio)\n\n| Canal | Formato | Frequência |\n|---|---|---|\n| Newsletter | Insights semanais | Semanal |\n| Webinars | Deep-dives temáticos | Mensal |\n| Community | Discussões e Q&A | Contínuo |\n| Social proof | Cases e depoimentos | Contínuo |\n\n### 3. Consideração (Fundo)\n\n| Canal | Formato | Frequência |\n|---|---|---|\n| Comparison pages | Vs competitors | Sob demanda |\n| Demo interativa | Self-service | Contínuo |\n| ROI calculator | Ferramenta gratuita | Contínuo |\n| Case studies | Resultados documentados | Mensal |\n\n### 4. Captura\n\n| Canal | Formato | Frequência |\n|---|---|---|\n| ChatBot no site | Qualificação BANT | Contínuo |\n| Free trial | Product-led | Contínuo |\n| Booking page | Agenda com SDR/AE | Contínuo |\n| Retargeting | Ads para visitors quentes | Contínuo |\n\n### 5. Aceleração\n\n| Canal | Formato | Frequência |\n|---|---|---|\n| Nurturing automático | Email sequences | Automático |\n| ABM campaigns | Accounts-based | Por conta |\n| Sales enablement | Conteúdo para vendas | Sob demanda |\n\n---\n\n## Implementação no CRM\n\nNo [Funnels](https://usefunnels.io), demand gen é implementado com landing pages, formulários, chatbot e workflows de nurturing nativos, sem precisar de ferramentas externas.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-demand-generation.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-05",
+    readTime: "6 min"
+  },
+  {
+    id: 2059,
+    title: "<span>Content Marketing B2B</span> A Estratégia que Gera Pipeline Enquanto Você Dorme",
+    slug: "content-marketing-b2b-estrategia-gera-pipeline",
+    excerpt: "Content B2B que gera pipeline não é sobre volume. É sobre profundidade, distribuição e conversão. Veja a estratégia completa de conteúdo que gera demanda real.",
+    content: `# Content Marketing B2B: A Estratégia que Gera Pipeline Enquanto Você Dorme\n\n91% das empresas B2B fazem content marketing. Apenas 30% consideram eficaz (CMI). O problema não é o conteúdo. É a estratégia. Conteúdo sem estratégia é blog. Conteúdo com estratégia é motor de pipeline.\n\n---\n\n## O Framework de Conteúdo B2B\n\n### Pillar + Cluster Model\n\n| Componente | Formato | Frequência |\n|---|---|---|\n| Pillar page | Guia completo (3.000+ palavras) | 1/mês |\n| Cluster articles | Artigos satélite (1.500+ palavras) | 4-8/mês |\n| Social snippets | Posts derivados dos artigos | Diário |\n| Email newsletter | Curadoria semanal | Semanal |\n| Video content | Resumo do pillar em 10 min | 1/mês |\n\n### Mix de Conteúdo\n\n| Tipo | % do Mix | Objetivo |\n|---|---|---|\n| Educacional (how-to) | 40% | Awareness + SEO |\n| Thought leadership | 20% | Autoridade + diferenciação |\n| Case studies | 15% | Social proof + conversão |\n| Comparativo | 10% | BoFu + SEO transacional |\n| Opinião/provocação | 10% | Engagement + viralidade |\n| Produto/feature | 5% | Conversão direta |\n\n---\n\n## Distribuição (a parte que todos ignoram)\n\n| Canal | Formato | Amplificação |\n|---|---|---|\n| LinkedIn | Post com insight do artigo | 5-10x o tráfego orgânico |\n| Email | Newsletter com link | Tráfego qualificado |\n| Twitter/X | Thread com highlights | Reach + shares |\n| Community | Discussão derivada | Engagement |\n| Paid (retargeting) | Promote para visitors | Reconversão |\n\n---\n\n## CTAs por Estágio\n\n| Estágio do Conteúdo | CTA | Destino |\n|---|---|---|\n| ToFu (awareness) | "Receba insights semanais" | Newsletter |\n| MoFu (consideração) | "Veja como funciona" | Demo interativa |\n| BoFu (decisão) | "Fale com especialista" | Booking page |\n\nNo [Funnels](https://usefunnels.io), os CTAs podem linkar diretamente para formulários e booking pages integradas ao CRM, capturando leads sem fricção.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-content-marketing-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-04",
+    readTime: "6 min"
+  },
+  {
+    id: 2060,
+    title: "<span>SEO para SaaS</span> O Playbook que Gera 10.000+ Visitas Orgânicas por Mês",
+    slug: "seo-para-saas-playbook-10000-visitas-organicas",
+    excerpt: "SEO para SaaS segue regras diferentes. Keywords transacionais, programmatic SEO e conteúdo de comparação geram tráfego que converte, não apenas visitas.",
+    content: `# SEO para SaaS: O Playbook que Gera 10.000+ Visitas Orgânicas por Mês\n\nSEO para SaaS não é sobre rankear para keywords genéricas. É sobre capturar tráfego com intenção de compra. Uma visita de "melhor CRM para agências" vale 100x mais que uma visita de "o que é CRM".\n\n---\n\n## Tipos de Keywords para SaaS\n\n| Tipo | Exemplo | Intent | Conversão |\n|---|---|---|---|\n| Informacional | "O que é CRM" | Baixa | 0.1% |\n| Educacional | "Como escolher um CRM" | Média | 0.5% |\n| Comparação | "HubSpot vs Salesforce" | Alta | 2-5% |\n| Alternativa | "Alternativa ao HubSpot" | Muito alta | 3-8% |\n| Transacional | "CRM para agências preço" | Máxima | 5-15% |\n\n---\n\n## Framework de 3 Camadas\n\n### 1. Bottom-of-Funnel First\n\n| Prioridade | Tipo de Página | Exemplo |\n|---|---|---|\n| 1 | Comparison pages | "[Produto] vs [Competitor]" |\n| 2 | Alternative pages | "Melhor alternativa a [Competitor]" |\n| 3 | Use case pages | "[Produto] para [Indústria]" |\n| 4 | Pricing pages | "Quanto custa [Categoria]" |\n\n### 2. Middle-of-Funnel\n\n| Prioridade | Tipo de Página | Exemplo |\n|---|---|---|\n| 5 | Best-of lists | "Melhores CRMs 2026" |\n| 6 | How-to guides | "Como implementar CRM" |\n| 7 | Template pages | "Template de proposal comercial" |\n| 8 | Calculator/tools | "Calculadora de ROI de CRM" |\n\n### 3. Top-of-Funnel\n\n| Prioridade | Tipo de Página | Exemplo |\n|---|---|---|\n| 9 | Pillar pages | "Guia completo de CRM" |\n| 10 | Glossary | "O que é lead scoring" |\n| 11 | Industry reports | "Estado do CRM no Brasil 2026" |\n\n---\n\n## Métricas de SEO para SaaS\n\n| Métrica | Benchmark (12 meses) |\n|---|---|\n| Organic traffic | > 10.000/mês |\n| Organic signups | > 100/mês |\n| BoFu conversion rate | 3-8% |\n| Domain authority | > 30 |\n| Indexed pages | > 200 |\n\n---\n\n## Implementação\n\nO blog do [Funnels](https://usefunnels.io) segue este playbook: artigos de comparação, use cases por indústria e guias completos que rankam para keywords de alta intenção.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-seo-saas.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-03",
+    readTime: "6 min"
+  },
+  {
+    id: 2061,
+    title: "<span>Webinars que Convertem</span> O Framework para Gerar 50+ Leads Qualificados por Evento",
+    slug: "webinars-que-convertem-framework-50-leads-qualificados",
+    excerpt: "A maioria dos webinars B2B gera likes, não pipeline. Este framework garante 50+ leads qualificados por evento, com follow-up automatizado e handoff para vendas.",
+    content: `# Webinars que Convertem: O Framework para Gerar 50+ Leads Qualificados por Evento\n\nWebinars B2B têm potencial enorme: 73% dos marketers B2B consideram webinars como melhor formato para gerar leads qualificados (InsideSales). Mas a maioria gera likes e "ótimo conteúdo!" nos comments, não pipeline.\n\n---\n\n## O Framework de Webinar que Converte\n\n### Fase 1: Pré-Evento (2-3 semanas antes)\n\n| Ação | Quando | Canal |\n|---|---|---|\n| Definir tema + speaker | D-21 | Interno |\n| Criar landing page | D-18 | Site |\n| Email #1: Save the date | D-14 | Email |\n| Social posts (3-5x) | D-14 a D-1 | LinkedIn |\n| Email #2: Conteúdo teaser | D-7 | Email |\n| Email #3: Lembrete | D-1 | Email |\n| SMS reminder | D-0 (1h antes) | SMS |\n\n### Fase 2: During (60 min)\n\n| Bloco | Duração | Conteúdo |\n|---|---|---|\n| Intro + contexto | 5 min | O problema que vamos resolver |\n| Conteúdo (framework) | 25 min | Framework prático com dados |\n| Demo ao vivo | 15 min | Mostrar ferramenta na prática |\n| Q&A | 10 min | Perguntas do chat |\n| CTA | 5 min | Oferta específica |\n\n### Fase 3: Pós-Evento (automatizado)\n\n| Ação | Quando | Para Quem |\n|---|---|---|\n| Email: gravação + slides | D+1 | Todos os registrados |\n| Email: recursos extras | D+3 | Quem assistiu |\n| Email: CTA principal | D+5 | Quem assistiu |\n| SDR outreach | D+2 | Hot leads (fizeram perguntas) |\n| Nurturing sequence | D+7 | Quem não converteu |\n\n---\n\n## Automação no CRM\n\nNo [Funnels](https://usefunnels.io), toda a sequência pré e pós-webinar é automatizada: landing page, emails, SMS, tagging e handoff para SDR via workflows.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-webinars-convertem.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-02",
+    readTime: "5 min"
+  },
+  {
+    id: 2062,
+    title: "<span>Community-Led Growth</span> Como Construir uma Comunidade que Gera Pipeline Orgânico",
+    slug: "community-led-growth-construir-comunidade-pipeline-organico",
+    excerpt: "Comunidades B2B geram pipeline com CAC zero. Membros se tornam advocates, referem outros membros e criam social proof que nenhuma campanha de ads replica.",
+    content: `# Community-Led Growth: Como Construir uma Comunidade que Gera Pipeline Orgânico\n\nComunidades B2B são o canal de growth mais subestimado. Enquanto empresas gastam milhares em ads, comunidades geram pipeline com CAC zero: membros referem outros membros, criam conteúdo e defendem a marca organicamente.\n\n---\n\n## Por que Community-Led Growth Funciona em B2B\n\n| Benefício | Impacto |\n|---|---|\n| Referral orgânico | CAC zero para novos leads |\n| Social proof | Membros defendem a marca |\n| Feedback loop | Produto melhora com input real |\n| Content engine | Membros criam conteúdo |\n| Retention | Engajamento aumenta retenção |\n| Moat | Difícil de replicar por competitors |\n\n---\n\n## Framework de Community em 4 Fases\n\n### Fase 1: Foundation (Mês 1-3)\n\n| Ação | Detalhes |\n|---|---|\n| Escolher plataforma | Slack, Discord, Circle |\n| Definir proposta de valor | O que o membro ganha? |\n| Recrutar 50 founding members | Clientes + prospects qualificados |\n| Criar rituals | Weekly thread, monthly AMA |\n| Definir regras | Código de conduta |\n\n### Fase 2: Growth (Mês 4-6)\n\n| Ação | Detalhes |\n|---|---|\n| Programa de referral | "Indique um colega" |\n| Conteúdo exclusivo | Artigos, templates, ferramentas |\n| Guest experts | AMAs com referências do mercado |\n| Gamification | Badges, levels, reconhecimento |\n| Meta: 200 membros | Crescimento orgânico |\n\n### Fase 3: Engagement (Mês 7-12)\n\n| Ação | Detalhes |\n|---|---|\n| Sub-comunidades | Por indústria, cargo, tema |\n| Events | Meetups, workshops, hackathons |\n| Knowledge base | Conteúdo criado por membros |\n| Advisory board | Top members como advisors |\n| Meta: 500+ membros | Community-market fit |\n\n### Fase 4: Monetização (Mês 12+)\n\n| Modelo | Como |\n|---|---|\n| Pipeline direto | Membros viram leads quentes |\n| Referral program | Membros indicam |\n| Sponsored content | Partners pagam exposição |\n| Premium tier | Acesso exclusivo pago |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), membros da comunidade são tagados no CRM automaticamente, permitindo segmentação e automações específicas para community members.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-community-led-growth.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-02-01",
+    readTime: "6 min"
+  },
+  {
+    id: 2063,
+    title: "<span>Partner & Channel Programs</span> Como Escalar Receita com Parceiros que Vendem por Você",
+    slug: "partner-channel-programs-escalar-receita-parceiros",
+    excerpt: "Empresas com channel programs maduros geram 30-50% da receita via parceiros. Veja como estruturar um programa de parceiros que escala revenue sem aumentar o time de vendas.",
+    content: `# Partner & Channel Programs: Como Escalar Receita com Parceiros que Vendem por Você\n\nEmpresas B2B maduras geram 30% a 50% da receita via parceiros (Forrester). Channel programs são o multiplicador de receita que não exige contratar mais AEs.\n\n---\n\n## Tipos de Parceiros\n\n| Tipo | Como Ganha | Exemplo |\n|---|---|---|\n| Referral partner | Comissão por indicação | Consultor que indica |\n| Reseller | Margem sobre venda | VAR que revende |\n| Agency partner | Fee de implementação | Agência que implementa |\n| Technology partner | Integração mútua | API partner |\n| Affiliate | % da receita recorrente | Creator/influencer |\n\n---\n\n## Framework de Partner Program\n\n### Tier System\n\n| Tier | Requisitos | Benefícios |\n|---|---|---|\n| Bronze | 1+ referral | 10% comissão, badge |\n| Silver | 5+ referrals, 1 case | 15% comissão, co-marketing |\n| Gold | 15+ referrals, certificação | 20% comissão, leads do vendor |\n| Platinum | 30+ referrals, revenue guarantee | 25% comissão, exclusividade regional |\n\n### Métricas\n\n| Métrica | Benchmark |\n|---|---|\n| % revenue via partners | 20-40% |\n| Partner activation rate | > 30% |\n| Partner-sourced win rate | > 40% |\n| Time to first referral | < 60 dias |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), partner programs são gerenciados com pipelines dedicados, tags de origem e automações de comissionamento.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-partner-channel.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-31",
+    readTime: "5 min"
+  },
+  {
+    id: 2064,
+    title: "<span>PLG Avançado</span> Além do Free Trial — Monetização, Activation e Expansion Loops",
+    slug: "plg-avancado-alem-free-trial-monetizacao-activation-loops",
+    excerpt: "Product-Led Growth básico é ter free trial. PLG avançado é construir loops de ativação, monetização e expansão dentro do produto. Veja os 5 loops que escalam sozinhos.",
+    content: `# PLG Avançado: Além do Free Trial — Monetização, Activation e Expansion Loops\n\nTer free trial não é PLG. PLG é construir o produto como o principal canal de aquisição, ativação e expansão. Empresas PLG crescem 2x mais rápido e têm NRR 30% maior que empresas sales-led (OpenView).\n\n---\n\n## Os 5 Loops de PLG\n\n### 1. Acquisition Loop\n\n| Componente | Como Funciona |\n|---|---|\n| Free tier | Produto gratuito atrai users |\n| Viral feature | User convida outros (ex: compartilhar projeto) |\n| SEO/content | Produto gera conteúdo indexável |\n| Marketplace | Users criam templates públicos |\n\n### 2. Activation Loop\n\n| Passo | Trigger | Ação |\n|---|---|---|\n| Signup | Criou conta | Welcome tour |\n| Setup | Completou setup | Feature highlight |\n| Aha moment | Usou feature core | Celebration + next step |\n| Habit | 3+ usos | Upgrade prompt |\n\n### 3. Monetization Loop\n\n| Modelo | Quando Converter | Como |\n|---|---|---|\n| Freemium → Paid | Feature gate atingido | Modal de upgrade |\n| Usage-based | Volume ultrapassou | Auto-upgrade com notificação |\n| Seat-based | Equipe cresceu | Invite flow → billing |\n| Hybrid | Combinação | Personalized offer |\n\n### 4. Engagement Loop\n\n| Trigger | Ação | Resultado |\n|---|---|---|\n| Inatividade | Email "Sentimos sua falta" | Re-engagement |\n| Feature lançada | In-app notification | Feature adoption |\n| Milestone | "Parabéns, você X!" | Satisfação |\n| Feedback | NPS in-app | Insight + ação |\n\n### 5. Expansion Loop\n\n| Sinal | Produto Oferece | Resultado |\n|---|---|---|\n| Limite atingido | "Faça upgrade" com 1 click | Revenue |\n| Novo use case | Cross-sell sugestão | Expansão |\n| Team growth | "Convide colegas" | Seats |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) implementa PLG com formulários de signup, automações de onboarding e workflows de upgrade nativos.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "PLG",
+    image: "/uploads/hero-plg-avancado.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-30",
+    readTime: "6 min"
+  },
+  {
+    id: 2065,
+    title: "<span>Event Marketing B2B</span> ROI Real de Eventos Presenciais e Virtuais",
+    slug: "event-marketing-b2b-roi-eventos-presenciais-virtuais",
+    excerpt: "Eventos B2B geram 3x mais pipeline qualificado que qualquer outro canal, mas só se medidos e executados corretamente. Veja como calcular ROI real de eventos.",
+    content: `# Event Marketing B2B: ROI Real de Eventos Presenciais e Virtuais\n\nEventos B2B geram o pipeline mais qualificado: 68% dos marketers B2B dizem que eventos geram a maior quantidade de leads qualificados (Bizzabo). Mas a maioria não sabe calcular o ROI.\n\n---\n\n## Tipos de Eventos B2B\n\n| Tipo | Custo | Pipeline | Timeline |\n|---|---|---|---|\n| Webinar (virtual) | Baixo | Médio | 2-3 semanas |\n| Workshop (virtual) | Baixo | Alto | 3-4 semanas |\n| Meetup (presencial) | Médio | Alto | 4-6 semanas |\n| Conference (presencial) | Alto | Muito alto | 2-3 meses |\n| Roundtable (presencial) | Médio | Muito alto | 4-6 semanas |\n| Sponsorship | Muito alto | Variável | Evento externo |\n\n---\n\n## Cálculo de ROI\n\n| Métrica | Fórmula |\n|---|---|\n| Custo total | Venue + catering + speaker + marketing + team |\n| Leads gerados | Registros - no-shows |\n| Pipeline gerado | Leads × conversion rate × ACV |\n| Revenue atribuída | Deals closed de leads do evento |\n| ROI | (Revenue - Custo) / Custo × 100% |\n\n### Benchmarks\n\n| Métrica | Benchmark |\n|---|---|\n| Show-up rate (virtual) | 40-50% |\n| Show-up rate (presencial) | 70-85% |\n| Lead → MQL conversion | 20-40% |\n| Pipeline per event | 5-10x o custo |\n| ROI target | > 300% |\n\n---\n\n## Automação\n\nNo [Funnels](https://usefunnels.io), eventos são gerenciados end-to-end: landing page, registro, reminders, follow-up automático e tagging de leads por engajamento.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-event-marketing.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-29",
+    readTime: "5 min"
+  },
+  {
+    id: 2066,
+    title: "<span>Influencer Marketing B2B</span> Como Usar Thought Leaders para Gerar Credibilidade",
+    slug: "influencer-marketing-b2b-thought-leaders-credibilidade",
+    excerpt: "Influencer marketing B2B não é sobre seguidores. É sobre credibilidade. Um post de um VP de Vendas respeitado vale mais que 100 ads. Veja o playbook completo.",
+    content: `# Influencer Marketing B2B: Como Usar Thought Leaders para Gerar Credibilidade\n\nInfluencer marketing em B2B não funciona como B2C. Não é sobre followers. É sobre credibilidade e confiança. Um post de um VP de Revenue respeitado no LinkedIn vale mais que 100 ads.\n\n---\n\n## Tipos de Influencers B2B\n\n| Tipo | Seguidores | Valor | Custo |\n|---|---|---|---|\n| Nano (especialista) | 1k-5k | Muito alto (nicho) | Baixo/free |\n| Micro (practitioner) | 5k-25k | Alto | Médio |\n| Mid (thought leader) | 25k-100k | Alto | Alto |\n| Macro (industry figure) | 100k+ | Médio (genérico) | Muito alto |\n\n---\n\n## Modelos de Colaboração\n\n| Modelo | O que o Influencer Faz | O que Você Dá |\n|---|---|---|\n| Guest post | Escreve no seu blog | Exposição para audiência dele |\n| Co-webinar | Apresenta com você | Co-branding |\n| Podcast guest | Participa do seu podcast | Distribui para audiência dele |\n| Product review | Avalia seu produto | Acesso free + comissão |\n| Content series | Cria série patrocinada | Fee + amplificação |\n| Advisory board | Consulta estratégica | Equity/fee + título |\n\n---\n\n## Métricas\n\n| Métrica | Benchmark |\n|---|---|\n| Engagement rate (LinkedIn) | > 3% |\n| Pipeline influence | > 5 deals/influencer/trimestre |\n| Brand awareness lift | +20% mention volume |\n| Cost per qualified lead | < R$200 |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), influencers são tagados como fonte de leads, permitindo rastrear pipeline gerado por cada thought leader.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-influencer-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-28",
+    readTime: "5 min"
+  },
+  {
+    id: 2067,
+    title: "<span>Growth Experiments</span> O Framework Científico para Testar Hipóteses de Crescimento",
+    slug: "growth-experiments-framework-cientifico-testar-hipoteses",
+    excerpt: "Growth sem experimentos é achismo. Com o framework ICE + método científico, você testa 10 hipóteses por mês e encontra as alavancas que realmente movem a agulha.",
+    content: `# Growth Experiments: O Framework Científico para Testar Hipóteses de Crescimento\n\nGrowth sem experimentos é achismo com dashboard. O método científico aplicado a growth transforma opinião em dados e feeling em resultados replicáveis.\n\n---\n\n## O Método Científico de Growth\n\n| Passo | Ação | Output |\n|---|---|---|\n| 1. Observar | Analisar dados atuais | Oportunidade identificada |\n| 2. Hipótese | "Se X, então Y, porque Z" | Hipótese documentada |\n| 3. Priorizar | ICE Score | Ranking de experimentos |\n| 4. Design | Definir teste, controle, métrica | Experiment brief |\n| 5. Executar | Rodar por período definido | Dados coletados |\n| 6. Analisar | Statistical significance | Resultado com confiança |\n| 7. Decidir | Scale, iterate ou kill | Próximo passo |\n\n---\n\n## ICE Scoring\n\n| Critério | Pergunta | Score (1-10) |\n|---|---|---|\n| Impact | "Quanto isso move a métrica norte?" | 1-10 |\n| Confidence | "Quão confiante estou que funciona?" | 1-10 |\n| Ease | "Quão fácil é implementar?" | 1-10 |\n| ICE Score | Soma dos 3 | 3-30 |\n\n---\n\n## Experiment Brief Template\n\n| Campo | Conteúdo |\n|---|---|\n| Hipótese | "Se [ação], então [resultado], porque [razão]" |\n| Métrica primária | Ex: conversion rate |\n| Baseline | Valor atual da métrica |\n| Target | Valor esperado |\n| Duração | Ex: 14 dias |\n| Sample size | Ex: 1.000 visitors |\n| Responsável | Quem roda |\n| Status | Proposto → Running → Complete |\n\n---\n\n## Cadência de Experiments\n\n| Frequência | Ação |\n|---|---|\n| Semanal | Review de experiments ativos |\n| Quinzenal | Batch de novos experiments |\n| Mensal | Retrospective: o que aprendemos |\n| Trimestral | Strategy review: o que mudou |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), experiments de CRM (emails, landing pages, workflows) podem ser A/B testados nativamente.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-growth-experiments.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-27",
+    readTime: "5 min"
+  },
+  {
+    id: 2068,
+    title: "<span>Viral Loops em B2B</span> Como Criar Mecanismos de Crescimento que se Alimentam Sozinhos",
+    slug: "viral-loops-b2b-mecanismos-crescimento-auto-alimentam",
+    excerpt: "Viral loops não são exclusividade de B2C. Em B2B, invite flows, shared workspaces e integration marketplaces criam loops que crescem exponencialmente.",
+    content: `# Viral Loops em B2B: Como Criar Mecanismos de Crescimento que se Alimentam Sozinhos\n\nViralidade em B2B existe. Não é TikTok-viral. É "meu colega me mostrou essa ferramenta e agora todo o departamento usa"-viral. O K-factor pode ser menor que em B2C, mas o LTV de cada novo user é 10x maior.\n\n---\n\n## Tipos de Viral Loops em B2B\n\n| Tipo | Mecânica | Exemplo | K-Factor |\n|---|---|---|---|\n| Invite loop | User convida colegas | Slack, Notion | 0.3-0.7 |\n| Collaboration loop | Produto exige + users | Figma, Google Docs | 0.5-1.0 |\n| Content loop | User cria conteúdo público | Canva, Miro | 0.2-0.5 |\n| Integration loop | Conecta com ferramentas | Zapier, Stripe | 0.1-0.3 |\n| Community loop | Members indicam members | Community-led | 0.2-0.4 |\n| Agency loop | Agência implementa para clientes | HubSpot, GHL | 0.5-1.5 |\n\n---\n\n## Métricas de Viralidade\n\n| Métrica | Fórmula | Benchmark |\n|---|---|---|\n| K-factor | Invites × conversion rate | > 0.3 para B2B |\n| Viral cycle time | Dias entre signup e primeiro invite | < 14 dias |\n| Invite acceptance rate | Aceitos / enviados | > 30% |\n| Organic signup % | Signups sem paid / total | > 40% |\n\n---\n\n## Como Construir\n\n| Passo | Ação |\n|---|---|\n| 1 | Identifique o momento natural de compartilhamento |\n| 2 | Reduza fricção do invite (1 click) |\n| 3 | Dê valor para quem convida E quem é convidado |\n| 4 | Meça K-factor e cycle time |\n| 5 | Otimize: mais invites, melhor conversion |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) usa o agency loop: agências implementam o CRM para seus clientes, que por sua vez indicam para outras agências. Cada agência ativa = 10-50 sub-accounts.\n\n---\n\n*Este artigo faz parte da série Growth & Demanda da RevHackers.*`,
+    category: "Growth",
+    image: "/uploads/hero-viral-loops.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-26",
+    readTime: "5 min"
+  },
+  // =============================================
+  // CLUSTER: OUTBOUND & PROSPECÇÃO (Funnels Backlinks)
+  // =============================================
+  {
+    id: 2069,
+    title: "<span>Cold Outreach 2026</span> O Guia Definitivo para Prospecção que Gera Reuniões",
+    slug: "cold-outreach-2026-guia-definitivo-prospeccao-gera-reunioes",
+    excerpt: "Cold outreach em 2026 exige personalização real, multi-canal e timing perfeito. Este guia mostra como gerar 15+ reuniões qualificadas por mês com prospecção fria.",
+    content: `# Cold Outreach 2026: O Guia Definitivo para Prospecção que Gera Reuniões\n\nCold outreach não morreu. O que morreu foi o spray-and-pray. Em 2026, prospecção fria exige personalização real, multi-canal coordenado e timing perfeito.\n\n---\n\n## O Framework de Cold Outreach Moderno\n\n### 1. Research (30 min/conta)\n\n| Fonte | O que Buscar | Para que Usar |\n|---|---|---|\n| LinkedIn | Cargo, tempo, posts recentes | Personalização |\n| Site da empresa | Revenue, equipe, tech stack | Qualificação |\n| News/press | Funding, contratações, lançamentos | Trigger event |\n| Mutual connections | Quem conhece quem | Warm intro |\n\n### 2. Sequência Multi-canal (12 dias)\n\n| Dia | Canal | Ação |\n|---|---|---|\n| D1 | LinkedIn | View profile + connect |\n| D2 | Email | Email #1: Trigger + pain |\n| D4 | LinkedIn | Comentar post recente |\n| D5 | Email | Email #2: Case study |\n| D7 | LinkedIn | DM: Pergunta genuína |\n| D8 | Telefone | Cold call (script) |\n| D10 | Email | Email #3: Value offer |\n| D12 | LinkedIn | Breakup message |\n\n### 3. Templates que Convertem\n\n| Tipo | Subject Line | Open Rate |\n|---|---|---|\n| Trigger event | "[Nome], vi que vocês [evento]" | 45-55% |\n| Mutual connection | "[Nome] me indicou falar com você" | 50-60% |\n| Pain-first | "O problema que [cargo] mais reclama" | 35-45% |\n| Quick question | "Pergunta rápida sobre [tema]" | 40-50% |\n\n---\n\n## Métricas de Outreach\n\n| Métrica | Benchmark |\n|---|---|\n| Open rate | > 40% |\n| Reply rate | > 8% |\n| Positive reply rate | > 3% |\n| Meeting booked rate | > 2% |\n| Meetings/SDR/mês | > 15 |\n\n---\n\n## Automação\n\nNo [Funnels](https://usefunnels.io), sequências de cold outreach são automatizadas com email + SMS + tasks para o SDR, com tracking de opens e replies.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-cold-outreach-2026.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-25",
+    readTime: "6 min"
+  },
+  {
+    id: 2070,
+    title: "<span>LinkedIn Social Selling</span> Como Transformar Seu Perfil em Máquina de Pipeline",
+    slug: "linkedin-social-selling-transformar-perfil-maquina-pipeline",
+    excerpt: "78% dos social sellers vendem mais que seus pares. LinkedIn é a plataforma #1 para vendas B2B. Veja como transformar seu perfil em máquina de pipeline.",
+    content: `# LinkedIn Social Selling: Como Transformar Seu Perfil em Máquina de Pipeline\n\n78% dos social sellers vendem mais que seus pares que não usam social selling (LinkedIn). Em B2B, LinkedIn é a plataforma #1 para construir autoridade e gerar pipeline.\n\n---\n\n## O Framework SSI (Social Selling Index)\n\n| Pilar | O que Mede | Como Melhorar |\n|---|---|---|\n| Establish brand | Perfil profissional | Headline, about, featured |\n| Find people | Encontrar decisores | Search, Sales Navigator |\n| Engage insights | Criar e compartilhar conteúdo | Posts, comments, articles |\n| Build relationships | Fortalecer conexões | DMs, comments, endorsements |\n\n---\n\n## Otimização de Perfil\n\n| Elemento | Antes | Depois |\n|---|---|---|\n| Headline | "SDR na Empresa X" | "Ajudo [ICP] a resolver [problema]" |\n| About | Currículo | História + valor + CTA |\n| Banner | Genérico | Proposta de valor visual |\n| Featured | Vazio | Case study, ferramenta, post top |\n| Activity | Silêncio | 1-2 posts/semana + 5 comments/dia |\n\n---\n\n## Cadência de Conteúdo\n\n| Tipo | Frequência | Objetivo |\n|---|---|---|\n| Post educacional | 2x/semana | Awareness + autoridade |\n| Storytelling | 1x/semana | Engagement + humanização |\n| Carrossel/infográfico | 1x/semana | Reach + saves |\n| Comment em posts de ICPs | 5x/dia | Visibilidade + relacionamento |\n| DM strategy | 3-5/dia | Pipeline direto |\n\n---\n\n## Métricas\n\n| Métrica | Benchmark |\n|---|---|\n| SSI Score | > 70 |\n| Profile views/semana | > 100 |\n| Connection acceptance | > 40% |\n| DM reply rate | > 25% |\n| Pipeline from LinkedIn | > 30% do total |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), leads do LinkedIn são capturados via formulários e automaticamente tagados como fonte "LinkedIn Social Selling" para rastrear ROI.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-linkedin-selling.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-24",
+    readTime: "5 min"
+  },
+  {
+    id: 2071,
+    title: "<span>ABM Outbound</span> O Framework para Conquistar Contas Enterprise uma a uma",
+    slug: "abm-outbound-framework-conquistar-contas-enterprise",
+    excerpt: "ABM Outbound combina a precisão do Account-Based Marketing com a proatividade do outbound. O resultado? Pipeline enterprise com win rate 2x maior que outbound genérico.",
+    content: `# ABM Outbound: O Framework para Conquistar Contas Enterprise uma a uma\n\nABM Outbound combina precisão cirúrgica com proatividade. Em vez de prospectar 1.000 empresas e converte 10, você escolhe 50 contas ideais e converte 10. Mesmo resultado, 10x menos esforço.\n\n---\n\n## ABM vs Outbound Tradicional\n\n| Aspecto | Outbound Tradicional | ABM Outbound |\n|---|---|---|\n| Approach | Shotgun: muitos leads | Sniper: poucas contas |\n| Research | 2 min/lead | 30-60 min/conta |\n| Personalização | Nome + empresa | Empresa + dor + contexto |\n| Canais | Email blast | Multi-canal coordenado |\n| Stakeholders | 1 contato | 3-7 contatos/conta |\n| Win rate | 5-10% | 15-30% |\n| Deal size | Variável | Maior (enterprise) |\n\n---\n\n## Framework ABM em 5 Etapas\n\n### 1. Select (Selecionar Contas)\n\n| Critério | Peso |\n|---|---|\n| Fit com ICP | 30% |\n| Revenue potencial | 25% |\n| Acessibilidade (conexões) | 20% |\n| Timing (triggers) | 15% |\n| Competitive landscape | 10% |\n\n### 2. Map (Mapear Stakeholders)\n\n| Role | Objetivo |\n|---|---|\n| Champion | Quem defende internamente |\n| Decision maker | Quem assina |\n| Influencer | Quem opina |\n| Blocker | Quem pode barrar |\n| User | Quem vai usar |\n\n### 3. Engage (Multi-touch)\n\n| Semana | Ações |\n|---|---|\n| S1 | LinkedIn connect com 3 stakeholders |\n| S2 | Email personalizado + content share |\n| S3 | Ads retargeting para a empresa |\n| S4 | Convite para webinar/evento |\n| S5 | Cold call para champion |\n| S6 | Gift/swag personalizado |\n\n### 4. Convert → 5. Expand\n\nReunião → Proposta → Close → Land and Expand\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), ABM é implementado com pipelines por conta, múltiplos contatos por deal, e automações coordenadas entre stakeholders.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-abm-outbound.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-23",
+    readTime: "6 min"
+  },
+  {
+    id: 2072,
+    title: "<span>SDR Playbook Completo</span> Da Contratação ao Ramp-up em 90 Dias",
+    slug: "sdr-playbook-completo-contratacao-ramp-up-90-dias",
+    excerpt: "Contratar SDR é fácil. Fazer produzir em 90 dias é o desafio. Este playbook cobre contratação, onboarding, treinamento, KPIs e compensation para SDRs de alta performance.",
+    content: `# SDR Playbook Completo: Da Contratação ao Ramp-up em 90 Dias\n\nO SDR médio leva 3-6 meses para rampar. Com este playbook, ramp-up acontece em 90 dias. A chave? Onboarding estruturado, KPIs claros e coaching contínuo.\n\n---\n\n## Perfil do SDR Ideal\n\n| Competência | O que Avaliar | Como Testar |\n|---|---|---|\n| Coachability | Aceita feedback e melhora | Role-play + feedback |\n| Curiosidade | Faz perguntas boas | Entrevista reversa |\n| Resiliência | Lida com rejeição | Cenário hipotético |\n| Organização | Gerencia volume | Case prático |\n| Comunicação | Escreve e fala bem | Email + call test |\n\n---\n\n## Ramp-up em 90 dias\n\n| Fase | Período | Foco | Meta |\n|---|---|---|---|\n| Learn | D1-30 | Produto, ICP, pitch | Certificação interna |\n| Shadow | D15-45 | Observar AEs e SDRs seniors | 5 shadows |\n| Practice | D30-60 | Calls reais com suporte | 50% da meta |\n| Produce | D60-90 | Operação independente | 100% da meta |\n\n---\n\n## KPIs de SDR\n\n| Métrica | Daily | Weekly | Monthly |\n|---|---|---|---|\n| Activities (total) | 80-100 | 400-500 | 1.600-2.000 |\n| Emails sent | 40-50 | 200 | 800 |\n| Calls made | 25-40 | 150 | 600 |\n| LinkedIn touches | 15-20 | 75 | 300 |\n| Conversations | 5-10 | 30 | 120 |\n| Meetings booked | 1-2 | 5-8 | 15-20 |\n| Pipeline generated | — | — | 3-5x quota |\n\n---\n\n## Compensation\n\n| Componente | % | Detalhes |\n|---|---|---|\n| Base salary | 60-70% | Fixo mensal |\n| Variable | 30-40% | Por meeting + pipeline |\n| Bonus | Extra | Acelerador acima de 100% |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), o SDR tem dashboard próprio com atividades, pipeline e metas, tudo dentro do CRM.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-sdr-playbook.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-22",
+    readTime: "6 min"
+  },
+  {
+    id: 2073,
+    title: "<span>Prospecção por Nicho</span> Como Dominar um Vertical Antes de Expandir",
+    slug: "prospeccao-por-nicho-dominar-vertical-antes-expandir",
+    excerpt: "Prospectar geral é competir com todos. Prospectar por nicho é competir com poucos. O niche-down gera autoridade, referrals e win rates 3x maiores.",
+    content: `# Prospecção por Nicho: Como Dominar um Vertical Antes de Expandir\n\nProspectar geral é competir com Salesforce, HubSpot e todos os generalistas. Prospectar por nicho é ser "o CRM das agências" ou "o CRM das clínicas". A diferença em win rate é de 3x.\n\n---\n\n## Por que Niche Down Funciona\n\n| Aspecto | Generalista | Nichado |\n|---|---|---|\n| Mensagem | "Servimos todos" | "Entendemos seu problema específico" |\n| Competição | Todos os players | Poucos ou nenhum |\n| Referral | Aleatório | Network fechado |\n| Case studies | Genéricos | Iguais ao prospect |\n| Win rate | 10-15% | 30-40% |\n| CAC | Alto | Baixo |\n| Churn | Médio | Baixo (fit alto) |\n\n---\n\n## Framework de Niche Selection\n\n| Critério | Peso | Pergunta |\n|---|---|---|\n| TAM | 25% | Mercado grande o suficiente? |\n| Pain intensity | 25% | Dor forte e urgente? |\n| Willingness to pay | 20% | Pagam por solução? |\n| Accessibility | 15% | Consigo alcançá-los? |\n| Competition | 15% | Poucos competidores? |\n\n---\n\n## Playbook por Nicho\n\n| Passo | Ação |\n|---|---|\n| 1 | Escolher 1 nicho com score > 7 |\n| 2 | Ganhar 5 clientes no nicho |\n| 3 | Criar 3 case studies |\n| 4 | Produzir conteúdo específico |\n| 5 | Participar de eventos do nicho |\n| 6 | Pedir referrals |\n| 7 | Dominar com 30%+ market share |\n| 8 | Expandir para nicho adjacente |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), cada nicho pode ter seu próprio pipeline, templates de email e landing pages específicas, maximizando conversão por vertical.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-multichannel-outbound.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-21",
+    readTime: "5 min"
+  },
+  {
+    id: 2074,
+    title: "<span>Email Deliverability</span> O Guia Técnico para Seus Emails Chegarem na Caixa de Entrada",
+    slug: "email-deliverability-guia-tecnico-emails-caixa-entrada",
+    excerpt: "21% dos emails legítimos não chegam na inbox. Deliverability não é sobre conteúdo, é sobre infraestrutura técnica. SPF, DKIM, DMARC e domain warming são essenciais.",
+    content: `# Email Deliverability: O Guia Técnico para Seus Emails Chegarem na Caixa de Entrada\n\n21% dos emails legítimos não chegam na inbox (ReturnPath). O problema não é o conteúdo — é a infraestrutura. Sem SPF, DKIM e DMARC configurados corretamente, seus emails vão para spam.\n\n---\n\n## Os 3 Pilares Técnicos\n\n| Protocolo | O que Faz | Prioridade |\n|---|---|---|\n| SPF | Autoriza servidores a enviar em seu nome | Obrigatório |\n| DKIM | Assina digitalmente o email | Obrigatório |\n| DMARC | Define política para falhas de SPF/DKIM | Obrigatório |\n\n---\n\n## Checklist de Deliverability\n\n| Item | Status Ideal |\n|---|---|\n| SPF configurado | Pass |\n| DKIM configurado | Pass |\n| DMARC policy | p=quarantine ou p=reject |\n| Domain age | > 30 dias |\n| Domain warming | 2-4 semanas |\n| Bounce rate | < 2% |\n| Spam complaint rate | < 0.1% |\n| Unsubscribe rate | < 0.5% |\n| HTML/Text ratio | 60/40 |\n| Links/email | < 3 |\n| Image/text ratio | < 40% imagem |\n\n---\n\n## Domain Warming Schedule\n\n| Dia | Emails/dia | Target |\n|---|---|---|\n| D1-3 | 10-20 | Contatos que abrem |\n| D4-7 | 30-50 | Contatos engajados |\n| D8-14 | 50-100 | Expandir lista |\n| D15-21 | 100-200 | Lista completa |\n| D22-30 | 200-500 | Volume normal |\n| D30+ | Volume final | Manter consistência |\n\n---\n\n## Spam Words para Evitar\n\n| Categoria | Exemplos |\n|---|---|\n| Urgência falsa | "Urgente", "Última chance", "Agora" |\n| Promessa exagerada | "Garantido", "100% free", "Sem risco" |\n| Financeiro | "Desconto", "Promoção", "Oferta" |\n| ALL CAPS | Qualquer palavra em maiúscula |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem guia nativo de configuração de SPF, DKIM e DMARC, e ferramentas de domain warming integradas para garantir deliverability máxima.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Automação",
+    image: "/uploads/hero-email-deliverability.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-20",
+    readTime: "5 min"
+  },
+  {
+    id: 2075,
+    title: "<span>Cold Calling em 2026</span> O Script e Método que Ainda Gera Reuniões",
+    slug: "cold-calling-2026-script-metodo-gera-reunioes",
+    excerpt: "Cold calling não morreu — mas mudou. O script de 2026 é curto, baseado em trigger events e focado em agendar, não em vender. Veja o método que funciona.",
+    content: `# Cold Calling em 2026: O Script e Método que Ainda Gera Reuniões\n\nCold calling tem taxa de conversão de 2-3%. Parece baixo? Um SDR que faz 40 calls/dia gera 4-6 reuniões/semana. Nenhum outro canal ativo tem esse output em velocidade.\n\n---\n\n## O Script em 3 Blocos (90 segundos)\n\n### Bloco 1: Pattern Interrupt (10 seg)\n\n| O que Dizer | Por que Funciona |\n|---|---|\n| "Oi [Nome], sei que não esperava essa ligação..." | Honestidade desarma |\n| "[Nome], posso ser direto?" | Pede permissão |\n\n### Bloco 2: Value Prop (30 seg)\n\n| O que Dizer | Por que Funciona |\n|---|---|\n| "Vi que vocês [trigger event]..." | Mostra que pesquisou |\n| "Empresas como [similar] estavam tendo [problema]..." | Relevância |\n| "Conseguimos [resultado] em [tempo]" | Prova social |\n\n### Bloco 3: Ask (15 seg)\n\n| O que Dizer | Por que Funciona |\n|---|---|\n| "Faz sentido trocarmos 15 min essa semana?" | Compromisso pequeno |\n| "Terça ou quarta funciona melhor?" | Opção binária |\n\n---\n\n## Handling Objeções\n\n| Objeção | Resposta |\n|---|---|\n| "Não tenho tempo" | "Entendo, 15 min na [dia]? Se não fizer sentido, nunca mais ligo" |\n| "Manda por email" | "Claro! O que especificamente seria útil ver antes?" |\n| "Já temos solução" | "Interessante — e como está funcionando pra [métrica]?" |\n| "Não sou a pessoa certa" | "Quem seria a melhor pessoa para [tema]?" |\n\n---\n\n## Métricas\n\n| Métrica | Benchmark |\n|---|---|\n| Calls/dia/SDR | 35-50 |\n| Connect rate | 8-15% |\n| Conversation rate | 3-5% |\n| Meeting rate | 1-3% |\n| Show-up rate | 70-80% |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), calls são logadas automaticamente via integração telefônica, com tasks automáticas de follow-up pós-call.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-cold-calling.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-19",
+    readTime: "5 min"
+  },
+  {
+    id: 2076,
+    title: "<span>Sequências de Prospecção</span> Templates e Cadências que Convertem em Cada Segmento",
+    slug: "sequencias-prospeccao-templates-cadencias-convertem-segmento",
+    excerpt: "Uma sequência de prospecção não serve para todos. SMB precisa de velocidade, Enterprise precisa de profundidade. Veja templates por segmento e estágio.",
+    content: `# Sequências de Prospecção: Templates e Cadências por Segmento\n\nUma sequência que funciona para SMB falha em Enterprise. O volume, canais, timing e tom mudam completamente. Veja as cadências otimizadas para cada segmento.\n\n---\n\n## Sequência por Segmento\n\n### SMB (< R$5k ACV)\n\n| Dia | Canal | Ação | Objetivo |\n|---|---|---|---|\n| D1 | Email | Pain + value prop | Awareness |\n| D2 | LinkedIn | Connect + view | Visibilidade |\n| D3 | Email | Case study | Social proof |\n| D5 | Telefone | Quick call | Engajamento |\n| D7 | Email | Breakup | Urgência |\n\n**Total: 5 touches, 7 dias | Response rate: 12-18%**\n\n### Mid-Market (R$5k-50k ACV)\n\n| Dia | Canal | Ação | Objetivo |\n|---|---|---|---|\n| D1 | Email | Trigger + insight | Awareness |\n| D3 | LinkedIn | Content share + connect | Autoridade |\n| D5 | Email | Framework/playbook | Valor |\n| D7 | Telefone | Consultive call | Qualificação |\n| D9 | LinkedIn | DM follow-up | Persistência |\n| D11 | Email | ROI calculation | Business case |\n| D14 | Email | Breakup | Urgência |\n\n**Total: 7 touches, 14 dias | Response rate: 8-15%**\n\n### Enterprise (> R$50k ACV)\n\n| Dia | Canal | Ação | Objetivo |\n|---|---|---|---|\n| D1 | LinkedIn | Research + connect | Entry point |\n| D3 | Email | Personalized insight | Relevância |\n| D5 | LinkedIn | Comment + engage | Visibilidade |\n| D7 | Email | Custom content | Autoridade |\n| D10 | Telefone | EA/assistant call | Acesso |\n| D12 | Email | Industry report | Valor |\n| D15 | LinkedIn | Multi-stakeholder | Expansão |\n| D18 | Email | Executive referral | Escalação |\n| D21 | Gift/swag | Attention grabber | Diferenciação |\n| D25 | Email | Breakup | Catalisador |\n\n**Total: 10 touches, 25 dias | Response rate: 5-12%**\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), cada segmento usa um workflow de prospecção diferente, com templates e cadências pré-configuradas.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-sequencias-prospeccao.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-18",
+    readTime: "5 min"
+  },
+  {
+    id: 2077,
+    title: "<span>Outbound para Enterprise</span> O Processo de Vendas Complexas em 8 Etapas",
+    slug: "outbound-enterprise-processo-vendas-complexas-8-etapas",
+    excerpt: "Vender para Enterprise é diferente. Ciclo longo, múltiplos stakeholders, procurement e compliance. Este processo em 8 etapas garante deals de 6 dígitos.",
+    content: `# Outbound para Enterprise: O Processo de Vendas Complexas em 8 Etapas\n\nEnterprise selling envolve 6-10 stakeholders, ciclos de 6-18 meses e compliance rigoroso. Não é sobre vender — é sobre navegar política interna e construir consensus.\n\n---\n\n## As 8 Etapas\n\n| Etapa | Foco | Duração | Stakeholders |\n|---|---|---|---|\n| 1. Identify | Encontrar contas ideais | Semanal | SDR |\n| 2. Research | Deep dive na empresa | 2-3h/conta | SDR |\n| 3. Connect | Multi-thread entry | 2-4 semanas | SDR + AE |\n| 4. Qualify | MEDDPICC | 1-2 calls | AE |\n| 5. Discover | Mapear pains e stakeholders | 2-3 calls | AE + SE |\n| 6. Propose | Solução + business case | 1-2 semanas | AE + SE |\n| 7. Negotiate | Termos + procurement | 2-8 semanas | AE + Legal |\n| 8. Close | Assinatura + handoff | 1-2 semanas | AE + CSM |\n\n---\n\n## MEDDPICC Framework\n\n| Letra | Significado | Pergunta |\n|---|---|---|\n| M | Metrics | Quais KPIs importam? |\n| E | Economic Buyer | Quem assina o cheque? |\n| D | Decision Criteria | O que avaliam para decidir? |\n| D | Decision Process | Como decidem internamente? |\n| P | Paper Process | Como funciona procurement? |\n| I | Identify Pain | Qual a dor principal? |\n| C | Champion | Quem defende internamente? |\n| C | Competition | Com quem estamos competindo? |\n\n---\n\n## Métricas Enterprise\n\n| Métrica | Benchmark |\n|---|---|\n| Win rate | 15-25% |\n| Average deal size | > R$100k |\n| Sales cycle | 6-12 meses |\n| Stakeholders envolvidos | 6-10 |\n| Calls to close | 8-15 |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), deals enterprise são gerenciados com campos MEDDPICC customizados, multi-contatos por deal e stages detalhados.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-outbound-enterprise.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-17",
+    readTime: "6 min"
+  },
+  {
+    id: 2078,
+    title: "<span>Ferramentas de Prospecção</span> O Stack Essencial do SDR Moderno em 2026",
+    slug: "ferramentas-prospeccao-stack-essencial-sdr-moderno-2026",
+    excerpt: "O SDR moderno usa 5-8 ferramentas por dia. Saber quais usar e como integrar é o que separa 5 reuniões/mês de 20+. Veja o stack essencial de prospecção.",
+    content: `# Ferramentas de Prospecção: O Stack Essencial do SDR Moderno em 2026\n\nO SDR que usa as ferramentas certas gera 3x mais reuniões que quem prospecta manualmente. O stack ideal tem 5-8 ferramentas integradas.\n\n---\n\n## O Stack por Função\n\n### Data & Enrichment\n\n| Ferramenta | Para que | Preço |\n|---|---|---|\n| LinkedIn Sales Navigator | Encontrar decisores | $$$ |\n| Apollo.io | Dados + email finder | $$ |\n| ZoomInfo | Dados enterprise | $$$$ |\n| Clearbit | Enrichment de leads | $$ |\n\n### Outreach & Engagement\n\n| Ferramenta | Para que | Preço |\n|---|---|---|\n| Funnels CRM | Sequências multi-canal | $$ |\n| Outreach.io | Email sequences | $$$ |\n| Salesloft | Sales engagement | $$$ |\n| Lemlist | Email personalizado | $ |\n\n### Calling & Video\n\n| Ferramenta | Para que | Preço |\n|---|---|---|\n| Gong | Análise de calls | $$$$ |\n| Aircall | Cloud phone | $$ |\n| Loom | Video prospecting | $ |\n| Chorus | Conversation intelligence | $$$ |\n\n### Productivity\n\n| Ferramenta | Para que | Preço |\n|---|---|---|\n| Calendly | Booking | Free/$ |\n| Grammarly | Email quality | Free/$ |\n| Vidyard | Video messages | $$ |\n| Crystal | Personality insights | $$ |\n\n---\n\n## Stack Recomendado\n\n| Budget | Stack |\n|---|---|\n| Lean (< R$500/mês) | Funnels + Apollo + Calendly + Loom |\n| Growth (R$500-2k/mês) | Funnels + SalesNav + Aircall + Gong |\n| Enterprise (> R$2k/mês) | Funnels + ZoomInfo + Outreach + Gong |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) substitui várias ferramentas: CRM + email sequences + SMS + landing pages + booking, reduzindo o stack e o custo.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-ferramentas-prospeccao.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-16",
+    readTime: "5 min"
+  },
+  {
+    id: 2079,
+    title: "<span>ICP e Persona B2B</span> O Framework para Definir Quem Você Deveria Estar Prospectando",
+    slug: "icp-persona-b2b-framework-definir-quem-prospectar",
+    excerpt: "80% dos problemas de prospecção nascem de um ICP mal definido. Prospectar a empresa errada é jogar dinheiro fora. Veja o framework para definir ICP e persona com precisão.",
+    content: `# ICP e Persona B2B: O Framework para Definir Quem Você Deveria Estar Prospectando\n\n80% dos problemas de prospecção nascem antes do primeiro email: prospectar a empresa errada. Um ICP bem definido é a diferença entre 2% e 15% de conversion rate.\n\n---\n\n## ICP vs Persona\n\n| Conceito | Definição | Exemplo |\n|---|---|---|\n| ICP (Ideal Customer Profile) | A empresa ideal | SaaS B2B, 50-200 employees, R$5M+ ARR |\n| Persona (Buyer Persona) | A pessoa ideal | VP de Vendas, 35-45 anos, usa CRM |\n\n---\n\n## ICP Framework\n\n| Atributo | Perguntas | Exemplo |\n|---|---|---|\n| Industry | Qual vertical? | SaaS, AgTech, FinTech |\n| Company size | Quantos employees? | 50-200 |\n| Revenue | Qual faturamento? | R$5M-50M |\n| Growth stage | Qual estágio? | Series A-B |\n| Tech stack | Que ferramentas usam? | CRM básico, Planilha |\n| Geography | Onde estão? | Brasil, LATAM |\n| Pain indicators | Que sinais de dor? | Hiring SDRs, Lost deals |\n\n---\n\n## Persona Framework\n\n| Atributo | Perguntas | Exemplo |\n|---|---|---|\n| Title/Role | Qual cargo? | VP Vendas, Head Revenue |\n| Reports to | Quem é o chefe? | CEO, CRO |\n| Goals | O que quer atingir? | Escalar vendas, Reduzir CAC |\n| Pains | O que impede? | Processo manual, Sem dados |\n| Metrics | O que mede? | Pipeline, Win rate, CAC |\n| Objections | O que teme? | Tempo de implementação |\n| Content | O que consome? | LinkedIn, Podcasts |\n\n---\n\n## Anti-ICP\n\n| Sinal | Por que Desqualificar |\n|---|---|\n| < 10 employees | Não tem budget |\n| Sem processo de vendas | Não está pronto |\n| Acabou de implementar CRM | Timing errado |\n| Vertical fora do fit | Churn alto |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), campos de ICP scoring customizados permitem qualificar leads automaticamente e priorizar as contas com maior fit.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Strategy",
+    image: "/uploads/hero-icp-persona.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-15",
+    readTime: "5 min"
+  },
+  {
+    id: 2080,
+    title: "<span>Multi-channel Orchestration</span> Como Sincronizar Email, Telefone e Social em Uma Cadência",
+    slug: "multi-channel-orchestration-sincronizar-email-telefone-social",
+    excerpt: "Email sozinho gera 5% de reply. Multi-canal coordenado gera 15-25%. A chave é orquestração: cada canal reforça o anterior. Veja como montar cadências integradas.",
+    content: `# Multi-channel Orchestration: Como Sincronizar Email, Telefone e Social\n\nEmail sozinho: 5-8% reply rate. Email + LinkedIn: 12-18%. Email + LinkedIn + Telefone: 18-25%. O segredo não é usar mais canais — é orquestrar eles para que cada toque reforce o anterior.\n\n---\n\n## A Ciência da Orquestração\n\n| Canal | Melhor Para | Limitação |\n|---|---|---|\n| Email | Escala, documentação | Low reply rate |\n| LinkedIn | Personalização, visibilidade | Low volume |\n| Telefone | Urgência, rapport | Time-intensive |\n| SMS | Lembretes, confirmações | Intrusivo se frio |\n| Video | Diferenciação, demo | Produção |\n\n---\n\n## Cadência Orquestrada (14 dias)\n\n| Dia | Canal | Mensagem | Objetivo |\n|---|---|---|---|\n| D1 | LinkedIn | View + Connect | Awareness |\n| D1 | Email | Trigger-based intro | Primeira impressão |\n| D3 | LinkedIn | Comment on post | Visibilidade |\n| D4 | Email | Value + case study | Social proof |\n| D5 | Telefone | Quick call | Engajamento direto |\n| D7 | LinkedIn | DM: "Vi meus emails?" | Cross-channel |\n| D8 | Email | Framework/tool | Valor puro |\n| D10 | Video (Loom) | Personalized 60s | Diferenciação |\n| D12 | Telefone | Follow-up call | Persistência |\n| D14 | Email | Breakup + CTA | Último push |\n\n---\n\n## Regras de Orquestração\n\n| Regra | Detalhes |\n|---|---|\n| Consistência | Mesma identidade visual e tom |\n| Referência cruzada | "Vi que conectamos no LinkedIn..." |\n| Escalation | Começar suave (email) → escalar (call) |\n| Parar quando engajar | Resposta = sair da sequência |\n| Data-driven | A/B test por segmento |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) centraliza email, SMS, chamadas e tasks em workflows unificados, permitindo orquestração multi-canal nativa sem ferramentas extras.\n\n---\n\n*Este artigo faz parte da série Outbound & Prospecção da RevHackers.*`,
+    category: "Vendas",
+    image: "/uploads/hero-multichannel-sequencias.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-14",
+    readTime: "5 min"
+  },
+  // =============================================
+  // CLUSTER: MARKETING B2B (Funnels Backlinks)
+  // =============================================
+  {
+    id: 2081,
+    title: "<span>Marketing B2B em 2026</span> O Guia Completo para Gerar Demanda Qualificada",
+    slug: "marketing-b2b-2026-guia-completo-gerar-demanda-qualificada",
+    excerpt: "Marketing B2B mudou. Não é sobre gerar MQLs — é sobre gerar demanda real. Este guia cobre as estratégias, canais e métricas que funcionam em 2026.",
+    content: `# Marketing B2B em 2026: O Guia Completo para Gerar Demanda Qualificada\n\nMarketing B2B em 2026 não é sobre volume de leads. É sobre gerar demanda qualificada que converte em pipeline. A era do "quanto mais MQLs melhor" acabou.\n\n---\n\n## Demand Gen vs Lead Gen\n\n| Aspecto | Lead Gen (old) | Demand Gen (2026) |\n|---|---|---|\n| Objetivo | Capturar emails | Criar demanda real |\n| Métrica | MQLs | Pipeline influence |\n| Conteúdo | Gated (ebook) | Ungated (educação) |\n| Resultado | Lista de emails | Inbound qualificado |\n| Sales alignment | MQL handoff | Revenue team |\n\n---\n\n## Os 6 Canais que Mais Geram Pipeline B2B\n\n| Canal | Pipeline Share | CAC | Tempo |\n|---|---|---|---|\n| Referral/word of mouth | 25-35% | Baixo | Variável |\n| Outbound (SDR) | 20-30% | Médio | 2-4 semanas |\n| Content/SEO | 15-25% | Baixo | 3-12 meses |\n| Events/webinars | 10-20% | Médio | 2-6 semanas |\n| Paid ads | 5-15% | Alto | Imediato |\n| Partnerships | 5-15% | Baixo | 1-3 meses |\n\n---\n\n## Marketing Metrics que Importam\n\n| Métrica | O que Mede | Target |\n|---|---|---|\n| Marketing-sourced pipeline | $ gerado por marketing | > 40% |\n| Pipeline velocity | Velocidade do funnel | < 60 dias |\n| CAC payback | Meses para recuperar CAC | < 12 meses |\n| LTV:CAC ratio | Eficiência | > 3:1 |\n| Marketing ROI | Return on investment | > 5:1 |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) centraliza todas as ferramentas de marketing B2B: landing pages, email, automações, CRM e analytics em uma plataforma.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-marketing-b2b-pillar.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-13",
+    readTime: "6 min"
+  },
+  {
+    id: 2082,
+    title: "<span>Landing Pages que Convertem</span> Anatomia, Templates e Otimização para B2B",
+    slug: "landing-pages-convertem-anatomia-templates-otimizacao-b2b",
+    excerpt: "A landing page média converte 2.35%. As top 10% convertem 11%+. A diferença? Estrutura, copy e CTA. Veja a anatomia exata de landing pages B2B de alta conversão.",
+    content: `# Landing Pages que Convertem: Anatomia e Otimização para B2B\n\nA landing page média converte 2.35%. As top 10% convertem 11%+. A diferença não é design — é estrutura, copy e CTA.\n\n---\n\n## Anatomia da Landing Page Perfeita\n\n| Seção | Objetivo | Regra |\n|---|---|---|\n| Hero | Capturar atenção | Value prop em 1 frase |\n| Pain | Gerar identificação | 3 dores do ICP |\n| Solution | Apresentar produto | Como resolve cada dor |\n| Social proof | Gerar confiança | Logos + depoimentos + números |\n| Features | Mostrar detalhes | 3-5 features com benefícios |\n| CTA | Converter | 1 ação clara, acima da dobra |\n| FAQ | Eliminar objeções | 5-7 perguntas frequentes |\n\n---\n\n## Benchmarks por Tipo\n\n| Tipo | Conversion Rate | Uso |\n|---|---|---|\n| Demo request | 3-8% | High-intent |\n| Free trial signup | 5-15% | PLG |\n| Ebook download | 10-25% | Top of funnel |\n| Webinar registro | 15-30% | Mid funnel |\n| Consultation | 2-5% | Enterprise |\n\n---\n\n## Otimização (CRO)\n\n| Teste | Impacto Típico |\n|---|---|\n| Headline com número | +15-25% |\n| CTA acima da dobra | +20-30% |\n| Remover menu | +10-20% |\n| Adicionar vídeo | +10-15% |\n| Social proof | +15-25% |\n| Formulário curto (3 campos) | +30-50% |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem builder de landing pages drag-and-drop com templates B2B otimizados e A/B testing nativo.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-landing-pages.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-12",
+    readTime: "5 min"
+  },
+  {
+    id: 2083,
+    title: "<span>Email Marketing B2B</span> Newsletters, Nurturing e Automation que Geram Pipeline",
+    slug: "email-marketing-b2b-newsletters-nurturing-automation-pipeline",
+    excerpt: "Email marketing B2B tem ROI de 42:1. Mas só se feito certo. Newsletters, nurturing sequences e triggered emails — cada um tem seu papel no funil.",
+    content: `# Email Marketing B2B: Newsletters, Nurturing e Automation que Geram Pipeline\n\nEmail marketing B2B tem ROI de 42:1 (DMA). Mas só quando segmentado, personalizado e automatizado. Blast genérico para toda a base? ROI de 0.\n\n---\n\n## Os 3 Pilares do Email B2B\n\n### 1. Newsletter\n\n| Aspecto | Recomendação |\n|---|---|\n| Frequência | Semanal ou quinzenal |\n| Conteúdo | Educacional (80%) + produto (20%) |\n| Subject line | Curiosidade + benefício |\n| Design | Texto-heavy, sem HTML pesado |\n| CTA | 1 por email |\n\n### 2. Nurturing Sequences\n\n| Stage | Emails | Conteúdo | Objetivo |\n|---|---|---|---|\n| TOFU | 3-5 | Blog posts, guias | Educação |\n| MOFU | 3-4 | Cases, comparações | Consideração |\n| BOFU | 2-3 | Demo, trial, proposta | Decisão |\n\n### 3. Triggered Emails\n\n| Trigger | Email | Timing |\n|---|---|---|\n| Form submit | Welcome + recurso | Imediato |\n| Page visit (pricing) | "Posso ajudar?" | 1 hora |\n| Inactividade (30d) | Re-engagement | 30 dias |\n| Trial expiring | Urgência + oferta | 3 dias antes |\n\n---\n\n## Benchmarks\n\n| Métrica | B2B Benchmark |\n|---|---|\n| Open rate | 20-30% |\n| Click rate | 2-5% |\n| Unsubscribe | < 0.5% |\n| Reply rate | 1-3% |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem email marketing nativo com segmentação, automações, A/B testing e templates prontos para B2B.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-email-marketing-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-11",
+    readTime: "5 min"
+  },
+  {
+    id: 2084,
+    title: "<span>Paid Ads B2B</span> Google, LinkedIn e Meta — Onde Investir e Como Otimizar",
+    slug: "paid-ads-b2b-google-linkedin-meta-investir-otimizar",
+    excerpt: "Paid ads em B2B tem CPL de R$50-500 dependendo do canal. LinkedIn é caro mas qualificado. Google captura demanda existente. Meta é barato mas menos qualificado.",
+    content: `# Paid Ads B2B: Google, LinkedIn e Meta — Onde Investir\n\nPaid ads em B2B não é sobre custo por lead. É sobre custo por oportunidade qualificada. Um lead de R$500 que fecha R$100k é melhor que 100 leads de R$5.\n\n---\n\n## Comparação de Canais\n\n| Canal | CPL | Qualidade | Melhor Para | Budget Mín |\n|---|---|---|---|---|\n| Google Search | R$30-150 | Alta (intent) | Capturar demanda | R$3k/mês |\n| LinkedIn Ads | R$80-500 | Muito alta | Target por cargo | R$5k/mês |\n| Meta Ads | R$10-50 | Média | Retargeting, awareness | R$2k/mês |\n| Google Display | R$5-30 | Baixa | Retargeting | R$1k/mês |\n| YouTube | R$15-80 | Média-alta | Educação, awareness | R$3k/mês |\n\n---\n\n## Estratégias por Stage\n\n| Stage | Canal | Formato | Offer |\n|---|---|---|---|\n| TOFU | Meta + YouTube | Vídeo educacional | Conteúdo ungated |\n| MOFU | LinkedIn + Google | Case study, comparação | Webinar, guia |\n| BOFU | Google Search + Retargeting | Demo, trial | Free trial, demo |\n\n---\n\n## Métricas\n\n| Métrica | Target |\n|---|---|\n| CPL (geral) | < R$100 |\n| CPL → SQL | < R$500 |\n| ROAS | > 5:1 |\n| CPC (LinkedIn) | R$8-25 |\n| CTR (LinkedIn) | > 0.8% |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) rastreia UTMs, atribui leads por campanha e conecta ad spend a pipeline gerado, permitindo calcular ROAS real.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-paid-ads-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-10",
+    readTime: "5 min"
+  },
+  {
+    id: 2085,
+    title: "<span>Branding B2B</span> Por que Empresas com Marca Forte Vendem Mais e Mais Rápido",
+    slug: "branding-b2b-empresas-marca-forte-vendem-mais-rapido",
+    excerpt: "Branding em B2B não é logo bonito. É o que faz o prospect escolher você antes mesmo do primeiro contato. Empresas com brand recognition têm sales cycles 30% menores.",
+    content: `# Branding B2B: Por que Empresas com Marca Forte Vendem Mais\n\nBranding em B2B não é logo. É a razão pela qual o prospect já confia em você antes do first call. Empresas com brand recognition forte têm sales cycles 30% menores e win rates 20% maiores.\n\n---\n\n## Os 5 Pilares do Brand B2B\n\n| Pilar | Descrição | Exemplo |\n|---|---|---|\n| Positioning | O que você é | "O CRM das agências brasileiras" |\n| Messaging | O que você diz | Taglines, value props |\n| Visual identity | Como você se apresenta | Logo, cores, tipografia |\n| Voice & tone | Como você soa | Técnico mas acessível |\n| Experience | Como o cliente sente | Onboarding, suporte |\n\n---\n\n## Brand Metrics\n\n| Métrica | Como Medir | Target |\n|---|---|---|\n| Brand awareness | Surveys, Branded search | +20%/ano |\n| Share of voice | Mentions vs competidores | > 25% |\n| Brand preference | Surveys "qual escolheria?" | > 40% |\n| Trust score | NPS + reviews | > 70 NPS |\n| Branded traffic | Google Analytics | > 30% do total |\n\n---\n\n## Construção de Brand\n\n| Atividade | Frequência | Impacto |\n|---|---|---|\n| Thought leadership (LinkedIn) | Diário | Alto |\n| Podcast/video | Semanal | Alto |\n| Community building | Contínuo | Muito alto |\n| PR/media | Mensal | Médio |\n| Sponsorship | Trimestral | Médio |\n| Brand refresh | Anual | Cosmético |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) suporta branding consistente com white-label, domínio customizado e templates visuais alinhados à identidade.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-branding-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-09",
+    readTime: "5 min"
+  },
+  {
+    id: 2086,
+    title: "<span>Podcast B2B</span> Como Lançar e Escalar um Podcast que Gera Authority e Pipeline",
+    slug: "podcast-b2b-lancar-escalar-gerar-authority-pipeline",
+    excerpt: "Podcast B2B é o canal com maior ROI por hora investida em 2026. 1 gravação gera 10+ peças de conteúdo. Veja o playbook de lançamento e growth.",
+    content: `# Podcast B2B: Como Lançar e Escalar para Gerar Authority e Pipeline\n\nPodcast B2B é o melhor investimento de conteúdo em 2026. 1 hora de gravação gera: episódio completo, 5-10 clips para social, 1 blog post, 1 newsletter e 10+ quotes compartilháveis.\n\n---\n\n## Por que Podcast Funciona em B2B\n\n| Benefício | Detalhes |\n|---|---|\n| Authority | Você é o host = expert |\n| Networking | Convidar prospects como guests |\n| Content engine | 1 episódio = 10+ peças |\n| Trust | Voz humana cria conexão |\n| SEO | Transcrições indexadas |\n| Pipeline | Guest → warm lead |\n\n---\n\n## Playbook de Lançamento (90 dias)\n\n| Fase | Período | Ações |\n|---|---|---|\n| Setup | D1-14 | Nome, artwork, hosting, equipamento |\n| Piloto | D15-30 | 3 episódios gravados (não publicados) |\n| Launch | D30-45 | Lançar 3 episódios de uma vez |\n| Cadência | D45+ | 1 episódio/semana consistency |\n\n---\n\n## Equipamento Mínimo\n\n| Item | Investimento |\n|---|---|\n| Microfone USB | R$200-500 |\n| Software (Riverside/Zencastr) | Free-R$100/mês |\n| Hosting (Buzzsprout/Spotify) | Free-R$50/mês |\n| Edição (Descript) | R$50/mês |\n| **Total** | **R$300-700** |\n\n---\n\n## Métricas\n\n| Métrica | Benchmark |\n|---|---|\n| Downloads/episódio | > 100 (início) |\n| Growth rate | > 10%/mês |\n| Guest conversion rate | > 20% |\n| Content pieces generated | > 10/episódio |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), cada guest de podcast pode ser tagado como lead, com follow-up automatizado e integração ao pipeline de vendas.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-podcast-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-08",
+    readTime: "5 min"
+  },
+  {
+    id: 2087,
+    title: "<span>Marketing Attribution</span> Como Saber Qual Canal Realmente Gera Revenue",
+    slug: "marketing-attribution-saber-canal-realmente-gera-revenue",
+    excerpt: "76% dos marketers não sabem qual canal gera mais revenue. Attribution resolve isso. First-touch, last-touch, multi-touch — qual modelo usar e como implementar.",
+    content: `# Marketing Attribution: Como Saber Qual Canal Realmente Gera Revenue\n\n76% dos marketers B2B não sabem qual canal gera mais revenue (Bizible). Sem attribution, você está investindo às cegas. A solução é implementar modelos de atribuição.\n\n---\n\n## Modelos de Attribution\n\n| Modelo | Como Funciona | Melhor Para |\n|---|---|---|\n| First-touch | 100% para primeiro contato | Entender awareness |\n| Last-touch | 100% para último contato | Entender conversão |\n| Linear | Dividido igual entre touches | Visão balanced |\n| Time-decay | Mais peso para touches recentes | Funil curto |\n| U-shaped | 40% first, 20% middle, 40% last | B2B (mais comum) |\n| W-shaped | First + mid + last = 90%, rest 10% | Enterprise |\n| Custom/ML | Algoritmo decide | Empresas data-driven |\n\n---\n\n## Implementação Prática\n\n| Passo | Ação |\n|---|---|\n| 1 | UTM em todos os links |\n| 2 | Capturar source no formulário |\n| 3 | Conectar CRM com analytics |\n| 4 | Definir modelo de atribuição |\n| 5 | Dashboard de attribution |\n| 6 | Revisar budget trimestralmente |\n\n---\n\n## UTM Convention\n\n| Parâmetro | Exemplo |\n|---|---|\n| utm_source | linkedin, google, email |\n| utm_medium | paid, organic, social |\n| utm_campaign | webinar-q1-2026 |\n| utm_content | cta-demo, banner-top |\n| utm_term | crm-b2b (keywords) |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) rastreia automaticamente UTMs, source e medium de cada lead, conectando investimento em marketing a pipeline e revenue.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-mkt-attribution.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-07",
+    readTime: "5 min"
+  },
+  {
+    id: 2088,
+    title: "<span>Lead Nurturing B2B</span> Como Transformar Leads Frios em Oportunidades Quentes",
+    slug: "lead-nurturing-b2b-transformar-leads-frios-oportunidades-quentes",
+    excerpt: "80% dos leads não estão prontos para comprar. Mas 80% vão comprar nos próximos 24 meses. Lead nurturing transforma timing errado em deal no momento certo.",
+    content: `# Lead Nurturing B2B: Como Transformar Leads Frios em Oportunidades Quentes\n\n80% dos leads B2B não estão prontos para comprar quando entram no CRM. Mas 80% deles vão comprar nos próximos 24 meses (Forrester). Nurturing mantém você top-of-mind até o momento certo.\n\n---\n\n## O Framework de Nurturing\n\n| Stage | Objetivo | Conteúdo | Frequência |\n|---|---|---|---|\n| Awareness | Educar sobre o problema | Blog posts, guias | 2x/semana |\n| Consideration | Mostrar soluções | Cases, comparações | 1x/semana |\n| Decision | Facilitar a decisão | Demo, trial, ROI | 2x/semana |\n| Post-sale | Reter e expandir | Tips, webinars | 1x/semana |\n\n---\n\n## Segmentação para Nurturing\n\n| Critério | Segmentos | Conteúdo Diferente |\n|---|---|---|\n| Cargo | C-level vs Manager vs IC | Estratégico vs Tático |\n| Industry | SaaS, Agência, E-commerce | Cases do vertical |\n| Score | Hot, Warm, Cold | Urgência da mensagem |\n| Stage | TOFU, MOFU, BOFU | Profundidade |\n| Behavior | Ativo vs Inativo | Re-engagement |\n\n---\n\n## Lead Scoring\n\n| Ação | Pontos |\n|---|---|\n| Visitou pricing page | +20 |\n| Baixou conteúdo BOFU | +15 |\n| Abriu 3+ emails | +10 |\n| Visitou case study | +10 |\n| Cargo = Decision maker | +25 |\n| Empresa > 50 employees | +15 |\n| Inativo > 30 dias | -20 |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), lead nurturing é automatizado com workflows, scoring e segmentação dinâmica que move leads pelo funil automaticamente.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-lead-nurturing.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-06",
+    readTime: "5 min"
+  },
+  {
+    id: 2089,
+    title: "<span>Video Marketing B2B</span> YouTube, Shorts e Vídeo Personalizado para Pipeline",
+    slug: "video-marketing-b2b-youtube-shorts-video-personalizado-pipeline",
+    excerpt: "Vídeo é consumido por 72% dos B2B buyers no processo de compra. YouTube para awareness, shorts para engagement e vídeo personalizado para conversão.",
+    content: `# Video Marketing B2B: YouTube, Shorts e Vídeo Personalizado\n\n72% dos B2B buyers assistem vídeo durante o processo de decisão (Google). Vídeo não é opcional em 2026 — é obrigatório.\n\n---\n\n## Tipos de Vídeo por Stage\n\n| Stage | Tipo | Duração | Objetivo |\n|---|---|---|---|\n| TOFU | Educacional/how-to | 5-15 min | Awareness |\n| TOFU | Shorts/clips | 30-60 seg | Reach |\n| MOFU | Demo do produto | 3-5 min | Consideração |\n| MOFU | Customer story | 2-3 min | Social proof |\n| BOFU | Personalized video | 60-90 seg | Conversão |\n| BOFU | Proposta em vídeo | 3-5 min | Fechamento |\n\n---\n\n## YouTube B2B Strategy\n\n| Aspecto | Recomendação |\n|---|---|\n| Frequência | 1-2 vídeos/semana |\n| Thumbnail | Face + texto + contraste |\n| Title | Keyword + benefício |\n| Description | Keywords + links + timestamps |\n| Tags | Topic cluster keywords |\n| Shorts | Clips dos vídeos longos |\n\n---\n\n## Vídeo Personalizado para Outbound\n\n| Uso | Template | Resultado |\n|---|---|---|\n| Cold outreach | "[Nome], gravei isso para você" | 3x reply rate |\n| Proposta | Video walkthrough | 40% mais close |\n| Follow-up | "Resumo da nossa call" | 2x engagement |\n| Onboarding | Welcome personalizado | 30% mais ativação |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), vídeos podem ser embeddados em emails, landing pages e propostas com tracking de visualização integrado.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-video-marketing.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-05",
+    readTime: "5 min"
+  },
+  {
+    id: 2090,
+    title: "<span>Social Media B2B</span> LinkedIn, Twitter/X e YouTube — Estratégia por Plataforma",
+    slug: "social-media-b2b-linkedin-twitter-youtube-estrategia-plataforma",
+    excerpt: "Social media B2B não é postar por postar. É distribuir conteúdo estratégico na plataforma certa para o ICP certo. Veja a estratégia por plataforma.",
+    content: `# Social Media B2B: Estratégia por Plataforma\n\nSocial media em B2B é distribuição de conteúdo estratégico. LinkedIn para decision makers, Twitter/X para tech leaders, YouTube para educação aprofundada.\n\n---\n\n## Priorização por Plataforma\n\n| Plataforma | Público B2B | Formato | Prioridade |\n|---|---|---|---|\n| LinkedIn | Decision makers, VPs | Text, carousel, video | #1 obrigatório |\n| YouTube | All levels | Video longo, tutorials | #2 para authority |\n| Twitter/X | Tech, startups, devs | Short text, threads | #3 para nicho |\n| Instagram | Branding, cultura | Stories, reels | #4 secundário |\n| TikTok | Awareness, recruiter | Short video | #5 experimental |\n\n---\n\n## Cadência por Plataforma\n\n| Plataforma | Posts/semana | Melhor Horário |\n|---|---|---|\n| LinkedIn | 3-5 | Ter-Qui, 8h-10h |\n| YouTube | 1-2 | Ter-Qui, 10h |\n| Twitter/X | 5-10 | Seg-Sex, 9h-17h |\n| Instagram | 3-5 | Seg-Sex, 12h |\n\n---\n\n## Content Mix\n\n| Tipo | % | Exemplo |\n|---|---|---|\n| Educacional | 40% | Frameworks, how-tos |\n| Storytelling | 25% | Experiências, lições |\n| Social proof | 15% | Cases, resultados |\n| Produto | 10% | Features, updates |\n| Cultura | 10% | Time, bastidores |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) integra social media com CRM: leads do social são capturados automaticamente e entram no pipeline de vendas.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-social-media-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-04",
+    readTime: "5 min"
+  },
+  {
+    id: 2091,
+    title: "<span>Copywriting B2B</span> Os Frameworks de Copy que Convertem em Landing Pages e Emails",
+    slug: "copywriting-b2b-frameworks-copy-convertem-landing-pages-emails",
+    excerpt: "Copywriting B2B não é criativo. É estratégico. AIDA, PAS, BAB — os frameworks comprovados para escrever copy que converte em landing pages, emails e ads.",
+    content: `# Copywriting B2B: Frameworks que Convertem\n\nCopywriting B2B não é sobre ser criativo. É sobre ser claro, relevante e persuasivo. Os melhores copywriters B2B usam frameworks comprovados.\n\n---\n\n## Os Frameworks Essenciais\n\n### AIDA (Landing Pages)\n\n| Fase | O que Fazer | Exemplo |\n|---|---|---|\n| Attention | Headline impactante | "Pare de perder 40% dos seus leads" |\n| Interest | Dados, fatos | "Empresas sem CRM perdem R$2M/ano" |\n| Desire | Benefícios + prova | "Clientes aumentaram vendas em 3x" |\n| Action | CTA claro | "Comece grátis agora" |\n\n### PAS (Cold Emails)\n\n| Fase | O que Fazer | Exemplo |\n|---|---|---|\n| Problem | Identificar a dor | "Sei que gerenciar pipeline no Excel é caótico" |\n| Agitate | Amplificar | "Quantos deals você perdeu por falta de follow-up?" |\n| Solution | Resolver | "Com [produto], follow-up é automático" |\n\n### BAB (Case Studies)\n\n| Fase | O que Fazer | Exemplo |\n|---|---|---|\n| Before | Situação antes | "Empresa X tinha 5% de conversion rate" |\n| After | Resultado | "Agora converte 18%" |\n| Bridge | Como | "Usando [produto] para automação" |\n\n---\n\n## Rules of B2B Copy\n\n| Regra | Detalhes |\n|---|---|\n| Clareza > criatividade | Se precisa explicar, reescreva |\n| Benefício > feature | "Venda mais" vs "Pipeline management" |\n| Específico > genérico | "37%" vs "muitos" |\n| Curto > longo | Menos palavras = mais leitura |\n| You > We | Fale sobre o cliente, não sobre você |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), templates de email e landing pages já vêm estruturados nos frameworks AIDA e PAS para maximizar conversão.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Marketing",
+    image: "/uploads/hero-copywriting-b2b.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-03",
+    readTime: "5 min"
+  },
+  {
+    id: 2092,
+    title: "<span>Marketing Ops</span> A Infraestrutura que Faz Marketing B2B Escalar",
+    slug: "marketing-ops-infraestrutura-marketing-b2b-escalar",
+    excerpt: "Marketing Ops é a infraestrutura que permite escalar. Sem MOps, marketing é artesanal. Com MOps, é uma máquina previsível de pipeline.",
+    content: `# Marketing Ops: A Infraestrutura que Faz Marketing B2B Escalar\n\nMarketing Ops (MOps) é a diferença entre marketing artesanal e marketing escalável. É a infraestrutura de dados, processos e automação que faz tudo funcionar.\n\n---\n\n## O que Marketing Ops Faz\n\n| Área | Responsabilidade | Impacto |\n|---|---|---|\n| Tech stack | Selecionar e integrar ferramentas | Eficiência |\n| Data management | Limpeza, enriquecimento, segmentação | Qualidade |\n| Process design | SLA com vendas, lead handoff | Velocidade |\n| Analytics | Dashboards, attribution, reporting | Visibilidade |\n| Automation | Workflows, triggers, scoring | Scale |\n| Compliance | GDPR, LGPD, CAN-SPAM | Legal |\n\n---\n\n## Marketing Tech Stack Ideal\n\n| Categoria | Ferramenta | Alternativa |\n|---|---|---|\n| CRM + Marketing | Funnels | HubSpot |\n| Analytics | GA4 + Looker Studio | Mixpanel |\n| Enrichment | Clearbit | Apollo |\n| Attribution | UTM + CRM | Bizible |\n| Content | WordPress/Blog nativo | Webflow |\n| Social | Buffer/Hootsuite | Sprout |\n\n---\n\n## SLA Marketing-Sales\n\n| Métrica | Marketing Promete | Sales Promete |\n|---|---|---|\n| MQLs/mês | 100 MQLs | — |\n| SLA de follow-up | — | < 4 horas |\n| Lead quality score | > 60 pontos | — |\n| Feedback loop | — | Disposição em 48h |\n| Pipeline target | 3x quota | Close 20% |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) unifica CRM, automação, landing pages e analytics, eliminando a necessidade de 5-8 ferramentas separadas de MOps.\n\n---\n\n*Este artigo faz parte da série Marketing B2B da RevHackers.*`,
+    category: "Strategy",
+    image: "/uploads/hero-mkt-ops.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-02",
+    readTime: "5 min"
+  },
+  // =============================================
+  // EXPANSÃO: CRM & TECH STACK
+  // =============================================
+  {
+    id: 2093,
+    title: "<span>Migração de CRM</span> O Guia Sem Dor para Trocar de CRM sem Perder Dados",
+    slug: "migracao-crm-guia-trocar-sem-perder-dados",
+    excerpt: "70% das migrações de CRM falham por falta de planejamento. Este guia garante migração limpa: mapeamento de campos, limpeza de dados e go-live sem downtime.",
+    content: `# Migração de CRM: O Guia Sem Dor para Trocar de CRM\n\n70% das migrações de CRM falham ou excedem o prazo (Gartner). A causa? Falta de planejamento. Com o framework certo, migração é previsível.\n\n---\n\n## Checklist de Migração\n\n| Fase | Ação | Duração |\n|---|---|---|\n| 1. Audit | Mapear dados atuais | 1 semana |\n| 2. Clean | Limpar duplicatas e lixo | 1 semana |\n| 3. Map | Mapear campos old → new | 2-3 dias |\n| 4. Test | Migração em sandbox | 1 semana |\n| 5. Train | Treinar equipe | 1 semana |\n| 6. Go-live | Migrar produção | 1 dia |\n| 7. Validate | Verificar integridade | 2-3 dias |\n\n---\n\n## O que Migrar\n\n| Dado | Prioridade | Cuidado |\n|---|---|---|\n| Contatos | Crítico | Deduplicar antes |\n| Deals/Oportunidades | Crítico | Mapear stages |\n| Notas e atividades | Alto | Histórico importante |\n| Emails | Médio | Volume grande |\n| Automações | Alto | Recriar, não copiar |\n| Custom fields | Alto | Mapear 1:1 |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem importador nativo com mapeamento de campos e suporte dedicado para migração de qualquer CRM.\n\n---\n\n*Expansão do cluster CRM & Tech Stack.*`,
+    category: "CRM",
+    image: "/uploads/hero-crm-migration.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2026-01-01",
+    readTime: "5 min"
+  },
+  {
+    id: 2094,
+    title: "<span>Revenue Operations</span> Como Unificar Sales, Marketing e CS em Uma Máquina de Revenue",
+    slug: "revenue-operations-unificar-sales-marketing-cs-maquina-revenue",
+    excerpt: "RevOps não é mais opcional. Empresas com RevOps crescem 19% mais rápido. Veja como unificar dados, processos e métricas de toda a operação de receita.",
+    content: `# Revenue Operations: Unificando Sales, Marketing e CS\n\nEmpresas com Revenue Operations crescem 19% mais rápido e são 15% mais lucrativas (Forrester). RevOps elimina silos entre Sales, Marketing e CS.\n\n---\n\n## RevOps vs Silos\n\n| Aspecto | Silos | RevOps |\n|---|---|---|\n| Dados | Cada time tem o seu | Uma fonte de verdade |\n| Métricas | Cada time mede diferente | Revenue metrics unificadas |\n| Processos | Desconectados | End-to-end integrados |\n| Tech stack | Ferramentas separadas | Stack unificado |\n| Resultado | Culpa entre times | Responsabilidade compartilhada |\n\n---\n\n## Os 3 Pilares de RevOps\n\n| Pilar | Foco | Métricas |\n|---|---|---|\n| Process | Otimizar o funil end-to-end | Velocity, conversion rates |\n| Platform | Tech stack unificado | Data quality, integrations |\n| People | Alinhamento entre times | SLA compliance, NPS interno |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) é a plataforma ideal para RevOps: CRM + Marketing + Automação em um stack unificado.\n\n---\n\n*Expansão do cluster CRM & Tech Stack.*`,
+    category: "Strategy",
+    image: "/uploads/hero-revenue-ops.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-31",
+    readTime: "5 min"
+  },
+  {
+    id: 2095,
+    title: "<span>CRM Mobile</span> Como Vender Mais com CRM no Celular — Field Sales e Reuniões",
+    slug: "crm-mobile-vender-mais-celular-field-sales-reunioes",
+    excerpt: "65% dos vendedores que usam CRM mobile atingem quota. Só 22% dos que não usam conseguem. CRM no celular é a diferença entre vender e perder deals.",
+    content: `# CRM Mobile: Como Vender Mais com CRM no Celular\n\n65% dos vendedores que usam CRM mobile atingem quota vs 22% dos que não usam (Nucleus Research). O celular é onde o vendedor vive — o CRM precisa estar lá.\n\n---\n\n## Use Cases de CRM Mobile\n\n| Situação | O que o Vendedor Faz | Resultado |\n|---|---|---|\n| Antes da reunião | Revisar histórico do contato | Preparação |\n| Na reunião | Tomar notas, criar tasks | Registro imediato |\n| Pós-reunião | Atualizar stage, agendar follow-up | Nenhum deal esquecido |\n| No trânsito | Ouvir notas, ligar para leads | Produtividade |\n| No evento | Escanear cartão, criar contato | Captura rápida |\n\n---\n\n## Features Essenciais\n\n| Feature | Por que Importa |\n|---|---|\n| Offline mode | Funciona sem internet |\n| Push notifications | Alertas de atividades |\n| Click-to-call | Liga direto do CRM |\n| Voice notes | Notas por voz |\n| GPS check-in | Log de visitas |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem app mobile nativo para iOS e Android com todas essas features.\n\n---\n\n*Expansão do cluster CRM & Tech Stack.*`,
+    category: "CRM",
+    image: "/uploads/hero-crm-mobile.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-30",
+    readTime: "4 min"
+  },
+  {
+    id: 2096,
+    title: "<span>Sales Forecasting</span> Como Prever Revenue com Precisão Usando Seu CRM",
+    slug: "sales-forecasting-prever-revenue-precisao-usando-crm",
+    excerpt: "Apenas 45% dos forecast de vendas são precisos. Com dados de CRM limpos e metodologia correta, precisão sobe para 80%+. Veja os 4 métodos de forecast.",
+    content: `# Sales Forecasting: Como Prever Revenue com Precisão\n\nApenas 45% dos forecast de vendas são precisos (CSO Insights). A causa? Dados ruins, pipeline inflado e achismo. Com CRM limpo e método, precisão sobe para 80%+.\n\n---\n\n## Os 4 Métodos de Forecast\n\n| Método | Como Funciona | Precisão |\n|---|---|---|\n| Pipeline-based | Stage × probability | 50-65% |\n| Historical | Médias históricas | 55-70% |\n| Rep estimate | Vendedor estima | 40-55% |\n| AI/ML | Algoritmo multi-variável | 75-90% |\n\n---\n\n## Pipeline-Based Forecast\n\n| Stage | Probability | Weighted Value |\n|---|---|---|\n| Qualified | 10% | Deal × 0.10 |\n| Discovery | 25% | Deal × 0.25 |\n| Proposal | 50% | Deal × 0.50 |\n| Negotiation | 75% | Deal × 0.75 |\n| Verbal | 90% | Deal × 0.90 |\n\n---\n\n## Cadência de Forecast\n\n| Frequência | Ação |\n|---|---|\n| Diário | Atualizar pipeline |\n| Semanal | Review com manager |\n| Mensal | Forecast formal |\n| Trimestral | Forecast board |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) calcula forecast automaticamente baseado em stages, probabilidades e histórico de win rates.\n\n---\n\n*Expansão do cluster CRM & Tech Stack.*`,
+    category: "CRM",
+    image: "/uploads/hero-sales-forecast-crm.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-29",
+    readTime: "5 min"
+  },
+  {
+    id: 2097,
+    title: "<span>Integrações de CRM</span> As 15 Integrações Essenciais para um CRM Completo",
+    slug: "integracoes-crm-15-integracoes-essenciais-crm-completo",
+    excerpt: "Um CRM isolado é um CRM morto. As integrações certas transformam o CRM em hub central de revenue. Veja as 15 integrações que todo CRM B2B precisa.",
+    content: `# Integrações de CRM: As 15 Essenciais\n\nUm CRM sem integrações é uma agenda glorificada. As integrações certas transformam o CRM em hub central de toda a operação de revenue.\n\n---\n\n## As 15 Integrações\n\n| Categoria | Integração | Para que |\n|---|---|---|\n| Email | Gmail/Outlook | Sync bidirecional |\n| Calendário | Google Calendar | Booking meetings |\n| Chamadas | Aircall/Twilio | Click-to-call + log |\n| WhatsApp | WhatsApp Business | Mensagens no CRM |\n| Enriquecimento | Clearbit/Apollo | Auto-fill de dados |\n| Lead capture | Typeform/Website forms | Leads automáticos |\n| Pagamento | Stripe/PagSeguro | Revenue tracking |\n| Contrato | DocuSign/PandaDoc | Assinatura digital |\n| Analytics | GA4/Mixpanel | UTM tracking |\n| Social | LinkedIn | Social selling |\n| Ads | Google/Meta Ads | Lead source |\n| Chat | Intercom/Drift | Conversational |\n| Suporte | Zendesk/Freshdesk | CS tickets |\n| BI | Looker Studio/Power BI | Dashboards |\n| Automação | Zapier/Make | Conectar tudo |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem 90% dessas integrações nativas, eliminando a necessidade de conectores externos.\n\n---\n\n*Expansão do cluster CRM & Tech Stack.*`,
+    category: "CRM",
+    image: "/uploads/hero-crm-integracoes.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-28",
+    readTime: "4 min"
+  },
+  // =============================================
+  // EXPANSÃO: IA & AUTOMAÇÃO
+  // =============================================
+  {
+    id: 2098,
+    title: "<span>IA Preditiva em Vendas</span> Como Antecipar Quais Deals Vão Fechar",
+    slug: "ia-preditiva-vendas-antecipar-deals-fechar",
+    excerpt: "IA preditiva analisa padrões históricos para prever quais deals vão fechar, quais vão estagnar e onde investir tempo. Menos achismo, mais dados.",
+    content: `# IA Preditiva em Vendas: Antecipando Quais Deals Vão Fechar\n\nIA preditiva usa machine learning para analisar padrões de deals ganhos e perdidos. O resultado? Seu time foca nos deals certos.\n\n---\n\n## O que IA Preditiva Analisa\n\n| Variável | Impacto |\n|---|---|\n| Velocidade entre stages | Alto |\n| Engajamento do contato | Alto |\n| Número de stakeholders | Médio |\n| Valor do deal | Médio |\n| Histórico do vendedor | Alto |\n| Industry/vertical | Médio |\n| Source do lead | Alto |\n\n---\n\n## Tipos de Predição\n\n| Tipo | O que Prevê | Ação |\n|---|---|---|\n| Win probability | % de fechar | Priorizar |\n| Churn risk | % de cancelar | Intervir |\n| Expansion signal | Potencial de upsell | Oferecer |\n| Lead score | Qualidade do lead | Rotear |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) usa scoring inteligente que combina atividade, engajamento e dados demográficos para priorizar deals.\n\n---\n\n*Expansão do cluster IA & Automação.*`,
+    category: "IA",
+    image: "/uploads/hero-ai-predictive.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-27",
+    readTime: "5 min"
+  },
+  {
+    id: 2099,
+    title: "<span>IA Conversacional</span> Chatbots e Assistentes de IA que Vendem 24/7",
+    slug: "ia-conversacional-chatbots-assistentes-vendem-24-7",
+    excerpt: "IA conversacional qualifica leads, agenda reuniões e responde perguntas 24/7. O SDR que nunca dorme. Veja como implementar chatbots que vendem.",
+    content: `# IA Conversacional: Chatbots que Vendem 24/7\n\nIA conversacional é o SDR que nunca dorme, nunca está de mau humor e nunca esquece o follow-up. Empresas que usam chatbot AI geram 35% mais leads qualificados.\n\n---\n\n## Tipos de IA Conversacional\n\n| Tipo | Inteligência | Uso |\n|---|---|---|\n| Rule-based | Fluxos fixos | FAQ, routing |\n| NLP chatbot | Entende linguagem | Qualificação |\n| GPT-powered | Conversa natural | Vendas, suporte |\n| Voice AI | Ligações automáticas | Outbound |\n\n---\n\n## Use Cases em Vendas\n\n| Use Case | Como Funciona | Resultado |\n|---|---|---|\n| Lead qualification | Perguntas BANT/MEDDPICC | Leads pré-qualificados |\n| Meeting booking | Verifica agenda + agenda | Meetings 24/7 |\n| FAQ | Responde objeções comuns | Self-service |\n| Re-engagement | Contata leads inativos | Pipeline reativado |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem chatbot nativo com AI que qualifica, responde e agenda reuniões diretamente no CRM.\n\n---\n\n*Expansão do cluster IA & Automação.*`,
+    category: "IA",
+    image: "/uploads/hero-ai-conversational.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-26",
+    readTime: "4 min"
+  },
+  {
+    id: 2100,
+    title: "<span>Automação No-Code</span> Como Criar Workflows Complexos sem Escrever Código",
+    slug: "automacao-no-code-criar-workflows-complexos-sem-codigo",
+    excerpt: "70% das automações de negócio podem ser criadas sem código. Zapier, Make e builders nativos democratizaram a automação. Veja os 10 workflows essenciais.",
+    content: `# Automação No-Code: Workflows Complexos sem Código\n\n70% das automações de negócio podem ser criadas sem uma linha de código. Ferramentas no-code democratizaram a automação para times de vendas e marketing.\n\n---\n\n## 10 Workflows Essenciais (No-Code)\n\n| Workflow | Trigger | Ação | Resultado |\n|---|---|---|---|\n| Lead routing | Novo lead | Distribuir por round-robin | Velocidade |\n| Welcome series | Form submit | 5 emails em 14 dias | Nurturing |\n| Deal alert | Deal > R$50k | Notificar manager | Visibilidade |\n| Follow-up task | Meeting acabou | Criar task em 24h | Disciplina |\n| Stage update | Email replied | Mover stage | Pipeline limpo |\n| Inactivity alert | 7 dias sem atividade | Email ao vendedor | Acompanhamento |\n| Win notification | Deal fechado | Slack + comemoração | Cultura |\n| Onboarding | Deal Won | Criar projeto CS | Handoff |\n| NPS trigger | 30 dias pós-venda | Enviar pesquisa | Feedback |\n| Renewal alert | 60 dias antes | Notificar CSM | Retenção |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem workflow builder visual drag-and-drop para criar todas essas automações sem código.\n\n---\n\n*Expansão do cluster IA & Automação.*`,
+    category: "Automação",
+    image: "/uploads/hero-nocode-automacao.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-25",
+    readTime: "4 min"
+  },
+  {
+    id: 2101,
+    title: "<span>Data Enrichment com IA</span> Como Enriquecer Leads Automaticamente com Dados",
+    slug: "data-enrichment-ia-enriquecer-leads-automaticamente-dados",
+    excerpt: "40% dos dados de CRM estão incompletos ou errados. Data enrichment com IA preenche automaticamente cargo, empresa, receita e tech stack dos seus leads.",
+    content: `# Data Enrichment com IA: Leads Completos Automaticamente\n\n40% dos dados de CRM estão incompletos (Salesforce). Data enrichment preenche automaticamente as lacunas: cargo, empresa, receita, tech stack.\n\n---\n\n## O que Data Enrichment Adiciona\n\n| Dado | Fonte | Valor |\n|---|---|---|\n| Cargo/título | LinkedIn | Personalização |\n| Empresa | Clearbit/Apollo | Qualificação |\n| Revenue | Crunchbase | ICP scoring |\n| Employees | LinkedIn | Segmentação |\n| Tech stack | BuiltWith | Relevância |\n| Funding | Crunchbase | Timing |\n| Email | Apollo/Hunter | Contactabilidade |\n| Phone | Apollo/ZoomInfo | Multi-canal |\n\n---\n\n## ROI de Data Enrichment\n\n| Métrica | Sem Enrichment | Com Enrichment |\n|---|---|---|\n| Lead quality score | 45% | 78% |\n| Personalization rate | 20% | 85% |\n| Reply rate | 5% | 12% |\n| Time to qualify | 15 min | 2 min |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) integra com Apollo, Clearbit e outros para enriquecer leads automaticamente ao entrarem no CRM.\n\n---\n\n*Expansão do cluster IA & Automação.*`,
+    category: "IA",
+    image: "/uploads/hero-ai-data-enrichment.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-24",
+    readTime: "4 min"
+  },
+  // =============================================
+  // EXPANSÃO: CS & RETENÇÃO
+  // =============================================
+  {
+    id: 2102,
+    title: "<span>CS Playbooks</span> Os 7 Playbooks Essenciais de Customer Success",
+    slug: "cs-playbooks-7-playbooks-essenciais-customer-success",
+    excerpt: "Playbooks transformam CS de reativo em proativo. Os 7 playbooks essenciais: Onboarding, Red Account, Renewal, Expansion, Advocacy, Risk e Escalation.",
+    content: `# CS Playbooks: Os 7 Essenciais\n\nPlaybooks transformam CS de "apagar incêndio" em processo previsível. Veja os 7 que todo time de CS precisa.\n\n---\n\n## Os 7 Playbooks\n\n| Playbook | Trigger | Ação | Resultado |\n|---|---|---|---|\n| Onboarding | Novo cliente | 90 dias de ativação | Time-to-value rápido |\n| Red Account | Health score < 40 | Intervenção imediata | Prevenção de churn |\n| Renewal | 90 dias antes | Preparação + proposta | Renovação |\n| Expansion | Health > 80 + usage alto | Upsell/cross-sell | NRR > 130% |\n| Advocacy | NPS 9-10 | Pedir case/referral | Marketing social proof |\n| Risk | Usage caindo | Re-engagement | Evitar churn |\n| Escalation | Ticket crítico | VP intervention | Resolução rápida |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), cada playbook é um workflow automatizado com triggers, tasks e escalation rules.\n\n---\n\n*Expansão do cluster CS & Retenção.*`,
+    category: "CS",
+    image: "/uploads/hero-cs-playbooks.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-23",
+    readTime: "4 min"
+  },
+  {
+    id: 2103,
+    title: "<span>NPS Avançado</span> Como Usar NPS para Prever Churn e Impulsionar Growth",
+    slug: "nps-avancado-usar-prever-churn-impulsionar-growth",
+    excerpt: "NPS básico é número. NPS avançado é sistema de revenue. Segment por cohort, correlacione com churn e transforme detratores em promotores.",
+    content: `# NPS Avançado: Prevendo Churn e Impulsionando Growth\n\nNPS básico = perguntar e calcular score. NPS avançado = segmentar, analisar e agir em tempo real.\n\n---\n\n## NPS como Sistema de Revenue\n\n| Segment | Score | Ação | Revenue Impact |\n|---|---|---|---|\n| Promoters (9-10) | > 50% | Referral + case study | +Revenue |\n| Passives (7-8) | 20-40% | Engajamento + valor | Proteção |\n| Detractors (0-6) | < 15% | Rescue + intervenção | Evitar churn |\n\n---\n\n## Cadência de NPS\n\n| Tipo | Frequência | Objetivo |\n|---|---|---|\n| Relational NPS | Trimestral | Satisfação geral |\n| Transactional NPS | Pós-interação | Experiência specific |\n| Product NPS | Pós-feature | Product-market fit |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), pesquisas NPS são automatizadas com segmentação e workflows de follow-up por score.\n\n---\n\n*Expansão do cluster CS & Retenção.*`,
+    category: "CS",
+    image: "/uploads/hero-nps-advanced.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-22",
+    readTime: "4 min"
+  },
+  {
+    id: 2104,
+    title: "<span>Tech-Touch CS</span> Como Gerenciar 500+ Clientes com Automação Inteligente",
+    slug: "tech-touch-cs-gerenciar-500-clientes-automacao-inteligente",
+    excerpt: "High-touch não escala. Tech-touch gerencia 500+ clientes por CSM com automação, in-app messaging e self-service. Veja o playbook completo.",
+    content: `# Tech-Touch CS: Gerenciando 500+ Clientes com Automação\n\nHigh-touch = 1 CSM para 20 clientes (caro). Tech-touch = 1 CSM para 500+ (escalável). A qualidade da experiência pode ser igual com automação inteligente.\n\n---\n\n## Tech-Touch vs High-Touch\n\n| Aspecto | High-Touch | Tech-Touch |\n|---|---|---|\n| Ratio CSM:Cliente | 1:20 | 1:500+ |\n| Custo por cliente | Alto | Baixo |\n| Personalização | Manual | Automatizada |\n| Escalabilidade | Limitada | Ilimitada |\n| Experiência | Premium | Boa (se bem feito) |\n\n---\n\n## Componentes de Tech-Touch\n\n| Componente | Ferramenta | Objetivo |\n|---|---|---|\n| Onboarding automatizado | Email drip | Time-to-value |\n| In-app guides | Tooltips, tours | Ativação |\n| Health alerts | Scoring automático | Intervenção seletiva |\n| Self-service | Knowledge base | Reduzir tickets |\n| Webinars | Group training | Educação em escala |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) automatiza toda a jornada tech-touch com workflows, emails e alertas inteligentes.\n\n---\n\n*Expansão do cluster CS & Retenção.*`,
+    category: "CS",
+    image: "/uploads/hero-cs-tech-touch.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-21",
+    readTime: "4 min"
+  },
+  {
+    id: 2105,
+    title: "<span>Customer Advisory Board</span> Como Criar um Conselho de Clientes que Direciona Produto",
+    slug: "customer-advisory-board-criar-conselho-clientes-direciona-produto",
+    excerpt: "Um Customer Advisory Board (CAB) é o grupo de clientes VIP que influencia roadmap e se tornam evangelistas. Veja como criar e gerenciar.",
+    content: `# Customer Advisory Board: Conselho de Clientes que Direciona Produto\n\nUm CAB é o grupo de 10-20 clientes top que participam ativamente do futuro do produto. Eles influenciam roadmap, validam features e se tornam advocates.\n\n---\n\n## Estrutura do CAB\n\n| Aspecto | Recomendação |\n|---|---|\n| Tamanho | 10-20 membros |\n| Perfil | Top clientes, power users |\n| Frequência | Trimestral |\n| Formato | Virtual + 1 presencial/ano |\n| Duration | 2h por sessão |\n\n---\n\n## Benefícios\n\n| Para o Produto | Para o Cliente |\n|---|---|\n| Feedback direto | Influência no roadmap |\n| Validação de features | Acesso antecipado |\n| Redução de churn | Networking VIP |\n| Cases e referrals | Reconhecimento |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), membros do CAB são tagados como VIP com workflows exclusivos e comunicação personalizada.\n\n---\n\n*Expansão do cluster CS & Retenção.*`,
+    category: "CS",
+    image: "/uploads/hero-customer-advisory.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-20",
+    readTime: "4 min"
+  },
+  {
+    id: 2106,
+    title: "<span>CS como Centro de Revenue</span> Como Transformar CS de Custo em Máquina de Receita",
+    slug: "cs-centro-revenue-transformar-custo-maquina-receita",
+    excerpt: "CS não é custo. É a maior fonte de revenue da empresa. Expansão, NRR e referrals podem gerar mais revenue que novas vendas. Veja como monetizar CS.",
+    content: `# CS como Centro de Revenue: De Custo a Máquina de Receita\n\nExpandir um cliente existente custa 5-10x menos que adquirir novo. CS bem feito gera mais revenue que new business.\n\n---\n\n## CS Revenue Streams\n\n| Stream | Contribuição | Como |\n|---|---|---|\n| Renewal | 80-95% GRR | Manter clientes |\n| Expansion | 20-40% NRR extra | Upsell/cross-sell |\n| Referral | 15-25% new pipeline | Clientes indicando |\n| Advocacy | Reduz CAC | Cases, reviews |\n\n---\n\n## NRR (Net Revenue Retention)\n\n| NRR | Status | Significado |\n|---|---|---|\n| > 130% | Excelente | Crescimento orgânico |\n| 110-130% | Bom | Expansão saudável |\n| 100-110% | OK | Estável |\n| < 100% | Problema | Churn > expansão |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) rastreia expansion revenue, NRR e referrals por CSM, transformando CS em centro de profit.\n\n---\n\n*Expansão do cluster CS & Retenção.*`,
+    category: "CS",
+    image: "/uploads/hero-cs-revenue.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-19",
+    readTime: "4 min"
+  },
+  // =============================================
+  // EXPANSÃO: GROWTH & DEMANDA
+  // =============================================
+  {
+    id: 2107,
+    title: "<span>Referral Engine</span> Como Construir uma Máquina de Indicação B2B",
+    slug: "referral-engine-construir-maquina-indicacao-b2b",
+    excerpt: "Referral é o canal com maior win rate (78%) e menor CAC. Mas funciona só se for sistematizado. Veja como construir um referral engine B2B.",
+    content: `# Referral Engine: Máquina de Indicação B2B\n\nReferrals têm 78% win rate vs 30% para leads normais (Texas Tech). Mas apenas 11% dos vendedores pedem indicação. É revenue na mesa.\n\n---\n\n## Framework de Referral\n\n| Passo | Ação | Timing |\n|---|---|---|\n| 1. Identify | Selecionar top clientes | Mensal |\n| 2. Define | Criar programa estruturado | Setup |\n| 3. Ask | Pedir indicação (método) | Pós-sucesso |\n| 4. Reward | Benefício para quem indica | Após conversão |\n| 5. Track | Medir e otimizar | Contínuo |\n\n---\n\n## Tipos de Reward\n\n| Reward | Para quem | Eficácia |\n|---|---|---|\n| Desconto no plano | SMB | Alta |\n| Feature upgrade | Mid-market | Alta |\n| Gift card | Qualquer | Média |\n| Doação/charity | Enterprise | Alta |\n| Co-marketing | Parceiros | Alta |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), referrals são rastreados com source tracking e workflows de recompensa automatizados.\n\n---\n\n*Expansão do cluster Growth & Demanda.*`,
+    category: "Growth",
+    image: "/uploads/hero-referral-engine.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-18",
+    readTime: "4 min"
+  },
+  {
+    id: 2108,
+    title: "<span>A/B Testing B2B</span> O Guia para Testes que Realmente Movem Métricas",
+    slug: "ab-testing-b2b-guia-testes-realmente-movem-metricas",
+    excerpt: "90% dos A/B tests falham porque testam a coisa errada. Em B2B, teste o que impacta pipeline: messaging, pricing, CTA e fluxos de conversão.",
+    content: `# A/B Testing B2B: Testes que Movem Métricas\n\n90% dos testes não geram resultado porque testam coisas triviais. Em B2B, teste o que impacta revenue.\n\n---\n\n## O que Testar (Priorizado)\n\n| Teste | Impacto | Dificuldade |\n|---|---|---|\n| Pricing page | Muito alto | Médio |\n| CTA text | Alto | Fácil |\n| Email subject line | Alto | Fácil |\n| Landing page headline | Alto | Fácil |\n| Form fields | Alto | Fácil |\n| Demo flow | Muito alto | Difícil |\n| Onboarding | Alto | Médio |\n\n---\n\n## Metodologia\n\n| Passo | Ação |\n|---|---|\n| 1. Hipótese | "Se mudarmos X, Y aumenta Z%" |\n| 2. Sample size | Calculadora de significância |\n| 3. Duração | Mínimo 2 semanas |\n| 4. Single variable | Testar 1 coisa por vez |\n| 5. Measure | Métrica primária + secundária |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem A/B testing nativo em landing pages, emails e workflows.\n\n---\n\n*Expansão do cluster Growth & Demanda.*`,
+    category: "Growth",
+    image: "/uploads/hero-ab-testing.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-17",
+    readTime: "4 min"
+  },
+  {
+    id: 2109,
+    title: "<span>Pricing para SaaS B2B</span> Os 5 Modelos que Maximizam Revenue e Retenção",
+    slug: "pricing-saas-b2b-5-modelos-maximizam-revenue-retencao",
+    excerpt: "Pricing é a alavanca de crescimento mais subestimada. Uma mudança de 1% no preço gera 11% de aumento em profit. Veja os 5 modelos de pricing.",
+    content: `# Pricing para SaaS B2B: Os 5 Modelos\n\nUma melhoria de 1% no pricing gera 11% de aumento em profit (McKinsey). É a alavanca mais poderosa que ninguém otimiza.\n\n---\n\n## Os 5 Modelos\n\n| Modelo | Como Funciona | Melhor Para |\n|---|---|---|\n| Per-seat | $ por usuário/mês | Collaboration tools |\n| Usage-based | $ por uso (API calls, emails) | Infrastructure |\n| Tiered | Planos fixos (Basic/Pro/Enterprise) | Maioria SaaS |\n| Freemium | Free + paid features | PLG |\n| Value-based | $ baseado em valor entregue | Enterprise |\n\n---\n\n## Pricing Metrics\n\n| Métrica | Target |\n|---|---|\n| ARPU | Crescendo Q/Q |\n| ACV | > R$12k (B2B) |\n| Expansion revenue | > 20% NRR extra |\n| Pricing power | > 90% mantêm após aumento |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) usa modelo tiered que escala com o tamanho do negócio do cliente.\n\n---\n\n*Expansão do cluster Growth & Demanda.*`,
+    category: "Strategy",
+    image: "/uploads/hero-pricing-saas.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-16",
+    readTime: "4 min"
+  },
+  {
+    id: 2110,
+    title: "<span>Growth Metrics</span> As 15 Métricas que Todo SaaS B2B Precisa Monitorar",
+    slug: "growth-metrics-15-metricas-todo-saas-b2b-monitorar",
+    excerpt: "Tem métrica demais? Foque em 15. De MRR a NPS, estas são as métricas que realmente importam para crescimento sustentável em SaaS B2B.",
+    content: `# Growth Metrics: As 15 Métricas Essenciais para SaaS B2B\n\nMuitas métricas = nenhuma métrica. Foque nestas 15 organizadas por stage.\n\n---\n\n## Métricas por Stage\n\n### Aquisição\n| Métrica | O que Mede | Target |\n|---|---|---|\n| CAC | Custo de aquisição | Reduzindo |\n| LTV:CAC | Eficiência | > 3:1 |\n| Payback period | Meses para ROI | < 12 meses |\n\n### Conversão\n| Métrica | O que Mede | Target |\n|---|---|---|\n| MQL → SQL | Qualidade do lead | > 30% |\n| SQL → Opp | Pipeline efficiency | > 50% |\n| Win rate | Fechamento | > 20% |\n\n### Revenue\n| Métrica | O que Mede | Target |\n|---|---|---|\n| MRR/ARR | Revenue recorrente | Crescendo |\n| ACV | Valor médio do contrato | Aumentando |\n| Pipeline velocity | Velocidade do $ | Acelerando |\n\n### Retenção\n| Métrica | O que Mede | Target |\n|---|---|---|\n| GRR | Retenção bruta | > 90% |\n| NRR | Retenção líquida | > 110% |\n| Churn rate | Cancelamento | < 5%/ano |\n\n### Satisfação\n| Métrica | O que Mede | Target |\n|---|---|---|\n| NPS | Satisfação geral | > 50 |\n| CSAT | Satisfação transacional | > 85% |\n| Time-to-value | Velocidade de ativação | < 30 dias |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) rastreia todas essas métricas nativamente com dashboards em tempo real.\n\n---\n\n*Expansão do cluster Growth & Demanda.*`,
+    category: "Growth",
+    image: "/uploads/hero-growth-metrics.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-15",
+    readTime: "5 min"
+  },
+  {
+    id: 2111,
+    title: "<span>Sales Enablement</span> Como Equipar Seu Time de Vendas para Fechar Mais",
+    slug: "sales-enablement-equipar-time-vendas-fechar-mais",
+    excerpt: "Sales enablement aumenta win rates em 15-25%. Não é só treinamento — é conteúdo certo, na hora certa, para o vendedor certo. Veja o framework.",
+    content: `# Sales Enablement: Equipando Vendedores para Fechar Mais\n\nSales enablement bem feito aumenta win rates em 15-25% (Highspot). É o sistema de dar ao vendedor tudo que precisa para vender.\n\n---\n\n## Os 4 Pilares\n\n| Pilar | O que Inclui | Resultado |\n|---|---|---|\n| Content | Battle cards, one-pagers, cases | Vendedor preparado |\n| Training | Onboarding, role-plays, coaching | Habilidade |\n| Tools | CRM, demos, proposals | Produtividade |\n| Data | Analytics, win/loss analysis | Decisões melhores |\n\n---\n\n## Battle Cards\n\n| Seção | Conteúdo |\n|---|---|\n| Overview | Value prop em 1 frase |\n| ICP | Quem compra |\n| Pains | Problemas que resolve |\n| Differentiators | Por que nós vs competidor |\n| Objections | Top 5 objeções + respostas |\n| Proof points | Números e cases |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) centraliza battle cards, templates e proposals em um hub acessível pelo CRM.\n\n---\n\n*Expansão do cluster Growth & Demanda.*`,
+    category: "Vendas",
+    image: "/uploads/hero-sales-enablement.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-14",
+    readTime: "4 min"
+  },
+  // =============================================
+  // EXPANSÃO: OUTBOUND & PROSPECÇÃO
+  // =============================================
+  {
+    id: 2112,
+    title: "<span>Data Quality em Outbound</span> Por que Seus Emails Não Chegam e Como Resolver",
+    slug: "data-quality-outbound-emails-nao-chegam-resolver",
+    excerpt: "30% das listas de prospecção têm dados ruins. Emails bouncing, telefones errados. Veja como garantir data quality antes de disparar.",
+    content: `# Data Quality em Outbound: Por que Seus Emails Não Chegam\n\n30% das listas de prospecção têm dados desatualizados (ZoomInfo). Data quality ruim = bounce alto = reputação destruída.\n\n---\n\n## Problemas de Data Quality\n\n| Problema | Impacto | Solução |\n|---|---|---|\n| Email inválido | Bounce > 5% | Verificar com NeverBounce |\n| Cargo errado | Mensagem irrelevante | Enriquecer com Apollo |\n| Empresa errada | Waste of time | Verificar manualmente |\n| Duplicatas | Spam perception | Deduplicar no CRM |\n| Dados antigos | Low relevance | Atualizar trimestral |\n\n---\n\n## Processo de Limpeza\n\n| Passo | Ação | Ferramenta |\n|---|---|---|\n| 1 | Verificar emails | NeverBounce, ZeroBounce |\n| 2 | Enriquecer dados | Apollo, Clearbit |\n| 3 | Deduplicar | CRM nativo |\n| 4 | Segmentar | ICP scoring |\n| 5 | Validar telefones | Numverify |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) detecta duplicatas automaticamente e integra com ferramentas de verificação de email.\n\n---\n\n*Expansão do cluster Outbound & Prospecção.*`,
+    category: "Vendas",
+    image: "/uploads/hero-outbound-data.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-13",
+    readTime: "4 min"
+  },
+  {
+    id: 2113,
+    title: "<span>Sales Coaching</span> O Framework para Desenvolver SDRs e AEs de Alta Performance",
+    slug: "sales-coaching-framework-desenvolver-sdrs-aes-alta-performance",
+    excerpt: "Empresas com sales coaching estruturado têm 28% mais win rate. Não é sobre corrigir — é sobre desenvolver. Veja o framework de coaching.",
+    content: `# Sales Coaching: Desenvolvendo SDRs e AEs de Alta Performance\n\nSales coaching estruturado gera 28% mais win rate (CSO Insights). O segredo? Não corrigir — desenvolver.\n\n---\n\n## Framework de Coaching\n\n| Sessão | Frequência | Foco | Duração |\n|---|---|---|---|\n| 1:1 pipeline review | Semanal | Deals específicos | 30 min |\n| Call review | Semanal | Ouvir e dar feedback | 30 min |\n| Role-play | Quinzenal | Praticar cenários | 45 min |\n| Shadowing | Mensal | Observar ao vivo | 1h |\n| Skills assessment | Trimestral | Avaliar evolução | 1h |\n\n---\n\n## Competências a Desenvolver\n\n| Competência | Para SDR | Para AE |\n|---|---|---|\n| Discovery | Perguntas de qualificação | Perguntas de diagnóstico |\n| Objection handling | Superar gatekeepers | Lidar com procurement |\n| Closing | Agendar reunião | Fechar deal |\n| Communication | Cold message | Proposta e apresentação |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), managers acessam analytics de atividade por rep para coaching data-driven.\n\n---\n\n*Expansão do cluster Outbound & Prospecção.*`,
+    category: "Vendas",
+    image: "/uploads/hero-sales-coaching.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-12",
+    readTime: "4 min"
+  },
+  {
+    id: 2114,
+    title: "<span>Handling Objeções</span> As 20 Objeções Mais Comuns em B2B e Como Responder",
+    slug: "handling-objecoes-20-objecoes-comuns-b2b-responder",
+    excerpt: "Toda venda B2B tem objeções. Preço, timing, competidor, inércia. As 20 objeções mais comuns com scripts de resposta prontos para usar.",
+    content: `# Handling Objeções: As 20 Mais Comuns em B2B\n\nObjeção não é rejeição — é pedido de informação. As 20 objeções mais comuns organizadas por tipo.\n\n---\n\n## Objeções de Preço\n\n| Objeção | Resposta |\n|---|---|\n| "É caro" | "Comparado a quê? Qual o custo de NÃO resolver esse problema?" |\n| "Não tem budget" | "Entendo. Se budget não fosse issue, faria sentido?" |\n| "Competidor é mais barato" | "É mais barato ou tem menos valor?" |\n\n## Objeções de Timing\n\n| Objeção | Resposta |\n|---|---|\n| "Agora não" | "O que mudaria em 3 meses?" |\n| "Estamos em projeto" | "Quando seria bom retomar?" |\n| "Fim de ano" | "E se começarmos o setup agora para ir live em janeiro?" |\n\n## Objeções de Autoridade\n\n| Objeção | Resposta |\n|---|---|\n| "Preciso falar com meu chefe" | "Posso participar dessa conversa?" |\n| "Não sou decisor" | "Quem mais deveria estar envolvido?" |\n\n## Objeções de Competidor\n\n| Objeção | Resposta |\n|---|---|\n| "Já uso [competidor]" | "E como está funcionando para [métrica]?" |\n| "Estamos avaliando 3 opções" | "O que é mais importante na avaliação?" |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), objection scripts ficam salvos como snippets para acesso rápido durante calls.\n\n---\n\n*Expansão do cluster Outbound & Prospecção.*`,
+    category: "Vendas",
+    image: "/uploads/hero-objection-handling.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-11",
+    readTime: "5 min"
+  },
+  {
+    id: 2115,
+    title: "<span>Outbound Reporting</span> Os Dashboards e KPIs que Todo Sales Manager Precisa",
+    slug: "outbound-reporting-dashboards-kpis-sales-manager",
+    excerpt: "Se você não mede, não melhora. Os 5 dashboards essenciais de outbound e as métricas que todo sales manager precisa acompanhar diariamente.",
+    content: `# Outbound Reporting: Dashboards e KPIs Essenciais\n\nUm sales manager sem dashboards é um piloto sem instrumentos. Veja os 5 dashboards que toda operação de outbound precisa.\n\n---\n\n## Os 5 Dashboards\n\n| Dashboard | Métricas | Frequência |\n|---|---|---|\n| Activity | Calls, emails, meetings | Diário |\n| Pipeline | Deals, stages, velocity | Semanal |\n| Conversion | MQL→SQL→Opp→Won | Semanal |\n| Revenue | MRR, ACV, forecast | Mensal |\n| Team | Performance por rep | Semanal |\n\n---\n\n## KPIs por Nível\n\n| Nível | KPIs | Frequência |\n|---|---|---|\n| SDR | Calls, meetings booked, SQL | Diário |\n| AE | Pipeline, win rate, ACV | Semanal |\n| Manager | Team quota, forecast, velocity | Semanal |\n| VP | Revenue, CAC, LTV:CAC | Mensal |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) gera todos esses dashboards automaticamente com dados do CRM em tempo real.\n\n---\n\n*Expansão do cluster Outbound & Prospecção.*`,
+    category: "Vendas",
+    image: "/uploads/hero-outbound-reporting.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-10",
+    readTime: "4 min"
+  },
+  // =============================================
+  // EXPANSÃO: MARKETING B2B
+  // =============================================
+  {
+    id: 2116,
+    title: "<span>Automação de Marketing Avançada</span> Workflows Multi-Step que Nutrem e Convertem",
+    slug: "automacao-marketing-avancada-workflows-multi-step-nutrem-convertem",
+    excerpt: "Automação básica é enviar email após form. Automação avançada é orquestrar jornadas multi-step com branching, scoring e engagement triggers.",
+    content: `# Automação de Marketing Avançada: Workflows Multi-Step\n\nAutomação básica = trigger → email. Automação avançada = orquestrar jornadas completas com lógica condicional e scoring.\n\n---\n\n## Workflow Avançado: Lead Nurturing\n\n| Step | Condição | Ação |\n|---|---|---|\n| 1 | Form submit | Email de welcome |\n| 2 | Abriu email? | SIM: Email 2 / NÃO: Re-send |\n| 3 | Clicou link? | SIM: Score +10 / NÃO: Wait 2d |\n| 4 | Score > 50? | SIM: Notificar SDR / NÃO: Continue nurture |\n| 5 | SDR contatou? | SIM: Move para pipeline / NÃO: Auto-email |\n\n---\n\n## Tipos de Workflow Avançado\n\n| Tipo | Uso | Complexidade |\n|---|---|---|\n| Linear | Onboarding simples | Baixa |\n| Branching | Segmentação dinâmica | Média |\n| Multi-channel | Email + SMS + task | Alta |\n| AI-powered | Decisão por ML | Muito alta |\n\n---\n\n## Implementação\n\nO [Funnels](https://usefunnels.io) tem workflow builder visual com branching, condições e multi-channel nativos.\n\n---\n\n*Expansão do cluster Marketing B2B.*`,
+    category: "Marketing",
+    image: "/uploads/hero-mkt-automation-adv.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-09",
+    readTime: "4 min"
+  },
+  {
+    id: 2117,
+    title: "<span>Webinar Playbook</span> Como Fazer Webinars B2B que Geram Pipeline Real",
+    slug: "webinar-playbook-fazer-webinars-b2b-geram-pipeline-real",
+    excerpt: "Webinars geram 20-40% de pipeline quando feitos certo. O segredo: conteúdo educacional + follow-up agressivo. Veja o playbook completo.",
+    content: `# Webinar Playbook: Gerando Pipeline com Webinars B2B\n\nWebinars bem feitos geram 20-40% de pipeline. A maioria das empresas erra no follow-up: 73% dos registrados nunca recebem contato pós-evento.\n\n---\n\n## Playbook por Fase\n\n| Fase | Ação | Timeline |\n|---|---|---|\n| Pré-evento | Promoção multi-canal | 3 semanas antes |\n| Evento | Conteúdo + Q&A | No dia |\n| Pós-evento | Follow-up segmentado | 24-48h depois |\n\n---\n\n## Follow-up Segmentado\n\n| Segmento | Critério | Follow-up |\n|---|---|---|\n| Attended + engaged | Fez perguntas, ficou até final | SDR call em 24h |\n| Attended + passive | Entrou mas não interagiu | Email com replay + CTA |\n| Registered + no-show | Registrou mas não veio | Email com replay |\n| Not registered | Público alvo | Promover replay |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), registros de webinar são leads automáticos com tags de engajamento e follow-up workflow.\n\n---\n\n*Expansão do cluster Marketing B2B.*`,
+    category: "Marketing",
+    image: "/uploads/hero-webinar-playbook.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-08",
+    readTime: "4 min"
+  },
+  {
+    id: 2118,
+    title: "<span>Case Study Playbook</span> Como Criar Cases que Vendem — Framework e Templates",
+    slug: "case-study-playbook-criar-cases-vendem-framework-templates",
+    excerpt: "Case studies são o conteúdo com maior impacto em vendas B2B. 73% dos buyers leem cases antes de decidir. Veja o framework para criar cases que convertem.",
+    content: `# Case Study Playbook: Cases que Vendem\n\n73% dos B2B buyers leem case studies antes de decidir (DemandGen). Cases são social proof em formato narrativo.\n\n---\n\n## Framework STAR\n\n| Seção | Conteúdo | Tamanho |\n|---|---|---|\n| Situation | Quem é o cliente, contexto | 2 parágrafos |\n| Task | Problema/desafio | 1 parágrafo |\n| Action | O que fizeram (com seu produto) | 3-4 parágrafos |\n| Result | Números e outcomes | Bullets com dados |\n\n---\n\n## Elementos de um Case Forte\n\n| Elemento | Por que Importa |\n|---|---|\n| Logo do cliente | Reconhecimento |\n| Quote do champion | Credibilidade |\n| Números antes/depois | Prova tangível |\n| Timeline | Velocidade de resultado |\n| Vertical/industry | Relevância para ICP |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), cases são integrados ao CRM e aparecem como sugestão contextual para vendedores.\n\n---\n\n*Expansão do cluster Marketing B2B.*`,
+    category: "Marketing",
+    image: "/uploads/hero-case-study.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-07",
+    readTime: "4 min"
+  },
+  {
+    id: 2119,
+    title: "<span>Calendar de Marketing</span> Como Planejar 12 Meses de Conteúdo B2B",
+    slug: "calendar-marketing-planejar-12-meses-conteudo-b2b",
+    excerpt: "Sem calendário, marketing é reativo. Com calendário, é máquina previsível. Veja como planejar 12 meses de conteúdo B2B alinhado a revenue.",
+    content: `# Calendário de Marketing: 12 Meses de Conteúdo B2B\n\nSem calendário = marketing reativo. Com calendário = conteúdo planejado alinhado a objetivos de revenue.\n\n---\n\n## Framework de 12 Meses\n\n| Mês | Tema | Conteúdo | Evento |\n|---|---|---|---|\n| Jan | Planejamento | Guias, templates | Webinar kickoff |\n| Fev | Benchmark | Reports, dados | — |\n| Mar | Produto | Launch, updates | Evento de produto |\n| Abr | Cases | Estudos de caso | Customer day |\n| Mai | Industry | Tendências | Conferência |\n| Jun | Mid-year | Review, ajustes | Webinar review |\n| Jul | Educação | How-tos, tutoriais | Workshop |\n| Ago | Community | User stories | Community event |\n| Set | Strategy | Frameworks | Roundtable |\n| Out | Product | Feature launches | Evento produto |\n| Nov | Black Friday | Promos, deals | Campaign |\n| Dez | Review | Wrap-up, previsões | Year-end webinar |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), campanhas são organizadas por trimestre com automações e tracking de resultado.\n\n---\n\n*Expansão do cluster Marketing B2B.*`,
+    category: "Marketing",
+    image: "/uploads/hero-mkt-calendar.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-06",
+    readTime: "4 min"
+  },
+  {
+    id: 2120,
+    title: "<span>Competitive Intel</span> Como Monitorar e Superar Competidores em B2B",
+    slug: "competitive-intel-monitorar-superar-competidores-b2b",
+    excerpt: "89% dos B2B buyers avaliam competidores. Se você não sabe o que eles oferecem, seu vendedor não sabe responder. Veja como montar competitive intel.",
+    content: `# Competitive Intelligence: Monitorando e Superando Competidores\n\n89% dos B2B buyers avaliam pelo menos 3 opções antes de decidir. Quem não conhece o competidor perde para quem conhece.\n\n---\n\n## Framework de Competitive Intel\n\n| Área | O que Monitorar | Ferramenta |\n|---|---|---|\n| Product | Features, pricing, roadmap | G2, Capterra |\n| Marketing | Messaging, content, ads | SimilarWeb, SEMRush |\n| Sales | Win/loss reasons, objections | CRM analysis |\n| Reviews | Pontos fortes/fracos | G2, TrustRadius |\n| People | Hires, org changes | LinkedIn |\n\n---\n\n## Battle Card por Competidor\n\n| Seção | Conteúdo |\n|---|---|\n| Overview | Quem são, positioning |\n| Strengths | Onde são fortes |\n| Weaknesses | Onde são fracos |\n| Our advantage | Por que somos melhor |\n| Landmines | Perguntas que prejudicam eles |\n| Traps | Perguntas que eles fazem sobre nós |\n| Win stories | Cases onde ganhamos deles |\n\n---\n\n## Implementação\n\nNo [Funnels](https://usefunnels.io), battle cards ficam acessíveis no CRM com win/loss tracking por competidor.\n\n---\n\n*Expansão do cluster Marketing B2B.*`,
+    category: "Strategy",
+    image: "/uploads/hero-competitive-intel.png",
+    author: { name: "Giulliano Alves", role: "CEO and Founder", avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png" },
+    date: "2025-12-05",
+    readTime: "4 min"
+  },
+  // =============================================
   // ARTIGOS ORIGINAIS (existentes)
   // =============================================
   {
@@ -723,7 +1518,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-12-25",
     readTime: "8 min",
@@ -739,7 +1534,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-09-05",
     readTime: "7 min",
@@ -755,7 +1550,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-07-27",
     readTime: "5 min"
@@ -785,7 +1580,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-11-11",
     readTime: "4 min"
@@ -897,7 +1692,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-05-25",
     readTime: "10 min",
@@ -913,7 +1708,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2025-05-20",
     readTime: "12 min",
@@ -1046,7 +1841,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-15",
     readTime: "6 min"
@@ -1062,7 +1857,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-03-05",
     readTime: "9 min"
@@ -1094,7 +1889,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-20",
     readTime: "8 min",
@@ -1111,7 +1906,7 @@ export const blogPosts: BlogPost[] = [
     author: {
       name: "Luna",
       role: "Analista de Marketing e Redatora",
-      avatar: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/693716430f6c8c68e5492413.jpeg"
+      avatar: "/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png"
     },
     date: "2024-02-15",
     readTime: "10 min"

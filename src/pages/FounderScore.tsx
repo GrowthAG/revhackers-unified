@@ -171,7 +171,7 @@ const FounderScore = () => {
 
             await submitPublicDiagnostic(
                 { ...enrichedData, phone: '' },
-                { answers, analysis: analysisResult, source: 'founder-score' },
+                { answers, diagnostic_type: 'founder', analysis: analysisResult, source: 'founder-score' },
                 score,
                 {
                     level: result.title,
@@ -346,7 +346,7 @@ const FounderScore = () => {
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
                                             className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
-                                                ? "bg-[#03FC3B] text-black border-[#03FC3B] shadow-[0_0_15px_rgba(3,252,59,0.4)] scale-[1.02]"
+                                                ? "bg-[#00CC6A] text-black border-[#00CC6A] shadow-[0_0_15px_rgba(0,204,106,0.4)] scale-[1.02]"
                                                 : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
@@ -388,7 +388,7 @@ const FounderScore = () => {
                     {/* GATE OVERLAY */}
                     {!hasSubmittedLead && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-500">
-                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-2xl relative overflow-hidden my-auto max-h-[90vh]">
+                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
                                 {/* Coluna Esquerda: Teaser */}
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
                                     <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
@@ -426,7 +426,7 @@ const FounderScore = () => {
                         {/* DASHBOARD HEADLINE - Padronizado */}
                         <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
                             <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#03FC3B]"></span>
+                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#00CC6A]"></span>
                                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
@@ -544,7 +544,7 @@ const FounderScore = () => {
                                                 Plano de Ação
                                             </h4>
                                             <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                Sua prioridade estratégica agora é: <strong className="!text-black bg-yellow-300 px-1">{insights.action}</strong>.
+                                                Sua prioridade estratégica agora é: <strong className="!text-black bg-[#00CC6A]/20 px-1">{insights.action}</strong>.
                                                 O custo de ignorar este ajuste é a perda de autoridade para concorrentes menos qualificados porém mais barulhentos.
                                             </p>
                                         </div>

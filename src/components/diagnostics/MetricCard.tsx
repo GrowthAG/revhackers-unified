@@ -16,8 +16,8 @@ export const MetricCard = ({ label, value, description, subtext, status = 'neutr
     const getStatusColor = (s: string) => {
         switch (s) {
             case 'success': return variant === 'dark' ? 'bg-revgreen' : 'bg-black';
-            case 'warning': return 'bg-yellow-400';
-            case 'critical': return 'bg-red-500';
+            case 'warning': return 'bg-zinc-400';
+            case 'critical': return variant === 'dark' ? 'bg-zinc-300' : 'bg-zinc-900';
             default: return variant === 'dark' ? 'bg-zinc-800' : 'bg-zinc-200';
         }
     };

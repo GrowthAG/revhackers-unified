@@ -58,8 +58,8 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				revgreen: {
-					DEFAULT: '#03FC3B',
-					accent: '#02D932'
+					DEFAULT: '#00CC6A',
+					accent: '#00B85E'
 				},
 			},
 			borderRadius: {
