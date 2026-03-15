@@ -29,10 +29,10 @@ serve(async (req) => {
             throw new Error('Segment is required');
         }
 
-        const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
+        const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-        if (!PERPLEXITY_API_KEY) {
-            console.warn('PERPLEXITY_API_KEY not set, returning empty enrichment');
+        if (!OPENAI_API_KEY) {
+            console.warn('OPENAI_API_KEY not set, returning empty enrichment');
             return new Response(JSON.stringify({
                 error: 'API not configured',
                 benchmark: null,
@@ -51,21 +51,21 @@ serve(async (req) => {
 
         // Execute requested enrichments
         if (enrichmentType === 'all' || enrichmentType === 'benchmark') {
-            results.benchmark = await enrichBenchmark(PERPLEXITY_API_KEY, segment, ticket, isB2B, reiContext);
+            results.benchmark = await enrichBenchmark(OPENAI_API_KEY, segment, ticket, isB2B, reiContext);
         }
 
         if (enrichmentType === 'all' || enrichmentType === 'personas') {
-            results.personas = await enrichPersonas(PERPLEXITY_API_KEY, segment, ticket, objective, reiContext);
+            results.personas = await enrichPersonas(OPENAI_API_KEY, segment, ticket, objective, reiContext);
         }
 
         if (enrichmentType === 'all' || enrichmentType === 'market') {
             // Pass competitors to market enrichment
-            results.market = await enrichMarket(PERPLEXITY_API_KEY, segment, reiContext, competitors);
+            results.market = await enrichMarket(OPENAI_API_KEY, segment, reiContext, competitors);
         }
 
         console.log('Strategic enrichment completed for segment:', segment);
 
-        return new Response(JSON.stringify({ result: results }), { // Fixed structure to match client expectance (result wrapper)
+        return new Response(JSON.stringify({ result: results }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });
@@ -79,44 +79,45 @@ serve(async (req) => {
     }
 });
 
-async function callPerplexity(apiKey: string, prompt: string): Promise<any> {
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+// ============================================================
+// OPENAI API CALL (GPT-4o-mini — replaces Perplexity sonar-reasoning-pro)
+// ============================================================
+
+async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'sonar-reasoning-pro',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é um consultor de negócios sênior, especialista em análise de mercado, construção de personas e estratégia de crescimento (Growth Hacking). Responda sempre com dados técnicos, realistas e focados no mercado brasileiro. A resposta DEVE ser APENAS um JSON válido.'
+                    content: 'Você é um consultor de negócios sênior, especialista em análise de mercado, construção de personas e estratégia de crescimento (Growth Hacking). Responda sempre com dados técnicos, realistas e focados no mercado brasileiro. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras.'
                 },
                 { role: 'user', content: prompt }
             ],
-            temperature: 0.1, // Lower temperature for more consistent JSON
+            temperature: 0.3,
         }),
     });
 
     if (!response.ok) {
-        throw new Error(`Perplexity API error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenAI API error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-        throw new Error('No content in response');
+        throw new Error('No content in OpenAI response');
     }
 
     let cleanContent = content.trim();
 
-    // Remove <think>...</think> blocks (reasoning from sonar-reasoning-pro)
-    const thinkRegex = /<think>[\s\S]*?<\/think>/gi;
-    cleanContent = cleanContent.replace(thinkRegex, '').trim();
-
-    // Remove markdown code blocks
+    // Remove markdown code blocks if present
     if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
     if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
     if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
@@ -131,8 +132,8 @@ async function callPerplexity(apiKey: string, prompt: string): Promise<any> {
     try {
         return JSON.parse(cleanContent);
     } catch (parseError) {
-        console.error('Failed to parse Perplexity response:', cleanContent.substring(0, 200));
-        throw new Error('Invalid JSON response from Perplexity');
+        console.error('Failed to parse OpenAI response:', cleanContent.substring(0, 200));
+        throw new Error('Invalid JSON response from OpenAI');
     }
 }
 
@@ -160,7 +161,7 @@ Retorne um JSON EXATAMENTE com esta estrutura (respeite as chaves):
 }`;
 
     try {
-        return await callPerplexity(apiKey, prompt);
+        return await callOpenAI(apiKey, prompt);
     } catch (error) {
         console.error('Benchmark enrichment failed:', error);
         return null;
@@ -198,7 +199,7 @@ Retorne um JSON EXATAMENTE com esta estrutura:
 Gere obrigatoriamente 3 personas detalhadas.`;
 
     try {
-        const result = await callPerplexity(apiKey, prompt);
+        const result = await callOpenAI(apiKey, prompt);
 
         // Add robust avatar URLs
         if (result?.personas && Array.isArray(result.personas)) {
@@ -228,7 +229,7 @@ async function enrichMarket(apiKey: string, segment: string, context?: string, c
 CONCORRENTES MENCIONADOS PELO CLIENTE (PRIORIDADE TOTAL NA ANÁLISE):
 ${competitors.map(c => `- ${c.nome} ${c.url ? '(' + c.url + ')' : ''}`).join('\n')}
 
-IMPORTANTE: Você deve pesquisar e analisar especificamente estes concorrentes acima, listando seus posicionamentos reais.
+IMPORTANTE: Você deve analisar especificamente estes concorrentes acima, listando seus posicionamentos reais.
 Se houver menos de 3 citados, complemente com outros players REAIS e RELEVANTES do mercado.
 `;
     }
@@ -239,7 +240,7 @@ Mercado Alvo: ${segment} (Brasil)
 ${competitorsContext}
 
 Tarefa: Análise estratégica de mercado e competitiva estilo "Consultoria Premium".
-Use dados reais da web para analisar os concorrentes citados.
+Analise os concorrentes citados com dados realistas.
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
@@ -248,11 +249,11 @@ Retorne um JSON EXATAMENTE com esta estrutura:
     { "titulo": "Nome da Tendência", "impacto": "Alto/Médio/Baixo", "descricao": "Explicação estratégica detalhada." }
   ],
   "concorrentes_benchmark": [
-    { 
-      "nome": "Nome do Concorrente", 
+    {
+      "nome": "Nome do Concorrente",
       "url": "URL se conhecida",
-      "pontos_fortes": "Lista de forças", 
-      "pontos_fracos": "Lista de fraquezas", 
+      "pontos_fortes": "Lista de forças",
+      "pontos_fracos": "Lista de fraquezas",
       "diferencial": "O 'moat' deles",
       "posicionamento": "Como eles se vendem no mercado"
     }
@@ -270,7 +271,7 @@ Retorne um JSON EXATAMENTE com esta estrutura:
 Gere de 3 a 5 concorrentes reais.`;
 
     try {
-        return await callPerplexity(apiKey, prompt);
+        return await callOpenAI(apiKey, prompt);
     } catch (error) {
         console.error('Market enrichment failed:', error);
         return null;

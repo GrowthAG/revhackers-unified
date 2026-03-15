@@ -6,44 +6,41 @@ const corsHeaders = {
 }
 
 // ============================================================
-// PERPLEXITY API CALL (follows enrich-strategic-data pattern)
+// OPENAI API CALL (GPT-4o-mini — same pattern as other edge functions)
 // ============================================================
 
-async function callPerplexity(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'llama-3.1-sonar-small-128k-online',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
             ],
-            temperature: 0.1,
+            temperature: 0.3,
         }),
     });
 
     if (!response.ok) {
-        throw new Error(`Perplexity API error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenAI API error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
-        throw new Error('No content in Perplexity response');
+        throw new Error('No content in OpenAI response');
     }
 
     let cleanContent = content.trim();
 
-    // Remove <think>...</think> blocks (reasoning from sonar-reasoning models)
-    const thinkRegex = /<think>[\s\S]*?<\/think>/gi;
-    cleanContent = cleanContent.replace(thinkRegex, '').trim();
-
-    // Remove markdown code blocks
+    // Remove markdown code blocks if present
     if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
     if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
     if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
@@ -58,7 +55,7 @@ async function callPerplexity(apiKey: string, systemPrompt: string, userPrompt: 
     try {
         return JSON.parse(cleanContent);
     } catch {
-        console.error('Failed to parse Perplexity response:', cleanContent.substring(0, 200));
+        console.error('Failed to parse OpenAI response:', cleanContent.substring(0, 200));
         throw new Error('Failed to parse AI response as JSON');
     }
 }
@@ -69,9 +66,9 @@ async function callPerplexity(apiKey: string, systemPrompt: string, userPrompt: 
 
 const SYSTEM_PROMPT = `Você é um analista de inteligência de mercado sênior focado em B2B e SaaS.
 Analise o segmento e objetivo fornecidos.
-Retorne APENAS um JSON válido (sem markdown) seguindo estritamente este esquema:
+Retorne APENAS um JSON válido (sem markdown, sem explicações extras) seguindo estritamente este esquema:
 {
-    "industry_trends": ["Tendência 1", "Tendência 2"],
+    "industry_trends": ["Tendência 1", "Tendência 2", "Tendência 3"],
     "competitor_benchmarks": [
         {"company_name": "Empresa A", "key_metric": "CAC estimado R$ X", "strategy_insight": "Usa estratégia Y"},
         {"company_name": "Empresa B", "key_metric": "Ticket Médio", "strategy_insight": "Foco em Enterprise"},
@@ -95,7 +92,13 @@ Retorne APENAS um JSON válido (sem markdown) seguindo estritamente este esquema
         { "name": "Nome 3", "role": "Cargo 3", "pain": "Dor 3", "trigger": "Gatilho 3", "message": "Msg 3", "wiifm": "Ganho 3" }
     ],
     "strategic_advice": "Um conselho matador em português focado em crescimento."
-}`;
+}
+
+REGRAS:
+- Baseie-se em dados reais de mercado. Cite empresas reais do segmento.
+- Seja específico nos números e métricas. Não use placeholders genéricos.
+- Todas as respostas em português brasileiro.
+- Responda APENAS com o JSON, sem texto adicional.`;
 
 // ============================================================
 // MAIN HANDLER
@@ -113,22 +116,31 @@ serve(async (req) => {
             throw new Error('Missing required fields: segment, objective');
         }
 
-        const apiKey = Deno.env.get('PERPLEXITY_API_KEY');
+        const apiKey = Deno.env.get('OPENAI_API_KEY');
         if (!apiKey) {
-            throw new Error('PERPLEXITY_API_KEY not configured');
+            throw new Error('OPENAI_API_KEY not configured');
         }
 
         console.log(`[market-intelligence] Processing: segment="${segment}", objective="${objective}"`);
 
-        const result = await callPerplexity(
+        const result = await callOpenAI(
             apiKey,
             SYSTEM_PROMPT,
             `Segmento: ${segment}. Objetivo: ${objective}`
         );
 
-        console.log(`[market-intelligence] Success: ${result.competitor_benchmarks?.length || 0} competitors found`);
+        // Validate required fields
+        const validated = {
+            industry_trends: Array.isArray(result.industry_trends) ? result.industry_trends : [],
+            competitor_benchmarks: Array.isArray(result.competitor_benchmarks) ? result.competitor_benchmarks.slice(0, 5) : [],
+            market_sizing: result.market_sizing || { tam: '', sam: '', som: '' },
+            personas: Array.isArray(result.personas) ? result.personas.slice(0, 3) : [],
+            strategic_advice: result.strategic_advice || ''
+        };
 
-        return new Response(JSON.stringify(result), {
+        console.log(`[market-intelligence] Success: ${validated.competitor_benchmarks.length} competitors, ${validated.personas.length} personas`);
+
+        return new Response(JSON.stringify(validated), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
