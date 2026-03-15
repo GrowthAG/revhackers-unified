@@ -230,12 +230,14 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
         return items;
     };
 
-    // Parse regular content (H2, H3, paragraphs, lists, quotes)
+    // Parse regular content (H2, H3, paragraphs, lists, quotes, tables, YouTube embeds)
     const parseRegularContent = (text: string, startKey: number) => {
         const lines = text.split('\n');
         const elements: JSX.Element[] = [];
         let currentParagraph: string[] = [];
         let currentList: string[] = [];
+        let currentTable: string[][] = [];
+        let tableHeader: string[] = [];
         let listType: 'ul' | 'ol' | null = null;
         let elementKey = startKey;
 
@@ -266,13 +268,99 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
             }
         };
 
+        const flushTable = () => {
+            if (tableHeader.length > 0 && currentTable.length > 0) {
+                elements.push(
+                    <div key={`table-wrap-${elementKey++}`} className="article-table-wrapper">
+                        <table className="article-table">
+                            <thead>
+                                <tr>
+                                    {tableHeader.map((cell, idx) => (
+                                        <th key={idx} dangerouslySetInnerHTML={{ __html: formatInlineStyles(cell) }} />
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentTable.map((row, rowIdx) => (
+                                    <tr key={rowIdx}>
+                                        {row.map((cell, cellIdx) => (
+                                            <td key={cellIdx} dangerouslySetInnerHTML={{ __html: formatInlineStyles(cell) }} />
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+            tableHeader = [];
+            currentTable = [];
+        };
+
+        const parseTableRow = (line: string): string[] => {
+            return line.split('|').filter((_, i, arr) => i > 0 && i < arr.length - 1).map(cell => cell.trim());
+        };
+
+        const isSeparatorRow = (line: string): boolean => {
+            return /^\|[\s\-:|]+\|$/.test(line.trim()) || /^\|(\s*-+\s*\|)+$/.test(line.trim());
+        };
+
         lines.forEach((line, index) => {
             const trimmedLine = line.trim();
 
             if (!trimmedLine) {
                 flushParagraph();
                 flushList();
+                flushTable();
                 return;
+            }
+
+            // YouTube embed [YOUTUBE:VIDEO_ID]
+            const youtubeMatch = trimmedLine.match(/^\[YOUTUBE:([a-zA-Z0-9_-]+)\]$/);
+            if (youtubeMatch) {
+                flushParagraph();
+                flushList();
+                flushTable();
+                elements.push(
+                    <div key={`yt-${elementKey++}`} className="article-youtube">
+                        <iframe
+                            width="100%"
+                            height="400"
+                            src={`https://www.youtube.com/embed/${youtubeMatch[1]}`}
+                            title="YouTube video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            style={{ borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}
+                        />
+                    </div>
+                );
+                return;
+            }
+
+            // Table row (starts with |)
+            if (trimmedLine.startsWith('|') && trimmedLine.endsWith('|')) {
+                flushParagraph();
+                flushList();
+
+                if (isSeparatorRow(trimmedLine)) {
+                    // This is the separator row after header, skip it
+                    return;
+                }
+
+                const cells = parseTableRow(trimmedLine);
+                if (tableHeader.length === 0) {
+                    // First row is header
+                    tableHeader = cells;
+                } else {
+                    currentTable.push(cells);
+                }
+                return;
+            }
+
+            // If we were in a table and hit a non-table line, flush
+            if (tableHeader.length > 0) {
+                flushTable();
             }
 
             // H2
@@ -361,6 +449,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
 
         flushParagraph();
         flushList();
+        flushTable();
 
         return { elements, nextKey: elementKey };
     };

@@ -320,6 +320,40 @@
 }
 
 /* ============================================
+   YouTube Embeds
+   ============================================ */
+
+.article-youtube {
+    margin: 32px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.article-youtube iframe {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .article-youtube iframe {
+        height: 240px;
+    }
+
+    .article-table-wrapper {
+        margin: 16px -12px;
+        border-radius: 6px;
+    }
+
+    .article-table {
+        font-size: 13px;
+    }
+
+    .article-table th,
+    .article-table td {
+        padding: 8px;
+    }
+}
+
+/* ============================================
    Responsive
    ============================================ */
 
