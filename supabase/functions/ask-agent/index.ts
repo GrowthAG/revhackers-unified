@@ -51,7 +51,7 @@ serve(async (req) => {
                 apiUrl = 'https://api.openai.com/v1/chat/completions';
                 apiKey = Deno.env.get('OPENAI_API_KEY');
                 requestBody = {
-                    model: model || 'gpt-4o',
+                    model: model || 'gpt-5.4',
                     messages: [
                         { role: 'system', content: finalSystemPrompt },
                         ...messages

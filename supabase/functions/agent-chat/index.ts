@@ -259,7 +259,7 @@ serve(async (req) => {
             const apiKey = Deno.env.get('OPENAI_API_KEY');
             if (!apiKey) throw new Error('OpenAI API Key missing');
 
-            const targetModel = model || 'gpt-5.2';
+            const targetModel = model || 'gpt-5.4';
             const isOasis = targetModel.includes('o1') || targetModel.includes('o3') || targetModel.includes('gpt-5');
 
             const createRawPayload = (mode: 'modern' | 'legacy') => {
@@ -305,7 +305,7 @@ serve(async (req) => {
         }
 
         // 1. RESOLVE AGENT IDENTITY FROM DATABASE
-        let targetModelId = model || 'gpt-5.2';
+        let targetModelId = model || 'gpt-5.4';
         let baseSystemPrompt = system_prompt || '';
         let agentName = 'Assistente';
         let dbAgent: any = null;

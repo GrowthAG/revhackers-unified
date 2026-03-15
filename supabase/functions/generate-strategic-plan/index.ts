@@ -382,7 +382,7 @@ CRITICAL_RULE_PORTUGUESE: TODO o conteúdo gerado DEVE ser 100% em PORTUGUÊS BR
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-5.4',
         messages: [
           { role: 'system', content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Respeite todas as tipagens documentadas.' },
           { role: 'user', content: prompt }

@@ -118,7 +118,7 @@ Retorne a análise em um objeto JSON exato:
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-4o',
+                model: 'gpt-5.4',
                 messages: [
                     { role: 'system', content: 'Responda APENAS com o JSON solicitado, válido e sem marcações Markdown.' },
                     { role: 'user', content: prompt }
