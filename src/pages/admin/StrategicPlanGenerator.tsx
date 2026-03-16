@@ -545,12 +545,73 @@ export default function StrategicPlanGenerator() {
             if (existingPlan) {
                 const diagData = { ...(existingPlan.diagnostic_data as any) };
                 if (!diagData.enriched_analysis) diagData.enriched_analysis = {};
-                diagData.enriched_analysis[type] = result;
+                
+                // Keep the exact same interface shape as the initial generation
+                if (type === 'market' || type === 'benchmark') {
+                     diagData.enriched_analysis.market = {
+                         ...(diagData.enriched_analysis.market || {}),
+                         ...result
+                     };
+                } else if (type === 'personas') {
+                     diagData.enriched_analysis.personas = {
+                         ...(diagData.enriched_analysis.personas || {}),
+                         ...result
+                     };
+                }
+
                 diagData.enriched_analysis.isDeepResearch = true;
+
+                // Also update the UI-facing persona_data!
+                const updatedPersonaData = { ...(existingPlan.persona_data || {}) };
+                if (type === 'benchmark' && result.concorrentes_benchmark) {
+                     updatedPersonaData.competitor_benchmarks = result.concorrentes_benchmark.map((c: any) => ({
+                         company_name: c.nome || 'Concorrente',
+                         domain: c.url || '',
+                         monthly_traffic: '-',
+                         domain_authority: 0,
+                         avg_cpc: '-',
+                         top_keywords: [],
+                         strengths: c.pontos_fortes || '',
+                         weaknesses: c.pontos_fracos || '',
+                     }));
+
+                     if (result.analise_swot_rapida) {
+                         updatedPersonaData.strategic_advice = `Oportunidades: ${(result.analise_swot_rapida.oportunidades || []).join('; ')}. Ameaças: ${(result.analise_swot_rapida.ameacas || []).join('; ')}.`;
+                         updatedPersonaData.key_differentiators = result.analise_swot_rapida.oportunidades;
+                     }
+                     if (result.tendencias_2025) {
+                          updatedPersonaData.industry_trends = result.tendencias_2025.map((t: any) =>
+                              typeof t === 'string' ? t : `${t.titulo}: ${t.descricao || t.impacto || ''}`
+                          );
+                     }
+                } else if (type === 'personas' && result.personas) {
+                     updatedPersonaData.personas = result.personas.map((p: any, i: number) => ({
+                          name: p.nome || `Persona ${i + 1}`,
+                          role: p.cargo || 'Decisor',
+                          age: p.idade ? parseInt(p.idade) : (35 + i * 5),
+                          location: 'Brasil',
+                          company_context: p.empresa_tipo || segment,
+                          bio: p.bio_curta || '',
+                          channels: p.canais_favoritos || ['LinkedIn', 'E-mail', 'WhatsApp'],
+                          personality: {
+                              analytical_creative: 30 + (i * 20),
+                              passive_active: 60 + (i * 10),
+                              reserved_extroverted: 45 + (i * 15),
+                              reactive_preventive: 40 + (i * 10)
+                          },
+                          pain: (p.dores_principais || []).join('. ') || 'A ser detalhado na consultoria.',
+                          trigger: (p.gatilhos_mentais || []).slice(0, 2).join('. ') || 'Pressão por resultados.',
+                          message: p.pitch_elevador || (p.ganhos_desejados || []).join(' - ') || 'Mensagem a ser definida.',
+                          wiifm: (p.ganhos_desejados || []).slice(0, 2).join('. ') || 'Resultado concreto e mensurável.',
+                     }));
+                }
 
                 const { data: updated, error } = await supabase
                     .from('strategic_plans')
-                    .update({ diagnostic_data: diagData as any })
+                    .update({ 
+                        diagnostic_data: diagData as any,
+                        persona_data: updatedPersonaData as any 
+                    })
                     .eq('id', existingPlan.id)
                     .select()
                     .single();
