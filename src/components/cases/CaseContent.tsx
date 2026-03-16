@@ -52,7 +52,7 @@ const CaseContent = ({ caseData }: CaseContentProps) => {
                   </span>
                 </div>
                 <p className={`text-base md:text-lg leading-relaxed ${isDark ? 'text-zinc-200' : 'text-zinc-900'}`}>
-                  {content.trim().replace(/^[:.—\s]+/, '')}
+                  {content.trim().replace(/^[:.\-\s]+/, '')}
                 </p>
               </div>
             );

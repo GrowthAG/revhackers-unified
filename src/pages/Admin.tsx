@@ -135,48 +135,77 @@ const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
   </div>
 );
 
-const ProjectRow = ({ project, navigate }: any) => (
-  <div
-    onClick={() => navigate(`/admin/jornada/${project.id}`)}
-    className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm hover:shadow-md"
-  >
-    <div className="flex items-center gap-4">
-      <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-300 group-hover:bg-zinc-900 group-hover:text-white transition-all font-bold text-xs">
-        {project.client_name?.charAt(0) || <Folder className="w-4 h-4" />}
-      </div>
-      <div>
-        <h3 className="text-xs font-bold text-zinc-900">{project.client_name || 'Projeto sem nome'}</h3>
-        <p className="text-[10px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1.5 uppercase tracking-wider">
-          {project.status === 'active' ? (
-            <span className="inline-flex items-center gap-1 text-[#00CC6A] font-bold">
-              Em Execução
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-zinc-400">
-              Pendente
-            </span>
-          )}
-          <span className="text-zinc-200">•</span>
-          <span>Q{project.quarter}/{project.year}</span>
-        </p>
-      </div>
-    </div>
+const TYPE_LABELS: Record<string, string> = {
+  crm_ops: 'CRM & RevOps',
+  CRM_CS_OPS: 'CRM & RevOps',
+  funnels_impl: 'Site & Funil',
+  founder: 'Founder',
+  content_seo: 'SEO',
+  consulting: '360\u00ba',
+  training: 'Treinamento',
+};
 
-    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-      <Button
-        variant="outline"
-        onClick={(e) => { e.stopPropagation(); navigate(`/admin/rei/${project.id}`); }}
-        className="h-7 text-[9px] font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:text-zinc-900 hover:border-zinc-200 transition-all px-3 rounded-lg"
-        title="Editar dados cadastrais"
-      >
-        Editar
-      </Button>
-      <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-300 hover:text-zinc-900">
-        <MoreHorizontal className="w-3.5 h-3.5" />
-      </Button>
+const ProjectRow = ({ project, navigate }: any) => {
+  const displayName = project.client_company || project.client_name || 'Projeto sem nome';
+  const displayInitial = displayName.charAt(0).toUpperCase();
+  const typeLabel = TYPE_LABELS[project.type] || project.type || '';
+  const duration = (project as any).project_duration || '';
+
+  return (
+    <div
+      onClick={() => navigate(`/admin/jornada/${project.id}`)}
+      className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm hover:shadow-md"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-300 group-hover:bg-zinc-900 group-hover:text-white transition-all font-bold text-xs">
+          {displayInitial}
+        </div>
+        <div>
+          <h3 className="text-xs font-bold text-zinc-900">{displayName}</h3>
+          <p className="text-[10px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1.5 uppercase tracking-wider">
+            {project.status === 'active' ? (
+              <span className="inline-flex items-center gap-1 text-[#00CC6A] font-bold">
+                Em Execu\u00e7\u00e3o
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-zinc-400">
+                Pendente
+              </span>
+            )}
+            <span className="text-zinc-200">\u2022</span>
+            {typeLabel && (
+              <>
+                <span>{typeLabel}</span>
+                <span className="text-zinc-200">\u2022</span>
+              </>
+            )}
+            {duration && (
+              <>
+                <span>{duration}</span>
+                <span className="text-zinc-200">\u2022</span>
+              </>
+            )}
+            <span>Q{project.quarter}/{project.year}</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="outline"
+          onClick={(e) => { e.stopPropagation(); navigate(`/admin/rei/${project.id}`); }}
+          className="h-7 text-[9px] font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:text-zinc-900 hover:border-zinc-200 transition-all px-3 rounded-lg"
+          title="Editar dados cadastrais"
+        >
+          Editar
+        </Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-300 hover:text-zinc-900">
+          <MoreHorizontal className="w-3.5 h-3.5" />
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const EmptyState = ({ navigate }: any) => (
   <div className="bg-zinc-50/30 rounded-xl border border-dashed border-zinc-200 p-12 flex flex-col items-center justify-center text-center">

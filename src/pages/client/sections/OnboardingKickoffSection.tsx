@@ -40,7 +40,7 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
-                    eyebrow="Onboarding — Etapa 1"
+                    eyebrow="Onboarding - Etapa 1"
                     titleLine1="O Kickoff"
                     titleLine2="Estratégico"
                     description="Transferência de contexto entre Vendas e Operação. Alinhamento absoluto de expectativas, prazos e responsáveis."

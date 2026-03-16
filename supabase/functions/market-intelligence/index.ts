@@ -6,7 +6,7 @@ const corsHeaders = {
 }
 
 // ============================================================
-// OPENAI API CALL (GPT-4o-mini — same pattern as other edge functions)
+// OPENAI API CALL (GPT-4o-mini - same pattern as other edge functions)
 // ============================================================
 
 async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
@@ -66,6 +66,7 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
 
 const SYSTEM_PROMPT = `Você é um analista de inteligência de mercado sênior focado em B2B e SaaS.
 Analise o segmento e objetivo fornecidos.
+NUNCA use o caractere em dash (travessão longo) em nenhum campo - use apenas hífen simples (-), dois pontos (:) ou ponto (.).
 Retorne APENAS um JSON válido (sem markdown, sem explicações extras) seguindo estritamente este esquema:
 {
     "industry_trends": ["Tendência 1", "Tendência 2", "Tendência 3"],

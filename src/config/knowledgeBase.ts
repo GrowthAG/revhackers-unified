@@ -1,5 +1,5 @@
 /**
- * Base de Conhecimento — Frameworks Estratégicos
+ * Base de Conhecimento - Frameworks Estratégicos
  *
  * Conceitos extraídos de livros de referência que informam a geração
  * de planos estratégicos pela IA. Esses frameworks são injetados
@@ -7,17 +7,17 @@
  * em metodologias comprovadas.
  *
  * Fontes:
- * - "Onboarding Orquestrado" — Donna Weber
- * - "Receita Previsível" — Aaron Ross & Marylou Tyler
- * - "Rápido e Devagar" — Daniel Kahneman
- * - "Customer Success" — Dan Steinman, Lincoln Murphy & Nick Mehta
- * - "The Trusted Advisor" — David Maister
+ * - "Onboarding Orquestrado" - Donna Weber
+ * - "Receita Previsível" - Aaron Ross & Marylou Tyler
+ * - "Rápido e Devagar" - Daniel Kahneman
+ * - "Customer Success" - Dan Steinman, Lincoln Murphy & Nick Mehta
+ * - "The Trusted Advisor" - David Maister
  */
 
 // ─── Onboarding Orquestrado (Donna Weber) ─────────────────────────────
 // A metodologia que fundamenta toda a jornada de onboarding da RevHackers
 export const ONBOARDING_ORQUESTRADO = {
-  source: 'Onboarding Orquestrado — Donna Weber',
+  source: 'Onboarding Orquestrado - Donna Weber',
 
   // As 6 Etapas do Onboarding Orquestrado
   stages: [
@@ -95,10 +95,10 @@ export const ONBOARDING_ORQUESTRADO = {
 
   // Insights fundamentais
   keyInsights: [
-    'Mais da metade do churn está vinculado a onboarding e atendimento deficientes — custa US$136B/ano nos EUA.',
+    'Mais da metade do churn está vinculado a onboarding e atendimento deficientes - custa US$136B/ano nos EUA.',
     'Onboarding NÃO é implementação técnica. É a jornada completa de levar o cliente ao sucesso.',
-    'A janela crítica são os primeiros 90 dias — depois disso o padrão de uso está definido.',
-    'Remorso do comprador afeta 82% das pessoas — o onboarding é o antídoto.',
+    'A janela crítica são os primeiros 90 dias - depois disso o padrão de uso está definido.',
+    'Remorso do comprador afeta 82% das pessoas - o onboarding é o antídoto.',
     'A esperança não é uma estratégia. Planeje cada etapa com entregáveis concretos.',
     'O Plano de Sucesso deve incluir: visão do cliente, resultados desejados, cronograma, papéis e responsabilidades.',
   ],
@@ -107,7 +107,7 @@ export const ONBOARDING_ORQUESTRADO = {
 // ─── Receita Previsível (Aaron Ross) ──────────────────────────────────
 // Fundamenta a estrutura de geração de demanda e pipeline dos planos
 export const RECEITA_PREVISIVEL = {
-  source: 'Receita Previsível — Aaron Ross & Marylou Tyler',
+  source: 'Receita Previsível - Aaron Ross & Marylou Tyler',
 
   // Os 3 Pilares
   pillars: [
@@ -135,7 +135,7 @@ export const RECEITA_PREVISIVEL = {
       'Definir ICP (Ideal Customer Profile) com precisão cirúrgica',
       'Enviar email curto e personalizado pedindo referência interna',
       'Follow-up por telefone apenas após demonstração de interesse',
-      'SDR qualifica e agenda — AE fecha',
+      'SDR qualifica e agenda - AE fecha',
     ],
   },
 
@@ -151,26 +151,26 @@ export const RECEITA_PREVISIVEL = {
   ],
 
   keyInsights: [
-    'Receita previsível não é sobre crescer rápido — é sobre crescer de forma sistemática e repetível.',
+    'Receita previsível não é sobre crescer rápido - é sobre crescer de forma sistemática e repetível.',
     'A metodologia levou a Salesforce a ultrapassar US$100M em receita recorrente.',
     'Seeds são os melhores leads (referral), Nets capturam volume (marketing), Spears são cirúrgicos (outbound).',
-    'O "Vale da Morte" é a transição de crescimento orgânico para crescimento previsível — a maioria das empresas morre aqui.',
+    'O "Vale da Morte" é a transição de crescimento orgânico para crescimento previsível - a maioria das empresas morre aqui.',
   ],
 };
 
 // ─── Rápido e Devagar (Daniel Kahneman) ──────────────────────────────
 // Fundamenta como comunicamos valor e estruturamos decisões nos planos
 export const RAPIDO_E_DEVAGAR = {
-  source: 'Rápido e Devagar: Duas Formas de Pensar — Daniel Kahneman',
+  source: 'Rápido e Devagar: Duas Formas de Pensar - Daniel Kahneman',
 
   systems: {
     system1: {
-      name: 'Sistema 1 — Rápido',
+      name: 'Sistema 1 - Rápido',
       characteristics: 'Automático, intuitivo, emocional, sem esforço',
       relevance: 'Decisões de compra impulsivas, primeira impressão do plano estratégico, reação ao design do onboarding',
     },
     system2: {
-      name: 'Sistema 2 — Devagar',
+      name: 'Sistema 2 - Devagar',
       characteristics: 'Deliberado, analítico, baseado em regras, requer esforço',
       relevance: 'Análise de ROI, avaliação de OKRs, decisão de aprovação do plano',
     },
@@ -186,7 +186,7 @@ export const RAPIDO_E_DEVAGAR = {
 
   keyInsights: [
     'Até 95% do tempo estamos no piloto automático (Sistema 1). O plano estratégico precisa ser visualmente claro para o Sistema 1 processar.',
-    'Empresas são melhores que indivíduos para evitar vieses — por isso processos estruturados (checklists, reviews) são cruciais.',
+    'Empresas são melhores que indivíduos para evitar vieses - por isso processos estruturados (checklists, reviews) são cruciais.',
     'A dor de perder R$1 é sentida 2x mais do que o prazer de ganhar R$1. Use "custo da inação" no diagnóstico.',
     'Checklist e frameworks reduzem erros cognitivos. Cada etapa do onboarding deve ter checklist explícito.',
   ],
@@ -194,7 +194,7 @@ export const RAPIDO_E_DEVAGAR = {
 
 // ─── Customer Success (Steinman, Murphy, Mehta) ──────────────────────
 export const CUSTOMER_SUCCESS = {
-  source: 'Customer Success — Dan Steinman, Lincoln Murphy & Nick Mehta',
+  source: 'Customer Success - Dan Steinman, Lincoln Murphy & Nick Mehta',
 
   principles: [
     'Customer Success é receita. Retenção e expansão são mais baratos que aquisição.',
@@ -219,7 +219,7 @@ export function generateFrameworkContext(projectType: string): string {
 
   // Sempre incluir Onboarding Orquestrado (base do produto)
   sections.push(`
-FRAMEWORK BASE — ONBOARDING ORQUESTRADO (Donna Weber):
+FRAMEWORK BASE - ONBOARDING ORQUESTRADO (Donna Weber):
 O onboarding segue 6 etapas: ${ONBOARDING_ORQUESTRADO.stages.map(s => s.name).join(' → ')}.
 Cada etapa do plano deve mapear para essas fases.
 Insight crítico: ${ONBOARDING_ORQUESTRADO.keyInsights[0]}
@@ -228,7 +228,7 @@ A janela crítica são os primeiros 90 dias.`);
   // Consulting/CRM: incluir Receita Previsível
   if (['consulting', 'crm_ops', 'funnel'].includes(projectType)) {
     sections.push(`
-FRAMEWORK — RECEITA PREVISÍVEL (Aaron Ross):
+FRAMEWORK - RECEITA PREVISÍVEL (Aaron Ross):
 3 tipos de leads: Seeds (referral) + Nets (inbound) + Spears (outbound).
 Especialização: SDR (prospecta) → AE (fecha) → CS (retém).
 Erros fatais: atribuir prospecção a vendedores, não ter ICP, depender de um canal.
@@ -237,7 +237,7 @@ O plano deve considerar essa estrutura ao propor geração de demanda e pipeline
 
   // Todos: vieses cognitivos relevantes
   sections.push(`
-FRAMEWORK — VIESES COGNITIVOS (Kahneman):
+FRAMEWORK - VIESES COGNITIVOS (Kahneman):
 - Aversão à perda: mostre o custo de NÃO agir (2x mais impactante que ganhos).
 - Ancoragem: apresente benchmarks do setor ANTES do diagnóstico.
 - Facilidade cognitiva: planos visuais e limpos são mais confiáveis.

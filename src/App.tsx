@@ -63,13 +63,13 @@ const AgendaGiulliano = lazy(() => import("./pages/AgendaGiulliano"));
 const AgendaLinkedin = lazy(() => import("./pages/AgendaLinkedin"));
 const AgendaKickoff = lazy(() => import("./pages/AgendaKickoff"));
 
-// Score Pages (Heavy — 21-70KB each)
+// Score Pages (Heavy - 21-70KB each)
 const GrowthScore = lazy(() => import("./pages/GrowthScore"));
 const SiteScore = lazy(() => import("./pages/SiteScore"));
 const FounderScore = lazy(() => import("./pages/FounderScore"));
 const RevenueScore = lazy(() => import("./pages/RevenueScore"));
 
-// REI Workflows (Heavy — 15-38KB each)
+// REI Workflows (Heavy - 15-38KB each)
 const ReiHub = lazy(() => import("./pages/REI-Hub"));
 const ReiDev = lazy(() => import("./pages/REI-Dev"));
 const ReiConsulting = lazy(() => import("./pages/REI-Consulting"));

@@ -13,7 +13,7 @@ const Comunidade = () => {
 
   return (
     <PageLayout>
-      {/* Hero — Standardized DarkHeroSection */}
+      {/* Hero - Standardized DarkHeroSection */}
       <DarkHeroSection
         title="Comunidade RevHackers"
         subtitle="CONECTE-SE COM A ELITE DE REVENUE OPERATIONS, MARKETING E VENDAS DO BRASIL."
@@ -30,7 +30,7 @@ const Comunidade = () => {
         </div>
       </Section>
 
-      {/* Benefits Grid — 3 Cards */}
+      {/* Benefits Grid - 3 Cards */}
       <Section variant="dark" className="py-24 bg-black border-b border-zinc-900">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto mb-16">
@@ -60,7 +60,7 @@ const Comunidade = () => {
         </div>
       </Section>
 
-      {/* Features — Logo + List */}
+      {/* Features - Logo + List */}
       <Section variant="dark" className="py-24 bg-zinc-950 border-b border-zinc-900">
         <div className="container-custom">
           <div className="max-w-5xl mx-auto">

@@ -13,7 +13,7 @@ export default function OnboardingTrainingSection({ plan }: OnboardingSectionPro
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
-                    eyebrow="Onboarding — Etapa 3"
+                    eyebrow="Onboarding - Etapa 3"
                     titleLine1="Treinamento"
                     titleLine2="Da Operação"
                     description="O sistema construído na fase anterior agora é transicionado para quem fará ele girar: sua equipe."
@@ -66,7 +66,7 @@ export default function OnboardingTrainingSection({ plan }: OnboardingSectionPro
                             </p>
                         </div>
 
-                        {/* Card 3 — Dark (Dia da Virada) */}
+                        {/* Card 3 - Dark (Dia da Virada) */}
                         <div className="bg-zinc-950 rounded-xl p-8 flex flex-col">
                             <div className="flex items-center gap-3 mb-4">
                                 <span className="text-xs text-zinc-600 font-mono">03</span>

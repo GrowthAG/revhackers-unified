@@ -68,7 +68,7 @@ const Materiais = () => {
     fetchMaterials();
   }, []);
 
-  // Pure Database Data — filter out materials with Google Drive links (invalid)
+  // Pure Database Data - filter out materials with Google Drive links (invalid)
   const materials = apiMaterials.filter(m => {
     const link = (m.link_material || '').toLowerCase();
     return !link.includes('docs.google.com') && !link.includes('drive.google.com');

@@ -44,9 +44,9 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                     {bench.domain && <p className="text-xs text-zinc-400 truncate">{bench.domain}</p>}
                 </div>
                 <div className="hidden md:flex items-center gap-5 shrink-0 text-xs">
-                    <span className="w-20 text-center font-mono text-zinc-600">{bench.monthly_traffic || '—'}</span>
-                    <span className="w-8 text-center font-bold text-zinc-700">{bench.domain_authority || '—'}</span>
-                    <span className="w-14 text-center font-mono text-zinc-600">{bench.avg_cpc || '—'}</span>
+                    <span className="w-20 text-center font-mono text-zinc-600">{bench.monthly_traffic || '-'}</span>
+                    <span className="w-8 text-center font-bold text-zinc-700">{bench.domain_authority || '-'}</span>
+                    <span className="w-14 text-center font-mono text-zinc-600">{bench.avg_cpc || '-'}</span>
                 </div>
                 {open ? <ChevronDown className="w-4 h-4 text-zinc-400 shrink-0" /> : <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />}
             </button>
@@ -107,13 +107,13 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                     {!hasRealData && (
                         <div className="flex items-center gap-2">
                             <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Dados de referência para o segmento — atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Dados de referência para o segmento - atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
                         </div>
                     )}
                     {hasRealData && isREIFallback && (
                         <div className="flex items-center gap-2">
                             <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Concorrentes informados pelo cliente — enriquecimento de mercado disponível via "Deep Benchmark"</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Concorrentes informados pelo cliente - enriquecimento de mercado disponível via "Deep Benchmark"</p>
                         </div>
                     )}
                 </div>

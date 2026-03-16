@@ -15,7 +15,7 @@ import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
-// Questions centered on "Revenue Maturity" — 7 dimensões, total = 100pts
+// Questions centered on "Revenue Maturity" - 7 dimensões, total = 100pts
 const QUESTIONS = [
     {
         id: 1,
@@ -132,7 +132,7 @@ const RevenueScore = () => {
                 setSelectedOption(null);
                 setCurrentQ(prev => prev + 1);
             } else {
-                // Última pergunta — trigger IA e avançar
+                // Última pergunta - trigger IA e avançar
                 setIsAnalyzing(true);
                 analyzeDiagnosticAI('revenue', updatedAnswers, newScore)
                     .then(result => setAnalysisResult(result))

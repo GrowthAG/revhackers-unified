@@ -12,25 +12,25 @@ const fallbackByType: Record<string, {
     crm_ops: {
         context: 'Empresa B2B com processo comercial descentralizado, dados fragmentados e ausência de governança de pipeline.',
         problem: 'Sem visibilidade real sobre a operação de vendas. Decisões tomadas por feeling, não por dados. Oportunidades se perdem entre planilhas e WhatsApp.',
-        solution: 'Implementação de Máquina de Vendas RevHackers — CRM centralizado, automações de passagem de bastão, governança ativa e treinamento até adoção visceral.',
-        expectedOutcome: 'Pipeline 100% rastreável, ciclo de vendas reduzido em 20–40%, taxa de conversão aumentada com dados reais para escalar.',
+        solution: 'Implementação de Máquina de Vendas RevHackers: CRM centralizado, automações de passagem de bastão, governança ativa e treinamento até adoção visceral.',
+        expectedOutcome: 'Pipeline 100% rastreável, ciclo de vendas reduzido em 20-40%, taxa de conversão aumentada com dados reais para escalar.',
     },
     founder: {
         context: 'Founder com expertise comprovada, mas audiência limitada e sem sistema de conversão via conteúdo.',
         problem: 'Autoridade de mercado concentrada em poucos contatos. Dependência de network pessoal para geração de oportunidades. Zero inbound.',
-        solution: 'Protocolo Founder RevHackers — posicionamento cirúrgico, cadência sustentável de conteúdo e loop de conversão via LinkedIn.',
-        expectedOutcome: 'Audiência qualificada 3–5x maior, 4–12 oportunidades inbound/mês, independência de cold outreach.',
+        solution: 'Protocolo Founder RevHackers: posicionamento cirúrgico, cadência sustentável de conteúdo e loop de conversão via LinkedIn.',
+        expectedOutcome: 'Audiência qualificada 3-5x maior, 4-12 oportunidades inbound/mês, independência de cold outreach.',
     },
     dev: {
         context: 'Empresa que precisa de presença digital profissional com foco em conversão e performance.',
         problem: 'Site atual não converte, performance abaixo dos padrões, experiência mobile comprometida e sem rastreamento adequado.',
-        solution: 'Projeto de desenvolvimento com arquitetura-primeiro — wireframe aprovado, entrega incremental e performance como critério de aceite.',
+        solution: 'Projeto de desenvolvimento com arquitetura-primeiro: wireframe aprovado, entrega incremental e performance como critério de aceite.',
         expectedOutcome: 'Site com LCP < 2.5s, GTmetrix ≥ 90, conversão estimada +30–80% vs anterior, entrega em 6 semanas.',
     },
     default: {
         context: 'Empresa B2B com potencial de crescimento, mas sem motor de receita estruturado para escalar de forma previsível.',
         problem: 'Dependência de táticas isoladas, pipeline sem governança, CAC descontrolado e ausência de rastreamento ponta a ponta.',
-        solution: 'Motor de Receita Integrado RevHackers — fundação técnica, geração de demanda inteligente, ativação orquestrada e expansão baseada em dados.',
+        solution: 'Motor de Receita Integrado RevHackers: fundação técnica, geração de demanda inteligente, ativação orquestrada e expansão baseada em dados.',
         expectedOutcome: 'Receita previsível com 3 fontes de demanda paralelas, LTV:CAC ≥ 3:1 e pipeline completo da atração ao sucesso do cliente.',
     },
 };
@@ -74,7 +74,7 @@ export default function ExecutiveSummarySection({ plan }: { plan: any }) {
                     eyebrow="Visão Geral"
                     titleLine1="Resumo"
                     titleLine2="Executivo"
-                    description="A síntese do diagnóstico, do problema central e da solução proposta — em 60 segundos."
+                    description="A síntese do diagnóstico, do problema central e da solução proposta, em 60 segundos."
                 />
 
                 {/* 4 Quadrant Grid */}

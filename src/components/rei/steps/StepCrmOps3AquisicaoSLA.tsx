@@ -108,7 +108,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="unknown" id="s-nao-sei" />
-                        <Label htmlFor="s-nao-sei" className="text-zinc-700 font-normal cursor-pointer text-sm">Não medimos formalmente — respondemos assim que o lead chega, mas sem SLA definido.</Label>
+                        <Label htmlFor="s-nao-sei" className="text-zinc-700 font-normal cursor-pointer text-sm">Não medimos formalmente - respondemos assim que o lead chega, mas sem SLA definido.</Label>
                     </div>
                 </RadioGroup>
             </div>

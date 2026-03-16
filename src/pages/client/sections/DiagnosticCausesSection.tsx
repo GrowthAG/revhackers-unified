@@ -30,7 +30,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full flex flex-col justify-start gap-10">
 
-                {/* ── Causas Raiz — Individual Numbered Cards ── */}
+                {/* ── Causas Raiz - Individual Numbered Cards ── */}
                 {risks.length > 0 && (
                     <div className="space-y-5">
                         <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                     </div>
                 )}
 
-                {/* ── Decisões Mandatórias — Dark Banner ── */}
+                {/* ── Decisões Mandatórias - Dark Banner ── */}
                 {decisions.length > 0 && (
                     <div className="bg-zinc-950 rounded-xl overflow-hidden">
                         <div className="px-8 py-5 border-b border-zinc-800">

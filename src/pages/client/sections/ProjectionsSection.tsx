@@ -82,7 +82,7 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
                         eyebrow="Resultados Esperados"
                         titleLine1="Projeção de"
                         titleLine2="Crescimento"
-                        description={`Estimativa baseada no diagnóstico e nas médias do segmento — horizonte de ${horizonLabel}`}
+                        description={`Estimativa baseada no diagnóstico e nas médias do segmento - horizonte de ${horizonLabel}`}
                     />
 
                     <div className="grid grid-cols-2 gap-3 shrink-0">

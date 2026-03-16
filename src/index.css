@@ -185,7 +185,7 @@
   }
 }
 
-/* === CONTRASTE (scoped — sem !important global em p) === */
+/* === CONTRASTE (scoped - sem !important global em p) === */
 /* Os componentes usam Tailwind utilities (text-black, text-zinc-500, text-white, etc.)
    de forma explícita. Não forçamos cor globalmente para evitar quebrar dark sections. */
 

@@ -78,7 +78,7 @@
 <!-- CITAÇÃO -->
 <blockquote class="quote">
   "Citação de especialista ou cliente relevante."
-  <cite>— Nome, Cargo na Empresa</cite>
+  <cite>- Nome, Cargo na Empresa</cite>
 </blockquote>
 
 <!-- CONCLUSÃO -->

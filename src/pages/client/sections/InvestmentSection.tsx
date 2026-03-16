@@ -30,7 +30,7 @@ function getSegmentConfig(segment: string) {
     // Default
     return {
         channels: [
-            { key: 'google_ads', name: 'Google Ads', icon: 'search', recommended: [3000, 12000], desc: 'Captura de demanda ativa — keywords de intenção de compra' },
+            { key: 'google_ads', name: 'Google Ads', icon: 'search', recommended: [3000, 12000], desc: 'Captura de demanda ativa - keywords de intenção de compra' },
             { key: 'meta_ads', name: 'Meta Ads', icon: 'smartphone', recommended: [2000, 8000], desc: 'Awareness, retargeting e geração de leads com criativos visuais' },
             { key: 'linkedin_ads', name: 'LinkedIn Ads', icon: 'briefcase', recommended: [1500, 5000], desc: 'Posicionamento B2B e geração de oportunidades com decisores' },
         ],
@@ -242,7 +242,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     eyebrow="Financeiro"
                     titleLine1="Investimento"
                     titleLine2="& Retorno"
-                    description="Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis — ajuste conforme seu budget."
+                    description="Breakdown de investimento por canal com faixas recomendadas para o segmento. Valores editáveis - ajuste conforme seu budget."
                 />
             </div>
 

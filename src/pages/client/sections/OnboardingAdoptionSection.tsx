@@ -13,7 +13,7 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
-                    eyebrow="Onboarding — Etapa 4"
+                    eyebrow="Onboarding | Etapa 4"
                     titleLine1="Adoção &"
                     titleLine2="Mapeamento"
                     description="Período de uso real onde monitoramos atritos da equipe com a ferramenta e comportamentos dos novos canais."

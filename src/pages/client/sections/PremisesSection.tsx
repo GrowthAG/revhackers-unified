@@ -63,7 +63,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                     ))}
                 </div>
 
-                {/* Compromissos Mutuos — dark block */}
+                {/* Compromissos Mutuos - dark block */}
                 {darkPillar && (
                     <div className="bg-zinc-950 rounded-xl overflow-hidden">
                         <div className="flex items-baseline justify-between px-8 py-5 border-b border-zinc-800">

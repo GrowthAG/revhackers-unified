@@ -491,7 +491,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A]">Projeto Ativo</p>
                                     <p className="text-[10px] text-zinc-500">
-                                        Iniciado em {project?.created_at ? new Date(project.created_at).toLocaleDateString('pt-BR') : '—'}
+                                        Iniciado em {project?.created_at ? new Date(project.created_at).toLocaleDateString('pt-BR') : '-'}
                                     </p>
                                 </div>
                             </div>
@@ -668,7 +668,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
         <ErrorBoundary>
             <AdminPageLayout
                 title={project?.client_company || project?.client_name || 'Projeto'}
-                description={`Jornada ${project?.quarter || 'Q1'} ${project?.year || ''} — Onboarding Estratégico`}
+                description={`Jornada ${project?.quarter || 'Q1'} ${project?.year || ''} - Onboarding Estratégico`}
                 backTo="/admin/rei"
             >
                 {/* Progress Bar - Visual indicator of journey progress */}

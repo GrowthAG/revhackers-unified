@@ -4,7 +4,7 @@ import { Check, Loader2, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * PlanSignPage — Página leve para assinatura mobile via QR Code.
+ * PlanSignPage - Página leve para assinatura mobile via QR Code.
  * Não carrega o plano inteiro, apenas os dados mínimos para assinar.
  * Rota: /plan/:token/sign
  */
@@ -104,7 +104,7 @@ export default function PlanSignPage() {
                     />
                     {company && (
                         <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
-                            Planejamento Estratégico — {company}
+                            Planejamento Estratégico - {company}
                         </p>
                     )}
                 </div>

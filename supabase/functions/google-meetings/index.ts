@@ -455,14 +455,14 @@ p { color:#71717a; }
         const body = await req.json();
         const { action, client_email } = body;
 
-        // Action: get_auth_url — returns URL for admin to authorize
+        // Action: get_auth_url - returns URL for admin to authorize
         if (action === 'auth_url') {
             return new Response(JSON.stringify({ success: true, url: getAuthUrl() }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         }
 
-        // Action: list — fetch meetings using refresh token
+        // Action: list - fetch meetings using refresh token
         if (action === 'list' || action === 'recordings') {
             const REFRESH_TOKEN = Deno.env.get('GOOGLE_REFRESH_TOKEN');
             if (!REFRESH_TOKEN) {

@@ -63,13 +63,13 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
       onClick={onClick}
     >
       <article className="h-full flex flex-col bg-white">
-        {/* Image Container - Square/Rectangular Aspect */}
-        <div className="aspect-[16/9] w-full overflow-hidden bg-black relative mb-6">
+        {/* Image Container */}
+        <div className="aspect-[16/9] w-full overflow-hidden bg-black relative mb-6 flex items-center justify-center">
           <img
             src={imgSrc}
             alt={post.title}
             onError={handleImageError}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+            className="max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100 p-4"
           />
         </div>
 

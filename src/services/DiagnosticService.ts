@@ -392,11 +392,13 @@ export class DiagnosticService {
         return {
             premises_data: aiPlanData?.pillars ? { pillars: aiPlanData.pillars } : this.generatePremises(segment, objective, bottlenecks, answers, projectType),
             methodology_data: aiPlanData?.methodology_steps ? { steps: aiPlanData.methodology_steps } : this.generateMethodology(isB2B, channels, answers, projectType),
-            roadmap_data: aiPlanData?.roadmap_phases ? { phases: aiPlanData.roadmap_phases } : this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
+            roadmap_data: aiPlanData?.roadmap_phases
+                ? { phases: aiPlanData.roadmap_phases, project_duration: aiPlanData.project_duration || undefined }
+                : this.generateRoadmap(hasCRM, isB2B, challenges, answers, marketData, projectType),
             goals_data: aiPlanData?.okrs ? {
                 okrs: aiPlanData.okrs.map((o: any) => ({
                     ...o,
-                    // AI returns sub_results: string[] — map to krs format GoalsSection expects
+                    // AI returns sub_results: string[] - map to krs format GoalsSection expects
                     krs: Array.isArray(o.sub_results) && o.sub_results.length > 0
                         ? o.sub_results.map((text: string, j: number) => ({
                             label: `RK ${j + 1}`,
@@ -728,7 +730,7 @@ export class DiagnosticService {
         if (projectType === 'crm_ops') {
             phases.push({
                 name: 'Ciclo 01',
-                title: `Arquitetura & Setup — ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
+                title: `Arquitetura & Setup - ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
                 items: [
                     'Mapeamento As-Is dos processos de Vendas e Marketing',
                     'Ajuste ou Criação de Instância CRM Segura',
@@ -738,7 +740,7 @@ export class DiagnosticService {
             });
             phases.push({
                 name: 'Ciclo 02',
-                title: `Integrações & Automação — ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 28))}`,
+                title: `Integrações & Automação - ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 28))}`,
                 items: [
                     'Integração com Landing Pages, ERPs ou Forms Nativos',
                     'Roteamento automático Round-Robin ou por Lead Scoring',
@@ -748,7 +750,7 @@ export class DiagnosticService {
             });
             phases.push({
                 name: 'Ciclo 03',
-                title: `Cultural Drive & Onboarding — ${formatDate(addDays(startDate, 29))} a ${formatDate(addDays(startDate, 42))}`,
+                title: `Cultural Drive & Onboarding - ${formatDate(addDays(startDate, 29))} a ${formatDate(addDays(startDate, 42))}`,
                 items: [
                     'Workshops operacionais com a liderança e base comercial',
                     'Testes de carga com Mocks Reais de Vendas',
@@ -758,7 +760,7 @@ export class DiagnosticService {
             });
             phases.push({
                 name: 'Ciclo 04',
-                title: `Dados e Evolução Contínua — a partir de ${formatDate(addDays(startDate, 43))}`,
+                title: `Dados e Evolução Contínua - a partir de ${formatDate(addDays(startDate, 43))}`,
                 items: [
                     'Construção de Dashboards de LTV vs CAC Preditivo',
                     'Monitoramento de Taxa de Conversão por Etapa do Funil',
@@ -783,7 +785,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 01',
-            title: `Embarque & Setup — ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
+            title: `Embarque & Setup - ${formatDate(startDate)} a ${formatDate(addDays(startDate, 14))}`,
             items: cycle1Items
         });
 
@@ -804,7 +806,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 02',
-            title: `Estratégia & Kickoff — ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 21))}`,
+            title: `Estratégia & Kickoff - ${formatDate(addDays(startDate, 15))} a ${formatDate(addDays(startDate, 21))}`,
             items: cycle2Items
         });
 
@@ -826,7 +828,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 03',
-            title: `Execução & Adoção — ${formatDate(addDays(startDate, 22))} a ${formatDate(addDays(startDate, 70))}`,
+            title: `Execução & Adoção - ${formatDate(addDays(startDate, 22))} a ${formatDate(addDays(startDate, 70))}`,
             items: cycle3Items
         });
 
@@ -845,7 +847,7 @@ export class DiagnosticService {
 
         phases.push({
             name: 'Ciclo 04',
-            title: `Valor & Expansão — a partir de ${formatDate(addDays(startDate, 71))}`,
+            title: `Valor & Expansão - a partir de ${formatDate(addDays(startDate, 71))}`,
             items: cycle4Items
         });
 
@@ -872,7 +874,7 @@ export class DiagnosticService {
                     ]
                 },
                 {
-                    objective: 'RK 1 — Higienização e Arquitetura', label: '01',
+                    objective: 'RK 1 - Higienização e Arquitetura', label: '01',
                     krs: [
                         { label: 'RK 1.1', text: 'Auditoria de propriedades e unificação de cadastros concluída', target: 'Sem. 2' },
                         { label: 'RK 1.2', text: 'Criação de propriedades padronizadas (UTMs, Ticket, Segmento)', target: 'Sem. 3' },
@@ -880,7 +882,7 @@ export class DiagnosticService {
                     ]
                 },
                 {
-                    objective: 'RK 2 — Captação e Integração', label: '02',
+                    objective: 'RK 2 - Captação e Integração', label: '02',
                     krs: [
                         { label: 'RK 2.1', text: 'Formulários do site e Landing Pages 100% integrados via API/Webhook', target: 'Mês 1' },
                         { label: 'RK 2.2', text: 'Entrada de leads automatizada (sem depender de planilhas manuais)', target: 'Mês 1' },
@@ -888,7 +890,7 @@ export class DiagnosticService {
                     ]
                 },
                 {
-                    objective: 'RK 3 — Roteamento e SLA Comercial', label: '03',
+                    objective: 'RK 3 - Roteamento e SLA Comercial', label: '03',
                     krs: [
                         { label: 'RK 3.1', text: 'Regras de roteamento (Round-robin ou território) ativas', target: 'Mês 2' },
                         { label: 'RK 3.2', text: 'Alertas automáticos de estagnação de negócios para gestores', target: 'Mês 2' },
@@ -896,7 +898,7 @@ export class DiagnosticService {
                     ]
                 },
                 {
-                    objective: 'RK 4 — Adoção e Relatórios', label: '04',
+                    objective: 'RK 4 - Adoção e Relatórios', label: '04',
                     krs: [
                         { label: 'RK 4.1', text: '100% dos vendedores utilizando o CRM diariamente', target: 'Mês 2' },
                         { label: 'RK 4.2', text: 'Dashboard executivo de Vendas operante (Pipeline Velocity, LTV, CAC)', target: 'Mês 3' },
@@ -1199,7 +1201,7 @@ export class DiagnosticService {
 
     /**
      * Builds 3 PersonaSection-compatible personas from REI form answers.
-     * These represent the CLIENT's ideal customers — who THEY sell to.
+     * These represent the CLIENT's ideal customers - who THEY sell to.
      * Always returns exactly 3 personas, contextual to the business segment.
      */
     static generatePersonasFromREI(answers: any): any[] {
@@ -1363,7 +1365,7 @@ export class DiagnosticService {
                 },
             ];
         } else {
-            // Generic B2B / Services — 3 diverse buyer personas
+            // Generic B2B / Services - 3 diverse buyer personas
             personas = [
                 {
                     name: `Decisor Estratégico`,
@@ -1404,11 +1406,11 @@ export class DiagnosticService {
             ];
         }
 
-        // Final formatting — add company_context + location
+        // Final formatting - add company_context + location
         return personas.map(p => ({
             ...p,
             location: 'Brasil',
-            company_context: `${segment}${tamanhoLabel ? ` — ${tamanhoLabel}` : ''}`,
+            company_context: `${segment}${tamanhoLabel ? ` - ${tamanhoLabel}` : ''}`,
         }));
     }
 
@@ -1426,9 +1428,9 @@ export class DiagnosticService {
         const cacSelect = answers.cacAtual || '';
         const cacLabels: Record<string, string> = {
             'menor-500': 'R$ 2,80', '500-2k': 'R$ 4,50', '2k-5k': 'R$ 6,20',
-            'acima-5k': 'R$ 9,40', 'nao-sei': '—',
+            'acima-5k': 'R$ 9,40', 'nao-sei': '-',
         };
-        const avgCpc = cacLabels[cacSelect] || '—';
+        const avgCpc = cacLabels[cacSelect] || '-';
 
         // 1. Check structured fields first (concorrente1_nome, concorrente1_site, etc.)
         const structured: Array<{ name: string; site: string }> = [];
@@ -1458,11 +1460,11 @@ export class DiagnosticService {
                 return {
                     company_name: c.name,
                     domain: cleanSite || `${c.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com.br`,
-                    monthly_traffic: ['—', '—', '—'][i],
+                    monthly_traffic: ['-', '-', '-'][i],
                     domain_authority: 0,
                     avg_cpc: avgCpc,
                     top_keywords: this.getSegmentKeywords(segLower).slice(0, 3),
-                    strengths: `Player do segmento — análise aprofundada via "Gerar Inteligência de Mercado".`,
+                    strengths: `Player do segmento - análise aprofundada via "Gerar Inteligência de Mercado".`,
                     weaknesses: 'Dados de tráfego e keywords serão preenchidos pelo Deep Research.',
                 };
             });
@@ -1470,7 +1472,7 @@ export class DiagnosticService {
             while (parsed.length < 3) {
                 parsed.push({
                     company_name: `Concorrente ${parsed.length + 1} (a identificar)`,
-                    domain: '—', monthly_traffic: '—', domain_authority: 0, avg_cpc: '—',
+                    domain: '-', monthly_traffic: '-', domain_authority: 0, avg_cpc: '-',
                     top_keywords: this.getSegmentKeywords(segLower).slice(0, 2),
                     strengths: 'Será identificado na fase de Deep Research.',
                     weaknesses: 'Clique em "Gerar Inteligência de Mercado" para análise.',
@@ -1479,7 +1481,7 @@ export class DiagnosticService {
             return parsed;
         }
 
-        // 4. No concorrentes at all — generate segment-specific fallback profiles
+        // 4. No concorrentes at all - generate segment-specific fallback profiles
         const profiles = this.getSegmentCompetitors(segLower, segment);
         const keywords = this.getSegmentKeywords(segLower);
 
@@ -1531,9 +1533,9 @@ export class DiagnosticService {
         // Generic B2B fallback
         const cleanSegment = segment.split(',')[0].trim();
         return [
-            { name: `Líder Digital — ${cleanSegment}`, domain: 'liderdigital.com.br', traffic: '45K', da: 38, strengths: `Player consolidado no segmento de ${cleanSegment}. Investimento consistente em mídia paga e presença digital.`, weaknesses: 'Modelo de vendas tradicional. Processo comercial pouco automatizado.' },
-            { name: `Referência Nacional — ${cleanSegment}`, domain: 'refnacional.com.br', traffic: '28K', da: 32, strengths: `Forte em conteúdo educativo e SEO no nicho de ${cleanSegment}. Autoridade reconhecida.`, weaknesses: 'Foco em branding sem estrutura de conversão. Pipeline desorganizado.' },
-            { name: `Novo Player Digital — ${cleanSegment}`, domain: 'novoplayer.com.br', traffic: '12K', da: 22, strengths: `Abordagem digital-first no mercado de ${cleanSegment}. Onboarding ágil e proposta inovadora.`, weaknesses: 'Base de clientes pequena. Pouca validação de mercado.' },
+            { name: `Líder Digital - ${cleanSegment}`, domain: 'liderdigital.com.br', traffic: '45K', da: 38, strengths: `Player consolidado no segmento de ${cleanSegment}. Investimento consistente em mídia paga e presença digital.`, weaknesses: 'Modelo de vendas tradicional. Processo comercial pouco automatizado.' },
+            { name: `Referência Nacional - ${cleanSegment}`, domain: 'refnacional.com.br', traffic: '28K', da: 32, strengths: `Forte em conteúdo educativo e SEO no nicho de ${cleanSegment}. Autoridade reconhecida.`, weaknesses: 'Foco em branding sem estrutura de conversão. Pipeline desorganizado.' },
+            { name: `Novo Player Digital - ${cleanSegment}`, domain: 'novoplayer.com.br', traffic: '12K', da: 22, strengths: `Abordagem digital-first no mercado de ${cleanSegment}. Onboarding ágil e proposta inovadora.`, weaknesses: 'Base de clientes pequena. Pouca validação de mercado.' },
         ];
     }
 
@@ -1568,7 +1570,7 @@ export class DiagnosticService {
         if (segment.includes('saas') || segment.includes('software')) {
             return [
                 'Product-Led Growth (PLG) como motor de aquisição: empresas SaaS que adotam PLG crescem 2x mais rápido',
-                'AI-native features viram commodity — diferencial migra para onboarding e time-to-value',
+                'AI-native features viram commodity - diferencial migra para onboarding e time-to-value',
                 'Revenue Operations integrado (RevOps) reduz CAC em até 25% ao alinhar marketing, vendas e CS',
             ];
         }
@@ -1589,7 +1591,7 @@ export class DiagnosticService {
         // Generic B2B default
         return [
             'Automação de processos com IA generativa reduz custo operacional em 20–35% para empresas B2B',
-            'Revenue Operations integrado (RevOps) como vantagem competitiva — elimina silos entre marketing, vendas e CS',
+            'Revenue Operations integrado (RevOps) como vantagem competitiva - elimina silos entre marketing, vendas e CS',
             'Personalização baseada em dados aumenta taxas de conversão em até 35% no pipeline',
         ];
     }

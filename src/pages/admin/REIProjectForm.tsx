@@ -25,7 +25,30 @@ type FormData = {
     quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4';
     year: number;
     type: string;
+    project_duration: string;
     next_rei_date: string;
+};
+
+const DURATION_OPTIONS = [
+    { value: '30 dias', label: '30 dias (1 mês)' },
+    { value: '45 dias', label: '45 dias' },
+    { value: '6 semanas', label: '6 semanas' },
+    { value: '8 semanas', label: '8 semanas' },
+    { value: '90 dias', label: '90 dias (3 meses)' },
+    { value: '12 semanas', label: '12 semanas' },
+    { value: '6 meses', label: '6 meses' },
+    { value: '12 meses', label: '12 meses' },
+];
+
+const DEFAULT_DURATION_BY_TYPE: Record<string, string> = {
+    dev: '6 semanas',
+    site: '6 semanas',
+    funnels_impl: '90 dias',
+    consulting: '90 dias',
+    founder: '90 dias',
+    crm_ops: '90 dias',
+    content_seo: '90 dias',
+    training: '30 dias',
 };
 
 const REIProjectForm = () => {
@@ -41,9 +64,19 @@ const REIProjectForm = () => {
         defaultValues: {
             year: new Date().getFullYear(),
             quarter: 'Q1',
-            type: 'crm_ops'
+            type: 'crm_ops',
+            project_duration: '90 dias'
         }
     });
+
+    // Auto-suggest duration when type changes
+    const watchedType = watch('type');
+    useEffect(() => {
+        if (!isEditing && watchedType) {
+            const suggested = DEFAULT_DURATION_BY_TYPE[watchedType] || '90 dias';
+            setValue('project_duration', suggested);
+        }
+    }, [watchedType, isEditing]);
 
     const [mode, setMode] = useState<'existing' | 'new'>('existing');
     const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
@@ -107,6 +140,7 @@ const REIProjectForm = () => {
                     setValue('quarter', project.quarter as any);
                     setValue('year', project.year);
                     setValue('type', project.type || 'crm_ops');
+                    setValue('project_duration', (project as any).project_duration || DEFAULT_DURATION_BY_TYPE[project.type || 'consulting'] || '90 dias');
                     setValue('next_rei_date', project.next_rei_date.split('T')[0]);
                 } else {
                     toast({ title: 'Protocolo não encontrado', variant: 'destructive' });
@@ -192,6 +226,7 @@ const REIProjectForm = () => {
                 quarter: data.quarter,
                 year: Number(data.year),
                 type: data.type,
+                project_duration: data.project_duration || '90 dias',
                 next_rei_date: new Date(data.next_rei_date).toISOString(),
                 last_rei_date: new Date().toISOString()
             };
@@ -311,7 +346,7 @@ const REIProjectForm = () => {
                                                 <SelectContent className="rounded-xl border-zinc-100 max-h-[250px] shadow-sm">
                                                     {filterClients(clients).map(client => (
                                                         <SelectItem key={client.id} value={client.id} className="text-sm py-2 cursor-pointer">
-                                                            {client.name} {client.company ? `— ${client.company}` : ''}
+                                                            {client.name} {client.company ? `| ${client.company}` : ''}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -370,6 +405,23 @@ const REIProjectForm = () => {
                                             <SelectItem value="content_seo">SEO & Autenticidade</SelectItem>
                                             <SelectItem value="consulting">Consulting 360º</SelectItem>
                                             <SelectItem value="training">Treinamento In-Company</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label className={labelClasses}>Duração do Projeto</Label>
+                                    <Select
+                                        value={watch('project_duration')}
+                                        onValueChange={(value) => setValue('project_duration', value)}
+                                    >
+                                        <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
+                                            {DURATION_OPTIONS.map(opt => (
+                                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>

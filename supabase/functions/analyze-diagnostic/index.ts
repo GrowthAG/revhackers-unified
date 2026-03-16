@@ -67,8 +67,8 @@ Com base EXCLUSIVAMENTE nos dados acima, gere uma análise personalizada em JSON
 
 REGRAS:
 - Seja direto, técnico e baseado nos dados. Nada genérico.
-- Se uma dimensão tem score 0, isso é um GAP CRÍTICO — destaque com urgência.
-- Se uma dimensão tem score 20/20, é um SUPERPODER — reconheça.
+- Se uma dimensão tem score 0, isso é um GAP CRÍTICO - destaque com urgência.
+- Se uma dimensão tem score 20/20, é um SUPERPODER - reconheça.
 - Responda APENAS O JSON, sem markdown, sem explicações extras.
     `.trim();
 }
@@ -102,7 +102,7 @@ Responda APENAS O JSON.
 }
 
 // ============================================================
-// OPENAI API CALL (GPT-4o-mini — same pattern as generate-strategic-plan)
+// OPENAI API CALL (GPT-4o-mini - same pattern as generate-strategic-plan)
 // ============================================================
 
 async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
@@ -117,7 +117,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Não adicione explicações.'
+                    content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Não adicione explicações. NUNCA use o caractere em dash (travessão longo) em nenhum campo - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
                 },
                 { role: 'user', content: prompt }
             ],

@@ -19,7 +19,7 @@ interface CommandItem {
 }
 
 // --- Imports ---
-// Tasks are managed in Notion — stub for legacy command menu
+// Tasks are managed in Notion - stub for legacy command menu
 const getAllActiveTasks = async () => [] as any[];
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { Database } from 'lucide-react';

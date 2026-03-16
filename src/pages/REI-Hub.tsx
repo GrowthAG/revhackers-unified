@@ -155,7 +155,7 @@ const ReiHubPage = () => {
                             REI <span className="text-zinc-300">Hub</span>
                         </h1>
                         <p className="text-zinc-400 text-sm font-medium tracking-wide uppercase">
-                            Revenue Engine Intelligence — {firstName && `Olá, ${firstName}`}
+                            Revenue Engine Intelligence - {firstName && `Olá, ${firstName}`}
                         </p>
                     </div>
 

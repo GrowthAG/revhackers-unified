@@ -1,5 +1,5 @@
 /**
- * Chrome UX Report (CrUX) API — Client-side proxy via Edge Function
+ * Chrome UX Report (CrUX) API - Client-side proxy via Edge Function
  * Métricas reais de experiência do usuário para benchmark competitivo no SiteScore
  *
  * A chamada real à CrUX API acontece no Edge Function `crux-benchmark`
@@ -44,7 +44,7 @@ export interface BenchmarkResult {
 
 /**
  * Realiza benchmark do site do cliente contra concorrentes via Edge Function
- * (API key gerenciada server-side — não passa mais como parâmetro)
+ * (API key gerenciada server-side - não passa mais como parâmetro)
  */
 export async function runCompetitiveBenchmark(
     clientUrl: string,

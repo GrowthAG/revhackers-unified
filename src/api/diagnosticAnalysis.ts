@@ -70,7 +70,7 @@ function getMockAnalysis(type: DiagnosticType, answers: number[], totalScore: nu
     const weak = answers
         .map((s, i) => ({ label: labels[i], score: s }))
         .filter(d => d.score <= 5)
-        .map(d => `${d.label} está comprometendo sua operação — ação imediata necessária.`);
+        .map(d => `${d.label} está comprometendo sua operação - ação imediata necessária.`);
 
     if (type === 'growth') {
         if (totalScore >= 80) return {
@@ -91,7 +91,7 @@ function getMockAnalysis(type: DiagnosticType, answers: number[], totalScore: nu
             archetype: "Operação Passiva",
             headline: "Sua operação de growth é essencialmente reativa. Sem processos, sem métricas e sem previsibilidade, cada mês é uma loteria.",
             strengths: strong.length >= 1 ? strong.slice(0, 3) : ["Reconhecimento da necessidade de mudança", "Espaço total para estruturação", "Baixo custo de correção neste estágio"],
-            gaps: weak.length >= 1 ? weak.slice(0, 3) : ["Ausência de estratégia de aquisição ativa", "Zero visibilidade sobre CAC e ROI", "Sem processo de vendas — tudo depende de intuição"],
+            gaps: weak.length >= 1 ? weak.slice(0, 3) : ["Ausência de estratégia de aquisição ativa", "Zero visibilidade sobre CAC e ROI", "Sem processo de vendas - tudo depende de intuição"],
             immediateAction: "Defina 1 canal de aquisição principal (o que já gera mais leads) e instale tracking de CAC nele nos próximos 7 dias. Sem dados, qualquer investimento é um tiro no escuro."
         };
     }
@@ -115,7 +115,7 @@ function getMockAnalysis(type: DiagnosticType, answers: number[], totalScore: nu
         archetype: "Funil Invertido",
         headline: "Sua operação de receita carece de estrutura fundamental. Sem previsibilidade, sem CRM e sem time especializado, a empresa depende de oportunismo.",
         strengths: strong.length >= 1 ? strong.slice(0, 3) : ["Reconhecimento da necessidade de estruturação", "Oportunidade de implementação do zero", "Baixa complexidade para primeiras ações"],
-        gaps: weak.length >= 1 ? weak.slice(0, 3) : ["Receita totalmente imprevisível", "Sem time comercial estruturado", "Zero tecnologia de vendas — dados perdidos"],
+        gaps: weak.length >= 1 ? weak.slice(0, 3) : ["Receita totalmente imprevisível", "Sem time comercial estruturado", "Zero tecnologia de vendas - dados perdidos"],
         immediateAction: "Implemente um CRM básico (HubSpot Free) esta semana. Registre cada lead com fonte, valor estimado e próximo passo. Em 30 dias, você terá seu primeiro forecast real."
     };
 }

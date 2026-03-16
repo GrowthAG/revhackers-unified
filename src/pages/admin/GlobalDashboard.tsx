@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-// Tasks are managed in Notion — stubs for legacy dashboard
+// Tasks are managed in Notion - stubs for legacy dashboard
 const getAllActiveTasks = async () => [] as any[];
 const getAllActiveProjects = async () => [] as any[];
 import { getAllLibraries } from '@/api/knowledge';

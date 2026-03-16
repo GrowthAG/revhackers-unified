@@ -367,7 +367,7 @@ export default function MaterialUpload() {
                       Clique para selecionar ou arraste o arquivo
                     </p>
                     <p className="text-[11px] text-zinc-400">
-                      PDF, DOCX, PPTX, XLSX, TXT, CSV — até 10MB
+                      PDF, DOCX, PPTX, XLSX, TXT, CSV - até 10MB
                     </p>
                   </>
                 )}

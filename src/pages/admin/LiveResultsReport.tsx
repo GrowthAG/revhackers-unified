@@ -172,27 +172,27 @@ const LiveResultsReport = ({ embedded = false, projectId: propProjectId }: { emb
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <MetricCard
                             title="Novos Leads (SQL)"
-                            value={cycleMetrics.leads || "—"}
+                            value={cycleMetrics.leads || "-"}
                             change={cycleMetrics.leads_change}
                             trend={cycleMetrics.leads_trend}
                         />
                         <MetricCard
                             title="Custo Aquisição (CAC)"
-                            value={cycleMetrics.cac || "—"}
+                            value={cycleMetrics.cac || "-"}
                             prefix={cycleMetrics.cac ? "R$ " : ""}
                             change={cycleMetrics.cac_change}
                             trend={cycleMetrics.cac_trend}
                         />
                         <MetricCard
                             title="Receita Recorrente (MRR)"
-                            value={cycleMetrics.mrr || "—"}
+                            value={cycleMetrics.mrr || "-"}
                             prefix={cycleMetrics.mrr ? "R$ " : ""}
                             change={cycleMetrics.mrr_change}
                             trend={cycleMetrics.mrr_trend}
                         />
                         <MetricCard
                             title="Retorno (ROI)"
-                            value={cycleMetrics.roi || "—"}
+                            value={cycleMetrics.roi || "-"}
                             change={cycleMetrics.roi_change}
                             trend={cycleMetrics.roi_trend}
                             suffix={cycleMetrics.roi ? "x" : ""}

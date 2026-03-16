@@ -176,7 +176,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                                 transition={{ delay: idx * 0.05 }}
                                 className="border border-zinc-200 rounded-lg bg-white hover:border-zinc-300 transition-colors overflow-hidden"
                             >
-                                {/* Card header — always visible */}
+                                {/* Card header - always visible */}
                                 <button
                                     onClick={() => setExpandedId(isExpanded ? null : meeting.google_event_id)}
                                     className="w-full flex items-center gap-3 p-3 text-left"

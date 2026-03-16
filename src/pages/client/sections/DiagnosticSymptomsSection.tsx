@@ -24,7 +24,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             </div>
 
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full flex flex-col justify-start gap-8">
-                {/* ── Context Mirror — Dark Block ── */}
+                {/* ── Context Mirror - Dark Block ── */}
                 {context && (
                     <div className="bg-zinc-950 rounded-xl overflow-hidden">
                         <div className="grid grid-cols-1 md:grid-cols-2">
@@ -39,7 +39,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                     <EditableField
                                         path={`diagnostic_data.context_mirror.${['segment', 'objective', 'maturity', 'restrictions'][i]}`}
                                         className="text-lg font-bold text-white leading-snug"
-                                        placeholder={item.value || '—'}
+                                        placeholder={item.value || '-'}
                                     />
                                 </div>
                             ))}
@@ -47,7 +47,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                     </div>
                 )}
 
-                {/* ── Sinais Estratégicos — Card Grid ── */}
+                {/* ── Sinais Estratégicos - Card Grid ── */}
                 {signals.length > 0 && (
                     <div className="space-y-5">
                         <div className="flex items-center justify-between">

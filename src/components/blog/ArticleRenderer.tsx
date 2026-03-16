@@ -392,7 +392,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                 flushList();
                 const quote = trimmedLine.substring(2).trim();
                 const nextLine = lines[index + 1]?.trim();
-                if (nextLine?.startsWith('—')) {
+                if (nextLine?.startsWith('-')) {
                     elements.push(
                         <blockquote key={`quote-${elementKey++}`} className="article-quote">
                             <p>{quote}</p>

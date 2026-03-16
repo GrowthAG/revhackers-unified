@@ -15,7 +15,7 @@ import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
-// Questions centered on "Growth Maturity" — 7 dimensões, total = 100pts
+// Questions centered on "Growth Maturity" - 7 dimensões, total = 100pts
 const QUESTIONS = [
     {
         id: 1,
@@ -130,7 +130,7 @@ const GrowthScore = () => {
             if (currentQ < QUESTIONS.length - 1) {
                 setCurrentQ(prev => prev + 1);
             } else {
-                // Última pergunta — trigger IA e avançar
+                // Última pergunta - trigger IA e avançar
                 setIsAnalyzing(true);
                 analyzeDiagnosticAI('growth', updatedAnswers, newScore)
                     .then(result => setAnalysisResult(result))

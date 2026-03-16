@@ -140,7 +140,7 @@ const DefaultArticle = ({
 
         <blockquote className="my-12 border-l-4 border-revgreen pl-6 italic text-xl text-gray-800 bg-gray-50 py-4 pr-4 rounded-r-lg">
           <p className="mb-2">"A verdadeira transformação acontece quando combinamos dados, tecnologia e processos em uma estratégia coerente."</p>
-          <cite className="block text-sm font-bold text-gray-500 not-italic uppercase tracking-wide">— {authorName}, {authorRole}</cite>
+          <cite className="block text-sm font-bold text-gray-500 not-italic uppercase tracking-wide">- {authorName}, {authorRole}</cite>
         </blockquote>
 
         <h2 id="conclusao" className="text-3xl font-bold mb-6 text-gray-900 tracking-tight">Conclusão</h2>

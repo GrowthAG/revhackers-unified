@@ -86,7 +86,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                                 <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200">
                                     <Play className="w-3.5 h-3.5 text-black" />
                                     <span className="text-xs font-black uppercase tracking-widest text-zinc-700">
-                                        {meetingTitle || `${label.title} — ${company}`}
+                                        {meetingTitle || `${label.title} - ${company}`}
                                     </span>
                                 </div>
                                 {formattedDate && (

@@ -13,9 +13,12 @@ const NEXT_STATUS: Record<ItemStatus, ItemStatus> = {
 
 // ── Duration detection ────────────────────────────────────────────────────
 function detectDuration(plan: any): string {
+    // Priority: rei_projects.project_duration > roadmap_data.project_duration > type-based fallback
+    const fromProject = plan?.rei_projects?.project_duration;
+    const fromRoadmap = plan?.roadmap_data?.project_duration || plan?.project_duration;
+    if (fromProject) return fromProject;
+    if (fromRoadmap) return fromRoadmap;
     const pt = plan?.rei_projects?.type || plan?.project_type || 'full';
-    const explicit = plan?.roadmap_data?.project_duration || plan?.project_duration;
-    if (explicit) return explicit;
     return pt === 'dev' || pt === 'site' ? '6 semanas' : '90 dias';
 }
 

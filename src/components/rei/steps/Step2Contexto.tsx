@@ -242,7 +242,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                                 <input
                                     {...form.register(`concorrente${n}_nome`)}
                                     className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm bg-white"
-                                    placeholder={`Concorrente ${n} — Nome da empresa`}
+                                    placeholder={`Concorrente ${n} - Nome da empresa`}
                                 />
                                 <input
                                     {...form.register(`concorrente${n}_site`)}

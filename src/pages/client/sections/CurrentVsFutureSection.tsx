@@ -94,7 +94,7 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-zinc-200 rounded-2xl overflow-hidden">
 
-                    {/* Current State — Light */}
+                    {/* Current State - Light */}
                     <div className="bg-white p-8 md:p-10 border-b lg:border-b-0 lg:border-r border-zinc-200">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-3 h-3 rounded-full bg-zinc-300" />
@@ -120,7 +120,7 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                         </div>
                     </div>
 
-                    {/* Future State — Dark */}
+                    {/* Future State - Dark */}
                     <div className="bg-zinc-950 p-8 md:p-10">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-3 h-3 rounded-full bg-[#00CC6A]" />
@@ -153,7 +153,7 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                     <div className="flex items-center gap-2 px-5 py-2.5 bg-zinc-950 rounded-lg">
                         <ArrowRight className="w-4 h-4 text-[#00CC6A]" />
                         <span className="text-[11px] font-bold text-white uppercase tracking-widest">
-                            Transformação em {plan?.roadmap_data?.project_duration || '90 dias'}
+                            Transformação em {plan?.rei_projects?.project_duration || plan?.roadmap_data?.project_duration || '90 dias'}
                         </span>
                     </div>
                     <div className="h-[2px] flex-1 bg-zinc-100 rounded-full" />

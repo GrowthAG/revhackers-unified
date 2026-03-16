@@ -168,7 +168,7 @@ export default function StrategicPlanGenerator() {
         setGenerating(true);
 
         try {
-            // 1. Fetch REI Responses first — needed for email resolution and CRM Ops normalization
+            // 1. Fetch REI Responses first - needed for email resolution and CRM Ops normalization
             console.log('Fetching latest REI responses...');
             const { data: latestResponse } = await supabase
                 .from('rei_responses')
@@ -194,7 +194,7 @@ export default function StrategicPlanGenerator() {
             const isCrmOps = reiProject?.type === 'crm_ops';
             const normalizedAnswers = isCrmOps ? {
                 ...answers,
-                // Financial metrics — DiagnosticService reads camelCase names
+                // Financial metrics - DiagnosticService reads camelCase names
                 mrr: answers.revops_mrr_atual || answers.mrr || '',
                 ticketMedio: answers.revops_ticket_medio || answers.ticketMedio || '',
                 cacAtual: answers.revops_cac_atual || answers.cacAtual || '',
@@ -205,7 +205,7 @@ export default function StrategicPlanGenerator() {
                 empresa: answers.revops_empresa || '',
                 nomeEmpresa: answers.revops_empresa || '',
                 email: answers.revops_email || '',
-                // Competitors — DiagnosticService reads concorrente1_nome (snake_case, no prefix)
+                // Competitors - DiagnosticService reads concorrente1_nome (snake_case, no prefix)
                 concorrente1_nome: answers.revops_concorrente1_nome || '',
                 concorrente1_site: answers.revops_concorrente1_site || '',
                 concorrente2_nome: answers.revops_concorrente2_nome || '',
@@ -220,7 +220,7 @@ export default function StrategicPlanGenerator() {
                 ? { ...latestResponse, responses: { ...latestResponse.responses, form_data: normalizedAnswers } }
                 : latestResponse;
 
-            // Effective client identity — CRM Ops stores email/company in form, not in rei_projects
+            // Effective client identity - CRM Ops stores email/company in form, not in rei_projects
             const effectiveEmail = answers.revops_email || reiProject.client_email;
             const effectiveCompany = answers.revops_empresa || reiProject.client_company || reiProject.client_name;
             const effectiveName = reiProject.client_name || answers.revops_empresa || 'Cliente Sem Nome';
@@ -338,7 +338,7 @@ export default function StrategicPlanGenerator() {
                 },
                 pain: (p.dores_principais || []).join('. ') || 'A ser detalhado na consultoria.',
                 trigger: (p.gatilhos_mentais || []).slice(0, 2).join('. ') || 'Pressão por resultados.',
-                message: p.pitch_elevador || (p.ganhos_desejados || []).join(' — ') || 'Mensagem a ser definida.',
+                message: p.pitch_elevador || (p.ganhos_desejados || []).join(' - ') || 'Mensagem a ser definida.',
                 wiifm: (p.ganhos_desejados || []).slice(0, 2).join('. ') || 'Resultado concreto e mensurável.',
             }));
 
@@ -346,9 +346,9 @@ export default function StrategicPlanGenerator() {
             const mappedCompetitors = (enrichmentResult.market?.concorrentes_benchmark || []).map((c: any) => ({
                 company_name: c.nome || 'Concorrente',
                 domain: c.url || '',
-                monthly_traffic: '—',
+                monthly_traffic: '-',
                 domain_authority: 0,
-                avg_cpc: '—',
+                avg_cpc: '-',
                 top_keywords: [],
                 strengths: c.pontos_fortes || '',
                 weaknesses: c.pontos_fracos || '',
@@ -369,7 +369,7 @@ export default function StrategicPlanGenerator() {
                 : 'Foco em eficiência operacional e decisões baseadas em dados.';
 
             // ── REI-based fallbacks (used when Perplexity AI fails) ───────────
-            // These are built from real client answers — uses normalizedAnswers so CRM Ops
+            // These are built from real client answers - uses normalizedAnswers so CRM Ops
             // fields (revops_*) are correctly mapped before DiagnosticService reads them.
             const reiFallbackPersonas = DiagnosticService.generatePersonasFromREI(normalizedAnswers);
             const reiFallbackCompetitors = DiagnosticService.generateBenchmarkFromREI(normalizedAnswers);
@@ -397,7 +397,7 @@ export default function StrategicPlanGenerator() {
                 strategic_advice: mappedAdvice,
                 avg_cac_benchmark: enrichmentResult.benchmark?.cac_medio || undefined,
                 conversion_benchmarks: enrichmentResult.benchmark
-                    ? `Lead→SQL: ${enrichmentResult.benchmark.taxa_conversao || '—'} | Ciclo: ${enrichmentResult.benchmark.ciclo_vendas || '—'} | LTV:CAC: ${enrichmentResult.benchmark.ltv_cac_ratio || '—'}`
+                    ? `Lead→SQL: ${enrichmentResult.benchmark.taxa_conversao || '-'} | Ciclo: ${enrichmentResult.benchmark.ciclo_vendas || '-'} | LTV:CAC: ${enrichmentResult.benchmark.ltv_cac_ratio || '-'}`
                     : undefined,
                 key_differentiators: enrichmentResult.market?.analise_swot_rapida?.oportunidades || undefined,
                 // Metadata: lets the frontend know where data came from
@@ -416,7 +416,8 @@ export default function StrategicPlanGenerator() {
                         objective: objective,
                         isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
                         projectType: reiProject?.type || 'consulting',
-                        projectId: reiProjectId
+                        projectId: reiProjectId,
+                        projectDuration: reiProject?.project_duration || undefined
                     }
                 });
 

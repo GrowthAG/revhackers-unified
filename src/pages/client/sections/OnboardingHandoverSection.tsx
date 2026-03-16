@@ -14,7 +14,7 @@ export default function OnboardingHandoverSection({ plan }: OnboardingSectionPro
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
-                    eyebrow="Onboarding — Etapa 5"
+                    eyebrow="Onboarding | Etapa 5"
                     titleLine1="Passagem"
                     titleLine2="De Bastão"
                     description="Marco zero da fase Sustentação. O projeto de Onboarding oficialmente acaba e a parceria de otimização de longo prazo começa."

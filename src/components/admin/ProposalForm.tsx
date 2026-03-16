@@ -694,11 +694,11 @@ ESTRUTURA DE RESPOSTA (JSON):
    [Extraia da transcrição: Duração (ex: 90 dias), Modelo (Piloto/Rollout)...]
    
    03
-   Fase 1 — [Nome da Fase Extraído]
+   Fase 1 - [Nome da Fase Extraído]
    [O que será feito na primeira etapa?]
    
    04
-   Fase 2 — [Nome da Fase Extraído]
+   Fase 2 - [Nome da Fase Extraído]
    [O que será feito na sequência?]
    
    ... (Adicione quantas fases forem necessárias conforme a transcrição)
@@ -714,8 +714,8 @@ ESTRUTURA DE RESPOSTA (JSON):
 2. "detailed_scope": Array para o Roadmap Visual. Deve ESPELHAR as fases descritas no texto acima.
    Exemplo (Não copie, gere o seu):
    [
-     { "phase": "Fase 1 — [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] },
-     { "phase": "Fase 2 — [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] }
+     { "phase": "Fase 1 - [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] },
+     { "phase": "Fase 2 - [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] }
    ]`
                     }, {
                         role: 'user',
@@ -736,8 +736,8 @@ Model de JSON de saída:
     "summary": "Sistema de Geração de Demanda...\\n\\n01\\nObjetivo...\\n\\n02\\nHorizonte...\\n\\n03\\nFase 1...",
     "headline": "Proposta Comercial: [Nome do Cliente]",
     "detailed_scope": [
-        { "phase": "Fase 1 — [Nome]", "duration": "Semana 1", "description": "...", "deliverables": ["..."], "status": "pending" },
-        { "phase": "Fase 2 — [Nome]", "duration": "Semana 2", "description": "...", "deliverables": ["..."], "status": "pending" }
+        { "phase": "Fase 1 - [Nome]", "duration": "Semana 1", "description": "...", "deliverables": ["..."], "status": "pending" },
+        { "phase": "Fase 2 - [Nome]", "duration": "Semana 2", "description": "...", "deliverables": ["..."], "status": "pending" }
     ],
     "investment_total": 0,
     "setup_fee": 0,
@@ -906,7 +906,7 @@ Model de JSON de saída:
                                                             const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
                                                             if (data?.success) {
                                                                 updateFieldsWithMetadata(data.data, true);
-                                                                toast({ title: 'Dados do Cliente Carregados', description: `${data.data.clientName || 'Empresa'} — ${data.data.clientContactName || 'Contato'}` });
+                                                                toast({ title: 'Dados do Cliente Carregados', description: `${data.data.clientName || 'Empresa'} - ${data.data.clientContactName || 'Contato'}` });
                                                             }
                                                         }}
                                                         className="p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"

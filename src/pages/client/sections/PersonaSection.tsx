@@ -248,13 +248,13 @@ export default function PersonaSection({ plan }: { plan: any }) {
                     {isREIFallback && !isDefault && (
                         <div className="flex items-center gap-2">
                             <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Persona construída com base no ICP declarado no REI — aprofundamento disponível via "Deep Personas"</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Persona construída com base no ICP declarado no REI. Aprofundamento disponível via "Deep Personas"</p>
                         </div>
                     )}
                     {isDefault && (
                         <div className="flex items-center gap-2">
                             <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Perfis de referência — personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
+                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Perfis de referência. Personalize via "Deep Personas" ou preenchendo o campo ICP no formulário REI</p>
                         </div>
                     )}
                 </div>

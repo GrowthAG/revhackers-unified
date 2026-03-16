@@ -80,7 +80,7 @@ serve(async (req) => {
 });
 
 // ============================================================
-// OPENAI API CALL (GPT-4o-mini — replaces Perplexity sonar-reasoning-pro)
+// OPENAI API CALL (GPT-4o-mini - replaces Perplexity sonar-reasoning-pro)
 // ============================================================
 
 async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
@@ -95,7 +95,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é um consultor de negócios sênior, especialista em análise de mercado, construção de personas e estratégia de crescimento (Growth Hacking). Responda sempre com dados técnicos, realistas e focados no mercado brasileiro. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras.'
+                    content: 'Você é um consultor de negócios sênior, especialista em análise de mercado, construção de personas e estratégia de crescimento (Growth Hacking). Responda sempre com dados técnicos, realistas e focados no mercado brasileiro. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
                 },
                 { role: 'user', content: prompt }
             ],

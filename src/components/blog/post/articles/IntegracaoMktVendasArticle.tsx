@@ -108,7 +108,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                         O problema não é o tráfego. O problema não é o produto.
                     </p>
                     <p className="mt-4">
-                        O verdadeiro gargalo está na falta de conexão entre os seus times. Imagine que sua empresa capta leads, investe em tráfego pago, gera oportunidades — mas as vendas não escalam e os clientes vão embora.
+                        O verdadeiro gargalo está na falta de conexão entre os seus times. Imagine que sua empresa capta leads, investe em tráfego pago, gera oportunidades - mas as vendas não escalam e os clientes vão embora.
                     </p>
                     <p className="mt-4 font-bold text-gray-900">
                         Isso não é azar. É desalinhamento.

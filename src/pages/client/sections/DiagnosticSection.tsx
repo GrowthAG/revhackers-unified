@@ -49,7 +49,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                     ].map((item, i) => (
                         <div key={i} className={`p-6 ${i !== 3 ? 'border-b md:border-b-0 md:border-r border-zinc-200' : ''}`}>
                             <span className="text-xs font-black text-zinc-400 uppercase tracking-widest block mb-2">{item.label}</span>
-                            <p className="text-base font-bold text-zinc-900 leading-snug">{item.value || '—'}</p>
+                            <p className="text-base font-bold text-zinc-900 leading-snug">{item.value || '-'}</p>
                         </div>
                     ))}
                 </div>

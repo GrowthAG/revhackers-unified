@@ -34,7 +34,7 @@ export default function OnboardingSetupSection({ plan }: OnboardingSectionProps)
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="my-auto px-6 md:px-10 lg:px-12 py-8 max-w-[1600px] mx-auto w-full">
                 <SectionHeader
-                    eyebrow="Onboarding — Etapa 2"
+                    eyebrow="Onboarding | Etapa 2"
                     titleLine1="Máquina"
                     titleLine2="Operacional"
                     description="Configuramos as fundações de rastreamento, processos e integrações antes do treinamento oficial."

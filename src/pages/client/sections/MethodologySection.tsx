@@ -20,18 +20,18 @@ const defaultSteps = [
     },
     {
         phase: '02', name: 'Geração de Demanda Inteligente', tagline: 'Semana 2–6',
-        description: 'Ativamos os canais de aquisição corretos para o seu perfil de ICP — não todos ao mesmo tempo. Estruturamos três fluxos de entrada: inbound via autoridade e SEO, outbound via prospecção ativa e segmentada, e parcerias via network estratégico.',
+        description: 'Ativamos os canais de aquisição corretos para o seu perfil de ICP - não todos ao mesmo tempo. Estruturamos três fluxos de entrada: inbound via autoridade e SEO, outbound via prospecção ativa e segmentada, e parcerias via network estratégico.',
         principles: ['Seeds: network e indicação ativada com processo', 'Nets: campanha de demanda segmentada por ICP', 'Spears: outreach personalizado para contas-alvo', 'Primeiro ROAS obtido em até 30 dias de campanha'],
     },
     {
         phase: '03', name: 'Ativação & Onboarding Orquestrado', tagline: 'Semana 3–8',
-        description: 'O momento crítico é logo após a compra — e a maioria das empresas abandona o cliente. Estruturamos uma jornada de ativação em milestones com momentos de verdade: cada touchpoint tem um dono, um prazo e um resultado esperado.',
+        description: 'O momento crítico é logo após a compra - e a maioria das empresas abandona o cliente. Estruturamos uma jornada de ativação em milestones com momentos de verdade: cada touchpoint tem um dono, um prazo e um resultado esperado.',
         principles: ['Momento de Verdade 1: ativação em 24h após fechamento', 'Momento de Verdade 2: primeiro resultado entregue em 15 dias', 'Momento de Verdade 3: review de resultados no dia 90', 'Automações de nurturing com cadência adaptada ao comportamento'],
     },
     {
         phase: '04', name: 'Expansão & Motor de Receita', tagline: 'Mês 2 em diante',
-        description: 'Com dados reais de CAC, LTV, ROAS e churn, ativamos o ciclo de crescimento. O cliente que ativa, tem sucesso e se torna defensor. Esse defensor gera novos leads com custo zero — completando o ciclo completo de receita.',
-        principles: ['Velocidade de Pipeline calculada e otimizada mensalmente', 'LTV:CAC acima de 3:1 como critério de escala', 'Expansão de conta: upsell e cross-sell no pipeline', 'Revisões mensais RAPT — Revisão, Alinhamento, Prioridade, Tática'],
+        description: 'Com dados reais de CAC, LTV, ROAS e churn, ativamos o ciclo de crescimento. O cliente que ativa, tem sucesso e se torna defensor. Esse defensor gera novos leads com custo zero - completando o ciclo completo de receita.',
+        principles: ['Velocidade de Pipeline calculada e otimizada mensalmente', 'LTV:CAC acima de 3:1 como critério de escala', 'Expansão de conta: upsell e cross-sell no pipeline', 'Revisões mensais RAPT - Revisão, Alinhamento, Prioridade, Tática'],
     },
 ];
 
@@ -62,22 +62,22 @@ const crmSteps = [
 const founderSteps = [
     {
         phase: '01', name: 'Posicionamento & Identidade', tagline: 'Semana 1–2',
-        description: 'Antes de postar, precisamos saber quem você é para quem importa. Definimos o nicho de autoridade, o ponto de vista único (POV) e o ICP do perfil pessoal — quem você quer atrair, qual problema você resolve e por que você e não outro.',
+        description: 'Antes de postar, precisamos saber quem você é para quem importa. Definimos o nicho de autoridade, o ponto de vista único (POV) e o ICP do perfil pessoal - quem você quer atrair, qual problema você resolve e por que você e não outro.',
         principles: ['Definição do nicho de autoridade e POV único', 'ICP do perfil: cargo, segmento e dor do seguidor ideal', 'Bio, headline e banner do LinkedIn otimizados', 'Conteúdo fixado que posiciona antes do primeiro post'],
     },
     {
         phase: '02', name: 'Conteúdo Âncora', tagline: 'Semana 3–6',
-        description: 'Criamos os primeiros posts de alto impacto — carrosséis de autoridade, text posts de opinião e stories de bastidor — para testar formatos, calibrar a voz e gerar os primeiros dados reais de alcance e engajamento do ICP.',
+        description: 'Criamos os primeiros posts de alto impacto - carrosséis de autoridade, text posts de opinião e stories de bastidor - para testar formatos, calibrar a voz e gerar os primeiros dados reais de alcance e engajamento do ICP.',
         principles: ['3 formatos testados: carrossel, text post, vídeo curto', 'Estratégia de comentários em contas âncora do nicho', 'Análise de alcance por formato para dobrar no que funciona', 'Primeiros inbounds qualificados ou conexões de 1º grau no ICP'],
     },
     {
         phase: '03', name: 'Cadência & Volume', tagline: 'Semana 7–10',
-        description: 'Máquina rodando: 3 publicações semanais consistentes, rotina de comentários estratégicos e nutrição da audiência. Nessa fase a consistência supera a perfeição — quem publica sem parar vence quem publica o post perfeito uma vez.',
+        description: 'Máquina rodando: 3 publicações semanais consistentes, rotina de comentários estratégicos e nutrição da audiência. Nessa fase a consistência supera a perfeição - quem publica sem parar vence quem publica o post perfeito uma vez.',
         principles: ['Cadência de 3x/semana consolidada e sistematizada', 'Banco de conteúdo com 2 semanas de buffer', 'Comentários diários em 5–10 posts de contas âncora', 'Review de métricas quinzenal para ajuste de pauta'],
     },
     {
         phase: '04', name: 'Loop de Conversão', tagline: 'Semana 11–12',
-        description: 'Transformamos audiência em oportunidade. Com autoridade estabelecida, ativamos o loop: seguidores viram conexões, conexões viram conversas, conversas viram chamadas — tudo originado de conteúdo, sem cold outreach.',
+        description: 'Transformamos audiência em oportunidade. Com autoridade estabelecida, ativamos o loop: seguidores viram conexões, conexões viram conversas, conversas viram chamadas - tudo originado de conteúdo, sem cold outreach.',
         principles: ['DM estratégico: abordagem baseada em engajamento real', 'Convites para podcast, evento ou parceria (inbound de autoridade)', 'Newsletter ou grupo fechado para leads mais quentes', 'Revisão final: 1 inbound qualificado = payback do protocolo'],
     },
 ];
@@ -86,12 +86,12 @@ const founderSteps = [
 const devSteps = [
     {
         phase: '01', name: 'Briefing & Arquitetura', tagline: 'Semana 1',
-        description: 'Nenhuma linha de código antes da estrutura aprovada. Mapeamos o objetivo de cada página, criamos o sitemap, definimos a stack tecnológica e entregamos o wireframe para aprovação — o rascunho que evita retrabalho caro.',
+        description: 'Nenhuma linha de código antes da estrutura aprovada. Mapeamos o objetivo de cada página, criamos o sitemap, definimos a stack tecnológica e entregamos o wireframe para aprovação - o rascunho que evita retrabalho caro.',
         principles: ['Sitemap completo com objetivo de conversão por página', 'Wireframe (baixa fidelidade) aprovado pelo cliente', 'Stack definida: framework, CMS, hosting, analytics', 'Metas de performance estabelecidas como critério de aceite'],
     },
     {
         phase: '02', name: 'Design & Copy', tagline: 'Semana 2–3',
-        description: 'UI de alta fidelidade construída sobre o wireframe aprovado. O design segue mobile-first e os textos são revisados para conversão — não apenas para informar. A identidade visual é aplicada antes do desenvolvimento.',
+        description: 'UI de alta fidelidade construída sobre o wireframe aprovado. O design segue mobile-first e os textos são revisados para conversão - não apenas para informar. A identidade visual é aplicada antes do desenvolvimento.',
         principles: ['UI de alta fidelidade no Figma, mobile-first', 'Texto revisado: headline, CTA e proposta de valor por seção', 'Aprovação de design antes de entrar em código', 'Assets exportados e organizados para entrega ao desenvolvimento'],
     },
     {
@@ -115,17 +115,17 @@ const differentialsByType: Record<string, { title: string; desc: string }[]> = {
     ],
     founder: [
         { title: 'Posicionamento Cirúrgico', desc: 'Nicho, POV e headline definidos antes de qualquer postagem. A clareza de quem você é atrai o cliente certo.' },
-        { title: 'Máquina de Conteúdo', desc: 'Cadência sustentável de 3x/semana que converte autoridade em audiência qualificada — sem burnout criativo.' },
+        { title: 'Máquina de Conteúdo', desc: 'Cadência sustentável de 3x/semana que converte autoridade em audiência qualificada - sem burnout criativo.' },
         { title: 'Loop de Conversão', desc: 'Da audiência ao pipeline: DM estratégico, inbound qualificado e convites de palestra originados do conteúdo.' },
     ],
     dev: [
         { title: 'Arquitetura Primeiro', desc: 'Sitemap, wireframe e aprovação antes de qualquer linha de código. Sem surpresas no meio do projeto.' },
-        { title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão — não por ordem alfabética. Resultado visível toda semana.' },
-        { title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto — não bônus. Entregamos o que prometemos.' },
+        { title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão - não por ordem alfabética. Resultado visível toda semana.' },
+        { title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto - não bônus. Entregamos o que prometemos.' },
     ],
     default: [
         { title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
-        { title: 'Ciclo Completo de Receita', desc: 'Da atração ao fechamento ao sucesso do cliente — cada etapa conectada e medida.' },
+        { title: 'Ciclo Completo de Receita', desc: 'Da atração ao fechamento ao sucesso do cliente - cada etapa conectada e medida.' },
         { title: 'Onboarding como Vantagem', desc: 'O primeiro resultado entregue em 15 dias determina o LTV. Cada touchpoint tem dono e prazo.' },
     ],
 };

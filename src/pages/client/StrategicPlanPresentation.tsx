@@ -84,6 +84,35 @@ export default function StrategicPlanPresentation() {
     const [client, setClient] = useState<any>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+
+    // Clean up external chat widgets (GHL, Lovable, etc.) - they should NOT appear on presentation pages
+    useEffect(() => {
+        const cleanupChatWidgets = () => {
+            const selectors = [
+                'chat-widget',
+                '#leadconnector-chat-widget',
+                '[id*="leadconnector"]',
+                '[class*="leadconnector"]',
+                'iframe[src*="leadconnectorhq"]',
+                'iframe[src*="widget.leadconnectorhq"]',
+                'div[data-chat-widget]',
+                '#hl-chat-widget-container',
+                '#hl-chat-widget-bubble',
+                '.hl-chat-widget',
+                '#ghl-chat-script',
+                '[id*="gptengineer"]',
+                '[class*="gptengineer"]',
+            ];
+            selectors.forEach(sel => {
+                document.querySelectorAll(sel).forEach(el => el.remove());
+            });
+        };
+        cleanupChatWidgets();
+        // Run again after a delay (widgets may load asynchronously)
+        const timer1 = setTimeout(cleanupChatWidgets, 2000);
+        const timer2 = setTimeout(cleanupChatWidgets, 5000);
+        return () => { clearTimeout(timer1); clearTimeout(timer2); };
+    }, []);
     const [approving, setApproving] = useState(false);
     const [showApproved, setShowApproved] = useState(false);
     const [approvedName, setApprovedName] = useState('');
@@ -128,7 +157,7 @@ export default function StrategicPlanPresentation() {
             return pt === 'full' || pt === 'consulting' || pt === 'funnels_impl' || pt === 'content_seo' || !pt;
         }
 
-        // Investment hidden for CRM/onboarding — o cliente já está em operação, não faz sentido falar em investimento
+        // Investment hidden for CRM/onboarding - o cliente já está em operação, não faz sentido falar em investimento
         if (s.id === 'investment') {
             return pt !== 'crm_ops';
         }
@@ -197,7 +226,7 @@ export default function StrategicPlanPresentation() {
     async function loadPlan() {
         if (!token) { setLoading(false); return; }
         try {
-            const { data, error } = await supabase.from('strategic_plans').select('*, rei_projects(type)').eq('access_token', token).single();
+            const { data, error } = await supabase.from('strategic_plans').select('*, rei_projects(type, project_duration)').eq('access_token', token).single();
             if (error) throw error;
             setPlan(data);
             if (data.client_id) {
@@ -475,7 +504,7 @@ export default function StrategicPlanPresentation() {
                     </button>
                 </div>
 
-                {/* Main content — Full Screen Format */}
+                {/* Main content - Full Screen Format */}
                 <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth">
                     {/* Slide container - Full bleed no margins */}
                     <div className="w-full h-full flex flex-col">

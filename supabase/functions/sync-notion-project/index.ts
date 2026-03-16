@@ -98,7 +98,7 @@ serve(async (req) => {
         };
 
         // ==========================================
-        // FASE SETUP — chamada quando admin cria o projeto
+        // FASE SETUP - chamada quando admin cria o projeto
         // Cria Sprint imediatamente com dados básicos
         // Salva notion_sprint_id no rei_projects para uso na fase enrich
         // ==========================================
@@ -148,7 +148,7 @@ serve(async (req) => {
         }
 
         // ==========================================
-        // FASE ENRICH — chamada quando cliente preenche o REI
+        // FASE ENRICH - chamada quando cliente preenche o REI
         // Busca Sprint criada no setup, atualiza meta com dados reais,
         // cria Task com todo o conteúdo do formulário
         // ==========================================
@@ -185,7 +185,7 @@ serve(async (req) => {
                 // Extrai meta real das respostas do REI
                 const goalText = data.revops_objetivo_principal || data.objective
                     || data.mainGoal || data.objetivo || data.goal
-                    || `Onboarding ${type} — ${resolvedCompany}`;
+                    || `Onboarding ${type} - ${resolvedCompany}`;
 
                 const updateProps: Record<string, any> = {
                     "Meta da Sprint": {
@@ -205,7 +205,7 @@ serve(async (req) => {
                     console.warn(`⚠️ Não foi possível atualizar Sprint: ${e.message}`);
                 }
             } else {
-                // Fallback: fase setup não rodou — cria Sprint agora
+                // Fallback: fase setup não rodou - cria Sprint agora
                 console.log(`[Enrich] Sprint não encontrada, criando como fallback...`);
 
                 const goalText = data.revops_objetivo_principal || data.objective

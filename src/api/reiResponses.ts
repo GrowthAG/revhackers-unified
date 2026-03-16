@@ -168,7 +168,7 @@ export const calculateMaturity = (responses: Record<string, any>): {
 };
 
 // NOTE: saveReiDiagnostic lives in reiProjects.ts (single source of truth)
-// Do NOT duplicate here — REIWizard imports from reiProjects.ts
+// Do NOT duplicate here - REIWizard imports from reiProjects.ts
 
 /**
  * COMPARAR EVOLUÇÃO

@@ -15,7 +15,7 @@ const defaultOKRs = [
         dark: true,
     },
     {
-        objective: 'RK 1 — Infraestrutura e Fundação', label: '01',
+        objective: 'RK 1: Infraestrutura e Fundação', label: '01',
         krs: [
             { label: 'RK 1.1', text: 'CRM implementado com adoção do time acima de 80%', target: 'Sem. 2' },
             { label: 'RK 1.2', text: 'Conversões rastreadas de ponta a ponta: clique, lead, oportunidade e fechamento', target: 'Sem. 3' },
@@ -23,7 +23,7 @@ const defaultOKRs = [
         ],
     },
     {
-        objective: 'RK 2 — Geração de Demanda', label: '02',
+        objective: 'RK 2: Geração de Demanda', label: '02',
         krs: [
             { label: 'RK 2.1', text: 'Custo por lead abaixo do benchmark do segmento nos primeiros 30 dias', target: 'Mês 1' },
             { label: 'RK 2.2', text: 'Taxa de conversão de Lead para SQL acima de 15%', target: 'Mês 2' },
@@ -31,7 +31,7 @@ const defaultOKRs = [
         ],
     },
     {
-        objective: 'RK 3 — Conversão e Pipeline', label: '03',
+        objective: 'RK 3: Conversão e Pipeline', label: '03',
         krs: [
             { label: 'RK 3.1', text: 'Conversão de SQL para fechamento acima de 20%', target: 'Mês 2' },
             { label: 'RK 3.2', text: 'Ciclo médio de vendas abaixo de 30 dias para tickets até R$10K', target: 'Mês 2' },
@@ -39,7 +39,7 @@ const defaultOKRs = [
         ],
     },
     {
-        objective: 'RK 4 — Retenção e Expansão', label: '04',
+        objective: 'RK 4: Retenção e Expansão', label: '04',
         krs: [
             { label: 'RK 4.1', text: 'CAC recuperado em até 90 dias (payback abaixo de 90 dias)', target: 'Mês 3' },
             { label: 'RK 4.2', text: 'Proporção LTV:CAC igual ou acima de 3:1 como sinal de escala autorizada', target: 'Trim. 2' },
@@ -72,7 +72,7 @@ const crmOKRs = [
         dark: true,
     },
     {
-        objective: 'RK 1 — Infraestrutura e Visibilidade', label: '01',
+        objective: 'RK 1: Infraestrutura e Visibilidade', label: '01',
         krs: [
             { label: 'RK 1.1', text: 'Pipelines customizados validados e publicados no CRM Central', target: 'Sem. 2' },
             { label: 'RK 1.2', text: 'Rastreamento de origens (UTMs/Pixels) conectado às oportunidades', target: 'Sem. 3' },
@@ -80,7 +80,7 @@ const crmOKRs = [
         ],
     },
     {
-        objective: 'RK 2 — Governança e Processos', label: '02',
+        objective: 'RK 2: Governança e Processos', label: '02',
         krs: [
             { label: 'RK 2.1', text: 'SLA de Passagem de Bastão Marketing > Vendas mapeado e metrificado no sistema', target: 'Mês 1' },
             { label: 'RK 2.2', text: 'Alerta de estagnação de negócios (SLA de follow-up) programado', target: 'Mês 2' },
@@ -88,7 +88,7 @@ const crmOKRs = [
         ],
     },
     {
-        objective: 'RK 3 — Conversão e Velocidade', label: '03',
+        objective: 'RK 3: Conversão e Velocidade', label: '03',
         krs: [
             { label: 'RK 3.1', text: 'Aumento na taxa de avanço entre etapas finais através de automação', target: 'Mês 2' },
             { label: 'RK 3.2', text: 'Redução do ciclo de vendas médio via acompanhamento e tarefas automatizadas', target: 'Mês 3' },
@@ -96,7 +96,7 @@ const crmOKRs = [
         ],
     },
     {
-        objective: 'RK 4 — Adoção Organizacional', label: '04',
+        objective: 'RK 4: Adoção Organizacional', label: '04',
         krs: [
             { label: 'RK 4.1', text: 'Onboarding de usuários: 100% da equipe treinada nos padrões de entrada', target: 'Mês 1' },
             { label: 'RK 4.2', text: 'Menos de 10% das oportunidades sem atividade por mais de 7 dias', target: 'Mês 2' },
@@ -141,7 +141,7 @@ export default function GoalsSection({ plan }: { plan: any }) {
                     ))}
                 </div>
 
-                {/* Main OKR — dark hero card */}
+                {/* Main OKR - dark hero card */}
                 {displayOKRs.slice(0, 1).map((okr: any, i: number) => (
                     <div key={i} className="bg-zinc-950 rounded-xl overflow-hidden">
                         <div className="flex items-center gap-4 px-8 py-6 border-b border-zinc-800">

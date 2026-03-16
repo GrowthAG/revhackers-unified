@@ -133,7 +133,7 @@ export default function StepCrmOps1Context({ form }: Props) {
                             <input
                                 {...form.register(`revops_concorrente${n}_nome` as any)}
                                 className="p-3 border border-zinc-200 focus:border-black transition-colors text-sm bg-white outline-none h-12"
-                                placeholder={`Concorrente ${n} — Nome`}
+                                placeholder={`Concorrente ${n} - Nome`}
                             />
                             <input
                                 {...form.register(`revops_concorrente${n}_site` as any)}

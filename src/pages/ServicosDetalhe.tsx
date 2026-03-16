@@ -1,10 +1,13 @@
 
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, Target, Database, MessageSquare, LayoutTemplate, Cpu } from 'lucide-react';
+import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, Target, Database, MessageSquare, LayoutTemplate, Cpu, X, Calendar } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import BookingModal from '@/components/shared/BookingModal';
 
 // --- DATA SOURCE ---
 const servicosData = {
@@ -190,6 +193,8 @@ const servicosData = {
 const ServicosDetalhe = () => {
   const { slug } = useParams<{ slug: string }>();
   const service = slug ? servicosData[slug as keyof typeof servicosData] : null;
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<{ title: string; description: string } | null>(null);
 
   if (!service) {
     return (
@@ -224,8 +229,8 @@ const ServicosDetalhe = () => {
               {service.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild className="btn-green-flat h-14 px-8 text-sm shadow-lg shadow-revgreen/10">
-                <Link to={service.heroCta}>Agendar Consultoria</Link>
+              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-14 px-8 text-sm shadow-lg shadow-revgreen/10 cursor-pointer">
+                Agendar Consultoria
               </Button>
               <Button asChild className="btn-outline-flat h-14 px-8 text-sm bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10">
                 <Link to="/cases">Ver Cases</Link>
@@ -243,12 +248,19 @@ const ServicosDetalhe = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {service.whatWeDo.map((item, i) => (
-              <Card key={i} className="bg-gray-50 border border-gray-100 shadow-sm hover:border-revgreen transition-all duration-300 h-full group hover:shadow-md">
+              <Card
+                key={i}
+                className="bg-gray-50 border border-gray-100 shadow-sm hover:border-revgreen transition-all duration-300 h-full group hover:shadow-md cursor-pointer"
+                onClick={() => setSelectedService(item)}
+              >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-black mb-3 group-hover:text-revgreen transition-colors">{item.title}</CardTitle>
                   <CardDescription className="text-gray-600 font-light leading-relaxed">
                     {item.description}
                   </CardDescription>
+                  <div className="mt-4 flex items-center text-revgreen text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                    Saiba mais <ArrowRight className="w-3 h-3 ml-1" />
+                  </div>
                 </CardHeader>
               </Card>
             ))}
@@ -311,12 +323,83 @@ const ServicosDetalhe = () => {
             <p className="text-xl text-gray-500 mb-10 font-light">
               Agende uma consultoria gratuita e descubra como podemos ajudar sua empresa a escalar.
             </p>
-            <Button asChild className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-xl">
-              <Link to="/diagnostico">Agendar Consultoria Gratuita</Link>
+            <Button
+              onClick={() => setIsBookingOpen(true)}
+              className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-xl cursor-pointer"
+            >
+              Agendar Consultoria Gratuita
             </Button>
           </div>
         </div>
       </Section>
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+      />
+
+      {/* Service Detail Popup - Design System Match */}
+      {selectedService && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Dark Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedService(null)}
+            className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+          />
+
+          {/* Modal Content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-2xl bg-white rounded-none shadow-sm overflow-hidden border border-zinc-200"
+          >
+            {/* Header - Same as CallDiagnosticModal */}
+            <div className="p-8 md:p-12 border-b border-zinc-100 flex justify-between items-start">
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono font-black text-revgreen uppercase tracking-[0.4em]">{service?.number} // {service?.title}</span>
+                <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic uppercase">
+                  {selectedService.title}
+                </h2>
+              </div>
+              <button onClick={() => setSelectedService(null)} className="p-2 hover:bg-zinc-100 transition-colors rounded-full">
+                <X className="w-6 h-6 text-black" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-8 md:p-12 space-y-8">
+              {/* Description */}
+              <p className="text-lg text-zinc-500 font-light leading-relaxed">
+                {selectedService.description}
+              </p>
+
+              {/* Context Badge */}
+              <div className="border-l-2 border-revgreen pl-6 py-2">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block mb-1">Parte do Projeto</span>
+                <span className="text-lg font-bold text-black tracking-tight">{service?.title}</span>
+              </div>
+
+              {/* CTA */}
+              <Button
+                onClick={() => {
+                  setSelectedService(null);
+                  setIsBookingOpen(true);
+                }}
+                className="w-full h-20 bg-black text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-[0.2em] text-xs transition-all duration-500 cursor-pointer rounded-none"
+              >
+                <Calendar className="w-5 h-5 mr-4" />
+                Agendar Diagnóstico de {selectedService.title}
+                <ArrowRight className="w-5 h-5 ml-4" />
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
     </PageLayout>
   );

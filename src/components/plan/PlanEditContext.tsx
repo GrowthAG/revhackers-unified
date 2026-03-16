@@ -160,7 +160,7 @@ export function EditToolbar() {
             <div className="plan-edit-bar fixed top-0 left-0 right-0 z-[200] bg-zinc-950 border-b border-[#00CC6A]/30 flex items-center justify-between px-6 py-2.5">
                 <div className="flex items-center gap-2">
                     <Pencil className="w-3.5 h-3.5 text-[#00CC6A]" />
-                    <span className="text-xs font-bold text-white uppercase tracking-widest">Modo Edição — Admin</span>
+                    <span className="text-xs font-bold text-white uppercase tracking-widest">Modo Edição - Admin</span>
                     {hasChanges && (
                         <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-amber-400 font-mono">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />

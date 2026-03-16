@@ -52,7 +52,7 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
 
                 <StrategicContext label="O Diagnóstico">
                     <p>
-                        Se sua operação B2B está estagnada, mesmo com investimento em marketing, vendas e equipe qualificada, o problema quase sempre está dentro do funil comercial — não fora.
+                        Se sua operação B2B está estagnada, mesmo com investimento em marketing, vendas e equipe qualificada, o problema quase sempre está dentro do funil comercial - não fora.
                     </p>
                     <p className="mt-4">
                         A maioria dos CEOs e heads de growth tenta acelerar com tráfego ou contratar mais SDRs, mas o que precisam, na real, é cirurgia de precisão: diagnóstico de onde a receita está vazando.

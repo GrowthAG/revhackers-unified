@@ -94,7 +94,7 @@ export default function ThesisSection({ plan }: { plan: any }) {
                 {/* ── Divider ── */}
                 <div className="h-px bg-zinc-200 max-w-4xl mx-auto mb-12" />
 
-                {/* ── Pillars — editorial layout ── */}
+                {/* ── Pillars - editorial layout ── */}
                 <div className="flex flex-col md:flex-row max-w-5xl mx-auto">
                     {displayPillars.map((pillar: any, i: number) => {
                         const isLast = i === displayPillars.length - 1;
