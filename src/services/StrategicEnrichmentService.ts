@@ -154,10 +154,11 @@ export class StrategicEnrichmentService {
         type: EnrichmentType,
         segment: string,
         options?: {
-            competitors?: string[];
+            competitors?: any[];
             objective?: string;
             context?: any;
             siteAnalysis?: any;
+            projectType?: string;
         }
     ): Promise<any> {
         try {
@@ -168,7 +169,8 @@ export class StrategicEnrichmentService {
                     competitors: options?.competitors,
                     objective: options?.objective,
                     context: options?.context,
-                    siteAnalysis: options?.siteAnalysis
+                    siteAnalysis: options?.siteAnalysis,
+                    projectType: options?.projectType
                 }
             });
 

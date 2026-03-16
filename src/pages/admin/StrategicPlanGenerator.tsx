@@ -538,7 +538,8 @@ export default function StrategicPlanGenerator() {
                 objective,
                 competitors,
                 context: answers,
-                siteAnalysis: reiProject?.site_analysis || undefined
+                siteAnalysis: reiProject?.site_analysis || undefined,
+                projectType: reiProject?.type || 'consulting'
             });
 
             // Merge into existing plan
@@ -1082,56 +1083,52 @@ export default function StrategicPlanGenerator() {
                                     </div>
 
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
-                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">CAC Médio</p>
+                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
+                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">CAC Médio</p>
                                             {editMode ? (
-                                                <input
-                                                    type="text"
+                                                <textarea
                                                     value={editedData.benchmark.cac_medio}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, cac_medio: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
                                                 />
                                             ) : (
-                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.cac_medio}</p>
+                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.cac_medio}</p>
                                             )}
                                         </div>
-                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
-                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">Conv. Média</p>
+                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
+                                            <p className="text-[10px] text-[#00CC6A] uppercase tracking-widest font-black mb-3">Conv. Média</p>
                                             {editMode ? (
-                                                <input
-                                                    type="text"
+                                                <textarea
                                                     value={editedData.benchmark.taxa_conversao}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, taxa_conversao: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-[#00CC6A] w-full"
+                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-[#00CC6A] w-full h-full min-h-[120px]"
                                                 />
                                             ) : (
-                                                <p className="text-xl font-bold text-[#00CC6A] tracking-tight">{enrichedData.benchmark.taxa_conversao}</p>
+                                                <p className="text-sm font-bold text-[#00CC6A] leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.taxa_conversao}</p>
                                             )}
                                         </div>
-                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
-                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">Ciclo Vendas</p>
+                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
+                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">Ciclo Vendas</p>
                                             {editMode ? (
-                                                <input
-                                                    type="text"
+                                                <textarea
                                                     value={editedData.benchmark.ciclo_vendas}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ciclo_vendas: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
                                                 />
                                             ) : (
-                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.ciclo_vendas}</p>
+                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.ciclo_vendas}</p>
                                             )}
                                         </div>
-                                        <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-800">
-                                            <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">LTV:CAC</p>
+                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
+                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">LTV:CAC</p>
                                             {editMode ? (
-                                                <input
-                                                    type="text"
+                                                <textarea
                                                     value={editedData.benchmark.ltv_cac_ratio}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ltv_cac_ratio: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
                                                 />
                                             ) : (
-                                                <p className="text-xl font-bold text-white tracking-tight">{enrichedData.benchmark.ltv_cac_ratio}</p>
+                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.ltv_cac_ratio}</p>
                                             )}
                                         </div>
                                     </div>

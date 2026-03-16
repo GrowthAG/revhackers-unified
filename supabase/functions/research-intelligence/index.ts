@@ -12,6 +12,7 @@ interface ResearchRequest {
     objective?: string;
     context?: any;
     siteAnalysis?: any;
+    projectType?: string;
 }
 
 // Build site analysis context block
@@ -146,13 +147,21 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
 // TYPE-SPECIFIC PROMPTS (Deep Research - more detailed than enrich)
 // ============================================================
 
-function getBenchmarkPrompt(segment: string, objective?: string, context?: any, siteAnalysis?: any): string {
+function getBenchmarkPrompt(segment: string, objective?: string, context?: any, siteAnalysis?: any, projectType?: string): string {
     const siteBlock = buildSiteBlock(siteAnalysis);
     const contextBlock = context ? `\nDados do diagnostico do cliente: \n${buildClientContext(context, segment, objective)}` : '';
+    
+    const isCrmOps = projectType === 'crm_ops';
+    const crmOpsInstruction = isCrmOps 
+        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
+A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
+NÃO analise o mercado de "CRM as a Service", "Consultoria de Vendas" ou "RevOps", a menos que o cliente seja declaradamente desse setor. 
+O Benchmark deve focar no ambiente competitivo em que a empresa analisada atua, olhando para o CAC, LTV e ferramentas do SETOR DELES.` 
+        : '';
 
     return `Segmento: ${segment}
 Objetivo: ${objective || 'crescimento'}
-${contextBlock}${siteBlock}
+${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Head de Inteligencia de Mercado da RevHackers. Gere um BENCHMARK PROFUNDO e PERSONALIZADO para o segmento deste cliente no Brasil.
 INSTRUCOES CRITICAS:
@@ -177,13 +186,21 @@ Retorne um JSON com EXATAMENTE esta estrutura:
 }`;
 }
 
-function getPersonasPrompt(segment: string, objective?: string, context?: any, siteAnalysis?: any): string {
+function getPersonasPrompt(segment: string, objective?: string, context?: any, siteAnalysis?: any, projectType?: string): string {
     const siteBlock = buildSiteBlock(siteAnalysis);
     const contextBlock = context ? `\nDados do diagnostico do cliente: \n${buildClientContext(context, segment, objective)}` : '';
 
+    const isCrmOps = projectType === 'crm_ops';
+    const crmOpsInstruction = isCrmOps 
+        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
+A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
+NÃO gere personas de donos de Agência de Marketing, NÃO analise o mercado de "CRM as a Service" ou "RevOps", a menos que o cliente seja declaradamente desse setor. 
+As pessoas devem ser as pessoas que **compram o produto/serviço que esta empresa vende**, não os compradores de CRM.` 
+        : '';
+
     return `Segmento: ${segment}
 Objetivo: ${objective || 'crescimento'}
-${contextBlock}${siteBlock}
+${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Estrategista de ICP da RevHackers. Crie 3 BUYER PERSONAS ultra-detalhadas que representem os compradores REAIS dos produtos e servicos DESTE cliente.
 ATENCAO: Nao confunda o projeto/servico que a RevHackers esta prestando (ex: crm_ops, consultoria) com o que o cliente vende. As personas devem ser os clientes DO cliente, baseadas firmemente na Analise do Site e no Segmento.
@@ -218,7 +235,7 @@ Retorne um JSON com EXATAMENTE esta estrutura:
 Gere EXATAMENTE 3 personas com TODOS os campos preenchidos.`;
 }
 
-function getMarketPrompt(segment: string, competitors?: { nome: string, url?: string }[], objective?: string, context?: any, siteAnalysis?: any): string {
+function getMarketPrompt(segment: string, competitors?: { nome: string, url?: string }[], objective?: string, context?: any, siteAnalysis?: any, projectType?: string): string {
     const siteBlock = buildSiteBlock(siteAnalysis);
     let competitorsBlock = '';
     if (competitors && competitors.length > 0) {
@@ -230,9 +247,16 @@ Voce DEVE analisar estes concorrentes especificamente. Complemente com outros pl
     }
     const contextBlock = context ? `\nDados do diagnostico: \n${buildClientContext(context, segment, objective)}` : '';
 
+    const isCrmOps = projectType === 'crm_ops';
+    const crmOpsInstruction = isCrmOps 
+        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
+A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
+NÃO analise o mercado de "CRM as a Service", "Consultoria de Vendas" ou "RevOps", a menos que o cliente seja declaradamente desse setor.` 
+        : '';
+
     return `Segmento: ${segment} (Brasil)
 Objetivo: ${objective || 'crescimento'}
-${competitorsBlock}${contextBlock}${siteBlock}
+${competitorsBlock}${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Analista de Inteligencia Competitiva da RevHackers. Entregue uma analise de mercado estilo McKinsey/Bain, PERSONALIZADA para o negocio real deste cliente.
 INSTRUCOES CRITICAS:
@@ -280,7 +304,7 @@ serve(async (req) => {
     }
 
     try {
-        const { type, segment, competitors, objective, context, siteAnalysis }: ResearchRequest = await req.json();
+        const { type, segment, competitors, objective, context, siteAnalysis, projectType }: ResearchRequest = await req.json();
 
         if (!type || !segment) {
             throw new Error('Missing required fields: type, segment');
@@ -303,13 +327,13 @@ NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), 
         let userPrompt: string;
         switch (type) {
             case 'benchmark':
-                userPrompt = getBenchmarkPrompt(segment, objective, context, siteAnalysis);
+                userPrompt = getBenchmarkPrompt(segment, objective, context, siteAnalysis, projectType);
                 break;
             case 'personas':
-                userPrompt = getPersonasPrompt(segment, objective, context, siteAnalysis);
+                userPrompt = getPersonasPrompt(segment, objective, context, siteAnalysis, projectType);
                 break;
             case 'market':
-                userPrompt = getMarketPrompt(segment, competitors, objective, context, siteAnalysis);
+                userPrompt = getMarketPrompt(segment, competitors, objective, context, siteAnalysis, projectType);
                 break;
             default:
                 throw new Error(`Invalid research type: ${type}`);
