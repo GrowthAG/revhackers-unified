@@ -17,17 +17,17 @@ serve(async (req) => {
             throw new Error('URL is required')
         }
 
-        const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
+        const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-        if (!PERPLEXITY_API_KEY) {
-            console.warn('PERPLEXITY_API_KEY not set, falling back to mock data');
+        if (!OPENAI_API_KEY) {
+            console.warn('OPENAI_API_KEY not set, falling back to mock data');
             return new Response(JSON.stringify(getMockData(url)), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 200,
             });
         }
 
-        console.log(`Enriching profile URL with Perplexity: ${url}`);
+        console.log(`Enriching profile URL with OpenAI GPT-5.4: ${url}`);
 
         const systemPrompt = `Você é um Analista de Inteligência de Mercado e Perfilador de Venture Capital.
         Sua missão é realizar uma análise PROFUNDA e ESTRATÉGICA de um perfil do LinkedIn.
@@ -59,14 +59,14 @@ serve(async (req) => {
           }
         }`;
 
-        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+                'Authorization': `Bearer ${OPENAI_API_KEY}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'sonar-reasoning-pro',
+                model: 'gpt-5.4',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: `Realize uma auditoria técnica e estratégica deste perfil: ${url}. Se houver restrições de privacidade, gere um Benchmark Gerencial baseado no seu cargo provável.` }
@@ -78,20 +78,18 @@ serve(async (req) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Perplexity API Error:', errorText);
-            throw new Error(`Perplexity API returned ${response.status}`);
+            console.error('OpenAI API Error:', errorText);
+            throw new Error(`OpenAI API returned ${response.status}`);
         }
 
         const data = await response.json();
         const content = data.choices?.[0]?.message?.content;
 
         if (!content) {
-            throw new Error('No content in Perplexity response');
+            throw new Error('No content in OpenAI response');
         }
 
         let cleanContent = content.trim();
-        const thinkRegex = /<think>[\s\S]*?<\/think>/gi;
-        cleanContent = cleanContent.replace(thinkRegex, '').trim();
 
         if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
         if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
@@ -105,7 +103,7 @@ serve(async (req) => {
         try {
             profileData = JSON.parse(cleanContent);
         } catch (parseError) {
-            console.error('Failed to parse Perplexity response as JSON:', cleanContent);
+            console.error('Failed to parse OpenAI response as JSON:', cleanContent);
             profileData = getMockData(url);
         }
 

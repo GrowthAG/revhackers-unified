@@ -232,7 +232,7 @@ const ServicosDetalhe = () => {
               <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-14 px-8 text-sm shadow-lg shadow-revgreen/10 cursor-pointer">
                 Agendar Consultoria
               </Button>
-              <Button asChild className="btn-outline-flat h-14 px-8 text-sm bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10">
+              <Button asChild className="h-14 px-8 text-sm bg-transparent border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
                 <Link to="/cases">Ver Cases</Link>
               </Button>
             </div>

@@ -190,7 +190,7 @@ const CasesDetalhe = () => {
                   <h5 className="font-bold text-black text-sm mb-2">Precisa de resultados assim?</h5>
                   <p className="text-xs text-zinc-500 mb-4">Agende um diagnóstico gratuito da sua operação.</p>
                   <Button asChild className="w-full bg-black hover:bg-revgreen hover:text-black text-white text-xs font-bold uppercase tracking-widest">
-                    <Link to="/diagnostico">Agendar Agora</Link>
+                    <Link to="/booking">Agendar Agora</Link>
                   </Button>
                 </div>
               </div>

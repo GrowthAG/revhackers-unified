@@ -91,6 +91,19 @@ export function PlanEditProvider({
         }
     }, [plan, planId, pendingChanges, onPlanUpdate]);
 
+    // --- Auto-Save Effect ---
+    // Keep a stable reference to pendingChanges length and the save function
+    const pendingCount = Object.keys(pendingChanges).length;
+    useEffect(() => {
+        if (pendingCount === 0 || !isEditing) return;
+
+        const timer = setTimeout(() => {
+            save();
+        }, 2000); // 2 seconds debounce
+
+        return () => clearTimeout(timer);
+    }, [pendingChanges, isEditing, save, pendingCount]);
+
     return (
         <PlanEditCtx.Provider value={{ isEditing, saving, savedAt, getField, setField, save, pendingChanges }}>
             {children}

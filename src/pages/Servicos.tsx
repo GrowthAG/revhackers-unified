@@ -156,7 +156,7 @@ const Servicos = () => {
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-black text-black mb-8 tracking-tighter">
-              Ready to Upgrade?
+              Pronto para Escalar?
             </h2>
             <p className="text-zinc-500 mb-12 text-lg font-light max-w-xl mx-auto">
               Seu stack de receita precisa de uma auditoria completa. Vamos encontrar os gargalos.

@@ -64,42 +64,102 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
 // SYSTEM PROMPT
 // ============================================================
 
-const SYSTEM_PROMPT = `Você é um analista de inteligência de mercado sênior focado em B2B e SaaS.
-Analise o segmento e objetivo fornecidos.
-NUNCA use o caractere em dash (travessão longo) em nenhum campo - use apenas hífen simples (-), dois pontos (:) ou ponto (.).
-Retorne APENAS um JSON válido (sem markdown, sem explicações extras) seguindo estritamente este esquema:
+const SYSTEM_PROMPT = `Voce e o Head de Inteligencia de Mercado da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Voce tem 15+ anos de experiencia em consultoria estrategica e analise competitiva.
+Sua especialidade e transformar dados brutos de diagnostico em inteligencia acionavel.
+
+REGRAS ABSOLUTAS:
+- Todas as respostas em portugues brasileiro.
+- Responda APENAS com JSON valido, sem texto adicional.
+- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- Baseie-se em dados reais de mercado. Cite empresas reais do segmento no Brasil.
+- Seja especifico nos numeros e metricas. Nao use placeholders genericos.
+- PERSONALIZE tudo ao contexto do cliente. Se recebeu dados do site, diagnostico ou concorrentes, USE-OS.`;
+
+// Build rich context from all available client data
+function buildUserPrompt(segment: string, objective: string, reiResponses?: any, siteAnalysis?: any, competitors?: { nome: string, url?: string }[]): string {
+    const lines: string[] = [];
+
+    lines.push(`Segmento: ${segment}`);
+    lines.push(`Objetivo Estrategico: ${objective}`);
+
+    // Extract key client data from REI responses
+    if (reiResponses && typeof reiResponses === 'object') {
+        const company = reiResponses.companyName || reiResponses.revops_empresa || reiResponses.nome_empresa || '';
+        const crm = reiResponses.currentCRM || reiResponses.revops_crm_atual || '';
+        const teamSize = reiResponses.teamSize || reiResponses.revops_tamanho_time || '';
+        const revenue = reiResponses.monthlyRevenue || reiResponses.revops_faturamento || '';
+        const mainPain = reiResponses.mainChallenge || reiResponses.revops_maior_dor || reiResponses.biggestPain || '';
+        const channels = reiResponses.adsChannels || reiResponses.revops_canais_aquisicao || '';
+
+        if (company) lines.push(`Empresa: ${company}`);
+        if (crm) lines.push(`CRM atual: ${crm}`);
+        if (teamSize) lines.push(`Tamanho do time: ${teamSize}`);
+        if (revenue) lines.push(`Faturamento: ${revenue}`);
+        if (mainPain) lines.push(`Dor principal: ${mainPain}`);
+        if (channels) lines.push(`Canais de aquisicao: ${typeof channels === 'object' ? JSON.stringify(channels) : channels}`);
+    }
+
+    // Site analysis context
+    if (siteAnalysis && typeof siteAnalysis === 'object') {
+        lines.push('');
+        lines.push('--- Dados do site do cliente ---');
+        if (siteAnalysis.resumo_proposta) lines.push(`Proposta de valor: ${siteAnalysis.resumo_proposta}`);
+        if (siteAnalysis.publico_alvo) lines.push(`Publico-alvo: ${siteAnalysis.publico_alvo}`);
+        if (siteAnalysis.produtos_servicos) {
+            const prods = Array.isArray(siteAnalysis.produtos_servicos) ? siteAnalysis.produtos_servicos.join(', ') : siteAnalysis.produtos_servicos;
+            lines.push(`Produtos/Servicos: ${prods}`);
+        }
+        if (siteAnalysis.maturidade_digital) lines.push(`Maturidade digital: ${siteAnalysis.maturidade_digital}`);
+        if (siteAnalysis.pontos_fracos_site) {
+            const fraq = Array.isArray(siteAnalysis.pontos_fracos_site) ? siteAnalysis.pontos_fracos_site.join(', ') : siteAnalysis.pontos_fracos_site;
+            lines.push(`Pontos fracos do site: ${fraq}`);
+        }
+    }
+
+    // Competitors
+    if (competitors && competitors.length > 0) {
+        lines.push('');
+        lines.push('--- Concorrentes citados pelo cliente ---');
+        competitors.forEach(c => {
+            lines.push(`- ${c.nome}${c.url ? ' (' + c.url + ')' : ''}`);
+        });
+        lines.push('PRIORIDADE: Analise estes concorrentes especificamente. Complemente com outros players reais se necessario.');
+    }
+
+    lines.push('');
+    lines.push(`INSTRUCAO CRITICA: Personalize TODA a analise ao negocio real deste cliente. As personas devem ser compradores dos produtos/servicos dele. Os concorrentes devem ser do mesmo espaco. O conselho estrategico deve atacar a dor principal.`);
+
+    lines.push('');
+    lines.push(`Retorne um JSON com esta estrutura:
 {
-    "industry_trends": ["Tendência 1", "Tendência 2", "Tendência 3"],
+    "industry_trends": ["Tendencia especifica do segmento 1", "Tendencia 2", "Tendencia 3"],
     "competitor_benchmarks": [
-        {"company_name": "Empresa A", "key_metric": "CAC estimado R$ X", "strategy_insight": "Usa estratégia Y"},
-        {"company_name": "Empresa B", "key_metric": "Ticket Médio", "strategy_insight": "Foco em Enterprise"},
-        {"company_name": "Empresa C", "key_metric": "Growth Rate", "strategy_insight": "PLG"}
+        {"company_name": "Empresa real do segmento", "key_metric": "Metrica chave com numero (ex: CAC R$ 350)", "strategy_insight": "Estrategia observavel que funciona para eles"},
+        {"company_name": "Empresa 2", "key_metric": "Metrica 2", "strategy_insight": "Insight 2"},
+        {"company_name": "Empresa 3", "key_metric": "Metrica 3", "strategy_insight": "Insight 3"}
     ],
     "market_sizing": {
-        "tam": "Descrição do Mercado Total",
-        "sam": "Descrição do Mercado Endereçável",
-        "som": "Descrição do Mercado que podemos capturar"
+        "tam": "Mercado Total do segmento no Brasil com valor estimado",
+        "sam": "Mercado Enderecavel considerando o posicionamento do cliente",
+        "som": "Mercado Capturavel em 12-24 meses com estrategia RevHackers"
     },
     "personas": [
         {
-            "name": "Nome da Persona 1",
+            "name": "Nome brasileiro realista",
             "role": "Cargo (ex: Diretor Comercial)",
-            "pain": "Principal dor específica (ex: Falta de visibilidade)",
-            "trigger": "Gatilho de compra (ex: Troca de gestão)",
-            "message": "Pitch de 1 frase para essa persona",
-            "wiifm": "O que ela ganha pessoalmente (ex: Promoção, menos estresse)"
-        },
-        { "name": "Nome 2", "role": "Cargo 2", "pain": "Dor 2", "trigger": "Gatilho 2", "message": "Msg 2", "wiifm": "Ganho 2" },
-        { "name": "Nome 3", "role": "Cargo 3", "pain": "Dor 3", "trigger": "Gatilho 3", "message": "Msg 3", "wiifm": "Ganho 3" }
+            "pain": "Dor principal conectada ao produto/servico do cliente",
+            "trigger": "Gatilho de compra especifico (ex: Troca de gestao, perda de receita)",
+            "message": "Pitch de 1 frase que o vendedor do cliente usaria",
+            "wiifm": "Ganho pessoal concreto (ex: Bater meta com menos esforco)"
+        }
     ],
-    "strategic_advice": "Um conselho matador em português focado em crescimento."
+    "strategic_advice": "Conselho estrategico direto e personalizado para ESTE cliente, baseado nos dados reais fornecidos. 2-3 frases."
 }
+Gere EXATAMENTE 3 personas e 3 concorrentes no minimo.`);
 
-REGRAS:
-- Baseie-se em dados reais de mercado. Cite empresas reais do segmento.
-- Seja específico nos números e métricas. Não use placeholders genéricos.
-- Todas as respostas em português brasileiro.
-- Responda APENAS com o JSON, sem texto adicional.`;
+    return lines.join('\n');
+}
 
 // ============================================================
 // MAIN HANDLER
@@ -111,7 +171,7 @@ serve(async (req) => {
     }
 
     try {
-        const { segment, objective } = await req.json();
+        const { segment, objective, rei_responses, siteAnalysis, competitors } = await req.json();
 
         if (!segment || !objective) {
             throw new Error('Missing required fields: segment, objective');
@@ -122,13 +182,11 @@ serve(async (req) => {
             throw new Error('OPENAI_API_KEY not configured');
         }
 
-        console.log(`[market-intelligence] Processing: segment="${segment}", objective="${objective}"`);
+        console.log(`[market-intelligence] Processing: segment="${segment}", objective="${objective}", hasREI=${!!rei_responses}, hasSite=${!!siteAnalysis}, competitors=${competitors?.length || 0}`);
 
-        const result = await callOpenAI(
-            apiKey,
-            SYSTEM_PROMPT,
-            `Segmento: ${segment}. Objetivo: ${objective}`
-        );
+        const userPrompt = buildUserPrompt(segment, objective, rei_responses, siteAnalysis, competitors);
+
+        const result = await callOpenAI(apiKey, SYSTEM_PROMPT, userPrompt);
 
         // Validate required fields
         const validated = {

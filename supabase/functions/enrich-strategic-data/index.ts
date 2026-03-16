@@ -13,8 +13,83 @@ interface EnrichmentRequest {
     objective?: string;
     isB2B?: boolean;
     enrichmentType: EnrichmentType;
-    rei_responses?: any; // Contexto completo do diagnóstico
-    competitors?: { nome: string, url?: string }[]; // New field
+    rei_responses?: any;
+    competitors?: { nome: string, url?: string }[];
+    siteAnalysis?: any;
+    projectType?: string;
+}
+
+// Build structured client context from REI responses + site analysis
+function buildClientContext(rei: any, siteAnalysis: any, segment: string, objective?: string, projectType?: string): string {
+    if (!rei && !siteAnalysis) return '';
+
+    const lines: string[] = [];
+    lines.push('<CONTEXTO_REAL_DO_CLIENTE>');
+
+    // Company identification
+    const company = rei?.companyName || rei?.revops_empresa || rei?.nome_empresa || rei?.empresa || '';
+    const site = rei?.companySite || rei?.revops_site || rei?.site || '';
+    if (company) lines.push(`Empresa: ${company}`);
+    if (site) lines.push(`Site: ${site}`);
+    lines.push(`Segmento: ${segment}`);
+    if (objective) lines.push(`Objetivo Principal: ${objective}`);
+    if (projectType) lines.push(`Tipo de Projeto: ${projectType}`);
+
+    // Team and structure
+    const teamSize = rei?.teamSize || rei?.revops_tamanho_time || rei?.tamanho_time || '';
+    const revenue = rei?.monthlyRevenue || rei?.revops_faturamento || rei?.faturamento || '';
+    const budget = rei?.budget || rei?.revops_budget || rei?.orcamento || '';
+    if (teamSize) lines.push(`Tamanho do time: ${teamSize}`);
+    if (revenue) lines.push(`Faturamento: ${revenue}`);
+    if (budget) lines.push(`Budget disponivel: ${budget}`);
+
+    // Current tools and stack
+    const crm = rei?.currentCRM || rei?.revops_crm_atual || rei?.crm || '';
+    const tools = rei?.currentTools || rei?.revops_ferramentas || rei?.ferramentas || '';
+    const adsChannels = rei?.adsChannels || rei?.revops_canais_aquisicao || rei?.canais || '';
+    if (crm) lines.push(`CRM atual: ${crm}`);
+    if (tools) lines.push(`Ferramentas em uso: ${typeof tools === 'object' ? JSON.stringify(tools) : tools}`);
+    if (adsChannels) lines.push(`Canais de aquisicao: ${typeof adsChannels === 'object' ? JSON.stringify(adsChannels) : adsChannels}`);
+
+    // Pain points and challenges
+    const mainPain = rei?.mainChallenge || rei?.revops_maior_dor || rei?.maiorDor || rei?.biggestPain || '';
+    const bottleneck = rei?.bottleneck || rei?.revops_gargalo || rei?.gargalo || '';
+    if (mainPain) lines.push(`Dor principal: ${mainPain}`);
+    if (bottleneck) lines.push(`Gargalo operacional: ${bottleneck}`);
+
+    // Metrics
+    const conversionRate = rei?.conversionRate || rei?.revops_taxa_conversao || '';
+    const avgTicket = rei?.avgTicket || rei?.revops_ticket_medio || rei?.ticketMedio || '';
+    const salesCycle = rei?.salesCycle || rei?.revops_ciclo_vendas || '';
+    if (conversionRate) lines.push(`Taxa de conversao atual: ${conversionRate}`);
+    if (avgTicket) lines.push(`Ticket medio: ${avgTicket}`);
+    if (salesCycle) lines.push(`Ciclo de vendas: ${salesCycle}`);
+
+    // Site analysis data
+    if (siteAnalysis && typeof siteAnalysis === 'object') {
+        lines.push('');
+        lines.push('--- Analise do Site do Cliente ---');
+        if (siteAnalysis.resumo_proposta) lines.push(`Proposta de valor: ${siteAnalysis.resumo_proposta}`);
+        if (siteAnalysis.publico_alvo) lines.push(`Publico-alvo identificado: ${siteAnalysis.publico_alvo}`);
+        if (siteAnalysis.produtos_servicos) {
+            const prods = Array.isArray(siteAnalysis.produtos_servicos) ? siteAnalysis.produtos_servicos.join(', ') : siteAnalysis.produtos_servicos;
+            lines.push(`Produtos/Servicos: ${prods}`);
+        }
+        if (siteAnalysis.diferenciais) lines.push(`Diferenciais: ${siteAnalysis.diferenciais}`);
+        if (siteAnalysis.maturidade_digital) lines.push(`Maturidade digital: ${siteAnalysis.maturidade_digital}`);
+        if (siteAnalysis.tom_comunicacao) lines.push(`Tom de comunicacao: ${siteAnalysis.tom_comunicacao}`);
+        if (siteAnalysis.pontos_fracos_site) {
+            const fraq = Array.isArray(siteAnalysis.pontos_fracos_site) ? siteAnalysis.pontos_fracos_site.join(', ') : siteAnalysis.pontos_fracos_site;
+            lines.push(`Pontos fracos do site: ${fraq}`);
+        }
+        if (siteAnalysis.oportunidades_estrategicas) {
+            const oport = Array.isArray(siteAnalysis.oportunidades_estrategicas) ? siteAnalysis.oportunidades_estrategicas.join(', ') : siteAnalysis.oportunidades_estrategicas;
+            lines.push(`Oportunidades estrategicas: ${oport}`);
+        }
+    }
+
+    lines.push('</CONTEXTO_REAL_DO_CLIENTE>');
+    return lines.join('\n');
 }
 
 serve(async (req) => {
@@ -23,7 +98,7 @@ serve(async (req) => {
     }
 
     try {
-        const { segment, ticket, objective, isB2B, enrichmentType, rei_responses, competitors }: EnrichmentRequest = await req.json();
+        const { segment, ticket, objective, isB2B, enrichmentType, rei_responses, competitors, siteAnalysis, projectType }: EnrichmentRequest = await req.json();
 
         if (!segment) {
             throw new Error('Segment is required');
@@ -46,21 +121,20 @@ serve(async (req) => {
 
         const results: any = {};
 
-        // Prepare context string from REI responses for better AI context
-        const reiContext = rei_responses ? JSON.stringify(rei_responses) : '';
+        // Build structured client context instead of raw JSON dump
+        const clientContext = buildClientContext(rei_responses, siteAnalysis, segment, objective, projectType);
 
         // Execute requested enrichments
         if (enrichmentType === 'all' || enrichmentType === 'benchmark') {
-            results.benchmark = await enrichBenchmark(OPENAI_API_KEY, segment, ticket, isB2B, reiContext);
+            results.benchmark = await enrichBenchmark(OPENAI_API_KEY, segment, ticket, isB2B, clientContext);
         }
 
         if (enrichmentType === 'all' || enrichmentType === 'personas') {
-            results.personas = await enrichPersonas(OPENAI_API_KEY, segment, ticket, objective, reiContext);
+            results.personas = await enrichPersonas(OPENAI_API_KEY, segment, ticket, objective, clientContext);
         }
 
         if (enrichmentType === 'all' || enrichmentType === 'market') {
-            // Pass competitors to market enrichment
-            results.market = await enrichMarket(OPENAI_API_KEY, segment, reiContext, competitors);
+            results.market = await enrichMarket(OPENAI_API_KEY, segment, clientContext, competitors);
         }
 
         console.log('Strategic enrichment completed for segment:', segment);
@@ -95,7 +169,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é um consultor de negócios sênior, especialista em análise de mercado, construção de personas e estratégia de crescimento (Growth Hacking). Responda sempre com dados técnicos, realistas e focados no mercado brasileiro. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
+                    content: 'Voce e o Diretor de Inteligencia Estrategica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Voce analisa mercados, constroi ICPs e gera benchmarks com precisao cirurgica. Seus dados sao SEMPRE baseados no mercado brasileiro real, com empresas e numeros realistas. Voce NUNCA gera conteudo generico - cada resposta e hiper-personalizada ao contexto do cliente. A resposta DEVE ser APENAS um JSON valido. Nao inclua blocos ```json nem explicacoes extras. NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).'
                 },
                 { role: 'user', content: prompt }
             ],
@@ -138,26 +212,34 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
 }
 
 async function enrichBenchmark(apiKey: string, segment: string, ticket?: string, isB2B?: boolean, context?: string): Promise<any> {
-    const prompt = `
-Contexto do Cliente (REI): ${context || 'N/A'}
-Segmento de Atuação: ${segment}
-${ticket ? `Ticket Médio: ${ticket}` : ''}
-Modelo de Negócio: ${isB2B ? 'B2B (Business to Business)' : 'B2C (Business to Consumer)'}
+    const prompt = `Voce e o Head de Inteligencia de Mercado da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missao e gerar benchmarks CIRURGICOS e REALISTAS para o cliente abaixo, comparando com o mercado brasileiro REAL.
 
-OBJETIVO: Gerar benchmarks REAIS e atualizados do mercado brasileiro para este segmento específico. Não invente números, use médias de mercado aceitáveis.
+${context || ''}
 
-Retorne um JSON EXATAMENTE com esta estrutura (respeite as chaves):
+Segmento de Atuacao: ${segment}
+${ticket ? `Ticket Medio informado pelo cliente: ${ticket}` : ''}
+Modelo de Negocio: ${isB2B ? 'B2B (Business to Business)' : 'B2C (Business to Consumer)'}
+
+INSTRUCOES CRITICAS:
+- Se o cliente informou ticket medio, CRM atual ou taxa de conversao, USE esses dados para contextualizar.
+- Compare os numeros do cliente com os benchmarks do segmento - aponte onde ele esta acima ou abaixo do mercado.
+- As ferramentas sugeridas devem considerar as que o cliente JA usa (se informadas) e propor evolucoes realistas.
+- O comparativo de mercado deve citar concorrentes reais do segmento no Brasil.
+- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+
+Retorne um JSON EXATAMENTE com esta estrutura:
 {
-  "cac_medio": "Valor monetário estimado (ex: R$ 250,00)",
-  "taxa_conversao": "Porcentagem média (Lead -> Cliente) (ex: 2.5%)",
-  "ciclo_vendas": "Tempo médio (ex: 45 dias)",
-  "ltv_cac_ratio": "Ratio ideal (ex: 4:1)",
+  "cac_medio": "Valor monetario estimado para o segmento (ex: R$ 250,00)",
+  "taxa_conversao": "Porcentagem media Lead -> Cliente do segmento (ex: 2.5%)",
+  "ciclo_vendas": "Tempo medio do segmento (ex: 45 dias)",
+  "ltv_cac_ratio": "Ratio ideal para o segmento (ex: 4:1)",
   "ferramentas_principais": {
-    "crm": ["Nome Ferramenta 1", "Nome Ferramenta 2"],
-    "automacao": ["Nome Ferramenta 1", "Nome Ferramenta 2"],
-    "ads": ["Canal 1", "Canal 2"]
+    "crm": ["Ferramenta real 1", "Ferramenta real 2"],
+    "automacao": ["Ferramenta real 1", "Ferramenta real 2"],
+    "ads": ["Canal mais eficiente 1", "Canal 2"]
   },
-  "comparativo_mercado": "Uma frase curta comparando a dificuldade deste nicho (ex: 'Alta competitividade no Google Ads, sugerimos foco em LinkedIn')."
+  "comparativo_mercado": "Analise de 2-3 frases comparando o cenario competitivo do segmento. Cite empresas reais e tendencias. Aponte onde o cliente pode se diferenciar."
 }`;
 
     try {
@@ -169,34 +251,45 @@ Retorne um JSON EXATAMENTE com esta estrutura (respeite as chaves):
 }
 
 async function enrichPersonas(apiKey: string, segment: string, ticket?: string, objective?: string, context?: string): Promise<any> {
-    const prompt = `
-Contexto do Cliente (REI): ${context || 'N/A'}
-Segmento: ${segment}
-${ticket ? `Ticket Médio: ${ticket}` : ''}
-${objective ? `Objetivo Estratégico: ${objective}` : ''}
+    const prompt = `Voce e o Estrategista de ICP (Ideal Customer Profile) da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missao e criar 3 Buyer Personas ULTRA-REALISTAS que representem os compradores REAIS dos produtos e servicos DESTE cliente.
 
-Tarefa: Desenvolver 3 Buyer Personas (ICPs) extremamente detalhadas para este negócio, com foco e nomes brasileiros.
-A análise deve ser profunda e psicológica, identificando motivadores reais de compra.
+ATENCAO: Nao confunda o projeto/servico que a RevHackers esta prestando (ex: crm_ops, consultoria) com o que o cliente vende. As personas devem ser os clientes DO cliente, baseadas firmemente na Analise do Site e no Segmento informados abaixo.
+
+${context || ''}
+
+Segmento: ${segment}
+${ticket ? `Ticket Medio: ${ticket}` : ''}
+${objective ? `Objetivo Estrategico: ${objective}` : ''}
+
+INSTRUCOES CRITICAS DE PERSONALIZACAO:
+- Se o contexto menciona produtos/servicos especificos, as personas DEVEM ser compradores IGUAIS aos que compram esses produtos.
+- Se o contexto menciona publico-alvo, as personas DEVEM estar nesse publico.
+- Se o contexto menciona tom de comunicacao ou segmento, as dores e gatilhos devem refletir isso.
+- Cada persona deve ser PSICOLOGICAMENTE distinta: um decisor (C-level), um influenciador tecnico, um usuario final.
+- Nomes brasileiros realistas. Bios que refletem carreiras brasileiras.
+- O pitch_elevador deve ser uma frase que a equipe comercial do cliente poderia usar LITERALMENTE.
+- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
   "personas": [
     {
-      "nome": "Nome Sobrenome (Brasileiro)",
-      "cargo": "Cargo Profissional",
+      "nome": "Nome Sobrenome (brasileiro realista)",
+      "cargo": "Cargo real no mercado brasileiro",
       "idade": "Ex: 35-45 anos",
       "genero": "M ou F",
-      "bio_curta": "Resumo da trajetória e momento de carreira.",
-      "dores_principais": ["Dor profunda 1", "Dor profunda 2", "Dor profunda 3"],
-      "ganhos_desejados": ["O que ele quer ganhar 1", "O que ele quer ganhar 2"],
-      "objecoes_compra": ["Objeção tática 1", "Objeção financeira 2"],
-      "gatilhos_mentais": ["Gatilho que mais funciona (ex: Autoridade)", "Prova Social"],
-      "canais_favoritos": ["LinkedIn", "Portais do Setor", "Grupos WhatsApp"],
-      "pitch_elevador": "Uma frase de alto impacto que fala diretamente à dor deste perfil."
+      "bio_curta": "2-3 frases sobre trajetoria, empresa onde trabalha (tipo realista) e momento de carreira. Conecte ao segmento do cliente.",
+      "dores_principais": ["Dor profunda 1 conectada ao produto/servico do cliente", "Dor 2 especifica do cargo", "Dor 3 do mercado"],
+      "ganhos_desejados": ["Ganho pessoal que o produto/servico resolve", "Ganho profissional mensuravel"],
+      "objecoes_compra": ["Objecao real que este perfil teria ao avaliar o cliente", "Objecao financeira ou politica"],
+      "gatilhos_mentais": ["Gatilho que mais funciona para este perfil (ex: Autoridade, Prova Social, Urgencia)", "Segundo gatilho"],
+      "canais_favoritos": ["Canal real onde este perfil consome conteudo", "Segundo canal", "Terceiro canal"],
+      "pitch_elevador": "Uma frase direta, consultiva e de alto impacto que o vendedor do cliente usaria para este perfil."
     }
   ]
 }
-Gere obrigatoriamente 3 personas detalhadas.`;
+Gere EXATAMENTE 3 personas com TODOS os campos preenchidos.`;
 
     try {
         const result = await callOpenAI(apiKey, prompt);
@@ -220,55 +313,61 @@ Gere obrigatoriamente 3 personas detalhadas.`;
     }
 }
 
-// Updated enrichMarket to use Competitors
 async function enrichMarket(apiKey: string, segment: string, context?: string, competitors?: { nome: string, url?: string }[]): Promise<any> {
 
     let competitorsContext = '';
     if (competitors && competitors.length > 0) {
         competitorsContext = `
-CONCORRENTES MENCIONADOS PELO CLIENTE (PRIORIDADE TOTAL NA ANÁLISE):
-${competitors.map(c => `- ${c.nome} ${c.url ? '(' + c.url + ')' : ''}`).join('\n')}
+CONCORRENTES INFORMADOS PELO CLIENTE (ANALISE COM PRIORIDADE TOTAL):
+${competitors.map(c => `- ${c.nome}${c.url ? ' (' + c.url + ')' : ''}`).join('\n')}
 
-IMPORTANTE: Você deve analisar especificamente estes concorrentes acima, listando seus posicionamentos reais.
-Se houver menos de 3 citados, complemente com outros players REAIS e RELEVANTES do mercado.
+Voce DEVE analisar especificamente estes concorrentes acima com dados reais.
+Se houver menos de 3 citados, complemente com outros players REAIS e RELEVANTES do segmento no Brasil.
 `;
     }
 
-    const prompt = `
-Contexto do Cliente: ${context || 'N/A'}
+    const prompt = `Voce e o Analista de Inteligencia Competitiva da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missao e entregar uma analise de mercado estilo McKinsey/Bain, mas PERSONALIZADA para o negocio REAL deste cliente.
+
+${context || ''}
+
 Mercado Alvo: ${segment} (Brasil)
 ${competitorsContext}
 
-Tarefa: Análise estratégica de mercado e competitiva estilo "Consultoria Premium".
-Analise os concorrentes citados com dados realistas.
+INSTRUCOES CRITICAS DE PERSONALIZACAO:
+- As tendencias devem ser relevantes ao segmento ESPECIFICO do cliente, nao tendencias genericas de "B2B".
+- Os concorrentes devem ser empresas REAIS que competem no mesmo espaco que o cliente.
+- O SWOT deve refletir as oportunidades e ameacas para ESTE cliente especificamente, baseado nos pontos fracos/fortes identificados.
+- O TAM/SAM/SOM deve usar dados realistas do mercado brasileiro para este segmento.
+- Se a analise do site revelou pontos fracos ou diferenciais, use isso para contextualizar as oportunidades.
+- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
   "tendencias_2025": [
-    { "titulo": "Nome da Tendência", "impacto": "Alto/Médio/Baixo", "descricao": "Explicação estratégica detalhada." },
-    { "titulo": "Nome da Tendência", "impacto": "Alto/Médio/Baixo", "descricao": "Explicação estratégica detalhada." }
+    { "titulo": "Tendencia real e especifica do segmento", "impacto": "Alto/Medio/Baixo", "descricao": "Explicacao de 2-3 frases com dados concretos e impacto no negocio do cliente." }
   ],
   "concorrentes_benchmark": [
     {
-      "nome": "Nome do Concorrente",
+      "nome": "Nome Real do Concorrente",
       "url": "URL se conhecida",
-      "pontos_fortes": "Lista de forças",
-      "pontos_fracos": "Lista de fraquezas",
-      "diferencial": "O 'moat' deles",
-      "posicionamento": "Como eles se vendem no mercado"
+      "pontos_fortes": "2-3 forcas especificas observaveis",
+      "pontos_fracos": "2-3 fraquezas identificaveis",
+      "diferencial": "O moat real deles - o que os torna dificeis de copiar",
+      "posicionamento": "Como se posicionam no mercado e qual publico atendem"
     }
   ],
   "analise_swot_rapida": {
-    "oportunidades": ["Oportunidade 1", "Oportunidade 2"],
-    "ameacas": ["Ameaça 1", "Ameaça 2"]
+    "oportunidades": ["Oportunidade especifica para o cliente baseada no contexto", "Oportunidade 2 com base no mercado", "Oportunidade 3"],
+    "ameacas": ["Ameaca real baseada na concorrencia identificada", "Ameaca 2 de mercado"]
   },
   "tam_sam_som": {
-    "tam": "Valor ou descrição do Mercado Total",
-    "sam": "Valor ou descrição do Mercado Endereçável",
-    "som": "Valor ou descrição do Mercado que podemos capturar"
+    "tam": "Mercado Total com valor estimado em reais para o segmento no Brasil",
+    "sam": "Mercado Enderecavel com valor - o que o cliente poderia atingir",
+    "som": "Mercado Capturavel em 12-24 meses com a estrategia RevHackers"
   }
 }
-Gere de 3 a 5 concorrentes reais.`;
+Gere de 3 a 5 concorrentes reais e pelo menos 3 tendencias.`;
 
     try {
         return await callOpenAI(apiKey, prompt);

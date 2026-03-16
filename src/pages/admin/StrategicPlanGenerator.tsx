@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Eye, BrainCircuit, Loader2, Users, TrendingUp, Target, ShieldAlert, BadgeCheck, FileText, ExternalLink, Link as LinkIcon, Copy, Check } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
 import { StrategicEnrichmentService, StrategicEnrichmentResult } from '@/services/StrategicEnrichmentService';
 import { DiagnosticService } from '@/services/DiagnosticService';
@@ -307,7 +308,9 @@ export default function StrategicPlanGenerator() {
                 const aiResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
                     objective,
                     rei_responses: normalizedAnswers,
-                    competitors: competitorsList.length > 0 ? competitorsList : undefined
+                    competitors: competitorsList.length > 0 ? competitorsList : undefined,
+                    siteAnalysis: reiProject?.site_analysis || undefined,
+                    projectType: reiProject?.type || 'consulting'
                 });
 
                 if (aiResult.error) {
@@ -417,7 +420,8 @@ export default function StrategicPlanGenerator() {
                         isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
                         projectType: reiProject?.type || 'consulting',
                         projectId: reiProjectId,
-                        projectDuration: reiProject?.project_duration || undefined
+                        projectDuration: reiProject?.project_duration || undefined,
+                        siteAnalysis: reiProject?.site_analysis || undefined,
                     }
                 });
 
@@ -457,6 +461,8 @@ export default function StrategicPlanGenerator() {
                 status: existingPlan ? existingPlan.status : 'draft',
                 diagnostic_data: {
                     ...diagnosticContext,
+                    scores: reiProject?.site_analysis?.ai_analysis?.technical_scores || diagnosticContext.scores,
+                    stack: reiProject?.site_analysis?.ai_analysis?.tech_stack || diagnosticContext.stack,
                     enriched_analysis: enrichmentResult,
                     market_intelligence: market_intelligence || null,
                     ai_base_success: aiBaseSuccess // Flag for debugging
@@ -531,7 +537,8 @@ export default function StrategicPlanGenerator() {
             const result = await StrategicEnrichmentService.researchIntelligence(type, segment, {
                 objective,
                 competitors,
-                context: answers
+                context: answers,
+                siteAnalysis: reiProject?.site_analysis || undefined
             });
 
             // Merge into existing plan
@@ -598,7 +605,7 @@ export default function StrategicPlanGenerator() {
                         <Button variant="ghost" onClick={() => navigate(`/admin/jornada/${reiProjectId}`)} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-black mb-2 pl-0">
                             <ArrowLeft className="w-3 h-3 mr-2" /> Voltar para Jornada
                         </Button>
-                        <h1 className="text-3xl font-bold text-black tracking-tight">Gerador Estratégico AI</h1>
+                        <h1 className="text-3xl font-bold text-black tracking-tight">Painel Estratégico</h1>
                         <p className="text-zinc-500">Cliente: <span className="font-semibold text-black">{client.company_name}</span></p>
                     </div>
                     <div className="flex gap-3">
@@ -642,23 +649,34 @@ export default function StrategicPlanGenerator() {
                                 </span>
                             )}
                         </div>
-                        <button
-                            onClick={() => {
-                                const uploadUrl = `${window.location.origin}/upload-materiais/${reiProjectId}`;
-                                navigator.clipboard.writeText(uploadUrl);
-                                setCopiedLink(true);
-                                setTimeout(() => setCopiedLink(false), 2000);
-                            }}
-                            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors"
-                        >
-                            {copiedLink ? <Check className="w-3 h-3 text-[#00CC6A]" /> : <Copy className="w-3 h-3" />}
-                            {copiedLink ? 'Link Copiado!' : 'Copiar Link de Upload'}
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    window.open(`/upload-materiais/${reiProjectId}`, '_blank');
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-zinc-900 rounded-md text-[10px] font-bold uppercase tracking-widest text-white hover:bg-black transition-colors"
+                            >
+                                <ExternalLink className="w-3 h-3" />
+                                Fazer Upload Agora
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const uploadUrl = `${window.location.origin}/upload-materiais/${reiProjectId}`;
+                                    navigator.clipboard.writeText(uploadUrl);
+                                    setCopiedLink(true);
+                                    setTimeout(() => setCopiedLink(false), 2000);
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-zinc-200 rounded-md text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                            >
+                                {copiedLink ? <Check className="w-3 h-3 text-[#00CC6A]" /> : <Copy className="w-3 h-3" />}
+                                {copiedLink ? 'Link Copiado!' : 'Copiar Link'}
+                            </button>
+                        </div>
                     </div>
 
                     {materials.length === 0 ? (
-                        <div className="text-center py-6 text-sm text-zinc-400">
-                            Nenhum material enviado ainda. Compartilhe o link de upload com o cliente.
+                        <div className="text-center py-6 text-sm text-zinc-400 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50">
+                            Nenhum material adicionado. Clique em &quot;Fazer Upload Agora&quot; ou envie o link para o cliente.
                         </div>
                     ) : (
                         <div className="space-y-2">

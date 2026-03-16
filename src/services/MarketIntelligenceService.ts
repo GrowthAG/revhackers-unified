@@ -25,10 +25,24 @@ export interface MarketIntelligenceData {
 }
 
 export class MarketIntelligenceService {
-    static async fetchMarketData(segment: string, objective: string): Promise<MarketIntelligenceData> {
+    static async fetchMarketData(
+        segment: string,
+        objective: string,
+        options?: {
+            rei_responses?: any;
+            siteAnalysis?: any;
+            competitors?: { nome: string, url?: string }[];
+        }
+    ): Promise<MarketIntelligenceData> {
         try {
             const { data, error } = await supabase.functions.invoke('market-intelligence', {
-                body: { segment, objective }
+                body: {
+                    segment,
+                    objective,
+                    rei_responses: options?.rei_responses,
+                    siteAnalysis: options?.siteAnalysis,
+                    competitors: options?.competitors
+                }
             });
 
             if (error) throw error;

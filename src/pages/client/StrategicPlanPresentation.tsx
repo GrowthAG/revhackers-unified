@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanEditProvider } from '@/components/plan/PlanEditContext';
-import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb, ShieldCheck } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb, ShieldCheck, Printer, Upload } from 'lucide-react';
 import { EditToolbar } from '@/components/plan/PlanEditContext';
 import { QRCodeSVG } from 'qrcode.react';
+import { useReactToPrint } from 'react-to-print';
 
 // Section imports
 import CoverSection from './sections/CoverSection';
@@ -84,6 +85,12 @@ export default function StrategicPlanPresentation() {
     const [client, setClient] = useState<any>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const printRef = useRef<HTMLDivElement>(null);
+
+    const handlePrint = useReactToPrint({
+        contentRef: printRef,
+        documentTitle: `Planejamento_Estrategico_${client?.company || 'Cliente'}`,
+    });
 
     // Clean up external chat widgets (GHL, Lovable, etc.) - they should NOT appear on presentation pages
     useEffect(() => {
@@ -162,9 +169,9 @@ export default function StrategicPlanPresentation() {
             return pt !== 'crm_ops';
         }
 
-        // Persona and Benchmark: not shown for CRM (irrelevant for process implementation)
+        // Persona and Benchmark: now visible for all project types including CRM Ops
         if (s.id === 'persona' || s.id === 'benchmark') {
-            return pt !== 'crm_ops';
+            return true;
         }
 
         return true;
@@ -312,8 +319,8 @@ export default function StrategicPlanPresentation() {
     const signUrl = `${window.location.origin}/plan/${token}?sign=1`;
 
     // ── Section renderer ───────────────────────────────────────────────────
-    const renderSection = () => {
-        switch (currentSectionId) {
+    const renderSectionById = (id: string) => {
+        switch (id) {
             case 'cover': return <CoverSection plan={plan} client={client} />;
             case 'executive_summary': return <ExecutiveSummarySection plan={plan} />;
             case 'diagnostic_symptoms': return <DiagnosticSymptomsSection plan={plan} />;
@@ -336,14 +343,28 @@ export default function StrategicPlanPresentation() {
             case 'projections': return <ProjectionsSection plan={plan} />;
             case 'investment': return <InvestmentSection plan={plan} />;
             case 'approval': return (
-                <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
+                <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6 print:hidden">
                     <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-8 w-auto mb-12 opacity-40" />
                     {isApproved ? (
                         <div className="max-w-md">
                             <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center mx-auto mb-6 rounded-full"><Check className="w-8 h-8 text-[#00CC6A]" /></div>
                             <h2 className="text-3xl font-bold text-black mb-3">Planejamento Aprovado</h2>
                             <p className="text-zinc-500 text-sm mb-2">Assinado por <strong>{plan.next_steps_data?.approved_by_name || 'cliente'}</strong></p>
-                            <p className="text-zinc-500 text-sm">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
+                            <p className="text-zinc-500 text-sm mb-8">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
+                            
+                            <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 text-left">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] mb-2 block">Passo 2 / 2</span>
+                                <h3 className="text-lg font-bold text-zinc-900 mb-2">Anexar Materiais do Projeto</h3>
+                                <p className="text-xs text-zinc-500 mb-6">Envie agora os acessos, planilhas, logos ou arquivos necessários para iniciarmos a execução do projeto sem atrasos.</p>
+                                
+                                <button 
+                                    onClick={() => window.open(`/upload-materiais/${plan.rei_projects?.id || plan.project_id}`, '_blank')}
+                                    className="w-full py-3 bg-zinc-900 text-white text-sm font-bold rounded-lg hover:bg-black transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Upload className="w-4 h-4" /> Enviar Arquivos e Acessos
+                                </button>
+                            </div>
+
                             <div className="mt-12 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-400 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
                         </div>
                     ) : isRejected ? (
@@ -399,8 +420,16 @@ export default function StrategicPlanPresentation() {
                         <div className="w-20 h-20 border-2 border-[#00CC6A] rounded-full flex items-center justify-center mx-auto mb-8"><Check className="w-10 h-10 text-[#00CC6A]" /></div>
                         <h2 className="text-3xl font-bold text-white mb-3">Planejamento Aprovado</h2>
                         <p className="text-white/50 text-sm mb-2">Assinado por <strong className="text-white">{plan.next_steps_data?.approved_by_name || approvedName}</strong></p>
-                        <p className="text-white/30 text-xs">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
-                        <button onClick={() => setShowApproved(false)} className="mt-10 px-8 py-3 border border-white/20 text-white/60 text-sm hover:border-white/40 hover:text-white transition-colors">Continuar lendo</button>
+                        <p className="text-white/30 text-xs mb-8">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
+                        
+                        <button 
+                            onClick={() => window.open(`/upload-materiais/${plan.rei_projects?.id || plan.project_id}`, '_blank')}
+                            className="w-full py-3 bg-[#00CC6A] text-black text-sm font-bold rounded-lg hover:bg-[#00CC6A]/90 transition-colors flex items-center justify-center gap-2 mb-4"
+                        >
+                            <Upload className="w-4 h-4" /> Passo 2: Enviar Materiais do Projeto
+                        </button>
+                        
+                        <button onClick={() => setShowApproved(false)} className="px-8 py-3 border border-white/20 text-white/60 text-sm hover:border-white/40 hover:text-white transition-colors">Voltar para o Documento</button>
                     </div>
                 </div>
             )}
@@ -496,6 +525,14 @@ export default function StrategicPlanPresentation() {
                     </button>
 
                     <button
+                        onClick={() => handlePrint()}
+                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
+                        title="Baixar PDF"
+                    >
+                        <Printer className="w-4 h-4" />
+                    </button>
+
+                    <button
                         onClick={toggleFullscreen}
                         className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
                         title="Tela Cheia"
@@ -505,10 +542,29 @@ export default function StrategicPlanPresentation() {
                 </div>
 
                 {/* Main content - Full Screen Format */}
-                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth">
+                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth print:hidden">
                     {/* Slide container - Full bleed no margins */}
-                    <div className="w-full h-full flex flex-col">
-                        {renderSection()}
+                    <div className="w-full h-full flex flex-col print:hidden">
+                        {renderSectionById(currentSectionId)}
+                    </div>
+                </div>
+
+                {/* Hidden Printable Container for PDF Export */}
+                <div className="hidden print:block w-full bg-white">
+                    <div ref={printRef} className="w-full bg-white flex flex-col">
+                        <style type="text/css" media="print">
+                            {`
+                                @page { size: landscape; margin: 0; }
+                                body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                                .print-page { width: 100vw; height: 100vh; page-break-after: always; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+                                .print-hidden { display: none !important; }
+                            `}
+                        </style>
+                        {sections.map(s => (
+                            <div key={s.id} className="print-page bg-white">
+                                {renderSectionById(s.id)}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

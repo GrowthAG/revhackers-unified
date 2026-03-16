@@ -12,7 +12,7 @@ serve(async (req: Request) => {
     }
 
     try {
-        const { url } = await req.json()
+        const { url, enriched } = await req.json()
 
         if (!url) {
             throw new Error('URL is required')
@@ -56,6 +56,20 @@ serve(async (req: Request) => {
         const hasHubspot = html.includes('hs-scripts') || html.includes('hubspot');
         const hasActiveCampaign = html.includes('vtrack') || html.includes('activecampaign');
         const hasWordPress = html.includes('wp-content') || html.includes('wp-includes');
+        const hasGoogleAnalytics = html.includes('gtag') || html.includes('google-analytics') || html.includes('ga.js');
+        const hasBlog = $('a[href*="/blog"]').length > 0 || $('a[href*="/artigos"]').length > 0;
+        const hasChatbot = html.includes('tawk') || html.includes('intercom') || html.includes('drift') || html.includes('zendesk') || html.includes('crisp');
+
+        // Extract body text for enriched analysis (first 3000 chars)
+        let bodyText = '';
+        if (enriched) {
+            const paragraphs: string[] = [];
+            $('p, li').each((_: any, el: any) => {
+                const text = $(el).text().trim().replace(/\s+/g, ' ');
+                if (text.length > 20) paragraphs.push(text);
+            });
+            bodyText = paragraphs.slice(0, 30).join('\n').substring(0, 3000);
+        }
 
         // @ts-ignore - Deno is available in Edge Functions runtime
         const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
@@ -64,13 +78,16 @@ serve(async (req: Request) => {
             title,
             description,
             h1: h1.slice(0, 3),
-            h2: h2.slice(0, 5),
+            h2: h2.slice(0, 8),
             hasPixel,
             hasGTM,
+            hasGoogleAnalytics,
             hasRD,
             hasHubspot,
             hasActiveCampaign,
-            hasWordPress
+            hasWordPress,
+            hasBlog,
+            hasChatbot,
         };
 
         if (!OPENAI_API_KEY) {
@@ -82,34 +99,95 @@ serve(async (req: Request) => {
             }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        console.log('[inspect-website] Calling OpenAI for Value Proposition analysis...');
+        console.log(`[inspect-website] Calling OpenAI (enriched=${!!enriched})...`);
 
-        // Prepare OpenAI prompt
-        const prompt = `Você é um Consultor Sênior de RevOps (Revenue Operations). 
-Sua tarefa é analisar os dados extraídos da página inicial (Home Page) de um lead B2B e fornecer um "Micro-Dossiê de Gelo" para um vendedor usar na reunião de vendas que fará com essa empresa.
+        // Tools summary for AI context
+        const toolsSummary = [
+            hasPixel ? 'Meta Pixel' : null,
+            hasGTM ? 'Google Tag Manager' : null,
+            hasGoogleAnalytics ? 'Google Analytics' : null,
+            hasRD ? 'RD Station' : null,
+            hasHubspot ? 'HubSpot' : null,
+            hasActiveCampaign ? 'ActiveCampaign' : null,
+            hasWordPress ? 'WordPress' : null,
+            hasBlog ? 'Blog ativo' : null,
+            hasChatbot ? 'Chatbot' : null,
+        ].filter(Boolean).join(', ') || 'Nenhuma ferramenta detectada';
 
-Site Alvo: ${targetUrl}
+        // Base data context (shared between both modes)
+        const dataContext = `Site Alvo: ${targetUrl}
 
--- Dados brutos extraídos (SEO/Tags) --
-Título SEO: ${title}
-Meta Descrição: ${description}
-Principais Títulos (H1): ${h1.slice(0, 3).join(' | ')}
-Subtítulos (H2): ${h2.slice(0, 5).join(' | ')}
+-- Dados brutos extraidos (SEO/Tags) --
+Titulo SEO: ${title}
+Meta Descricao: ${description}
+Principais Titulos (H1): ${h1.slice(0, 3).join(' | ')}
+Subtitulos (H2): ${h2.slice(0, 8).join(' | ')}
 
--- Dados Técnicos Extras (Scraping) --
-Pixel da Meta (Facebook): ${hasPixel ? 'Instalado' : 'NÃO INSTALADO'}
-Google Tag Manager: ${hasGTM ? 'Instalado' : 'NÃO INSTALADO'}
-RD Station (Automação de Marketing Mkt): ${hasRD ? 'Encontrado' : 'Não Encontrado'}
-HubSpot: ${hasHubspot ? 'Encontrado' : 'Não Encontrado'}
+-- Ferramentas e Integrações Detectadas --
+${toolsSummary}
 
-Por favor, seja direto, sem floreios, com tom sério e focado em gargalos (Gaps).
-Retorne a análise em um objeto JSON exato:
+-- Dados Tecnicos --
+Pixel da Meta (Facebook): ${hasPixel ? 'Instalado' : 'NAO INSTALADO'}
+Google Tag Manager: ${hasGTM ? 'Instalado' : 'NAO INSTALADO'}
+RD Station: ${hasRD ? 'Encontrado' : 'Nao Encontrado'}
+HubSpot: ${hasHubspot ? 'Encontrado' : 'Nao Encontrado'}
+Blog: ${hasBlog ? 'Encontrado' : 'Nao Encontrado'}
+Chatbot: ${hasChatbot ? 'Encontrado' : 'Nao Encontrado'}`;
+
+        let prompt: string;
+
+        if (enriched) {
+            // ENRICHED MODE: Full business context extraction for strategic planning
+            prompt = `Voce e um Consultor Senior de Growth e Revenue Operations.
+Sua tarefa e analisar os dados extraidos do site de um cliente e extrair o MAXIMO de contexto de negocio possivel para alimentar um planejamento estrategico.
+
+${dataContext}
+
+-- Conteudo do Site (Texto extraido) --
+${bodyText || '(Nao foi possivel extrair texto do corpo)'}
+
+REGRA: NUNCA use o caractere em dash (travessao longo). Use apenas hifen simples (-), dois pontos (:), ponto (.) ou virgula (,).
+
+Retorne a analise em um objeto JSON exato com TODOS os campos abaixo. Para as notas de \`technical_scores\` (0 a 100), estime-as validando a presenca de ferramentas, uso de titulos e metatags.
 {
   "proposta_de_valor_clara": true ou false,
-  "resumo_proposta": "Resuma o que a empresa vende em apenas 1 frase curta baseada nos títulos (H1/H2).",
-  "problema_identificado": "A mensagem do site foca demais no produto e pouco na dor do cliente? Há jargões demais? Aponte a pior falha de conversão percebida nos textos extraídos.",
-  "sugestao_quebra_gelo": "Dê UMA frase tática em primeira pessoa que o vendedor pode usar para abrir a reunião. Ex: 'João, vi que o site de vocês tem uma proposta super legal no H1, mas notei que estão sem Pixel e GTM, devem estar desperdiçando tráfego nas campanhas...'"
+  "resumo_proposta": "Resuma o que a empresa faz/vende em 1-2 frases curtas e diretas.",
+  "segmento": "Segmento de mercado (ex: 'SaaS B2B', 'E-commerce moda', 'Consultoria financeira', 'Industria metalurgica')",
+  "publico_alvo": "Quem e o cliente ideal da empresa baseado no conteudo do site",
+  "produtos_servicos": ["Lista", "dos", "principais", "produtos", "ou", "servicos"],
+  "diferenciais": "O que a empresa destaca como diferencial competitivo no site",
+  "maturidade_digital": "basica, intermediaria ou avancada - baseado em: ferramentas detectadas, qualidade do conteudo, CTAs, blog, design",
+  "tom_comunicacao": "formal, informal, tecnico ou aspiracional",
+  "pontos_fracos_site": ["Lista de problemas observados: falta de CTA, sem blog, design datado, mensagem confusa, etc"],
+  "ferramentas_detectadas": "${toolsSummary}",
+  "problema_identificado": "Principal gap de conversao ou posicionamento observado no site",
+  "oportunidades_estrategicas": ["Lista de 3-5 oportunidades de growth baseadas na analise"],
+  "tech_stack": ["Google Analytics", "Meta Pixel", "WordPress"],
+  "technical_scores": {
+    "performance": 85,
+    "seo": 92,
+    "accessibility": 88,
+    "bestPractices": 90
+  }
 }`;
+        } else {
+            // STANDARD MODE: Quick ice-breaker dossier (original behavior)
+            prompt = `Voce e um Consultor Senior de RevOps (Revenue Operations).
+Sua tarefa e analisar os dados extraidos da pagina inicial (Home Page) de um lead B2B e fornecer um "Micro-Dossie de Gelo" para um vendedor usar na reuniao de vendas que fara com essa empresa.
+
+${dataContext}
+
+Por favor, seja direto, sem floreios, com tom serio e focado em gargalos (Gaps).
+REGRA: NUNCA use o caractere em dash (travessao longo). Use apenas hifen simples (-), dois pontos (:), ponto (.) ou virgula (,).
+
+Retorne a analise em um objeto JSON exato:
+{
+  "proposta_de_valor_clara": true ou false,
+  "resumo_proposta": "Resuma o que a empresa vende em apenas 1 frase curta baseada nos titulos (H1/H2).",
+  "problema_identificado": "A mensagem do site foca demais no produto e pouco na dor do cliente? Ha jargoes demais? Aponte a pior falha de conversao percebida nos textos extraidos.",
+  "sugestao_quebra_gelo": "De UMA frase tatica em primeira pessoa que o vendedor pode usar para abrir a reuniao."
+}`;
+        }
 
         const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',

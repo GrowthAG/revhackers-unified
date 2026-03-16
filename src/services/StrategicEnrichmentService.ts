@@ -84,8 +84,10 @@ export class StrategicEnrichmentService {
             ticket?: string;
             objective?: string;
             isB2B?: boolean;
-            rei_responses?: any; // The full diagnostic context
+            rei_responses?: any;
             competitors?: { nome: string, url?: string }[];
+            siteAnalysis?: any;
+            projectType?: string;
         }
     ): Promise<StrategicEnrichmentResult> {
         try {
@@ -99,7 +101,9 @@ export class StrategicEnrichmentService {
                     objective: options?.objective,
                     isB2B: options?.isB2B ?? true,
                     rei_responses: options?.rei_responses,
-                    competitors: options?.competitors
+                    competitors: options?.competitors,
+                    siteAnalysis: options?.siteAnalysis,
+                    projectType: options?.projectType
                 }
             });
 
@@ -136,6 +140,8 @@ export class StrategicEnrichmentService {
             isB2B?: boolean;
             rei_responses?: any;
             competitors?: { nome: string, url?: string }[];
+            siteAnalysis?: any;
+            projectType?: string;
         }
     ): Promise<StrategicEnrichmentResult> {
         return this.enrich(segment, 'all', options);
@@ -151,6 +157,7 @@ export class StrategicEnrichmentService {
             competitors?: string[];
             objective?: string;
             context?: any;
+            siteAnalysis?: any;
         }
     ): Promise<any> {
         try {
@@ -160,7 +167,8 @@ export class StrategicEnrichmentService {
                     segment,
                     competitors: options?.competitors,
                     objective: options?.objective,
-                    context: options?.context
+                    context: options?.context,
+                    siteAnalysis: options?.siteAnalysis
                 }
             });
 

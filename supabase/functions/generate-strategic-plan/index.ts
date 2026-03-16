@@ -13,6 +13,7 @@ interface GenerateParams {
   projectType?: string;
   projectId?: string;
   projectDuration?: string;
+  siteAnalysis?: any;
 }
 
 serve(async (req: Request) => {
@@ -21,7 +22,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { rei_responses, segment, objective, isB2B, projectType, projectId, projectDuration }: GenerateParams = await req.json();
+    const { rei_responses, segment, objective, isB2B, projectType, projectId, projectDuration, siteAnalysis }: GenerateParams = await req.json();
 
     if (!rei_responses) {
       throw new Error('rei_responses is required');
@@ -183,6 +184,40 @@ serve(async (req: Request) => {
     const effectiveDuration = projectDuration || (isDev ? '6 semanas' : '90 dias');
     console.log(`[generate-strategic-plan] Using project duration: ${effectiveDuration}`);
 
+    // --- SITE ANALYSIS CONTEXT ---
+    let siteContext = '';
+    if (siteAnalysis && typeof siteAnalysis === 'object') {
+      console.log('[generate-strategic-plan] Injecting site analysis context');
+      const sa = siteAnalysis;
+      siteContext = `
+
+<ANALISE_DO_SITE_DO_CLIENTE>
+Segmento: ${sa.segmento || 'Nao identificado'}
+Publico-alvo: ${sa.publico_alvo || 'Nao identificado'}
+Produtos/Servicos: ${Array.isArray(sa.produtos_servicos) ? sa.produtos_servicos.join(', ') : (sa.produtos_servicos || 'Nao identificados')}
+Proposta de valor: ${sa.resumo_proposta || 'Nao identificada'}
+Diferenciais: ${sa.diferenciais || 'Nao identificados'}
+Maturidade digital: ${sa.maturidade_digital || 'Nao avaliada'}
+Tom de comunicacao: ${sa.tom_comunicacao || 'Nao avaliado'}
+Pontos fracos do site: ${Array.isArray(sa.pontos_fracos_site) ? sa.pontos_fracos_site.join(', ') : (sa.pontos_fracos_site || 'Nao avaliados')}
+Ferramentas detectadas: ${sa.ferramentas_detectadas || 'Nenhuma'}
+Oportunidades: ${Array.isArray(sa.oportunidades_estrategicas) ? sa.oportunidades_estrategicas.join(', ') : (sa.oportunidades_estrategicas || 'Nao identificadas')}
+</ANALISE_DO_SITE_DO_CLIENTE>
+
+INSTRUCAO CRITICA SOBRE O CONTEXTO DO SITE:
+- Use as informacoes acima para personalizar TODAS as secoes do plano ao negocio REAL do cliente.
+- Nos pilares: referencie os produtos/servicos reais do cliente, nao genéricos.
+- No roadmap: inclua acoes especificas para o segmento e publico-alvo identificados.
+- Nos OKRs: use metricas relevantes para o tipo de negocio do cliente.
+- No diagnostico: aponte gaps reais baseados na maturidade digital observada.
+- Nos quick wins: sugira acoes concretas baseadas nos pontos fracos do site.
+- NUNCA ignore a analise do site. O plano DEVE ser contextualizado ao negocio real.
+`;
+    } else {
+      console.log('[generate-strategic-plan] No site analysis available');
+    }
+    // --- END SITE ANALYSIS CONTEXT ---
+
     let strategicContext = `Crie um plano estratégico de Growth altamente tático e contextualizado para um projeto de ${effectiveDuration}.
 Você DEVE basear cada insight, cada risco e cada etapa do roadmap ESPECIFICAMENTE nas dores relatadas nas respostas e na transcrição da call.
 LEI IMUTÁVEL: NUNCA crie cenários genéricos de "aumentar vendas" ou "melhorar processos". Cite QUAIS processos estão ruins segundo o cliente. Diga QUANTO é o budget, QUAL ferramenta eles usam atualmente, QUAL é o tamanho do time.
@@ -276,7 +311,7 @@ ${materialsContext}
 - Referencie explicitamente os materiais nas recomendações (ex: "Conforme identificado no playbook de vendas fornecido...")
 - Baseia projeções e metas em dados reais encontrados nos materiais (não em benchmarks genéricos)
 - Se houver planilhas ou dados numéricos, extraia métricas reais para calibrar os OKRs` : ''}
-
+${siteContext}
 ${strategicContext}
 
 Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com TÁTICAS AVANÇADAS, inferidas das respostas:
@@ -293,12 +328,12 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
     "future": ["Estado futuro 1 - como ficará após a implementação", "Estado futuro 2 - melhoria operacional específica", "Estado futuro 3 - ferramenta ou processo implementado", "Estado futuro 4 - resultado financeiro ou de performance esperado", "Estado futuro 5 - autonomia ou governança conquistada"]
   },
   "quick_wins": [
-    { "day": "Dia 1", "action": "Ação concreta do primeiro dia - cite ferramenta e responsável", "outcome": "Resultado tangível entregue ao final do dia" },
-    { "day": "Dia 2", "action": "Ação do segundo dia", "outcome": "Entregável concreto" },
-    { "day": "Dia 3", "action": "Ação do terceiro dia", "outcome": "Entregável concreto" },
-    { "day": "Dia 4–5", "action": "Ação dos dias 4 e 5", "outcome": "Entregável concreto" },
-    { "day": "Dia 6", "action": "Ação do sexto dia", "outcome": "Entregável concreto" },
-    { "day": "Dia 7", "action": "Review + marco de conclusão da primeira semana", "outcome": "Confirmação de que a base está sólida" }
+    { "day": "Dia 1", "action": "Acao concreta do primeiro dia - cite ferramenta e responsavel", "outcome": "Resultado tangivel entregue ao final do dia", "owner": "revhackers" },
+    { "day": "Dia 2", "action": "Acao do segundo dia", "outcome": "Entregavel concreto", "owner": "revhackers" },
+    { "day": "Dia 3", "action": "Acao do terceiro dia", "outcome": "Entregavel concreto", "owner": "cliente" },
+    { "day": "Dia 4-5", "action": "Acao dos dias 4 e 5", "outcome": "Entregavel concreto", "owner": "ambos" },
+    { "day": "Dia 6", "action": "Acao do sexto dia", "outcome": "Entregavel concreto", "owner": "revhackers" },
+    { "day": "Dia 7", "action": "Review + marco de conclusao da primeira semana", "outcome": "Confirmacao de que a base esta solida", "owner": "ambos" }
   ],
   "thesis_statement": {
     "before": "Frase que antecede o highlight - contextualize a necessidade (ex: Para escalar vendas sem perder margem, precisamos construir)",
@@ -376,7 +411,8 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
   }
 }
 
-CRITICAL_RULE_ARRAYS: OBRIGATÓRIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 4 itens em pillars (Contexto, Tech Stack, Alvos, Compromissos), EXATAMENTE 3 itens em thesis_pillars (os 3 pilares da tese de solução), pelo menos 2 itens em methodology_steps, EXATAMENTE 5 itens em current_vs_future.current e current_vs_future.future, e EXATAMENTE 6 itens em quick_wins. Arrays com apenas 1 item serão considerados inválidos.
+CRITICAL_RULE_ARRAYS: OBRIGATORIO retornar EXATAMENTE 3 itens em roadmap_phases (Ciclo 01, Ciclo 02, Ciclo 03), EXATAMENTE 3 itens em okrs (um por trimestre), EXATAMENTE 4 itens em pillars (Contexto, Tech Stack, Alvos, Compromissos), EXATAMENTE 3 itens em thesis_pillars (os 3 pilares da tese de solucao), pelo menos 2 itens em methodology_steps, EXATAMENTE 5 itens em current_vs_future.current e current_vs_future.future, e EXATAMENTE 6 itens em quick_wins. Arrays com apenas 1 item serao considerados invalidos.
+CRITICAL_RULE_QUICK_WINS_OWNER: Cada quick_win DEVE ter o campo "owner" com um destes valores: "revhackers" (acao executada pela equipe RevHackers), "cliente" (acao que depende do cliente fornecer acesso, dados ou aprovacao), ou "ambos" (acao colaborativa). Distribua de forma realista: acoes tecnicas e de configuracao sao "revhackers", acoes de acesso e aprovacao sao "cliente", reunioes e reviews sao "ambos".
 CRITICAL_RULE_EXECUTIVE_SUMMARY: O executive_summary DEVE ser ultra-cirúrgico - cada campo em 1-2 frases curtas e impactantes. O thesis_statement DEVE ser uma frase persuasiva e personalizada para ESTE cliente - NUNCA use a tese genérica. O quick_wins DEVE ter ações concretas dos primeiros 7 dias - o que acontece LITERALMENTE no Day 1, Day 2, etc. O current_vs_future DEVE contrastar o estado real atual (problemas) com o estado futuro (após a implementação) usando linguagem específica do diagnóstico.
 
 CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onboarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".

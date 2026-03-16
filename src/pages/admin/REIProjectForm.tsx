@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Users, Calendar, Zap, Target, Search, FileText, ExternalLink, Edit2, Copy } from 'lucide-react';
+import { Loader2, Save, Users, Calendar, Zap, Target, Search, FileText, ExternalLink, Edit2, Copy, Globe, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ClientFormContent from './ClientFormContent';
 import AdminLayout from '@/components/layout/AdminLayout'; // Replaces PageLayout
@@ -81,6 +81,13 @@ const REIProjectForm = () => {
     const [mode, setMode] = useState<'existing' | 'new'>('existing');
     const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
 
+    // Site analysis state
+    const [clientSite, setClientSite] = useState('');
+    const [siteAnalysis, setSiteAnalysis] = useState<any>(null);
+    const [analyzingSite, setAnalyzingSite] = useState(false);
+    const [siteAnalysisExpanded, setSiteAnalysisExpanded] = useState(true);
+    const [siteAnalysisError, setSiteAnalysisError] = useState<string | null>(null);
+
     // Styling Constants (Diagnostic Standard)
     const inputClasses = "bg-transparent border-0 border-b h-14 rounded-none transition-all font-medium text-base px-4 focus:ring-0 w-full border-zinc-200 text-black focus:border-black placeholder:text-zinc-300 hover:bg-zinc-50/50";
     const labelClasses = "text-[10px] font-black uppercase tracking-widest pl-0.5 text-zinc-400";
@@ -116,6 +123,43 @@ const REIProjectForm = () => {
         }
     };
 
+    // ── Site Analysis Handler ──
+    const handleAnalyzeSite = async () => {
+        if (!clientSite) return;
+        setAnalyzingSite(true);
+        setSiteAnalysisError(null);
+        setSiteAnalysis(null);
+        try {
+            const { data, error } = await supabase.functions.invoke('inspect-website', {
+                body: { url: clientSite, enriched: true }
+            });
+            if (error) throw new Error(error.message || 'Erro ao analisar site');
+            if (data?.success === false) throw new Error(data?.error || 'Falha na analise');
+
+            // Merge scraped data + AI analysis into a single object
+            const merged = {
+                ...data?.data,
+                ...data?.ai_analysis,
+            };
+            setSiteAnalysis(merged);
+            setSiteAnalysisExpanded(true);
+            toast({
+                title: 'Site Analisado',
+                description: `Analise de ${clientSite} concluida com sucesso.`,
+            });
+        } catch (err: any) {
+            console.error('Site analysis error:', err);
+            setSiteAnalysisError(err.message || 'Erro desconhecido');
+            toast({
+                title: 'Erro na Analise',
+                description: err.message || 'Nao foi possivel analisar o site.',
+                variant: 'destructive'
+            });
+        } finally {
+            setAnalyzingSite(false);
+        }
+    };
+
     const isEditing = !!id;
 
     useEffect(() => {
@@ -142,6 +186,9 @@ const REIProjectForm = () => {
                     setValue('type', project.type || 'crm_ops');
                     setValue('project_duration', (project as any).project_duration || DEFAULT_DURATION_BY_TYPE[project.type || 'consulting'] || '90 dias');
                     setValue('next_rei_date', project.next_rei_date.split('T')[0]);
+                    // Load site analysis data
+                    if ((project as any).client_site) setClientSite((project as any).client_site);
+                    if ((project as any).site_analysis) setSiteAnalysis((project as any).site_analysis);
                 } else {
                     toast({ title: 'Protocolo não encontrado', variant: 'destructive' });
                     navigate('/admin/rei');
@@ -162,6 +209,10 @@ const REIProjectForm = () => {
             setValue('client_name', client.name);
             setValue('client_email', client.email);
             setValue('client_company', client.company || '');
+            // Auto-fill website from client record
+            if ((client as any).website) {
+                setClientSite((client as any).website);
+            }
         }
     };
 
@@ -228,7 +279,9 @@ const REIProjectForm = () => {
                 type: data.type,
                 project_duration: data.project_duration || '90 dias',
                 next_rei_date: new Date(data.next_rei_date).toISOString(),
-                last_rei_date: new Date().toISOString()
+                last_rei_date: new Date().toISOString(),
+                client_site: clientSite || null,
+                site_analysis: siteAnalysis || null,
             };
 
             if (isEditing && id) {
@@ -424,6 +477,115 @@ const REIProjectForm = () => {
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                </div>
+
+                                {/* ── Site do Cliente + Analise ── */}
+                                <div className="space-y-3">
+                                    <Label className={labelClasses}>Site do Cliente</Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            placeholder="https://exemplo.com.br"
+                                            value={clientSite}
+                                            onChange={(e) => setClientSite(e.target.value)}
+                                            className={inputClasses}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleAnalyzeSite}
+                                            disabled={!clientSite || analyzingSite}
+                                            className="h-14 px-4 shrink-0 rounded-none border-0 border-b border-zinc-200 hover:border-black transition-all text-[10px] uppercase font-bold tracking-widest"
+                                        >
+                                            {analyzingSite ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <Globe className="w-4 h-4" />
+                                            )}
+                                            <span className="ml-2">{analyzingSite ? 'Analisando...' : 'Analisar'}</span>
+                                        </Button>
+                                    </div>
+
+                                    {/* Site Analysis Error */}
+                                    {siteAnalysisError && (
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-lg">
+                                            <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                                            <span className="text-[11px] text-red-600 font-medium">{siteAnalysisError}</span>
+                                        </div>
+                                    )}
+
+                                    {/* Site Analysis Result */}
+                                    {siteAnalysis && (
+                                        <div className="border border-zinc-200 rounded-lg overflow-hidden">
+                                            <button
+                                                type="button"
+                                                className="w-full flex items-center justify-between px-4 py-3 bg-zinc-50 hover:bg-zinc-100 transition-colors"
+                                                onClick={() => setSiteAnalysisExpanded(!siteAnalysisExpanded)}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Analise do Site</span>
+                                                </div>
+                                                {siteAnalysisExpanded ? (
+                                                    <ChevronUp className="w-3.5 h-3.5 text-zinc-400" />
+                                                ) : (
+                                                    <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                                                )}
+                                            </button>
+                                            {siteAnalysisExpanded && (
+                                                <div className="px-4 py-3 space-y-2 bg-white">
+                                                    {siteAnalysis.resumo_proposta && (
+                                                        <p className="text-[13px] font-medium text-zinc-700 leading-relaxed">{siteAnalysis.resumo_proposta}</p>
+                                                    )}
+                                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-1">
+                                                        {siteAnalysis.segmento && (
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Segmento</span>
+                                                                <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.segmento}</p>
+                                                            </div>
+                                                        )}
+                                                        {siteAnalysis.publico_alvo && (
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Publico-alvo</span>
+                                                                <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.publico_alvo}</p>
+                                                            </div>
+                                                        )}
+                                                        {siteAnalysis.maturidade_digital && (
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Maturidade Digital</span>
+                                                                <p className="text-[12px] text-zinc-600 font-medium capitalize">{siteAnalysis.maturidade_digital}</p>
+                                                            </div>
+                                                        )}
+                                                        {siteAnalysis.tom_comunicacao && (
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tom</span>
+                                                                <p className="text-[12px] text-zinc-600 font-medium capitalize">{siteAnalysis.tom_comunicacao}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {siteAnalysis.produtos_servicos && Array.isArray(siteAnalysis.produtos_servicos) && siteAnalysis.produtos_servicos.length > 0 && (
+                                                        <div className="pt-1">
+                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Produtos/Servicos</span>
+                                                            <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.produtos_servicos.join(', ')}</p>
+                                                        </div>
+                                                    )}
+                                                    {siteAnalysis.diferenciais && (
+                                                        <div className="pt-1">
+                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Diferenciais</span>
+                                                            <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.diferenciais}</p>
+                                                        </div>
+                                                    )}
+                                                    {siteAnalysis.pontos_fracos_site && (
+                                                        <div className="pt-1">
+                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Pontos Fracos do Site</span>
+                                                            <p className="text-[12px] text-zinc-600 font-medium">
+                                                                {Array.isArray(siteAnalysis.pontos_fracos_site) ? siteAnalysis.pontos_fracos_site.join(', ') : siteAnalysis.pontos_fracos_site}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
