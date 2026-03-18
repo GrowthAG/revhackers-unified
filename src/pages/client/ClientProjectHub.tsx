@@ -17,6 +17,14 @@ const scopeByType: Record<string, string[]> = {
         'Treinamento do Time no CRM',
         'Dashboard de Métricas Comerciais',
     ],
+    crm: [
+        'Diagnóstico de Revenue Operations',
+        'Estruturação e Configuração do CRM',
+        'Automações de Pipeline e Follow-up',
+        'Playbook de Vendas & SLA de Passagem',
+        'Treinamento do Time no CRM',
+        'Dashboard de Métricas Comerciais',
+    ],
     CRM_CS_OPS: [
         'Diagnóstico de Revenue Operations',
         'Estruturação e Configuração do CRM',
