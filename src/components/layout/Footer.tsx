@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Mail, Linkedin, Instagram, Youtube } from 'lucide-react';
 import NewsletterForm from '../shared/NewsletterForm';
 import { APP_CONFIG } from '@/config/constants';
+import { APP_ROUTES } from '@/config/routes';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -20,7 +21,7 @@ const Footer = () => {
 
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-10">
-            <Link to="/" className="inline-block group focus:outline-none">
+            <Link to={APP_ROUTES.PUBLIC.HOME} className="inline-block group focus:outline-none">
               <img
                 src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
                 alt="RevHackers Logo"
@@ -52,20 +53,20 @@ const Footer = () => {
           <div className="lg:col-span-2 space-y-8">
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Navegação</h3>
             <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/quem-somos" className="hover:text-white transition-colors">Sobre Nós</Link></li>
-              <li><Link to="/cases" className="hover:text-white transition-colors">Cases</Link></li>
-              <li><Link to="/comunidade" className="hover:text-white transition-colors">Comunidade</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.HOME} className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.QUEM_SOMOS} className="hover:text-white transition-colors">Sobre Nós</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.CASES} className="hover:text-white transition-colors">Cases</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.COMUNIDADE} className="hover:text-white transition-colors">Comunidade</Link></li>
             </ul>
           </div>
 
           <div className="lg:col-span-2 space-y-8">
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Conteúdo</h3>
             <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
-              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link to="/servicos" className="hover:text-white transition-colors">Serviços</Link></li>
-              <li><Link to="/materiais" className="hover:text-white transition-colors">Materiais</Link></li>
-              <li><Link to="/booking" className="hover:text-white transition-colors">Agendar Call</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.BLOG} className="hover:text-white transition-colors">Blog</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.SERVICOS} className="hover:text-white transition-colors">Serviços</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.MATERIAIS} className="hover:text-white transition-colors">Materiais</Link></li>
+              <li><Link to={APP_ROUTES.PUBLIC.BOOKING} className="hover:text-white transition-colors">Agendar Call</Link></li>
             </ul>
           </div>
 
@@ -82,8 +83,8 @@ const Footer = () => {
             © {currentYear} RevHackers. Engineering Revenue for Scale.
           </p>
           <div className="flex gap-8 text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-600">
-            <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
-            <Link to="/termos-de-uso" className="hover:text-white transition-colors">Termos</Link>
+            <Link to={APP_ROUTES.LEGAL_AND_FEEDBACK.PRIVACIDADE} className="hover:text-white transition-colors">Privacidade</Link>
+            <Link to={APP_ROUTES.LEGAL_AND_FEEDBACK.TERMOS_DE_USO} className="hover:text-white transition-colors">Termos</Link>
             <a href="https://usefunnels.io" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Powered by Funnels</a>
           </div>
         </div>
