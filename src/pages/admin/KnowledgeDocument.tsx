@@ -34,6 +34,10 @@ const KnowledgeDocumentEditor = () => {
     const [isThinking, setIsThinking] = useState(false);
     const [coverImage, setCoverImage] = useState<string | null>(null);
     const [isUploadingCover, setIsUploadingCover] = useState(false);
+    
+    // Handover Metadata
+    const [visibility, setVisibility] = useState('internal');
+    const [category, setCategory] = useState('geral');
 
     // Command/Mention State
     const [commandType, setCommandType] = useState<CommandType>(null);
@@ -85,6 +89,8 @@ const KnowledgeDocumentEditor = () => {
                 setTitle((data as any).title || data.filename?.replace('.html', '') || 'Sem Título');
                 setContent(data.content || '');
                 setCoverImage((data.metadata as any)?.cover_image || null);
+                setVisibility((data.metadata as any)?.visibility || 'internal');
+                setCategory((data.metadata as any)?.category || 'geral');
             }
         } catch (err) {
             console.error('Error loading:', err);
@@ -291,7 +297,9 @@ const KnowledgeDocumentEditor = () => {
                 metadata: {
                     type: 'native_document',
                     last_edited: new Date().toISOString(),
-                    cover_image: coverImage
+                    cover_image: coverImage,
+                    visibility: visibility,
+                    category: category
                 }
             };
 
@@ -400,9 +408,43 @@ const KnowledgeDocumentEditor = () => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Sem Título"
-                        className="w-full text-5xl font-bold bg-transparent border-none focus:ring-0 p-0 resize-none overflow-hidden placeholder:text-zinc-200 mb-8 leading-tight"
+                        className="w-full text-5xl font-bold bg-transparent border-none focus:ring-0 p-0 resize-none overflow-hidden placeholder:text-zinc-200 mb-6 leading-tight"
                         rows={1} spellCheck={false}
                     />
+
+                    {/* Handover Metadata Controls */}
+                    <div className="flex flex-wrap items-center gap-4 mb-8">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Visibilidade</span>
+                            <select 
+                                value={visibility} 
+                                onChange={e => setVisibility(e.target.value)}
+                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 rounded-md px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
+                            >
+                                <option value="internal">Interno (Somente Admin)</option>
+                                <option value="shared">Compartilhável (Visível no Hub)</option>
+                                <option value="final">Oficial Entregue (Destaque no Hub)</option>
+                            </select>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Categoria</span>
+                            <select 
+                                value={category} 
+                                onChange={e => setCategory(e.target.value)}
+                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 rounded-md px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
+                            >
+                                <option value="geral">Geral</option>
+                                <option value="kickoff">Kickoff & Alinhamento</option>
+                                <option value="transcr">Transcrições e Reuniões</option>
+                                <option value="strategy">Planejamento e Estratégia</option>
+                                <option value="tech">Documentação Técnica</option>
+                                <option value="playbook">Playbooks e SOPs</option>
+                                <option value="final">Entregáveis Finais</option>
+                                <option value="acessos">Acessos e Referências</option>
+                            </select>
+                        </div>
+                    </div>
 
                     {/* Visual Toolbar (Subtle) */}
                     <div className="flex items-center gap-1 mb-6 text-zinc-400 border-b border-zinc-50 pb-2">

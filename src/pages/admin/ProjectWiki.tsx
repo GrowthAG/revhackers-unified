@@ -121,11 +121,11 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header / Stats */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1">Wiki & Docs</h2>
-                    <p className="text-sm text-zinc-500 font-medium">
-                        {docs.length} documentos • Última atualização hoje
+                    <h2 className="text-xl font-black text-black tracking-tight mb-1 uppercase">Wiki & Documentos</h2>
+                    <p className="text-xs text-zinc-500 font-medium tracking-wide">
+                        {docs.length} documentos • Repositório central do projeto
                     </p>
                 </div>
                 <Button
@@ -150,11 +150,23 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                             <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white transition-colors">
                                 <FileText size={20} />
                             </div>
-                            {doc.metadata?.type && (
-                                <span className="px-2 py-1 bg-zinc-50 border border-zinc-100 rounded-md text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                                    {doc.metadata.type === 'native_document' ? 'Nativo' : 'Arquivo'}
-                                </span>
-                            )}
+                            <div className="flex flex-col items-end gap-1">
+                                {doc.metadata?.visibility && (
+                                    <span className={cn(
+                                        "px-2 py-0.5 border rounded-md text-[8px] font-black uppercase tracking-widest",
+                                        doc.metadata.visibility === 'internal' ? "bg-zinc-100 text-zinc-500 border-zinc-200" :
+                                        doc.metadata.visibility === 'shared' ? "bg-blue-50 text-blue-600 border-blue-200" :
+                                        "bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20"
+                                    )}>
+                                        {doc.metadata.visibility === 'internal' ? 'Interno' : doc.metadata.visibility === 'shared' ? 'Compartilhado' : 'Oficial'}
+                                    </span>
+                                )}
+                                {doc.metadata?.category && (
+                                    <span className="px-2 py-0.5 bg-zinc-50 border border-zinc-100 rounded-md text-[8px] font-bold uppercase tracking-wider text-zinc-400">
+                                        {doc.metadata.category}
+                                    </span>
+                                )}
+                            </div>
                         </div>
 
                         {/* Content */}

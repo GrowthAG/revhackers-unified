@@ -144,7 +144,7 @@ const ProjectDetails = () => {
                                 <Zap size={14} /> Sprints
                             </TabsTrigger>
                             <TabsTrigger value="biblioteca" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
-                                <BookOpen size={14} /> Biblioteca
+                                <BookOpen size={14} /> Wiki & Documentos
                             </TabsTrigger>
                             <TabsTrigger value="resultados" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
                                 <TrendingUp size={14} /> Resultados

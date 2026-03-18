@@ -1,10 +1,12 @@
+```
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { getPublicReiProjectById, type ReiProject } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
-import { Loader2, Check, Clock, Shield, FileText, LayoutTemplate, MessageSquare } from 'lucide-react';
+import { Loader2, Check, Clock, Shield, FileText, LayoutTemplate, MessageSquare, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 // ── Scope items by project type ───────────────────────────────────────────
 const scopeByType: Record<string, string[]> = {
@@ -58,11 +60,23 @@ const scopeByType: Record<string, string[]> = {
     ],
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+    'geral': 'Visão Geral',
+    'kickoff': 'Kickoff & Alinhamento',
+    'transcr': 'Transcrições e Reuniões',
+    'strategy': 'Planejamento e Estratégia',
+    'tech': 'Documentação Técnica',
+    'playbook': 'Playbooks e SOPs',
+    'final': 'Entregáveis Finais',
+    'acessos': 'Acessos e Referências'
+};
+
 const ClientProjectHub = () => {
     const { id } = useParams();
     const [project, setProject] = useState<Partial<ReiProject> | null>(null);
     const [planToken, setPlanToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [clientDocs, setClientDocs] = useState<any[]>([]);
 
     useEffect(() => {
         const loadProject = async () => {
@@ -80,6 +94,29 @@ const ClientProjectHub = () => {
                     .maybeSingle();
 
                 if (planData) setPlanToken(planData.access_token);
+
+                // 3. Fetch Official Handover Documentation
+                const { data: libData } = await supabase
+                    .from('knowledge_libraries')
+                    .select('id')
+                    .eq('project_id', id)
+                    .maybeSingle();
+                
+                if (libData) {
+                    const { data: docs } = await supabase
+                        .from('agent_documents')
+                        .select('id, title, metadata, updated_at')
+                        .eq('library_id', libData.id)
+                        .order('updated_at', { ascending: false });
+                    
+                    if (docs) {
+                        const publicDocs = docs.filter(d => 
+                            (d.metadata as any)?.visibility === 'shared' || 
+                            (d.metadata as any)?.visibility === 'final'
+                        );
+                        setClientDocs(publicDocs);
+                    }
+                }
 
             } catch (error) {
                 console.error("Error loading project hub:", error);
@@ -242,6 +279,63 @@ const ClientProjectHub = () => {
                             ))}
                         </div>
                     </div>
+
+                    {/* 3.5. OFFICIAL DOCUMENTATION HANDOVER */}
+                    {clientDocs.length > 0 && (
+                        <div id="docs" className="py-8 scroll-mt-24">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2 pl-1">
+                                <BookOpen className="w-4 h-4" /> Documentação Oficial
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {clientDocs.map(doc => {
+                                    const meta = doc.metadata as any || {};
+                                    const cat = meta.category || 'geral';
+                                    const isFinal = meta.visibility === 'final';
+                                    return (
+                                        <div 
+                                            key={doc.id}
+                                            // TODO: Client view of the document. For now, open an alert. A proper `/client-doc/:id` route should be built eventually.
+                                            onClick={() => alert('Visualizador de documentos do cliente em breve.')}
+                                            className={cn(
+                                                "group relative border rounded-2xl p-5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden",
+                                                isFinal ? "bg-zinc-900 border-zinc-800 text-white shadow-xl hover:bg-black" : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-300 hover:shadow-sm"
+                                            )}
+                                        >
+                                            <div className="flex justify-between items-start z-10 relative mb-6">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                                                    isFinal ? "bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white" : "bg-zinc-50 text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white"
+                                                )}>
+                                                    <FileText size={20} />
+                                                </div>
+                                                <div className="flex flex-col items-end gap-1">
+                                                    {isFinal && (
+                                                        <span className="px-2 py-0.5 bg-[#00CC6A]/20 text-[#00CC6A] border border-[#00CC6A]/30 rounded-md text-[8px] font-black uppercase tracking-widest">
+                                                            Entregável Final
+                                                        </span>
+                                                    )}
+                                                    <span className={cn(
+                                                        "px-2 py-0.5 border rounded-md text-[8px] font-bold uppercase tracking-wider",
+                                                        isFinal ? "bg-zinc-800 border-zinc-700 text-zinc-300" : "bg-zinc-50 border-zinc-100 text-zinc-500"
+                                                    )}>
+                                                        {CATEGORY_LABELS[cat] || cat}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="z-10 relative">
+                                                <h3 className={cn("font-bold mb-1 line-clamp-2", isFinal ? "text-white" : "text-zinc-900")}>
+                                                    {doc.title}
+                                                </h3>
+                                                <p className={cn("text-xs font-medium", isFinal ? "text-zinc-500" : "text-zinc-400")}>
+                                                    Atualizado em {new Date(doc.updated_at).toLocaleDateString('pt-BR')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* 4. SCOPE SUMMARY (CONTRACTED) */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-12 border-t border-zinc-200">

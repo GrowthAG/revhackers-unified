@@ -432,33 +432,66 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             )}
                         </div>
 
-                        <div className="bg-white border border-zinc-100 p-24 text-center min-h-[500px] flex flex-col items-center justify-center space-y-12">
-                            <div className="w-24 h-24 border border-zinc-200 rounded-xl flex items-center justify-center">
-                                <Clock className={`w-8 h-8 ${project.scheduling_completed || project.status === 'active' ? 'text-black' : 'text-zinc-200'}`} strokeWidth={1} />
+                        <div className="bg-white border border-zinc-100 p-16 md:p-24 text-center min-h-[500px] flex flex-col items-center justify-center space-y-12">
+                            <div className="w-24 h-24 border border-zinc-200 rounded-xl flex items-center justify-center bg-zinc-50">
+                                <Clock className={`w-8 h-8 ${project.scheduling_completed || project.status === 'active' ? 'text-black' : 'text-zinc-500'}`} strokeWidth={1} />
                             </div>
-                            <div className="max-w-xl">
-                                <h3 className="text-6xl font-black text-black tracking-ultratight uppercase mb-6 leading-none">
+                            <div className="max-w-xl w-full">
+                                <h3 className="text-4xl md:text-5xl font-black text-black tracking-ultratight uppercase mb-4 leading-none">
                                     {project.scheduling_completed || project.status === 'active' ? 'Data Confirmada' : 'Agendamento'}
                                 </h3>
-                                <p className="text-sm text-zinc-400 mb-12 leading-relaxed uppercase tracking-widest">
-                                    {project.scheduling_completed || project.status === 'active'
-                                        ? `O agendamento estratégico está ativo${project.next_rei_date ? ` para ${new Date(project.next_rei_date).toLocaleDateString()}` : ''}.`
-                                        : 'Aguardando seleção de slot para apresentação de roadmap.'}
-                                </p>
-                                <div className="flex flex-col gap-4 items-center">
+                                
+                                {!project.scheduling_completed && project.status !== 'active' ? (
+                                    <div className="space-y-8 bg-zinc-50 p-8 rounded-2xl border border-zinc-200 text-left">
+                                        <div className="space-y-4">
+                                            <p className="text-sm text-zinc-600 font-medium">
+                                                Para avançar para o planejamento, o cliente precisa selecionar uma data para a reunião de Kickoff/Apresentação.
+                                            </p>
+                                            <div className="flex flex-col gap-3 mt-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-6 h-6 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center text-xs font-bold">1</div>
+                                                    <p className="text-xs text-zinc-700 font-medium">Envie o link de agendamento para o cliente</p>
+                                                </div>
+                                                <div className="flex gap-2 ml-9">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        className="text-xs font-bold w-full uppercase tracking-wider"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText('https://revhackers.com/agenda-kickoff');
+                                                            toast({ title: 'Link Copiado!', description: 'Envie para o cliente via WhatsApp ou Email.' });
+                                                        }}
+                                                    >
+                                                        Copiar Link de Agenda
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-3 pt-4 border-t border-zinc-200">
+                                                <div className="w-6 h-6 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center text-xs font-bold">2</div>
+                                                <p className="text-xs text-zinc-700 font-medium">Após o cliente agendar, confirme manualmente abaixo</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-zinc-400 mb-12 leading-relaxed uppercase tracking-widest">
+                                        O agendamento estratégico está ativo{project.next_rei_date ? ` para ${new Date(project.next_rei_date).toLocaleDateString()}` : ''}.
+                                    </p>
+                                )}
+
+                                <div className="flex flex-col gap-4 items-center mt-8">
                                     <Button
                                         onClick={confirmScheduling}
                                         disabled={project.scheduling_completed || project.status === 'active'}
-                                        className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl h-16 px-12 uppercase text-xs font-black tracking-[0.3em] transition-all disabled:opacity-20"
+                                        className="bg-black text-white hover:bg-zinc-800 rounded-xl h-14 px-12 uppercase text-xs font-black tracking-[0.2em] transition-all disabled:opacity-50"
                                     >
-                                        {project.scheduling_completed || project.status === 'active' ? 'CONCLUÍDO' : 'CONFIRMAR AGENDAMENTO'}
+                                        {project.scheduling_completed || project.status === 'active' ? 'CONCLUÍDO' : 'Marcar como Agendado'}
                                     </Button>
 
                                     {(project.scheduling_completed || project.status === 'active') && (
                                         <Button
                                             variant="ghost"
                                             onClick={() => setCurrentStep(2)}
-                                            className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-black mt-4"
+                                            className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-black mt-2"
                                         >
                                             AVANÇAR PARA PLANEJAMENTO →
                                         </Button>
@@ -562,11 +595,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
 
                             <button
                                 onClick={() => {
-                                    if (planAccessToken) {
-                                        window.open(`/plan/${planAccessToken}`, '_blank');
-                                    } else {
-                                        toast({ title: 'Plano ainda não gerado', description: 'Gere o planejamento estratégico primeiro para abrir o Hub do Cliente.', variant: 'destructive' });
-                                    }
+                                    window.open(`/hub/${id}`, '_blank');
                                 }}
                                 className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
                             >
@@ -575,7 +604,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                 </div>
                                 <div>
                                     <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Hub do Cliente</p>
-                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Página pública de acompanhamento</p>
+                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Portal público do projeto</p>
                                 </div>
                             </button>
 
@@ -587,8 +616,8 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                     <Database className="w-4 h-4 text-zinc-900 group-hover:text-white transition-colors" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Biblioteca</p>
-                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Wiki e documentos do projeto</p>
+                                    <p className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-1">Wiki & Documentos</p>
+                                    <p className="text-[11px] text-zinc-400 leading-relaxed">Repositório de arquivos e entregáveis</p>
                                 </div>
                             </button>
                         </div>
