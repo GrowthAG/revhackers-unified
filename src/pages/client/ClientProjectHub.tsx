@@ -1,4 +1,3 @@
-```
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -105,9 +104,9 @@ const ClientProjectHub = () => {
                 if (libData) {
                     const { data: docs } = await supabase
                         .from('agent_documents')
-                        .select('id, title, metadata, updated_at')
+                        .select('id, filename, metadata, created_at')
                         .eq('library_id', libData.id)
-                        .order('updated_at', { ascending: false });
+                        .order('created_at', { ascending: false });
                     
                     if (docs) {
                         const publicDocs = docs.filter(d => 
@@ -324,10 +323,10 @@ const ClientProjectHub = () => {
                                             </div>
                                             <div className="z-10 relative">
                                                 <h3 className={cn("font-bold mb-1 line-clamp-2", isFinal ? "text-white" : "text-zinc-900")}>
-                                                    {doc.title}
+                                                    {doc.filename}
                                                 </h3>
                                                 <p className={cn("text-xs font-medium", isFinal ? "text-zinc-500" : "text-zinc-400")}>
-                                                    Atualizado em {new Date(doc.updated_at).toLocaleDateString('pt-BR')}
+                                                    Adicionado em {new Date(doc.created_at).toLocaleDateString('pt-BR')}
                                                 </p>
                                             </div>
                                         </div>
