@@ -38,29 +38,29 @@ import InvestmentSection from './sections/InvestmentSection';
 // 5. Show the plan (Methodology, OKRs, Roadmap) → 6. Show the execution (Onboarding) →
 // 7. Close (Investment → Approval)
 const NAV_SECTIONS = [
-    { id: 'cover',               name: 'Capa',                   icon: <FileText className="w-4 h-4" /> },
-    { id: 'executive_summary',   name: 'Resumo Executivo',        icon: <FileText className="w-4 h-4" /> },
-    { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário',      icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'diagnostic_causes',   name: 'Causa Raiz',              icon: <AlertTriangle className="w-4 h-4" /> },
-    { id: 'pipeline_architecture', name: 'Arquitetura do Pipeline', icon: <GitBranch className="w-4 h-4" /> },
-    { id: 'current_vs_future',   name: 'Atual vs Futuro',         icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'thesis',              name: 'Tese de Crescimento',     icon: <Lightbulb className="w-4 h-4" /> },
-    { id: 'premises',            name: 'Premissas',               icon: <Target className="w-4 h-4" /> },
-    { id: 'persona',             name: 'Persona',                 icon: <Users className="w-4 h-4" /> },
-    { id: 'benchmark',           name: 'Análise de Mercado',      icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'methodology',         name: 'Metodologia',             icon: <Settings className="w-4 h-4" /> },
-    { id: 'goals',               name: 'Metas e Indicadores',     icon: <Target className="w-4 h-4" /> },
-    { id: 'roadmap_macro',       name: 'Marcos do Projeto',       icon: <Calendar className="w-4 h-4" /> },
-    { id: 'quick_wins',          name: 'Primeiros 7 Dias',        icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   icon: <Calendar className="w-4 h-4" /> },
-    { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     icon: <Settings className="w-4 h-4" /> },
-    { id: 'onboarding_training', name: 'Treinamento & Produção',   icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'onboarding_adoption', name: 'Adoção & Mapeamento',     icon: <Target className="w-4 h-4" /> },
-    { id: 'onboarding_handover', name: 'Passagem de Bastão',      icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'sla',                 name: 'Regras do Jogo',          icon: <ShieldCheck className="w-4 h-4" /> },
-    { id: 'projections',         name: 'Projeções',               icon: <TrendingUp className="w-4 h-4" /> },
-    { id: 'investment',          name: 'Investimento',            icon: <DollarSign className="w-4 h-4" /> },
-    { id: 'approval',            name: 'Aprovação',               icon: <Check className="w-4 h-4" /> },
+    { id: 'cover',               name: 'Capa',                   chapter: 'Fase 1 • Raio-X', icon: <FileText className="w-4 h-4" /> },
+    { id: 'executive_summary',   name: 'Resumo Executivo',        chapter: 'Fase 1 • Raio-X', icon: <FileText className="w-4 h-4" /> },
+    { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário',      chapter: 'Fase 1 • Raio-X', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'diagnostic_causes',   name: 'Causa Raiz',              chapter: 'Fase 1 • Raio-X', icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: 'pipeline_architecture', name: 'Arquitetura do Pipeline', chapter: 'Fase 2 • Engenharia', icon: <GitBranch className="w-4 h-4" /> },
+    { id: 'current_vs_future',   name: 'Atual vs Futuro',         chapter: 'Fase 2 • Engenharia', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'thesis',              name: 'Tese de Crescimento',     chapter: 'Fase 2 • Engenharia', icon: <Lightbulb className="w-4 h-4" /> },
+    { id: 'premises',            name: 'Premissas',               chapter: 'Fase 2 • Engenharia', icon: <Target className="w-4 h-4" /> },
+    { id: 'persona',             name: 'Persona',                 chapter: 'Fase 2 • Engenharia', icon: <Users className="w-4 h-4" /> },
+    { id: 'benchmark',           name: 'Análise de Mercado',      chapter: 'Fase 2 • Engenharia', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'methodology',         name: 'Metodologia',             chapter: 'Fase 3 • Cronograma', icon: <Settings className="w-4 h-4" /> },
+    { id: 'goals',               name: 'Metas e Indicadores',     chapter: 'Fase 3 • Cronograma', icon: <Target className="w-4 h-4" /> },
+    { id: 'roadmap_macro',       name: 'Marcos do Projeto',       chapter: 'Fase 3 • Cronograma', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'quick_wins',          name: 'Primeiros 7 Dias',        chapter: 'Fase 3 • Cronograma', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   chapter: 'Fase 4 • Execução', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     chapter: 'Fase 4 • Execução', icon: <Settings className="w-4 h-4" /> },
+    { id: 'onboarding_training', name: 'Treinamento & Produção',   chapter: 'Fase 4 • Execução', icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'onboarding_adoption', name: 'Adoção & Mapeamento',     chapter: 'Fase 4 • Execução', icon: <Target className="w-4 h-4" /> },
+    { id: 'onboarding_handover', name: 'Passagem de Bastão',      chapter: 'Fase 4 • Execução', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'sla',                 name: 'Regras do Jogo',          chapter: 'Fase 4 • Execução', icon: <ShieldCheck className="w-4 h-4" /> },
+    { id: 'projections',         name: 'Projeções',               chapter: 'Fase 4 • Execução', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'investment',          name: 'Investimento',            chapter: 'Fase 4 • Execução', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 'approval',            name: 'Aprovação',               chapter: 'Fase 4 • Execução', icon: <Check className="w-4 h-4" /> },
 ];
 
 function getStatusBadge(status: string) {
@@ -313,6 +313,7 @@ export default function StrategicPlanPresentation() {
     // ── Variables ───────────────────────────────────────────────────────────
     const companyName = client?.company || 'Cliente';
     const currentSectionId = sections[currentIndex]?.id;
+    const currentChapter = sections[currentIndex]?.chapter || '';
     const progress = ((currentIndex + 1) / sections.length) * 100;
     const isApproved = plan.status === 'approved';
     const isRejected = plan.status === 'revision_requested';
@@ -555,8 +556,13 @@ export default function StrategicPlanPresentation() {
                         <ArrowLeft className="w-4 h-4" />
                     </button>
 
-                    <div className="px-3 text-[11px] font-mono text-zinc-900 font-bold tracking-widest">
-                        {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
+                    <div className="px-3 flex items-center gap-3">
+                        {currentChapter && (
+                            <span className="hidden sm:inline-flex text-[10px] font-bold text-zinc-500 bg-zinc-100/80 px-2 py-1 rounded-md uppercase tracking-[0.2em]">{currentChapter}</span>
+                        )}
+                        <span className="text-[11px] font-mono text-zinc-900 font-bold tracking-widest whitespace-nowrap">
+                            {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
+                        </span>
                     </div>
 
                     <button

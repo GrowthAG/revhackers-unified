@@ -110,12 +110,12 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
-                    eyebrow={isConsultative ? "Alinhamento Imediato" : "Ação Imediata"}
+                    eyebrow={isConsultative ? "Alinhamento Imediato" : "Aceleração Imediata"}
                     titleLine1="Primeiros"
                     titleLine2="7 Dias"
                     description={isConsultative 
-                        ? "As diretrizes concretas e mapeamentos da primeira semana. Estrutura desenhada para guiar a sua operação."
-                        : "As entregas concretas da primeira semana. Resultados visíveis antes de qualquer sprint, sem esperar 90 dias."}
+                        ? "As diretrizes concretas e mapeamentos da primeira semana. Estrutura desenhada para guiar a sua operação financeira e comercial sem achismos."
+                        : "Tempo é dinheiro. Estas são as entregas concretas da sua primeira semana com a RevHackers. Resultados visíveis antes de qualquer sprint, sem esperar 90 dias para ver valor."}
                 />
             </div>
 

@@ -131,11 +131,14 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {scores && scores.performance > 0 && (
                     <div className="border border-zinc-200 rounded-xl overflow-hidden">
                         <div className="px-8 py-5 border-b border-zinc-100 bg-zinc-50/50">
-                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Auditoria Técnica</span>
-                            <h3 className="text-lg font-bold text-zinc-900 mt-1">Infraestrutura & SEO</h3>
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Auditoria Técnica (0-100)</span>
+                            <h3 className="text-lg font-bold text-zinc-900 mt-1 mb-2">Infraestrutura & SEO</h3>
+                            <p className="text-sm text-zinc-500 max-w-2xl leading-relaxed">
+                                Avaliação baseada no algoritmo oficial do <strong>Google Lighthouse</strong>. Uma infraestrutura lenta ou inacessível penaliza seu rankeamento orgânico e destrói sua taxa de conversão antes mesmo do lead consumir sua oferta.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-4">
                             {Object.entries(scores).map(([key, value]: [string, any], i: number, arr) => {
                                 const labelMap: Record<string, string> = {
                                     performance: 'Performance',
