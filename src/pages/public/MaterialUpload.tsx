@@ -398,6 +398,14 @@ export default function MaterialUpload() {
               <p className="text-[11px] text-zinc-400 mt-1.5">
                 Google Drive, Miro, Notion, Figma ou qualquer link compartilhável.
               </p>
+              <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+                <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
+                <p className="text-[11px] text-amber-700 leading-relaxed">
+                  <strong>Importante:</strong> Certifique-se de que o compartilhamento do link esteja ativo 
+                  (acesso público ou "qualquer pessoa com o link") para que nossa equipe e a IA 
+                  possam acessar o conteúdo do material.
+                </p>
+              </div>
             </div>
           )}
 

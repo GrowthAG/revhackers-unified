@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "npm:@supabase/supabase-js@2"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -6,13 +7,19 @@ const corsHeaders = {
 }
 
 interface ResearchRequest {
-    type: 'benchmark' | 'personas' | 'market';
+    type: 'benchmark' | 'personas' | 'market' | 'synthesis';
     segment: string;
     competitors?: { nome: string, url?: string }[];
     objective?: string;
     context?: any;
     siteAnalysis?: any;
     projectType?: string;
+    enrichedData?: {
+        market?: any;
+        personas?: any;
+        benchmark?: any;
+    };
+    jobId?: string;
 }
 
 // Build site analysis context block
@@ -152,29 +159,41 @@ function getBenchmarkPrompt(segment: string, objective?: string, context?: any, 
     const contextBlock = context ? `\nDados do diagnostico do cliente: \n${buildClientContext(context, segment, objective)}` : '';
     
     const isCrmOps = projectType === 'crm_ops';
+    const company = context?.companyName || context?.revops_empresa || '';
+    const companySite = context?.companySite || context?.revops_site || '';
     const crmOpsInstruction = isCrmOps 
-        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
-A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
-NÃO analise o mercado de "CRM as a Service", "Consultoria de Vendas" ou "RevOps", a menos que o cliente seja declaradamente desse setor. 
-O Benchmark deve focar no ambiente competitivo em que a empresa analisada atua, olhando para o CAC, LTV e ferramentas do SETOR DELES.` 
+        ? `\n\nREGRA CRITICA DE CONTEXTO:
+Este projeto e uma consultoria de CRM/Operacoes Comerciais prestada para a empresa cliente.
+O "Objetivo" listado acima descreve o que a CONSULTORIA vai fazer - NAO e o negocio do cliente.
+${company ? `A empresa cliente e: ${company}` : ''}
+${companySite ? `Site da empresa cliente: ${companySite}` : ''}
+PASSOS OBRIGATORIOS (execute mentalmente antes de gerar o JSON):
+1. Acesse o site da empresa e identifique o SETOR principal (ex: AdTech, HealthTech, Varejo, Educacao, Industria).
+2. Identifique o SUB-NICHO especifico dentro desse setor (ex: "Atribuicao de midia offline para TV/Radio", nao apenas "AdTech"). Este detalhe e critico para um benchmark preciso.
+3. Gere o benchmark EXCLUSIVAMENTE para esse sub-nicho especifico - com empresas concorrentes reais que atuam nesse espaco exato.
+4. CAC, ciclo de vendas e LTV:CAC devem ser referencia para o sub-nicho identificado, nao para o setor amplo.
+NUNCA gere benchmark de "CRM como servico", "Consultoria de RevOps" ou "Marketing de Performance" a menos que o SITE da empresa venda isso.` 
         : '';
 
-    return `Segmento: ${segment}
-Objetivo: ${objective || 'crescimento'}
+    return `Segmento declarado: ${segment}
+Objetivo do projeto de consultoria (NAO e o mercado do cliente): ${objective || 'crescimento'}
 ${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Head de Inteligencia de Mercado da RevHackers. Gere um BENCHMARK PROFUNDO e PERSONALIZADO para o segmento deste cliente no Brasil.
 INSTRUCOES CRITICAS:
-- Se os dados do diagnostico ou site revelam CRM atual, ticket medio ou taxa de conversao, USE para comparar com o mercado.
-- Cite empresas REAIS do segmento. Nao use genericos.
-- O comparativo deve ser uma analise estrategica de 3-4 frases que ajude o cliente a se posicionar.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- ESTRITAMENTE PROIBIDO USAR RANGES GENERICOS DE CAC (Ex do que NÃO fazer: "R$ 500 a R$ 2.000"). Você DEVE informar a MÉDIA EXATA CALCULADA que ocorre na prática do Brasil (Ex do que fazer: "R$ 1.250,00" ou "R$ 350,00"). Aja como quem cruzou os dados e chegou à média do momento.
+- O mesmo vale para ciclo de vendas e conversão: dê apenas um valor pontual médio do segmento, nada de margens amplas que mostram incerteza.
+- Se os dados do diagnostico ou site revelam CRM atual, ticket medio ou taxa de conversao, USE para comparar com o mercado do sub-nicho.
+- Cite empresas REAIS do sub-nicho identificado. Nao use genericos.
+- O comparativo deve ser uma analise estrategica de 3-4 frases que ajude o cliente a se posicionar nesse sub-nicho especifico.
+- IDIOMA: Todo o conteudo DEVE estar em Portugues do Brasil correto, com acentuacao completa (ex: "métricas", "conversão", "posição", "análise"). Nao omita acentos.
+- NUNCA use o caractere em dash (travessao longo U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON com EXATAMENTE esta estrutura:
 {
-  "cac_medio": "Valor monetario com contexto (ex: R$ 350,00 - acima da media do segmento por X motivo)",
-  "taxa_conversao": "Porcentagem com benchmark (ex: 2.8% - media do segmento e 3.2%)",
-  "ciclo_vendas": "Tempo com contexto (ex: 45 dias - empresas lideres fazem em 30)",
+  "cac_medio": "Valor monetario ÚNICO e exato com contexto curto (ex: R$ 350,00 - acima da media do segmento por ser ticket alto). Sem ranges.",
+  "taxa_conversao": "Porcentagem pontual com contexto (ex: 2.8% - no Brasil a media é 3.2%). Sem ranges.",
+  "ciclo_vendas": "Tempo pontual com contexto (ex: 45 dias - lideres fazem em 30). Sem ranges.",
   "ltv_cac_ratio": "Ratio com meta (ex: 4:1 - meta saudavel para o segmento)",
   "ferramentas_principais": {
     "crm": ["CRM real 1", "CRM real 2", "CRM real 3"],
@@ -191,15 +210,23 @@ function getPersonasPrompt(segment: string, objective?: string, context?: any, s
     const contextBlock = context ? `\nDados do diagnostico do cliente: \n${buildClientContext(context, segment, objective)}` : '';
 
     const isCrmOps = projectType === 'crm_ops';
+    const company = context?.companyName || context?.revops_empresa || '';
+    const companySite = context?.companySite || context?.revops_site || '';
     const crmOpsInstruction = isCrmOps 
-        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
-A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
-NÃO gere personas de donos de Agência de Marketing, NÃO analise o mercado de "CRM as a Service" ou "RevOps", a menos que o cliente seja declaradamente desse setor. 
-As pessoas devem ser as pessoas que **compram o produto/serviço que esta empresa vende**, não os compradores de CRM.` 
+        ? `\n\nREGRA CRITICA DE CONTEXTO:
+Este projeto e uma consultoria de CRM/Operacoes Comerciais.
+O "Objetivo" listado descreve o que a CONSULTORIA vai entregar - NAO e o negocio do cliente.
+${company ? `A empresa cliente e: ${company}` : ''}
+${companySite ? `Site da empresa cliente: ${companySite}` : ''}
+PASSOS OBRIGATORIOS (execute mentalmente antes de gerar o JSON):
+1. Acesse o site e identifique o SETOR e SUB-NICHO especifico da empresa.
+2. As personas devem ser os COMPRADORES REAIS do produto/servico que essa empresa vende naquele sub-nicho.
+3. Cada persona deve ter cargo, empresa-tipo e motivacoes especificos para aquele sub-nicho.
+NAO gere personas genericas de tech ou vendas - sejam especificas ao sub-nicho identificado.` 
         : '';
 
-    return `Segmento: ${segment}
-Objetivo: ${objective || 'crescimento'}
+    return `Segmento declarado: ${segment}
+Objetivo do projeto de consultoria (NAO e o mercado do cliente): ${objective || 'crescimento'}
 ${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Estrategista de ICP da RevHackers. Crie 3 BUYER PERSONAS ultra-detalhadas que representem os compradores REAIS dos produtos e servicos DESTE cliente.
@@ -210,8 +237,9 @@ INSTRUCOES CRITICAS DE PERSONALIZACAO:
 - Se o publico-alvo foi identificado, as personas DEVEM estar nesse publico.
 - Cada persona deve ser PSICOLOGICAMENTE distinta: um decisor (C-level), um influenciador tecnico, um usuario final.
 - Nomes brasileiros realistas. Bios com carreiras brasileiras.
-- O pitch_elevador deve ser uma frase que o vendedor do cliente usaria LITERALMENTE.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- O pitch_elevador DEVE mencionar o MECANISMO ESPECIFICO e UNICO que a empresa usa (ex: "quando seu anuncio vai ao ar na TV, sua campanha digital ativa automaticamente"). JAMAIS use frases genericas como "insights acionaveis" ou "dados de comportamento digital" isoladamente. Mencione O QUE a empresa faz de especifico que nenhum concorrente faz igual.
+- IDIOMA OBRIGATORIO: Todo o conteudo gerado DEVE estar em Portugues do Brasil correto, com acentuacao completa (ex: "ação", "análise", "gestão", "mídia", "público"). Nao omita acentos.
+- NUNCA use o caractere em dash (travessao longo U+2014) — use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON com EXATAMENTE esta estrutura:
 {
@@ -221,14 +249,14 @@ Retorne um JSON com EXATAMENTE esta estrutura:
       "cargo": "Cargo real do mercado brasileiro",
       "idade": "Ex: 38-45 anos",
       "genero": "M ou F",
-      "bio_curta": "2-3 frases sobre trajetoria, tipo de empresa onde trabalha e momento de carreira. Conecte ao segmento.",
-      "empresa_tipo": "Tipo de empresa realista (ex: SaaS B2B com 50-200 funcionarios)",
-      "dores_principais": ["Dor conectada ao produto/servico do cliente", "Dor do cargo", "Dor do mercado"],
-      "ganhos_desejados": ["Ganho pessoal que o produto resolve", "Ganho profissional mensuravel"],
+      "bio_curta": "2-3 frases sobre trajetoria, tipo de empresa onde trabalha e momento de carreira. Conecte ao sub-nicho especifico da empresa.",
+      "empresa_tipo": "Tipo de empresa realista e especifica ao sub-nicho (ex: Anunciante de varejo com budget de TV de R$5mi/ano)",
+      "dores_principais": ["Dor ESPECIFICA conectada ao produto/servico do cliente neste sub-nicho", "Dor do cargo neste contexto", "Dor do mercado"],
+      "ganhos_desejados": ["Ganho especifico que o produto resolve para este perfil", "Ganho profissional mensuravel"],
       "objecoes_compra": ["Objecao real ao avaliar este tipo de solucao", "Objecao financeira", "Objecao politica interna"],
       "gatilhos_mentais": ["Gatilho que funciona para este perfil (ex: Autoridade)", "Segundo gatilho"],
       "canais_favoritos": ["Canal real onde consome conteudo", "Canal 2", "Canal 3"],
-      "pitch_elevador": "Frase consultiva e direta que o vendedor usaria para este perfil"
+      "pitch_elevador": "Frase que menciona O MECANISMO ESPECIFICO da empresa. Deve ser literal, especifica e diferente para cada persona. Ex correto: 'A Tunad detecta em tempo real quando seu comercial vai ao ar na TV e ativa automaticamente sua campanha digital para capturar a intencao gerada.' Ex errado: 'Transformamos dados em insights acionaveis.'"
     }
   ]
 }
@@ -248,23 +276,34 @@ Voce DEVE analisar estes concorrentes especificamente. Complemente com outros pl
     const contextBlock = context ? `\nDados do diagnostico: \n${buildClientContext(context, segment, objective)}` : '';
 
     const isCrmOps = projectType === 'crm_ops';
+    const company = context?.companyName || context?.revops_empresa || '';
+    const companySite = context?.companySite || context?.revops_site || '';
     const crmOpsInstruction = isCrmOps 
-        ? `\nATENÇÃO MÁXIMA (REGRA DE NEGÓCIO CRÍTICA): Este cliente contratou uma consultoria de "CRM & Operações Comerciais". 
-A sua análise DEVE focar EXCLUSIVAMENTE nos clientes, concorrentes e no mercado do **CLIENTE deste projeto**. 
-NÃO analise o mercado de "CRM as a Service", "Consultoria de Vendas" ou "RevOps", a menos que o cliente seja declaradamente desse setor.` 
+        ? `\n\nREGRA CRITICA DE CONTEXTO:
+Este projeto e uma consultoria de CRM/Operacoes Comerciais - o "Objetivo" descreve o que a CONSULTORIA vai fazer, NAO o mercado do cliente.
+${company ? `A empresa analisada e: ${company}` : ''}
+${companySite ? `Site da empresa: ${companySite}` : ''}
+PASSOS OBRIGATORIOS antes de gerar a analise:
+1. Identifique o mercado REAL da empresa a partir do nome e site (ex: AdTech, Saude, Varejo, Industria).
+2. Identifique o SUB-NICHO especifico (ex: para uma AdTech, pode ser "atribuicao de midia offline TV/Radio" - muito diferente de "marketing digital"). Essa precisao define a qualidade do TAM/SAM/SOM.
+3. Analise o TAM/SAM/SOM exclusivamente para esse sub-nicho especifico, com dados do mercado brasileiro.
+4. Os concorrentes DEVEM ser empresas que competem diretamente naquele sub-nicho especifico (nao concorrentes genericos do setor amplo).
+5. As tendencias devem ser especificas ao sub-nicho identificado.
+NUNCA analise o mercado de RevOps, CRM, Consultoria de Vendas ou Marketing de Performance a menos que o site revele isso explicitamente.` 
         : '';
 
-    return `Segmento: ${segment} (Brasil)
-Objetivo: ${objective || 'crescimento'}
+    return `Segmento auto-declarado (pode ser impreciso): ${segment} (Brasil)
+Objetivo do projeto de consultoria (NAO e o negocio central do cliente): ${objective || 'crescimento'}
 ${competitorsBlock}${contextBlock}${siteBlock}${crmOpsInstruction}
 
 Tarefa: Voce e o Analista de Inteligencia Competitiva da RevHackers. Entregue uma analise de mercado estilo McKinsey/Bain, PERSONALIZADA para o negocio real deste cliente.
-INSTRUCOES CRITICAS:
-- As tendencias devem ser relevantes ao segmento ESPECIFICO do cliente.
-- Os concorrentes devem ser empresas REAIS que competem no mesmo espaco.
-- O SWOT deve refletir oportunidades e ameacas para ESTE cliente, baseado nos dados fornecidos.
-- Se o site revelou pontos fracos ou diferenciais, use para contextualizar o SWOT.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+INSTRUCOES CRITICAS DE LOCALIZACAO (BRASIL):
+- OBRIGATORIO: Os concorrentes DEVEM SER EMPRESAS BRASILEIRAS REAIS. É estritamente proibido listar empresas estrangeiras (americanas, europeias, etc) a não ser que o cliente seja global. Foque no mercado local (Brasil).
+- As tendencias devem ser relevantes ao SUB-NICHO ESPECIFICO identificado para o cliente dentro do mercado brasileiro.
+- Os concorrentes devem competir naquele sub-nicho especifico no Brasil, não no setor amplo global.
+- O SWOT deve refletir oportunidades e ameaças reais no cenário brasileiro.
+- IDIOMA: Todo o conteudo DEVE estar em Portugues do Brasil correto, com acentuacao completa.
+- NUNCA use o caractere em dash (travessao longo U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON com EXATAMENTE esta estrutura:
 {
@@ -295,6 +334,80 @@ Gere de 3 a 5 concorrentes reais e pelo menos 3 tendencias.`;
 }
 
 // ============================================================
+// SYNTHESIS PROMPT: Bridge Deep Research -> Plan Content
+// ============================================================
+
+function getSynthesisPrompt(context: any, enrichedData: any, segment: string, objective?: string): string {
+    const company = context?.companyName || context?.revops_empresa || context?.empresa || 'a empresa cliente';
+    const companySite = context?.companySite || context?.revops_site || '';
+    
+    const market = enrichedData?.market || {};
+    const benchmark = enrichedData?.benchmark || {};
+    const personasData = enrichedData?.personas || {};
+    const personas = Array.isArray(personasData?.personas) ? personasData.personas : [];
+
+    const marketBlock = market ? `
+MERCADO (TAM/SAM/SOM):
+- TAM: ${market.tam_sam_som?.tam || 'N/A'}
+- SAM: ${market.tam_sam_som?.sam || 'N/A'}
+- SOM: ${market.tam_sam_som?.som || 'N/A'}
+Oportunidades de mercado: ${(market.analise_swot_rapida?.oportunidades || []).join('; ')}
+Amecas: ${(market.analise_swot_rapida?.ameacas || []).join('; ')}
+Tendencias: ${(market.tendencias_2025 || []).map((t: any) => t.titulo || t).join('; ')}` : '';
+    
+    const benchmarkBlock = benchmark ? `
+BENCHMARK DO SETOR:
+- CAC medio do setor: ${benchmark.cac_medio || 'N/A'}
+- Taxa de conversao do setor: ${benchmark.taxa_conversao || 'N/A'}
+- Ciclo de vendas do setor: ${benchmark.ciclo_vendas || 'N/A'}
+- LTV:CAC do setor: ${benchmark.ltv_cac_ratio || 'N/A'}
+- Analise comparativa: ${benchmark.comparativo_mercado || 'N/A'}` : '';
+    
+    const personasBlock = personas.length > 0 ? `
+PERSONAS E COMPRADORES IDENTIFICADOS:
+${personas.slice(0, 3).map((p: any) => `- ${p.nome || ''} (${p.cargo || ''}): Dor principal: ${(p.dores_principais || [])[0] || ''}. Pitching: ${p.pitch_elevador || ''}`).join('\n')}` : '';
+
+    return `Empresa: ${company}
+Site: ${companySite}
+Segmento Real (Identificado por IA): ${segment}
+Objetivo da Consultoria: ${objective || 'crescimento'}
+${marketBlock}
+${benchmarkBlock}
+${personasBlock}
+
+Tarefa: Voce e o Head de Estrategia da RevHackers. Com base em TODA a inteligencia de mercado acima, reescreva o RESUMO EXECUTIVO e o DIAGNOSTICO do plano estrategico para esta empresa.
+Este conteudo sera apresentado ao CEO/fundador da empresa. Use linguagem executiva, direta, especifica - NUNCA use boilerplate generico.
+
+REGRAS CRITICAS:
+1. Contexto: descreva a SITUACAO REAL da empresa no SEU MERCADO ESPECIFICO (nao diga "Empresa B2B generica" - diga quem eles sao de verdade)
+2. Problema Central: identifique o problema ESTRATEGICO mais critico que a consultoria ira atacar baseado nos dados reais
+3. Solucao Proposta: descreva o que a RevHackers vai entregar de especifico para ESTE cliente neste mercado
+4. Resultado Esperado: use metricas ESPECIFICAS do benchmark do setor identificado
+5. Sinais de Diagnostico: liste 3-5 sinais estrategicos de como a empresa esta posicionada vs o setor (use dados do benchmark)
+6. IDIOMA: Portugues do Brasil correto com acentuacao completa
+7. NUNCA use dash longo (U+2014) - use hifen simples
+
+Retorne um JSON com EXATAMENTE esta estrutura:
+{
+  "executive_summary": {
+    "context": "2-3 frases descrevendo a empresa e seu contexto de mercado ESPECIFICO - quem sao, que mercado ocupam, que momento vivem",
+    "problem": "1-2 frases sobre o problema estrategico central mais critico que a consultoria vai resolver - baseado em dados reais do diagnostico",
+    "solution": "1-2 frases sobre o que a RevHackers vai entregar de especifico - nao generico, conectado ao contexto real desta empresa",
+    "expected_outcome": "Metricas esperadas especificas baseadas no benchmark do setor (ex: CAC de Rx para Ry, ciclo de vendas de X para Y semanas, LTV:CAC atingindo Z:1)"
+  },
+  "diagnostic_signals": [
+    {
+      "signal": "Sinal diagnostico especifico (1 frase)",
+      "severity": "high|medium|low",
+      "recommendation": "Recomendacao acionavel especifica"
+    }
+  ],
+  "strategic_opportunities": ["Oportunidade especifica 1 para esta empresa neste mercado", "Oportunidade 2", "Oportunidade 3"]
+}
+Gere EXATAMENTE o JSON acima. Nada mais.`;
+}
+
+// ============================================================
 // MAIN HANDLER
 // ============================================================
 
@@ -303,8 +416,12 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    let jobId: string | undefined;
+
     try {
-        const { type, segment, competitors, objective, context, siteAnalysis, projectType }: ResearchRequest = await req.json();
+        const payload: ResearchRequest = await req.json();
+        const { type, segment, competitors, objective, context, siteAnalysis, projectType, enrichedData } = payload;
+        jobId = payload.jobId;
 
         if (!type || !segment) {
             throw new Error('Missing required fields: type, segment');
@@ -317,12 +434,15 @@ serve(async (req) => {
 
         console.log(`[research-intelligence] Deep ${type} research for: ${segment}, hasSite=${!!siteAnalysis}`);
 
-        const systemPrompt = `Voce e o Head de Pesquisa Estrategica da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
-Voce tem 15+ anos de experiencia em consultoria estrategica (McKinsey, Bain, BCG).
-Sua especialidade e transformar diagnosticos brutos em inteligencia de mercado acionavel.
-Cada analise que voce produz e HIPER-PERSONALIZADA ao negocio real do cliente, nunca generica.
-Responda APENAS com JSON valido. Sem markdown, sem explicacoes extras.
-NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).`;
+        const systemPrompt = `Você é o Head de Pesquisa Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Você tem 15+ anos de experiência em consultoria estratégica (McKinsey, Bain, BCG).
+Sua especialidade é transformar diagnósticos brutos em inteligência de mercado acionável.
+Cada análise que você produz é HIPER-PERSONALIZADA ao negócio real do cliente, nunca genérica.
+Responda APENAS com JSON válido. Sem markdown, sem explicações extras.
+NUNCA use o caractere em dash (—) — use apenas hífen simples (-), dois pontos (:) ou ponto (.).
+REGRA ABSOLUTA DE IDIOMA: Todo o texto deve estar em Português do Brasil correto e completo.
+JAMAIS omita acentuação. Palavras como "ação", "gestão", "operação", "automação", "análise", "técnico", "página", "você", "nível", "período", "após", "também", "além", "mídias", "único", "público", "é", "está", "são", "assim", "métricas", "tendência", "disponível", "critérios", "médio", "avaliação", "conversão", "atração", "geração", "criação", "definição", "aquisição" DEVEM ser escritas com acentos corretos.
+Texto sem acentuação é um ERRO CRÍTICO INACEITÁVEL.`;
 
         let userPrompt: string;
         switch (type) {
@@ -334,6 +454,9 @@ NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), 
                 break;
             case 'market':
                 userPrompt = getMarketPrompt(segment, competitors, objective, context, siteAnalysis, projectType);
+                break;
+            case 'synthesis':
+                userPrompt = getSynthesisPrompt(context, enrichedData, segment, objective);
                 break;
             default:
                 throw new Error(`Invalid research type: ${type}`);
@@ -355,6 +478,22 @@ NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), 
 
         console.log(`[research-intelligence] Deep ${type} completed successfully`);
 
+        if (jobId) {
+            const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+            const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+            if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+                const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+                await supabaseClient
+                    .from('ai_generation_jobs')
+                    .update({
+                        status: 'completed',
+                        result_data: result,
+                        completed_at: new Date().toISOString()
+                    })
+                    .eq('id', jobId);
+            }
+        }
+
         return new Response(JSON.stringify(result), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
@@ -362,6 +501,23 @@ NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), 
 
     } catch (error: any) {
         console.error('[research-intelligence] Error:', error.message);
+        
+        if (jobId) {
+            const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+            const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+            if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+                const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+                await supabaseClient
+                    .from('ai_generation_jobs')
+                    .update({
+                        status: 'failed',
+                        error_log: error.message,
+                        completed_at: new Date().toISOString()
+                    })
+                    .eq('id', jobId);
+            }
+        }
+
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,

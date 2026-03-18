@@ -41,14 +41,14 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
     const defaultSteps = [
         { day: 'DIA 1', action: 'Otimizar perfil LinkedIn (headline, banner, sobre) - foco Brasil' },
         { day: 'DIA 1-2', action: 'Criar lista de 200+ empresas target (SP, RJ, BH tech)' },
-        { day: 'DIA 2-3', action: 'Escrever 5 templates de prospecao em portugues brasileiro' },
+        { day: 'DIA 2-3', action: 'Escrever 5 templates de prospecção em português brasileiro' },
         { day: 'DIA 3', action: 'Criar demo workspace do Funnels com dados brasileiros' },
-        { day: 'DIA 4-6', action: 'Publicar 4 posts no LinkedIn sobre dores brasileiras (WhatsApp, consolidacao)' },
+        { day: 'DIA 4-6', action: 'Publicar 4 posts no LinkedIn sobre dores brasileiras (WhatsApp, consolidação)' },
         { day: 'DIA 5-6', action: 'Criar lead magnet: "Checklist: Migrar de RD+Pipedrive para Funnels em 48h"' },
-        { day: 'DIA 6-7', action: 'Configurar Calendly + email sequences (5 sequencias)' },
-        { day: 'DIA 7', action: 'Iniciar outreach manual (10-15 conexoes/dia no LinkedIn)' },
-        { day: 'SEMANA 1', action: 'Agendar 3-5 discovery calls (meta minima)' },
-        { day: 'SEMANA 1', action: 'Documentar objecoes comuns e respostas (playbook)' },
+        { day: 'DIA 6-7', action: 'Configurar Calendly + email sequences (5 sequências)' },
+        { day: 'DIA 7', action: 'Iniciar outreach manual (10-15 conexões/dia no LinkedIn)' },
+        { day: 'SEMANA 1', action: 'Agendar 3-5 discovery calls (meta mínima)' },
+        { day: 'SEMANA 1', action: 'Documentar objeções comuns e respostas (playbook)' },
     ];
 
     const steps = displaySteps.length > 0 ? displaySteps : defaultSteps;

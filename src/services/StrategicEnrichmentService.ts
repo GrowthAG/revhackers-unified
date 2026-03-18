@@ -71,7 +71,7 @@ export interface StrategicEnrichmentResult {
     isDeepResearch?: boolean;
 }
 
-export type EnrichmentType = 'benchmark' | 'personas' | 'market' | 'all';
+export type EnrichmentType = 'benchmark' | 'personas' | 'market' | 'synthesis' | 'all';
 
 export class StrategicEnrichmentService {
     /**
@@ -159,6 +159,11 @@ export class StrategicEnrichmentService {
             context?: any;
             siteAnalysis?: any;
             projectType?: string;
+            enrichedData?: {
+                market?: any;
+                personas?: any;
+                benchmark?: any;
+            };
         }
     ): Promise<any> {
         try {
@@ -170,7 +175,8 @@ export class StrategicEnrichmentService {
                     objective: options?.objective,
                     context: options?.context,
                     siteAnalysis: options?.siteAnalysis,
-                    projectType: options?.projectType
+                    projectType: options?.projectType,
+                    enrichedData: options?.enrichedData,
                 }
             });
 

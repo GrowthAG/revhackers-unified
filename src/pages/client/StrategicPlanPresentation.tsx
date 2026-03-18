@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanEditProvider } from '@/components/plan/PlanEditContext';
-import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb, ShieldCheck, Printer, Upload } from 'lucide-react';
+import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Calendar, Users, Briefcase, TrendingUp, DollarSign, Settings, PanelLeftClose, PanelLeftOpen, Pencil, Maximize2, Minimize2, Smartphone, AlertTriangle, Lightbulb, ShieldCheck, Printer, Upload, GitBranch } from 'lucide-react';
 import { EditToolbar } from '@/components/plan/PlanEditContext';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
@@ -13,6 +13,7 @@ import ExecutiveSummarySection from './sections/ExecutiveSummarySection';
 import CurrentVsFutureSection from './sections/CurrentVsFutureSection';
 import DiagnosticSymptomsSection from './sections/DiagnosticSymptomsSection';
 import DiagnosticCausesSection from './sections/DiagnosticCausesSection';
+import PipelineArchitectureSection from './sections/PipelineArchitectureSection';
 import ThesisSection from './sections/ThesisSection';
 import PremisesSection from './sections/PremisesSection';
 import PersonaSection from './sections/PersonaSection';
@@ -41,6 +42,7 @@ const NAV_SECTIONS = [
     { id: 'executive_summary',   name: 'Resumo Executivo',        icon: <FileText className="w-4 h-4" /> },
     { id: 'diagnostic_symptoms', name: 'Sintomas e Cenário',      icon: <BarChart3 className="w-4 h-4" /> },
     { id: 'diagnostic_causes',   name: 'Causa Raiz',              icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: 'pipeline_architecture', name: 'Arquitetura do Pipeline', icon: <GitBranch className="w-4 h-4" /> },
     { id: 'current_vs_future',   name: 'Atual vs Futuro',         icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'thesis',              name: 'Tese de Crescimento',     icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'premises',            name: 'Premissas',               icon: <Target className="w-4 h-4" /> },
@@ -87,9 +89,11 @@ export default function StrategicPlanPresentation() {
     const [loading, setLoading] = useState(true);
     const printRef = useRef<HTMLDivElement>(null);
 
+    const activeCompanyName = plan?.rei_projects?.trade_name || plan?.cover_data?.company_override || client?.trade_name || client?.company || 'Cliente';
+
     const handlePrint = useReactToPrint({
         contentRef: printRef,
-        documentTitle: `Planejamento_Estrategico_${client?.company || 'Cliente'}`,
+        documentTitle: `Planejamento_Estrategico_${activeCompanyName.replace(/\s+/g, '_')}`,
     });
 
     // Clean up external chat widgets (GHL, Lovable, etc.) - they should NOT appear on presentation pages
@@ -325,6 +329,7 @@ export default function StrategicPlanPresentation() {
             case 'executive_summary': return <ExecutiveSummarySection plan={plan} />;
             case 'diagnostic_symptoms': return <DiagnosticSymptomsSection plan={plan} />;
             case 'diagnostic_causes': return <DiagnosticCausesSection plan={plan} />;
+            case 'pipeline_architecture': return <PipelineArchitectureSection plan={plan} />;
             case 'current_vs_future': return <CurrentVsFutureSection plan={plan} />;
             case 'thesis': return <ThesisSection plan={plan} />;
             case 'premises': return <PremisesSection plan={plan} />;
@@ -335,7 +340,7 @@ export default function StrategicPlanPresentation() {
             case 'quick_wins': return <QuickWinsSection plan={plan} />;
             case 'onboarding_kickoff': return <OnboardingKickoffSection plan={plan} />;
             case 'onboarding_setup': return <OnboardingSetupSection plan={plan} />;
-            case 'onboarding_training': return <OnboardingTrainingSection plan={plan} />;
+            case 'onboarding_training': return <OnboardingTrainingSection plan={plan} clientName={activeCompanyName} />;
             case 'onboarding_adoption': return <OnboardingAdoptionSection plan={plan} />;
             case 'onboarding_handover': return <OnboardingHandoverSection plan={plan} />;
             case 'sla': return <SlaSection plan={plan} client={client} />;
@@ -343,10 +348,10 @@ export default function StrategicPlanPresentation() {
             case 'projections': return <ProjectionsSection plan={plan} />;
             case 'investment': return <InvestmentSection plan={plan} />;
             case 'approval': return (
-                <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6 print:hidden">
-                    <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-8 w-auto mb-12 opacity-40" />
+                <div className="flex flex-col items-center justify-center min-vh-70 text-center px-6 print:hidden mt-20 mb-20">
+                    <div className="max-w-5xl w-full mx-auto">
                     {isApproved ? (
-                        <div className="max-w-md">
+                        <div className="max-w-md mx-auto">
                             <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center mx-auto mb-6 rounded-full"><Check className="w-8 h-8 text-[#00CC6A]" /></div>
                             <h2 className="text-3xl font-bold text-black mb-3">Planejamento Aprovado</h2>
                             <p className="text-zinc-500 text-sm mb-2">Assinado por <strong>{plan.next_steps_data?.approved_by_name || 'cliente'}</strong></p>
@@ -368,42 +373,67 @@ export default function StrategicPlanPresentation() {
                             <div className="mt-12 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-400 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
                         </div>
                     ) : isRejected ? (
-                        <div className="max-w-md">
-                            <h2 className="text-2xl font-bold text-black mb-3">Ajuste Solicitado</h2>
-                            <p className="text-zinc-500 text-sm">Nossa equipe está revisando suas observações e entrará em contato em breve para refinar o plano.</p>
+                        <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
+                            <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+                            </div>
+                            <h3 className="text-2xl font-black text-black mb-3">Reconstrução em Andamento</h3>
+                            <p className="text-zinc-500 text-sm max-w-md mx-auto">
+                                Nossa IA Especialista (REI) está analisando seus apontamentos e gerando uma nova versão otimizada do planejamento estratégico.
+                            </p>
+                            <div className="mt-8 pt-6 border-t border-zinc-100">
+                                <span className="text-xs text-zinc-400 font-bold uppercase tracking-widest">REVENUE ENGINE INTELLIGENCE™</span>
+                            </div>
                         </div>
                     ) : (
-                        <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center text-left">
+                            
                             {/* Left Side: Copy */}
                             <div>
-                                <h2 className="text-4xl font-black text-zinc-900 mb-4 tracking-tight">Autorização e Assinatura</h2>
-                                <p className="text-lg text-zinc-500 mb-10 leading-relaxed font-medium">Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.</p>
+                                <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-zinc-900 mb-4 leading-tight">
+                                    Autorização e Assinatura
+                                </h2>
+                                <p className="text-[17px] text-zinc-500 font-medium leading-[1.6] mb-8 pr-4">
+                                    Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.
+                                </p>
                                 
-                                <div className="flex flex-col sm:flex-row items-center gap-4">
-                                    <button onClick={() => setShowSign(true)} className="w-full sm:w-auto px-10 py-4 bg-zinc-900 text-white text-[15px] font-bold rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-sm">
-                                        <Check className="w-5 h-5" /> Assinar Agora
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <button 
+                                        onClick={() => setShowSign(true)} 
+                                        className="flex-1 bg-zinc-950 text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors"
+                                    >
+                                        <Check className="w-4 h-4" /> Assinar Agora
                                     </button>
-                                    <button onClick={() => setShowRejectModal(true)} className="w-full sm:w-auto px-8 py-4 border border-zinc-200 text-zinc-600 text-[15px] font-bold rounded-xl hover:border-zinc-300 hover:bg-zinc-50 transition-colors">
+                                    <button 
+                                        onClick={() => setShowRejectModal(true)} 
+                                        className="flex-1 bg-white border border-zinc-200 text-zinc-600 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                                    >
                                         Solicitar Ajuste
                                     </button>
                                 </div>
                             </div>
-                            
-                            {/* Right Side: QR Code Area */}
-                            <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-                                <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-zinc-400 mb-6 border border-zinc-100">
-                                    <Smartphone className="w-6 h-6" />
+
+                            {/* Right Side: QR Code Card */}
+                            <div className="flex justify-center lg:justify-end">
+                                <div className="border border-zinc-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 lg:p-10 w-full max-w-sm flex flex-col items-center text-center bg-white relative">
+                                    <div className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center mb-5 shrink-0">
+                                        <Smartphone className="w-4 h-4 text-zinc-400" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
+                                    <p className="text-sm text-zinc-500 leading-relaxed mb-6 px-2">
+                                        Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.
+                                    </p>
+                                    <div className="border border-zinc-100 p-2 rounded-2xl mb-8">
+                                        <QRCodeSVG value={signUrl} size={180} level="M" fgColor="#09090b" />
+                                    </div>
+                                    <div className="bg-[#00CC6A]/10 px-4 py-1.5 rounded uppercase tracking-[0.2em] font-black text-[10px] text-[#00CC6A]">
+                                        Válido Assinatura Digital
+                                    </div>
                                 </div>
-                                <h3 className="text-xl font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
-                                <p className="text-sm text-zinc-500 mb-8 font-medium">Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.</p>
-                                
-                                <div className="p-4 bg-white border border-zinc-100 rounded-2xl shadow-sm">
-                                    <QRCodeSVG value={signUrl} size={180} level="M" fgColor="#09090b" />
-                                </div>
-                                <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#00CC6A] mt-6 bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">Válido Assinatura Digital</span>
                             </div>
                         </div>
                     )}
+                    </div>
                 </div>
             );
             default: return null;
@@ -467,18 +497,42 @@ export default function StrategicPlanPresentation() {
 
             {/* Reject modal */}
             {showRejectModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowRejectModal(false)}>
-                    <div className="bg-white max-w-lg w-full border border-zinc-200 p-6" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold mb-1">Solicitar Ajustes</h3>
-                        <p className="text-zinc-500 text-sm mb-4">Descreva o que precisa ser revisado no planejamento {typeLabel}.</p>
+                <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowRejectModal(false)}>
+                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-2xl relative" onClick={e => e.stopPropagation()}>
                         {rejectSent ? (
-                            <div className="text-center py-6"><Check className="w-8 h-8 text-[#00CC6A] mx-auto mb-2" /><p className="text-black font-semibold">Solicitação enviada</p></div>
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-[#00CC6A]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Check className="w-8 h-8 text-[#00CC6A]" />
+                                </div>
+                                <h3 className="text-xl font-bold text-zinc-900 mb-2">Solicitação enviada</h3>
+                                <p className="text-sm text-zinc-500">Nossa Inteligência Artificial está processando seu pedido.</p>
+                            </div>
                         ) : (
                             <>
-                                <textarea value={rejectText} onChange={e => setRejectText(e.target.value)} placeholder="Ex: Gostaria de ajustar o prazo do Mês 1, o nosso time ainda não tem SDR..." className="w-full min-h-[120px] resize-none border border-zinc-200 focus:border-zinc-900 p-3 text-sm focus:outline-none" />
-                                <div className="flex justify-end gap-3 mt-4">
-                                    <button onClick={() => setShowRejectModal(false)} className="px-5 py-2.5 border border-zinc-200 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors">Cancelar</button>
-                                    <button onClick={handleReject} disabled={!rejectText.trim() || rejecting} className="px-6 py-2.5 bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-40">{rejecting ? 'Enviando...' : 'Enviar'}</button>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
+                                        <p className="text-sm text-zinc-500">Aponte o que precisa mudar no plano {typeLabel}.</p>
+                                    </div>
+                                </div>
+                                
+                                <textarea 
+                                    value={rejectText} 
+                                    onChange={e => setRejectText(e.target.value)} 
+                                    placeholder="Descreva o que sentiu falta, o que precisa ser ajustado ou alguma regra de negócio que deve ser adicionada..." 
+                                    className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400" 
+                                />
+                                
+                                <div className="flex items-center justify-end gap-3 mt-8">
+                                    <button onClick={() => setShowRejectModal(false)} className="px-5 py-3 hover:bg-zinc-50 text-[14px] font-bold text-zinc-600 transition-colors rounded-xl border border-transparent hover:border-zinc-200">
+                                        Cancelar
+                                    </button>
+                                    <button onClick={handleReject} disabled={!rejectText.trim() || rejecting} className="px-8 py-3 bg-purple-600 text-white text-[14px] font-bold hover:bg-purple-700 transition-colors disabled:opacity-40 rounded-xl shadow-lg shadow-purple-600/20 flex items-center gap-2">
+                                        {rejecting ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : 'Enviar para Inteligência'}
+                                    </button>
                                 </div>
                             </>
                         )}

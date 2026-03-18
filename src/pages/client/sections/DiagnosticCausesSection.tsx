@@ -58,7 +58,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                                 <div className="mb-4">
                                                     <EditableField
                                                         path={`diagnostic_data.risks.${i}.text`}
-                                                        className="text-lg font-bold text-zinc-900 leading-snug tracking-tight"
+                                                        className="text-[16px] font-medium text-zinc-800 leading-snug tracking-tight"
                                                         placeholder={risk.text}
                                                         multiline
                                                     />
@@ -103,7 +103,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         </span>
                                         <EditableField
                                             path={`diagnostic_data.decisions.${i}.title`}
-                                            className="text-lg font-bold text-white mb-2.5 leading-tight block"
+                                            className="text-[16px] font-medium text-white mb-2.5 leading-tight block"
                                             placeholder={decision.title}
                                         />
                                         <EditableField

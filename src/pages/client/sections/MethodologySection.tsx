@@ -132,6 +132,7 @@ const differentialsByType: Record<string, { title: string; desc: string }[]> = {
 
 export default function MethodologySection({ plan }: { plan: any }) {
     const projectType = plan?.rei_projects?.type || plan?.project_type || 'default';
+    const isConsultative = plan?.form_data?.project_duration === '30_days' || plan?.diagnostic_data?.roadmap_data?.project_duration === '30_days';
 
     // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda por cliente.
     const stepsMap: Record<string, typeof defaultSteps> = {
@@ -140,7 +141,22 @@ export default function MethodologySection({ plan }: { plan: any }) {
         dev:     devSteps,
         site:    devSteps,
     };
-    const displaySteps = stepsMap[projectType] || defaultSteps;
+    
+    let baseSteps = stepsMap[projectType] || defaultSteps;
+
+    // Se for projeto consultivo de 30 dias, reescrever as taglines de tempo para refletir dias (em vez de semanas).
+    const displaySteps = baseSteps.map((step, index) => {
+        let newTagline = step.tagline;
+        if (isConsultative) {
+            const shortTaglines = ['Dias 1–7', 'Dias 8–15', 'Dias 16–22', 'Dias 23–30'];
+            newTagline = shortTaglines[index] || step.tagline;
+        }
+        return {
+            ...step,
+            tagline: newTagline
+        };
+    });
+
     const differentials = differentialsByType[projectType] || differentialsByType['default'];
 
     const eyebrowByType: Record<string, string> = {

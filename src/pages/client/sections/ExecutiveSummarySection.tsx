@@ -3,6 +3,8 @@ import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
 // ── Fallback executive summary by type ────────────────────────────────────
+// NOTE: These are only used when AI generation fails completely.
+// With the passthrough fix, AI-generated content should always be available.
 const fallbackByType: Record<string, {
     context: string;
     problem: string;
@@ -10,28 +12,28 @@ const fallbackByType: Record<string, {
     expectedOutcome: string;
 }> = {
     crm_ops: {
-        context: 'Empresa B2B com processo comercial descentralizado, dados fragmentados e ausência de governança de pipeline.',
-        problem: 'Sem visibilidade real sobre a operação de vendas. Decisões tomadas por feeling, não por dados. Oportunidades se perdem entre planilhas e WhatsApp.',
-        solution: 'Implementação de Máquina de Vendas RevHackers: CRM centralizado, automações de passagem de bastão, governança ativa e treinamento até adoção visceral.',
-        expectedOutcome: 'Pipeline 100% rastreável, ciclo de vendas reduzido em 20-40%, taxa de conversão aumentada com dados reais para escalar.',
+        context: '',
+        problem: '',
+        solution: '',
+        expectedOutcome: '',
     },
     founder: {
-        context: 'Founder com expertise comprovada, mas audiência limitada e sem sistema de conversão via conteúdo.',
-        problem: 'Autoridade de mercado concentrada em poucos contatos. Dependência de network pessoal para geração de oportunidades. Zero inbound.',
-        solution: 'Protocolo Founder RevHackers: posicionamento cirúrgico, cadência sustentável de conteúdo e loop de conversão via LinkedIn.',
-        expectedOutcome: 'Audiência qualificada 3-5x maior, 4-12 oportunidades inbound/mês, independência de cold outreach.',
+        context: '',
+        problem: '',
+        solution: '',
+        expectedOutcome: '',
     },
     dev: {
-        context: 'Empresa que precisa de presença digital profissional com foco em conversão e performance.',
-        problem: 'Site atual não converte, performance abaixo dos padrões, experiência mobile comprometida e sem rastreamento adequado.',
-        solution: 'Projeto de desenvolvimento com arquitetura-primeiro: wireframe aprovado, entrega incremental e performance como critério de aceite.',
-        expectedOutcome: 'Site com LCP < 2.5s, GTmetrix ≥ 90, conversão estimada +30–80% vs anterior, entrega em 6 semanas.',
+        context: '',
+        problem: '',
+        solution: '',
+        expectedOutcome: '',
     },
     default: {
-        context: 'Empresa B2B com potencial de crescimento, mas sem motor de receita estruturado para escalar de forma previsível.',
-        problem: 'Dependência de táticas isoladas, pipeline sem governança, CAC descontrolado e ausência de rastreamento ponta a ponta.',
-        solution: 'Motor de Receita Integrado RevHackers: fundação técnica, geração de demanda inteligente, ativação orquestrada e expansão baseada em dados.',
-        expectedOutcome: 'Receita previsível com 3 fontes de demanda paralelas, LTV:CAC ≥ 3:1 e pipeline completo da atração ao sucesso do cliente.',
+        context: '',
+        problem: '',
+        solution: '',
+        expectedOutcome: '',
     },
 };
 
@@ -77,21 +79,20 @@ export default function ExecutiveSummarySection({ plan }: { plan: any }) {
                     description="A síntese do diagnóstico, do problema central e da solução proposta, em 60 segundos."
                 />
 
-                {/* 4 Quadrant Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-200 border border-zinc-200 rounded-2xl overflow-hidden mt-10">
+                {/* 4 Quadrant Grid - Notion Style */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
                     {items.map((item, i) => {
-                        const isDark = i === 2; // Solution gets dark treatment
                         return (
                             <div
                                 key={i}
-                                className={`p-8 md:p-10 ${isDark ? 'bg-zinc-950' : 'bg-white'}`}
+                                className="p-8 md:p-10 bg-zinc-50 border border-zinc-200 rounded-3xl group hover:border-zinc-300 transition-colors"
                             >
-                                <span className={`text-[10px] font-black uppercase tracking-[0.25em] block mb-4 ${isDark ? 'text-[#00CC6A]' : 'text-zinc-400'}`}>
+                                <span className="text-[10px] font-black uppercase tracking-[0.25em] block mb-4 text-zinc-400">
                                     {item.label}
                                 </span>
                                 <EditableField
                                     path={item.path}
-                                    className={`text-[17px] font-bold leading-relaxed ${isDark ? 'text-white' : 'text-zinc-900'}`}
+                                    className="text-[16px] font-medium leading-relaxed text-zinc-600 group-hover:text-zinc-800 transition-colors"
                                     placeholder={item.value}
                                     multiline
                                 />

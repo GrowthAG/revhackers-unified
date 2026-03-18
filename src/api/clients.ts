@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export interface Client {
     id: string;
     name: string;
+    trade_name?: string;
     email: string;
     company?: string;
     cnpj?: string;

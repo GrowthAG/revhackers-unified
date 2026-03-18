@@ -94,42 +94,8 @@ function TraitSlider({ left, right, value, personaIndex, traitKey }: {
     );
 }
 
-// ── Default Personas ──────────────────────────────────────────────────────
-const defaultPersonas = [
-    {
-        name: 'Ricardo Mendes', age: 44, role: 'CEO / Founder B2B',
-        company_context: 'Empresa B2B com 50 a 200 colaboradores', location: 'São Paulo, SP',
-        bio: 'Ricardo lidera a operação comercial e precisa de previsibilidade de receita. Está exausto de ferramentas fragmentadas e dashboards que nunca batem.',
-        channels: ['E-mail', 'WhatsApp', 'Google', 'LinkedIn'],
-        personality: { analytical_creative: 25, passive_active: 70, reserved_extroverted: 55, reactive_preventive: 35 },
-        pain: 'Churn alto e não sabe por quê. Dados fragmentados entre 5 ferramentas sem visão unificada.',
-        trigger: 'MRR estagnado por 3 meses ou queda de NPS abaixo de 7.',
-        message: 'Transforme dados dispersos em receita previsível com um sistema único de Revenue Operations.',
-        wiifm: 'Dormir tranquilo sabendo exatamente de onde vem o lucro e o prejuízo.',
-    },
-    {
-        name: 'Mariana Costa', age: 38, role: 'Head de Vendas',
-        company_context: 'Scale-up ou mid-market em crescimento acelerado', location: 'Belo Horizonte, MG',
-        bio: 'Mariana lidera o time de vendas e lida com pipeline invisível e follow-up manual. Quer previsibilidade de quota e automações que funcionem.',
-        channels: ['WhatsApp', 'LinkedIn', 'E-mail'],
-        personality: { analytical_creative: 50, passive_active: 80, reserved_extroverted: 65, reactive_preventive: 40 },
-        pain: 'Time perde 40% do tempo em tarefas manuais que não geram receita. CRM não é usado.',
-        trigger: 'Metas não batidas por 2 trimestres e pressão da diretoria.',
-        message: 'Automatize o que não vende e libere seu time para fechar contratos maiores.',
-        wiifm: 'Bater meta e ser reconhecida sem trabalhar mais horas.',
-    },
-    {
-        name: 'Felipe Rodrigues', age: 33, role: 'Head de Marketing e Growth',
-        company_context: 'SaaS B2B com investimento em marketing digital', location: 'Curitiba, PR',
-        bio: 'Felipe é responsável por gerar leads e está sob pressão constante de CAC. Investe em tráfego pago mas não consegue rastrear o impacto real.',
-        channels: ['LinkedIn', 'Google', 'Instagram', 'E-mail'],
-        personality: { analytical_creative: 70, passive_active: 75, reserved_extroverted: 60, reactive_preventive: 55 },
-        pain: 'Não consegue provar ROI das campanhas para justificar budget para a diretoria.',
-        trigger: 'Corte de budget iminente ou troca de gestão questionando resultados.',
-        message: 'Rastreamento ponta a ponta do lead ao contrato fechado em dashboards que qualquer diretoria entende.',
-        wiifm: 'Budget aprovado, promoção e reconhecimento técnico pelo time.',
-    },
-];
+// ── No more hardcoded personas — all personas come from AI enrichment ──
+const defaultPersonas: any[] = [];
 
 // ── PersonaCard ───────────────────────────────────────────────────────────
 function PersonaCard({ persona, index }: { persona: any; index: number }) {
@@ -159,9 +125,6 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
                         </div>
                     </div>
                 </div>
-                {p.company_context && (
-                    <EditableField path={`persona_data.personas.${index}.company_context`} className="text-zinc-400 text-xs border-t border-zinc-800 pt-3 block" placeholder={p.company_context} />
-                )}
             </div>
 
             {/* Bio */}
@@ -229,9 +192,30 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
 export default function PersonaSection({ plan }: { plan: any }) {
     const personaData = plan.persona_data || {};
     const personas = personaData.personas || [];
-    const displayPersonas = personas.length > 0 ? personas : defaultPersonas;
+    const displayPersonas = personas; // Only use AI-generated personas, never hardcoded defaults
     const isREIFallback = personaData._data_source === 'rei_fallback';
     const isDefault = personas.length === 0;
+
+    if (displayPersonas.length === 0) {
+        return (
+            <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
+                <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+                    <SectionHeader
+                        eyebrow="Quem Compramos"
+                        titleLine1="Persona &"
+                        titleLine2="Tomadores de Decisão"
+                        description="Perfis detalhados dos decisores: personalidade, canais, dores, gatilhos e critérios de compra."
+                    />
+                </div>
+                <div className="flex-1 flex items-center justify-center p-12">
+                    <div className="text-center max-w-md">
+                        <p className="text-zinc-400 text-sm font-medium">Gere a Inteligência de Mercado para ver as personas do ICP.</p>
+                        <p className="text-zinc-300 text-xs mt-2">Clique em "Gerar Inteligência de Mercado" na tela de planejamento.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "npm:@supabase/supabase-js@2"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +15,15 @@ interface GenerateParams {
   projectId?: string;
   projectDuration?: string;
   siteAnalysis?: any;
+  enrichedIntelligence?: {
+    personas?: any;
+    benchmark?: any;
+    market?: any;
+  };
+  clientName?: string;
+  clientCompany?: string;
+  tradeName?: string;
+  jobId?: string; // ID from the ai_generation_jobs table
 }
 
 serve(async (req: Request) => {
@@ -21,8 +31,12 @@ serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  let jobId: string | undefined;
+
   try {
-    const { rei_responses, segment, objective, isB2B, projectType, projectId, projectDuration, siteAnalysis }: GenerateParams = await req.json();
+    const payload: GenerateParams = await req.json();
+    const { rei_responses, segment, objective, isB2B, projectType, projectId, projectDuration, siteAnalysis, enrichedIntelligence, clientName, clientCompany, tradeName } = payload;
+    jobId = payload.jobId;
 
     if (!rei_responses) {
       throw new Error('rei_responses is required');
@@ -72,13 +86,20 @@ serve(async (req: Request) => {
             // Find contact identifiers to query Notion
             // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
             const contactEmail = cleanResponses.revops_email || cleanResponses.email || cleanResponses.email_responsavel || cleanResponses.contato || '';
-            const companyName = cleanResponses.revops_empresa || cleanResponses.companyName || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || cleanResponses.projectName || '';
-            const founderName = cleanResponses.fullName || '';
-            const searchQuery = contactEmail || companyName || founderName;
+            const companyName = tradeName || clientCompany || cleanResponses.revops_empresa || cleanResponses.companyName || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || cleanResponses.projectName || '';
+            const founderName = clientName || cleanResponses.fullName || '';
+            // Try multiple search queries: email first, then company, then name
+            const searchQueries = [contactEmail, companyName, founderName].filter(Boolean);
+            let searchQuery = searchQueries[0] || '';
 
             console.log('[generate-strategic-plan] Initiating Notion Transcript Search for:', searchQuery);
 
-            if (searchQuery) {
+            if (searchQueries.length > 0) {
+                // Try each search query until we find a Notion page
+                let notionPageFound = false;
+                for (const query of searchQueries) {
+                    if (notionPageFound || !query) continue;
+                    console.log('[generate-strategic-plan] Trying Notion search with query:', query);
                 // 1. Search for the Page
                 const searchRes = await fetch('https://api.notion.com/v1/search', {
                     method: 'POST',
@@ -88,7 +109,7 @@ serve(async (req: Request) => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        query: searchQuery,
+                        query: query,
                         sort: { direction: 'descending', timestamp: 'last_edited_time' },
                         page_size: 1
                     })
@@ -101,7 +122,7 @@ serve(async (req: Request) => {
                         console.log('[generate-strategic-plan] Notion Page Found:', pageId);
 
                         // 2. Fetch the Blocks (Content)
-                        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=100`, {
+                        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=200`, {
                             method: 'GET',
                             headers: {
                                 'Authorization': `Bearer ${NOTION_API_KEY.trim()}`,
@@ -126,11 +147,16 @@ serve(async (req: Request) => {
                             console.log('[generate-strategic-plan] Failed to fetch blocks for page');
                         }
                     } else {
-                        console.log('[generate-strategic-plan] No Notion Page matched the query.');
+                        console.log('[generate-strategic-plan] No Notion Page matched query:', query);
                     }
                 } else {
                     console.log('[generate-strategic-plan] Notion API Search Failed HTTP', searchRes.status);
                 }
+
+                if (transcriptText) {
+                    notionPageFound = true;
+                }
+                } // end for loop
             }
         } catch (e: any) {
             console.error('[generate-strategic-plan] Error during Notion flow:', e.message);
@@ -168,7 +194,7 @@ serve(async (req: Request) => {
             for (const mat of materials) {
               materialsContext += `\nMATERIAL: ${mat.original_name || 'Sem nome'} (Tipo: ${mat.material_type})`;
               if (mat.description) materialsContext += `\nDescrição do cliente: ${mat.description}`;
-              if (mat.extracted_text) materialsContext += `\nConteúdo extraído:\n${mat.extracted_text.substring(0, 3000)}`;
+              if (mat.extracted_text) materialsContext += `\nConteúdo extraído:\n${mat.extracted_text.substring(0, 6000)}`;
               if (mat.source_type === 'link' && mat.file_url) materialsContext += `\nLink: ${mat.file_url}`;
               materialsContext += '\n---';
             }
@@ -217,6 +243,101 @@ INSTRUCAO CRITICA SOBRE O CONTEXTO DO SITE:
       console.log('[generate-strategic-plan] No site analysis available');
     }
     // --- END SITE ANALYSIS CONTEXT ---
+
+    // --- PIPELINE & CRM CONTEXT ---
+    let pipelineContext = '';
+    const pipelines = cleanResponses.revops_custom_pipelines;
+    const lostReasons = cleanResponses.revops_custom_lost_reasons;
+    
+    if (pipelines && Array.isArray(pipelines) && pipelines.length > 0) {
+        pipelineContext += '\\n<ESTRUTURA_DE_FUNIL_ATUAL>\\n';
+        pipelines.forEach((pipe: any) => {
+            pipelineContext += `- Funil: ${pipe.name}\\n`;
+            if (pipe.stages && Array.isArray(pipe.stages)) {
+                pipelineContext += `  Etapas: ${pipe.stages.join(' ➔ ')}\\n`;
+            }
+        });
+        pipelineContext += '</ESTRUTURA_DE_FUNIL_ATUAL>\\n';
+    }
+
+    if (lostReasons && Array.isArray(lostReasons) && lostReasons.length > 0) {
+        pipelineContext += '\\n<MOTIVOS_DE_PERDA_ATUAIS>\\n';
+        const reasonsList = lostReasons.map((lr: any) => lr.reason).join(', ');
+        pipelineContext += `Motivos mapeados: ${reasonsList}\\n`;
+        pipelineContext += '</MOTIVOS_DE_PERDA_ATUAIS>\\n';
+    }
+
+    if (pipelineContext) {
+        pipelineContext += '\\nINSTRUCAO CRITICA DA ARQUITETURA DE VENDAS:\\n- Se a estrutura de funil ou motivos de perda constarem acima, USE ESTES DADOS para fundamentar o diagnóstico e os quick wins (exemplo: proponha automações focadas NESTAS etapas e mitigação para ESTES motivos de perda especificos).\\n';
+    }
+    // --- END PIPELINE & CRM CONTEXT ---
+
+    // --- ENRICHED INTELLIGENCE CONTEXT ---
+    let enrichmentContext = '';
+    if (enrichedIntelligence) {
+      console.log('[generate-strategic-plan] Injecting enriched intelligence context');
+      const ei = enrichedIntelligence;
+      const lines: string[] = [];
+      lines.push('<INTELIGENCIA_DE_MERCADO_JA_VALIDADA>');
+      lines.push('ATENCAO: Os dados abaixo foram pesquisados e validados por IA. VOCE DEVE usar esses dados como fonte primaria de verdade.');
+      lines.push('As personas, concorrentes e benchmarks abaixo devem ser REFERENCIADOS diretamente nos pilares, roadmap, OKRs e executive_summary.');
+      lines.push('');
+
+      if (ei.personas?.personas && Array.isArray(ei.personas.personas)) {
+        lines.push('--- PERSONAS DO ICP (Ideal Customer Profile) ---');
+        ei.personas.personas.forEach((p: any, i: number) => {
+          lines.push(`Persona ${i+1}: ${p.nome} - ${p.cargo}`);
+          if (p.bio_curta) lines.push(`  Bio: ${p.bio_curta}`);
+          if (p.dores_principais) lines.push(`  Dores: ${p.dores_principais.join('; ')}`);
+          if (p.gatilhos_mentais) lines.push(`  Gatilhos: ${p.gatilhos_mentais.join('; ')}`);
+          if (p.canais_favoritos) lines.push(`  Canais: ${p.canais_favoritos.join(', ')}`);
+          if (p.pitch_elevador) lines.push(`  Pitch: ${p.pitch_elevador}`);
+        });
+        lines.push('');
+      }
+
+      if (ei.benchmark) {
+        lines.push('--- BENCHMARK DO SEGMENTO ---');
+        if (ei.benchmark.cac_medio) lines.push(`CAC Medio do segmento: ${ei.benchmark.cac_medio}`);
+        if (ei.benchmark.taxa_conversao) lines.push(`Taxa de conversao media: ${ei.benchmark.taxa_conversao}`);
+        if (ei.benchmark.ciclo_vendas) lines.push(`Ciclo de vendas medio: ${ei.benchmark.ciclo_vendas}`);
+        if (ei.benchmark.ltv_cac_ratio) lines.push(`LTV:CAC ideal: ${ei.benchmark.ltv_cac_ratio}`);
+        if (ei.benchmark.comparativo_mercado) lines.push(`Comparativo: ${ei.benchmark.comparativo_mercado}`);
+        lines.push('');
+      }
+
+      if (ei.market) {
+        if (ei.market.concorrentes_benchmark && Array.isArray(ei.market.concorrentes_benchmark)) {
+          lines.push('--- CONCORRENTES MAPEADOS ---');
+          ei.market.concorrentes_benchmark.forEach((c: any) => {
+            lines.push(`- ${c.nome}${c.url ? ' (' + c.url + ')' : ''}: Fortes: ${c.pontos_fortes || 'N/A'}. Fracos: ${c.pontos_fracos || 'N/A'}`);
+          });
+          lines.push('');
+        }
+        if (ei.market.tendencias_2025 && Array.isArray(ei.market.tendencias_2025)) {
+          lines.push('--- TENDENCIAS DO MERCADO ---');
+          ei.market.tendencias_2025.forEach((t: any) => {
+            lines.push(`- ${t.titulo}: ${t.descricao || t.impacto || ''}`);
+          });
+          lines.push('');
+        }
+        if (ei.market.tam_sam_som) {
+          lines.push(`TAM: ${ei.market.tam_sam_som.tam}`);
+          lines.push(`SAM: ${ei.market.tam_sam_som.sam}`);
+          lines.push(`SOM: ${ei.market.tam_sam_som.som}`);
+        }
+      }
+
+      lines.push('</INTELIGENCIA_DE_MERCADO_JA_VALIDADA>');
+      lines.push('');
+      lines.push('INSTRUCAO CRITICA: Use os NOMES EXATOS das personas acima nos pilares e roadmap.');
+      lines.push('INSTRUCAO CRITICA: Use os CONCORRENTES REAIS acima na analise competitiva do plano.');
+      lines.push('INSTRUCAO CRITICA: Use os BENCHMARKS acima para calibrar OKRs e projecoes.');
+      enrichmentContext = lines.join('\n');
+    } else {
+      console.log('[generate-strategic-plan] No enriched intelligence available');
+    }
+    // --- END ENRICHED INTELLIGENCE CONTEXT ---
 
     let strategicContext = `Crie um plano estratégico de Growth altamente tático e contextualizado para um projeto de ${effectiveDuration}.
 Você DEVE basear cada insight, cada risco e cada etapa do roadmap ESPECIFICAMENTE nas dores relatadas nas respostas e na transcrição da call.
@@ -291,6 +412,51 @@ Segmento: ${segment || 'B2B'}
 Objetivo Principal: ${objective || 'Crescimento Previsível'}
 Modelo B2B: ${isB2B !== false ? 'Sim' : 'Não'}
 
+<GLOSSARIO_DE_CAMPOS_REI>
+ATENÇÃO CRITICA: Os campos abaixo tem nomes tecnicos que PODEM SER AMBIGUOS. Use ESTE glossario como referencia OBRIGATORIA antes de interpretar qualquer valor do JSON.
+- revops_cac_atual = Custo de Aquisicao de Cliente ATUAL ou DESEJADO em Reais. Este e o CAC REAL do cliente. NAO confunda com custos de ferramentas.
+- revops_tech_debt_cost = Custo ANUAL de ferramentas e plataformas satelites (Apollo, Snovio, etc). NAO e CAC. E o custo de manutencao do stack tecnologico.
+- revops_mrr_atual = Receita Recorrente Mensal ATUAL em Reais (valor absoluto, nao percentual).
+- revops_ticket_medio = Ticket Medio por contrato/deal em Reais.
+- revops_sales_cycle_days = Ciclo medio de vendas em DIAS (do primeiro contato ate o fechamento).
+- revops_win_rate = Taxa de conversao de proposta enviada para venda fechada em PERCENTUAL.
+- revops_tamanho_time = Composicao do time comercial (quantidade de SDRs + Closers).
+- revops_pipeline_stagnation = Gargalos do pipeline, etapas onde os deals ficam travados com tempo medio de estagnacao.
+- revops_flow_cadencia = Nivel de organizacao da cadencia de contato com leads (caotico/basico/estruturado).
+- revops_automacoes_core = Nivel de automacao atual de marketing e vendas (manual/parcial/avancado).
+- revops_forecasting_accuracy = Onde e como o forecast e feito (no CRM ou fora dele).
+- revops_onboarding_handoff = Qualidade da passagem de bastao de vendas para CS/sucesso do cliente.
+- revops_hub_central = Ferramenta central de CRM e as ferramentas satelites.
+- revops_lead_scoring = Tipo de lead scoring usado (manual/automatizado/framework).
+- revops_icp_framework = Framework de qualificacao de ICP usado pela empresa.
+- revops_sla_marketing_vendas = Existencia e estrutura do SLA entre marketing e vendas.
+- revops_speed_to_lead_sla = Tempo de resposta ao lead (tempo entre entrada do lead e primeiro contato).
+- revops_shadow_it_index = Nivel de uso de ferramentas nao-oficiais pelos vendedores (planilhas, WhatsApp pessoal, etc).
+- revops_toxic_compensation = Modelo de remuneracao variavel (saudavel baseado em qualidade ou toxico baseado em volume).
+- revops_cpq_friction = Nivel de friccao na geracao de propostas comerciais (automatizado/parcial/manual).
+- revops_economic_buyer_mapped = Se o decisor economico esta mapeado nos deals.
+- revops_health_score_tracking = Se existe health score de clientes para CS.
+- revops_expansion_playbook = Se existe playbook de expansao/upsell.
+- revops_routing_vip = Como os leads VIP sao distribuidos.
+- revops_win_loss_analysis = Tipo de analise de deals ganhos vs perdidos (inexistente/informal/estruturada).
+- revops_integracoes = Nivel de integracao entre ferramentas (isoladas/hub_satelites/totalmente_integrado).
+- revops_data_hygiene_owner = Quem e responsavel pela higiene de dados.
+- revops_custom_pipelines = Estrutura dos funis/pipelines de vendas com suas etapas.
+- revops_custom_lost_reasons = Motivos de perda de deals mapeados pela empresa.
+
+REGRA ABSOLUTA DE INTERPRETACAO:
+1. Se o campo diz "cac_atual", o valor E o CAC. Use ESSE valor para definir metas de CAC.
+2. Se o campo diz "tech_debt_cost", o valor E o custo de ferramentas. NAO use como CAC.
+3. Se o campo diz "mrr_atual", o valor E a receita mensal. NAO divida por 12.
+4. Se o campo diz "ticket_medio", o valor E por deal/contrato. NAO multiplique.
+5. NUNCA invente faixas de valores. Use os valores EXATOS informados pelo cliente.
+6. Se "speed_to_lead_sla" contem "informal", significa que a resposta existe mas nao e mensurada formalmente.
+7. Se "expansion_playbook" contem "parcial" ou "nao_estruturado", NAO assuma que upsell ja funciona. Trate como gap.
+8. Se "toxic_compensation" contem "coletivo_distribuido", o modelo e de comissao coletiva (nao toxico). NAO sugira mudar modelo de comissionamento.
+9. Se "data_hygiene_owner" menciona ferramentas mas NAO menciona uma pessoa, significa que NINGUEM e responsavel por higiene de dados. Trate como gap critico.
+10. Se "custom_lost_reasons" contem "Outros / Sem motivo claro", isso indica que a maioria dos deals perdidos NAO tem motivo catalogado — isso e um problema operacional grave que deve ser mencionado.
+</GLOSSARIO_DE_CAMPOS_REI>
+
 Respostas Reais do Diagnóstico:
 ${JSON.stringify(cleanResponses, null, 2)}
 ${scoringContext}
@@ -312,7 +478,20 @@ ${materialsContext}
 - Baseia projeções e metas em dados reais encontrados nos materiais (não em benchmarks genéricos)
 - Se houver planilhas ou dados numéricos, extraia métricas reais para calibrar os OKRs` : ''}
 ${siteContext}
+${pipelineContext}
+${enrichmentContext}
 ${strategicContext}
+
+[REGRA CRITICA — PRIORIDADE MAXIMA — ANTI-CONTAMINACAO DE BENCHMARKS]:
+Os dados de ENRICHMENT/BENCHMARK acima sao REFERENCIA DE MERCADO apenas.
+Para metricas do CLIENTE, use EXCLUSIVAMENTE os valores do campo REI:
+- CAC do cliente = valor EXATO de "revops_cac_atual" (NAO use benchmark de mercado como CAC do cliente)
+- MRR do cliente = valor EXATO de "revops_mrr_atual"
+- Ticket medio = valor EXATO de "revops_ticket_medio"  
+- Ciclo de vendas = valor EXATO de "revops_sales_cycle_days"
+- Win rate = valor EXATO de "revops_win_rate"
+Se "revops_cac_atual" = 1000, entao o CAC do cliente e R$1.000. QUALQUER valor diferente no expected_outcome e ERRO.
+Benchmarks devem ser usados apenas para COMPARAR, nunca para SUBSTITUIR os dados reais do cliente.
 
 Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com TÁTICAS AVANÇADAS, inferidas das respostas:
 {
@@ -370,9 +549,9 @@ Retorne um JSON VÁLIDO EXATAMENTE NESTE FORMATO, e preencha TODOS os arrays com
     { "phase": "01", "tagline": "Semana 1-2", "name": "Fundação / Setup", "description": "Táticas duras que faremos na semana 1 usando os nomes reais das ferramentas citadas (se aplicável).", "principles": ["Tática exata 1", "Tática exata 2"] }
   ],
   "roadmap_phases": [
-    { "name": "Ciclo 01", "title": "Fundação e Diagnóstico (Mês 01)", "items": ["Ação 1 cirúrgica contra a dor principal", "Ação 2 baseada no contexto real", "Ação 3 com ferramenta específica", "Ação 4 de configuração técnica"] },
-    { "name": "Ciclo 02", "title": "Execução e Automações (Mês 02)", "items": ["Ação 1 de execução concreta", "Ação 2 com métrica mensurável", "Ação 3 de automação e integração", "Ação 4 de treinamento da equipe"] },
-    { "name": "Ciclo 03", "title": "Governança e Escala (Mês 03)", "items": ["Ação 1 de governança operacional", "Ação 2 de revisão e otimização", "Ação 3 de documentação e passagem de bastão", "Ação 4 de consolidação de resultados"] }
+    { "name": "Ciclo 01", "title": "Fundação e Diagnóstico (Preencha o período exato, ex: Dias 01-10 ou Mês 01)", "items": ["Ação 1 cirúrgica contra a dor principal", "Ação 2 baseada no contexto real", "Ação 3 com ferramenta específica", "Ação 4 de configuração técnica"] },
+    { "name": "Ciclo 02", "title": "Execução e Automações (Período exato, ex: Dias 11-20 ou Mês 02)", "items": ["Ação 1 de execução concreta", "Ação 2 com métrica mensurável", "Ação 3 de automação e integração", "Ação 4 de treinamento da equipe"] },
+    { "name": "Ciclo 03", "title": "Governança e Escala (Período final, ex: Dias 21-30 ou Mês 03)", "items": ["Ação 1 de governança operacional", "Ação 2 de revisão e otimização", "Ação 3 de documentação e passagem de bastão", "Ação 4 de consolidação de resultados"] }
   ],
   "okrs": [
     { "objective": "Nome do objetivo estratégico 1", "description": "O que este OKR resolve de concreto (Objective)", "timeline": "Trimestre 1", "sub_results": ["KR 1 com número específico", "KR 2 tático mensurável", "KR 3 com prazo"] },
@@ -417,9 +596,18 @@ CRITICAL_RULE_EXECUTIVE_SUMMARY: O executive_summary DEVE ser ultra-cirúrgico -
 
 CRITICAL_RULE_ONBOARDING: VOCÊ DEVE PREENCHER COMPLETAMENTE O onboarding_data substituindo as reticências (...) por frases autoritárias, técnicas e 100% voltadas à realidade do diagnóstico do cliente. Se ele falou sobre funis ruins no ActiveCampaign, preencha o p1_title de "setup" ou "training" falando diretamente sobre o ActiveCampaign. Seja extremamente cirúrgico e agressivo na entrega de valor. Nunca retorne genéricos do tipo "Construir funis de e-mail". Retorne "Mapeamento dos fluxos automáticos de abandono no ActiveCampaign citados na reunião".
 
-CRITICAL_RULE_BRANDING: NUNCA mencione "GoHighLevel", "GHL" ou "HighLevel". Sempre que propor, mencionar ou estruturar a infraestrutura de CRM, o único nome oficial que deve ser utilizado no planejamento é "Funnels".
-CRITICAL_RULE_SPECIFICITY: OBRIGATÓRIO Citar nomes de ferramentas e palavras exatas do cliente. PROIBIDO USAR AS PALAVRAS GENÉRICAS COMO "potencializar", "sinergia", "otimizar processos" SEM explicar como. Você será penalizado se produzir texto vago. Entregue APENAS o JSON válido.
-CRITICAL_RULE_PORTUGUESE: TODO o conteúdo gerado DEVE ser 100% em PORTUGUÊS BRASILEIRO. PROIBIDO usar termos em inglês como "Blueprint", "Hand-off", "Go-Live", "Data Hygiene", "Pipeline Review", "Win Rate", "Speed to Lead", "Handover", "As-Is", "To-Be", "SOP", "Go-To-Market", "Break-Even", "Forecast", "Data-Driven", "Weekly Review". Use SEMPRE os equivalentes em português: "Projeto Técnico", "Passagem de Bastão", "Entrada em Produção", "Higiene de Dados", "Revisão de Pipeline", "Taxa de Conversão", "Velocidade de Resposta", "Processo Atual", "Processo Ideal", "Manual Operacional", "Estratégia de Entrada no Mercado", "Ponto de Equilíbrio", "Previsão de Receita", "Orientado por Dados", "Revisão Semanal". Acrônimos técnicos universais como CRM, SQL, MQL, ROAS, CAC, LTV, KPI, OKR, ICP, UTM são permitidos.`;
+CRITICAL_RULE_PORTUGUESE: TODO o conteúdo gerado DEVE ser 100% em PORTUGUÊS BRASILEIRO. PROIBIDO usar termos em inglês como "Blueprint", "Hand-off", "Go-Live", "Data Hygiene", "Pipeline Review", "Win Rate", "Speed to Lead", "Handover", "As-Is", "To-Be", "SOP", "Go-To-Market", "Break-Even", "Forecast", "Data-Driven", "Weekly Review". Use SEMPRE os equivalentes em português: "Projeto Técnico", "Passagem de Bastão", "Entrada em Produção", "Higiene de Dados", "Revisão de Pipeline", "Taxa de Conversão", "Velocidade de Resposta", "Processo Atual", "Processo Ideal", "Manual Operacional", "Estratégia de Entrada no Mercado", "Ponto de Equilíbrio", "Previsão de Receita", "Orientado por Dados", "Revisão Semanal". Acrônimos técnicos universais como CRM, SQL, MQL, ROAS, CAC, LTV, KPI, OKR, ICP, UTM são permitidos.
+CRITICAL_RULE_BANNED_WORDS: É EXPRESSAMENTE PROIBIDO gerar e utilizar a palavra ou expressão "frustrante_repetitivo", "frustrante" ou "repetitivo" em QUALQUER lugar do JSON gerado, especialmente nos textos descritivos. Use termos profissionais e analíticos como "transição manual", "fricção operacional" ou "ineficiência no fluxo".
+CRITICAL_RULE_SIGNALS_LANGUAGE: Nos arrays 'signals', 'risks' e 'decisions', os campos de texto descritivo DEVEM ser escritos em linguagem natural, fluída e humana estruturando uma frase completa (ex: "A cadência de emails está caótica e aumentando o ghosting"). É EXPRESSAMENTE PROIBIDO retornar nomes de variáveis em snake_case ou chaves de sistema vazadas do contexto (ex: PROIBIDO retornar "revops_flow_cadencia = caotico"). Traduza o dado técnico para o problema real na linguagem de negócios do cliente.
+CRITICAL_RULE_TECH_STACK_OVERRIDE: Se o cliente relatou utilizar um CRM legado (ex: Agendor, Pipedrive, RD Station), o Tech Stack Visado DEVE obrigatoriamente tratar a ferramenta antiga como um sistema que SERÁ TOTALMENTE SUBSTITUÍDO pelo Funnels. NUNCA sugira que o Funnels irá integrar com o CRM atual ou atuar em paralelo. O Funnels assumirá a "camada central de operação de receita", substituindo a estrutura legada.
+CRITICAL_RULE_CONSULTATIVE_PROJECT: Se a duração do projeto for de 30 dias ("30_days" ou "30 dias"), o projeto possui caráter ABSOLUTAMENTE CONSULTIVO e ORIENTATIVO. A RevHackers NÃO executa configurações técnicas (hands-on) nesses projetos. Você DEVE usar verbos e ações de mentoria, orientação, desenho de processo, auditoria e direcionamento. NUNCA use "nós vamos configurar no Funnels" ou "nós vamos implantar", e SEMPRE use "Orientar a configuração", "Desenhar a arquitetura para o cliente implantar", "Auditar o processo" ou "Acompanhar a adoção".
+CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ DEVE USÁ-LO EM ESTRITAMENTE TODAS AS REFERÊNCIAS VISUAIS AO CLIENTE E NUNCA A RAZÃO SOCIAL LITERAL. O TRADE NAME É A MARCA FANTASIA. NOME FORNECIDO: ${tradeName || 'N/A'}.
+
+- O JSON de saida deve validar SEM ERROS contra o schema esperado.
+- Remova markdown, \`\`\`json, e chaves invisíveis - retorne texto puramente serializável.
+- Use tom executivo direto, cortando gordura e fluff.
+- SEJA EXATO SOBRE SISTEMAS (ex: Onde diz "Integracao de entrada", escreva "Integracao RD Station -> Funnels").
+`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -459,12 +647,46 @@ CRITICAL_RULE_PORTUGUESE: TODO o conteúdo gerado DEVE ser 100% em PORTUGUÊS BR
       throw new Error('Failed to parse JSON out of AI response');
     }
 
+    if (jobId) {
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        const { error: dbError } = await supabaseClient
+          .from('ai_generation_jobs')
+          .update({
+             status: 'completed',
+             result_data: planData,
+             completed_at: new Date().toISOString()
+          })
+          .eq('id', jobId);
+        if (dbError) console.error('[generate-strategic-plan] Error updating job success state:', dbError);
+      }
+    }
+
     return new Response(JSON.stringify({ result: planData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   } catch (error: any) {
     console.error('[generate-strategic-plan] Caught Error:', error.message);
+    
+    if (jobId) {
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        await supabaseClient
+          .from('ai_generation_jobs')
+          .update({
+             status: 'failed',
+             error_log: error.message,
+             completed_at: new Date().toISOString()
+          })
+          .eq('id', jobId);
+      }
+    }
+
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,

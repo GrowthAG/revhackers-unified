@@ -36,40 +36,30 @@ function getSegmentKey(plan: any) {
 function CompetitorRow({ bench, index }: { bench: any; index: number }) {
     const [open, setOpen] = useState(false);
     return (
-        <div className="border-t border-zinc-100">
-            <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-50 transition-colors text-left">
-                <span className="text-xs text-zinc-300 font-mono w-9 shrink-0">{String(index + 1).padStart(2, '0')}</span>
+        <div className="border-t border-zinc-100/60">
+            <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50 transition-colors text-left">
+                <span className="text-[10px] text-zinc-300 font-mono font-bold w-6 shrink-0">{String(index + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-black truncate">{bench.company_name}</p>
-                    {bench.domain && <p className="text-xs text-zinc-400 truncate">{bench.domain}</p>}
+                    <p className="text-[13px] font-bold text-zinc-900 truncate">{bench.company_name}</p>
+                    {bench.domain && <p className="text-[11px] text-zinc-400 truncate">{bench.domain}</p>}
                 </div>
-                <div className="hidden md:flex items-center gap-5 shrink-0 text-xs">
-                    <span className="w-20 text-center font-mono text-zinc-600">{bench.monthly_traffic || '-'}</span>
-                    <span className="w-8 text-center font-bold text-zinc-700">{bench.domain_authority || '-'}</span>
-                    <span className="w-14 text-center font-mono text-zinc-600">{bench.avg_cpc || '-'}</span>
+                <div className="hidden md:flex items-center gap-5 shrink-0 text-[11px]">
+                    <span className="w-20 text-center font-mono text-zinc-500">{bench.monthly_traffic || '-'}</span>
+                    <span className="w-8 text-center font-bold text-zinc-600">{bench.domain_authority || '-'}</span>
+                    <span className="w-16 text-center font-mono text-zinc-500">{bench.avg_cpc || '-'}</span>
                 </div>
                 {open ? <ChevronDown className="w-4 h-4 text-zinc-400 shrink-0" /> : <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />}
             </button>
             {open && (
-                <div className="px-5 pb-5 pt-0 bg-zinc-50 border-t border-zinc-100">
-                    <div className="grid md:grid-cols-2 gap-4 mt-3">
+                <div className="px-10 pb-4 pt-1 bg-zinc-50/50">
+                    <div className="grid md:grid-cols-2 gap-6 mt-2">
                         {bench.strengths && (
-                            <div><p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1">Pontos Fortes</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.strengths}</p></div>
+                            <div><p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fortes</p><p className="text-[12px] text-zinc-600 leading-[1.6]">{bench.strengths}</p></div>
                         )}
                         {bench.weaknesses && (
-                            <div><p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1">Pontos Fracos</p><p className="text-xs text-zinc-600 leading-relaxed">{bench.weaknesses}</p></div>
+                            <div><p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fracos</p><p className="text-[12px] text-zinc-600 leading-[1.6]">{bench.weaknesses}</p></div>
                         )}
                     </div>
-                    {bench.top_keywords && bench.top_keywords.length > 0 && (
-                        <div className="mt-3">
-                            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-1.5">Keywords Principais</p>
-                            <div className="flex flex-wrap gap-1.5">
-                                {bench.top_keywords.map((kw: string, i: number) => (
-                                    <span key={i} className="text-xs px-2 py-0.5 bg-zinc-200 text-zinc-600 font-mono">{kw}</span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                 </div>
             )}
         </div>
@@ -77,186 +67,214 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
 }
 
 export default function BenchmarkSection({ plan }: { plan: any }) {
-    const data = plan.persona_data || plan.market_intelligence || {};
+    // ── Primary source: enriched_analysis (from Deep Intelligence) ─────────
+    const enriched = (plan.diagnostic_data as any)?.enriched_analysis || {};
+    const enrichedMarket   = enriched.market   || {};
+    const enrichedBenchmark = enriched.benchmark || {};
+
+    // ── Legacy fallback: persona_data (from initial REI generation) ─────────
+    const personaData = plan.persona_data || {};
+
     const segKey = getSegmentKey(plan);
     const mock = mockDataMap[segKey] || mockDataMap.default;
 
-    const competitors = (Array.isArray(data.competitor_benchmarks) && data.competitor_benchmarks.length > 0) ? data.competitor_benchmarks : (mock?.competitor_benchmarks || []);
-    const trends = (Array.isArray(data.industry_trends) && data.industry_trends.length > 0) ? data.industry_trends : (mock?.industry_trends || []);
-    const marketSizing = data.market_sizing?.tam ? data.market_sizing : (mock?.market_sizing || null);
-    const advice = data.strategic_advice || mock?.strategic_advice || '';
-    const cacBenchmark = data.avg_cac_benchmark || mock?.avg_cac_benchmark || '';
-    const conversionBenchmarks = data.conversion_benchmarks || mock?.conversion_benchmarks || '';
-    const differentiators = (Array.isArray(data.key_differentiators) && data.key_differentiators.length > 0) ? data.key_differentiators : (mock?.key_differentiators || []);
-    const hasRealData = Array.isArray(data.competitor_benchmarks) && data.competitor_benchmarks.length > 0;
-    const isREIFallback = data._data_source === 'rei_fallback';
+    // Competitors: enriched market > persona_data > mock
+    const enrichedCompetitors = (enrichedMarket.concorrentes_benchmark || []).map((c: any) => ({
+        company_name: c.nome || c.company_name || 'Concorrente',
+        domain: c.url || c.domain || '',
+        monthly_traffic: c.monthly_traffic || '-',
+        domain_authority: c.domain_authority || 0,
+        avg_cpc: c.avg_cpc || '-',
+        top_keywords: c.top_keywords || [],
+        strengths: c.pontos_fortes || c.strengths || '',
+        weaknesses: c.pontos_fracos || c.weaknesses || '',
+    }));
+    const competitors = enrichedCompetitors.length > 0
+        ? enrichedCompetitors
+        : (Array.isArray(personaData.competitor_benchmarks) && personaData.competitor_benchmarks.length > 0
+            ? personaData.competitor_benchmarks
+            : mock?.competitor_benchmarks || []);
+
+    // Trends: enriched market > persona_data > mock
+    const enrichedTrends = (enrichedMarket.tendencias_2025 || []).map((t: any) =>
+        typeof t === 'string' ? t : `${t.titulo || ''}: ${t.descricao || t.impacto || ''}`
+    );
+    const trends = enrichedTrends.length > 0
+        ? enrichedTrends
+        : (Array.isArray(personaData.industry_trends) && personaData.industry_trends.length > 0
+            ? personaData.industry_trends
+            : mock?.industry_trends || []);
+
+    // Market sizing: enriched market > persona_data > mock
+    const marketSizing = enrichedMarket.tam_sam_som?.tam
+        ? enrichedMarket.tam_sam_som
+        : (personaData.market_sizing?.tam ? personaData.market_sizing : (mock?.market_sizing || null));
+
+    // Benchmark metrics: enriched benchmark > persona_data > mock
+    const cacBenchmark = enrichedBenchmark.cac_medio || personaData.avg_cac_benchmark || mock?.avg_cac_benchmark || '';
+    const conversionBenchmarks = (() => {
+        if (enrichedBenchmark.taxa_conversao || enrichedBenchmark.ciclo_vendas) {
+            const parts = [];
+            if (enrichedBenchmark.taxa_conversao) parts.push(`Conversão: ${enrichedBenchmark.taxa_conversao}`);
+            if (enrichedBenchmark.ciclo_vendas) parts.push(`Ciclo Médio: ${enrichedBenchmark.ciclo_vendas}`);
+            if (enrichedBenchmark.ltv_cac_ratio) parts.push(`LTV:CAC: ${enrichedBenchmark.ltv_cac_ratio}`);
+            return parts.join(' | ');
+        }
+        return personaData.conversion_benchmarks || mock?.conversion_benchmarks || '';
+    })();
+
+    // Strategic advice: SWOT opportunities from market > persona_data > mock
+    const swotOpportunities = enrichedMarket.analise_swot_rapida?.oportunidades || [];
+    const advice = enrichedBenchmark.comparativo_mercado
+        || (swotOpportunities.length > 0 ? `Oportunidades: ${swotOpportunities.join('; ')}.` : '')
+        || personaData.strategic_advice || mock?.strategic_advice || '';
+
+    // Differentiators: SWOT opportunities > persona_data key_differentiators > mock
+    const differentiators = swotOpportunities.length > 0
+        ? swotOpportunities
+        : (Array.isArray(personaData.key_differentiators) && personaData.key_differentiators.length > 0
+            ? personaData.key_differentiators
+            : mock?.key_differentiators || []);
+
+    const hasRealData = enrichedCompetitors.length > 0 || (Array.isArray(personaData.competitor_benchmarks) && personaData.competitor_benchmarks.length > 0);
+    const isDeepData = enrichedCompetitors.length > 0;
+    const isREIFallback = !isDeepData && personaData._data_source === 'rei_fallback';
+
 
     return (
-        <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
-            <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
+        <div className="flex flex-col h-full bg-white overflow-hidden w-full">
+            <div className="flex-none px-6 md:px-10 lg:px-14 py-6 pb-2">
                 <SectionHeader
                     eyebrow="Inteligência de Mercado"
                     titleLine1="Benchmark"
                     titleLine2="Competitivo"
-                    description="Tráfego, palavras-chave, canais de mídia e pontos fracos dos concorrentes, com links diretos para ver os anúncios ativos em Meta, Google e LinkedIn."
+                    description="Tráfego, métricas e análises de concorrentes para referência."
                 />
             </div>
 
-            <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-14">
-                <div className="space-y-2 -mt-6">
-                    {!hasRealData && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Dados de referência para o segmento - atualizados com IA ao clicar em "Gerar Inteligência de Mercado"</p>
-                        </div>
-                    )}
-                    {hasRealData && isREIFallback && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Concorrentes informados pelo cliente - enriquecimento de mercado disponível via "Deep Benchmark"</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Trends */}
-                {trends.length > 0 && (
-                    <div>
-                        <div className="flex items-center gap-2 mb-5">
-                            <TrendingUp className="w-4 h-4 text-zinc-700" />
-                            <h3 className="text-lg font-bold text-black">Tendências do Segmento</h3>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {trends.map((trend: string, i: number) => (
-                                <div key={i} className="border border-zinc-200 p-5 rounded-2xl">
-                                    <div className="text-xs text-zinc-400 font-mono mb-3">{String(i + 1).padStart(2, '0')}</div>
-                                    <EditableField
-                                        path={`persona_data.industry_trends.${i}`}
-                                        className="text-sm text-zinc-800 leading-relaxed font-medium"
-                                        placeholder={trend}
-                                        multiline
-                                    />
-                                </div>
-                            ))}
-                        </div>
+            <div className="flex-1 overflow-y-auto px-6 md:px-10 lg:px-14 pb-14 w-full bg-white max-w-[1400px] mx-auto">
+                <div className="space-y-8 mt-2">
+                    
+                    {/* Headers Info */}
+                    <div className="space-y-1">
+                        {!hasRealData && (
+                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                                / Dados de referência (Mock) - Atualize via "Gerar Inteligência de Mercado"
+                            </p>
+                        )}
+                        {hasRealData && isREIFallback && (
+                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                                / Concorrentes do cliente - Enriquecimento profundo disponível na IA
+                            </p>
+                        )}
                     </div>
-                )}
 
-                {/* CAC & Conversion */}
-                <div className="grid md:grid-cols-2 gap-4">
-                    {cacBenchmark && (
-                        <div className="bg-zinc-950 p-7 rounded-2xl">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Target className="w-3.5 h-3.5 text-[#00CC6A]" />
-                                <p className="text-[10px] text-[#00CC6A]/70 uppercase tracking-[0.25em] font-black">Benchmark CAC do Segmento</p>
-                            </div>
-                            <p className="text-2xl font-black text-white leading-tight">{cacBenchmark}</p>
-                        </div>
-                    )}
-                    {conversionBenchmarks && (
-                        <div className="border border-zinc-200 p-7 rounded-2xl">
-                            <div className="flex items-center gap-2 mb-3">
-                                <PieChart className="w-3.5 h-3.5 text-zinc-400" />
-                                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black">Benchmarks de Conversão</p>
-                            </div>
-                            <p className="text-sm font-bold text-zinc-800 leading-relaxed">{conversionBenchmarks}</p>
-                        </div>
-                    )}
-                </div>
+                    {/* Key Metrics - 4-column grid optimized for text */}
+                    {(cacBenchmark || conversionBenchmarks) && (() => {
+                        const parts = conversionBenchmarks ? conversionBenchmarks.split('|').map((s: string) => s.trim()) : [];
+                        const conv = parts.find((p: string) => p.toLowerCase().includes('convers')) || parts[0] || '';
+                        const ciclo = parts.find((p: string) => p.toLowerCase().includes('ciclo')) || parts[1] || '';
+                        const ltvcac = parts.find((p: string) => p.toLowerCase().includes('ltv')) || parts[2] || '';
 
-                {/* Competitors Table */}
-                <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <BarChart3 className="w-5 h-5 text-black" />
-                            <h3 className="text-xl font-bold text-black">Concorrentes Analisados</h3>
-                        </div>
-                        <span className="text-xs text-zinc-400 font-mono">{competitors.length} empresas</span>
-                    </div>
-                    <p className="text-xs text-zinc-400 mb-5">Clique em cada empresa para expandir métricas completas + links para ver anúncios ativos.</p>
-                    <div className="border border-zinc-200 overflow-hidden rounded-2xl">
-                        <div className="flex items-center gap-4 bg-zinc-950 px-5 py-3">
-                            <div className="w-9 shrink-0" />
-                            <div className="flex-1 text-xs text-zinc-500 uppercase tracking-widest font-semibold">Empresa / Concorrente</div>
-                            <div className="hidden md:flex items-center gap-5 shrink-0 text-xs text-zinc-600 uppercase tracking-widest font-semibold">
-                                <span className="w-20 text-center">Visitas/mês</span>
-                                <span className="w-8 text-center">DA</span>
-                                <span className="w-14 text-center">CPC Médio</span>
-                            </div>
-                            <div className="w-4 shrink-0" />
-                        </div>
-                        {competitors.map((bench: any, i: number) => (
-                            <CompetitorRow key={i} bench={bench} index={i} />
-                        ))}
-                    </div>
-                    <p className="text-xs text-zinc-300 mt-2">* Dados estimados via IA e benchmarks de mercado. Valores aproximados para referência estratégica.</p>
-                </div>
+                        const parseMetric = (str: string) => {
+                            const [label, ...rest] = str.split(':');
+                            return { label: label?.trim() || '', value: rest.join(':').trim() };
+                        };
 
-                {/* Market Sizing */}
-                {marketSizing && (
-                    <div>
-                        <div className="flex items-center gap-2 mb-5">
-                            <PieChart className="w-4 h-4 text-zinc-700" />
-                            <h3 className="text-lg font-bold text-black">Tamanho de Mercado</h3>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {[
-                                { label: 'TAM', subtitle: 'Mercado Total Disponível', value: marketSizing.tam, hint: 'Tamanho total do mercado endereçável' },
-                                { label: 'SAM', subtitle: 'Mercado Endereçável Servível', value: marketSizing.sam, hint: 'Parcela que você pode alcançar hoje' },
-                                { label: 'SOM', subtitle: 'Mercado Obtível Realista', value: marketSizing.som, hint: 'Fatia alcançável nos próximos 12 a 18 meses' },
-                            ].map(({ label, subtitle, value, hint }) => (
-                                <div key={label} className="border border-zinc-200 p-6 rounded-2xl">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div>
-                                            <span className="text-2xl font-bold text-black font-mono">{label}</span>
-                                            <p className="text-xs text-zinc-400 mt-0.5">{subtitle}</p>
+                        const convParsed = parseMetric(conv);
+                        const cicloParsed = parseMetric(ciclo);
+                        const ltvParsed = parseMetric(ltvcac);
+
+                        const metrics = [
+                            { label: 'CAC Médio', value: cacBenchmark, accent: '#00CC6A', icon: <Target className="w-3.5 h-3.5" />, dark: true },
+                            { label: convParsed.label || 'Conversão', value: convParsed.value || conv, accent: '#3B82F6', icon: <PieChart className="w-3.5 h-3.5" />, dark: false },
+                            { label: cicloParsed.label || 'Ciclo Médio', value: cicloParsed.value || ciclo, accent: '#F59E0B', icon: <TrendingUp className="w-3.5 h-3.5" />, dark: false },
+                            { label: ltvParsed.label || 'LTV:CAC', value: ltvParsed.value || ltvcac, accent: '#8B5CF6', icon: <BarChart3 className="w-3.5 h-3.5" />, dark: false },
+                        ].filter(m => m.value);
+
+                        return (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                                {metrics.map((m, i) => (
+                                    <div key={i} className={`rounded-xl p-5 border ${m.dark ? 'bg-[#0A0A0A] border-zinc-900 text-white' : 'border-zinc-200/60 bg-white'}`}>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div style={{ color: m.accent }}>{m.icon}</div>
+                                            <p className={`text-[10px] uppercase tracking-[0.2em] font-bold ${m.dark ? 'text-white/60' : 'text-zinc-500'}`}>{m.label}</p>
                                         </div>
-                                        <span className="text-xs text-zinc-300 text-right">{hint}</span>
+                                        <div className={`text-[13px] leading-[1.6] font-medium ${m.dark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                            {m.value}
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-zinc-700 font-medium leading-relaxed">{value}</p>
+                                ))}
+                            </div>
+                        );
+                    })()}
+
+                    {/* Competitors Table */}
+                    <div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                                <BarChart3 className="w-4 h-4" />
+                                Concorrentes Analisados
+                            </h3>
+                            <span className="text-[10px] text-zinc-400 font-mono font-bold">{competitors.length} EMPRESAS</span>
+                        </div>
+                        
+                        <div className="border border-zinc-200/60 overflow-hidden rounded-xl shadow-sm">
+                            <div className="flex items-center gap-4 bg-[#0A0A0A] px-4 py-2.5">
+                                <div className="w-6 shrink-0" />
+                                <div className="flex-1 text-[10px] text-zinc-300 uppercase tracking-widest font-bold">Empresa / Concorrente</div>
+                                <div className="hidden md:flex items-center gap-5 shrink-0 text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                                    <span className="w-20 text-center">Visitas/mês</span>
+                                    <span className="w-8 text-center">DA</span>
+                                    <span className="w-16 text-center">CPC</span>
                                 </div>
+                                <div className="w-4 shrink-0" />
+                            </div>
+                            {competitors.map((bench: any, i: number) => (
+                                <CompetitorRow key={i} bench={bench} index={i} />
                             ))}
                         </div>
                     </div>
-                )}
 
-                {/* Strategic Advice */}
-                {advice && (
-                    <div className="border-l-2 border-zinc-950 pl-6 py-1">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Lightbulb className="w-4 h-4 text-zinc-600" />
-                            <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black">Conselho Estratégico</p>
+                    {/* Trends */}
+                    {trends.length > 0 && (
+                        <div>
+                            <div className="flex items-center gap-2 mb-4">
+                                <TrendingUp className="w-4 h-4 text-zinc-700" />
+                                <h3 className="text-sm font-bold text-zinc-900">Tendências do Segmento</h3>
+                            </div>
+                            <div className={`grid gap-3 ${trends.length % 3 === 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+                                {trends.map((trend: string, i: number) => (
+                                    <div key={i} className="border border-zinc-200/60 p-4 rounded-xl bg-zinc-50/50">
+                                        <div className="text-[10px] text-zinc-400 font-mono font-bold mb-2">{String(i + 1).padStart(2, '0')}</div>
+                                        <EditableField
+                                            path={`persona_data.industry_trends.${i}`}
+                                            className="text-[13px] text-zinc-700 leading-relaxed font-medium"
+                                            placeholder={trend}
+                                            multiline
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <EditableField
-                            path="persona_data.strategic_advice"
-                            className="text-base text-zinc-800 leading-relaxed font-medium"
-                            placeholder={advice}
-                            multiline
-                        />
-                    </div>
-                )}
+                    )}
 
-                {/* Differentiators */}
-                {differentiators.length > 0 && (
-                    <div className="bg-zinc-950 p-8 md:p-10 rounded-2xl">
-                        <div className="flex items-center gap-3 mb-8">
-                            <ChevronRight className="w-4 h-4 text-[#00CC6A]" />
-                            <h3 className="text-lg font-bold text-white">Suas Oportunidades de Diferenciação</h3>
+                    {/* Strategic Advice */}
+                    {advice && (
+                        <div className="bg-[#00CC6A]/10 border border-[#00CC6A]/20 p-5 rounded-xl">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Lightbulb className="w-4 h-4 text-[#00CC6A]" />
+                                <p className="text-[10px] text-[#00CC6A] uppercase tracking-[0.2em] font-bold">Conselho Estratégico</p>
+                            </div>
+                            <EditableField
+                                path="persona_data.strategic_advice"
+                                className="text-[14px] text-zinc-800 leading-[1.6] font-medium"
+                                placeholder={advice}
+                                multiline
+                            />
                         </div>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            {differentiators.map((diff: string, i: number) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <span className="text-[#00CC6A] font-mono text-xs mt-1 shrink-0 font-bold">{String(i + 1).padStart(2, '0')}</span>
-                                    <EditableField
-                                        path={`persona_data.key_differentiators.${i}`}
-                                        className="text-sm text-white/70 leading-relaxed"
-                                        placeholder={diff}
-                                        multiline
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

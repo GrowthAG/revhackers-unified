@@ -7,38 +7,50 @@ import SectionHeader from '@/components/plan/SectionHeader';
 const fallbackByType: Record<string, { day: string; action: string; outcome: string; owner?: 'revhackers' | 'cliente' | 'ambos' }[]> = {
     crm_ops: [
         { day: 'Dia 1', action: 'Mapeamento do processo comercial atual', outcome: 'Documento com fluxo atual e gaps', owner: 'revhackers' },
-        { day: 'Dia 2', action: 'Criar Pipeline de Vendas no CRM', outcome: 'Funil com etapas, regras e responsaveis', owner: 'revhackers' },
+        { day: 'Dia 2', action: 'Criar Pipeline de Vendas no CRM', outcome: 'Funil com etapas, regras e responsáveis', owner: 'revhackers' },
         { day: 'Dia 3', action: 'Criar campos personalizados e propriedades', outcome: 'Campos customizados prontos para o time', owner: 'revhackers' },
-        { day: 'Dia 4', action: 'Criar templates de emails comerciais', outcome: 'Modelos de follow-up e nurturing prontos', owner: 'cliente' },
-        { day: 'Dia 5', action: 'Criar primeira automacao de passagem de bastao', outcome: 'Lead qualificado chega ao vendedor certo', owner: 'revhackers' },
-        { day: 'Dia 6', action: 'Alocacao de tarefas entre consultoria e cliente', outcome: 'RACI definido com responsaveis claros', owner: 'ambos' },
+        { day: 'Dia 4', action: 'Criar templates de e-mails comerciais', outcome: 'Modelos de follow-up e nurturing prontos', owner: 'cliente' },
+        { day: 'Dia 5', action: 'Criar primeira automação de passagem de bastão', outcome: 'Lead qualificado chega ao vendedor certo', owner: 'revhackers' },
+        { day: 'Dia 6', action: 'Alocação de tarefas entre consultoria e cliente', outcome: 'RACI definido com responsáveis claros', owner: 'ambos' },
         { day: 'Dia 7', action: 'Treinamento inicial com SDRs e Closers', outcome: 'Equipe operando no CRM desde o dia 1', owner: 'ambos' },
     ],
     founder: [
-        { day: 'Dia 1', action: 'Definicao do nicho de autoridade e ICP', outcome: 'Clareza sobre quem voce atrai', owner: 'ambos' },
-        { day: 'Dia 2', action: 'Otimizacao da bio, headline e banner', outcome: 'Perfil posicionado antes de publicar', owner: 'revhackers' },
-        { day: 'Dia 3', action: 'Pesquisa de 10 contas ancora no nicho', outcome: 'Mapa de formatos que performam', owner: 'revhackers' },
-        { day: 'Dia 4', action: 'Criacao do primeiro post de autoridade', outcome: 'Conteudo publicado testando formato', owner: 'ambos' },
-        { day: 'Dia 5-6', action: 'Comentarios estrategicos em contas ancora', outcome: 'Visibilidade junto a audiencia do ICP', owner: 'cliente' },
-        { day: 'Dia 7', action: 'Review de metricas e ajuste de pauta', outcome: 'Dados reais para calibrar estrategia', owner: 'ambos' },
+        { day: 'Dia 1', action: 'Definição do nicho de autoridade e ICP', outcome: 'Clareza sobre quem você atrai', owner: 'ambos' },
+        { day: 'Dia 2', action: 'Otimização da bio, headline e banner', outcome: 'Perfil posicionado antes de publicar', owner: 'revhackers' },
+        { day: 'Dia 3', action: 'Pesquisa de 10 contas âncora no nicho', outcome: 'Mapa de formatos que performam', owner: 'revhackers' },
+        { day: 'Dia 4', action: 'Criação do primeiro post de autoridade', outcome: 'Conteúdo publicado testando formato', owner: 'ambos' },
+        { day: 'Dia 5-6', action: 'Comentários estratégicos em contas âncora', outcome: 'Visibilidade junto à audiência do ICP', owner: 'cliente' },
+        { day: 'Dia 7', action: 'Review de métricas e ajuste de pauta', outcome: 'Dados reais para calibrar estratégia', owner: 'ambos' },
     ],
     dev: [
-        { day: 'Dia 1', action: 'Briefing: objetivo de cada pagina e publico', outcome: 'Documento de requisitos aprovado', owner: 'ambos' },
-        { day: 'Dia 2', action: 'Sitemap com objetivo de conversao por pagina', outcome: 'Estrutura definida antes do design', owner: 'revhackers' },
-        { day: 'Dia 3-4', action: 'Wireframe de baixa fidelidade das paginas', outcome: 'Rascunho que evita retrabalho caro', owner: 'revhackers' },
-        { day: 'Dia 5', action: 'Definicao de stack e criterios de performance', outcome: 'Framework e metas de LCP estabelecidos', owner: 'revhackers' },
-        { day: 'Dia 6', action: 'Setup do ambiente de desenvolvimento', outcome: 'Infraestrutura pronta para design', owner: 'revhackers' },
-        { day: 'Dia 7', action: 'Aprovacao do wireframe com stakeholders', outcome: 'Alinhamento antes de investir em codigo', owner: 'ambos' },
+        { day: 'Dia 1', action: 'Briefing: objetivo de cada página e público', outcome: 'Documento de requisitos aprovado', owner: 'ambos' },
+        { day: 'Dia 2', action: 'Sitemap com objetivo de conversão por página', outcome: 'Estrutura definida antes do design', owner: 'revhackers' },
+        { day: 'Dia 3-4', action: 'Wireframe de baixa fidelidade das páginas', outcome: 'Rascunho que evita retrabalho caro', owner: 'revhackers' },
+        { day: 'Dia 5', action: 'Definição de stack e critérios de performance', outcome: 'Framework e metas de LCP estabelecidos', owner: 'revhackers' },
+        { day: 'Dia 6', action: 'Setup do ambiente de desenvolvimento', outcome: 'Infraestrutura pronta para o design', owner: 'revhackers' },
+        { day: 'Dia 7', action: 'Aprovação do wireframe com stakeholders', outcome: 'Alinhamento antes de investir em código', owner: 'ambos' },
     ],
     default: [
         { day: 'Dia 1', action: 'Auditoria do Revenue Stack atual', outcome: 'Mapa de ferramentas e gaps', owner: 'revhackers' },
-        { day: 'Dia 2', action: 'Rastreamento ponta a ponta (UTMs + CRM)', outcome: 'Lead rastreavel do clique ao fechamento', owner: 'revhackers' },
+        { day: 'Dia 2', action: 'Rastreamento ponta a ponta (UTMs + CRM)', outcome: 'Lead rastreável do clique ao fechamento', owner: 'revhackers' },
         { day: 'Dia 3', action: 'Setup do Pipeline com etapas e SLA', outcome: 'Funil de vendas estruturado', owner: 'revhackers' },
-        { day: 'Dia 4', action: 'Primeira automacao de follow-up ativa', outcome: 'Leads qualificados automaticamente', owner: 'revhackers' },
+        { day: 'Dia 4', action: 'Primeira automação de follow-up ativa', outcome: 'Leads qualificados automaticamente', owner: 'revhackers' },
         { day: 'Dia 5', action: 'Campanhas de captura (Search + Social)', outcome: 'Demanda gerada na primeira semana', owner: 'revhackers' },
         { day: 'Dia 6', action: 'Dashboard de performance conectado', outcome: 'Visibilidade real de CPL e pipeline', owner: 'revhackers' },
-        { day: 'Dia 7', action: 'Review de fundacao com o time', outcome: 'Base solida para escalar', owner: 'ambos' },
+        { day: 'Dia 7', action: 'Review de fundação com o time', outcome: 'Base sólida para escalar', owner: 'ambos' },
     ],
+};
+
+const fallbackConsultative: Record<string, { day: string; action: string; outcome: string; owner?: 'revhackers' | 'cliente' | 'ambos' }[]> = {
+    crm_ops: [
+        { day: 'Dia 1', action: 'Auditoria do processo comercial e ferramentas', outcome: 'Documento de gaps operacionais', owner: 'revhackers' },
+        { day: 'Dia 2', action: 'Direcionamento de Arquitetura de CRM', outcome: 'Novo modelo de funil desenhado', owner: 'revhackers' },
+        { day: 'Dia 3', action: 'Desenho de campos estratégicos e propriedades', outcome: 'Esquema de dados providenciado', owner: 'revhackers' },
+        { day: 'Dia 4', action: 'Orientação para templates de e-mails comerciais', outcome: 'Scripts sugeridos para Nurturing', owner: 'revhackers' },
+        { day: 'Dia 5', action: 'Revisão das Regras de Passagem de Bastão', outcome: 'Fluxo ideal estruturado para adoção', owner: 'revhackers' },
+        { day: 'Dia 6', action: 'Definição de papéis e próximos passos', outcome: 'RACI e plano de adoção validados', owner: 'ambos' },
+        { day: 'Dia 7', action: 'Mentoria com líderes de Vendas e Operação', outcome: 'Alinhamento da governança do novo CRM', owner: 'ambos' },
+    ]
 };
 
 // ── Owner label helper ────────────────────────────────────────────────────
@@ -63,9 +75,14 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
     const { isEditing, getField, setField } = usePlanEdit();
     const diagnostic = plan?.diagnostic_data || {};
     const projectType = plan?.rei_projects?.type || plan?.project_type || 'default';
-    const fallback = fallbackByType[projectType] || fallbackByType.default;
+    const isConsultative = plan?.form_data?.project_duration === '30_days' || plan?.diagnostic_data?.roadmap_data?.project_duration === '30_days';
+    
+    // Choose appropriate fallback base
+    const baseFallback = isConsultative && fallbackConsultative[projectType] 
+        ? fallbackConsultative[projectType] 
+        : (fallbackByType[projectType] || fallbackByType.default);
 
-    const quickWins = diagnostic.quick_wins || fallback;
+    const quickWins = diagnostic.quick_wins || baseFallback;
 
     // Status tracking
     const getStatuses = (): boolean[] => {
@@ -93,10 +110,12 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
         <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
             <div className="flex-none px-6 md:px-10 lg:px-14 py-8 pb-4">
                 <SectionHeader
-                    eyebrow="Acao Imediata"
+                    eyebrow={isConsultative ? "Alinhamento Imediato" : "Ação Imediata"}
                     titleLine1="Primeiros"
                     titleLine2="7 Dias"
-                    description="As entregas concretas da primeira semana. Resultados visiveis antes de qualquer sprint, sem esperar 90 dias."
+                    description={isConsultative 
+                        ? "As diretrizes concretas e mapeamentos da primeira semana. Estrutura desenhada para guiar a sua operação."
+                        : "As entregas concretas da primeira semana. Resultados visíveis antes de qualquer sprint, sem esperar 90 dias."}
                 />
             </div>
 
@@ -104,123 +123,46 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
 
                 {/* Progress indicator */}
                 {completedCount > 0 && (
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="h-[3px] flex-1 bg-zinc-100 rounded-full overflow-hidden">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3 mb-8 pb-6 border-b border-zinc-100">
+                        <div className="flex-1 max-w-md h-[3px] bg-zinc-100 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-[#00CC6A] transition-all duration-500 ease-out rounded-full"
                                 style={{ width: `${(completedCount / quickWins.length) * 100}%` }}
                             />
                         </div>
-                        <span className="text-[11px] font-bold text-[#00CC6A] shrink-0">
-                            {completedCount}/{quickWins.length}
+                        <span className="text-[10px] font-bold text-[#00CC6A] uppercase tracking-widest shrink-0">
+                            {completedCount} DE {quickWins.length} CONCLUÍDAS
                         </span>
                     </div>
                 )}
 
-                {/* ── Horizontal Timeline (S-curve) ── */}
-                <div className="space-y-0">
-
-                    {/* Row 1: Left to Right */}
-                    <div className="relative">
-                        <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${row1.length}, minmax(0, 1fr))` }}>
-                            {row1.map((win: any, i: number) => {
-                                const isComplete = statuses[i] || false;
-                                const globalIndex = i;
-                                return (
-                                    <TimelineCard
-                                        key={globalIndex}
-                                        win={win}
-                                        index={globalIndex}
-                                        isComplete={isComplete}
-                                        isEditing={isEditing}
-                                        toggleComplete={toggleComplete}
-                                    />
-                                );
-                            })}
-                        </div>
-
-                        {/* Connecting line Row 1 */}
-                        <div className="absolute left-4 right-4 top-[calc(100%+6px)] h-[2px] bg-zinc-200 rounded-full" />
-
-                        {/* Dots on the line for Row 1 */}
-                        <div className="relative h-[14px] mt-[0px]">
-                            <div className="absolute left-4 right-4 top-[6px] flex justify-between">
-                                {row1.map((_: any, i: number) => {
-                                    const isComplete = statuses[i] || false;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={`w-[10px] h-[10px] rounded-full border-2 transition-all ${
-                                                isComplete
-                                                    ? 'bg-[#00CC6A] border-[#00CC6A]'
-                                                    : 'bg-white border-zinc-300'
-                                            }`}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* S-curve connector (right side bend) */}
-                    <div className="flex justify-end pr-4">
-                        <div className="w-[2px] h-8 bg-zinc-200 rounded-full" />
-                    </div>
-
-                    {/* Row 2: Right to Left (reversed) */}
-                    <div className="relative">
-                        {/* Dots on the line for Row 2 */}
-                        <div className="relative h-[14px] mb-[0px]">
-                            <div className="absolute left-4 right-4 top-[2px] flex justify-between flex-row-reverse">
-                                {row2.map((_: any, i: number) => {
-                                    const globalIndex = midpoint + i;
-                                    const isComplete = statuses[globalIndex] || false;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={`w-[10px] h-[10px] rounded-full border-2 transition-all ${
-                                                isComplete
-                                                    ? 'bg-[#00CC6A] border-[#00CC6A]'
-                                                    : 'bg-white border-zinc-300'
-                                            }`}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Connecting line Row 2 */}
-                        <div className="absolute left-4 right-4 top-[8px] h-[2px] bg-zinc-200 rounded-full" />
-
-                        <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${row2.length}, minmax(0, 1fr))` }}>
-                            {[...row2].reverse().map((win: any, i: number) => {
-                                const globalIndex = midpoint + (row2.length - 1 - i);
-                                const isComplete = statuses[globalIndex] || false;
-                                return (
-                                    <TimelineCard
-                                        key={globalIndex}
-                                        win={win}
-                                        index={globalIndex}
-                                        isComplete={isComplete}
-                                        isEditing={isEditing}
-                                        toggleComplete={toggleComplete}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
+                {/* ── Sleek Vertical List (2 Columns) ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-8">
+                    {quickWins.map((win: any, i: number) => {
+                        const isComplete = statuses[i] || false;
+                        return (
+                            <TimelineCard
+                                key={i}
+                                win={win}
+                                index={i}
+                                isComplete={isComplete}
+                                isEditing={isEditing}
+                                toggleComplete={toggleComplete}
+                            />
+                        );
+                    })}
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center gap-3 mt-6">
+                <div className="flex items-center gap-4 mt-16 max-w-2xl">
                     <span className="text-[#00CC6A] shrink-0 text-sm">/</span>
-                    <span className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                         {completedCount === quickWins.length && quickWins.length > 0
-                            ? 'Sprint 1 Concluida'
-                            : 'Fundacao Solida > Proxima Fase'
+                            ? 'Sprint 1 Concluída'
+                            : 'Fundação Sólida > Próxima Fase'
                         }
                     </span>
-                    <div className="h-[2px] flex-1 bg-zinc-100 rounded-full" />
+                    <div className="h-[1px] flex-1 bg-zinc-200/50" />
                 </div>
             </div>
         </div>
@@ -242,39 +184,38 @@ function TimelineCard({
     toggleComplete: (i: number) => void;
 }) {
     return (
-        <div className={`transition-opacity duration-200 ${isComplete ? 'opacity-50' : ''}`}>
-            <div className={`border rounded-xl p-4 bg-white h-full flex flex-col ${
-                isComplete ? 'border-[#00CC6A]/30' : 'border-zinc-200'
-            }`}>
-                {/* Day badge + check */}
-                <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] bg-[#00CC6A]/10 px-2.5 py-1 rounded-md">
-                        {win.day}
-                    </span>
+        <div className={`group flex gap-5 transition-all duration-300 ${isComplete ? 'opacity-50' : ''}`}>
+            {/* Left side: Day Marker */}
+            <div className="shrink-0 pt-1">
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full border ${isComplete ? 'border-[#00CC6A] bg-[#00CC6A]/5 text-[#00CC6A]' : 'border-zinc-200 bg-zinc-50 text-zinc-400'} text-[10px] font-black uppercase tracking-widest`}>
+                    {win.day?.replace('Dia ', 'D')}
+                </span>
+            </div>
+
+            {/* Right side: Content */}
+            <div className="flex-1 pb-6 border-b border-zinc-100/80 group-last:border-transparent">
+                <div className="flex items-start justify-between mb-2">
+                    <EditableField
+                        path={`diagnostic_data.quick_wins.${index}.action`}
+                        className={`text-[15px] font-bold text-zinc-900 leading-snug pr-4 ${
+                            isComplete ? 'line-through decoration-zinc-300' : ''
+                        }`}
+                        placeholder={win.action}
+                        multiline
+                    />
                     {isEditing && (
                         <div
-                            className={`w-[18px] h-[18px] rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-all ${
+                            className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-all ${
                                 isComplete ? 'bg-[#00CC6A]' : 'border-2 border-zinc-200 hover:border-zinc-400'
                             }`}
                             onClick={() => toggleComplete(index)}
                         >
-                            {isComplete && <Check className="w-[10px] h-[10px] text-white" strokeWidth={3} />}
+                            {isComplete && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                         </div>
                     )}
                 </div>
 
-                {/* Action */}
-                <EditableField
-                    path={`diagnostic_data.quick_wins.${index}.action`}
-                    className={`text-[13px] font-bold text-zinc-900 leading-snug mb-2 block flex-1 ${
-                        isComplete ? 'line-through decoration-zinc-300' : ''
-                    }`}
-                    placeholder={win.action}
-                    multiline
-                />
-
-                {/* Outcome */}
-                <p className="text-[11px] font-medium text-zinc-400 leading-relaxed mb-2">
+                <p className="text-[13px] font-medium text-zinc-500 leading-relaxed mb-4 max-w-sm">
                     <EditableField
                         path={`diagnostic_data.quick_wins.${index}.outcome`}
                         className="bg-transparent"
@@ -283,8 +224,9 @@ function TimelineCard({
                     />
                 </p>
 
-                {/* Owner badge */}
-                <OwnerBadge owner={win.owner} />
+                <div className="mt-auto">
+                    <OwnerBadge owner={win.owner} />
+                </div>
             </div>
         </div>
     );

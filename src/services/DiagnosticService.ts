@@ -137,6 +137,84 @@ function mapLabels(field: string, ids: string[]): string[] {
 
 export class DiagnosticService {
     /**
+     * Fallback for AI Benchmarks based on raw REI data
+     */
+    static generateBenchmarkFromREI(answers: any): any[] {
+        const competitors = [];
+        
+        // Tentamos preencher com os concorrentes informados no formulário CRM Ops
+        for (let i = 1; i <= 3; i++) {
+            const name = answers[`revops_concorrente${i}_nome`] || answers[`concorrente${i}_nome`];
+            const url = answers[`revops_concorrente${i}_site`] || answers[`concorrente${i}_site`];
+            
+            if (name) {
+                competitors.push({
+                    company_name: name,
+                    domain: url || '',
+                    monthly_traffic: '-',
+                    domain_authority: 0,
+                    avg_cpc: '-',
+                    top_keywords: [],
+                    strengths: 'Concorrente direto reportado',
+                    weaknesses: 'A validar em pesquisa profunda',
+                });
+            }
+        }
+
+        // Se o cliente não preencheu nada, enviamos um placeholder
+        if (competitors.length === 0) {
+            competitors.push({
+                company_name: 'Não informado',
+                domain: '',
+                monthly_traffic: '-',
+                domain_authority: 0,
+                avg_cpc: '-',
+                top_keywords: [],
+                strengths: '',
+                weaknesses: '',
+            });
+        }
+
+        return competitors;
+    }
+
+    /**
+     * Fallback for AI Personas based on raw REI data
+     */
+    static generatePersonasFromREI(answers: any): any[] {
+        return [{
+            name: 'Persona Principal',
+            role: 'Tomador de Decisão',
+            age: 35,
+            location: 'Brasil',
+            company_context: answers.segmento || answers.revops_segmento || 'Mercado Geral',
+            bio: 'Perfil baseado nas respostas iniciais do formulário estrategico.',
+            channels: answers.canaisAquisicao || ['LinkedIn', 'Google'],
+            personality: {
+                analytical_creative: 50,
+                passive_active: 50,
+                reserved_extroverted: 50,
+                reactive_preventive: 50
+            },
+            pain: (answers.desafios || []).join('. ') || 'Necessidade de melhorar resultados operacionais.',
+            trigger: 'Busca por eficiência e conversões.',
+            message: 'Acelere seus resultados com nossa solução focada no seu segmento.',
+            wiifm: 'Aumento de receita mapeada e controle de dados.'
+        }];
+    }
+
+    /**
+     * Fallback for AI Trends based on raw REI data
+     */
+    static generateDefaultTrends(answers: any): string[] {
+        const isB2B = this.checkIsB2B(answers);
+        if (isB2B) {
+            return ['Account-Based Marketing Integrado', 'RevOps como Estrutura Base', 'Vendas B2B Data-Driven', 'Automação de Follow-up Humanizada'];
+        }
+        return ['Marketing Omnichannel', 'Hiper-personalização', 'Jornada do Cliente Integrada', 'Conversational Commerce'];
+    }
+
+    /**
      * Helper to safely convert incoming form elements that might be strings into Arrays.
      * Prevents "x.forEach is not a function" crashes.
      */
@@ -1200,400 +1278,13 @@ export class DiagnosticService {
     // canaisAquisicao, segmento, tamanho, crm, metaCrescimento, etc.)
 
     /**
-     * Builds 3 PersonaSection-compatible personas from REI form answers.
-     * These represent the CLIENT's ideal customers - who THEY sell to.
-     * Always returns exactly 3 personas, contextual to the business segment.
+     * Returns segment-aware keyword suggestions for SEO/research.
+     * Still useful for search queries, not for display.
      */
-    static generatePersonasFromREI(answers: any): any[] {
-        const icpDescription = (answers.icpDescription || '').trim();
+    static generateSearchKeywordsFromREI(answers: any): string[] {
         const segment = answers.segmento === 'outro'
             ? (answers.segmento_outro || 'B2B')
             : (answers.segmento || answers.segmento_outro || 'B2B');
-        const tamanho = answers.tamanho || '';
-        const canais = answers.canaisAquisicao || [];
-        const desafios = answers.desafios || [];
-        const metaCrescimento = answers.metaCrescimento || answers.objetivoPrincipal || 'crescimento';
-        const ticketMedio = answers.ticketMedio || '';
-        const processGap = (answers.processGap || '').trim();
-
-        // Map channels
-        const channelMap: Record<string, string> = {
-            'google-ads': 'Google', 'google_ads': 'Google', 'seo': 'Google',
-            'meta-ads': 'Instagram', 'meta_ads': 'Instagram', 'facebook': 'Facebook',
-            'linkedin-ads': 'LinkedIn', 'linkedin_ads': 'LinkedIn', 'linkedin': 'LinkedIn',
-            'email': 'E-mail', 'email-marketing': 'E-mail', 'email_marketing': 'E-mail',
-            'whatsapp': 'WhatsApp', 'youtube': 'YouTube',
-            'indicacoes': 'Indicações', 'eventos': 'Eventos', 'parcerias': 'Parcerias',
-            'outbound': 'Outbound', 'inbound': 'Inbound',
-        };
-        const mappedChannels: string[] = canais.length > 0
-            ? [...new Set<string>(canais.slice(0, 5).map((c: string) => channelMap[c.toLowerCase()] || c))]
-            : ['LinkedIn', 'E-mail', 'WhatsApp'];
-
-        const segLower = segment.toLowerCase();
-        const tamanhoMap: Record<string, string> = {
-            'pre-seed': 'Pré-Seed', 'seed': 'Seed', 'serie-a': 'Série A',
-            'serie-b': 'Série B+', 'pme': 'PME', 'enterprise': 'Enterprise',
-        };
-        const tamanhoLabel = tamanhoMap[tamanho] || tamanho || '';
-
-        // ── BUILD 3 PERSONAS BASED ON SEGMENT ──────────────────────────
-        type PersonaTemplate = {
-            name: string; role: string; age: number;
-            bio: string; pain: string; trigger: string;
-            message: string; wiifm: string; channels: string[];
-            personality: { analytical_creative: number; passive_active: number; reserved_extroverted: number; reactive_preventive: number };
-        };
-
-        let personas: PersonaTemplate[] = [];
-
-        if (segLower.includes('consultoria financeira') || segLower.includes('financ') || segLower.includes('investimento') || segLower.includes('contábil')) {
-            personas = [
-                {
-                    name: 'Profissional Liberal',
-                    role: 'Médico / Advogado / Autônomo',
-                    age: 42,
-                    bio: `Profissional com renda mensal elevada mas sem tempo para gestão financeira. Acumula patrimônio de forma desorganizada, sem estratégia tributária ou de proteção patrimonial. Busca um consultor de confiança para delegar.${ticketMedio ? ` Investimento potencial: ${ticketMedio}/mês.` : ''}`,
-                    pain: 'Patrimônio crescendo sem estratégia. Paga impostos além do necessário. Não tem planejamento sucessório nem proteção patrimonial adequada.',
-                    trigger: 'Momento de vida relevante: aumento de renda, compra de imóvel, nascimento de filho ou proximidade de aposentadoria.',
-                    message: 'Consultoria financeira que protege e multiplica seu patrimônio enquanto você foca na sua profissão.',
-                    wiifm: 'Economia tributária, patrimônio protegido e tranquilidade financeira para focar na carreira.',
-                    channels: ['Indicações', 'Instagram', 'WhatsApp'],
-                    personality: { analytical_creative: 35, passive_active: 40, reserved_extroverted: 45, reactive_preventive: 30 },
-                },
-                {
-                    name: 'Empresário PME',
-                    role: 'Sócio-Diretor / CEO',
-                    age: 38,
-                    bio: `Empresário com faturamento entre R$ 500K e R$ 5M anuais. Mistura finanças pessoais e empresariais, sem processo decisório baseado em dados financeiros. Precisa de estruturação para escalar sem perder o controle.${tamanhoLabel ? ` Empresa porte: ${tamanhoLabel}.` : ''}`,
-                    pain: 'Fluxo de caixa instável, margem de lucro corroída por custos ocultos. Decisões financeiras baseadas no "feeling" ao invés de dados e projeções.',
-                    trigger: processGap || 'Necessidade de captar investimento, estruturar sócios ou resolver crise de caixa.',
-                    message: 'Método para transformar seu financeiro de "apagador de incêndio" em motor de crescimento previsível.',
-                    wiifm: 'Clareza financeira, margem otimizada e confiança para tomar decisões de expansão.',
-                    channels: mappedChannels,
-                    personality: { analytical_creative: 55, passive_active: 70, reserved_extroverted: 60, reactive_preventive: 50 },
-                },
-                {
-                    name: 'Executivo em Transição',
-                    role: 'Gerente / Diretor CLT',
-                    age: 45,
-                    bio: `Executivo com salário alto e benefícios corporativos que está planejando transição de carreira (empreender ou se aposentar cedo). Precisa de assessoria para organizar a transição financeira com segurança.${ticketMedio ? ` Patrimônio acumulado relevante.` : ''}`,
-                    pain: 'Insegurança sobre a viabilidade financeira de deixar o emprego. Não sabe se tem patrimônio suficiente para o próximo passo.',
-                    trigger: 'Desgaste corporativo, oportunidade de negócio ou meta de independência financeira atingida.',
-                    message: 'Planejamento financeiro personalizado para você fazer a transição de carreira no momento certo, com segurança.',
-                    wiifm: 'Clareza sobre o "número mágico" para a transição e roadmap financeiro para chegar lá.',
-                    channels: ['LinkedIn', 'E-mail', 'WhatsApp'],
-                    personality: { analytical_creative: 30, passive_active: 45, reserved_extroverted: 35, reactive_preventive: 25 },
-                },
-            ];
-        } else if (segLower.includes('saas') || segLower.includes('software') || segLower.includes('tech')) {
-            personas = [
-                {
-                    name: 'Head de Operações',
-                    role: 'COO / VP Operations',
-                    age: 36,
-                    bio: `Executivo responsável por eficiência operacional em empresa de tecnologia. Busca ferramentas e parceiros que otimizem processos e reduzam custos.${ticketMedio ? ` Budget trimestral: ${ticketMedio}.` : ''}`,
-                    pain: 'Processos manuais, falta de integração entre áreas e dificuldade em escalar sem contratar proporcionalmente.',
-                    trigger: 'Meta agressiva de crescimento definida pelo board ou perda de eficiência operacional.',
-                    message: `Solução comprovada para ${metaCrescimento || 'escalar operação'} com eficiência e previsibilidade.`,
-                    wiifm: 'Escala sem aumento proporcional de headcount, processos automatizados e KPIs claros.',
-                    channels: mappedChannels,
-                    personality: { analytical_creative: 60, passive_active: 70, reserved_extroverted: 50, reactive_preventive: 55 },
-                },
-                {
-                    name: 'Head de Marketing',
-                    role: 'CMO / Head de Growth',
-                    age: 33,
-                    bio: `Líder de marketing digital focado em performance e geração de demanda. Avalia parceiros pelo impacto mensurável em pipeline e CAC.`,
-                    pain: 'CAC crescente, dificuldade em atribuir resultados e pipeline insuficiente para as metas de vendas.',
-                    trigger: 'Trimestre abaixo da meta de MQL/SQL ou mudança de estratégia Go-to-Market.',
-                    message: 'Framework de growth que conecta marketing a receita com métricas claras.',
-                    wiifm: 'Pipeline previsível, CAC otimizado e alignment claro entre marketing e vendas.',
-                    channels: ['LinkedIn', 'Google', 'E-mail'],
-                    personality: { analytical_creative: 65, passive_active: 75, reserved_extroverted: 65, reactive_preventive: 45 },
-                },
-                {
-                    name: 'Founder / CEO',
-                    role: 'CEO / Co-Founder',
-                    age: 40,
-                    bio: `Fundador técnico que precisa profissionalizar a operação comercial. Grande visão de produto mas precisa de ajuda com go-to-market.${tamanhoLabel ? ` Empresa ${tamanhoLabel}.` : ''}`,
-                    pain: 'Produto excelente mas crescimento de receita abaixo do potencial. Vendas dependem do founder.',
-                    trigger: 'Preparação para rodada de investimento ou pressão do board por resultado comercial.',
-                    message: 'Método para tirar a venda da mão do founder e criar máquina de receita escalável.',
-                    wiifm: 'Receita recorrente escalável, independente do founder, com processos e equipe estruturados.',
-                    channels: ['LinkedIn', 'Eventos', 'Indicações'],
-                    personality: { analytical_creative: 70, passive_active: 80, reserved_extroverted: 55, reactive_preventive: 60 },
-                },
-            ];
-        } else if (segLower.includes('saúde') || segLower.includes('health') || segLower.includes('clínica') || segLower.includes('médic') || segLower.includes('odonto')) {
-            personas = [
-                {
-                    name: 'Profissional de Saúde',
-                    role: 'Médico / Dentista / Especialista',
-                    age: 38,
-                    bio: `Profissional da saúde com consultório ou clínica própria buscando atrair pacientes de maior ticket sem depender de convênios.`,
-                    pain: 'Agenda instável, dependência de convênios que pagam pouco, falta de diferenciação no mercado.',
-                    trigger: 'Queda na agenda particular ou abertura de nova clínica/consultório.',
-                    message: 'Estratégia digital para lotar sua agenda com pacientes particulares de alto ticket.',
-                    wiifm: 'Agenda cheia de pacientes particulares, ticket médio elevado e autoridade no segmento.',
-                    channels: ['Instagram', 'Google', 'Indicações'],
-                    personality: { analytical_creative: 35, passive_active: 45, reserved_extroverted: 40, reactive_preventive: 30 },
-                },
-                {
-                    name: 'Gestor de Clínica',
-                    role: 'Diretor Administrativo',
-                    age: 42,
-                    bio: `Gestor responsável pela operação e resultados financeiros de uma clínica de médio porte. Foco em eficiência e crescimento sustentável.`,
-                    pain: 'Custos operacionais altos, baixa taxa de retorno de pacientes e dificuldade em medir ROI de marketing.',
-                    trigger: 'Margem operacional em queda ou planejamento de expansão para novas unidades.',
-                    message: 'Framework de gestão que transforma sua clínica em negócio previsível e lucrativo.',
-                    wiifm: 'Operação otimizada, pacientes fidelizados e métricas claras de performance financeira.',
-                    channels: mappedChannels,
-                    personality: { analytical_creative: 50, passive_active: 60, reserved_extroverted: 45, reactive_preventive: 55 },
-                },
-                {
-                    name: 'Paciente Premium',
-                    role: 'Empresário / Executivo',
-                    age: 48,
-                    bio: `Pessoa de alto poder aquisitivo que prioriza conveniência, qualidade e resultados. Escolhe profissionais de saúde por reputação e indicação.`,
-                    pain: 'Dificuldade em encontrar profissionais de saúde confiáveis, demora no atendimento e falta de acompanhamento personalizado.',
-                    trigger: 'Problema de saúde, check-up de rotina ou indicação de alguém de confiança.',
-                    message: 'Atendimento personalizado com excelência clínica e conveniência total.',
-                    wiifm: 'Confiança no tratamento, conveniência no agendamento e acompanhamento contínuo.',
-                    channels: ['Indicações', 'Google', 'Instagram'],
-                    personality: { analytical_creative: 25, passive_active: 35, reserved_extroverted: 50, reactive_preventive: 20 },
-                },
-            ];
-        } else {
-            // Generic B2B / Services - 3 diverse buyer personas
-            personas = [
-                {
-                    name: `Decisor Estratégico`,
-                    role: 'CEO / Diretor',
-                    age: 42,
-                    bio: `Executivo C-Level no segmento ${segment} que busca parceiros estratégicos para ${metaCrescimento || 'acelerar resultados'}. Valoriza confiança, histórico comprovado e ROI claro.${ticketMedio ? ` Budget disponível: ${ticketMedio}.` : ''}`,
-                    pain: 'Crescimento estagnado, equipe sobrecarregada e falta de estratégia estruturada para o próximo patamar.',
-                    trigger: processGap || 'Pressão por resultados no trimestre ou mudança de cenário competitivo.',
-                    message: `Parceria estratégica para ${metaCrescimento || 'crescimento sustentável'} com método e previsibilidade.`,
-                    wiifm: 'Resultados mensuráveis, equipe alinhada e confiança no próximo passo de crescimento.',
-                    channels: mappedChannels,
-                    personality: { analytical_creative: 45, passive_active: 65, reserved_extroverted: 55, reactive_preventive: 50 },
-                },
-                {
-                    name: 'Gerente Operacional',
-                    role: 'Gerente / Coordenador',
-                    age: 34,
-                    bio: `Profissional de gestão intermediária no segmento ${segment}. Influenciador na decisão de compra, responsável pela implementação e resultados do dia-a-dia.`,
-                    pain: 'Sobrecarga operacional, falta de ferramentas adequadas e dificuldade em provar valor para a diretoria.',
-                    trigger: 'Projeto prioritário, deadline apertado ou necessidade de expertise que a equipe não tem.',
-                    message: 'Solução que simplifica sua operação e gera resultados visíveis para a diretoria.',
-                    wiifm: 'Processos mais eficientes, equipe capacitada e métricas para apresentar ao board.',
-                    channels: ['LinkedIn', 'E-mail', 'Google'],
-                    personality: { analytical_creative: 55, passive_active: 60, reserved_extroverted: 45, reactive_preventive: 40 },
-                },
-                {
-                    name: 'Empreendedor Emergente',
-                    role: 'Founder / Sócio',
-                    age: 30,
-                    bio: `Empreendedor no segmento ${segment} na fase de estruturação comercial.${tamanhoLabel ? ` Empresa ${tamanhoLabel}.` : ''} Busca acelerar crescimento sem reinventar a roda.`,
-                    pain: 'Faz tudo sozinho, vendas dependem do founder e não tem processo comercial estruturado.',
-                    trigger: 'Primeiro grande cliente, necessidade de escalar ou preparação para captar investimento.',
-                    message: 'Framework pronto para estruturar vendas, marketing e processos desde o início.',
-                    wiifm: 'Aceleração do crescimento, processo comercial replicável e preparação para scale.',
-                    channels: ['Instagram', 'WhatsApp', 'Eventos'],
-                    personality: { analytical_creative: 70, passive_active: 80, reserved_extroverted: 65, reactive_preventive: 55 },
-                },
-            ];
-        }
-
-        // Final formatting - add company_context + location
-        return personas.map(p => ({
-            ...p,
-            location: 'Brasil',
-            company_context: `${segment}${tamanhoLabel ? ` - ${tamanhoLabel}` : ''}`,
-        }));
-    }
-
-    /**
-     * Builds 3 BenchmarkSection-compatible competitor entries.
-     * Priority: structured fields > legacy textarea > segment fallback.
-     */
-    static generateBenchmarkFromREI(answers: any): any[] {
-        const segment = answers.segmento === 'outro'
-            ? (answers.segmento_outro || 'B2B')
-            : (answers.segmento || answers.segmento_outro || 'B2B');
-        const segLower = segment.toLowerCase();
-
-        // Parse CAC select value to realistic CPC
-        const cacSelect = answers.cacAtual || '';
-        const cacLabels: Record<string, string> = {
-            'menor-500': 'R$ 2,80', '500-2k': 'R$ 4,50', '2k-5k': 'R$ 6,20',
-            'acima-5k': 'R$ 9,40', 'nao-sei': '-',
-        };
-        const avgCpc = cacLabels[cacSelect] || '-';
-
-        // 1. Check structured fields first (concorrente1_nome, concorrente1_site, etc.)
-        const structured: Array<{ name: string; site: string }> = [];
-        for (let n = 1; n <= 3; n++) {
-            const nome = (answers[`concorrente${n}_nome`] || '').trim();
-            const site = (answers[`concorrente${n}_site`] || '').trim();
-            if (nome) structured.push({ name: nome, site });
-        }
-
-        // 2. Fallback: legacy textarea (comma/newline separated)
-        const concorrentesText = (answers.concorrentes || '').trim();
-        if (structured.length === 0 && concorrentesText) {
-            const lines = concorrentesText.split(/[,\n;]+/).map((s: string) => s.trim()).filter((s: string) => s.length > 2);
-            lines.slice(0, 3).forEach((line: string) => {
-                const match = line.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
-                structured.push({
-                    name: (match?.[1] || line).trim(),
-                    site: (match?.[2] || '').trim(),
-                });
-            });
-        }
-
-        // 3. If we have any competitor names, build entries from them
-        if (structured.length > 0) {
-            const parsed = structured.slice(0, 3).map((c, i) => {
-                const cleanSite = c.site.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
-                return {
-                    company_name: c.name,
-                    domain: cleanSite || `${c.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com.br`,
-                    monthly_traffic: ['-', '-', '-'][i],
-                    domain_authority: 0,
-                    avg_cpc: avgCpc,
-                    top_keywords: this.getSegmentKeywords(segLower).slice(0, 3),
-                    strengths: `Player do segmento - análise aprofundada via "Gerar Inteligência de Mercado".`,
-                    weaknesses: 'Dados de tráfego e keywords serão preenchidos pelo Deep Research.',
-                };
-            });
-            // Fill to 3 if needed
-            while (parsed.length < 3) {
-                parsed.push({
-                    company_name: `Concorrente ${parsed.length + 1} (a identificar)`,
-                    domain: '-', monthly_traffic: '-', domain_authority: 0, avg_cpc: '-',
-                    top_keywords: this.getSegmentKeywords(segLower).slice(0, 2),
-                    strengths: 'Será identificado na fase de Deep Research.',
-                    weaknesses: 'Clique em "Gerar Inteligência de Mercado" para análise.',
-                });
-            }
-            return parsed;
-        }
-
-        // 4. No concorrentes at all - generate segment-specific fallback profiles
-        const profiles = this.getSegmentCompetitors(segLower, segment);
-        const keywords = this.getSegmentKeywords(segLower);
-
-        return profiles.map((p, i) => ({
-            company_name: p.name,
-            domain: p.domain,
-            monthly_traffic: p.traffic,
-            domain_authority: p.da,
-            avg_cpc: avgCpc,
-            top_keywords: keywords.slice(i, i + 3),
-            strengths: p.strengths,
-            weaknesses: p.weaknesses,
-        }));
-    }
-
-
-
-
-    /** Returns segment-specific competitor profiles */
-    private static getSegmentCompetitors(segLower: string, segment: string): Array<{ name: string; domain: string; traffic: string; da: number; strengths: string; weaknesses: string }> {
-        if (segLower.includes('financ') || segLower.includes('consultor')) {
-            return [
-                { name: 'XP Assessoria de Investimentos', domain: 'xpassessor.com.br', traffic: '120K', da: 52, strengths: 'Marca consolidada, presença nacional, forte captação via indicação e mídia. Plataforma completa de investimentos.', weaknesses: 'Atendimento massificado, pouco personalizado para clientes PF de alto patrimônio.' },
-                { name: 'Par Mais Consultoria Financeira', domain: 'parmais.com.br', traffic: '28K', da: 35, strengths: 'Especialista em planejamento financeiro pessoal. Forte em conteúdo educativo e SEO orgânico.', weaknesses: 'Ticket médio limitado, foco em classe média. Processo comercial pouco digital.' },
-                { name: 'Warren Digital', domain: 'warren.com.br', traffic: '85K', da: 48, strengths: 'Modelo digital-first, onboarding 100% online. Forte tração em mídia paga e growth marketing.', weaknesses: 'Foco em público jovem/early career. Baixo diferencial em consultoria PJ.' },
-            ];
-        }
-        if (segLower.includes('saas') || segLower.includes('software') || segLower.includes('tech')) {
-            return [
-                { name: 'RD Station (TOTVS)', domain: 'rdstation.com', traffic: '450K', da: 65, strengths: 'Líder em automação de marketing no Brasil. Ecossistema completo com CRM e e-commerce.', weaknesses: 'Produto engessado para operações B2B complexas. Churn alto em SMBs.' },
-                { name: 'Pipedrive Brasil', domain: 'pipedrive.com/pt', traffic: '180K', da: 58, strengths: 'CRM intuitivo e focado em vendas. Forte em onboarding e product-led growth.', weaknesses: 'Limitações em automação avançada e relatórios customizados.' },
-                { name: 'Meetime', domain: 'meetime.com.br', traffic: '35K', da: 32, strengths: 'Especialista em inside sales e SDR. Forte em conteúdo B2B e geração de autoridade.', weaknesses: 'Nicho muito específico. Oferta limitada fora do universo de vendas consultivas.' },
-            ];
-        }
-        if (segLower.includes('saúde') || segLower.includes('saude') || segLower.includes('health') || segLower.includes('médic') || segLower.includes('medic')) {
-            return [
-                { name: 'Doctoralia', domain: 'doctoralia.com.br', traffic: '2.5M', da: 62, strengths: 'Marketplace dominante para agendamento médico. SEO orgânico fortíssimo e base de pacientes.', weaknesses: 'Modelo marketplace dilui a marca do profissional. Dependência de volume.' },
-                { name: 'iClinic (Afya)', domain: 'iclinic.com.br', traffic: '95K', da: 42, strengths: 'Software de gestão para clínicas. Ecossistema completo com prontuário eletrônico.', weaknesses: 'Foco em gestão operacional, fraco em marketing e captação de pacientes.' },
-                { name: 'Clínica Ideal', domain: 'clinicaideal.com.br', traffic: '15K', da: 25, strengths: 'Conteúdo educativo para profissionais de saúde. Comunidade ativa e engajada.', weaknesses: 'Modelo de negócio não escalável. Pouco investimento em tráfego pago.' },
-            ];
-        }
-        if (segLower.includes('juríd') || segLower.includes('legal') || segLower.includes('advog') || segLower.includes('direito')) {
-            return [
-                { name: 'Projuris', domain: 'projuris.com.br', traffic: '45K', da: 38, strengths: 'Software jurídico líder. Forte presença em eventos e conteúdo para advogados.', weaknesses: 'Foco em gestão de processos, fraco em captação de clientes para escritórios.' },
-                { name: 'Aurum Software', domain: 'aurum.com.br', traffic: '65K', da: 42, strengths: 'Plataforma completa para escritórios de advocacia. Marketing de conteúdo referência no setor.', weaknesses: 'Mercado de software jurídico saturado. Diferenciação cada vez mais difícil.' },
-                { name: 'Jusbrasil', domain: 'jusbrasil.com.br', traffic: '15M', da: 72, strengths: 'Maior portal jurídico do Brasil. SEO dominante e base massiva de advogados.', weaknesses: 'Modelo freemium com baixa conversão. Público misto sem segmentação clara.' },
-            ];
-        }
-        // Generic B2B fallback
-        const cleanSegment = segment.split(',')[0].trim();
-        return [
-            { name: `Líder Digital - ${cleanSegment}`, domain: 'liderdigital.com.br', traffic: '45K', da: 38, strengths: `Player consolidado no segmento de ${cleanSegment}. Investimento consistente em mídia paga e presença digital.`, weaknesses: 'Modelo de vendas tradicional. Processo comercial pouco automatizado.' },
-            { name: `Referência Nacional - ${cleanSegment}`, domain: 'refnacional.com.br', traffic: '28K', da: 32, strengths: `Forte em conteúdo educativo e SEO no nicho de ${cleanSegment}. Autoridade reconhecida.`, weaknesses: 'Foco em branding sem estrutura de conversão. Pipeline desorganizado.' },
-            { name: `Novo Player Digital - ${cleanSegment}`, domain: 'novoplayer.com.br', traffic: '12K', da: 22, strengths: `Abordagem digital-first no mercado de ${cleanSegment}. Onboarding ágil e proposta inovadora.`, weaknesses: 'Base de clientes pequena. Pouca validação de mercado.' },
-        ];
-    }
-
-    /** Returns segment-specific keywords */
-    private static getSegmentKeywords(segLower: string): string[] {
-        if (segLower.includes('financ') || segLower.includes('consultor')) {
-            return ['consultoria financeira', 'planejamento financeiro', 'assessoria de investimentos', 'gestão patrimonial', 'consultoria empresarial financeira', 'planejamento tributário'];
-        }
-        if (segLower.includes('saas') || segLower.includes('software') || segLower.includes('tech')) {
-            return ['software gestão', 'CRM vendas', 'automação comercial', 'plataforma SaaS', 'ferramenta de vendas', 'sistema gestão comercial'];
-        }
-        if (segLower.includes('saúde') || segLower.includes('saude') || segLower.includes('health')) {
-            return ['agendamento médico', 'gestão clínica', 'marketing para médicos', 'captação pacientes', 'software clínica', 'prontuário eletrônico'];
-        }
-        if (segLower.includes('juríd') || segLower.includes('legal') || segLower.includes('advog')) {
-            return ['software jurídico', 'gestão escritório advocacia', 'captação clientes advogado', 'marketing jurídico', 'CRM para advogados', 'automação jurídica'];
-        }
-        return ['growth marketing', 'geração de leads B2B', 'consultoria comercial', 'automação de vendas', 'CRM empresarial', 'marketing digital B2B'];
-    }
-
-
-    /**
-     * Returns segment-aware default industry trends when Perplexity AI is unavailable.
-     * Uses: segmento.
-     */
-    static generateDefaultTrends(answers: any): string[] {
-        const raw = answers.segmento === 'outro'
-            ? (answers.segmento_outro || '')
-            : (answers.segmento || answers.segmento_outro || '');
-        const segment = raw.toLowerCase();
-
-        if (segment.includes('saas') || segment.includes('software')) {
-            return [
-                'Product-Led Growth (PLG) como motor de aquisição: empresas SaaS que adotam PLG crescem 2x mais rápido',
-                'AI-native features viram commodity - diferencial migra para onboarding e time-to-value',
-                'Revenue Operations integrado (RevOps) reduz CAC em até 25% ao alinhar marketing, vendas e CS',
-            ];
-        }
-        if (segment.includes('fintech') || segment.includes('financ')) {
-            return [
-                'Open Finance amplia superfície de dados para personalização de ofertas e redução de inadimplência',
-                'Compliance-first como diferencial competitivo: empresas que investem em governança crescem mais confiantes',
-                'Embedded Finance: serviços financeiros dentro de plataformas não-financeiras ganham tração acelerada',
-            ];
-        }
-        if (segment.includes('cyber') || segment.includes('segurança')) {
-            return [
-                'Zero Trust Architecture vira padrão mínimo de segurança para empresas médias e grandes',
-                'Aumento de 300% em ataques de ransomware gera urgência e budget de segurança',
-                'Conformidade com LGPD e frameworks internacionais (ISO 27001) como gatilho de compra',
-            ];
-        }
-        // Generic B2B default
-        return [
-            'Automação de processos com IA generativa reduz custo operacional em 20–35% para empresas B2B',
-            'Revenue Operations integrado (RevOps) como vantagem competitiva - elimina silos entre marketing, vendas e CS',
-            'Personalização baseada em dados aumenta taxas de conversão em até 35% no pipeline',
-        ];
+        return [segment.toLowerCase(), 'growth marketing', 'geração de leads B2B'];
     }
 }
-

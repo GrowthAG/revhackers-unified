@@ -2,9 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { createDocumentFromREI } from "./knowledge";
 
-export type ReiProject = Database['public']['Tables']['rei_projects']['Row'];
-export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'];
-export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'];
+export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & { trade_name?: string | null };
+export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'] & { trade_name?: string | null };
+export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { trade_name?: string | null };
 
 /**
  * CRIAR PROJETO REI
@@ -170,7 +170,7 @@ export const updateReiProject = async (
 export const deleteReiProject = async (id: string): Promise<void> => {
     // Helper para deletar e ignorar erros de "tabela inexistente" (42P01 / PGRST204)
     const safeDelete = async (table: string, column: string) => {
-        const { error } = await supabase.from(table).delete().eq(column, id);
+        const { error } = await supabase.from(table as any).delete().eq(column, id);
         if (error && error.code !== '42P01' && !error.message?.includes('relation') && !error.message?.includes('does not exist')) {
             console.warn(`Aviso ao excluir dependência ${table}:`, error.message);
             // Non-blocking throw. We log to keep tracing but don't strictly halt unless necessary.

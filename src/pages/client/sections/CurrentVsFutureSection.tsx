@@ -91,56 +91,60 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                 />
             </div>
 
-            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-zinc-200 rounded-2xl overflow-hidden">
+            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full max-w-[1400px] mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-zinc-200/60 rounded-xl overflow-hidden shadow-sm">
 
                     {/* Current State - Light */}
-                    <div className="bg-white p-8 md:p-10 border-b lg:border-b-0 lg:border-r border-zinc-200">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-3 h-3 rounded-full bg-zinc-300" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+                    <div className="bg-white p-10 md:p-14 border-b lg:border-b-0 lg:border-r border-zinc-200/60">
+                        <div className="flex items-center gap-3 mb-10">
+                            <span className="w-2 h-2 rounded-full bg-zinc-300" />
+                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400">
                                 Cenário Atual
                             </span>
                         </div>
 
-                        <div className="space-y-5">
+                        <div className="space-y-8">
                             {currentItems.map((item: string, i: number) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <span className="text-zinc-200 font-bold font-mono text-lg leading-none mt-0.5 shrink-0">
+                                <div key={i} className="flex gap-5 group">
+                                    <span className="text-[10px] font-mono font-semibold text-zinc-300 mt-1 shrink-0 transition-colors group-hover:text-zinc-400">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
-                                    <EditableField
-                                        path={`diagnostic_data.current_vs_future.current.${i}`}
-                                        className="text-[15px] font-medium text-zinc-600 leading-relaxed"
-                                        placeholder={item}
-                                        multiline
-                                    />
+                                    <div className="flex-1">
+                                        <EditableField
+                                            path={`diagnostic_data.current_vs_future.current.${i}`}
+                                            className="text-[14px] md:text-[15px] text-zinc-600 leading-[1.8] font-medium transition-colors group-hover:text-zinc-900"
+                                            placeholder={item}
+                                            multiline
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Future State - Dark */}
-                    <div className="bg-zinc-950 p-8 md:p-10">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-3 h-3 rounded-full bg-[#00CC6A]" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00CC6A]">
+                    <div className="bg-[#0A0A0A] p-10 md:p-14">
+                        <div className="flex items-center gap-3 mb-10">
+                            <span className="w-2 h-2 rounded-full bg-[#00CC6A]" />
+                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
                                 Cenário Futuro
                             </span>
                         </div>
 
-                        <div className="space-y-5">
+                        <div className="space-y-8">
                             {futureItems.map((item: string, i: number) => (
-                                <div key={i} className="flex items-start gap-4">
-                                    <span className="text-zinc-700 font-bold font-mono text-lg leading-none mt-0.5 shrink-0">
+                                <div key={i} className="flex gap-5 group">
+                                    <span className="text-[10px] font-mono font-semibold text-zinc-700 mt-1 shrink-0 transition-colors group-hover:text-[#00CC6A]/50">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
-                                    <EditableField
-                                        path={`diagnostic_data.current_vs_future.future.${i}`}
-                                        className="text-[15px] font-medium text-zinc-400 leading-relaxed"
-                                        placeholder={item}
-                                        multiline
-                                    />
+                                    <div className="flex-1">
+                                        <EditableField
+                                            path={`diagnostic_data.current_vs_future.future.${i}`}
+                                            className="text-[14px] md:text-[15px] text-zinc-300 leading-[1.8] font-medium transition-colors group-hover:text-white"
+                                            placeholder={item}
+                                            multiline
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>

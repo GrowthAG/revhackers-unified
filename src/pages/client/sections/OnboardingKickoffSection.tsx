@@ -46,57 +46,79 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                     description="Transferência de contexto entre Vendas e Operação. Alinhamento absoluto de expectativas, prazos e responsáveis."
                 />
 
-                <div className="mt-8 space-y-6">
-                    {/* 3 Pillars in bordered cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {pillars.map((pillar, i) => {
-                            return (
-                                <div key={i} className="border border-zinc-200 rounded-xl p-8 flex flex-col">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <span className="text-xs text-zinc-300 font-mono">{String(i + 1).padStart(2, '0')}</span>
-                                    </div>
-                                    <h3 className="text-lg font-bold text-zinc-900 mb-2">
-                                        <EditableField
-                                            placeholder={pillar.titlePlaceholder}
-                                            path={pillar.titlePath}
-                                            className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                                        />
-                                    </h3>
-                                    <p className="text-[15px] text-zinc-500 leading-relaxed font-medium flex-1 mb-4">
-                                        <EditableField
-                                            placeholder={pillar.descPlaceholder}
-                                            path={pillar.descPath}
-                                            multiline
-                                            className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                                        />
-                                    </p>
-                                    <div className="border-t border-zinc-100 pt-3 flex items-center gap-2">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A]">Saída</span>
-                                        <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                                        <span className="text-xs font-bold text-zinc-700">
-                                            <EditableField
-                                                placeholder={pillar.outputPlaceholder}
-                                                path={pillar.outputPath}
-                                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                                            />
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                <div className="mt-12 flex flex-col lg:flex-row gap-12 lg:gap-20">
+                    
+                    {/* Left Column - Main Takeaway */}
+                    <div className="lg:w-1/3 flex flex-col justify-between">
+                        <div>
+                            <div className="w-12 h-[2px] bg-zinc-900 mb-6" />
+                            <h3 className="text-2xl font-black text-zinc-900 leading-tight tracking-tight mb-4">
+                                <EditableField
+                                    placeholder="O sucesso dos próximos 90 dias é decidido nesta primeira reunião."
+                                    path="onboarding_data.kickoff.main_title"
+                                    className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                    multiline
+                                />
+                            </h3>
+                            <p className="text-[13px] text-zinc-500 font-medium leading-[1.6]">
+                                O Kickoff não é uma formalidade. É o momento de alinhar os 
+                                executivos, travar o escopo e garantir que todos têm a mesma
+                                visão de sucesso para a operação de RevOps.
+                            </p>
+                        </div>
+                        
+                        <div className="mt-12 inline-flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
+                                Dia 01
+                            </span>
+                            <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-widest px-2">
+                                Início do Projeto
+                            </span>
+                        </div>
                     </div>
 
-                    {/* Compact accent bar */}
-                    <div className="bg-zinc-950 rounded-xl px-6 py-5 flex items-center justify-between">
-                        <p className="text-sm text-white/70 font-medium flex-1">
-                            <EditableField
-                                placeholder="O sucesso dos próximos 90 dias é decidido nesta primeira reunião."
-                                path="onboarding_data.kickoff.main_title"
-                                className="bg-transparent text-white/70 focus:bg-zinc-800 outline-none w-full"
-                            />
-                        </p>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] shrink-0 ml-4">Dia 01</span>
+                    {/* Right Column - Pillars List */}
+                    <div className="lg:w-2/3 space-y-8">
+                        {pillars.map((pillar, i) => (
+                            <div key={i} className="group relative border-b border-zinc-100 pb-8 last:border-0">
+                                <div className="flex gap-6 md:gap-8">
+                                    <div className="pt-1">
+                                        <span className="text-[10px] text-zinc-300 font-mono font-bold">{String(i + 1).padStart(2, '0')}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="text-[17px] font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                                            <EditableField
+                                                placeholder={pillar.titlePlaceholder}
+                                                path={pillar.titlePath}
+                                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                            />
+                                        </h4>
+                                        <p className="text-[13px] text-zinc-500 leading-[1.6] font-medium mb-4 max-w-xl">
+                                            <EditableField
+                                                placeholder={pillar.descPlaceholder}
+                                                path={pillar.descPath}
+                                                multiline
+                                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                            />
+                                        </p>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-2 py-0.5 rounded">
+                                                Saída Oficial
+                                            </span>
+                                            <p className="text-[11px] font-bold text-zinc-700">
+                                                <EditableField
+                                                    placeholder={pillar.outputPlaceholder}
+                                                    path={pillar.outputPath}
+                                                    className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                                />
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
+
                 </div>
             </div>
         </div>

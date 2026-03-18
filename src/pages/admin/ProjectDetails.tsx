@@ -46,6 +46,21 @@ const DailyDashboardPlaceholder = () => (
     </div>
 );
 
+/**
+ * Extracts trade/brand name from full legal name (razão social).
+ * "TUNAD MOMENT MARKETING PLATAFORM LTDA" → "Tunad"
+ */
+function getDisplayName(project: ReiProject | null): string {
+    if (!project) return 'Projeto';
+    const raw = project.client_company || project.client_name || 'Projeto';
+    const cleaned = raw
+        .replace(/\s+(LTDA|EIRELI|S\.?A\.?|ME|EPP|S\/S|SERVICOS|SERVIÇOS|MARKETING|CONSULTORIA|TECNOLOGIA|PLATAFORM|PLATFORM|DIGITAL|SOLUCOES|SOLUÇÕES|MOMENT|GROUP|BRASIL)\b/gi, '')
+        .trim();
+    const words = cleaned.split(/\s+/);
+    const brandName = words.length > 2 ? words.slice(0, 2).join(' ') : cleaned;
+    return brandName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) || raw;
+}
+
 const ProjectDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -103,7 +118,7 @@ const ProjectDetails = () => {
                         </Button>
                         <div>
                             <h1 className="text-lg font-black text-zinc-900 tracking-tight flex items-center gap-3">
-                                {project.client_company || project.client_name}
+                                {getDisplayName(project)}
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1 rounded-md">
                                     {project.status === 'active' ? 'Ativo' : 'Onboarding'}
                                 </span>

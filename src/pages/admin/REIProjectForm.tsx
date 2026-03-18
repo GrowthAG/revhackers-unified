@@ -19,6 +19,7 @@ import AdminPageLayout from '@/components/layout/AdminPageLayout';
 type FormData = {
     client_id?: string; // Added client_id
     client_name: string;
+    trade_name?: string;
     client_email: string;
     client_company?: string;
     analyst_email: string;
@@ -69,6 +70,61 @@ const REIProjectForm = () => {
         }
     });
 
+    const isEditing = !!id;
+    const DRAFT_KEY = 'rei_project_draft';
+
+    const [mode, setMode] = useState<'existing' | 'new'>('existing');
+    const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
+
+    // Site analysis state (declared early for draft persistence)
+    const [clientSite, setClientSite] = useState('');
+    const [siteAnalysis, setSiteAnalysis] = useState<any>(null);
+    const [analyzingSite, setAnalyzingSite] = useState(false);
+    const [siteAnalysisExpanded, setSiteAnalysisExpanded] = useState(true);
+    const [siteAnalysisError, setSiteAnalysisError] = useState<string | null>(null);
+
+    // ── Draft Persistence: restore from localStorage on mount (new projects only) ──
+    const [draftRestored, setDraftRestored] = useState(false);
+    useEffect(() => {
+        if (isEditing || draftRestored) return;
+        try {
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (saved) {
+                const draft = JSON.parse(saved);
+                if (draft.formData) {
+                    Object.entries(draft.formData).forEach(([key, value]) => {
+                        if (value !== undefined && value !== null && value !== '') {
+                            setValue(key as keyof FormData, value as any);
+                        }
+                    });
+                }
+                if (draft.clientSite) setClientSite(draft.clientSite);
+                if (draft.siteAnalysis) setSiteAnalysis(draft.siteAnalysis);
+                console.log('[Draft] Rascunho restaurado do localStorage');
+            }
+        } catch (e) {
+            console.warn('[Draft] Erro ao restaurar rascunho:', e);
+        }
+        setDraftRestored(true);
+    }, [isEditing, draftRestored]);
+
+    // ── Draft Persistence: auto-save on every field change ──
+    const allFormValues = watch();
+    useEffect(() => {
+        if (isEditing || !draftRestored) return;
+        const timer = setTimeout(() => {
+            try {
+                localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                    formData: allFormValues,
+                    clientSite,
+                    siteAnalysis,
+                    savedAt: new Date().toISOString()
+                }));
+            } catch (e) { /* ignore quota errors */ }
+        }, 500); // debounce 500ms
+        return () => clearTimeout(timer);
+    }, [allFormValues, clientSite, siteAnalysis, isEditing, draftRestored]);
+
     // Auto-suggest duration when type changes
     const watchedType = watch('type');
     useEffect(() => {
@@ -77,16 +133,6 @@ const REIProjectForm = () => {
             setValue('project_duration', suggested);
         }
     }, [watchedType, isEditing]);
-
-    const [mode, setMode] = useState<'existing' | 'new'>('existing');
-    const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
-
-    // Site analysis state
-    const [clientSite, setClientSite] = useState('');
-    const [siteAnalysis, setSiteAnalysis] = useState<any>(null);
-    const [analyzingSite, setAnalyzingSite] = useState(false);
-    const [siteAnalysisExpanded, setSiteAnalysisExpanded] = useState(true);
-    const [siteAnalysisError, setSiteAnalysisError] = useState<string | null>(null);
 
     // Styling Constants (Diagnostic Standard)
     const inputClasses = "bg-transparent border-0 border-b h-14 rounded-none transition-all font-medium text-base px-4 focus:ring-0 w-full border-zinc-200 text-black focus:border-black placeholder:text-zinc-300 hover:bg-zinc-50/50";
@@ -160,7 +206,7 @@ const REIProjectForm = () => {
         }
     };
 
-    const isEditing = !!id;
+
 
     useEffect(() => {
         loadData();
@@ -178,6 +224,7 @@ const REIProjectForm = () => {
                 if (project) {
                     setValue('client_id', (project as any).client_id || undefined);
                     setValue('client_name', project.client_name);
+                    setValue('trade_name', project.trade_name || undefined);
                     setValue('client_email', project.client_email);
                     setValue('client_company', project.client_company || '');
                     setValue('analyst_email', project.analyst_email);
@@ -207,6 +254,7 @@ const REIProjectForm = () => {
         if (client) {
             setValue('client_id', client.id);
             setValue('client_name', client.name);
+            setValue('trade_name', client.trade_name || undefined);
             setValue('client_email', client.email);
             setValue('client_company', client.company || '');
             // Auto-fill website from client record
@@ -271,6 +319,7 @@ const REIProjectForm = () => {
             const projectData: any = { // Using any to bypass strict type check for now if needed
                 // client_id: data.client_id, <--- REMOVED due to DB Schema mismatch
                 client_name: data.client_name,
+                trade_name: data.trade_name || null,
                 client_email: data.client_email,
                 client_company: data.client_company || null,
                 analyst_email: data.analyst_email,
@@ -287,11 +336,14 @@ const REIProjectForm = () => {
             if (isEditing && id) {
                 await updateReiProject(id, projectData);
                 toast({ title: 'Protocolo atualizado com sucesso' });
+                localStorage.removeItem(DRAFT_KEY);
             } else {
                 const res = await createReiProject(projectData);
                 if (res && (res as any).error) throw new Error((res as any).error.message || 'Erro desconhecido ao criar');
 
                 toast({ title: 'Novo Protocolo Iniciado' });
+                // Clear draft on successful creation
+                localStorage.removeItem(DRAFT_KEY);
 
                 if (res && res.id) {
                     // Fase 1: cria Sprint no Notion imediatamente (não bloqueia navegação)
@@ -668,7 +720,7 @@ const ProposalListByClient = ({ clientName }: { clientName: string }) => {
         const fetchProposals = async () => {
             setLoading(true);
             const { data } = await supabase
-                .from('proposals')
+                .from('proposals' as any)
                 .select('*')
                 .ilike('client_name', `%${clientName}%`)
                 .order('created_at', { ascending: false });

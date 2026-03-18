@@ -28,6 +28,30 @@ import type { ReiProject } from '@/api/reiProjects';
 import type { ReiResponse } from '@/api/reiResponses';
 import ReiDashboard from '@/components/rei/ReiDashboard'; // Added ReiDashboard import
 
+/**
+ * Extracts trade/brand name from full legal name (razão social).
+ * "TUNAD MOMENT MARKETING PLATAFORM LTDA" → "Tunad"
+ * "REVHACKERS CONSULTORIA LTDA" → "RevHackers"
+ * Falls back to client_name if no company name.
+ */
+function getDisplayName(project: ReiProject | null): string {
+    if (!project) return 'Projeto';
+    const raw = project.client_company || project.client_name || 'Projeto';
+    // Strip common legal suffixes
+    const cleaned = raw
+        .replace(/\s+(LTDA|EIRELI|S\.?A\.?|ME|EPP|S\/S|SERVICOS|SERVIÇOS|MARKETING|CONSULTORIA|TECNOLOGIA|PLATAFORM|PLATFORM|DIGITAL|SOLUCOES|SOLUÇÕES|MOMENT|GROUP|BRASIL)\b/gi, '')
+        .trim();
+    // If the cleaned result is just one word or very short, use it as-is
+    // Otherwise use the first meaningful word(s)
+    const words = cleaned.split(/\s+/);
+    const brandName = words.length > 2 ? words.slice(0, 2).join(' ') : cleaned;
+    // Title-case the result
+    return brandName
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase())
+        || raw;
+}
+
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-black mb-6 border-b border-zinc-100 pb-2 flex items-center gap-3">
         {children}
@@ -73,6 +97,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
     const [latestResponse, setLatestResponse] = useState<ReiResponse | null>(null);
     const [history, setHistory] = useState<ReiResponse[]>([]); // New history state
     const [loading, setLoading] = useState(true);
+    const [planAccessToken, setPlanAccessToken] = useState<string | null>(null);
 
     const steps = [
         { title: 'Fase 01: Onboarding', desc: 'Kickoff & Diagnóstico Profundo' },
@@ -140,7 +165,22 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                 setLatestResponse(allResponses.length > 0 ? allResponses[0] : null);
             } catch (historyError) {
                 console.warn("Could not load response history:", historyError);
-                // Non-critical error, continue without history
+            }
+
+            // Fetch plan access_token for Hub do Cliente button
+            try {
+                const { data: planData } = await supabase
+                    .from('strategic_plans')
+                    .select('access_token')
+                    .eq('rei_project_id', proj.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                if (planData?.access_token) {
+                    setPlanAccessToken(planData.access_token);
+                }
+            } catch (planError) {
+                console.warn("Could not load plan access_token:", planError);
             }
 
         } catch (error: any) {
@@ -471,7 +511,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                     Fase 04: Go Live
                                 </h3>
                                 <p className="text-xs text-zinc-500 max-w-lg leading-relaxed">
-                                    O planejamento foi aprovado e o projeto está em execução. Use os atalhos abaixo para gerenciar a implementação.
+                                    O projeto está em fase de implementação. Use os atalhos abaixo para gerenciar a execução.
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -484,23 +524,25 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
 
                         {/* Status Card */}
                         <div className="bg-zinc-950 rounded-2xl p-8 md:p-10">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 border border-[#00CC6A]/20 rounded-xl flex items-center justify-center">
-                                    <Check className="w-5 h-5 text-[#00CC6A]" />
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 border border-[#00CC6A]/20 rounded-xl flex items-center justify-center">
+                                        <Check className="w-5 h-5 text-[#00CC6A]" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A]">Projeto Ativo</p>
+                                        <p className="text-[10px] text-zinc-500">
+                                            Iniciado em {project?.created_at ? new Date(project.created_at).toLocaleDateString('pt-BR') : '-'}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A]">Projeto Ativo</p>
-                                    <p className="text-[10px] text-zinc-500">
-                                        Iniciado em {project?.created_at ? new Date(project.created_at).toLocaleDateString('pt-BR') : '-'}
-                                    </p>
-                                </div>
+                                <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">
+                                    Ciclo {project?.quarter} {project?.year}
+                                </span>
                             </div>
-                            <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight mb-2">
-                                {project?.client_company || project?.client_name}
+                            <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+                                {getDisplayName(project)}
                             </h3>
-                            <p className="text-sm text-zinc-500 font-medium">
-                                Ciclo {project?.quarter} {project?.year} · Implementação em andamento
-                            </p>
                         </div>
 
                         {/* Quick Actions Grid */}
@@ -519,7 +561,13 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             </button>
 
                             <button
-                                onClick={() => window.open(`/project-hub/${id}`, '_blank')}
+                                onClick={() => {
+                                    if (planAccessToken) {
+                                        window.open(`/plan/${planAccessToken}`, '_blank');
+                                    } else {
+                                        toast({ title: 'Plano ainda não gerado', description: 'Gere o planejamento estratégico primeiro para abrir o Hub do Cliente.', variant: 'destructive' });
+                                    }
+                                }}
                                 className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
                             >
                                 <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:border-zinc-900 transition-colors">
@@ -532,13 +580,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             </button>
 
                             <button
-                                onClick={() => {
-                                    const parentTabs = document.querySelector('[data-state="active"][value="jornada"]');
-                                    if (parentTabs) {
-                                        // Navigate to biblioteca tab in parent
-                                        navigate(`/admin/projects/${id}?tab=biblioteca`);
-                                    }
-                                }}
+                                onClick={() => navigate(`/admin/projects/${id}?tab=biblioteca`)}
                                 className="flex items-start gap-4 p-6 border border-zinc-200 rounded-2xl bg-white hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group"
                             >
                                 <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:border-zinc-900 transition-colors">
@@ -667,7 +709,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
     return (
         <ErrorBoundary>
             <AdminPageLayout
-                title={project?.client_company || project?.client_name || 'Projeto'}
+                title={getDisplayName(project)}
                 description={`Jornada ${project?.quarter || 'Q1'} ${project?.year || ''} - Onboarding Estratégico`}
                 backTo="/admin/rei"
             >

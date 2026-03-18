@@ -169,7 +169,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Voce e o Diretor de Inteligencia Estrategica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Voce analisa mercados, constroi ICPs e gera benchmarks com precisao cirurgica. Seus dados sao SEMPRE baseados no mercado brasileiro real, com empresas e numeros realistas. Voce NUNCA gera conteudo generico - cada resposta e hiper-personalizada ao contexto do cliente. A resposta DEVE ser APENAS um JSON valido. Nao inclua blocos ```json nem explicacoes extras. NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).'
+                    content: 'Você é o Diretor de Inteligência Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Você analisa mercados, constrói ICPs e gera benchmarks com precisão cirúrgica. Seus dados são SEMPRE baseados no mercado brasileiro real, com empresas e números realistas. Você NUNCA gera conteúdo genérico - cada resposta é hiper-personalizada ao contexto do cliente. REGRA ABSOLUTA DE ORTOGRAFIA: todo texto gerado DEVE estar em português brasileiro correto, com TODAS as acentuações obrigatórias (é, á, ã, õ, ç, ê, ô, etc). Palavras como "negociação", "operação", "atualização", "previsão", "caótica", "análise", "decisão" DEVEM ter acentos. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
                 },
                 { role: 'user', content: prompt }
             ],
@@ -212,34 +212,37 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
 }
 
 async function enrichBenchmark(apiKey: string, segment: string, ticket?: string, isB2B?: boolean, context?: string): Promise<any> {
-    const prompt = `Voce e o Head de Inteligencia de Mercado da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
-Sua missao e gerar benchmarks CIRURGICOS e REALISTAS para o cliente abaixo, comparando com o mercado brasileiro REAL.
+    const prompt = `Você é o Head de Inteligência de Mercado da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missão é gerar benchmarks CIRÚRGICOS e REALISTAS para o cliente abaixo, comparando com o mercado brasileiro REAL.
 
 ${context || ''}
 
-Segmento de Atuacao: ${segment}
-${ticket ? `Ticket Medio informado pelo cliente: ${ticket}` : ''}
-Modelo de Negocio: ${isB2B ? 'B2B (Business to Business)' : 'B2C (Business to Consumer)'}
+Segmento de Atuação: ${segment}
+${ticket ? `Ticket Médio informado pelo cliente: ${ticket}` : ''}
+Modelo de Negócio: ${isB2B ? 'B2B (Business to Business)' : 'B2C (Business to Consumer)'}
 
-INSTRUCOES CRITICAS:
-- Se o cliente informou ticket medio, CRM atual ou taxa de conversao, USE esses dados para contextualizar.
-- Compare os numeros do cliente com os benchmarks do segmento - aponte onde ele esta acima ou abaixo do mercado.
-- As ferramentas sugeridas devem considerar as que o cliente JA usa (se informadas) e propor evolucoes realistas.
+INSTRUÇÕES CRÍTICAS:
+- IDENTIFIQUE o segmento real do cliente a partir do nome da empresa e do site ANTES de gerar qualquer dado.
+- PROIBIDO USAR INTERVALOS GENÉRICOS DE PREÇO. Em vez de "R$ 800 a R$ 2.500", você DEVE fornecer o VALOR EXATO MÉDIO CALCULADO (ex: "R$ 1.250,00"). Aja como um analista de RevOps que cruzou os dados e chegou a um número consolidado.
+- Se o cliente informou ticket médio, CRM atual ou taxa de conversão, USE esses dados para contextualizar.
+- Compare os números do cliente com os benchmarks do segmento - aponte onde ele está acima ou abaixo do mercado.
+- As ferramentas sugeridas devem considerar as que o cliente JÁ usa (se informadas) e propor evoluções realistas.
 - O comparativo de mercado deve citar concorrentes reais do segmento no Brasil.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).
+- REGRA DE ORTOGRAFIA: todo texto DEVE usar português brasileiro correto com TODOS os acentos obrigatórios.
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
-  "cac_medio": "Valor monetario estimado para o segmento (ex: R$ 250,00)",
-  "taxa_conversao": "Porcentagem media Lead -> Cliente do segmento (ex: 2.5%)",
-  "ciclo_vendas": "Tempo medio do segmento (ex: 45 dias)",
+  "cac_medio": "Valor monetário ÚNICO (ex: R$ 450,00). É ESTRITAMENTE PROIBIDO usar ranges genéricos como 'R$ 300 - 800'. Dê sempre o valor consolidado da média brasileira no segmento.",
+  "taxa_conversao": "Porcentagem média única Lead -> Cliente do segmento (ex: 2.5%). Sem ranges.",
+  "ciclo_vendas": "Tempo médio único do segmento (ex: 45 dias). Sem ranges.",
   "ltv_cac_ratio": "Ratio ideal para o segmento (ex: 4:1)",
   "ferramentas_principais": {
     "crm": ["Ferramenta real 1", "Ferramenta real 2"],
     "automacao": ["Ferramenta real 1", "Ferramenta real 2"],
     "ads": ["Canal mais eficiente 1", "Canal 2"]
   },
-  "comparativo_mercado": "Analise de 2-3 frases comparando o cenario competitivo do segmento. Cite empresas reais e tendencias. Aponte onde o cliente pode se diferenciar."
+  "comparativo_mercado": "Análise de 2-3 frases comparando o cenário competitivo do segmento. Cite empresas reais e tendências. Aponte onde o cliente pode se diferenciar."
 }`;
 
     try {
@@ -251,25 +254,27 @@ Retorne um JSON EXATAMENTE com esta estrutura:
 }
 
 async function enrichPersonas(apiKey: string, segment: string, ticket?: string, objective?: string, context?: string): Promise<any> {
-    const prompt = `Voce e o Estrategista de ICP (Ideal Customer Profile) da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
-Sua missao e criar 3 Buyer Personas ULTRA-REALISTAS que representem os compradores REAIS dos produtos e servicos DESTE cliente.
+    const prompt = `Você é o Estrategista de ICP (Ideal Customer Profile) da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missão é criar 3 Buyer Personas ULTRA-REALISTAS que representem os compradores REAIS dos produtos e serviços DESTE cliente.
 
-ATENCAO: Nao confunda o projeto/servico que a RevHackers esta prestando (ex: crm_ops, consultoria) com o que o cliente vende. As personas devem ser os clientes DO cliente, baseadas firmemente na Analise do Site e no Segmento informados abaixo.
+ATENÇÃO MÁXIMA: Não confunda o projeto/serviço que a RevHackers está prestando (ex: crm_ops, consultoria) com o que o cliente vende. As personas devem ser os clientes DO cliente, baseadas firmemente na Análise do Site e no Segmento informados abaixo. IDENTIFIQUE o segmento real do cliente a partir do nome/site ANTES de gerar qualquer persona.
 
 ${context || ''}
 
 Segmento: ${segment}
-${ticket ? `Ticket Medio: ${ticket}` : ''}
-${objective ? `Objetivo Estrategico: ${objective}` : ''}
+${ticket ? `Ticket Médio: ${ticket}` : ''}
+${objective ? `Objetivo Estratégico: ${objective}` : ''}
 
-INSTRUCOES CRITICAS DE PERSONALIZACAO:
-- Se o contexto menciona produtos/servicos especificos, as personas DEVEM ser compradores IGUAIS aos que compram esses produtos.
-- Se o contexto menciona publico-alvo, as personas DEVEM estar nesse publico.
-- Se o contexto menciona tom de comunicacao ou segmento, as dores e gatilhos devem refletir isso.
-- Cada persona deve ser PSICOLOGICAMENTE distinta: um decisor (C-level), um influenciador tecnico, um usuario final.
+INSTRUÇÕES CRÍTICAS DE PERSONALIZAÇÃO:
+- PRIMEIRO identifique o que o cliente realmente vende/faz (a partir do nome da empresa e site). SÓ DEPOIS crie personas que sejam compradores desse produto/serviço.
+- Se o contexto menciona produtos/serviços específicos, as personas DEVEM ser compradores IGUAIS aos que compram esses produtos.
+- Se o contexto menciona público-alvo, as personas DEVEM estar nesse público.
+- Se o contexto menciona tom de comunicação ou segmento, as dores e gatilhos devem refletir isso.
+- Cada persona deve ser PSICOLOGICAMENTE distinta: um decisor (C-level), um influenciador técnico, um usuário final.
 - Nomes brasileiros realistas. Bios que refletem carreiras brasileiras.
 - O pitch_elevador deve ser uma frase que a equipe comercial do cliente poderia usar LITERALMENTE.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).
+- REGRA DE ORTOGRAFIA: todo texto DEVE usar português brasileiro correto com TODOS os acentos obrigatórios (é, á, ã, õ, ç, ê, ô, ú, í). Palavras como "negociação", "operação", "atualização", "previsão" DEVEM ter acentos.
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
@@ -279,29 +284,43 @@ Retorne um JSON EXATAMENTE com esta estrutura:
       "cargo": "Cargo real no mercado brasileiro",
       "idade": "Ex: 35-45 anos",
       "genero": "M ou F",
-      "bio_curta": "2-3 frases sobre trajetoria, empresa onde trabalha (tipo realista) e momento de carreira. Conecte ao segmento do cliente.",
-      "dores_principais": ["Dor profunda 1 conectada ao produto/servico do cliente", "Dor 2 especifica do cargo", "Dor 3 do mercado"],
-      "ganhos_desejados": ["Ganho pessoal que o produto/servico resolve", "Ganho profissional mensuravel"],
-      "objecoes_compra": ["Objecao real que este perfil teria ao avaliar o cliente", "Objecao financeira ou politica"],
-      "gatilhos_mentais": ["Gatilho que mais funciona para este perfil (ex: Autoridade, Prova Social, Urgencia)", "Segundo gatilho"],
-      "canais_favoritos": ["Canal real onde este perfil consome conteudo", "Segundo canal", "Terceiro canal"],
+      "bio_curta": "2-3 frases sobre trajetória, empresa onde trabalha (tipo realista) e momento de carreira. Conecte ao segmento do cliente.",
+      "dores_principais": ["Dor profunda 1 conectada ao produto/serviço do cliente", "Dor 2 específica do cargo", "Dor 3 do mercado"],
+      "ganhos_desejados": ["Ganho pessoal que o produto/serviço resolve", "Ganho profissional mensurável"],
+      "objecoes_compra": ["Objeção real que este perfil teria ao avaliar o cliente", "Objeção financeira ou política"],
+      "gatilhos_mentais": ["Gatilho que mais funciona para este perfil (ex: Autoridade, Prova Social, Urgência)", "Segundo gatilho"],
+      "canais_favoritos": ["Canal real onde este perfil consome conteúdo", "Segundo canal", "Terceiro canal"],
       "pitch_elevador": "Uma frase direta, consultiva e de alto impacto que o vendedor do cliente usaria para este perfil."
     }
   ]
 }
-Gere EXATAMENTE 3 personas com TODOS os campos preenchidos.`;
+Gere EXATAMENTE 3 personas com TODOS os campos preenchidos. Todo texto DEVE ter acentuação correta em português.`;
 
     try {
         const result = await callOpenAI(apiKey, prompt);
 
-        // Add robust avatar URLs
+        // Add robust avatar URLs ensuring gender match
         if (result?.personas && Array.isArray(result.personas)) {
             result.personas = result.personas.map((persona: any) => {
-                const gender = persona.genero?.toLowerCase().startsWith('f') ? 'women' : 'men';
+                // Strictly enforce gender path for randomuser.me
+                const rawGender = String(persona.genero || '').toLowerCase();
+                const isFemale = rawGender.startsWith('f') || rawGender === 'mulher' || rawGender.includes('feminino');
+                const genderPath = isFemale ? 'women' : 'men';
                 const avatarId = Math.floor(Math.random() * 75) + 1;
+                
+                // Remove prompt leaking if present (AI sometimes copies the instruction)
+                let cleanBio = persona.bio_curta || '';
+                if (cleanBio.includes('Pesquise o que')) {
+                    cleanBio = cleanBio.split('- Empresa:')[0] + '.';
+                }
+                if (cleanBio.includes('Insight as service')) {
+                    cleanBio = cleanBio.replace(/Software, Consultoria, Educação.*gerar análise\./gi, '').trim();
+                }
+
                 return {
                     ...persona,
-                    foto_url: `https://randomuser.me/api/portraits/${gender}/${avatarId}.jpg`
+                    bio_curta: cleanBio,
+                    foto_url: `https://randomuser.me/api/portraits/${genderPath}/${avatarId}.jpg`
                 };
             });
         }
@@ -326,48 +345,51 @@ Se houver menos de 3 citados, complemente com outros players REAIS e RELEVANTES 
 `;
     }
 
-    const prompt = `Voce e o Analista de Inteligencia Competitiva da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
-Sua missao e entregar uma analise de mercado estilo McKinsey/Bain, mas PERSONALIZADA para o negocio REAL deste cliente.
+    const prompt = `Você é o Analista de Inteligência Competitiva da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
+Sua missão é entregar uma análise de mercado estilo McKinsey/Bain, mas PERSONALIZADA para o negócio REAL deste cliente.
+
+IMPORTANTE: PRIMEIRO identifique o que o cliente realmente faz/vende (a partir do nome da empresa e site no contexto abaixo). SÓ DEPOIS gere análise de mercado ESPECÍFICA para esse segmento.
 
 ${context || ''}
 
 Mercado Alvo: ${segment} (Brasil)
 ${competitorsContext}
 
-INSTRUCOES CRITICAS DE PERSONALIZACAO:
-- As tendencias devem ser relevantes ao segmento ESPECIFICO do cliente, nao tendencias genericas de "B2B".
-- Os concorrentes devem ser empresas REAIS que competem no mesmo espaco que o cliente.
-- O SWOT deve refletir as oportunidades e ameacas para ESTE cliente especificamente, baseado nos pontos fracos/fortes identificados.
+INSTRUÇÕES CRÍTICAS DE PERSONALIZAÇÃO:
+- As tendências devem ser relevantes ao segmento ESPECÍFICO do cliente, não tendências genéricas de "B2B".
+- Os concorrentes devem ser empresas REAIS que competem no mesmo espaço que o cliente.
+- O SWOT deve refletir as oportunidades e ameaças para ESTE cliente especificamente, baseado nos pontos fracos/fortes identificados.
 - O TAM/SAM/SOM deve usar dados realistas do mercado brasileiro para este segmento.
-- Se a analise do site revelou pontos fracos ou diferenciais, use isso para contextualizar as oportunidades.
-- NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- Se a análise do site revelou pontos fracos ou diferenciais, use isso para contextualizar as oportunidades.
+- NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).
+- REGRA DE ORTOGRAFIA: todo texto DEVE usar português brasileiro correto com TODOS os acentos obrigatórios.
 
 Retorne um JSON EXATAMENTE com esta estrutura:
 {
   "tendencias_2025": [
-    { "titulo": "Tendencia real e especifica do segmento", "impacto": "Alto/Medio/Baixo", "descricao": "Explicacao de 2-3 frases com dados concretos e impacto no negocio do cliente." }
+    { "titulo": "Tendência real e específica do segmento", "impacto": "Alto/Médio/Baixo", "descricao": "Explicação de 2-3 frases com dados concretos e impacto no negócio do cliente." }
   ],
   "concorrentes_benchmark": [
     {
       "nome": "Nome Real do Concorrente",
       "url": "URL se conhecida",
-      "pontos_fortes": "2-3 forcas especificas observaveis",
-      "pontos_fracos": "2-3 fraquezas identificaveis",
-      "diferencial": "O moat real deles - o que os torna dificeis de copiar",
-      "posicionamento": "Como se posicionam no mercado e qual publico atendem"
+      "pontos_fortes": "2-3 forças específicas observáveis",
+      "pontos_fracos": "2-3 fraquezas identificáveis",
+      "diferencial": "O moat real deles - o que os torna difíceis de copiar",
+      "posicionamento": "Como se posicionam no mercado e qual público atendem"
     }
   ],
   "analise_swot_rapida": {
-    "oportunidades": ["Oportunidade especifica para o cliente baseada no contexto", "Oportunidade 2 com base no mercado", "Oportunidade 3"],
-    "ameacas": ["Ameaca real baseada na concorrencia identificada", "Ameaca 2 de mercado"]
+    "oportunidades": ["Oportunidade específica para o cliente baseada no contexto", "Oportunidade 2 com base no mercado", "Oportunidade 3"],
+    "ameacas": ["Ameaça real baseada na concorrência identificada", "Ameaça 2 de mercado"]
   },
   "tam_sam_som": {
     "tam": "Mercado Total com valor estimado em reais para o segmento no Brasil",
-    "sam": "Mercado Enderecavel com valor - o que o cliente poderia atingir",
-    "som": "Mercado Capturavel em 12-24 meses com a estrategia RevHackers"
+    "sam": "Mercado Endereçável com valor - o que o cliente poderia atingir",
+    "som": "Mercado Capturável em 12-24 meses com a estratégia RevHackers"
   }
 }
-Gere de 3 a 5 concorrentes reais e pelo menos 3 tendencias.`;
+Gere de 3 a 5 concorrentes reais e pelo menos 3 tendências. Todo texto DEVE ter acentuação correta em português.`;
 
     try {
         return await callOpenAI(apiKey, prompt);

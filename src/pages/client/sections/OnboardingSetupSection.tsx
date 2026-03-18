@@ -40,57 +40,62 @@ export default function OnboardingSetupSection({ plan }: OnboardingSectionProps)
                     description="Configuramos as fundações de rastreamento, processos e integrações antes do treinamento oficial."
                 />
 
-                <div className="mt-8 space-y-6">
-                    {/* Status banner */}
-                    <div className="bg-zinc-950 rounded-xl px-6 py-5 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A]">Status</span>
-                            <span className="text-sm text-white font-bold">100% Finalizado antes da Equipe Logar</span>
+                <div className="mt-8 space-y-12">
+                    
+                    {/* Status banner - Sleek & Modern */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-100">
+                        <div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] block mb-1">Status de Implementação</span>
+                            <span className="text-[15px] font-bold text-zinc-900 tracking-tight">100% Finalizado antes da Equipe Logar</span>
                         </div>
-                        <div className="w-32 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                            <div className="w-full h-full bg-[#00CC6A] rounded-full" />
+                        <div className="flex-1 max-w-sm hidden md:block">
+                            <div className="h-[3px] w-full bg-zinc-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-[#00CC6A] rounded-full w-full" />
+                            </div>
                         </div>
                     </div>
 
-                    {/* 3 steps as stacked rows inside a single card */}
-                    <div className="border border-zinc-200 rounded-xl overflow-hidden divide-y divide-zinc-100">
+                    {/* Steps - Clean Vertical List */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
                         {steps.map((step, i) => {
                             return (
-                                <div key={i} className="flex items-start gap-5 p-6">
-                                    <div className="flex items-center gap-4 shrink-0">
-                                        <span className="text-xs text-zinc-300 font-mono">{String(i + 1).padStart(2, '0')}</span>
+                                <div key={i} className="flex flex-col group">
+                                    <div className="mb-5 flex items-center justify-between">
+                                        <span className="text-[11px] font-black text-zinc-300 font-mono tracking-widest">{String(i + 1).padStart(2, '0')}</span>
+                                        <div className="w-12 h-[1px] bg-zinc-200 group-hover:w-24 group-hover:bg-[#00CC6A] transition-all duration-300" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="text-base font-bold text-zinc-900 mb-1">
-                                            <EditableField
-                                                placeholder={step.titlePlaceholder}
-                                                path={step.titlePath}
-                                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                                            />
-                                        </h3>
-                                        <p className="text-[15px] text-zinc-500 leading-relaxed font-medium">
-                                            <EditableField
-                                                placeholder={step.descPlaceholder}
-                                                path={step.descPath}
-                                                multiline
-                                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                                            />
-                                        </p>
-                                    </div>
+                                    <h3 className="text-[17px] font-bold text-zinc-900 mb-3 tracking-tight">
+                                        <EditableField
+                                            placeholder={step.titlePlaceholder}
+                                            path={step.titlePath}
+                                            className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                        />
+                                    </h3>
+                                    <p className="text-[13px] text-zinc-500 leading-[1.6] font-medium">
+                                        <EditableField
+                                            placeholder={step.descPlaceholder}
+                                            path={step.descPath}
+                                            multiline
+                                            className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                        />
+                                    </p>
                                 </div>
                             );
                         })}
                     </div>
 
-                    {/* Editable accent callout */}
-                    <div className="border-l-2 border-zinc-900 pl-5 py-2">
-                        <p className="text-[15px] text-zinc-500 font-medium">
+                    {/* Editable accent callout - Minimalist Quote Footer */}
+                    <div className="mt-16 pt-8 border-t border-zinc-100 flex items-start gap-4 max-w-3xl">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mt-1 shrink-0">Insight</span>
+                        <p className="text-[15px] text-zinc-600 font-medium leading-relaxed">
+                            "
                             <EditableField
                                 placeholder="Sem arquitetura correta, dados entram sujos e vendas são perdidas no limbo."
                                 path="onboarding_data.setup.main_title"
                                 multiline
-                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
+                                className="bg-transparent focus:bg-zinc-50 outline-none w-full inline"
                             />
+                            "
                         </p>
                     </div>
                 </div>

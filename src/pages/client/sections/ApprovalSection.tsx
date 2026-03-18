@@ -36,84 +36,10 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
     };
 
     return (
-        <div className="space-y-16">
-            {/* Header */}
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-6 h-px bg-zinc-900" />
-                    <span className="text-xs text-zinc-500 uppercase tracking-[0.2em] font-medium">Execução Imediata</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight leading-[1.05] mb-4">
-                    Próximos<br /><span className="text-zinc-400">Passos</span>
-                </h2>
-                <p className="text-zinc-500">O que acontece nas primeiras 48h após a aprovação do plano</p>
-            </div>
-
-            {/* Timeline */}
-            <div className="space-y-0 border-t border-zinc-200">
-                {steps.map((step: any, i: number) => {
-                    const day = step.day || `Passo ${i + 1}`;
-                    const title = step.title || step.category || step.action || step.name;
-                    const desc = step.description || (step.estimated_time ? `Prazo: ${step.estimated_time}` : '');
-                    return (
-                        <div key={i} className="flex items-start gap-6 py-6 border-b border-zinc-100 group hover:bg-zinc-50 px-2 transition-colors -mx-2">
-                            <div className="w-14 shrink-0">
-                                <span className="text-xs text-zinc-400 font-mono uppercase tracking-widest">{day}</span>
-                            </div>
-                            <div className="w-px bg-zinc-200 self-stretch shrink-0" />
-                            <div className="flex-1">
-                                <h4 className="text-base font-semibold text-black mb-1">{title}</h4>
-                                {desc && <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>}
-                            </div>
-                            <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <ArrowRight className="w-4 h-4 text-zinc-300" />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* QR Code – Mobile access */}
-            <div className="border border-zinc-200 overflow-hidden">
-                <div className="flex flex-col md:flex-row items-center gap-0">
-                    {/* QR Panel */}
-                    <div className="bg-zinc-50 flex flex-col items-center justify-center p-8 md:p-10 shrink-0 border-b md:border-b-0 md:border-r border-zinc-200">
-                        <img
-                            src={qrUrl}
-                            alt="QR Code para acesso mobile"
-                            className="w-[140px] h-[140px]"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                    </div>
-                    {/* Info */}
-                    <div className="p-8 flex-1">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Smartphone className="w-4 h-4 text-zinc-400" />
-                            <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold">Acesse pelo celular</p>
-                        </div>
-                        <h4 className="text-lg font-bold text-black mb-2">Compartilhe com seu time</h4>
-                        <p className="text-sm text-zinc-500 leading-relaxed mb-4">
-                            Escaneie o QR code para abrir este planejamento direto no smartphone ou envie o link para quem precisa revisar.
-                        </p>
-                        <div className="flex items-center gap-2">
-                            <code className="text-xs text-zinc-400 font-mono bg-zinc-100 px-3 py-2 flex-1 truncate block">
-                                {planUrl}
-                            </code>
-                            <button
-                                onClick={() => navigator.clipboard?.writeText(planUrl).then(() => alert('Link copiado!')).catch(() => { })}
-                                className="text-xs px-3 py-2 border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-black transition-colors shrink-0"
-                            >
-                                Copiar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Approval CTA */}
-            <div className="mt-8">
+        <div className="flex flex-col h-full bg-white overflow-hidden items-center justify-center">
+            <div className="max-w-5xl w-full px-6 md:px-12 py-12 mx-auto">
                 {isApproved ? (
-                    <div className="bg-white border border-[#00CC6A]/20 p-10 md:p-14 text-center rounded-2xl">
+                    <div className="bg-white border border-[#00CC6A]/20 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
                         <div className="w-12 h-12 bg-[#00CC6A]/10 border border-[#00CC6A]/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Check className="w-6 h-6 text-[#00CC6A]" />
                         </div>
@@ -124,50 +50,101 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         </div>
                     </div>
                 ) : isRejected ? (
-                    <div className="border border-zinc-200 p-10 text-center">
-                        <h3 className="text-xl font-semibold text-black mb-2">Ajustes em Revisão</h3>
-                        <p className="text-sm text-zinc-500">Nossa equipe está revisando suas observações e entrará em contato em breve.</p>
+                    <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
+                        <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+                        </div>
+                        <h3 className="text-2xl font-black text-black mb-3">Reconstrução em Andamento</h3>
+                        <p className="text-zinc-500 text-sm max-w-md mx-auto">
+                            Nossa IA Especialista (REI) está analisando seus apontamentos e gerando uma nova versão otimizada do planejamento estratégico.
+                        </p>
+                        <div className="mt-8 pt-6 border-t border-zinc-100">
+                            <span className="text-xs text-zinc-400 font-bold uppercase tracking-widest">REVENUE ENGINE INTELLIGENCE™</span>
+                        </div>
                     </div>
                 ) : (
-                    <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden">
-                        <div className="p-10 md:p-14 text-center">
-                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Próximo Passo</p>
-                            <h3 className="text-3xl md:text-4xl font-black text-black mb-3">Pronto para começar?</h3>
-                            <p className="text-zinc-500 mb-10 max-w-md mx-auto text-sm leading-relaxed">
-                                Ao aprovar, você autoriza o início das ações descritas neste planejamento. Nossa equipe entra em ação em até 24h.
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
+                        
+                        {/* Left Side: Text and Actions */}
+                        <div>
+                            <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-zinc-900 mb-4 leading-tight">
+                                Autorização e Assinatura
+                            </h2>
+                            <p className="text-[17px] text-zinc-500 font-medium leading-[1.6] mb-8 pr-4">
+                                Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.
                             </p>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <button onClick={() => setShowReject(true)} disabled={approving} className="px-8 py-4 bg-white border border-zinc-200 text-zinc-600 text-sm font-bold hover:bg-zinc-50 hover:text-black transition-colors disabled:opacity-30 rounded-lg">
-                                    Solicitar Ajustes
+                            
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button 
+                                    onClick={onApprove} 
+                                    disabled={approving} 
+                                    className="flex-1 bg-zinc-950 text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                                >
+                                    {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                    Assinar Agora
                                 </button>
-                                <button onClick={onApprove} disabled={approving} className="px-10 py-4 bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-2 rounded-lg shadow-md">
-                                    {approving ? (<><Loader2 className="w-4 h-4 animate-spin" /> Processando</>) : (<> Aprovar Execução <ArrowRight className="w-4 h-4" /></>)}
+                                <button 
+                                    onClick={() => setShowReject(true)} 
+                                    disabled={approving} 
+                                    className="flex-1 bg-white border border-zinc-200 text-zinc-600 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                                >
+                                    Solicitar Ajuste
                                 </button>
                             </div>
                         </div>
-                        <div className="px-10 py-5 bg-white border-t border-zinc-200 flex items-center justify-between">
-                            <span className="text-xs text-zinc-500 uppercase tracking-widest font-bold">▲ RevHackers</span>
-                            <span className="text-xs text-zinc-400 font-bold">Revenue Engine Intelligence™</span>
+
+                        {/* Right Side: QR Code Card */}
+                        <div className="flex justify-center md:justify-end">
+                            <div className="border border-zinc-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 lg:p-10 w-full max-w-sm flex flex-col items-center text-center bg-white relative">
+                                <div className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center mb-5 shrink-0">
+                                    <Smartphone className="w-4 h-4 text-zinc-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
+                                <p className="text-sm text-zinc-500 leading-relaxed mb-6 px-2">
+                                    Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.
+                                </p>
+                                <div className="border border-zinc-100 p-2 rounded-2xl mb-8">
+                                    <img
+                                        src={qrUrl}
+                                        alt="QR Code"
+                                        className="w-[180px] h-[180px]"
+                                    />
+                                </div>
+                                <div className="bg-[#00CC6A]/10 px-4 py-1.5 rounded uppercase tracking-[0.2em] font-black text-[10px] text-[#00CC6A]">
+                                    Válido Assinatura Digital
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Reject Dialog */}
+            {/* Reject/AI Adjustment Dialog */}
             {showReject && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowReject(false)}>
-                    <div className="bg-white max-w-lg w-full border border-zinc-200 p-6" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold mb-1">Solicitar Ajustes</h3>
-                        <p className="text-zinc-500 text-sm mb-4">Descreva o que precisa ser revisado no planejamento.</p>
+                <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowReject(false)}>
+                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
+                                <p className="text-sm text-zinc-500">Aponte o que precisa mudar. Nossa IA lerá e reajustará o plano.</p>
+                            </div>
+                        </div>
+                        
                         <textarea
                             value={rejectText} onChange={e => setRejectText(e.target.value)}
-                            placeholder="Ex: Gostaria de ajustar o prazo do Mês 1, o nosso time ainda não tem SDR..."
-                            className="w-full min-h-[120px] resize-none border border-zinc-200 focus:border-zinc-900 p-3 text-sm focus:outline-none"
+                            placeholder="Descreva o que sentiu falta, o que precisa ser ajustado ou alguma regra de negócio que deve ser adicionada..."
+                            className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
                         />
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button onClick={() => setShowReject(false)} className="px-5 py-2.5 bg-zinc-50 border border-zinc-200 text-sm font-bold text-zinc-600 hover:bg-zinc-100 transition-colors rounded-lg">Cancelar</button>
-                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-6 py-2.5 bg-black text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 rounded-lg shadow-sm">
-                                {sending ? 'Enviando...' : 'Enviar Feedback'}
+                        
+                        <div className="flex items-center justify-end gap-3 mt-8">
+                            <button onClick={() => setShowReject(false)} className="px-5 py-3 hover:bg-zinc-50 text-[14px] font-bold text-zinc-600 transition-colors rounded-xl border border-transparent hover:border-zinc-200">
+                                Cancelar
+                            </button>
+                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-8 py-3 bg-purple-600 text-white text-[14px] font-bold hover:bg-purple-700 transition-colors disabled:opacity-40 rounded-xl shadow-lg shadow-purple-600/20 flex items-center gap-2">
+                                {sending ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : 'Enviar para Inteligência'}
                             </button>
                         </div>
                     </div>

@@ -32,7 +32,7 @@ export default function StepCrmOps5Retencao({ form }: Props) {
                         <Label htmlFor="hand-sim" className="text-zinc-700 font-normal cursor-pointer text-sm">Transição estruturada: a equipe de CS recebe todo o histórico e necessidades mapeadas de forma automática.</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="frustrante_repetitivo" id="hand-nao" />
+                        <RadioGroupItem value="manual_repetitivo" id="hand-nao" />
                         <Label htmlFor="hand-nao" className="text-zinc-700 font-normal cursor-pointer text-sm">Transição manual: a equipe de CS geralmente precisa coletar boa parte das informações novamente com o cliente.</Label>
                     </div>
                 </RadioGroup>

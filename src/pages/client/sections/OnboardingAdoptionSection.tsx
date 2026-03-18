@@ -19,21 +19,25 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                     description="Período de uso real onde monitoramos atritos da equipe com a ferramenta e comportamentos dos novos canais."
                 />
 
-                <div className="mt-8 space-y-6">
-                    {/* 2 large cards side by side */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="border border-zinc-200 rounded-xl p-8 flex flex-col">
-                            <div className="flex items-center gap-3 mb-5">
-                                <span className="text-xs text-zinc-300 font-mono">01</span>
+                <div className="mt-12">
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+                        {/* Column 1: Auditoria */}
+                        <div className="flex flex-col group relative">
+                            <div className="absolute -left-6 top-0 bottom-0 w-[1px] bg-zinc-100 hidden lg:block" />
+                            <div className="mb-6">
+                                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 text-zinc-400 font-mono text-[11px] font-bold">
+                                    01
+                                </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight">
                                 <EditableField
                                     placeholder="Auditoria Silenciosa"
                                     path="onboarding_data.adoption.p1_title"
                                     className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                 />
                             </h3>
-                            <p className="text-[15px] text-zinc-500 leading-relaxed font-medium flex-1">
+                            <p className="text-[14px] text-zinc-500 leading-relaxed font-medium">
                                 <EditableField
                                     placeholder="Verificamos se a equipe está preenchendo os campos vitais corretamente e onde estão pulando etapas. Retreinamos individualmente sem alarde."
                                     path="onboarding_data.adoption.p1_desc"
@@ -43,18 +47,22 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                             </p>
                         </div>
 
-                        <div className="border border-zinc-200 rounded-xl p-8 flex flex-col">
-                            <div className="flex items-center gap-3 mb-5">
-                                <span className="text-xs text-zinc-300 font-mono">02</span>
+                        {/* Column 2: Ajustes */}
+                        <div className="flex flex-col group relative">
+                            <div className="absolute -left-6 top-0 bottom-0 w-[1px] bg-zinc-100 hidden lg:block" />
+                            <div className="mb-6">
+                                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 text-zinc-400 font-mono text-[11px] font-bold">
+                                    02
+                                </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-2">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight">
                                 <EditableField
                                     placeholder="Micro-Ajustes Estruturais"
                                     path="onboarding_data.adoption.p2_title"
                                     className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                 />
                             </h3>
-                            <p className="text-[15px] text-zinc-500 leading-relaxed font-medium flex-1">
+                            <p className="text-[14px] text-zinc-500 leading-relaxed font-medium">
                                 <EditableField
                                     placeholder="Adição ou remoção de etapas de funil extras ou propriedades que foram identificadas como vitais na prática."
                                     path="onboarding_data.adoption.p2_desc"
@@ -65,26 +73,36 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                         </div>
                     </div>
 
-                    {/* Ciclo de Retorno Banner (dark) */}
-                    <div className="bg-zinc-950 rounded-xl px-6 py-5 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div>
-                                <h4 className="text-sm text-white font-bold">Ciclo Rápido de Retorno</h4>
-                                <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Reunião semanal de 15min com a liderança para reportar atritos</p>
+                    <div className="mt-16 space-y-8">
+                        {/* Ciclo de Retorno Banner (Sleek) */}
+                        <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-zinc-200 transition-colors">
+                            <div className="flex items-start gap-4">
+                                <div className="mt-1 w-2 h-2 rounded-full bg-[#00CC6A] shadow-[0_0_8px_rgba(0,204,106,0.6)]" />
+                                <div>
+                                    <h4 className="text-[15px] text-zinc-900 font-bold mb-1">Ciclo Rápido de Retorno</h4>
+                                    <p className="text-[13px] text-zinc-500 font-medium">Reunião semanal de 15min com a liderança para reportar atritos</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
+                                    Semanal
+                                </span>
                             </div>
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] shrink-0">Semanal</span>
-                    </div>
 
-                    {/* Editable accent callout */}
-                    <div className="border-l-2 border-zinc-900 pl-5 py-2">
-                        <p className="text-[15px] text-zinc-500 font-medium">
-                            <EditableField
-                                placeholder="Nenhum modelo sobrevive ileso ao campo de batalha."
-                                path="onboarding_data.adoption.main_title"
-                                className="bg-transparent focus:bg-zinc-50 outline-none w-full"
-                            />
-                        </p>
+                        {/* Editable accent callout - Minimalist Quote */}
+                        <div className="pt-4 border-t border-zinc-100 flex items-start gap-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mt-1 shrink-0">Insight</span>
+                            <p className="text-[15px] text-zinc-800 font-medium leading-relaxed max-w-2xl">
+                                "
+                                <EditableField
+                                    placeholder="Nenhum modelo sobrevive ileso ao campo de batalha."
+                                    path="onboarding_data.adoption.main_title"
+                                    className="bg-transparent focus:bg-zinc-50 outline-none w-full inline"
+                                />
+                                "
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

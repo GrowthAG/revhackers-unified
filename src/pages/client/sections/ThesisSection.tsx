@@ -71,61 +71,70 @@ export default function ThesisSection({ plan }: { plan: any }) {
                     titleLine1="Tese De"
                     titleLine2="Crescimento"
                 />
+            </div>
 
+            <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full max-w-[1400px] mx-auto flex flex-col items-center">
+                
                 {/* ── Thesis Statement ── */}
-                <div className="text-center max-w-3xl mx-auto mt-10 mb-12">
+                <div className="text-center max-w-4xl mx-auto mt-2 mb-16 px-4">
                     <EditableField
                         path="diagnostic_data.thesis_statement.before"
-                        className="text-xl md:text-[1.75rem] font-black text-zinc-900 leading-[1.25] tracking-tight inline"
+                        className="text-[20px] md:text-[28px] font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.before}
                     />
+                    {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.highlight"
-                        className="text-xl md:text-[1.75rem] font-black text-[#00CC6A] leading-[1.25] tracking-tight inline"
+                        className="text-[20px] md:text-[28px] font-bold text-[#00CC6A] leading-[1.4] tracking-tight inline"
                         placeholder={thesis.highlight}
                     />
+                    {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.after"
-                        className="text-xl md:text-[1.75rem] font-black text-zinc-900 leading-[1.25] tracking-tight inline"
+                        className="text-[20px] md:text-[28px] font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.after}
                     />
                 </div>
 
-                {/* ── Divider ── */}
-                <div className="h-px bg-zinc-200 max-w-4xl mx-auto mb-12" />
+                <div className="w-full max-w-[1400px]">
+                    {/* ── Divider ── */}
+                    <div className="h-px bg-zinc-200 w-full mb-16" />
 
-                {/* ── Pillars - editorial layout ── */}
-                <div className="flex flex-col md:flex-row max-w-5xl mx-auto">
-                    {displayPillars.map((pillar: any, i: number) => {
-                        const isLast = i === displayPillars.length - 1;
-                        return (
-                            <React.Fragment key={i}>
-                                {i > 0 && <div className="hidden md:block w-px bg-zinc-100 shrink-0" />}
-                                {i > 0 && <div className="md:hidden h-px bg-zinc-100 w-full" />}
-                                <div className={`flex-1 py-6 md:py-0 md:px-8 first:md:pl-0 last:md:pr-0 ${i === 0 ? 'md:pr-8' : ''}`}>
-                                    <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest block mb-3">
-                                        {String(i + 1).padStart(2, '0')}
-                                    </span>
-                                    <EditableField
-                                        path={`diagnostic_data.thesis_pillars.${i}.title`}
-                                        className="text-base font-bold text-zinc-900 mb-2.5 block"
-                                        placeholder={pillar.title}
-                                    />
-                                    <EditableField
-                                        path={`diagnostic_data.thesis_pillars.${i}.description`}
-                                        className="text-sm text-zinc-500 leading-relaxed font-medium"
-                                        placeholder={pillar.description}
-                                        multiline
-                                    />
+                    {/* ── Pillars - editorial layout ── */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 gap-x-12 lg:gap-x-20 w-full">
+                        {displayPillars.map((pillar: any, i: number) => {
+                            return (
+                                <div key={i} className="flex flex-col relative group">
+                                    <div className="flex items-center gap-4 mb-5">
+                                        <span className="text-[10px] font-mono font-bold text-zinc-300 group-hover:text-[#00CC6A]/50 transition-colors shrink-0">
+                                            {String(i + 1).padStart(2, '0')}
+                                        </span>
+                                        <div className="h-px w-8 bg-zinc-200 shrink-0" />
+                                    </div>
+                                    
+                                    <h4 className="text-[17px] font-bold text-zinc-900 mb-3 tracking-tight">
+                                        <EditableField
+                                            path={`diagnostic_data.thesis_pillars.${i}.title`}
+                                            placeholder={pillar.title}
+                                        />
+                                    </h4>
+                                    
+                                    <div className="text-[15px] text-zinc-500 font-medium leading-[1.8] group-hover:text-zinc-800 transition-colors">
+                                        <EditableField
+                                            path={`diagnostic_data.thesis_pillars.${i}.description`}
+                                            placeholder={pillar.description}
+                                            multiline
+                                        />
+                                    </div>
 
                                     {pillar.actions && pillar.actions.length > 0 && (
-                                        <ul className="mt-4 space-y-1.5">
+                                        <ul className="mt-6 space-y-2">
                                             {pillar.actions.slice(0, 3).map((action: string, j: number) => (
-                                                <li key={j} className="flex items-start gap-2">
-                                                    <span className="text-zinc-300 shrink-0 text-sm">/</span>
+                                                <li key={j} className="flex items-start gap-3">
+                                                    <span className="text-zinc-300 mt-[2px] shrink-0 text-[11px] leading-relaxed">/</span>
                                                     <EditableField
                                                         path={`diagnostic_data.thesis_pillars.${i}.actions.${j}`}
-                                                        className="text-xs text-zinc-400 leading-snug"
+                                                        className="text-[14px] leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
                                                         placeholder={action}
                                                     />
                                                 </li>
@@ -133,9 +142,9 @@ export default function ThesisSection({ plan }: { plan: any }) {
                                         </ul>
                                     )}
                                 </div>
-                            </React.Fragment>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>

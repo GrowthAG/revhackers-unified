@@ -38,6 +38,165 @@ export default function StrategicPlanGenerator() {
     const [errorLog, setErrorLog] = useState<string | null>(null);
     const [materials, setMaterials] = useState<ReiMaterial[]>([]);
     const [copiedLink, setCopiedLink] = useState(false);
+    const [isSynthesizing, setIsSynthesizing] = useState(false);
+    const [synthesisDone, setSynthesisDone] = useState(false);
+    const [pendingJob, setPendingJob] = useState<any>(null);
+
+    // Escuta mudanças na tabela ai_generation_jobs em background
+    useEffect(() => {
+        if (!reiProjectId) return;
+
+        const checkJobs = async () => {
+            const { data } = await supabase
+                .from('ai_generation_jobs')
+                .select('*')
+                .eq('project_id', reiProjectId)
+                .in('status', ['pending', 'processing', 'completed'])
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (data) {
+                setPendingJob(data);
+                if (data.status === 'completed') {
+                    finalizePlanFromJob(data);
+                } else if (!generating) {
+                    setGenerating(true);
+                }
+            }
+        };
+
+        checkJobs();
+
+        const channel = supabase
+            .channel(`public:ai_generation_jobs:project_id=eq.${reiProjectId}`)
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'ai_generation_jobs',
+                filter: `project_id=eq.${reiProjectId}`
+            }, (payload) => {
+                const updatedJob = payload.new;
+                setPendingJob(updatedJob);
+                if (updatedJob.status === 'completed') {
+                    finalizePlanFromJob(updatedJob);
+                } else if (updatedJob.status === 'failed') {
+                    setGenerating(false);
+                    setErrorLog(updatedJob.error_log || 'A IA falhou em background.');
+                }
+            }).subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [reiProjectId]);
+
+    const finalizePlanFromJob = async (jobPayload: any) => {
+        try {
+            setGenerating(true);
+            
+            // Re-fetch the job directly from the DB to ensure we have the full JSONB payloads
+            // Supabase Realtime sometimes omits extremely large columns in `payload.new`
+            const { data: job, error: fetchError } = await supabase
+                .from('ai_generation_jobs')
+                .select('*')
+                .eq('id', jobPayload.id)
+                .single();
+                
+            if (fetchError || !job) throw new Error('Falha ao recuperar os dados completos do Job.');
+
+            const { result_data: aiPlanData, context_data } = job;
+            if (!context_data) throw new Error('O job nao tem context_data salvo no banco de dados.');
+
+            const {
+                diagnosticResponse, marketCtx, projectType, clientId,
+                personaData, enrichmentResult, normalizedAnswers, aiSuccess
+            } = context_data;
+
+            const fullDiagnostic = DiagnosticService.generateDiagnosis(diagnosticResponse, marketCtx, projectType, aiPlanData);
+            const { plan_data, ...diagnosticContext } = fullDiagnostic;
+            const { market_intelligence, ...dbSafePlanData } = plan_data;
+
+            const finalPlanData = {
+                ...dbSafePlanData,
+                onboarding_data: aiPlanData?.onboarding_data || null,
+                persona_data: personaData,
+                rei_project_id: reiProjectId,
+                client_id: clientId,
+                created_by: (await supabase.auth.getUser()).data.user?.id,
+                status: existingPlan ? existingPlan.status : 'draft',
+                diagnostic_data: {
+                    ...diagnosticContext,
+                    executive_summary: aiPlanData?.executive_summary || diagnosticContext.executive_summary || null,
+                    current_vs_future: aiPlanData?.current_vs_future || diagnosticContext.current_vs_future || null,
+                    quick_wins: aiPlanData?.quick_wins || diagnosticContext.quick_wins || null,
+                    thesis_statement: aiPlanData?.thesis_statement || diagnosticContext.thesis_statement || null,
+                    context_mirror: aiPlanData?.context_mirror || diagnosticContext.context_mirror || null,
+                    signals: aiPlanData?.signals || diagnosticContext.signals || null,
+                    risks: aiPlanData?.risks || diagnosticContext.risks || null,
+                    decisions: aiPlanData?.decisions || diagnosticContext.decisions || null,
+                    pillars: aiPlanData?.pillars || diagnosticContext.pillars || null,
+                    thesis_pillars: aiPlanData?.thesis_pillars || diagnosticContext.thesis_pillars || null,
+                    methodology_steps: aiPlanData?.methodology_steps || diagnosticContext.methodology_steps || null,
+                    roadmap_phases: aiPlanData?.roadmap_phases || diagnosticContext.roadmap_phases || null,
+                    okrs: aiPlanData?.okrs || diagnosticContext.okrs || null,
+                    summary: aiPlanData?.summary || diagnosticContext.summary || null,
+                    scores: reiProject?.site_analysis?.ai_analysis?.technical_scores || diagnosticContext.scores,
+                    stack: reiProject?.site_analysis?.ai_analysis?.tech_stack || diagnosticContext.stack,
+                    enriched_analysis: enrichmentResult,
+                    market_intelligence: market_intelligence || null,
+                    ai_base_success: true,
+                    form_data: {
+                        revops_custom_pipelines: normalizedAnswers.revops_custom_pipelines || [],
+                        revops_custom_lost_reasons: normalizedAnswers.revops_custom_lost_reasons || [],
+                    },
+                } as any
+            };
+
+            // Use explicit insert or update depending on existingPlan to avoid ON CONFLICT errors
+            let upserted;
+            if (existingPlan?.id) {
+                const { data, error } = await supabase
+                    .from('strategic_plans')
+                    .update(finalPlanData)
+                    .eq('id', existingPlan.id)
+                    .select()
+                    .single();
+                if (error) throw error;
+                upserted = data;
+            } else {
+                // Generate a consistent ID for the new plan
+                const newPlanId = crypto.randomUUID();
+                const { data, error } = await supabase
+                    .from('strategic_plans')
+                    .insert({ ...finalPlanData, id: newPlanId })
+                    .select()
+                    .single();
+                if (error) throw error;
+                upserted = data;
+            }
+
+            setExistingPlan(upserted);
+            
+            // Mark the job as completed
+            await supabase.from('ai_generation_jobs').update({ status: 'merged' }).eq('id', job.id);
+            setPendingJob(null);
+            
+            // Refresh data from DB to ensure UI updates with the newly created ID
+            await loadData();
+            
+            if (aiSuccess) {
+                alert('✅ Planejamento estratégico gerado com Inteligência de Mercado no Background!');
+            } else {
+                alert('✅ Planejamento base finalizado no Background!');
+            }
+        } catch (e: any) {
+            console.error('Finalization error:', e);
+            setErrorLog(`Falha na Montagem do Job Background: ${e.message}`);
+        } finally {
+            setGenerating(false);
+        }
+    };
 
     useEffect(() => {
         loadData();
@@ -276,12 +435,21 @@ export default function StrategicPlanGenerator() {
                 }
             }
 
-            // 3. Intelligence Enrichment
-            // Segment resolution: each REI type uses different field names for sector/segment
-            const segment = normalizedAnswers.segmento
-                || normalizedAnswers.sector          // consulting REI
+            // Segment resolution: use company identity as primary signal
+            const companyName = reiProject?.client_company || answers.revops_empresa || answers.companyName || answers.nome_empresa || '';
+            const companySite = reiProject?.site_analysis?.url || answers.companySite || answers.revops_site || answers.site || '';
+            const segmentFromAnswers = normalizedAnswers.segmento
+                || normalizedAnswers.sector
                 || normalizedAnswers.segmento_outro
-                || 'B2B';
+                || '';
+            
+            // If we have company identity, use it to anchor the segment so the AI researches the REAL business
+            const segment = (companyName && companySite)
+                ? `${segmentFromAnswers || 'Identificar segmento real'} - Empresa: ${companyName} (${companySite}). Identifique o segmento real do negócio a partir do site antes de gerar qualquer análise.`
+                : (companyName
+                    ? `${segmentFromAnswers || 'Identificar segmento real'} - Empresa: ${companyName}. Pesquise o que esta empresa faz antes de gerar análise.`
+                    : segmentFromAnswers || 'B2B');
+            
             // Objective resolution: each REI type uses different field names for primary goal
             const objective = answers.revops_objetivo_principal   // crm_ops
                 || answers.results12Months                        // consulting
@@ -290,8 +458,7 @@ export default function StrategicPlanGenerator() {
                 || answers.metaCrescimento
                 || answers.objetivoPrincipal
                 || (isCrmOps ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
-            console.log('[Generator] answers keys:', Object.keys(answers));
-            console.log('[Generator] segment:', segment, '| isCrmOps:', isCrmOps, '| effectiveEmail:', effectiveEmail);
+            console.log('[Generator] segment:', segment, '| companyName:', companyName, '| companySite:', companySite);
 
             // Extract competitors from REI context if any (from Gap 2 addition)
             const competitorsList: { nome: string, url?: string }[] = [];
@@ -407,34 +574,6 @@ export default function StrategicPlanGenerator() {
                 _data_source: aiSuccess ? 'ai_enriched' : 'rei_fallback',
             };
 
-            // ── AI Base Generation (GPT-4o via Edge Function) ──
-            let aiPlanData = null;
-            let aiBaseSuccess = false;
-            try {
-                console.log('Invoking Base AI Generation (GPT-4o)...');
-                const { data: baseAiData, error: baseAiError } = await supabase.functions.invoke('generate-strategic-plan', {
-                    body: {
-                        rei_responses: answers,
-                        segment: segment,
-                        objective: objective,
-                        isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
-                        projectType: reiProject?.type || 'consulting',
-                        projectId: reiProjectId,
-                        projectDuration: reiProject?.project_duration || undefined,
-                        siteAnalysis: reiProject?.site_analysis || undefined,
-                    }
-                });
-
-                if (baseAiError) {
-                    console.warn('Base AI generation error:', baseAiError);
-                } else if (baseAiData?.result) {
-                    aiPlanData = baseAiData.result;
-                    aiBaseSuccess = true;
-                }
-            } catch (err) {
-                console.warn('Failed to call Base AI Generation (GPT-4o):', err);
-            }
-
             // Fallback market context (used by DiagnosticService)
             const marketCtx = {
                 industry_trends: mappedTrends.length > 0 ? mappedTrends : ['Automação de vendas', 'Revenue Operations', 'IA Generativa aplicada a vendas'],
@@ -444,68 +583,132 @@ export default function StrategicPlanGenerator() {
                 strategic_advice: mappedAdvice,
             };
 
-            // diagnosticResponse: latestResponse with normalized form_data for CRM Ops compatibility
-            const fullDiagnostic = DiagnosticService.generateDiagnosis(diagnosticResponse, marketCtx, reiProject?.type, aiPlanData);
-            const { plan_data, ...diagnosticContext } = fullDiagnostic;
-
-            // 3. Define Plan Data (only columns that exist in strategic_plans table)
-            const { market_intelligence, ...dbSafePlanData } = plan_data;
-
-            const finalPlanData = {
-                ...dbSafePlanData,
-                onboarding_data: aiPlanData?.onboarding_data || null,
-                persona_data: personaData,
-                rei_project_id: reiProjectId,
-                client_id: clientId,
-                created_by: (await supabase.auth.getUser()).data.user?.id,
-                status: existingPlan ? existingPlan.status : 'draft',
-                diagnostic_data: {
-                    ...diagnosticContext,
-                    scores: reiProject?.site_analysis?.ai_analysis?.technical_scores || diagnosticContext.scores,
-                    stack: reiProject?.site_analysis?.ai_analysis?.tech_stack || diagnosticContext.stack,
-                    enriched_analysis: enrichmentResult,
-                    market_intelligence: market_intelligence || null,
-                    ai_base_success: aiBaseSuccess // Flag for debugging
-                } as any
+            // ── Background Job Setup ──
+            const jobContext = {
+                diagnosticResponse,
+                marketCtx,
+                projectType: reiProject?.type || 'consulting',
+                clientId: clientId,
+                personaData,
+                enrichmentResult,
+                normalizedAnswers,
+                aiSuccess
             };
 
-            console.log('Final plan data keys:', Object.keys(finalPlanData));
+            const { data: newJob, error: jobError } = await supabase
+                .from('ai_generation_jobs')
+                .insert({
+                    project_id: reiProjectId,
+                    type: 'strategic_plan',
+                    status: 'processing',
+                    context_data: jobContext
+                })
+                .select()
+                .single();
 
-            // 4. Save Plan (Insert or Update)
-            if (existingPlan) {
-                const { data: updated, error: upError } = await supabase
-                    .from('strategic_plans')
-                    .update(finalPlanData)
-                    .eq('id', existingPlan.id)
-                    .select()
-                    .single();
-                if (upError) throw upError;
-                setExistingPlan(updated);
-            } else {
-                const { data: inserted, error: inError } = await supabase
-                    .from('strategic_plans')
-                    .insert(finalPlanData)
-                    .select()
-                    .single();
-                if (inError) throw inError;
-                setExistingPlan(inserted);
-            }
+            if (jobError) throw jobError;
+            setPendingJob(newJob);
 
-            if (aiSuccess) {
-                alert('✅ Planejamento estratégico gerado com Inteligência de Mercado!');
-            } else {
-                alert('✅ Planejamento base gerado! Para dados de mercado enriquecidos, configure a chave Perplexity AI nos secrets do Supabase.');
-            }
+            // ── AI Base Generation (GPT-4o via Edge Function) in Background ──
+            console.log('Invoking Base AI Generation (GPT-4o) in background...');
+            supabase.functions.invoke('generate-strategic-plan', {
+                body: {
+                    jobId: newJob.id,
+                    rei_responses: answers,
+                    segment: segment,
+                    objective: objective,
+                    isB2B: reiProject?.type === 'crm_ops' ? true : DiagnosticService['checkIsB2B'](answers),
+                    projectType: reiProject?.type || 'consulting',
+                    projectId: reiProjectId,
+                    projectDuration: reiProject?.project_duration || undefined,
+                    siteAnalysis: reiProject?.site_analysis || undefined,
+                    enrichedIntelligence: aiSuccess ? {
+                        personas: enrichmentResult.personas,
+                        benchmark: enrichmentResult.benchmark,
+                        market: enrichmentResult.market,
+                    } : undefined,
+                    clientName: reiProject?.client_name || '',
+                    clientCompany: reiProject?.client_company || '',
+                    tradeName: reiProject?.trade_name || undefined,
+                }
+            }).catch(err => {
+                console.warn('Background AI trigger warning (HTTP may drop but execution continues):', err);
+            });
+
+            // We do NOT setGenerating(false) here, we leave it spinning. 
+            // The realtime listener (or finalize function) will turn it off.
 
         } catch (error: any) {
             console.error('Error generating plan:', error);
-            setErrorLog(`Falha na Inserção SQL ou Montagem: ${error.message} \nDetalhes: ${JSON.stringify(error)}`);
-        } finally {
+            setErrorLog(`Falha na Iniciação do Job ou Enriquecimento: ${error.message} \nDetalhes: ${JSON.stringify(error)}`);
             setGenerating(false);
+        }
+
+    }
+
+    async function handlePlanSynthesis(currentEnrichedData: StrategicEnrichmentResult) {
+        if (!existingPlan || !reiProject) return;
+        setIsSynthesizing(true);
+        setSynthesisDone(false);
+
+        try {
+            const planData = existingPlan.diagnostic_data as any;
+            const contextMirror = planData?.context_mirror || {};
+            const formAnswers = reiProject.data || {};
+
+            const enrichedContext = {
+                ...formAnswers,
+                segment: contextMirror.segment || formAnswers.segment || formAnswers.revops_segmento || '',
+                objective: contextMirror.objective || formAnswers.objective || formAnswers.revops_objetivo || '',
+                companyName: formAnswers.revops_empresa || formAnswers.empresa || formAnswers.companyName || client?.company_name || '',
+                companySite: formAnswers.revops_site || formAnswers.site || formAnswers.companySite || '',
+            };
+
+            const segment = enrichedContext.segment || 'B2B Tech';
+            const objective = enrichedContext.objective || 'crescimento';
+
+            const synthesisResult = await StrategicEnrichmentService.researchIntelligence('synthesis' as any, segment, {
+                objective,
+                context: enrichedContext,
+                siteAnalysis: reiProject?.site_analysis || undefined,
+                projectType: reiProject?.type || 'consulting',
+                enrichedData: {
+                    market: currentEnrichedData?.market || null,
+                    personas: currentEnrichedData?.personas || null,
+                    benchmark: currentEnrichedData?.benchmark || null,
+                }
+            });
+
+            if (synthesisResult?.executive_summary) {
+                const diagData = { ...(existingPlan.diagnostic_data as any) };
+                diagData.executive_summary = synthesisResult.executive_summary;
+
+                if (synthesisResult.diagnostic_signals?.length > 0) {
+                    diagData.enriched_analysis = {
+                        ...(diagData.enriched_analysis || {}),
+                        synthesis_signals: synthesisResult.diagnostic_signals,
+                        strategic_opportunities: synthesisResult.strategic_opportunities || [],
+                    };
+                }
+
+                await supabase
+                    .from('strategic_plans')
+                    .update({ diagnostic_data: diagData })
+                    .eq('id', existingPlan.id);
+
+                setExistingPlan((prev: any) => ({ ...prev, diagnostic_data: diagData }));
+                setSynthesisDone(true);
+                setTimeout(() => setSynthesisDone(false), 5000);
+            }
+        } catch (e: any) {
+            console.error('Plan synthesis failed:', e);
+        } finally {
+            setIsSynthesizing(false);
         }
     }
 
     async function handleDeepResearch(type: 'benchmark' | 'personas' | 'market') {
+
         if (!reiProjectId || !reiProject) return;
         setIsDeepResearching(type);
         try {
@@ -521,23 +724,70 @@ export default function StrategicPlanGenerator() {
             const rawResp = (latestResp?.responses as any) || {};
             const answers = rawResp?.form_data || rawResp || {};
 
-            const isCrmType = reiProject?.type === 'crm_ops';
-            const segment = answers.revops_segmento || answers.sector || answers.segmento || 'B2B';
-            const objective = answers.revops_objetivo_principal || answers.results12Months || answers.primaryGoal || answers.successVision || 'Crescimento';
+            // Build context from ALL available sources (priority order: form answers > reiProject.data > context_mirror)
+            const contextMirror = (existingPlan?.diagnostic_data as any)?.context_mirror || {};
+            const reiData = (reiProject?.data as any) || {};
+            const contextData = Object.keys(answers).length > 0 ? answers : Object.keys(reiData).length > 0 ? reiData : {};
 
-            // Extract competitors from normalized fields
+            const isCrmType = reiProject?.type === 'crm_ops';
+
+            const companyName = reiProject?.client_company || reiProject?.client_name || contextData.revops_empresa || contextData.companyName || '';
+            const companySite = reiProject?.client_site || contextData.revops_site || contextData.companySite || '';
+
+            const segmentFromAnswers = contextData.revops_segmento || contextData.sector || contextData.segmento || '';
+            const segmentFromMirror = contextMirror.segment || contextMirror.segmento || '';
+            const objectiveFromAnswers = contextData.revops_objetivo_principal || contextData.results12Months || contextData.primaryGoal || contextData.successVision || '';
+            const objectiveFromMirror = contextMirror.objective || '';
+
+            // Build a rich context object merging context_mirror + form answers + company info
+            const enrichedContext = {
+                ...contextData,
+                companyName,
+                companySite,
+                segmento: segmentFromAnswers || segmentFromMirror || '',
+                objetivo: objectiveFromAnswers || objectiveFromMirror || 'Crescimento',
+                maturidade_comercial: contextMirror.maturity,
+                restricoes: contextMirror.restrictions,
+            };
+
+            // CRITICAL: When no segment was filled in the form and we have company context,
+            // instruct the AI to infer the real segment from the company site —
+            // NOT default to the consulting project type (crm_ops, founder, etc.).
+            const hasCompanyContext = !!(companyName || companySite);
+            const segment = segmentFromAnswers || segmentFromMirror
+                || (hasCompanyContext
+                    ? `Identificar segmento real de ${companyName} (site: ${companySite}) — não informado no formulário`
+                    : 'B2B Tech');
+
+            const objective = objectiveFromAnswers || objectiveFromMirror || 'Crescimento';
+
+            // Debug log - will appear in browser console
+            console.log('[DeepResearch] Debug:', {
+                type,
+                reiProjectType: reiProject?.type,
+                isCrmType,
+                segment,
+                objective,
+                hasAnswers: Object.keys(answers).length > 0,
+                hasContextMirror: Object.keys(contextMirror).length > 0,
+                companyName: enrichedContext.companyName,
+                companySite: enrichedContext.companySite,
+            });
+
+
+            // Extract competitors from normalized fields (try all sources)
             const competitors: { nome: string, url?: string }[] = [];
-            const cn1 = answers.revops_concorrente1_nome || answers.concorrente1_nome;
-            const cn2 = answers.revops_concorrente2_nome || answers.concorrente2_nome;
-            const cn3 = answers.revops_concorrente3_nome || answers.concorrente3_nome;
-            if (cn1) competitors.push({ nome: cn1, url: answers.revops_concorrente1_site || answers.concorrente1_site });
-            if (cn2) competitors.push({ nome: cn2, url: answers.revops_concorrente2_site || answers.concorrente2_site });
-            if (cn3) competitors.push({ nome: cn3, url: answers.revops_concorrente3_site || answers.concorrente3_site });
+            const cn1 = enrichedContext.revops_concorrente1_nome || enrichedContext.concorrente1_nome;
+            const cn2 = enrichedContext.revops_concorrente2_nome || enrichedContext.concorrente2_nome;
+            const cn3 = enrichedContext.revops_concorrente3_nome || enrichedContext.concorrente3_nome;
+            if (cn1) competitors.push({ nome: cn1, url: enrichedContext.revops_concorrente1_site || enrichedContext.concorrente1_site });
+            if (cn2) competitors.push({ nome: cn2, url: enrichedContext.revops_concorrente2_site || enrichedContext.concorrente2_site });
+            if (cn3) competitors.push({ nome: cn3, url: enrichedContext.revops_concorrente3_site || enrichedContext.concorrente3_site });
 
             const result = await StrategicEnrichmentService.researchIntelligence(type, segment, {
                 objective,
                 competitors,
-                context: answers,
+                context: enrichedContext,
                 siteAnalysis: reiProject?.site_analysis || undefined,
                 projectType: reiProject?.type || 'consulting'
             });
@@ -548,9 +798,14 @@ export default function StrategicPlanGenerator() {
                 if (!diagData.enriched_analysis) diagData.enriched_analysis = {};
                 
                 // Keep the exact same interface shape as the initial generation
-                if (type === 'market' || type === 'benchmark') {
+                if (type === 'market') {
                      diagData.enriched_analysis.market = {
                          ...(diagData.enriched_analysis.market || {}),
+                         ...result
+                     };
+                } else if (type === 'benchmark') {
+                     diagData.enriched_analysis.benchmark = {
+                         ...(diagData.enriched_analysis.benchmark || {}),
                          ...result
                      };
                 } else if (type === 'personas') {
@@ -564,18 +819,20 @@ export default function StrategicPlanGenerator() {
 
                 // Also update the UI-facing persona_data!
                 const updatedPersonaData = { ...(existingPlan.persona_data || {}) };
-                if (type === 'benchmark' && result.concorrentes_benchmark) {
-                     updatedPersonaData.competitor_benchmarks = result.concorrentes_benchmark.map((c: any) => ({
-                         company_name: c.nome || 'Concorrente',
-                         domain: c.url || '',
-                         monthly_traffic: '-',
-                         domain_authority: 0,
-                         avg_cpc: '-',
-                         top_keywords: [],
-                         strengths: c.pontos_fortes || '',
-                         weaknesses: c.pontos_fracos || '',
-                     }));
-
+                
+                if (type === 'market') {
+                     if (result.concorrentes_benchmark) {
+                         updatedPersonaData.competitor_benchmarks = result.concorrentes_benchmark.map((c: any) => ({
+                             company_name: c.nome || 'Concorrente',
+                             domain: c.url || '',
+                             monthly_traffic: '-',
+                             domain_authority: 0,
+                             avg_cpc: '-',
+                             top_keywords: [],
+                             strengths: c.pontos_fortes || '',
+                             weaknesses: c.pontos_fracos || '',
+                         }));
+                     }
                      if (result.analise_swot_rapida) {
                          updatedPersonaData.strategic_advice = `Oportunidades: ${(result.analise_swot_rapida.oportunidades || []).join('; ')}. Ameaças: ${(result.analise_swot_rapida.ameacas || []).join('; ')}.`;
                          updatedPersonaData.key_differentiators = result.analise_swot_rapida.oportunidades;
@@ -585,6 +842,21 @@ export default function StrategicPlanGenerator() {
                               typeof t === 'string' ? t : `${t.titulo}: ${t.descricao || t.impacto || ''}`
                           );
                      }
+                     if (result.tam_sam_som) {
+                          updatedPersonaData.market_sizing = result.tam_sam_som;
+                     }
+                } else if (type === 'benchmark') {
+                     if (result.cac_medio) {
+                          updatedPersonaData.avg_cac_benchmark = result.cac_medio;
+                     }
+                     const conv = [];
+                     if (result.taxa_conversao) conv.push(`Conversão: ${result.taxa_conversao}`);
+                     if (result.ciclo_vendas) conv.push(`Ciclo Médio: ${result.ciclo_vendas}`);
+                     if (result.ltv_cac_ratio) conv.push(`LTV:CAC: ${result.ltv_cac_ratio}`);
+                     if (conv.length > 0) {
+                          updatedPersonaData.conversion_benchmarks = conv.join(' | ');
+                     }
+
                 } else if (type === 'personas' && result.personas) {
                      updatedPersonaData.personas = result.personas.map((p: any, i: number) => ({
                           name: p.nome || `Persona ${i + 1}`,
@@ -682,9 +954,9 @@ export default function StrategicPlanGenerator() {
                                 Salvar Alterações
                             </Button>
                         ) : (
-                            <Button onClick={handleGenerate} disabled={generating} className="bg-black text-white hover:bg-zinc-800">
-                                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />}
-                                {existingPlan ? 'Regerar Inteligência Base' : 'Gerar Planejamento'}
+                            <Button onClick={handleGenerate} disabled={generating || !!pendingJob} className="bg-black text-white hover:bg-zinc-800">
+                                {(generating || pendingJob) ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />}
+                                {(generating || pendingJob) ? 'Gerando em Background...' : (existingPlan ? 'Regerar Inteligência Base' : 'Gerar Planejamento')}
                             </Button>
                         )}
                     </div>
@@ -788,371 +1060,220 @@ export default function StrategicPlanGenerator() {
                 )}
 
                 {existingPlan && (
-                    <div className="flex gap-2 mb-8 bg-zinc-100 p-1 rounded-lg w-fit">
-                        <Button
-                            variant={isDeepResearching === 'benchmark' ? 'secondary' : 'ghost'}
-                            size="sm"
-                            disabled={!!isDeepResearching}
-                            onClick={() => handleDeepResearch('benchmark')}
-                            className="text-[10px] font-bold uppercase tracking-widest h-8"
-                        >
-                            {isDeepResearching === 'benchmark' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <TrendingUp className="w-3 h-3 mr-2" />}
-                            Deep Benchmark
-                        </Button>
-                        <Button
-                            variant={isDeepResearching === 'personas' ? 'secondary' : 'ghost'}
-                            size="sm"
-                            disabled={!!isDeepResearching}
-                            onClick={() => handleDeepResearch('personas')}
-                            className="text-[10px] font-bold uppercase tracking-widest h-8"
-                        >
-                            {isDeepResearching === 'personas' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Users className="w-3 h-3 mr-2" />}
-                            Deep Personas
-                        </Button>
-                        <Button
-                            variant={isDeepResearching === 'market' ? 'secondary' : 'ghost'}
-                            size="sm"
-                            disabled={!!isDeepResearching}
-                            onClick={() => handleDeepResearch('market')}
-                            className="text-[10px] font-bold uppercase tracking-widest h-8"
-                        >
-                            {isDeepResearching === 'market' ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <TrendingUp className="w-3 h-3 mr-2" />}
-                            Deep Market Tech
-                        </Button>
+                    <div className="bg-white border border-zinc-200 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className={`w-2.5 h-2.5 rounded-full ${existingPlan.status === 'sent' ? 'bg-[#00CC6A]' : 'bg-zinc-400'}`} />
+                            <span className="text-sm font-semibold text-black">{existingPlan.status === 'sent' ? 'Enviado ao Cliente' : 'Rascunho Interno'}</span>
+                            <span className="text-xs text-zinc-400">|</span>
+                            <span className="text-xs text-zinc-400 font-mono">{new Date(existingPlan.updated_at || existingPlan.created_at).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button onClick={handlePreview} variant="outline" size="sm" className="text-xs">
+                                <Eye className="w-3.5 h-3.5 mr-1.5" /> Visualizar
+                            </Button>
+                            {existingPlan.status === 'draft' && (
+                                <Button onClick={handleSendToClient} disabled={sending} size="sm" className="bg-zinc-900 hover:bg-zinc-800 text-white text-xs">
+                                    {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Send className="w-3.5 h-3.5 mr-1.5" />} Enviar para Cliente
+                                </Button>
+                            )}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                disabled={!!isDeepResearching || isSynthesizing}
+                                onClick={async () => {
+                                    await handleDeepResearch('benchmark');
+                                    await handleDeepResearch('personas');
+                                    await handleDeepResearch('market');
+                                    // After all 3 complete, get the latest enriched data and synthesize into plan
+                                    const { data: latestPlan } = await supabase
+                                        .from('strategic_plans')
+                                        .select('*')
+                                        .eq('id', existingPlan.id)
+                                        .single();
+                                    const latestEnriched = (latestPlan?.diagnostic_data as any)?.enriched_analysis || {};
+                                    await handlePlanSynthesis({
+                                        market: latestEnriched.market,
+                                        personas: latestEnriched.personas,
+                                        benchmark: latestEnriched.benchmark,
+                                    });
+                                }}
+                                className={`text-xs font-bold transition-colors ${synthesisDone ? 'border-[#00CC6A] text-[#00CC6A] bg-[#00CC6A]/5' : 'border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white'}`}
+                            >
+                                {isSynthesizing ? (
+                                    <span className="flex items-center"><Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />Sintetizando Plano...</span>
+                                ) : isDeepResearching ? (
+                                    <span className="flex items-center"><Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />{isDeepResearching === 'benchmark' ? 'Benchmark...' : isDeepResearching === 'personas' ? 'Personas...' : 'Mercado...'}</span>
+                                ) : synthesisDone ? (
+                                    <span className="flex items-center"><BadgeCheck className="w-3.5 h-3.5 mr-1.5" />Plano Sincronizado!</span>
+                                ) : (
+                                    <span className="flex items-center"><BrainCircuit className="w-3.5 h-3.5 mr-1.5" />Deep Intelligence</span>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 )}
 
-                {existingPlan && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Left Column: Status & Actions */}
-                        <div className="space-y-6">
-                            <div className="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm">
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400 mb-4">Status do Plano</h3>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className={`w-3 h-3 rounded-full ${existingPlan.status === 'sent' ? 'bg-[#00CC6A]' : 'bg-zinc-400'}`} />
-                                    <span className="font-semibold capitalize text-black">{existingPlan.status === 'sent' ? 'Enviado ao Cliente' : 'Rascunho Interno'}</span>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <Button onClick={handlePreview} variant="outline" className="w-full justify-start"><Eye className="w-4 h-4 mr-2" /> Visualizar Página Pública</Button>
-                                    {existingPlan.status === 'draft' && (
-                                        <Button onClick={handleSendToClient} disabled={sending} className="w-full justify-start bg-zinc-900 hover:bg-zinc-800 text-white">
-                                            {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />} Enviar para Cliente
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
+
+                {existingPlan && (enrichedData?.market || enrichedData?.personas?.personas || enrichedData?.benchmark) && (
+                    <div className="w-full space-y-4">
+                        <div className="flex items-center gap-2 mb-1">
+                            <BrainCircuit className="w-4 h-4 text-zinc-400" />
+                            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Inteligência Profunda — Resumo</h3>
+                            <span className="text-[10px] text-zinc-300 ml-auto">Detalhes completos nos slides do plano</span>
                         </div>
 
-                        {/* Right Content: Enriched Analysis Visualization */}
-                        <div className="lg:col-span-2 space-y-8">
-
-                            {/* 1. Market Analysis */}
-                            {enrichedData?.market && (
-                                <div className="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center"><TrendingUp size={20} /></div>
-                                        <div>
-                                            <h2 className="text-xl font-bold text-black">Análise de Mercado</h2>
-                                            <p className="text-xs text-zinc-500 uppercase tracking-widest">Tendências & Competitividade</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-6 mb-8">
-                                        <div className="p-5 bg-zinc-50 rounded-lg border border-zinc-100">
-                                            <h4 className="font-bold text-black mb-3 flex items-center gap-2"><Target size={16} /> TAM/SAM/SOM</h4>
-                                            {editMode ? (
-                                                <div className="space-y-3">
-                                                    <div className="flex flex-col">
-                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">TAM</label>
-                                                        <input
-                                                            type="text"
-                                                            value={editedData.market.tam_sam_som?.tam || ''}
-                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, tam: e.target.value } } })}
-                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">SAM</label>
-                                                        <input
-                                                            type="text"
-                                                            value={editedData.market.tam_sam_som?.sam || ''}
-                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, sam: e.target.value } } })}
-                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <label className="text-[10px] font-bold text-zinc-400 uppercase">SOM</label>
-                                                        <input
-                                                            type="text"
-                                                            value={editedData.market.tam_sam_som?.som || ''}
-                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, som: e.target.value } } })}
-                                                            className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <ul className="space-y-3 text-sm text-zinc-600">
-                                                    <li><b className="text-black">TAM:</b> {enrichedData.market.tam_sam_som?.tam || 'N/A'}</li>
-                                                    <li><b className="text-black">SAM:</b> {enrichedData.market.tam_sam_som?.sam || 'N/A'}</li>
-                                                    <li><b className="text-black">SOM:</b> {enrichedData.market.tam_sam_som?.som || 'N/A'}</li>
-                                                </ul>
-                                            )}
-                                        </div>
-                                        <div className="p-5 bg-zinc-50 rounded-lg border border-zinc-100">
-                                            <h4 className="font-bold text-black mb-3 flex items-center gap-2"><ShieldAlert size={16} /> SWOT Rápida</h4>
-                                            <div className="space-y-3 text-sm">
-                                                <div>
-                                                    <span className="text-xs font-bold bg-[#00CC6A]/10 text-[#00CC6A] px-2 py-0.5 rounded mr-2">OPORTUNIDADES</span>
-                                                    {editMode ? (
-                                                        <textarea
-                                                            value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
-                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, oportunidades: e.target.value.split(',').map(s => s.trim()) } } })}
-                                                            className="w-full mt-2 bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
-                                                        />
-                                                    ) : (
-                                                        <p className="text-zinc-600 mt-1">{enrichedData.market.analise_swot_rapida?.oportunidades?.join(', ') || 'N/A'}</p>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <span className="text-xs font-bold bg-zinc-200 text-zinc-700 px-2 py-0.5 rounded mr-2">AMEAÇAS</span>
-                                                    {editMode ? (
-                                                        <textarea
-                                                            value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}
-                                                            onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, ameacas: e.target.value.split(',').map(s => s.trim()) } } })}
-                                                            className="w-full mt-2 bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
-                                                        />
-                                                    ) : (
-                                                        <p className="text-zinc-600 mt-1">{enrichedData.market.analise_swot_rapida?.ameacas?.join(', ') || 'N/A'}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h4 className="font-bold text-black mb-4">Principais Tendências 2025</h4>
-                                        <div className="grid gap-3">
-                                            {(editMode ? editedData : enrichedData).market.tendencias_2025?.map((trend: any, i: number) => (
-                                                <div key={i} className="flex items-start gap-4 p-3 hover:bg-zinc-50 rounded-lg transition-colors border-l-2 border-transparent hover:border-black">
-                                                    <span className="font-bold text-zinc-300 text-lg">0{i + 1}</span>
-                                                    <div className="flex-1">
-                                                        {editMode ? (
-                                                            <div className="space-y-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={trend.titulo}
-                                                                    onChange={(e) => {
-                                                                        const newTrends = [...editedData.market.tendencias_2025];
-                                                                        newTrends[i].titulo = e.target.value;
-                                                                        setEditedData({ ...editedData, market: { ...editedData.market, tendencias_2025: newTrends } });
-                                                                    }}
-                                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-sm font-bold"
-                                                                />
-                                                                <textarea
-                                                                    value={trend.descricao}
-                                                                    onChange={(e) => {
-                                                                        const newTrends = [...editedData.market.tendencias_2025];
-                                                                        newTrends[i].descricao = e.target.value;
-                                                                        setEditedData({ ...editedData, market: { ...editedData.market, tendencias_2025: newTrends } });
-                                                                    }}
-                                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[40px]"
-                                                                />
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <h5 className="font-bold text-black text-sm">{trend.titulo}</h5>
-                                                                <p className="text-xs text-zinc-500 mt-1">{trend.descricao}</p>
-                                                            </>
-                                                        )}
-                                                    </div>
+                        {/* Compact Market Strip */}
+                        {enrichedData?.market && (
+                            <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center"><TrendingUp size={16} className="text-zinc-600" /></div>
+                                    <h4 className="text-sm font-semibold text-zinc-900">Mercado</h4>
+                                    {enrichedData.market.tendencias_2025?.length > 0 && (
+                                        <span className="text-[10px] font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full ml-auto">
+                                            {enrichedData.market.tendencias_2025.length} tendências
+                                        </span>
+                                    )}
+                                </div>
+                                {editMode ? (
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="space-y-3">
+                                            {['tam', 'sam', 'som'].map(k => (
+                                                <div key={k} className="flex flex-col">
+                                                    <label className="text-[10px] font-semibold text-zinc-400 uppercase">{k.toUpperCase()}</label>
+                                                    <input
+                                                        type="text"
+                                                        value={editedData.market.tam_sam_som?.[k] || ''}
+                                                        onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, [k]: e.target.value } } })}
+                                                        className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs"
+                                                    />
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* 2. Personas */}
-                            {enrichedData?.personas?.personas && (
-                                <div className="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center"><Users size={20} /></div>
-                                        <div>
-                                            <h2 className="text-xl font-bold text-black">Buyer Personas (ICP)</h2>
-                                            <p className="text-xs text-zinc-500 uppercase tracking-widest">Perfis Ideais Mapeados</p>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Oportunidades</label>
+                                                <textarea
+                                                    value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
+                                                    onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, oportunidades: e.target.value.split(',').map((s: string) => s.trim()) } } })}
+                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[50px]"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Ameaças</label>
+                                                <textarea
+                                                    value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}
+                                                    onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, ameacas: e.target.value.split(',').map((s: string) => s.trim()) } } })}
+                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[50px]"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <div className="grid md:grid-cols-3 gap-4">
-                                        {(editMode ? editedData : enrichedData).personas.personas.map((persona: any, idx: number) => (
-                                            <div key={idx} className="group relative border border-zinc-200 rounded-xl overflow-hidden hover:shadow-sm transition-all pt-12 pb-6 px-6 text-center">
-                                                <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-zinc-100 to-white" />
-                                                <div className="relative w-20 h-20 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden mb-4">
-                                                    <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}`} alt={persona.nome} className="w-full h-full object-cover" />
-                                                </div>
-
-                                                {editMode ? (
-                                                    <div className="space-y-4 text-left">
-                                                        <div className="flex flex-col">
-                                                            <label className="text-[10px] font-bold text-zinc-400 uppercase">Nome</label>
-                                                            <input
-                                                                type="text"
-                                                                value={persona.nome}
-                                                                onChange={(e) => {
-                                                                    const newPersonas = [...editedData.personas.personas];
-                                                                    newPersonas[idx].nome = e.target.value;
-                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
-                                                                }}
-                                                                className="bg-white border border-zinc-200 rounded px-2 py-1 text-sm font-bold"
-                                                            />
-                                                        </div>
-                                                        <div className="flex flex-col">
-                                                            <label className="text-[10px] font-bold text-zinc-400 uppercase">Cargo</label>
-                                                            <input
-                                                                type="text"
-                                                                value={persona.cargo}
-                                                                onChange={(e) => {
-                                                                    const newPersonas = [...editedData.personas.personas];
-                                                                    newPersonas[idx].cargo = e.target.value;
-                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
-                                                                }}
-                                                                className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Dores Principais (Vírgula)</p>
-                                                            <textarea
-                                                                value={persona.dores_principais?.join(', ') || ''}
-                                                                onChange={(e) => {
-                                                                    const newPersonas = [...editedData.personas.personas];
-                                                                    newPersonas[idx].dores_principais = e.target.value.split(',').map(s => s.trim());
-                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
-                                                                }}
-                                                                className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[60px]"
-                                                            />
-                                                        </div>
-                                                        <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100">
-                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Pitch de Elevador</p>
-                                                            <textarea
-                                                                value={persona.pitch_elevador || ''}
-                                                                onChange={(e) => {
-                                                                    const newPersonas = [...editedData.personas.personas];
-                                                                    newPersonas[idx].pitch_elevador = e.target.value;
-                                                                    setEditedData({ ...editedData, personas: { ...editedData.personas, personas: newPersonas } });
-                                                                }}
-                                                                className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[40px] italic"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <h3 className="font-bold text-black text-lg leading-tight">{persona.nome}</h3>
-                                                        <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-4">{persona.cargo}</p>
-
-                                                        <div className="text-left space-y-4">
-                                                            <div>
-                                                                <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Dores Principais</p>
-                                                                <ul className="text-xs text-zinc-600 list-disc ml-3 space-y-1">
-                                                                    {persona.dores_principais?.slice(0, 3).map((dor: string, i: number) => (
-                                                                        <li key={i}>{dor}</li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                            <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100">
-                                                                <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Pitch de Elevador</p>
-                                                                <p className="text-xs text-black italic">"{persona.pitch_elevador || 'N/A'}"</p>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                )}
+                                ) : (
+                                    <div className="grid grid-cols-3 gap-4">
+                                        {[
+                                            { label: 'TAM', meaning: '(Total Addressable Market)', value: enrichedData.market.tam_sam_som?.tam },
+                                            { label: 'SAM', meaning: '(Serviceable Available Market)', value: enrichedData.market.tam_sam_som?.sam },
+                                            { label: 'SOM', meaning: '(Serviceable Obtainable Market)', value: enrichedData.market.tam_sam_som?.som },
+                                        ].map(({ label, meaning, value }) => (
+                                            <div key={label} className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
+                                                <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+                                                    <span className="text-zinc-500 font-bold">{label}</span> <span className="font-medium text-zinc-300 ml-0.5">{meaning}</span>
+                                                </p>
+                                                <p className="text-xs text-zinc-700 font-medium leading-snug line-clamp-2">{value || 'N/A'}</p>
                                             </div>
                                         ))}
                                     </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Compact Personas Strip */}
+                        {enrichedData?.personas?.personas && (
+                            <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center"><Users size={16} className="text-zinc-600" /></div>
+                                    <h4 className="text-sm font-semibold text-zinc-900">Personas (ICP)</h4>
+                                    <span className="text-[10px] font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full ml-auto">
+                                        {(enrichedData.personas?.personas || []).length} perfis
+                                    </span>
                                 </div>
-                            )}
-
-                            {/* 3. Benchmarks */}
-                            {enrichedData?.benchmark && (
-                                <div className="bg-zinc-900 text-white p-8 rounded-xl shadow-sm">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={20} className="text-[#00CC6A]" /></div>
-                                        <div>
-                                            <h2 className="text-xl font-bold">Benchmarks do Setor</h2>
-                                            <p className="text-xs text-zinc-400 uppercase tracking-widest">Métricas de Referência</p>
-                                        </div>
+                                {editMode ? (
+                                    <div className="space-y-3">
+                                        {editedData.personas.personas.map((persona: any, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-100">
+                                                <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&size=32`} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                                <input type="text" value={persona.nome} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].nome = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs font-semibold flex-1" />
+                                                <input type="text" value={persona.cargo} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].cargo = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs flex-1" />
+                                            </div>
+                                        ))}
                                     </div>
-
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
-                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">CAC Médio</p>
-                                            {editMode ? (
-                                                <textarea
-                                                    value={editedData.benchmark.cac_medio}
-                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, cac_medio: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
-                                                />
-                                            ) : (
-                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.cac_medio}</p>
-                                            )}
-                                        </div>
-                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
-                                            <p className="text-[10px] text-[#00CC6A] uppercase tracking-widest font-black mb-3">Conv. Média</p>
-                                            {editMode ? (
-                                                <textarea
-                                                    value={editedData.benchmark.taxa_conversao}
-                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, taxa_conversao: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-[#00CC6A] w-full h-full min-h-[120px]"
-                                                />
-                                            ) : (
-                                                <p className="text-sm font-bold text-[#00CC6A] leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.taxa_conversao}</p>
-                                            )}
-                                        </div>
-                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
-                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">Ciclo Vendas</p>
-                                            {editMode ? (
-                                                <textarea
-                                                    value={editedData.benchmark.ciclo_vendas}
-                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ciclo_vendas: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
-                                                />
-                                            ) : (
-                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.ciclo_vendas}</p>
-                                            )}
-                                        </div>
-                                        <div className="p-5 bg-zinc-800/50 rounded-xl border border-zinc-800 flex flex-col h-full">
-                                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-3">LTV:CAC</p>
-                                            {editMode ? (
-                                                <textarea
-                                                    value={editedData.benchmark.ltv_cac_ratio}
-                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, ltv_cac_ratio: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white w-full h-full min-h-[120px]"
-                                                />
-                                            ) : (
-                                                <p className="text-sm font-medium text-white/90 leading-relaxed whitespace-pre-wrap flex-1">{enrichedData.benchmark.ltv_cac_ratio}</p>
-                                            )}
-                                        </div>
+                                ) : (
+                                    <div className="flex flex-wrap gap-3">
+                                        {enrichedData.personas.personas.map((persona: any, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-3 px-4 py-2.5 bg-zinc-50 rounded-lg border border-zinc-100 min-w-[200px]">
+                                                <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&size=32`} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                                <div>
+                                                    <p className="text-xs font-semibold text-zinc-900">{persona.nome}</p>
+                                                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{persona.cargo}</p>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
+                                )}
+                            </div>
+                        )}
 
-                                    {(editMode ? editedData : enrichedData).benchmark.comparativo_mercado && (
-                                        <div className="mt-6 pt-6 border-t border-zinc-800">
-                                            {editMode ? (
-                                                <textarea
-                                                    value={editedData.benchmark.comparativo_mercado}
-                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, comparativo_mercado: e.target.value } })}
-                                                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-zinc-300 min-h-[80px]"
-                                                />
-                                            ) : (
-                                                <p className="text-sm font-medium text-zinc-300 leading-relaxed">
-                                                    <span className="text-[#00CC6A] font-bold mr-2">Insight:</span>
-                                                    {enrichedData.benchmark.comparativo_mercado}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
+                        {/* Compact Benchmark Strip */}
+                        {enrichedData?.benchmark && (
+                            <div className="bg-zinc-950 text-white rounded-xl p-5">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={16} className="text-[#00CC6A]" /></div>
+                                    <h4 className="text-sm font-semibold text-white">Benchmarks</h4>
+                                    <span className="text-[10px] font-medium bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full border border-zinc-700 ml-auto">Métricas de Referência</span>
                                 </div>
-                            )}
-
-                        </div>
+                                {editMode ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        {[
+                                            { label: 'CAC Médio', key: 'cac_medio' },
+                                            { label: 'Conversão', key: 'taxa_conversao' },
+                                            { label: 'Ciclo', key: 'ciclo_vendas' },
+                                            { label: 'LTV:CAC', key: 'ltv_cac_ratio' },
+                                        ].map(({ label, key }) => (
+                                            <div key={key} className="flex flex-col">
+                                                <label className="text-[10px] font-semibold text-zinc-500 uppercase mb-1">{label}</label>
+                                                <textarea
+                                                    value={(editedData.benchmark as any)[key] || ''}
+                                                    onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, [key]: e.target.value } })}
+                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-white min-h-[60px]"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            {[
+                                                { label: 'CAC Médio', value: enrichedData.benchmark.cac_medio, accent: false },
+                                                { label: 'Conversão', value: enrichedData.benchmark.taxa_conversao, accent: true },
+                                                { label: 'Ciclo', value: enrichedData.benchmark.ciclo_vendas, accent: false },
+                                                { label: 'LTV:CAC', value: enrichedData.benchmark.ltv_cac_ratio, accent: false },
+                                            ].map(({ label, value, accent }) => (
+                                                <div key={label} className="bg-zinc-800/50 rounded-lg p-3 border border-zinc-800">
+                                                    <p className={`text-[10px] uppercase tracking-widest font-semibold mb-1.5 ${accent ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>{label}</p>
+                                                    <p className={`text-xs font-medium leading-snug line-clamp-3 ${accent ? 'text-[#00CC6A]' : 'text-white/80'}`}>{value || 'N/A'}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {enrichedData.benchmark.comparativo_mercado && (
+                                            <p className="text-xs text-zinc-400 mt-3 leading-relaxed line-clamp-2">
+                                                <span className="text-[#00CC6A] font-semibold mr-1">Insight:</span>
+                                                {enrichedData.benchmark.comparativo_mercado}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

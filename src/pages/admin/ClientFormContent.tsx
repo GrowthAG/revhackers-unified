@@ -25,6 +25,7 @@ import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 
 interface FormData {
     name: string;
+    trade_name?: string;
     email: string;
     company?: string;
     cnpj?: string;
@@ -42,6 +43,7 @@ interface FormData {
 
 const formSchema = zod.object({
     name: zod.string().min(1, 'Obrigatório'),
+    trade_name: zod.string().optional(),
     email: zod.string().email('E-mail inválido'),
     company: zod.string().optional(),
     cnpj: zod.string().optional(),
@@ -153,8 +155,10 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
             if (data.qsa && data.qsa.length > 0) {
                 const primaryPartner = data.qsa[0].nome_socio;
                 if (primaryPartner) setValue('name', primaryPartner);
-            } else if (data.nome_fantasia) {
-                setValue('name', data.nome_fantasia);
+            }
+
+            if (data.nome_fantasia) {
+                setValue('trade_name', data.nome_fantasia);
             }
 
             if (data.cep) setValue('cep', data.cep);
@@ -434,13 +438,18 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                             <Building2 size={12} className="text-zinc-600 fill-zinc-600/10" /> Dados Corporativos
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="space-y-2 md:col-span-1">
                                 <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Razão Social</Label>
                                 <Input {...register('company')} placeholder="NOME DA EMPRESA LTDA" className="!bg-white border-zinc-200 rounded-none h-12 text-sm font-bold text-black focus:ring-0 focus:border-black transition-colors uppercase" />
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 md:col-span-1">
+                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Nome Fantasia (Visuals)</Label>
+                                <Input {...register('trade_name')} placeholder="Sua Marca" className="!bg-white border-zinc-200 rounded-none h-12 text-sm font-bold text-black focus:ring-0 focus:border-black transition-colors" />
+                            </div>
+
+                            <div className="space-y-2 md:col-span-1">
                                 <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Digital Hub / Website</Label>
                                 <div className="relative">
                                     <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />

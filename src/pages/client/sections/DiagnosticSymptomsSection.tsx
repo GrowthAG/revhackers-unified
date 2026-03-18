@@ -38,7 +38,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.25em] block mb-3">{item.label}</span>
                                     <EditableField
                                         path={`diagnostic_data.context_mirror.${['segment', 'objective', 'maturity', 'restrictions'][i]}`}
-                                        className="text-lg font-bold text-white leading-snug"
+                                        className="text-[15px] font-medium text-zinc-100 leading-relaxed"
                                         placeholder={item.value || '-'}
                                     />
                                 </div>
@@ -72,7 +72,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         <div className="mb-auto pb-5">
                                             <EditableField
                                                 path={`diagnostic_data.signals.${i}.text`}
-                                                className="text-[17px] font-bold text-zinc-900 leading-snug tracking-tight"
+                                                className="text-[15px] font-medium text-zinc-800 leading-relaxed tracking-tight"
                                                 placeholder={signal.text}
                                                 multiline
                                             />
