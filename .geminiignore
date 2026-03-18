@@ -1,28 +1,27 @@
-# Dependências de ambiente e módulos não rastreados
+# Dependências e módulos pesados
 node_modules/
 
-# Diretórios estáticos construídos ou pré-compilados
+# Pastas de build e compilações estáticas
 dist/
 build/
 out/
 .next/
-.nuxt/
 
-# Diretórios internos e logs alocados em máquina de desenvolvimento
+# Caches e temporários locais
 .cache/
 .tmp/
 temp/
 tmp/
 .vite/
 .eslintcache
-*.log
 
-# Ocultação do Sistema Operacional padrão
+# Logs de ambiente e ocultos
+*.log
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Mídia não textual, blobs ou pacotes espessos para agentes de leitura passiva
+# Imagens, vídeos e arquivos difíceis/pesados de interpretar por IA baseada em texto
 *.png
 *.jpg
 *.jpeg
@@ -30,11 +29,9 @@ desktop.ini
 *.webp
 *.mov
 *.mp4
-*.avi
 *.pdf
-*.svgz
 
-# Históricos, supressões de arquivos de zip gerais
+# Backups genéricos locais
 backups/
 backup/
 *.zip
