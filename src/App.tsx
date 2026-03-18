@@ -110,12 +110,10 @@ const AdminCaseEdit = lazy(() => import("./pages/admin/AdminCaseEdit"));
 const DiagnosticView = lazy(() => import("./pages/admin/DiagnosticView"));
 const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
 const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
-const GlobalDashboard = lazy(() => import("./pages/admin/GlobalDashboard"));
 const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
 const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
 const OrchestratedOnboarding = lazy(() => import("./pages/admin/OrchestratedOnboarding"));
 const LiveStrategicPlan = lazy(() => import("./pages/admin/LiveStrategicPlan"));
-const LiveResultsReport = lazy(() => import("./pages/admin/LiveResultsReport"));
 const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
 const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
@@ -217,13 +215,12 @@ const App = () => (
               <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
               {/* Admin Management - GROWTHHUB */}
-              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="/admin/dashboard" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/admin" element={<Navigate to="/admin/rei" replace />} />
+              <Route path="/admin/dashboard" element={<Navigate to="/admin/rei" replace />} />
               <Route path="/admin/rei" element={<ProtectedRoute><AdminREIProjects /></ProtectedRoute>} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
               <Route path="/admin/strategic-plan/:projectId" element={<ProtectedRoute><LiveStrategicPlan /></ProtectedRoute>} />
-              <Route path="/admin/resultados/:projectId" element={<ProtectedRoute><LiveResultsReport /></ProtectedRoute>} />
 
               <Route path="/admin/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />

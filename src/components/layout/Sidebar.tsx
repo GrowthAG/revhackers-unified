@@ -133,7 +133,6 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
 
             <nav className="flex-1 py-8 overflow-y-auto">
                 {renderMenuSection("Operacional", [
-                    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
                     { icon: Handshake, label: 'Deal Rooms', path: '/admin/proposals' },
                     { icon: Users, label: 'Clientes', path: '/admin/rei' },
                     { icon: Users, label: 'Equipe', path: '/admin/users' }
