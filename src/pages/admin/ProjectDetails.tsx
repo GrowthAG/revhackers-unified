@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import {
     Map,
@@ -118,7 +118,13 @@ const ProjectDetails = () => {
                         </Button>
                         <div>
                             <h1 className="text-lg font-black text-zinc-900 tracking-tight flex items-center gap-3">
-                                {getDisplayName(project)}
+                                {project.client_id ? (
+                                    <Link to={`/admin/clients/${project.client_id}`} className="hover:underline transition-colors decoration-2 underline-offset-4 cursor-pointer" title="Ver Perfil do Cliente">
+                                        {getDisplayName(project)}
+                                    </Link>
+                                ) : (
+                                    getDisplayName(project)
+                                )}
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1 rounded-md">
                                     {project.status === 'active' ? 'Ativo' : 'Onboarding'}
                                 </span>

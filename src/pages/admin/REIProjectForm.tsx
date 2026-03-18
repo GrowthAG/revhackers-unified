@@ -315,9 +315,8 @@ const REIProjectForm = () => {
 
         setLoading(true);
         try {
-            // FIX: Removing client_id from insert to avoid schema error
             const projectData: any = { // Using any to bypass strict type check for now if needed
-                // client_id: data.client_id, <--- REMOVED due to DB Schema mismatch
+                client_id: data.client_id,
                 client_name: data.client_name,
                 trade_name: data.trade_name || null,
                 client_email: data.client_email,

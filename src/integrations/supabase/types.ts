@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -596,6 +596,7 @@ export type Database = {
           analyst_email: string
           client_company: string | null
           client_email: string
+          client_id: string | null
           client_name: string
           created_at: string | null
           id: string
@@ -613,6 +614,7 @@ export type Database = {
           analyst_email: string
           client_company?: string | null
           client_email: string
+          client_id?: string | null
           client_name: string
           created_at?: string | null
           id?: string
@@ -630,6 +632,7 @@ export type Database = {
           analyst_email?: string
           client_company?: string | null
           client_email?: string
+          client_id?: string | null
           client_name?: string
           created_at?: string | null
           id?: string
@@ -643,7 +646,15 @@ export type Database = {
           updated_at?: string | null
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rei_projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rei_responses: {
         Row: {
