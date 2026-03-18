@@ -8,7 +8,8 @@ import {
     TrendingUp,
     Users,
     ChevronLeft,
-    Loader2
+    Loader2,
+    Link as LinkIcon
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -137,6 +138,20 @@ const ProjectDetails = () => {
                                 } · {project.quarter} {project.year}
                             </p>
                         </div>
+                    </div>
+                    {/* Botão de Copiar Link do Hub */}
+                    <div className="flex items-center gap-3">
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/hub/${project.id}`);
+                                toast({ title: 'Link copiado!', description: 'Link mágico do cliente copiado para a área de transferência.' });
+                            }}
+                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 border-zinc-200 hover:bg-zinc-50"
+                        >
+                            <LinkIcon size={12} className="mr-2" /> Copiar Link Mágico
+                        </Button>
                     </div>
                 </div>
 
