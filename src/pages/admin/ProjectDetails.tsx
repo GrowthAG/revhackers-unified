@@ -9,10 +9,20 @@ import {
     Users,
     ChevronLeft,
     Loader2,
-    Link as LinkIcon
+    Link as LinkIcon,
+    QrCode
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { QRCodeSVG } from 'qrcode.react';
 import { getReiProjectById } from '@/api/reiProjects';
 import type { ReiProject } from '@/api/reiProjects';
 import OrchestratedOnboarding from '@/pages/admin/OrchestratedOnboarding';
@@ -141,6 +151,36 @@ const ProjectDetails = () => {
                     </div>
                     {/* Botão de Copiar Link do Hub */}
                     <div className="flex items-center gap-3">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="text-[10px] font-bold uppercase tracking-widest text-[#00E577] border-[#00E577]/30 bg-[#00E577]/5 hover:bg-[#00E577]/10"
+                                >
+                                    <QrCode size={12} className="mr-2" /> QR Code
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-center font-black text-xl tracking-tight">QR Code de Acesso</DialogTitle>
+                                    <DialogDescription className="text-center">
+                                        Peça para o cliente apontar a câmera na reunião para acessar o Hub.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="p-4 bg-white rounded-2xl shadow-lg border border-zinc-100">
+                                        <QRCodeSVG 
+                                            value={`${window.location.origin}/hub/${project.id}`} 
+                                            size={200}
+                                            level={"Q"}
+                                            includeMargin={true}
+                                        />
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                        
                         <Button 
                             variant="outline" 
                             size="sm" 
@@ -161,38 +201,16 @@ const ProjectDetails = () => {
                             <TabsTrigger value="jornada" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
                                 <Map size={14} /> Jornada
                             </TabsTrigger>
-                            <TabsTrigger value="execucao" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
-                                <Zap size={14} /> Sprints
-                            </TabsTrigger>
                             <TabsTrigger value="biblioteca" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
                                 <BookOpen size={14} /> Wiki & Documentos
-                            </TabsTrigger>
-                            <TabsTrigger value="resultados" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
-                                <TrendingUp size={14} /> Resultados
                             </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="jornada" className="m-0">
                             <OrchestratedOnboarding projectId={project.id} embedded={true} />
                         </TabsContent>
-                        <TabsContent value="execucao" className="m-0">
-                            <div className="flex flex-col items-center justify-center h-[60vh] text-center border border-dashed border-zinc-200 rounded-2xl bg-white">
-                                <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center mb-4">
-                                    <Zap className="w-5 h-5 text-zinc-900" />
-                                </div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Sprints</h3>
-                                <p className="text-xs text-zinc-400 max-w-sm leading-relaxed">
-                                    As tarefas e sprints são gerenciadas no Notion.
-                                </p>
-                            </div>
-                        </TabsContent>
                         <TabsContent value="biblioteca" className="m-0">
                             <ProjectWiki projectId={project.id} projectName={project.client_name} />
-                        </TabsContent>
-                        <TabsContent value="resultados" className="m-0 p-6">
-                            <div className="max-w-6xl mx-auto">
-                                <LiveResultsReport embedded={true} projectId={project.id} />
-                            </div>
                         </TabsContent>
                     </Tabs>
                 </div>
