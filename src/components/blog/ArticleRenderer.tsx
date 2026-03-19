@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArticleTakeaways } from './ArticleTakeaways';
+import { CheckCircle2, ChevronRight, LightbulbIcon, ArrowRight, Quote } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { ArticleBlueprint } from './ArticleBlueprint';
 import { ArticleStack } from './ArticleStack';
 import { ArticleRedFlags } from './ArticleRedFlags';
@@ -78,7 +80,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
             } else if (block.type === 'INFO') {
                 elements.push(
                     <ArticleInfoBox key={`info-${elementKey++}`}>
-                        <div dangerouslySetInnerHTML={{ __html: formatInlineStyles(block.content) }} />
+                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(block.content)) }} />
                     </ArticleInfoBox>
                 );
             } else if (block.type === 'TEXT') {
@@ -246,7 +248,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                 const paragraphText = currentParagraph.join(' ').trim();
                 if (paragraphText) {
                     elements.push(
-                        <p key={`p-${elementKey++}`} className="article-body" dangerouslySetInnerHTML={{ __html: formatInlineStyles(paragraphText) }} />
+                        <p key={`p-${elementKey++}`} className="article-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(paragraphText)) }} />
                     );
                 }
                 currentParagraph = [];
@@ -259,7 +261,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                 elements.push(
                     <ListTag key={`list-${elementKey++}`} className={listType === 'ul' ? 'article-list' : 'article-list-numbered'}>
                         {currentList.map((item, idx) => (
-                            <li key={idx} dangerouslySetInnerHTML={{ __html: formatInlineStyles(item) }} />
+                            <li key={idx} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(item)) }} />
                         ))}
                     </ListTag>
                 );
@@ -276,7 +278,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                             <thead>
                                 <tr>
                                     {tableHeader.map((cell, idx) => (
-                                        <th key={idx} dangerouslySetInnerHTML={{ __html: formatInlineStyles(cell) }} />
+                                        <th key={idx} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(cell)) }} />
                                     ))}
                                 </tr>
                             </thead>
@@ -284,7 +286,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                                 {currentTable.map((row, rowIdx) => (
                                     <tr key={rowIdx}>
                                         {row.map((cell, cellIdx) => (
-                                            <td key={cellIdx} dangerouslySetInnerHTML={{ __html: formatInlineStyles(cell) }} />
+                                            <td key={cellIdx} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(cell) }} />
                                         ))}
                                     </tr>
                                 ))}

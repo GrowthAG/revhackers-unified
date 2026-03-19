@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import DOMPurify from 'dompurify';
 import { Checkbox } from "@/components/ui/checkbox";
 import { casesData } from "@/data/casesData";
 import PageLayout from "@/components/layout/PageLayout";
@@ -60,8 +62,8 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
             <div className="bg-white p-6 lg:p-12 rounded-[4px] border border-zinc-200 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20" />
                 <div
-                    dangerouslySetInnerHTML={{ __html: htmlContent }}
-                    className="prose prose-zinc prose-sm max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900"
+                    className="deal-room-content prose prose-zinc prose-sm max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900"
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
                 />
             </div>
         );
@@ -434,7 +436,7 @@ export default function PublicDealRoom() {
                                     {isValidUrl ? (
                                         <iframe src={mindmapSrc} className="w-full h-full border-none" title="Blueprint" />
                                     ) : (
-                                        <div dangerouslySetInnerHTML={{ __html: proposal.mindmap_embed }} className="w-full h-full" />
+                                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(proposal.mindmap_embed) }} className="w-full h-full" />
                                     )}
                                 </div>
                             </section>

@@ -1,3 +1,5 @@
+import { ChevronRight, ArrowRight, Play, ExternalLink } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import React from 'react';
 import KeyTakeaways from './components/KeyTakeaways';
 import StrategicContext from './components/StrategicContext';
@@ -55,7 +57,7 @@ const DynamicV2Renderer = ({ config, onCTAClick }: DynamicV2RendererProps) => {
                     case 'text':
                         return (
                             <div key={index} className="prose prose-lg max-w-none text-gray-900 mb-8">
-                                <div dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(section.content || '') }} />
                             </div>
                         );
 
@@ -65,7 +67,7 @@ const DynamicV2Renderer = ({ config, onCTAClick }: DynamicV2RendererProps) => {
                     case 'strategic_context':
                         return (
                             <StrategicContext key={index} label={section.label}>
-                                <div dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(section.content || '') }} />
                             </StrategicContext>
                         );
 
@@ -164,7 +166,7 @@ const DynamicV2Renderer = ({ config, onCTAClick }: DynamicV2RendererProps) => {
                         );
 
                     case 'html':
-                        return <div key={index} dangerouslySetInnerHTML={{ __html: section.content || '' }} />;
+                        return <div key={index} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(section.content || '') }} />;
 
                     default:
                         return null;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import BlogPostHeader from '@/components/blog/post/BlogPostHeader';
+import DOMPurify from 'dompurify';
 import BlogPostContent from '@/components/blog/post/BlogPostContent';
 import BlogPostFooter from '@/components/blog/post/BlogPostFooter';
 import RelatedPosts from '@/components/blog/post/RelatedPosts';
@@ -305,11 +306,13 @@ const BlogPostPage = () => {
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 leading-snug tracking-tight text-balance max-w-5xl mx-auto [&>span]:text-revgreen"
                 dangerouslySetInnerHTML={{
-                  __html: post.title.includes('<')
-                    ? post.title
-                    : post.title.includes(':')
-                      ? `<span>${post.title.split(':')[0]}</span>: ${post.title.split(':').slice(1).join(':').trim()}`
-                      : post.title
+                  __html: DOMPurify.sanitize(
+                    post.title.includes('<')
+                      ? post.title
+                      : post.title.includes(':')
+                        ? `<span>${post.title.split(':')[0]}</span>: ${post.title.split(':').slice(1).join(':').trim()}`
+                        : post.title
+                  )
                 }}
               />
             </motion.div>

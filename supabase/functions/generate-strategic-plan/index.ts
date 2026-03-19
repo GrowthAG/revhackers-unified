@@ -44,9 +44,26 @@ serve(async (req: Request) => {
 
     // @ts-ignore
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    // @ts-ignore
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not configured on the server');
+    if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+      throw new Error('API keys are not configured on the server');
+    }
+
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+        throw new Error("Acesso Negado: Cabeçalho de autorização (JWT) ausente.");
+    }
+
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const token = authHeader.replace('Bearer ', '').trim();
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+    if (authError || !user) {
+        throw new Error("Acesso Negado: Token inválido ou expirado. " + (authError?.message || ''));
     }
 
     console.log('[generate-strategic-plan] Initiating generation for segment:', segment);

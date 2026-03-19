@@ -35,8 +35,20 @@ serve(async (req: Request) => {
       throw new Error('API keys are not configured on the server');
     }
 
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+        throw new Error("Acesso Negado: Cabeçalho de autorização (JWT) ausente.");
+    }
+
     // Initialize Supabase Admin client
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+        throw new Error("Acesso Negado: Token inválido. " + (authError?.message || ''));
+    }
 
     console.log(`[generate-playbook] Fetching data for project: ${projectId}, framework: ${framework}`);
 

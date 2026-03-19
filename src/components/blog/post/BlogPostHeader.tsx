@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, User, Share2, Linkedin, Twitter, Link as LinkIcon } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Author {
@@ -61,7 +62,7 @@ const BlogPostHeader = ({
 
       <h1
         className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-8 px-0 text-white text-balance tracking-tight [&>span]:text-revgreen"
-        dangerouslySetInnerHTML={{ __html: post.title }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">

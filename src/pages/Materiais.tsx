@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { FileText, Book, BookOpen, BarChart3, PlaySquare, FileSpreadsheet, Search, ArrowRight } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Section from '@/components/ui/Section';
@@ -175,9 +176,9 @@ const Materiais = () => {
                       </div>
 
                       <h3
-                        className="text-xl font-bold tracking-tight text-black mb-4 leading-[1.1] group-hover:text-zinc-700 transition-colors"
-                        dangerouslySetInnerHTML={{ __html: removeEmojis(title) }}
-                      />
+                        className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-revgreen transition-colors line-clamp-2 leading-tight"
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(removeEmojis(title)) }}
+                      ></h3>
 
                       <div
                         className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] leading-relaxed mb-8 flex-1 line-clamp-4"
