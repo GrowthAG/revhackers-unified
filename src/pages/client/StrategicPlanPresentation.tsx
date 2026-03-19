@@ -6,6 +6,7 @@ import { Check, Loader2, ArrowLeft, ArrowRight, FileText, Target, BarChart3, Cal
 import { EditToolbar } from '@/components/plan/PlanEditContext';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
+import { SignatureEngine } from '@/components/legal/SignatureEngine';
 
 // Section imports
 import CoverSection from './sections/CoverSection';
@@ -85,6 +86,7 @@ export default function StrategicPlanPresentation() {
     const location = useLocation();
     const [plan, setPlan] = useState<any>(null);
     const [client, setClient] = useState<any>(null);
+    const [dealSlug, setDealSlug] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const printRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ export default function StrategicPlanPresentation() {
         documentTitle: `Planejamento_Estrategico_${activeCompanyName.replace(/\s+/g, '_')}`,
     });
 
-    // Clean up external chat widgets (GHL, Lovable, etc.) - they should NOT appear on presentation pages
+    // Clean up external chat widgets (GHL, etc.) - they should NOT appear on presentation pages
     useEffect(() => {
         const cleanupChatWidgets = () => {
             const selectors = [
@@ -128,9 +130,6 @@ export default function StrategicPlanPresentation() {
     const [showApproved, setShowApproved] = useState(false);
     const [approvedName, setApprovedName] = useState('');
     const [showSign, setShowSign] = useState(false);
-    const [signName, setSignName] = useState('');
-    const [signEmail, setSignEmail] = useState('');
-    const [signAccepted, setSignAccepted] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectText, setRejectText] = useState('');
     const [rejecting, setRejecting] = useState(false);
@@ -244,6 +243,15 @@ export default function StrategicPlanPresentation() {
                 const { data: cl } = await supabase.from('clients').select('*').eq('id', data.client_id).single();
                 if (cl) setClient(cl);
             }
+
+            // Try to find if there is a Deal Room proposal for this client
+            const clientName = (data as any)?.client_company || (data as any)?.client_name;
+            if (clientName) {
+                const { data: propData } = await (supabase as any).from('proposals').select('slug').eq('client_name', clientName).order('created_at', { ascending: false }).limit(1).maybeSingle();
+                if (propData?.slug) {
+                    setDealSlug(propData.slug);
+                }
+            }
         } catch (err) { console.error('Erro ao carregar plano:', err); }
         finally { setLoading(false); }
     }
@@ -251,24 +259,6 @@ export default function StrategicPlanPresentation() {
     async function markViewed() {
         if (!plan) return;
         await supabase.from('strategic_plans').update({ status: 'viewed', viewed_at: new Date().toISOString() }).eq('id', plan.id);
-    }
-
-    async function handleApprove() {
-        if (!plan || !signName.trim() || !signEmail.trim() || !signAccepted) return;
-        setApproving(true);
-        try {
-            const existing = plan.next_steps_data || {};
-            const now = new Date().toISOString();
-            await supabase.from('strategic_plans').update({
-                status: 'approved', approved_at: now,
-                next_steps_data: { ...existing, approved_by_name: signName.trim(), approved_by_email: signEmail.trim().toLowerCase(), approved_at_iso: now },
-            }).eq('id', plan.id);
-            setApprovedName(signName.trim());
-            setPlan({ ...plan, status: 'approved', next_steps_data: { ...(plan.next_steps_data || {}), approved_by_name: signName.trim(), approved_by_email: signEmail.trim().toLowerCase() } });
-            setShowSign(false);
-            setShowApproved(true);
-        } catch (err) { console.error('Erro ao aprovar:', err); }
-        finally { setApproving(false); }
     }
 
     async function handleReject() {
@@ -467,31 +457,39 @@ export default function StrategicPlanPresentation() {
 
             {/* Sign modal */}
             {showSign && !isApproved && (
-                <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-                    <div className="bg-zinc-950 max-w-md w-full border border-zinc-800 p-8" onClick={e => e.stopPropagation()}>
-                        <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers" className="h-6 w-auto mb-8" />
-                        <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Assinatura Digital</p>
-                        <h3 className="text-xl font-bold text-white mb-6">Aprovar Planejamento {typeLabel}</h3>
-                        <div className="space-y-4 mb-6">
-                            <div>
-                                <label className="text-xs text-zinc-500 uppercase tracking-widest block mb-2">Nome Completo</label>
-                                <input type="text" value={signName} onChange={e => setSignName(e.target.value)} placeholder="Seu nome completo" autoFocus className="w-full bg-zinc-900 border border-zinc-700 px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#00CC6A]" />
-                            </div>
-                            <div>
-                                <label className="text-xs text-zinc-500 uppercase tracking-widest block mb-2">E-mail Corporativo</label>
-                                <input type="email" value={signEmail} onChange={e => setSignEmail(e.target.value)} placeholder="seu@email.com" className="w-full bg-zinc-900 border border-zinc-700 px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#00CC6A]" />
-                            </div>
-                            <label className="flex items-start gap-3 cursor-pointer">
-                                <input type="checkbox" checked={signAccepted} onChange={e => setSignAccepted(e.target.checked)} className="mt-0.5 accent-[#00CC6A] w-5 h-5 shrink-0" />
-                                <span className="text-xs text-zinc-400 leading-relaxed">Declaro que li, compreendi e aprovo formalmente este planejamento.</span>
-                            </label>
-                        </div>
-                        <div className="space-y-3">
-                            <button onClick={handleApprove} disabled={!signName.trim() || !signEmail.trim() || !signAccepted || approving} className="w-full py-4 bg-[#00CC6A] text-black text-sm font-black hover:bg-[#00CC6A]/90 transition-colors disabled:opacity-25 flex items-center justify-center gap-2">
-                                <Check className="w-5 h-5" /> {approving ? 'Registrando...' : 'Assinar e Aprovar'}
-                            </button>
-                            <button onClick={() => setShowSign(false)} className="w-full py-3 border border-zinc-700 text-zinc-400 text-xs font-semibold hover:border-zinc-500 hover:text-white transition-colors">Voltar</button>
-                        </div>
+                <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 overflow-y-auto pt-20 pb-20">
+                    <div className="max-w-xl w-full" onClick={e => e.stopPropagation()}>
+                        <SignatureEngine 
+                            projectId={plan.rei_projects?.id || plan.project_id}
+                            referenceType="strategic_plan"
+                            referenceId={plan.id}
+                            documentContentToHash={JSON.stringify({
+                                thesis: plan.thesis_data,
+                                roadmap: plan.roadmap_data,
+                                sla: plan.sla_data
+                            })}
+                            isOpen={showSign}
+                            onSuccess={async (signerData) => {
+                                // Update native plan status
+                                await supabase.from('strategic_plans').update({
+                                    status: 'approved',
+                                    approved_at: new Date().toISOString(),
+                                    next_steps_data: { 
+                                        ...(plan.next_steps_data || {}), 
+                                        approved_by_name: signerData.name, 
+                                        approved_by_email: signerData.email, 
+                                        approved_by_cpf: signerData.cpf,
+                                        approved_at_iso: new Date().toISOString()
+                                    },
+                                }).eq('id', plan.id);
+                                
+                                setPlan({ ...plan, status: 'approved', next_steps_data: { ...(plan.next_steps_data || {}), approved_by_name: signerData.name } });
+                                setApprovedName(signerData.name);
+                                setShowSign(false);
+                                setShowApproved(true);
+                            }}
+                        />
+                        <button onClick={() => setShowSign(false)} className="w-full mt-4 py-3 text-zinc-400 text-xs font-semibold hover:text-white transition-colors">Encerrar Criptografia e Voltar</button>
                     </div>
                 </div>
             )}

@@ -32,7 +32,10 @@ export const createReiProject = async (project: ReiProjectInsert): Promise<ReiPr
 export const getAllReiProjects = async (): Promise<ReiProject[]> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .select('*')
+        .select(`
+            *,
+            clients ( trade_name )
+        `)
         .order('next_rei_date', { ascending: true });
 
     if (error) {
@@ -40,7 +43,11 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
         throw error;
     }
 
-    return data || [];
+    return (data || []).map(p => {
+        const tradeName = (p.clients as any)?.trade_name;
+        delete (p as any).clients;
+        return { ...p, trade_name: tradeName } as ReiProject;
+    });
 };
 
 /**
@@ -49,7 +56,10 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
 export const getReiProjectById = async (id: string): Promise<ReiProject | null> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .select('*')
+        .select(`
+            *,
+            clients ( trade_name )
+        `)
         .eq('id', id)
         .single();
 
@@ -58,7 +68,14 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
         return null;
     }
 
-    return data;
+    if (data) {
+        // Map trade_name from the joined table
+        const tradeName = (data.clients as any)?.trade_name;
+        delete (data as any).clients;
+        return { ...data, trade_name: tradeName } as ReiProject;
+    }
+
+    return null;
 };
 
 /**
@@ -69,7 +86,10 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
 export const getPublicReiProjectById = async (id: string): Promise<Partial<ReiProject> | null> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .select('id, client_name, client_email, status, scheduling_completed, analyst_email, next_rei_date, created_at')
+        .select(`
+            id, client_name, client_email, client_company, status, scheduling_completed, analyst_email, next_rei_date, created_at, type,
+            clients ( trade_name )
+        `)
         .eq('id', id)
         .single();
 
@@ -78,7 +98,13 @@ export const getPublicReiProjectById = async (id: string): Promise<Partial<ReiPr
         return null;
     }
 
-    return data;
+    if (data) {
+        const tradeName = (data.clients as any)?.trade_name;
+        delete (data as any).clients;
+        return { ...data, trade_name: tradeName } as Partial<ReiProject>;
+    }
+
+    return null;
 };
 
 /**

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Check, Clock, Shield, FileText, LayoutTemplate, MessageSquare, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { HubNpsBlocker } from '@/components/client/HubNpsBlocker';
 
 // ── Scope items by project type ───────────────────────────────────────────
 const scopeByType: Record<string, string[]> = {
@@ -15,7 +16,7 @@ const scopeByType: Record<string, string[]> = {
         'Automações de Pipeline e Follow-up',
         'Playbook de Vendas & SLA de Passagem',
         'Treinamento do Time no CRM',
-        'Dashboard de Métricas Comerciais',
+        'Uso dos Dashboards Nativos do CRM',
     ],
     crm: [
         'Diagnóstico de Revenue Operations',
@@ -23,7 +24,7 @@ const scopeByType: Record<string, string[]> = {
         'Automações de Pipeline e Follow-up',
         'Playbook de Vendas & SLA de Passagem',
         'Treinamento do Time no CRM',
-        'Dashboard de Métricas Comerciais',
+        'Uso dos Dashboards Nativos do CRM',
     ],
     CRM_CS_OPS: [
         'Diagnóstico de Revenue Operations',
@@ -31,7 +32,7 @@ const scopeByType: Record<string, string[]> = {
         'Automações de Pipeline e Follow-up',
         'Playbook de Vendas & SLA de Passagem',
         'Treinamento do Time no CRM',
-        'Dashboard de Métricas Comerciais',
+        'Uso dos Dashboards Nativos do CRM',
     ],
     founder: [
         'Diagnóstico de Posicionamento Digital',
@@ -55,7 +56,7 @@ const scopeByType: Record<string, string[]> = {
         'Automações de Nutrição e Follow-up',
         'Setup de Ads & Tracking',
         'Otimização de Taxa de Conversão',
-        'Dashboard de Performance',
+        'Análise via Dashboards Nativos',
     ],
     default: [
         'Diagnóstico de Receita Profundo (360º)',
@@ -63,7 +64,7 @@ const scopeByType: Record<string, string[]> = {
         'Setup de CRM & Ferramentas de Vendas',
         'Playbook de Vendas (V1)',
         'Treinamento do Time Comercial',
-        'Dashboard de Métricas em Tempo Real',
+        'Uso de Dashboards Nativos da Ferramenta',
     ],
 };
 
@@ -84,6 +85,7 @@ const ClientProjectHub = () => {
     const [planToken, setPlanToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [clientDocs, setClientDocs] = useState<any[]>([]);
+    const [npsUnlocked, setNpsUnlocked] = useState(false);
 
     useEffect(() => {
         const loadProject = async () => {
@@ -91,27 +93,51 @@ const ClientProjectHub = () => {
             try {
                 // 1. Fetch Project Public Data
                 const data = await getPublicReiProjectById(id);
-                if (data) setProject(data);
+                if (data) {
+                    setProject(data);
+                    
+                    // Fire-and-forget: Log client access (Health Score Analytics - Phase 20)
+                    supabase.from('rei_projects')
+                        .update({ last_login_at: new Date().toISOString() } as any)
+                        .eq('id', id)
+                        .then(({ error }) => {
+                            if (error) console.log('RLS might block direct update, consider RPC for login tracking.', error);
+                        });
+                }
 
                 // 2. Fetch Plan Token if exists (for button link)
-                const { data: planData } = await supabase
-                    .from('strategic_plans')
+                const { data: planData } = await (supabase.from('strategic_plans') as any)
                     .select('access_token')
                     .eq('rei_project_id', id)
                     .maybeSingle();
 
                 if (planData) setPlanToken(planData.access_token);
 
+                // 2.5 Fetch NPS Status
+                const localNps = localStorage.getItem(`rei_nps_unlocked_${id}`);
+                if (localNps === 'true') {
+                    setNpsUnlocked(true);
+                } else {
+                    const { data: npsData } = await (supabase.from('rei_responses') as any)
+                        .select('id')
+                        .eq('project_id', id)
+                        .eq('diagnostic_type', 'onboarding_nps')
+                        .maybeSingle();
+
+                    if (npsData) {
+                        setNpsUnlocked(true);
+                        localStorage.setItem(`rei_nps_unlocked_${id}`, 'true');
+                    }
+                }
+
                 // 3. Fetch Official Handover Documentation
-                const { data: libData } = await supabase
-                    .from('knowledge_libraries')
+                const { data: libData } = await (supabase as any).from('knowledge_libraries')
                     .select('id')
                     .eq('project_id', id)
                     .maybeSingle();
                 
                 if (libData) {
-                    const { data: docs } = await supabase
-                        .from('agent_documents')
+                    const { data: docs } = await (supabase as any).from('agent_documents')
                         .select('id, filename, metadata, created_at')
                         .eq('library_id', libData.id)
                         .order('created_at', { ascending: false });
@@ -154,12 +180,16 @@ const ClientProjectHub = () => {
 
     // --- LOGIC: DETERMINE CURRENT PHASE & CTA ---
     const getPhaseStatus = () => {
+        if (planToken) return 'execution';
         const isScheduled = project.scheduling_completed;
         if (!isScheduled) return 'scheduling';
         return 'execution';
     };
 
     const currentPhase = getPhaseStatus();
+    
+    // Derived state determining if they should see the Blocker
+    const shouldShowNpsBlocker = currentPhase === 'execution' && !npsUnlocked;
 
     const handleViewSchedule = () => {
         if (planToken) {
@@ -171,15 +201,26 @@ const ClientProjectHub = () => {
 
     return (
         <div className="min-h-screen bg-zinc-50/50 text-zinc-900 font-inter selection:bg-zinc-900 selection:text-white">
+            {shouldShowNpsBlocker && (
+                <HubNpsBlocker 
+                    projectId={id!} 
+                    clientName={project.client_name?.split(' ')[0] || 'Cliente'} 
+                    onUnlock={() => setNpsUnlocked(true)} 
+                />
+            )}
             {/* 1. HEADER */}
             <header className="bg-white border-b border-zinc-200 sticky top-0 w-full z-50">
                 <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-3 pl-2">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center">
-                            <span className="font-bold text-white text-xs">RH</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                            <span className="font-bold text-white text-xs tracking-wider">
+                                {((project as any).trade_name || project.client_company || project.client_name || 'CL').substring(0, 2).toUpperCase()}
+                            </span>
                         </div>
                         <div>
-                            <h1 className="text-sm font-bold text-zinc-900 leading-none mb-1">{project.client_name}</h1>
+                            <h1 className="text-sm font-bold text-zinc-900 leading-none mb-1">
+                                {(project as any).trade_name || project.client_company || project.client_name}
+                            </h1>
                             <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Growth Hub</p>
                         </div>
                     </div>
@@ -213,13 +254,13 @@ const ClientProjectHub = () => {
 
                             <h2 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight mb-6 leading-[1.05]">
                                 {currentPhase === 'scheduling'
-                                    ? 'Agendamento do Kickoff.'
+                                    ? 'Apresentação do Plano.'
                                     : 'Acompanhe a Execução.'}
                             </h2>
 
                             <p className="text-zinc-500 text-lg leading-relaxed mb-8 max-w-lg font-normal">
                                 {currentPhase === 'scheduling'
-                                    ? 'Seu analista entrará em contato para alinhar os ponteiros técnicos e dar o start oficial nos 90 dias.'
+                                    ? 'Seu diagnóstico foi analisado pelo nosso time. Seu analista entrará em contato para agendar o Start Oficial e apresentar seu Roadmap de 90 dias.'
                                     : 'O projeto está em andamento. Acesse o cronograma completo ou agende sua apresentação estratégica.'}
                             </p>
 
@@ -301,8 +342,13 @@ const ClientProjectHub = () => {
                                     return (
                                         <div 
                                             key={doc.id}
-                                            // TODO: Client view of the document. For now, open an alert. A proper `/client-doc/:id` route should be built eventually.
-                                            onClick={() => alert('Visualizador de documentos do cliente em breve.')}
+                                            onClick={() => {
+                                                if (meta.type === 'external_link' && meta.url) {
+                                                    window.open(meta.url, '_blank');
+                                                } else {
+                                                    alert('Visualizador de documentos internos em breve. Se o link não abrir, peça ao analista adicionar a URL pública.');
+                                                }
+                                            }}
                                             className={cn(
                                                 "group relative border rounded-2xl p-5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden",
                                                 isFinal ? "bg-zinc-900 border-zinc-800 text-white shadow-xl hover:bg-black" : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-300 hover:shadow-sm"
@@ -313,7 +359,7 @@ const ClientProjectHub = () => {
                                                     "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
                                                     isFinal ? "bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white" : "bg-zinc-50 text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white"
                                                 )}>
-                                                    <FileText size={20} />
+                                                    {meta.type === 'external_link' ? <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> : <FileText size={20} />}
                                                 </div>
                                                 <div className="flex flex-col items-end gap-1">
                                                     {isFinal && (
@@ -350,6 +396,7 @@ const ClientProjectHub = () => {
                             <h3 className="text-lg font-bold text-zinc-900 mb-3 tracking-tight">Escopo Contratado</h3>
                             <p className="text-sm text-zinc-500 leading-relaxed mb-6">
                                 Este é o resumo executivo das entregas previstas para este ciclo de 90 dias.
+                                <span className="hidden opacity-0" id="debug-type-flag">{project.type}</span>
                             </p>
                             <div className="p-4 bg-white rounded-xl border border-zinc-200 shadow-sm">
                                 <div className="flex items-center gap-3">
@@ -372,7 +419,7 @@ const ClientProjectHub = () => {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-sm">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {(scopeByType[project.type || 'default'] || scopeByType.default).map((item, i) => (
+                                    {(scopeByType[project.type?.trim().toLowerCase() || 'default'] || scopeByType.default).map((item, i) => (
                                         <div key={i} className="flex items-start gap-3 p-3 rounded-lg hover:bg-zinc-50 transition-colors">
                                             <div className="mt-0.5 bg-zinc-900 text-white rounded-full p-0.5 shrink-0">
                                                 <Check className="w-3 h-3" />

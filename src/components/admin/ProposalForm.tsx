@@ -475,7 +475,7 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
         else setUploadingDoc(true);
 
         try {
-            const publicUrl = await uploadImageToSupabase(file, 'lovable-uploads');
+            const publicUrl = await uploadImageToSupabase(file, 'revhackers-uploads');
             if (publicUrl) {
                 if (type === 'logo') {
                     setValue('client_logo', publicUrl);

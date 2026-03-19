@@ -56,6 +56,7 @@ const OnboardingSuccess = lazy(() => import("./pages/public/OnboardingSuccess"))
 const MaterialUpload = lazy(() => import("./pages/public/MaterialUpload"));
 const PublicDiagnosticResult = lazy(() => import("./pages/PublicDiagnosticResult"));
 const SchedulingSuccess = lazy(() => import("./pages/SchedulingSuccess"));
+const CertificateOfAuthenticity = lazy(() => import("./pages/public/CertificateOfAuthenticity"));
 
 // Specialized Agenda Pages
 const AgendaLuna = lazy(() => import("./pages/AgendaLuna"));
@@ -116,6 +117,7 @@ const OrchestratedOnboarding = lazy(() => import("./pages/admin/OrchestratedOnbo
 const LiveStrategicPlan = lazy(() => import("./pages/admin/LiveStrategicPlan"));
 const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
+const KnowledgeDocument = lazy(() => import("./pages/admin/KnowledgeDocument"));
 const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
 const AdminProposalNew = lazy(() => import("./pages/admin/AdminProposalNew"));
 const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
@@ -172,6 +174,7 @@ const App = () => (
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/pesquisa-nps" element={<PesquisaNPS />} />
               <Route path="/obrigado-nps" element={<ObrigadoNPS />} />
+              <Route path="/legal/certificado/:hash" element={<CertificateOfAuthenticity />} />
 
               {/* Specialized Pages */}
               <Route path="/agenda/giulliano" element={<SecureBooking />} />
@@ -259,6 +262,11 @@ const App = () => (
               <Route path="/admin/cronograma/:id" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               {/* Unified Project Workspace */}
               <Route path="/admin/projects/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
+              
+              {/* Project Wiki / Document Editor */}
+              <Route path="/admin/knowledge/:libraryId/doc/new" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
+              <Route path="/admin/knowledge/:libraryId/doc/:docId" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
+              
               {/* Legacy Redirects */}
               <Route path="/admin/jornada" element={<Navigate to="/admin/rei" replace />} />
               <Route path="/admin/jornada/:id" element={<Navigate to="/admin/projects/:id" replace />} />

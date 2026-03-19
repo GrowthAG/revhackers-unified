@@ -60,7 +60,7 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                                     multiline
                                 />
                             </h3>
-                            <p className="text-[13px] text-zinc-500 font-medium leading-[1.6]">
+                            <p className="text-[15px] text-zinc-500 font-medium leading-[1.6]">
                                 O Kickoff não é uma formalidade. É o momento de alinhar os 
                                 executivos, travar o escopo e garantir que todos têm a mesma
                                 visão de sucesso para a operação de RevOps.
@@ -86,14 +86,14 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                                         <span className="text-[10px] text-zinc-300 font-mono font-bold">{String(i + 1).padStart(2, '0')}</span>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="text-[17px] font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                                        <h4 className="text-[19px] font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
                                             <EditableField
                                                 placeholder={pillar.titlePlaceholder}
                                                 path={pillar.titlePath}
                                                 className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                             />
                                         </h4>
-                                        <p className="text-[13px] text-zinc-500 leading-[1.6] font-medium mb-4 max-w-xl">
+                                        <p className="text-[15px] text-zinc-500 leading-[1.6] font-medium mb-4 max-w-xl">
                                             <EditableField
                                                 placeholder={pillar.descPlaceholder}
                                                 path={pillar.descPath}

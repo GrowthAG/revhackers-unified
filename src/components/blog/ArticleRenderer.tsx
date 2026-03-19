@@ -454,9 +454,37 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
         return { elements, nextKey: elementKey };
     };
 
+    const linkifyKeywords = (text: string): string => {
+        // Handle explicit markdown links [TEXT](URL) first
+        let linkedText = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-revgreen hover:underline font-semibold transition-colors decoration-revgreen/30 underline-offset-4" target="_blank" rel="noopener noreferrer">$1</a>');
+
+        // If it already has an anchor tag, skip auto-linking to avoid nested or broken HTML
+        if (linkedText.includes('<a ')) return linkedText;
+
+        const keywords = [
+            { pattern: "Mídia Paga|Tráfego Pago", url: '/servicos/tracao-midia-paga' },
+            { pattern: "\\bCRM\\b|HubSpot|ActiveCampaign", url: '/servicos/ecossistema-crm' },
+            { pattern: "Inbound Marketing|Inbound|SEO", url: '/servicos/conteudo-inbound-plg' },
+            { pattern: "Go-To-Market|GTM|Máquina de Vendas", url: '/servicos/consultoria-go-to-market' },
+            { pattern: "Growth Hacking|Account-Based Marketing|ABM", url: '/servicos/revenue-operations-abm' }
+        ];
+
+        keywords.forEach(kw => {
+            let replaced = false;
+            linkedText = linkedText.replace(new RegExp(`(${kw.pattern})`, 'gi'), (match) => {
+                if (replaced) return match;
+                replaced = true; // Only linkify first occurrence per text block
+                return `<a href="${kw.url}" class="text-revgreen hover:underline font-semibold transition-colors decoration-revgreen/30 underline-offset-4" title="Serviço RevHackers: ${match}">${match}</a>`;
+            });
+        });
+
+        return linkedText;
+    };
+
     const formatInlineStyles = (text: string): string => {
         text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        text = linkifyKeywords(text);
         return text;
     };
 

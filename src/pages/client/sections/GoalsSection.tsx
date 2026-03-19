@@ -136,8 +136,8 @@ export default function GoalsSection({ plan }: { plan: any }) {
                                 {item.symbol}
                             </div>
                             <div>
-                                <h4 className="font-bold text-[13px] text-zinc-900">{item.title}</h4>
-                                <p className="text-[11px] text-zinc-500">{item.desc}</p>
+                                <h4 className="font-bold text-[14px] text-zinc-900">{item.title}</h4>
+                                <p className="text-[12px] text-zinc-500">{item.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -151,7 +151,7 @@ export default function GoalsSection({ plan }: { plan: any }) {
                             <span className="text-[10px] text-[#00CC6A] uppercase tracking-[0.2em] font-bold mb-3 block">Objetivo Principal</span>
                             <EditableField 
                                 path={`goals_data.okrs.${i}.description`} 
-                                className="text-xl md:text-2xl font-black text-zinc-900 leading-tight tracking-tight" 
+                                className="text-2xl md:text-3xl font-black text-zinc-900 leading-[1.15] tracking-tight" 
                                 placeholder={okr.description} 
                                 multiline 
                             />
@@ -163,12 +163,12 @@ export default function GoalsSection({ plan }: { plan: any }) {
                                 <div key={j} className="bg-zinc-50/50 border border-zinc-200/60 rounded-xl p-6 relative group overflow-hidden">
                                     <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#00CC6A] to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="flex items-center justify-between mb-4">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-900 transition-colors">{kr.label}</span>
-                                        {kr.target && <span className="text-[9px] font-bold text-zinc-500 bg-white border border-zinc-200 px-2 py-0.5 rounded-full">{kr.target}</span>}
+                                        <span className="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-900 transition-colors">{kr.label}</span>
+                                        {kr.target && <span className="text-[10px] font-bold text-zinc-500 bg-white border border-zinc-200 px-2 py-0.5 rounded-full">{kr.target}</span>}
                                     </div>
                                     <EditableField 
                                         path={`goals_data.okrs.${i}.krs.${j}.text`} 
-                                        className="text-[13px] text-zinc-600 font-medium leading-[1.6]" 
+                                        className="text-[14px] text-zinc-600 font-medium leading-[1.7]" 
                                         placeholder={kr.text} 
                                         multiline 
                                     />
@@ -183,12 +183,12 @@ export default function GoalsSection({ plan }: { plan: any }) {
                     {displayOKRs.slice(1, 5).map((okr: any, i: number) => (
                         <div key={i} className="flex flex-col">
                             <div className="flex items-baseline gap-3 mb-5">
-                                <span className="text-[10px] font-mono font-bold text-zinc-300">
+                                <span className="text-[11px] font-mono font-bold text-zinc-300">
                                     {okr.label || String(i + 1).padStart(2, '0')}
                                 </span>
                                 <EditableField 
                                     path={`goals_data.okrs.${i + 1}.objective`} 
-                                    className="text-[15px] font-bold text-zinc-900 tracking-tight" 
+                                    className="text-[16px] font-bold text-zinc-900 tracking-tight" 
                                     placeholder={okr.objective || okr.kr} 
                                 />
                             </div>
@@ -201,10 +201,10 @@ export default function GoalsSection({ plan }: { plan: any }) {
                                         <div className="flex-1">
                                             <EditableField 
                                                 path={`goals_data.okrs.${i + 1}.krs.${j}.text`} 
-                                                className="text-[13px] text-zinc-600 leading-[1.6] font-medium block" 
+                                                className="text-[14px] text-zinc-600 leading-[1.6] font-medium block" 
                                                 placeholder={kr.text} 
                                             />
-                                            {kr.target && <span className="text-[10px] text-zinc-400 font-mono mt-1 block">{kr.target}</span>}
+                                            {kr.target && <span className="text-[11px] text-zinc-400 font-mono mt-1.5 block">{kr.target}</span>}
                                         </div>
                                     </div>
                                 ))}
@@ -223,15 +223,15 @@ export default function GoalsSection({ plan }: { plan: any }) {
                             <div key={i} className="relative">
                                 {i < 2 && <div className="hidden md:block absolute right-[-2rem] top-2 w-[1px] h-32 bg-zinc-800" />}
                                 <div className="mb-6">
-                                    <h4 className="text-white font-bold text-lg mb-1">{h.title}</h4>
-                                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">{h.subtitle}</span>
+                                    <h4 className="text-white font-bold text-xl mb-1">{h.title}</h4>
+                                    <span className="text-[11px] text-zinc-500 uppercase tracking-widest font-mono">{h.subtitle}</span>
                                 </div>
-                                <p className="text-[#00CC6A] text-[13px] font-bold mb-5">{h.metric}</p>
+                                <p className="text-[#00CC6A] text-[14px] font-bold mb-5">{h.metric}</p>
                                 <div className="space-y-3">
                                     {h.krs.map((kr, j) => (
                                         <div key={j} className="flex items-start gap-3">
                                             <span className="text-zinc-600 mt-[2px] text-xs">/</span>
-                                            <span className="text-[13px] text-zinc-400 font-medium leading-[1.6]">{kr}</span>
+                                            <span className="text-[14px] text-zinc-400 font-medium leading-[1.6]">{kr}</span>
                                         </div>
                                     ))}
                                 </div>

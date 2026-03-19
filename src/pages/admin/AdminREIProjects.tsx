@@ -173,7 +173,7 @@ const AdminREIProjects = () => {
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Empresa (Fantasia)</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Contato</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Tipo</TableHead>
-                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Status</TableHead>
+                                    <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Status & Saúde</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4">Período</TableHead>
                                     <TableHead className="text-black font-bold uppercase tracking-widest text-[10px] py-4 text-right pr-6">Ações</TableHead>
                                 </TableRow>
@@ -199,7 +199,7 @@ const AdminREIProjects = () => {
                                                 />
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{cleanCompanyName(project.client_company || project.client_name)}</div>
+                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{(project as any).trade_name || cleanCompanyName(project.client_company || project.client_name)}</div>
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_name || '-'}</div>
@@ -213,20 +213,56 @@ const AdminREIProjects = () => {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${
-                                                        project.status === 'completed' ? 'bg-[#00CC6A]' :
-                                                        project.status === 'active' || project.status === 'in_progress' ? 'bg-zinc-900' :
-                                                        project.status === 'pending' ? 'bg-zinc-400' :
-                                                        'bg-zinc-300'
-                                                    }`} />
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${
-                                                        project.status === 'completed' ? 'text-[#00CC6A]' : 'text-zinc-500'
-                                                    }`}>
-                                                        {project.status === 'completed' ? 'Concluído' :
-                                                            project.status === 'pending' ? 'Pendente' :
-                                                                project.status === 'active' || project.status === 'in_progress' ? 'Em Andamento' : 'Em Pausa'}
-                                                    </span>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${
+                                                            project.status === 'completed' ? 'bg-[#00CC6A]' :
+                                                            project.status === 'active' || project.status === 'in_progress' ? 'bg-zinc-900' :
+                                                            project.status === 'pending' ? 'bg-zinc-400' :
+                                                            'bg-zinc-300'
+                                                        }`} />
+                                                        <span className={`text-[10px] font-black uppercase tracking-widest ${
+                                                            project.status === 'completed' ? 'text-[#00CC6A]' : 'text-zinc-500'
+                                                        }`}>
+                                                            {project.status === 'completed' ? 'Concluído' :
+                                                                project.status === 'pending' ? 'Pendente' :
+                                                                    project.status === 'active' || project.status === 'in_progress' ? 'Em Andamento' : 'Em Pausa'}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {/* HEALTH SCORE COMPONENT */}
+                                                    {(() => {
+                                                        if (project.status === 'completed') return null;
+                                                        
+                                                        const lastLogin = (project as any).last_login_at ? new Date((project as any).last_login_at) : null;
+                                                        const now = new Date();
+                                                        let diffDays = 999;
+                                                        if (lastLogin) {
+                                                            const diffTime = Math.abs(now.getTime() - lastLogin.getTime());
+                                                            diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                                        }
+
+                                                        let healthColor = 'text-green-600 bg-green-50 border-green-200';
+                                                        let healthIcon = '🟢';
+                                                        let healthLabel = lastLogin ? `Ativo há ${diffDays}d` : 'Novo';
+
+                                                        if (diffDays > 14) {
+                                                            healthColor = 'text-red-700 bg-red-50 border-red-200';
+                                                            healthIcon = '🔴';
+                                                            healthLabel = 'Risco (>14d)';
+                                                        } else if (diffDays > 7) {
+                                                            healthColor = 'text-amber-700 bg-amber-50 border-amber-200';
+                                                            healthIcon = '🟡';
+                                                            healthLabel = 'Ausente (>7d)';
+                                                        }
+
+                                                        return (
+                                                            <div title={lastLogin ? lastLogin.toLocaleString('pt-BR') : 'Ainda não acessou'} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border text-[9px] font-bold uppercase tracking-wider w-fit ${healthColor}`}>
+                                                                <span>{healthIcon}</span>
+                                                                <span>{healthLabel}</span>
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </TableCell>
                                             <TableCell className="py-4">

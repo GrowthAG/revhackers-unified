@@ -130,7 +130,7 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
                                 style={{ width: `${(completedCount / quickWins.length) * 100}%` }}
                             />
                         </div>
-                        <span className="text-[10px] font-bold text-[#00CC6A] uppercase tracking-widest shrink-0">
+                        <span className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-widest shrink-0">
                             {completedCount} DE {quickWins.length} CONCLUÍDAS
                         </span>
                     </div>
@@ -156,7 +156,7 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
                 {/* Footer */}
                 <div className="flex items-center gap-4 mt-16 max-w-2xl">
                     <span className="text-[#00CC6A] shrink-0 text-sm">/</span>
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
                         {completedCount === quickWins.length && quickWins.length > 0
                             ? 'Sprint 1 Concluída'
                             : 'Fundação Sólida > Próxima Fase'
@@ -197,7 +197,7 @@ function TimelineCard({
                 <div className="flex items-start justify-between mb-2">
                     <EditableField
                         path={`diagnostic_data.quick_wins.${index}.action`}
-                        className={`text-[15px] font-bold text-zinc-900 leading-snug pr-4 ${
+                        className={`text-[16px] font-bold text-zinc-900 leading-snug pr-4 ${
                             isComplete ? 'line-through decoration-zinc-300' : ''
                         }`}
                         placeholder={win.action}
@@ -215,7 +215,7 @@ function TimelineCard({
                     )}
                 </div>
 
-                <p className="text-[13px] font-medium text-zinc-500 leading-relaxed mb-4 max-w-sm">
+                <p className="text-[14px] font-medium text-zinc-500 leading-relaxed mb-4 max-w-sm">
                     <EditableField
                         path={`diagnostic_data.quick_wins.${index}.outcome`}
                         className="bg-transparent"

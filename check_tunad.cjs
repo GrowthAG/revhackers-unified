@@ -15,7 +15,7 @@ async function check() {
         const url = urlMatch[1].replace(/['"]/g, '').trim();
         const key = keyMatch[1].replace(/['"]/g, '').trim();
 
-        console.log('Verificando "tunad" em rei_projects...');
+        // Check if there is a project with name containing "tunad"
         const r1 = await fetch(url + '/rest/v1/rei_projects?select=*&client_name=ilike.*tunad*', {
             headers: { apikey: key, Authorization: 'Bearer ' + key }
         });
@@ -30,7 +30,7 @@ async function check() {
             
             if (resp && resp.length > 0) {
                 console.log('✅ As respostas estão SALVAS no Banco de Dados para este projeto!');
-                console.log('Preview do Data Keys:', Object.keys(resp[0].responses.form_data));
+                console.log('Preview:', JSON.stringify(resp[0].responses.form_data, null, 2).substring(0, 300) + '...');
                 return;
             } else {
                 console.log('⚠️ Projeto existe, mas tabela rei_responses está vazia para ele!');
@@ -39,17 +39,16 @@ async function check() {
             console.log('Nenhum projeto explícito chamado tunad na tabela rei_projects.');
             
             // Fallback: search in JSON body of all responses
-            console.log('Buscando em TODAS as respostas globais...');
             const r3 = await fetch(url + '/rest/v1/rei_responses?select=id,responses,created_at&order=created_at.desc&limit=50', {
                 headers: { apikey: key, Authorization: 'Bearer ' + key }
             });
-            const resp3 = await r3.json();
-            if (!resp3 || resp3.error) {
-                console.error('Erro na API:', resp3);
+            const resp = await r3.json();
+            if (!resp || resp.error) {
+                console.error('Erro na API:', resp);
                 return;
             }
             
-            const found = resp3.filter(r => JSON.stringify(r.responses).toLowerCase().includes('tunad'));
+            const found = resp.filter(r => JSON.stringify(r.responses).toLowerCase().includes('tunad'));
             if (found.length > 0) {
                 console.log('✅ As respostas do cliente TUNAD foram localizadas nos arquivos brutos do JSON das ultimas 50! Estão seguras.');
                 console.log('Preview do Data Keys:', Object.keys(found[0].responses.form_data));

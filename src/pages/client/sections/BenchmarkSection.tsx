@@ -41,7 +41,21 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                 <span className="text-[10px] text-zinc-300 font-mono font-bold w-6 shrink-0">{String(index + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-bold text-zinc-900 truncate">{bench.company_name}</p>
-                    {bench.domain && <p className="text-[11px] text-zinc-400 truncate">{bench.domain}</p>}
+                    {bench.domain && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[11px] text-zinc-400 truncate">{bench.domain}</span>
+                            <a 
+                                href={bench.domain.startsWith('http') ? bench.domain : `https://${bench.domain}`} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-zinc-300 hover:text-indigo-500 transition-colors p-0.5"
+                                title="Abrir site do concorrente"
+                            >
+                                <ExternalLink size={11} strokeWidth={2.5} />
+                            </a>
+                        </div>
+                    )}
                 </div>
                 <div className="hidden md:flex items-center gap-5 shrink-0 text-[11px]">
                     <span className="w-20 text-center font-mono text-zinc-500">{bench.monthly_traffic || '-'}</span>

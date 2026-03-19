@@ -1,5 +1,7 @@
 
 
+import { useNavigate } from 'react-router-dom';
+import ArticleCTA from './components/ArticleCTA';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import PolemicLedGrowthArticle from './articles/PolemicLedGrowthArticle';
 import ChatGPTGrowthArticle from './articles/ChatGPTGrowthArticle';
@@ -56,7 +58,37 @@ interface ArticleComponentProps {
 }
 
 const BlogPostContent = ({ content, category, authorName, authorRole, authorAvatar, slug, onCTAClick }: BlogPostContentProps) => {
+  const navigate = useNavigate();
   const articleSlug = slug || '';
+
+  // Contextual Dynamic CTA Logic
+  const lowerCategory = (category || '').toLowerCase();
+  let ctaTitle = "Pronto para o próximo nível?";
+  let ctaDesc = "A RevHackers ajuda empresas de tecnologia a estruturarem playbooks de crescimento previsível.";
+  let ctaBtnText = "Agendar Diagnóstico";
+  let ctaAction = onCTAClick;
+
+  if (lowerCategory.includes('vendas') || lowerCategory.includes('comercial') || lowerCategory.includes('crm')) {
+    ctaTitle = "Gargalos no seu Funil de Vendas?";
+    ctaDesc = "Descubra exatamente onde você está perdendo negócios. Faça o diagnóstico comercial focado em Receita.";
+    ctaBtnText = "Iniciar Revenue Score";
+    ctaAction = () => navigate('/score-revenue');
+  } else if (lowerCategory.includes('marketing') || lowerCategory.includes('seo') || lowerCategory.includes('conteúdo') || lowerCategory.includes('midia')) {
+    ctaTitle = "Sua máquina de Marketing está tracionando?";
+    ctaDesc = "Avalie a performance dos seus canais de aquisição e descubra como dobrar seus leads qualificados.";
+    ctaBtnText = "Iniciar Marketing Score";
+    ctaAction = () => navigate('/score-site');
+  } else if (lowerCategory.includes('founder') || lowerCategory.includes('startups') || lowerCategory.includes('liderança') || lowerCategory.includes('plg')) {
+    ctaTitle = "Qual o próximo gargalo da sua operação?";
+    ctaDesc = "Faça o assessment exclusivo para Founders B2B e descubra onde focar sua energia para escalar.";
+    ctaBtnText = "Iniciar Founder Score";
+    ctaAction = () => navigate('/score-founder');
+  } else {
+    ctaTitle = "Sua operação B2B está pronta para escalar?";
+    ctaDesc = "Faça o diagnóstico 360º de Growth e descubra os vazamentos que estão limitando seu crescimento.";
+    ctaBtnText = "Iniciar Growth Score";
+    ctaAction = () => navigate('/score');
+  }
 
   // Try to parse content as Dynamic V2 JSON (Keep for legacy support or special grids)
   let dynamicV2Config = null;
@@ -117,7 +149,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
   const fixedAvatar = getFixedAuthorAvatar(authorAvatar);
 
   return (
-    <div className="bg-white text-gray-900 overflow-hidden antialiased">
+    <article className="bg-white text-gray-900 overflow-hidden antialiased">
       <div className="max-w-4xl mx-auto">
         {dynamicV2Config ? (
           <DynamicV2Renderer config={dynamicV2Config} onCTAClick={onCTAClick} />
@@ -129,13 +161,12 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
             <ArticleRenderer content={content} />
 
             {/* Contextual CTA */}
-            <div className="article-cta">
-              <h3>Pronto para o próximo nível?</h3>
-              <p>A RevHackers ajuda empresas de tecnologia a estruturarem playbooks de crescimento previsível.</p>
-              <button onClick={onCTAClick} className="article-cta-button">
-                Falar com um Especialista
-              </button>
-            </div>
+            <ArticleCTA 
+              title={ctaTitle}
+              description={ctaDesc}
+              primaryBtnText={ctaBtnText}
+              onPrimaryClick={ctaAction}
+            />
           </div>
         )}
 
@@ -144,6 +175,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
           <img
               src={fixedAvatar}
               alt={authorName}
+              loading="lazy"
               className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png';
@@ -159,7 +191,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

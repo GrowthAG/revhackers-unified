@@ -277,6 +277,7 @@ const BlogPostPage = () => {
             <img
               src={heroImgSrc}
               alt=""
+              fetchPriority="high"
               onError={handleHeroImageError}
               className="w-full h-full object-cover blur-xl scale-110"
             />

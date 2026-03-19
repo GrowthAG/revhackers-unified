@@ -1,10 +1,13 @@
-
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar, Clock, DollarSign, CreditCard, CheckCircle2, Zap, Quote, Share2 } from "lucide-react";
+import { CheckCircle2, FileText, ChevronRight, Lock, CalendarClock, Briefcase, Zap, ShieldCheck, PenLine, Loader2, ArrowRight, Play, CheckCircle, Share2, Quote } from "lucide-react";
+import { DynamicContract } from "./components/DynamicContract";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { casesData } from "@/data/casesData";
 import PageLayout from "@/components/layout/PageLayout";
 import {
@@ -21,6 +24,7 @@ import {
 import { OnboardingRoadmap } from "@/components/roadmap/OnboardingRoadmap";
 import { First90Days } from "@/components/roadmap/First90Days";
 import { toast } from "@/components/ui/use-toast";
+import { SignatureEngine } from "@/components/legal/SignatureEngine";
 
 
 
@@ -125,9 +129,91 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
 
 export default function PublicDealRoom() {
     const { slug } = useParams();
+    const [searchParams] = useSearchParams();
     const [proposal, setProposal] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const testimonialsRef = useRef<HTMLDivElement>(null);
+
+    // Signature State
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Detect payment success redirect from InfinitePay
+    useEffect(() => {
+        if (searchParams.get('payment') === 'success') {
+            toast({ 
+                title: "Pagamento Aprovado! 🥂", 
+                description: "Seu Hub está oficialmente liberado. O time de Onboarding foi notificado." 
+            });
+        }
+    }, [searchParams]);
+
+    const handleAcceptProposal = async (signerData: { name: string, role: string, cpf: string, email: string }) => {
+        setIsSubmitting(true);
+        try {
+            // 1. SAVE SIGNATURE
+            const { error } = await supabase.from('proposals' as any).update({
+                status: 'approved',
+                crm_data: {
+                    ...(proposal.crm_data || {}),
+                    deal_signed: true,
+                    signed_by: signerData.name,
+                    signed_role: signerData.role,
+                    signed_cpf: signerData.cpf,
+                    signed_email: signerData.email,
+                    signed_user_agent: navigator.userAgent,
+                    signed_at: new Date().toISOString()
+                }
+            }).eq('id', proposal.id);
+
+            if (error) throw error;
+
+            toast({ title: "Assinatura Registrada", description: "Gerando ambiente seguro de pagamento..." });
+
+            // 2. GENERATE INFINITEPAY LINK
+            const chargeAmount = Number(proposal.setup_fee) > 0 ? Number(proposal.setup_fee) : Number(proposal.investment_total);
+            const amountInCents = Math.round(chargeAmount * 100);
+
+            try {
+                const ipResponse = await fetch('https://api.infinitepay.io/invoices/public/checkout/links', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        handle: "UseFunnels",
+                        order_nsu: proposal.id,
+                        redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
+                        items: [
+                            {
+                                quantity: 1,
+                                price: amountInCents,
+                                description: `Setup & Estruturação de Revenue Ops - Deal Room`
+                            }
+                        ]
+                    })
+                });
+
+                const checkoutData = await ipResponse.json();
+                
+                if (checkoutData?.url) {
+                    window.location.href = checkoutData.url;
+                    return; // Halts execution to wait for redirect
+                } else {
+                    console.error("InfinitePay falhou em retornar URL: ", checkoutData);
+                    throw new Error("Link falhou");
+                }
+            } catch (paymentError) {
+                console.error("Payment integration error: ", paymentError);
+                // Fallback gracefully se a API de pagamento falhar: Continua no Deal Room normal
+                setProposal({ ...proposal, status: 'approved' });
+                toast({ title: "Estratégia Aprovada!", description: "Bem-vindo à equipe! Seu Hub será provisionado." });
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast({ title: "Erro na assinatura", description: "Não foi possível confirmar o aceite. Atualize a página e tente novamente.", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchProposal = async () => {
@@ -271,7 +357,7 @@ export default function PublicDealRoom() {
                                     toast({ title: "Iniciando Sessão...", description: "Registrando início e abrindo sala de conferência." });
                                     try {
                                         // Optional: You can create an RPC or table update here to log 'session_start'
-                                        await supabase.from('deal_sessions').insert({
+                                        await supabase.from('deal_sessions' as any).insert({
                                             deal_id: proposal.id,
                                             started_at: new Date().toISOString(),
                                             user_agent: navigator.userAgent
@@ -410,21 +496,58 @@ export default function PublicDealRoom() {
                     <section className="pt-12 border-t border-zinc-100/50">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
-                            {/* LEFT: Calendar */}
+                            {/* LEFT: Assinatura Digital (Substitui o Calendar) */}
                             <div className="lg:col-span-8 order-2 lg:order-1 flex flex-col space-y-5">
                                 <div className="h-20 flex flex-col justify-end">
-                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Concluir Projeto</h2>
-                                    <p className="text-[13px] text-zinc-500 mt-2.5 leading-relaxed">Agende a Call de Fechamento para tirar suas últimas dúvidas</p>
+                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Formalização do Acordo</h2>
+                                    <p className="text-[13px] text-zinc-500 mt-2.5 leading-relaxed">Assinatura eletrônica e liberação imediata do espaço de trabalho.</p>
                                 </div>
                                 <div className="flex-grow">
-                                    <div className="w-full h-full bg-white rounded-[4px] border border-zinc-200 overflow-hidden shadow-sm">
-                                        <iframe
-                                            src="https://pages.revhackers.com.br/widget/booking/t705eSgxmMHJrqU5VW1z"
-                                            style={{ width: '100%', border: 'none', height: '100%', minHeight: '700px', overflow: 'hidden' }}
-                                            scrolling="no"
-                                            title="Booking"
-                                        />
-                                    </div>
+                                    {proposal.status === 'approved' ? (
+                                        <div className="w-full h-full min-h-[500px] bg-green-50/50 rounded-[4px] border border-green-200 overflow-hidden shadow-sm flex flex-col items-center justify-center p-12 text-center relative">
+                                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply"></div>
+                                            <div className="z-10 bg-white p-4 rounded-full shadow-lg border border-green-100 mb-6">
+                                                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center animate-[pulse_3s_ease-in-out_infinite]">
+                                                    <CheckCircle2 className="w-10 h-10 text-white" />
+                                                </div>
+                                            </div>
+                                            <h3 className="z-10 text-3xl font-black text-green-900 tracking-tight mb-4">Projeto Aprovado Oficialmente</h3>
+                                            <p className="z-10 text-base text-green-800/80 max-w-md mx-auto leading-relaxed mb-8">
+                                                Sua máquina de receita já começou a ser arquitetada. A equipe estruturará o seu <b>Hub do Projeto</b> nas próximas horas.
+                                            </p>
+                                            <div className="z-10 flex flex-col items-center space-y-2 bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-green-100">
+                                                <p className="text-xs text-green-700 font-medium uppercase tracking-widest">Assinado por</p>
+                                                <p className="text-sm font-bold text-zinc-900">{proposal.crm_data?.signed_by || 'Cliente'}</p>
+                                                <p className="text-[11px] text-zinc-500">{proposal.crm_data?.signed_role || 'Diretoria'}</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-full min-h-[500px] flex flex-col relative max-w-xl mx-auto">
+                                            {/* Injecting the Deal Room Global Signature Shield */}
+                                            <SignatureEngine 
+                                                projectId={proposal.project_id}
+                                                referenceType="proposal"
+                                                referenceId={proposal.id}
+                                                documentContentToHash={JSON.stringify({ 
+                                                    scope: proposal.detailed_scope,
+                                                    investment: proposal.investment_total,
+                                                    terms: proposal.payment_terms
+                                                })}
+                                                onSuccess={(signerData) => handleAcceptProposal(signerData)}
+                                            />
+                                            
+                                            <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-col items-center">
+                                                <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wide mb-3 block text-center">Contrato de Prestação de Serviços (SLA)</Label>
+                                                <div className="w-full">
+                                                    <DynamicContract proposal={proposal} />
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-zinc-400 font-medium uppercase tracking-widest border-t border-zinc-100 pt-6">
+                                                <ShieldCheck className="w-3.5 h-3.5" /> Site Seguro com Criptografia SSL 256-bit
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

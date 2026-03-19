@@ -36,6 +36,7 @@ import ReiDashboard from '@/components/rei/ReiDashboard'; // Added ReiDashboard 
  */
 function getDisplayName(project: ReiProject | null): string {
     if (!project) return 'Projeto';
+    if (project.trade_name) return project.trade_name;
     const raw = project.client_company || project.client_name || 'Projeto';
     // Strip common legal suffixes
     const cleaned = raw
@@ -511,12 +512,24 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                             <div className="max-w-md">
                                 <h3 className="text-xl font-bold text-black mb-3">Construção do Roadmap</h3>
                                 <p className="text-sm text-zinc-500 mb-8 leading-relaxed">O diagnóstico foi concluído. Agora, vamos estruturar o planejamento estratégico e o roteiro de implementação para o cliente.</p>
-                                <Button
-                                    onClick={() => navigate(`/admin/planejamento/${id}`)}
-                                    className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-sm transition-all"
-                                >
-                                    Abrir Gerador de Planejamento
-                                </Button>
+                                <div className="flex flex-col gap-3">
+                                    <Button
+                                        onClick={() => navigate(`/admin/planejamento/${id}`)}
+                                        className="bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-sm transition-all"
+                                    >
+                                        Abrir Gerador de Planejamento
+                                    </Button>
+
+                                    {planAccessToken && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => window.open(`/plan/${planAccessToken}`, '_blank')}
+                                            className="border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-xl h-12 px-8 uppercase text-[11px] font-black tracking-[0.2em] shadow-sm transition-all"
+                                        >
+                                            🚀 Ver Planejamento Gerado (Ao Vivo)
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

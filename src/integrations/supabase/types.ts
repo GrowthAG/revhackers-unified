@@ -453,6 +453,65 @@ export type Database = {
         }
         Relationships: []
       }
+      document_signatures: {
+        Row: {
+          certificate_url: string | null
+          created_at: string
+          document_hash: string
+          id: string
+          project_id: string | null
+          reference_id: string
+          reference_type: string
+          signed_at: string
+          signer_cpf_cnpj: string
+          signer_email: string
+          signer_ip: string | null
+          signer_name: string
+          signer_role: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          certificate_url?: string | null
+          created_at?: string
+          document_hash: string
+          id?: string
+          project_id?: string | null
+          reference_id: string
+          reference_type: string
+          signed_at?: string
+          signer_cpf_cnpj: string
+          signer_email: string
+          signer_ip?: string | null
+          signer_name: string
+          signer_role?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          certificate_url?: string | null
+          created_at?: string
+          document_hash?: string
+          id?: string
+          project_id?: string | null
+          reference_id?: string
+          reference_type?: string
+          signed_at?: string
+          signer_cpf_cnpj?: string
+          signer_email?: string
+          signer_ip?: string | null
+          signer_name?: string
+          signer_role?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_signatures_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           created_at: string | null

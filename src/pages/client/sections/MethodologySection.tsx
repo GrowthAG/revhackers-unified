@@ -132,7 +132,7 @@ const differentialsByType: Record<string, { title: string; desc: string }[]> = {
 
 export default function MethodologySection({ plan }: { plan: any }) {
     const projectType = plan?.rei_projects?.type || plan?.project_type || 'default';
-    const isConsultative = plan?.form_data?.project_duration === '30_days' || plan?.diagnostic_data?.roadmap_data?.project_duration === '30_days';
+    const duration = plan?.rei_projects?.project_duration || plan?.diagnostic_data?.roadmap_data?.project_duration || plan?.form_data?.project_duration || '8_weeks';
 
     // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda por cliente.
     const stepsMap: Record<string, typeof defaultSteps> = {
@@ -144,13 +144,27 @@ export default function MethodologySection({ plan }: { plan: any }) {
     
     let baseSteps = stepsMap[projectType] || defaultSteps;
 
-    // Se for projeto consultivo de 30 dias, reescrever as taglines de tempo para refletir dias (em vez de semanas).
+    // Reescrever as taglines de tempo para refletir a duração dinâmica
     const displaySteps = baseSteps.map((step, index) => {
         let newTagline = step.tagline;
-        if (isConsultative) {
-            const shortTaglines = ['Dias 1–7', 'Dias 8–15', 'Dias 16–22', 'Dias 23–30'];
-            newTagline = shortTaglines[index] || step.tagline;
+        
+        if (duration === '12_weeks') {
+            const tags = ['Semana 1–3', 'Semana 4–6', 'Semana 7–9', 'Semana 10–12'];
+            newTagline = tags[index] || step.tagline;
+        } else if (duration === '16_weeks') {
+            const tags = ['Mês 1', 'Mês 2', 'Mês 3', 'Mês 4'];
+            newTagline = tags[index] || step.tagline;
+        } else if (duration === '24_weeks') {
+            const tags = ['Mês 1–2', 'Mês 3', 'Mês 4–5', 'Mês 6'];
+            newTagline = tags[index] || step.tagline;
+        } else if (duration === 'ongoing') {
+            const tags = ['Mês 1', 'Mês 2', 'Mês 3', 'Contínuo'];
+            newTagline = tags[index] || step.tagline;
+        } else if (duration === '30_days') {
+            const tags = ['Dias 1–7', 'Dias 8–15', 'Dias 16–22', 'Dias 23–30'];
+            newTagline = tags[index] || step.tagline;
         }
+
         return {
             ...step,
             tagline: newTagline
@@ -204,7 +218,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                 </div>
                                 <EditableField
                                     path={`methodology_data.steps.${i}.description`}
-                                    className="text-[15px] leading-relaxed mb-6 text-zinc-500 font-medium"
+                                    className="text-[16px] leading-relaxed mb-6 text-zinc-500 font-medium"
                                     placeholder={step.description}
                                     multiline
                                 />
@@ -213,7 +227,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                         {items.map((item: string, j: number) => (
                                             <div key={j} className="flex items-start gap-3">
                                                 <span className="text-zinc-300 shrink-0 text-sm mt-0.5">/</span>
-                                                <span className="text-sm text-zinc-600 leading-snug">{item}</span>
+                                                <span className="text-[15px] text-zinc-600 leading-snug">{item}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -230,7 +244,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                             <div className="pt-2">
                                 <EditableField
                                     path={`methodology_data.differentials.${i}.title`}
-                                    className="font-bold text-black text-[17px] mb-2 block"
+                                    className="font-bold text-black text-[18px] mb-2 block"
                                     placeholder={d.title}
                                 />
                                 <EditableField

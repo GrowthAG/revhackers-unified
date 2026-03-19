@@ -40,7 +40,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="flex-1">
-                                        <h3 className="text-[15px] font-bold text-zinc-900 mb-4 tracking-tight">
+                                        <h3 className="text-[16px] font-bold text-zinc-900 mb-4 tracking-tight">
                                             <EditableField
                                                 path={`premises_data.pillars.${i}.name`}
                                                 placeholder={pillar.name}
@@ -52,7 +52,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                                     <span className="text-zinc-300 mt-[2px] shrink-0 text-[11px] leading-relaxed">/</span>
                                                     <EditableField
                                                         path={`premises_data.pillars.${i}.items.${j}`}
-                                                        className="text-[14px] leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
+                                                        className="text-[15px] leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
                                                         placeholder={item}
                                                         multiline
                                                     />
@@ -71,7 +71,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                             <div>
                                 <div className="flex items-center gap-3 mb-10">
                                     <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
-                                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
+                                    <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
                                         <EditableField
                                             path="premises_data.pillars.3.name"
                                             placeholder={darkPillar.name}
@@ -87,7 +87,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                             </span>
                                             <EditableField
                                                 path={`premises_data.pillars.3.items.${j}`}
-                                                className="text-[14px] leading-[1.8] text-zinc-400 font-medium group-hover:text-white transition-colors"
+                                                className="text-[15px] leading-[1.8] text-zinc-400 font-medium group-hover:text-white transition-colors"
                                                 placeholder={item}
                                                 multiline
                                             />

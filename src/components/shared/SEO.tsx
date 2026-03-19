@@ -26,7 +26,8 @@ const SEO = ({
 
     const siteTitle = "RevHackers | Revenue Operations & Growth B2B";
     const fullTitle = title === "Home" ? siteTitle : `${title} | RevHackers`;
-    const currentUrl = canonical || window.location.href;
+    // Fix: Strip query parameters and hashes from the default canonical URL
+    const currentUrl = canonical || (typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : '');
 
     // Schema.org Structured Data for "Organization" (GEO Essential)
     const organizationSchema = {
@@ -61,6 +62,34 @@ const SEO = ({
         "priceRange": "$$$"
     };
 
+    // Schema.org Structured Data for "Article" (Crucial for AI/GEO and Google Rich Snippets)
+    const articleSchema = type === 'article' ? {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": fullTitle,
+        "image": image ? [image] : [],
+        "datePublished": publishedTime || new Date().toISOString(),
+        "dateModified": publishedTime || new Date().toISOString(),
+        "author": [{
+            "@type": "Person",
+            "name": author,
+            "url": "https://revhackers.com.br/quem-somos"
+        }],
+        "publisher": {
+            "@type": "Organization",
+            "name": "RevHackers",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg"
+            }
+        },
+        "description": description
+    } : null;
+
+    // Combine schemas
+    const schemas: any[] = [organizationSchema];
+    if (articleSchema) schemas.push(articleSchema);
+
     return (
         <Helmet>
             {/* Standard Metadata */}
@@ -90,7 +119,7 @@ const SEO = ({
 
             {/* Knowledge Graph Injection */}
             <script type="application/ld+json">
-                {JSON.stringify(organizationSchema)}
+                {JSON.stringify(schemas.length === 1 ? schemas[0] : schemas)}
             </script>
         </Helmet>
     );

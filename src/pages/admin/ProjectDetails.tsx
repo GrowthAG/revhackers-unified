@@ -10,7 +10,8 @@ import {
     ChevronLeft,
     Loader2,
     Link as LinkIcon,
-    QrCode
+    QrCode,
+    Presentation
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -26,10 +27,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import { getReiProjectById } from '@/api/reiProjects';
 import type { ReiProject } from '@/api/reiProjects';
 import OrchestratedOnboarding from '@/pages/admin/OrchestratedOnboarding';
-import LiveResultsReport from '@/pages/admin/LiveResultsReport';
 
 import { useToast } from '@/hooks/use-toast';
 import ProjectWiki from './ProjectWiki';
+import { AIPlaybookGenerator } from '@/components/admin/playbook/AIPlaybookGenerator';
 
 // Placeholders for components to come
 
@@ -63,6 +64,7 @@ const DailyDashboardPlaceholder = () => (
  */
 function getDisplayName(project: ReiProject | null): string {
     if (!project) return 'Projeto';
+    if (project.trade_name) return project.trade_name;
     const raw = project.client_company || project.client_name || 'Projeto';
     const cleaned = raw
         .replace(/\s+(LTDA|EIRELI|S\.?A\.?|ME|EPP|S\/S|SERVICOS|SERVIÇOS|MARKETING|CONSULTORIA|TECNOLOGIA|PLATAFORM|PLATFORM|DIGITAL|SOLUCOES|SOLUÇÕES|MOMENT|GROUP|BRASIL)\b/gi, '')
@@ -139,6 +141,37 @@ const ProjectDetails = () => {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1 rounded-md">
                                     {project.status === 'active' ? 'Ativo' : 'Onboarding'}
                                 </span>
+                                {(() => {
+                                    if (project.status === 'completed') return null;
+                                    const lastLogin = (project as any).last_login_at ? new Date((project as any).last_login_at) : null;
+                                    const now = new Date();
+                                    let diffDays = 999;
+                                    if (lastLogin) {
+                                        const diffTime = Math.abs(now.getTime() - lastLogin.getTime());
+                                        diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                    }
+
+                                    let healthColor = 'text-green-600 bg-green-50 border border-green-200';
+                                    let healthIcon = '🟢';
+                                    let healthLabel = lastLogin ? `Ativo há ${diffDays}d` : 'Novo';
+
+                                    if (diffDays > 14) {
+                                        healthColor = 'text-red-700 bg-red-50 border border-red-200';
+                                        healthIcon = '🔴';
+                                        healthLabel = 'Risco (>14d)';
+                                    } else if (diffDays > 7) {
+                                        healthColor = 'text-amber-700 bg-amber-50 border border-amber-200';
+                                        healthIcon = '🟡';
+                                        healthLabel = 'Ausente (>7d)';
+                                    }
+
+                                    return (
+                                        <span title={lastLogin ? lastLogin.toLocaleString('pt-BR') : 'Ainda não acessou'} className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md inline-flex items-center gap-1.5 ${healthColor}`}>
+                                            <span>{healthIcon}</span>
+                                            <span>{healthLabel}</span>
+                                        </span>
+                                    );
+                                })()}
                             </h1>
                             <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
                                 {project.type === 'crm_ops' ? 'CRM & RevOps' :
@@ -149,8 +182,28 @@ const ProjectDetails = () => {
                             </p>
                         </div>
                     </div>
-                    {/* Botão de Copiar Link do Hub */}
+                    {/* Botões de Acesso ao Gerador e Apresentação Estratégica */}
                     <div className="flex items-center gap-3">
+                        <Button 
+                            variant="default" 
+                            size="sm" 
+                            onClick={() => navigate(`/admin/planejamento/${project.id}`)}
+                            className="text-[10px] font-bold uppercase tracking-widest bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                        >
+                            <Zap size={12} className="mr-2" /> Módulo Gerador (REI Hub)
+                        </Button>
+                        
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => window.open(`/admin/strategic-plan/${project.id}`, '_blank')}
+                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 border-zinc-200 hover:bg-zinc-50 shadow-sm"
+                        >
+                            <Presentation size={12} className="mr-2" /> Apresentação (The Vault)
+                        </Button>
+
+                        <div className="w-px h-6 bg-zinc-200 mx-1"></div>
+
                         <Dialog>
                             <DialogTrigger asChild>
                                 <Button 
@@ -197,12 +250,15 @@ const ProjectDetails = () => {
 
                 <div className="flex-1 p-8 overflow-y-auto bg-white">
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-                        <TabsList className="bg-white border border-zinc-200 p-1 h-auto rounded-xl">
-                            <TabsTrigger value="jornada" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
+                        <TabsList className="bg-white border border-zinc-200 p-1 h-auto rounded-xl flex-wrap gap-2">
+                            <TabsTrigger value="jornada" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
                                 <Map size={14} /> Jornada
                             </TabsTrigger>
-                            <TabsTrigger value="biblioteca" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center">
+                            <TabsTrigger value="biblioteca" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
                                 <BookOpen size={14} /> Wiki & Documentos
+                            </TabsTrigger>
+                            <TabsTrigger value="playbook" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
+                                <Zap size={14} /> Fábrica de Playbook AI
                             </TabsTrigger>
                         </TabsList>
 
@@ -211,6 +267,9 @@ const ProjectDetails = () => {
                         </TabsContent>
                         <TabsContent value="biblioteca" className="m-0">
                             <ProjectWiki projectId={project.id} projectName={project.client_name} />
+                        </TabsContent>
+                        <TabsContent value="playbook" className="m-0">
+                            <AIPlaybookGenerator projectId={project.id} projectName={project.client_name} />
                         </TabsContent>
                     </Tabs>
                 </div>
