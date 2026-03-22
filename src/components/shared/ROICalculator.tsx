@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calculator, TrendingUp, Target, DollarSign, Mail, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { saveFormData } from '@/utils/formStorage';
+import { sendToGHL } from '@/lib/ghlRelay';
 
 interface ROIResult {
   monthlyIncrease: number;
@@ -93,24 +94,14 @@ const ROICalculator = () => {
         // Save to localStorage
         saveFormData(submissionData);
 
-        // Send to webhook
-        const webhookResponse = await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/824c1633-dd07-4343-9ca4-2f25653042f5', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submissionData),
-        });
+        // Send to GHL relay
+        await sendToGHL('roi_calculator', submissionData as Record<string, unknown>);
 
-        if (webhookResponse.ok) {
-          toast({
-            title: "Sucesso!",
-            description: "Suas informações foram enviadas com sucesso.",
-          });
-          onSuccess();
-        } else {
-          throw new Error('Erro no envio');
-        }
+        toast({
+          title: "Sucesso!",
+          description: "Suas informações foram enviadas com sucesso.",
+        });
+        onSuccess();
       } catch (error) {
         console.error('Error submitting form:', error);
         toast({
@@ -415,7 +406,7 @@ const ROICalculator = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <Card className="interactive-card">
                       <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold text-purple-600">
+                        <p className="text-2xl font-bold text-[#00CC6A]">
                           {result.roi.toFixed(0)}%
                         </p>
                         <p className="text-sm text-gray-600 mt-1">Retorno sobre investimento</p>
@@ -424,7 +415,7 @@ const ROICalculator = () => {
 
                     <Card className="interactive-card">
                       <CardContent className="pt-6 text-center">
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-zinc-900">
                           {result.paybackMonths.toFixed(0)} meses
                         </p>
                         <p className="text-sm text-gray-600 mt-1">Tempo de retorno</p>

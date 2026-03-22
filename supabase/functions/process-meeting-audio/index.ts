@@ -19,28 +19,52 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders });
     }
 
+    // ============================================================
+    // AUTH GATE - JWT obrigatorio (extensao Chrome envia o token
+    // do usuario logado no app RevHackers via Authorization header)
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ success: false, error: 'Autorizacao necessaria. Envie o token JWT no header Authorization.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    if (authError || !user) {
+        return new Response(JSON.stringify({ success: false, error: 'Token invalido ou expirado.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
     try {
         const formData = await req.formData();
         const audioFile = formData.get('audio') as File;
         const meetUrl = formData.get('meetUrl') as string;
         const meetTitle = formData.get('meetTitle') as string;
         const recordedAt = formData.get('recordedAt') as string;
+        // Vinculo explicito de projeto - enviado pela extensao quando o usuario
+        // seleciona o projeto antes de iniciar a gravacao (elimina o ILIKE fragil)
+        const explicitProjectId = (formData.get('projectId') as string) || null;
 
         if (!audioFile) {
             throw new Error('No audio file provided');
         }
-
-        const supabaseClient = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        );
 
         const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
         if (!OPENAI_API_KEY) {
             throw new Error('OPENAI_API_KEY not configured');
         }
 
-        console.log(`Processing meeting: ${meetTitle}`);
+        console.log(`[process-meeting-audio] Processing meeting: "${meetTitle}" | project: ${explicitProjectId || 'nao vinculado'} | user: ${user.email}`);
 
         // ========================================
         // STEP 1: Transcribe with Whisper
@@ -188,7 +212,8 @@ REGRAS:
         const { data: recording, error: recordingError } = await supabaseClient
             .from('meeting_recordings')
             .insert({
-                title: meetTitle,
+                title: meetTitle || 'Reuniao sem titulo',
+                drive_web_view_link: meetUrl || null,
                 transcript: transcript,
                 ai_summary: analysis.resumo_executivo,
                 ai_insights: analysis,
@@ -207,50 +232,88 @@ REGRAS:
         // ========================================
         // STEP 4: Update Client/Project Based on Type with Rich Artifacts
         // ========================================
-        const clientInfo = analysis.cliente || analysis.cliente_identificado || {};
+        // Estrategia de vinculo (prioridade decrescente):
+        //   1. explicitProjectId passado pela extensao (confiavel)
+        //   2. ILIKE por email/empresa extraido pelo GPT (fallback fragil)
+        let resolvedProjectId: string | null = null;
+        let resolvedClientId: string | null = null;
+        let existingData: any = {};
 
-        if (clientInfo?.empresa || clientInfo?.email) {
-            // Try to find matching client
-            let clientQuery = supabaseClient.from('clients').select('id, name');
+        if (explicitProjectId) {
+            // Caminho feliz: extensao informou o projeto antes de gravar
+            const { data: proj } = await supabaseClient
+                .from('rei_projects')
+                .select('id, client_id, diagnostic_data')
+                .eq('id', explicitProjectId)
+                .single();
 
-            if (clientInfo.email) {
-                clientQuery = clientQuery.ilike('email', `%${clientInfo.email}%`);
-            } else if (clientInfo.empresa) {
-                clientQuery = clientQuery.ilike('name', `%${clientInfo.empresa}%`);
-            }
+            if (proj) {
+                resolvedProjectId = proj.id;
+                resolvedClientId = proj.client_id || null;
+                existingData = proj.diagnostic_data || {};
 
-            const { data: matchingClients } = await clientQuery.limit(1);
-
-            if (matchingClients && matchingClients.length > 0) {
-                const clientId = matchingClients[0].id;
-
-                // Update recording with client link
                 if (recording) {
                     await supabaseClient
                         .from('meeting_recordings')
-                        .update({ client_id: clientId })
+                        .update({ rei_project_id: resolvedProjectId, client_id: resolvedClientId })
                         .eq('id', recording.id);
                 }
+                console.log(`[process-meeting-audio] Project resolved via explicit id: ${resolvedProjectId}`);
+            } else {
+                console.warn(`[process-meeting-audio] explicitProjectId ${explicitProjectId} not found in rei_projects`);
+            }
+        } else {
+            // Fallback: tentativa por ILIKE no nome/email extraido pelo GPT
+            const clientInfo = analysis.cliente || analysis.cliente_identificado || {};
 
-                // Find associated project
-                const { data: projects } = await supabaseClient
-                    .from('rei_projects')
-                    .select('id, status, diagnostic_data')
-                    .eq('client_id', clientId)
-                    .order('created_at', { ascending: false })
-                    .limit(1);
+            if (clientInfo?.empresa || clientInfo?.email) {
+                let clientQuery = supabaseClient.from('clients').select('id, name');
 
-                if (projects && projects.length > 0) {
-                    const projectId = projects[0].id;
-                    const existingData = projects[0].diagnostic_data || {};
+                if (clientInfo.email) {
+                    clientQuery = clientQuery.ilike('email', `%${clientInfo.email}%`);
+                } else if (clientInfo.empresa) {
+                    clientQuery = clientQuery.ilike('name', `%${clientInfo.empresa}%`);
+                }
 
-                    // Update recording with project link
+                const { data: matchingClients } = await clientQuery.limit(1);
+
+                if (matchingClients && matchingClients.length > 0) {
+                    resolvedClientId = matchingClients[0].id;
+
                     if (recording) {
                         await supabaseClient
                             .from('meeting_recordings')
-                            .update({ rei_project_id: projectId })
+                            .update({ client_id: resolvedClientId })
                             .eq('id', recording.id);
                     }
+
+                    const { data: projects } = await supabaseClient
+                        .from('rei_projects')
+                        .select('id, client_id, diagnostic_data')
+                        .eq('client_id', resolvedClientId)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (projects && projects.length > 0) {
+                        resolvedProjectId = projects[0].id;
+                        existingData = projects[0].diagnostic_data || {};
+
+                        if (recording) {
+                            await supabaseClient
+                                .from('meeting_recordings')
+                                .update({ rei_project_id: resolvedProjectId })
+                                .eq('id', recording.id);
+                        }
+                        console.log(`[process-meeting-audio] Project resolved via ILIKE: ${resolvedProjectId}`);
+                    }
+                } else {
+                    console.warn(`[process-meeting-audio] No client matched via ILIKE. Recording saved without project link.`);
+                }
+            }
+        }
+
+        if (resolvedProjectId) {
+            const projectId = resolvedProjectId;
 
                     // Update project based on meeting type
                     if (analysis.tipo_reuniao === 'proposta' && analysis.proposta) {
@@ -281,9 +344,8 @@ REGRAS:
                             })
                             .eq('id', projectId);
 
-                        console.log(`✅ Saved PROPOSAL artifacts to project ${projectId}`);
-                        console.log(`   → Scope: ${analysis.proposta.escopo_sugerido?.length || 0} items`);
-                        console.log(`   → Timeline: ${analysis.proposta.timeline_sugerida?.length || 0} phases`);
+                        console.log(`[process-meeting-audio] Saved PROPOSAL artifacts to project ${projectId}`);
+                        console.log(`[process-meeting-audio] Scope items: ${analysis.proposta.escopo_sugerido?.length || 0}, Timeline phases: ${analysis.proposta.timeline_sugerida?.length || 0}`);
 
 
                     } else if ((analysis.tipo_reuniao === 'kickoff' || analysis.tipo_reuniao === 'onboarding') && (analysis.kickoff_data || analysis.onboarding)) {
@@ -314,12 +376,25 @@ REGRAS:
                             })
                             .eq('id', projectId);
 
-                        console.log(`✅ Saved KICKOFF/ONBOARDING artifacts to project ${projectId}`);
+                        console.log(`[process-meeting-audio] Saved KICKOFF/ONBOARDING artifacts to project ${projectId}`);
 
-                        // TRIGGER ENRICHMENT & STRATEGIC PLAN GENERATION
-                        // We pass the extracted intelligence to the enrichment function
+                        // TRIGGER 1: Auto-fill REI form fields from transcript
+                        if (recording?.id) {
+                            try {
+                                console.log(`[process-meeting-audio] Triggering fill-rei-from-transcript for recording ${recording.id}`);
+                                const { error: fillError } = await supabaseClient.functions.invoke('fill-rei-from-transcript', {
+                                    body: { recordingId: recording.id, projectId }
+                                });
+                                if (fillError) console.error('[process-meeting-audio] fill-rei-from-transcript failed:', fillError);
+                                else console.log('[process-meeting-audio] REI auto-fill triggered successfully');
+                            } catch (fillErr) {
+                                console.error('[process-meeting-audio] Failed to invoke fill-rei-from-transcript:', fillErr);
+                            }
+                        }
+
+                        // TRIGGER 2: Strategic plan enrichment & generation
                         try {
-                            console.log(`🚀 Triggering Post-Kickoff Enrichment for ${projectId}`);
+                            console.log(`[process-meeting-audio] Triggering Post-Kickoff Enrichment for ${projectId}`);
 
                             const { error: invokeError } = await supabaseClient.functions.invoke('trigger-post-rei-enrichment', {
                                 body: {
@@ -332,23 +407,21 @@ REGRAS:
                                 }
                             });
 
-                            if (invokeError) console.error("Trigger enrichment failed:", invokeError);
-                            else console.log("✅ Enrichment triggered successfully");
+                            if (invokeError) console.error("[process-meeting-audio] Trigger enrichment failed:", invokeError);
+                            else console.log("[process-meeting-audio] Enrichment triggered successfully");
 
                         } catch (err) {
-                            console.error("Failed to invoke enrichment:", err);
+                            console.error("[process-meeting-audio] Failed to invoke enrichment:", err);
                         }
                     }
-                }
-            }
-        }
+        } // end if resolvedProjectId
 
         return new Response(JSON.stringify({
             success: true,
             recordingId: recording?.id,
             meetingType: analysis.tipo_reuniao,
             summary: analysis.resumo_executivo,
-            clientIdentified: analysis.cliente_identificado,
+            clientIdentified: analysis.cliente || analysis.cliente_identificado || null,
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });

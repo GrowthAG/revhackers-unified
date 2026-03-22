@@ -286,7 +286,7 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({ content }) => 
                                 {currentTable.map((row, rowIdx) => (
                                     <tr key={rowIdx}>
                                         {row.map((cell, cellIdx) => (
-                                            <td key={cellIdx} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(cell) }} />
+                                            <td key={cellIdx} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatInlineStyles(String(cell))) }} />
                                         ))}
                                     </tr>
                                 ))}

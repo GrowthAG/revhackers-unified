@@ -15,15 +15,31 @@ const SCORING_WEIGHTS = {
     // Text fields get base score
     text: 5,
     textarea: 10,
-    // Select fields get weighted scores
+    // Select fields: mapeamento de valores reais dos REIs para score
     select: {
+        // Valores booleanos genericos
         'yes': 15,
         'no': 0,
+        // Qualidade de planos
         'personalized': 10,
         'complete': 15,
         'basic': 5,
         'none': 0,
-        'some': 8
+        'some': 8,
+        // Valores de consultingQuestions.ts (hasPlans)
+        'structured': 15,
+        'informal': 8,
+        'none_plan': 0,
+        // Valores de annualRevenue
+        'acima-10m': 15,
+        '5m-10m': 12,
+        '1m-5m': 10,
+        '500k-1m': 8,
+        'abaixo-500k': 5,
+        // Valores de marketingMaterials
+        'complete_kit': 15,
+        'partial': 8,
+        'minimal': 3,
     }
 };
 
@@ -60,28 +76,29 @@ export const calculateREIScore = (formData: any): REIScore => {
     // Determine level based on percentage
     let level, color, description, recommendations;
 
+    // Design System Nobibecode: apenas zinc scale + #00CC6A como accent
     if (percentage >= 90) {
-        level = "Excelente";
-        color = "text-green-600";
-        description = "Sua empresa demonstra alta maturidade operacional e está pronta para escalar.";
+        level = "Lider";
+        color = "text-[#00CC6A]"; // accent verde apenas neste nivel maximo
+        description = "Sua empresa demonstra alta maturidade operacional e esta pronta para escalar.";
         recommendations = [
-            "Implementar automações avançadas",
+            "Implementar automacoes avancadas",
             "Expandir para novos mercados",
             "Otimizar processos existentes"
         ];
     } else if (percentage >= 70) {
-        level = "Muito Bom";
-        color = "text-blue-600";
-        description = "Boa estrutura comercial. Foco em otimização e eficiência.";
+        level = "Avancado";
+        color = "text-zinc-900";
+        description = "Boa estrutura comercial. Foco em otimizacao e eficiencia.";
         recommendations = [
             "Integrar ferramentas de marketing e vendas",
             "Implementar lead scoring",
             "Automatizar processos manuais"
         ];
     } else if (percentage >= 50) {
-        level = "Bom";
-        color = "text-yellow-600";
-        description = "Base sólida, mas há oportunidades significativas de melhoria.";
+        level = "Intermediario";
+        color = "text-zinc-700";
+        description = "Base solida, mas ha oportunidades significativas de melhoria.";
         recommendations = [
             "Estruturar processos de vendas",
             "Implementar CRM adequadamente",
@@ -89,20 +106,20 @@ export const calculateREIScore = (formData: any): REIScore => {
         ];
     } else if (percentage >= 30) {
         level = "Em Desenvolvimento";
-        color = "text-orange-600";
-        description = "Operação em fase inicial. Foco em estruturação básica.";
+        color = "text-zinc-500";
+        description = "Operacao em fase inicial. Foco em estruturacao basica.";
         recommendations = [
-            "Definir processos básicos",
+            "Definir processos basicos",
             "Implementar CRM",
             "Treinar equipe comercial"
         ];
     } else {
         level = "Inicial";
-        color = "text-red-600";
-        description = "Operação necessita de estruturação urgente.";
+        color = "text-zinc-400";
+        description = "Operacao necessita de estruturacao urgente.";
         recommendations = [
             "Criar processo de vendas documentado",
-            "Implementar ferramentas básicas",
+            "Implementar ferramentas basicas",
             "Definir ICP e persona"
         ];
     }

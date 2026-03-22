@@ -3,30 +3,8 @@ import { TrendingUp, BarChart3, Target, ChevronRight, ChevronDown, ExternalLink,
 import { EditableField } from '@/components/plan/PlanEditContext';
 import SectionHeader from '@/components/plan/SectionHeader';
 
-// ── Mock data for segments ────────────────────────────────────────────────
-const mockDataMap: Record<string, any> = {
-    default: {
-        competitor_benchmarks: [
-            { company_name: 'Concorrente A', domain: 'concorrente-a.com.br', monthly_traffic: '45K', domain_authority: 38, avg_cpc: 'R$ 2,50', top_keywords: ['growth marketing', 'consultoria digital'], strengths: 'SEO forte e presença orgânica consolidada', weaknesses: 'Sem automação de vendas e CRM fragmentado' },
-            { company_name: 'Concorrente B', domain: 'concorrente-b.com.br', monthly_traffic: '28K', domain_authority: 32, avg_cpc: 'R$ 3,20', top_keywords: ['marketing b2b', 'geração de leads'], strengths: 'Mídia paga agressiva e branding forte', weaknesses: 'Alto CAC e baixa retenção de clientes' },
-            { company_name: 'Concorrente C', domain: 'concorrente-c.com.br', monthly_traffic: '18K', domain_authority: 25, avg_cpc: 'R$ 1,80', top_keywords: ['automação marketing', 'inbound marketing'], strengths: 'Conteúdo educativo e comunidade ativa', weaknesses: 'Processo comercial manual e lento' },
-        ],
-        industry_trends: [
-            'Empresas B2B que investem em Revenue Operations crescem 19% mais rápido que a média do setor',
-            'A personalização baseada em IA aumenta taxas de conversão em até 35% no pipeline de vendas',
-            'Estratégias de Account-Based Marketing (ABM) dominam empresas com ticket médio acima de R$ 10K',
-        ],
-        market_sizing: { tam: 'R$ 4,2 bilhões em serviços de growth e performance marketing no Brasil', sam: 'R$ 1,8 bilhão em empresas B2B com faturamento entre R$ 5M–50M/ano', som: 'R$ 120 milhões alcançáveis nos próximos 18 meses via estratégia digital integrada' },
-        strategic_advice: 'O segmento apresenta alta fragmentação com poucos players oferecendo stack completo de Revenue Operations. A oportunidade está em integrar geração de demanda, automação e CRM em uma experiência unificada.',
-        avg_cac_benchmark: 'R$ 800–2.500 por cliente no segmento',
-        conversion_benchmarks: 'Lead→SQL: 12–18% | SQL→Fechamento: 18–25% | Ciclo médio: 21–45 dias',
-        key_differentiators: [
-            'Integrar CRM, automação e mídia em um único stack gerenciado',
-            'Focar em payback rápido (< 90 dias) como argumento de venda',
-            'Oferecer transparência total com dashboards em tempo real para o cliente',
-        ],
-    },
-};
+// ── No more mock data for segments (Strict Production Policy) ──────────────────────────
+const mockDataMap: Record<string, any> = {};
 
 function getSegmentKey(plan: any) {
     const segment = plan?.diagnostic_data?.context_mirror?.segmento || plan?.diagnostic_data?.context_mirror?.segment || plan?.premises_data?.segmento || '';
@@ -107,7 +85,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
         ? enrichedCompetitors
         : (Array.isArray(personaData.competitor_benchmarks) && personaData.competitor_benchmarks.length > 0
             ? personaData.competitor_benchmarks
-            : mock?.competitor_benchmarks || []);
+            : []);
 
     // Trends: enriched market > persona_data > mock
     const enrichedTrends = (enrichedMarket.tendencias_2025 || []).map((t: any) =>
@@ -117,15 +95,14 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
         ? enrichedTrends
         : (Array.isArray(personaData.industry_trends) && personaData.industry_trends.length > 0
             ? personaData.industry_trends
-            : mock?.industry_trends || []);
+            : []);
 
-    // Market sizing: enriched market > persona_data > mock
     const marketSizing = enrichedMarket.tam_sam_som?.tam
         ? enrichedMarket.tam_sam_som
-        : (personaData.market_sizing?.tam ? personaData.market_sizing : (mock?.market_sizing || null));
+        : (personaData.market_sizing?.tam ? personaData.market_sizing : null);
 
-    // Benchmark metrics: enriched benchmark > persona_data > mock
-    const cacBenchmark = enrichedBenchmark.cac_medio || personaData.avg_cac_benchmark || mock?.avg_cac_benchmark || '';
+    // Benchmark metrics: enriched benchmark > persona_data > empty string
+    const cacBenchmark = enrichedBenchmark.cac_medio || personaData.avg_cac_benchmark || '';
     const conversionBenchmarks = (() => {
         if (enrichedBenchmark.taxa_conversao || enrichedBenchmark.ciclo_vendas) {
             const parts = [];
@@ -134,21 +111,20 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
             if (enrichedBenchmark.ltv_cac_ratio) parts.push(`LTV:CAC: ${enrichedBenchmark.ltv_cac_ratio}`);
             return parts.join(' | ');
         }
-        return personaData.conversion_benchmarks || mock?.conversion_benchmarks || '';
+        return personaData.conversion_benchmarks || '';
     })();
 
-    // Strategic advice: SWOT opportunities from market > persona_data > mock
     const swotOpportunities = enrichedMarket.analise_swot_rapida?.oportunidades || [];
     const advice = enrichedBenchmark.comparativo_mercado
         || (swotOpportunities.length > 0 ? `Oportunidades: ${swotOpportunities.join('; ')}.` : '')
-        || personaData.strategic_advice || mock?.strategic_advice || '';
+        || personaData.strategic_advice || '';
 
-    // Differentiators: SWOT opportunities > persona_data key_differentiators > mock
+    // Differentiators: SWOT opportunities > persona_data key_differentiators > empty array
     const differentiators = swotOpportunities.length > 0
         ? swotOpportunities
         : (Array.isArray(personaData.key_differentiators) && personaData.key_differentiators.length > 0
             ? personaData.key_differentiators
-            : mock?.key_differentiators || []);
+            : []);
 
     const hasRealData = enrichedCompetitors.length > 0 || (Array.isArray(personaData.competitor_benchmarks) && personaData.competitor_benchmarks.length > 0);
     const isDeepData = enrichedCompetitors.length > 0;

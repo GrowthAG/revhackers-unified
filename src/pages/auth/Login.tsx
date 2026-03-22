@@ -30,27 +30,12 @@ const Login = () => {
         setError(null);
         setLoading(true);
 
-        // BYPASS TEMPORÁRIO DE DESENVOLVIMENTO
-        if (password === 'DEV_BYPASS_2024') {
-            console.log('🔓 Bypass de desenvolvimento ativado');
-            setDevBypass(email); // Seta usuário fake no contexto
-
-            // Delay para parecer mais seguro
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            setLoading(false);
-            navigate('/admin');
-            return;
-        }
-
         const result = await signInWithPassword(email, password);
 
         if (result.error) {
             setError('Credenciais inválidas. Tente novamente.');
             setLoading(false);
         } else {
-            // Delay para parecer mais seguro
-            await new Promise(resolve => setTimeout(resolve, 800));
             navigate('/admin');
         }
     };

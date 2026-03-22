@@ -87,12 +87,12 @@ serve(async (req) => {
                     return parentDbId === normalizedClientsId;
                 });
                 if (match) {
-                    console.log(`✅ Cliente encontrado no Notion: ${match.id}`);
+                    console.log(`[sync-notion] Cliente encontrado no Notion: ${match.id}`);
                     return match.id;
                 }
-                console.log(`ℹ️ Cliente não encontrado no Notion para: "${name}"`);
+                console.log(`[sync-notion] Cliente nao encontrado no Notion para: "${name}"`);
             } catch (e: any) {
-                console.warn(`⚠️ Busca de cliente falhou (não crítico): ${e.message}`);
+                console.warn(`[sync-notion] Busca de cliente falhou (nao critico): ${e.message}`);
             }
             return '';
         };
@@ -127,7 +127,7 @@ serve(async (req) => {
                 properties: sprintProperties,
             });
             const sprintPageId = newSprint.id;
-            console.log(`✅ Sprint criada: ${sprintPageId}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
+            console.log(`[sync-notion] Sprint criada: ${sprintPageId}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
 
             // Persiste o sprint ID no projeto para uso na fase enrich
             const { error: updateError } = await supabase
@@ -136,9 +136,9 @@ serve(async (req) => {
                 .eq('id', projectId);
 
             if (updateError) {
-                console.warn(`⚠️ Não foi possível salvar notion_sprint_id: ${updateError.message}`);
+                console.warn(`[sync-notion] Nao foi possivel salvar notion_sprint_id: ${updateError.message}`);
             } else {
-                console.log(`✅ notion_sprint_id salvo no projeto ${projectId}`);
+                console.log(`[sync-notion] notion_sprint_id salvo no projeto ${projectId}`);
             }
 
             return new Response(
@@ -168,7 +168,7 @@ serve(async (req) => {
                 .single();
 
             if (projectError) {
-                console.warn(`⚠️ Não foi possível buscar projeto: ${projectError.message}`);
+                console.warn(`[sync-notion] Nao foi possivel buscar projeto: ${projectError.message}`);
             }
 
             let sprintPageId = project?.notion_sprint_id || '';
@@ -200,9 +200,9 @@ serve(async (req) => {
 
                 try {
                     await notionPatch(sprintPageId, { properties: updateProps });
-                    console.log(`✅ Sprint atualizada com meta do REI`);
+                    console.log(`[sync-notion] Sprint atualizada com meta do REI`);
                 } catch (e: any) {
-                    console.warn(`⚠️ Não foi possível atualizar Sprint: ${e.message}`);
+                    console.warn(`[sync-notion] Nao foi possivel atualizar Sprint: ${e.message}`);
                 }
             } else {
                 // Fallback: fase setup não rodou - cria Sprint agora
@@ -230,7 +230,7 @@ serve(async (req) => {
                     properties: sprintProperties,
                 });
                 sprintPageId = newSprint.id;
-                console.log(`✅ Sprint criada (fallback): ${sprintPageId}`);
+                console.log(`[sync-notion] Sprint criada (fallback): ${sprintPageId}`);
             }
 
             // --- Task: cria com todos os dados do REI ---
@@ -312,7 +312,7 @@ serve(async (req) => {
                 properties: taskProperties,
                 children: childrenBlocks,
             });
-            console.log(`✅ Task criada: ${newTask.id}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
+            console.log(`[sync-notion] Task criada: ${newTask.id}${clientPageId ? ' (com vínculo de cliente)' : ''}`);
 
             return new Response(
                 JSON.stringify({

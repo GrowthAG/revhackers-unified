@@ -1,22 +1,27 @@
 {
     "manifest_version": 3,
-    "name": "Ork - Meeting Intelligence",
-    "short_name": "Ork",
-    "version": "1.1.0",
-    "description": "Capture, transcreva e analise suas reuniões automaticamente. Powered by RevHackers.",
+    "name": "RevHackers Clipper",
+    "short_name": "RH Clipper",
+    "version": "2.0.0",
+    "description": "OSINT Clipper e Meeting Recorder para o RevHackers Growth Hub. Grava reunioes do Google Meet e extrai dados de perfis LinkedIn.",
     "permissions": [
+        "tabs",
         "activeTab",
         "storage",
+        "scripting",
+        "identity",
         "tabCapture",
         "offscreen",
         "notifications"
     ],
     "host_permissions": [
-        "https://meet.google.com/*"
+        "https://meet.google.com/*",
+        "https://www.linkedin.com/*",
+        "https://*.supabase.co/*"
     ],
     "action": {
-        "default_popup": "popup.html",
-        "default_title": "Ork - Clique para gravar",
+        "default_popup": "popup/popup.html",
+        "default_title": "RevHackers Clipper",
         "default_icon": {
             "16": "icons/icon16.png",
             "48": "icons/icon48.png",
@@ -33,12 +38,31 @@
                 "https://meet.google.com/*"
             ],
             "js": [
-                "content.js"
-            ],
-            "css": [
-                "content.css"
+                "content-meet.js"
             ],
             "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://www.linkedin.com/in/*",
+                "https://www.linkedin.com/company/*"
+            ],
+            "js": [
+                "content-linkedin.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "popup/*",
+                "icons/*",
+                "offscreen.html"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
         }
     ],
     "icons": {

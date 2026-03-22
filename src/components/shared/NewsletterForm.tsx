@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from "@/components/ui/checkbox";
+import { sendToGHL } from '@/lib/ghlRelay';
 
 interface NewsletterFormProps {
   variant?: 'default' | 'footer';
@@ -46,16 +47,8 @@ const NewsletterForm = ({ variant = 'default' }: NewsletterFormProps) => {
       timestamp: new Date().toISOString()
     };
 
-    const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/824c1633-dd07-4343-9ca4-2f25653042f5';
-
     try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(webhookData),
-      });
-
-      if (!response.ok && response.status !== 0) throw new Error('Submission failed');
+      await sendToGHL('newsletter', webhookData as Record<string, unknown>);
 
       toast({
         title: "INSCRIÇÃO CONFIRMADA",

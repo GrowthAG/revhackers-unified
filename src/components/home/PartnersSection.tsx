@@ -2,7 +2,6 @@
 import Section from '@/components/ui/Section';
 
 const partners = [
-  { name: "TLDV", logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'%3E%3Ctext x='10' y='30' font-family='system-ui,-apple-system,sans-serif' font-size='28' font-weight='800' fill='%23333'%3Etl%3Ctspan fill='%236C5CE7'%3Edv%3C/tspan%3E%3C/text%3E%3C/svg%3E", scale: 1.5 },
   { name: "Heineken", logo: "/uploads/aada4820-3f12-4185-9af6-811f30795a93.png", scale: 1.1 },
   { name: "Lindoya", logo: "/uploads/lindoya-logo.png" },
   { name: "FMU", logo: "/uploads/e0d3d03b-c1d5-4a6e-9a61-3a1c2a707b5f.png" },

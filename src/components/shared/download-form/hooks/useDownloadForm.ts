@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { DownloadFormData } from '../types';
-import { validateForm, WEBHOOK_URL, EMAIL_WEBHOOK_URL } from '../utils';
+import { validateForm } from '../utils';
 import { saveFormData } from '@/utils/formStorage';
+import { sendToGHL } from '@/lib/ghlRelay';
 
 export const useDownloadForm = (
   materialId: string,
@@ -68,13 +69,7 @@ export const useDownloadForm = (
 
       console.log('Sending email webhook with data:', emailData);
 
-      await fetch(EMAIL_WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(emailData),
-      });
+      await sendToGHL('email_material', emailData as Record<string, unknown>);
     } catch (error) {
       console.error('Error sending email request:', error);
     }
@@ -137,18 +132,8 @@ export const useDownloadForm = (
         formType: 'download'
       });
 
-      // Send data to webhook using standard fetch
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(webhookData),
-      });
-
-      if (!response.ok && response.status !== 0) {
-        throw new Error('Failed to submit form data');
-      }
+      // Send data to GHL relay
+      await sendToGHL('download', webhookData as Record<string, unknown>);
 
 
       // Send material by email

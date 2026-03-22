@@ -142,7 +142,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
             {/* Left Sidebar: Controls & Frameworks */}
             <div className="lg:col-span-1 border border-zinc-200 bg-zinc-50/50 rounded-2xl p-6 overflow-y-auto hidden-scrollbar flex flex-col">
                 <div className="mb-6">
-                    <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-4">
+                    <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl flex items-center justify-center mb-4">
                         <Sparkles className="w-5 h-5" />
                     </div>
                     <h2 className="text-xl font-black text-zinc-900 mb-2">Fábrica de Playbooks</h2>
@@ -159,13 +159,13 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                             onClick={() => setFramework(fw.id)}
                             className={`p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
                                 framework === fw.id 
-                                ? 'border-indigo-600 bg-indigo-50/50 shadow-sm ring-1 ring-indigo-600/20' 
-                                : 'border-zinc-200 bg-white hover:border-indigo-300 hover:bg-zinc-50'
+                                ? 'border-zinc-900 bg-zinc-50 shadow-sm ring-1 ring-zinc-900/10 dark:border-zinc-400 dark:bg-zinc-900' 
+                                : 'border-zinc-200 bg-white hover:border-zinc-400 hover:bg-zinc-50'
                             }`}
                         >
                             <div className="flex items-center gap-2 mb-1">
-                                <FileText className={`w-4 h-4 ${framework === fw.id ? 'text-indigo-600' : 'text-zinc-400'}`} />
-                                <span className={`text-sm font-bold ${framework === fw.id ? 'text-indigo-900' : 'text-zinc-700'}`}>{fw.name}</span>
+                                <FileText className={`w-4 h-4 ${framework === fw.id ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400'}`} />
+                                <span className={`text-sm font-bold ${framework === fw.id ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-700'}`}>{fw.name}</span>
                             </div>
                             <p className="text-[11px] text-zinc-500 line-clamp-2">{fw.desc}</p>
                         </div>
@@ -214,8 +214,8 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                         disabled={isPublishing || !content.trim() || isPublished}
                         className={`h-9 px-4 text-xs font-bold rounded-lg transition-all ${
                             isPublished 
-                            ? 'bg-green-500 hover:bg-green-600 text-white' 
-                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            ? 'bg-zinc-100 text-[#00E577] border border-zinc-200 hover:bg-zinc-100' 
+                            : 'bg-zinc-900 hover:bg-zinc-800 text-white'
                         }`}
                     >
                         {isPublishing ? (

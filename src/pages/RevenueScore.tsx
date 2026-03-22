@@ -147,8 +147,6 @@ const RevenueScore = () => {
         setIsSubmitting(true);
         try {
             const resultMap = getResultMap(score);
-            // Default Webhook Layout
-            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
             await submitPublicDiagnostic(
                 { ...data, phone: '' },
@@ -160,7 +158,7 @@ const RevenueScore = () => {
                     action: "Diagnóstico de Receita",
                     color: "revgreen"
                 },
-                WEBHOOK_URL
+                'score_captured'
             );
 
             setHasSubmittedLead(true);
@@ -223,13 +221,13 @@ const RevenueScore = () => {
                                         disabled={selectedOption !== null}
                                         onClick={() => handleAnswer(opt.score, idx)}
                                         className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
-                                            ? "bg-[#00CC6A] text-black border-[#00CC6A] shadow-[0_0_15px_rgba(0,204,106,0.4)] scale-[1.02]"
-                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
+                                            ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
+                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                             } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
                                         <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
-                                            ? "bg-white text-black border-white"
-                                            : "bg-zinc-50 border-zinc-100 text-zinc-400 group-hover:border-black group-hover:text-black"
+                                            ? "bg-white text-zinc-900 border-white"
+                                            : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                             }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>

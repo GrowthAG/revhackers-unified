@@ -57,6 +57,7 @@ const MaterialUpload = lazy(() => import("./pages/public/MaterialUpload"));
 const PublicDiagnosticResult = lazy(() => import("./pages/PublicDiagnosticResult"));
 const SchedulingSuccess = lazy(() => import("./pages/SchedulingSuccess"));
 const CertificateOfAuthenticity = lazy(() => import("./pages/public/CertificateOfAuthenticity"));
+const MagicApproval = lazy(() => import("./pages/public/MagicApproval"));
 
 // Specialized Agenda Pages
 const AgendaLuna = lazy(() => import("./pages/AgendaLuna"));
@@ -110,6 +111,7 @@ const AdminCaseNew = lazy(() => import("./pages/admin/AdminCaseNew"));
 const AdminCaseEdit = lazy(() => import("./pages/admin/AdminCaseEdit"));
 const DiagnosticView = lazy(() => import("./pages/admin/DiagnosticView"));
 const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
 const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
 const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
@@ -119,6 +121,7 @@ const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
 const KnowledgeDocument = lazy(() => import("./pages/admin/KnowledgeDocument"));
 const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
+const RevenueCockpit = lazy(() => import("./pages/admin/RevenueCockpit"));
 const AdminProposalNew = lazy(() => import("./pages/admin/AdminProposalNew"));
 const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
 
@@ -175,6 +178,9 @@ const App = () => (
               <Route path="/pesquisa-nps" element={<PesquisaNPS />} />
               <Route path="/obrigado-nps" element={<ObrigadoNPS />} />
               <Route path="/legal/certificado/:hash" element={<CertificateOfAuthenticity />} />
+              
+              {/* Epic 8: Magic Approval Route */}
+              <Route path="/approve/:token" element={<MagicApproval />} />
 
               {/* Specialized Pages */}
               <Route path="/agenda/giulliano" element={<SecureBooking />} />
@@ -218,8 +224,8 @@ const App = () => (
               <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
               {/* Admin Management - GROWTHHUB */}
-              <Route path="/admin" element={<Navigate to="/admin/rei" replace />} />
-              <Route path="/admin/dashboard" element={<Navigate to="/admin/rei" replace />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
               <Route path="/admin/rei" element={<ProtectedRoute><AdminREIProjects /></ProtectedRoute>} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
@@ -280,8 +286,9 @@ const App = () => (
 
 
 
-              {/* Admin - Proposals (Deal Rooms) */}
-              <Route path="/admin/proposals" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
+              {/* Revenue Cockpit - substitui o Centro de Propostas */}
+              <Route path="/admin/proposals" element={<ProtectedRoute><RevenueCockpit /></ProtectedRoute>} />
+              <Route path="/admin/proposals/legacy" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
               <Route path="/admin/proposals/new" element={<ProtectedRoute><AdminProposalNew /></ProtectedRoute>} />
               <Route path="/admin/proposals/edit/:id" element={<ProtectedRoute><AdminProposalEdit /></ProtectedRoute>} />
 

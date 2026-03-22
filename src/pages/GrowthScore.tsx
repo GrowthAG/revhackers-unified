@@ -145,8 +145,6 @@ const GrowthScore = () => {
         setIsSubmitting(true);
         try {
             const result = getResultMap(score);
-            // Default Webhook Layout
-            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
             await submitPublicDiagnostic(
                 { ...data, phone: '' }, // No phone collected
@@ -158,7 +156,7 @@ const GrowthScore = () => {
                     action: "Diagnóstico de Growth",
                     color: "revgreen"
                 },
-                WEBHOOK_URL
+                'score_captured'
             );
 
             setHasSubmittedLead(true);
@@ -221,13 +219,13 @@ const GrowthScore = () => {
                                         disabled={selectedOption !== null}
                                         onClick={() => handleAnswer(opt.score, idx)}
                                         className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
-                                            ? "bg-[#00CC6A] text-black border-[#00CC6A] shadow-[0_0_15px_rgba(0,204,106,0.4)] scale-[1.02]"
-                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
+                                            ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
+                                            : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                             } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
                                         <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
-                                            ? "bg-white text-black border-white"
-                                            : "bg-zinc-50 border-zinc-100 text-zinc-400 group-hover:border-black group-hover:text-black"
+                                            ? "bg-white text-zinc-900 border-white"
+                                            : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                             }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
@@ -332,7 +330,7 @@ const GrowthScore = () => {
                                     ) : (
                                         <>
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
+                                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900 bg-zinc-100 px-3 py-1.5 rounded-md">
                                                     {analysisResult.archetype}
                                                 </span>
                                             </div>
@@ -458,7 +456,7 @@ const GrowthScore = () => {
                                                     <div className="w-1.5 h-1.5 bg-black rounded-full" /> Plano de Ação
                                                 </h4>
                                                 <p className="text-zinc-900 text-base leading-relaxed font-semibold">
-                                                    Sua prioridade estratégica agora é: <strong className="bg-[#00CC6A]/20 px-1 text-black">{insights.action}</strong>.
+                                                    Sua prioridade estratégica agora é: <strong className="bg-zinc-200 px-1 text-black">{insights.action}</strong>.
                                                 </p>
                                             </div>
                                         </div>

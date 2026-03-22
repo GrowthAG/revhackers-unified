@@ -32,29 +32,24 @@ type FormData = {
 
 const DURATION_OPTIONS = [
     { value: '30 dias', label: '30 dias (1 mês)' },
-    { value: '45 dias', label: '45 dias' },
-    { value: '6 semanas', label: '6 semanas' },
-    { value: '8 semanas', label: '8 semanas' },
+    { value: '60 dias', label: '60 dias (2 meses)' },
     { value: '90 dias', label: '90 dias (3 meses)' },
-    { value: '12 semanas', label: '12 semanas' },
-    { value: '6 meses', label: '6 meses' },
-    { value: '12 meses', label: '12 meses' },
+    { value: '180 dias', label: '180 dias (6 meses)' },
+    { value: '360 dias', label: '360 dias (12 meses)' },
 ];
 
 const DEFAULT_DURATION_BY_TYPE: Record<string, string> = {
-    dev: '6 semanas',
-    site: '6 semanas',
-    funnels_impl: '90 dias',
+    crm_ops: '90 dias',
+    funnels_impl: '60 dias',
     consulting: '90 dias',
     founder: '90 dias',
-    crm_ops: '90 dias',
-    content_seo: '90 dias',
-    training: '30 dias',
 };
 
 const REIProjectForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const isLeadMode = new URLSearchParams(location.search).get('lead') === 'true';
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [loadingProject, setLoadingProject] = useState(!!id);
@@ -315,7 +310,7 @@ const REIProjectForm = () => {
 
         setLoading(true);
         try {
-            const projectData: any = { // Using any to bypass strict type check for now if needed
+            const projectData: any = {
                 client_id: data.client_id,
                 client_name: data.client_name,
                 trade_name: data.trade_name || null,
@@ -330,6 +325,8 @@ const REIProjectForm = () => {
                 last_rei_date: new Date().toISOString(),
                 client_site: clientSite || null,
                 site_analysis: siteAnalysis || null,
+                // Lead mode: nao injeta tarefas, nao cria sprint, status diferente
+                ...(isLeadMode ? { status: 'lead' } : {}),
             };
 
             if (isEditing && id) {
@@ -340,26 +337,32 @@ const REIProjectForm = () => {
                 const res = await createReiProject(projectData);
                 if (res && (res as any).error) throw new Error((res as any).error.message || 'Erro desconhecido ao criar');
 
-                toast({ title: 'Novo Protocolo Iniciado' });
-                // Clear draft on successful creation
+                toast({
+                    title: isLeadMode ? 'Lead criado no pipeline' : 'Novo Projeto Iniciado',
+                    description: isLeadMode
+                        ? 'Oportunidade adicionada ao Deal Rooms.'
+                        : 'Projeto criado com tarefas automaticas.',
+                });
                 localStorage.removeItem(DRAFT_KEY);
 
-                if (res && res.id) {
-                    // Fase 1: cria Sprint no Notion imediatamente (não bloqueia navegação)
-                    supabase.functions.invoke('sync-notion-project', {
-                        body: {
-                            phase: 'setup',
-                            projectId: res.id,
-                            type: data.type,
-                            companyName: data.client_company || data.client_name,
-                            clientName: data.client_name,
-                        }
-                    }).then(({ error }) => {
-                        if (error) console.warn('[Notion Setup] Falhou (não crítico):', error);
-                        else console.log('[Notion Setup] Sprint criada no Notion');
+                // Fire-and-forget: enriquece projeto em background (CNPJ + PSI)
+                // Nao bloqueia navegacao - roda asincrono sem await
+                const projectId = (res as any)?.project?.id || (res as any)?.id;
+                if (projectId && !isLeadMode) {
+                    supabase.functions.invoke('auto-enrich-project', {
+                        body: { project_id: projectId },
+                    }).catch((err: any) => {
+                        console.warn('[REIProjectForm] auto-enrich-project falhou (nao critico):', err?.message);
                     });
+                }
 
-                    navigate(`/admin/jornada/${res.id}`);
+                if (res && (res as any).id) {
+                    // Lead vai direto para Deal Rooms, projeto vai para jornada
+                    if (isLeadMode) {
+                        navigate('/admin/proposals');
+                        return;
+                    }
+                    navigate(`/admin/jornada/${(res as any).id}`);
                     return;
                 }
             }
@@ -384,7 +387,7 @@ const REIProjectForm = () => {
     return (
         <AdminLayout>
             <AdminPageLayout
-                title={isEditing ? "Editar Projeto" : "Cadastrar novo projeto"}
+                title={isEditing ? "Editar Projeto" : isLeadMode ? "Nova Oportunidade" : "Novo Projeto"}
                 description="Defina a estratégia inicial e o direcionamento da conta."
                 backTo="/admin/rei"
                 backLabel="Voltar a Lista"
@@ -503,12 +506,10 @@ const REIProjectForm = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
-                                            <SelectItem value="crm_ops">CRM & RevOps</SelectItem>
-                                            <SelectItem value="funnels_impl">Site & Funnel Hub</SelectItem>
-                                            <SelectItem value="founder">Assessoria Founder</SelectItem>
-                                            <SelectItem value="content_seo">SEO & Autenticidade</SelectItem>
-                                            <SelectItem value="consulting">Consulting 360º</SelectItem>
-                                            <SelectItem value="training">Treinamento In-Company</SelectItem>
+                                            <SelectItem value="founder">Founder</SelectItem>
+                                            <SelectItem value="crm_ops">CRM</SelectItem>
+                                            <SelectItem value="consulting">360º</SelectItem>
+                                            <SelectItem value="funnels_impl">Site</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

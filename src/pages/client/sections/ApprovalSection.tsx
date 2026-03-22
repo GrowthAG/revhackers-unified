@@ -51,8 +51,8 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                     </div>
                 ) : isRejected ? (
                     <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
-                        <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+                        <div className="w-12 h-12 bg-zinc-100 border border-zinc-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Loader2 className="w-6 h-6 text-zinc-900 animate-spin" />
                         </div>
                         <h3 className="text-2xl font-black text-black mb-3">Reconstrução em Andamento</h3>
                         <p className="text-zinc-500 text-sm max-w-md mx-auto">
@@ -124,8 +124,8 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                 <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowReject(false)}>
                     <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-900"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
@@ -136,14 +136,14 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         <textarea
                             value={rejectText} onChange={e => setRejectText(e.target.value)}
                             placeholder="Descreva o que sentiu falta, o que precisa ser ajustado ou alguma regra de negócio que deve ser adicionada..."
-                            className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
+                            className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
                         />
                         
                         <div className="flex items-center justify-end gap-3 mt-8">
                             <button onClick={() => setShowReject(false)} className="px-5 py-3 hover:bg-zinc-50 text-[14px] font-bold text-zinc-600 transition-colors rounded-xl border border-transparent hover:border-zinc-200">
                                 Cancelar
                             </button>
-                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-8 py-3 bg-purple-600 text-white text-[14px] font-bold hover:bg-purple-700 transition-colors disabled:opacity-40 rounded-xl shadow-lg shadow-purple-600/20 flex items-center gap-2">
+                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-8 py-3 bg-zinc-950 text-white text-[14px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 rounded-xl flex items-center gap-2">
                                 {sending ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : 'Enviar para Inteligência'}
                             </button>
                         </div>

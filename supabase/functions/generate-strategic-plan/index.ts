@@ -93,94 +93,87 @@ serve(async (req: Request) => {
     const isFounder = projectType === 'founder';
     const isDev     = projectType === 'dev' || projectType === 'site';
 
-    // --- INTEGRATION: Notion Transcript Search ---
+    // --- INTEGRATION: Meeting Recording Transcript Search ---
+    // Source: meeting_recordings table (Chrome extension pipeline)
+    // Replaces legacy Notion dependency - recordings are stored in Supabase directly
     let transcriptText = "";
-    // @ts-ignore
-    const NOTION_API_KEY = Deno.env.get('NOTION_API_KEY');
 
-    if (NOTION_API_KEY) {
+    if (projectId) {
         try {
-            // Find contact identifiers to query Notion
-            // CRM Ops uses revops_* prefix; other REIs use flat camelCase/snake fields
-            const contactEmail = cleanResponses.revops_email || cleanResponses.email || cleanResponses.email_responsavel || cleanResponses.contato || '';
-            const companyName = tradeName || clientCompany || cleanResponses.revops_empresa || cleanResponses.companyName || cleanResponses.nome_empresa || cleanResponses.empresa || cleanResponses.company || cleanResponses.projectName || '';
-            const founderName = clientName || cleanResponses.fullName || '';
-            // Try multiple search queries: email first, then company, then name
-            const searchQueries = [contactEmail, companyName, founderName].filter(Boolean);
-            let searchQuery = searchQueries[0] || '';
+            console.log('[generate-strategic-plan] Searching meeting_recordings for project:', projectId);
 
-            console.log('[generate-strategic-plan] Initiating Notion Transcript Search for:', searchQuery);
-
-            if (searchQueries.length > 0) {
-                // Try each search query until we find a Notion page
-                let notionPageFound = false;
-                for (const query of searchQueries) {
-                    if (notionPageFound || !query) continue;
-                    console.log('[generate-strategic-plan] Trying Notion search with query:', query);
-                // 1. Search for the Page
-                const searchRes = await fetch('https://api.notion.com/v1/search', {
-                    method: 'POST',
+            // Query the most recent completed recording linked to this project
+            const recRes = await fetch(
+                `${SUPABASE_URL}/rest/v1/meeting_recordings?rei_project_id=eq.${projectId}&transcript_status=eq.completed&order=happened_at.desc&limit=1&select=transcript,ai_insights,ai_summary`,
+                {
                     headers: {
-                        'Authorization': `Bearer ${NOTION_API_KEY.trim()}`,
-                        'Notion-Version': '2022-06-28',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: query,
-                        sort: { direction: 'descending', timestamp: 'last_edited_time' },
-                        page_size: 1
-                    })
-                });
+                        'apikey': SUPABASE_SERVICE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                        'Accept': 'application/json',
+                    }
+                }
+            );
 
-                if (searchRes.ok) {
-                    const searchData = await searchRes.json();
-                    if (searchData.results && searchData.results.length > 0) {
-                        const pageId = searchData.results[0].id;
-                        console.log('[generate-strategic-plan] Notion Page Found:', pageId);
+            if (recRes.ok) {
+                const recordings: any[] = await recRes.json();
+                if (recordings && recordings.length > 0) {
+                    const rec = recordings[0];
+                    const rawTranscript = rec.transcript || '';
+                    const aiInsights = rec.ai_insights;
 
-                        // 2. Fetch the Blocks (Content)
-                        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=200`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${NOTION_API_KEY.trim()}`,
-                                'Notion-Version': '2022-06-28',
-                            }
-                        });
+                    // Build enriched transcript context: raw text + AI-extracted intelligence
+                    const parts: string[] = [];
 
-                        if (blocksRes.ok) {
-                            const blocksData = await blocksRes.json();
-                            // Parse blocks into a clean string (Supports Paragraphs, Bulleted Lists, and Headings)
-                            const extractedText = blocksData.results.map((b: any) => {
-                              const type = b.type;
-                              if (b[type]?.rich_text) {
-                                  return b[type].rich_text.map((t: any) => t.plain_text).join('');
-                              }
-                              return '';
-                            }).filter(Boolean).join('\n');
-                            
-                            transcriptText = extractedText;
-                            console.log(`[generate-strategic-plan] Transcript Loaded: ${transcriptText.length} characters`);
-                        } else {
-                            console.log('[generate-strategic-plan] Failed to fetch blocks for page');
+                    if (rawTranscript) {
+                        parts.push('--- TRANSCRICAO DA REUNIAO ---');
+                        parts.push(rawTranscript.substring(0, 12000));
+                    }
+
+                    if (aiInsights) {
+                        parts.push('');
+                        parts.push('--- INTELIGENCIA EXTRAIDA DA REUNIAO ---');
+
+                        if (aiInsights.resumo_executivo) {
+                            parts.push(`Resumo executivo: ${aiInsights.resumo_executivo}`);
                         }
-                    } else {
-                        console.log('[generate-strategic-plan] No Notion Page matched query:', query);
+                        if (aiInsights.inteligencia_estrategica?.desafios_especificos?.length) {
+                            parts.push(`Desafios identificados: ${aiInsights.inteligencia_estrategica.desafios_especificos.join(', ')}`);
+                        }
+                        if (aiInsights.inteligencia_estrategica?.concorrentes_mencionados?.length) {
+                            const concNames = aiInsights.inteligencia_estrategica.concorrentes_mencionados
+                                .map((c: any) => c.nome || c).join(', ');
+                            parts.push(`Concorrentes mencionados: ${concNames}`);
+                        }
+                        if (aiInsights.inteligencia_estrategica?.stack_tecnologica?.length) {
+                            parts.push(`Stack tecnologica: ${aiInsights.inteligencia_estrategica.stack_tecnologica.join(', ')}`);
+                        }
+                        if (aiInsights.kickoff_data?.definicao_sucesso) {
+                            parts.push(`Definicao de sucesso para o cliente: ${aiInsights.kickoff_data.definicao_sucesso}`);
+                        }
+                        if (aiInsights.kickoff_data?.gargalos_atuais?.length) {
+                            parts.push(`Gargalos atuais: ${aiInsights.kickoff_data.gargalos_atuais.join(', ')}`);
+                        }
+                        if (aiInsights.acoes_proximas?.length) {
+                            parts.push(`Proximas acoes acordadas: ${aiInsights.acoes_proximas.join('; ')}`);
+                        }
+                    }
+
+                    if (parts.length > 0) {
+                        transcriptText = parts.join('\n');
+                        console.log(`[generate-strategic-plan] Meeting transcript loaded: ${transcriptText.length} characters`);
                     }
                 } else {
-                    console.log('[generate-strategic-plan] Notion API Search Failed HTTP', searchRes.status);
+                    console.log('[generate-strategic-plan] No completed recording found for project. Proceeding without transcript.');
                 }
-
-                if (transcriptText) {
-                    notionPageFound = true;
-                }
-                } // end for loop
+            } else {
+                console.log('[generate-strategic-plan] meeting_recordings query failed:', recRes.status);
             }
         } catch (e: any) {
-            console.error('[generate-strategic-plan] Error during Notion flow:', e.message);
-            // Non-blocking error. Will continue without transcript.
+            console.error('[generate-strategic-plan] Error during recording fetch:', e.message);
+            // Non-blocking. Plan generation continues without transcript.
         }
     } else {
-        console.log('[generate-strategic-plan] WARNING: NOTION_API_KEY missing in environment. Transcripts skipped.');
+        console.log('[generate-strategic-plan] No projectId provided - transcript search skipped.');
     }
     // --- END INTEGRATION ---
 
@@ -471,7 +464,7 @@ REGRA ABSOLUTA DE INTERPRETACAO:
 7. Se "expansion_playbook" contem "parcial" ou "nao_estruturado", NAO assuma que upsell ja funciona. Trate como gap.
 8. Se "toxic_compensation" contem "coletivo_distribuido", o modelo e de comissao coletiva (nao toxico). NAO sugira mudar modelo de comissionamento.
 9. Se "data_hygiene_owner" menciona ferramentas mas NAO menciona uma pessoa, significa que NINGUEM e responsavel por higiene de dados. Trate como gap critico.
-10. Se "custom_lost_reasons" contem "Outros / Sem motivo claro", isso indica que a maioria dos deals perdidos NAO tem motivo catalogado — isso e um problema operacional grave que deve ser mencionado.
+10. Se "custom_lost_reasons" contem "Outros / Sem motivo claro", isso indica que a maioria dos deals perdidos NAO tem motivo catalogado - isso e um problema operacional grave que deve ser mencionado.
 </GLOSSARIO_DE_CAMPOS_REI>
 
 Respostas Reais do Diagnóstico:
@@ -499,7 +492,7 @@ ${pipelineContext}
 ${enrichmentContext}
 ${strategicContext}
 
-[REGRA CRITICA — PRIORIDADE MAXIMA — ANTI-CONTAMINACAO DE BENCHMARKS]:
+[REGRA CRITICA - PRIORIDADE MAXIMA - ANTI-CONTAMINACAO DE BENCHMARKS]:
 Os dados de ENRICHMENT/BENCHMARK acima sao REFERENCIA DE MERCADO apenas.
 Para metricas do CLIENTE, use EXCLUSIVAMENTE os valores do campo REI:
 - CAC do cliente = valor EXATO de "revops_cac_atual" (NAO use benchmark de mercado como CAC do cliente)
@@ -663,6 +656,20 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       console.error('[generate-strategic-plan] Parse error on raw output:', content);
       throw new Error('Failed to parse JSON out of AI response');
     }
+
+    // Post-processamento: garantir que nenhum em dash (-) ou en dash (–) sobreviveu.
+    // Regra absoluta do projeto (CLAUDE.md) - substitui por hifen simples.
+    const purgeEmDashes = (node: any): any => {
+      if (typeof node === 'string') return node.replace(/\u2014/g, '-').replace(/\u2013/g, '-');
+      if (Array.isArray(node)) return node.map(purgeEmDashes);
+      if (node !== null && typeof node === 'object') {
+        const out: any = {};
+        for (const [k, v] of Object.entries(node)) out[k] = purgeEmDashes(v);
+        return out;
+      }
+      return node;
+    };
+    planData = purgeEmDashes(planData);
 
     if (jobId) {
       const SUPABASE_URL = Deno.env.get('SUPABASE_URL');

@@ -239,7 +239,7 @@ INSTRUCOES CRITICAS DE PERSONALIZACAO:
 - Nomes brasileiros realistas. Bios com carreiras brasileiras.
 - O pitch_elevador DEVE mencionar o MECANISMO ESPECIFICO e UNICO que a empresa usa (ex: "quando seu anuncio vai ao ar na TV, sua campanha digital ativa automaticamente"). JAMAIS use frases genericas como "insights acionaveis" ou "dados de comportamento digital" isoladamente. Mencione O QUE a empresa faz de especifico que nenhum concorrente faz igual.
 - IDIOMA OBRIGATORIO: Todo o conteudo gerado DEVE estar em Portugues do Brasil correto, com acentuacao completa (ex: "ação", "análise", "gestão", "mídia", "público"). Nao omita acentos.
-- NUNCA use o caractere em dash (travessao longo U+2014) — use apenas hifen simples (-), dois pontos (:) ou ponto (.).
+- NUNCA use o caractere em dash (travessao longo U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 Retorne um JSON com EXATAMENTE esta estrutura:
 {
@@ -439,7 +439,7 @@ Você tem 15+ anos de experiência em consultoria estratégica (McKinsey, Bain, 
 Sua especialidade é transformar diagnósticos brutos em inteligência de mercado acionável.
 Cada análise que você produz é HIPER-PERSONALIZADA ao negócio real do cliente, nunca genérica.
 Responda APENAS com JSON válido. Sem markdown, sem explicações extras.
-NUNCA use o caractere em dash (—) — use apenas hífen simples (-), dois pontos (:) ou ponto (.).
+NUNCA use o caractere em dash (U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 REGRA ABSOLUTA DE IDIOMA: Todo o texto deve estar em Português do Brasil correto e completo.
 JAMAIS omita acentuação. Palavras como "ação", "gestão", "operação", "automação", "análise", "técnico", "página", "você", "nível", "período", "após", "também", "além", "mídias", "único", "público", "é", "está", "são", "assim", "métricas", "tendência", "disponível", "critérios", "médio", "avaliação", "conversão", "atração", "geração", "criação", "definição", "aquisição" DEVEM ser escritas com acentos corretos.
 Texto sem acentuação é um ERRO CRÍTICO INACEITÁVEL.`;
@@ -467,11 +467,9 @@ Texto sem acentuação é um ERRO CRÍTICO INACEITÁVEL.`;
         // Add avatar URLs for personas
         if (type === 'personas' && result?.personas && Array.isArray(result.personas)) {
             result.personas = result.personas.map((persona: any) => {
-                const gender = persona.genero?.toLowerCase().startsWith('f') ? 'women' : 'men';
-                const avatarId = Math.floor(Math.random() * 75) + 1;
                 return {
                     ...persona,
-                    foto_url: `https://randomuser.me/api/portraits/${gender}/${avatarId}.jpg`
+                    foto_url: null // Dependência fragil do randomuser.me removida, o frontend deve usar iniciais
                 };
             });
         }

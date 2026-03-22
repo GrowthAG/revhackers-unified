@@ -6,7 +6,9 @@ const AdminMaterialNew = () => {
     return (
         <AdminLayout>
             <div className="h-full">
-                <MaterialForm />
+                <AdminPageLayout title="Novo Material" backTo="/admin/materials" backLabel="Voltar aos Materiais">
+                    <MaterialForm />
+                </AdminPageLayout>
             </div>
         </AdminLayout>
     );

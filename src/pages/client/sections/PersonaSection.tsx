@@ -94,7 +94,7 @@ function TraitSlider({ left, right, value, personaIndex, traitKey }: {
     );
 }
 
-// ── No more hardcoded personas — all personas come from AI enrichment ──
+// ── No more hardcoded personas - all personas come from AI enrichment ──
 const defaultPersonas: any[] = [];
 
 // ── PersonaCard ───────────────────────────────────────────────────────────

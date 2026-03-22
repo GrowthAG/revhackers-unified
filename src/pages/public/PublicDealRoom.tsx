@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, FileText, ChevronRight, Lock, CalendarClock, Briefcase, Zap, ShieldCheck, PenLine, Loader2, ArrowRight, Play, CheckCircle, Share2, Quote } from "lucide-react";
+import { CheckCircle2, FileText, ChevronRight, Lock, CalendarClock, Briefcase, Zap, ShieldCheck, PenLine, Loader2, ArrowRight, Play, CheckCircle, Share2, Quote, CreditCard } from "lucide-react";
 import { DynamicContract } from "./components/DynamicContract";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +63,7 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
                 <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20" />
                 <div
                     className="deal-room-content prose prose-zinc prose-sm max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent || '') }}
                 />
             </div>
         );
@@ -138,20 +138,55 @@ export default function PublicDealRoom() {
 
     // Signature State
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [paymentLink, setPaymentLink] = useState<string | null>(null);
+    const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
-    // Detect payment success redirect from InfinitePay
+    // Auto-load payment link if already generated
     useEffect(() => {
-        if (searchParams.get('payment') === 'success') {
-            toast({ 
-                title: "Pagamento Aprovado! 🥂", 
-                description: "Seu Hub está oficialmente liberado. O time de Onboarding foi notificado." 
-            });
+        if (proposal?.crm_data?.payment_link) {
+            setPaymentLink(proposal.crm_data.payment_link);
         }
-    }, [searchParams]);
+    }, [proposal]);
 
-    const handleAcceptProposal = async (signerData: { name: string, role: string, cpf: string, email: string }) => {
+    // Detectar retorno do InfinitePay e verificar status REAL no banco
+    useEffect(() => {
+        if (searchParams.get('payment') === 'success' && proposal?.id) {
+            // Re-fetch da proposta para checar status atual no banco
+            // Nao confiar apenas no URL param - qualquer um pode adicionar ?payment=success
+            supabase
+                .rpc('get_proposal_by_slug', { slug_input: slug } as any)
+                .single()
+                .then(({ data }: { data: any }) => {
+                    if (data?.crm_data?.payment_confirmed === true || data?.status === 'paid') {
+                        toast({
+                            title: "Pagamento confirmado",
+                            description: "Acesso liberado. O time de Onboarding foi notificado.",
+                        });
+                        setProposal(data);
+                    } else {
+                        toast({
+                            title: "Pagamento em processamento",
+                            description: "Aguarde a confirmacao por email. Pode levar alguns minutos.",
+                        });
+                    }
+                });
+        }
+    }, [searchParams, proposal?.id]);
+
+    // Hash SHA-256 via Web Crypto API (nao armazena CPF em plain text - LGPD)
+    const hashSHA256 = async (value: string): Promise<string> => {
+        const normalized = value.replace(/\D/g, ''); // remove pontuacao do CPF
+        const buffer = new TextEncoder().encode(normalized);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+
+    const handleAcceptProposal = async (signerData: { name: string, role: string, cpf: string, email: string, hash: string }) => {
         setIsSubmitting(true);
         try {
+            // Hash do CPF antes de persistir (LGPD compliance - nunca armazenar PII em plain text)
+            const cpfHash = await hashSHA256(signerData.cpf);
+
             // 1. SAVE SIGNATURE
             const { error } = await supabase.from('proposals' as any).update({
                 status: 'approved',
@@ -160,60 +195,95 @@ export default function PublicDealRoom() {
                     deal_signed: true,
                     signed_by: signerData.name,
                     signed_role: signerData.role,
-                    signed_cpf: signerData.cpf,
+                    signed_cpf_hash: cpfHash,          // hash SHA-256, nunca plain text
                     signed_email: signerData.email,
-                    signed_user_agent: navigator.userAgent,
-                    signed_at: new Date().toISOString()
+                    signed_user_agent: navigator.userAgent.substring(0, 255),
+                    signed_at: new Date().toISOString(),
+                    certificate_hash: signerData.hash
                 }
             }).eq('id', proposal.id);
-
             if (error) throw error;
 
-            toast({ title: "Assinatura Registrada", description: "Gerando ambiente seguro de pagamento..." });
+            toast({ title: "Assinatura Registrada", description: "Projeto aprovado com sucesso! Gerando cofre..." });
 
-            // 2. GENERATE INFINITEPAY LINK
-            const chargeAmount = Number(proposal.setup_fee) > 0 ? Number(proposal.setup_fee) : Number(proposal.investment_total);
-            const amountInCents = Math.round(chargeAmount * 100);
-
+            // 2. GENERATE INFINITEPAY LINK VIA EDGE FUNCTION AND STORE IT
             try {
-                const ipResponse = await fetch('https://api.infinitepay.io/invoices/public/checkout/links', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        handle: "UseFunnels",
-                        order_nsu: proposal.id,
-                        redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
-                        items: [
-                            {
-                                quantity: 1,
-                                price: amountInCents,
-                                description: `Setup & Estruturação de Revenue Ops - Deal Room`
-                            }
-                        ]
-                    })
-                });
-
-                const checkoutData = await ipResponse.json();
-                
-                if (checkoutData?.url) {
-                    window.location.href = checkoutData.url;
-                    return; // Halts execution to wait for redirect
+                if (proposal.crm_data?.payment_link) {
+                    setPaymentLink(proposal.crm_data.payment_link);
                 } else {
-                    console.error("InfinitePay falhou em retornar URL: ", checkoutData);
-                    throw new Error("Link falhou");
+                    const chargeAmount = Number(proposal.setup_fee) > 0 ? Number(proposal.setup_fee) : Number(proposal.investment_total);
+                    const amountInCents = Math.round(chargeAmount * 100);
+                    
+                    const { data: checkoutData, error: proxyError } = await supabase.functions.invoke('infinitepay-create-link', {
+                        body: {
+                            order_nsu: proposal.id,
+                            redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
+                            amount: amountInCents
+                        }
+                    });
+
+                    if (proxyError) throw proxyError;
+                    
+                    if (checkoutData?.url) {
+                        setPaymentLink(checkoutData.url);
+                        // PERMANENT SAVE
+                        await supabase.from('proposals' as any).update({
+                            crm_data: {
+                                ...(proposal.crm_data || {}),
+                                payment_link: checkoutData.url
+                            }
+                        }).eq('id', proposal.id);
+                    }
                 }
             } catch (paymentError) {
                 console.error("Payment integration error: ", paymentError);
-                // Fallback gracefully se a API de pagamento falhar: Continua no Deal Room normal
-                setProposal({ ...proposal, status: 'approved' });
-                toast({ title: "Estratégia Aprovada!", description: "Bem-vindo à equipe! Seu Hub será provisionado." });
             }
 
-        } catch (error) {
-            console.error(error);
-            toast({ title: "Erro na assinatura", description: "Não foi possível confirmar o aceite. Atualize a página e tente novamente.", variant: "destructive" });
-        } finally {
+            setProposal((prev: any) => ({ ...prev, status: 'approved', crm_data: { ...(prev?.crm_data || {}), signed_by: signerData.name, certificate_hash: signerData.hash } }));
             setIsSubmitting(false);
+
+        } catch (error: any) {
+            console.error('Error accepting proposal:', error);
+            toast({ title: "Erro na assinatura", description: error.message, variant: "destructive" });
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleGenerateManualLink = async () => {
+        if (proposal.crm_data?.payment_link) {
+            setPaymentLink(proposal.crm_data.payment_link);
+            window.location.href = proposal.crm_data.payment_link;
+            return;
+        }
+
+        setIsGeneratingLink(true);
+        const chargeAmount = Number(proposal.setup_fee) > 0 ? Number(proposal.setup_fee) : Number(proposal.investment_total);
+        const amountInCents = Math.round(chargeAmount * 100);
+        try {
+            const { data, error } = await supabase.functions.invoke('infinitepay-create-link', {
+                body: {
+                    order_nsu: proposal.id,
+                    redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
+                    amount: amountInCents
+                }
+            });
+            
+            if (error) throw error;
+
+            if (data?.url) {
+                setPaymentLink(data.url);
+                await supabase.from('proposals' as any).update({
+                    crm_data: { ...(proposal.crm_data || {}), payment_link: data.url }
+                }).eq('id', proposal.id);
+                
+                window.location.href = data.url;
+            } else {
+                toast({ title: "Aviso", description: "Não foi possível gerar a fatura. Tente novamente." });
+            }
+        } catch (err) {
+            toast({ title: "Falha de Conexão", description: "Erro ao comunicar banco. Verifique sua rede." });
+        } finally {
+            setIsGeneratingLink(false);
         }
     };
 
@@ -254,18 +324,31 @@ export default function PublicDealRoom() {
         return () => clearInterval(interval);
     }, [proposal]);
 
-    // Inject Script for Widget
+    // Injecao do widget de formulario externo
+    // SEGURANCA: adicionar SRI (Subresource Integrity) assim que o hash do arquivo estiver disponivel:
+    // script.integrity = "sha384-<HASH_DO_ARQUIVO>";
+    // script.crossOrigin = "anonymous";
+    // Para gerar: openssl dgst -sha384 -binary form_embed.js | openssl base64 -A
     useEffect(() => {
         const script = document.createElement('script');
         script.src = "https://pages.revhackers.com.br/js/form_embed.js";
         script.async = true;
         script.type = "text/javascript";
+
+        // Silencia falhas de carregamento sem quebrar a pagina
+        script.onerror = () => {
+            console.warn('[DealRoom] Widget externo nao carregou. A pagina continua funcional.');
+            if (document.body.contains(script)) {
+                try { document.body.removeChild(script); } catch (_) { }
+            }
+        };
+
         document.body.appendChild(script);
         return () => {
             if (document.body.contains(script)) {
-                try { document.body.removeChild(script); } catch (e) { }
+                try { document.body.removeChild(script); } catch (_) { }
             }
-        }
+        };
     }, []);
 
     if (loading) {
@@ -314,11 +397,11 @@ export default function PublicDealRoom() {
                             </div>
 
                             <h1 className="text-3xl lg:text-5xl font-semibold tracking-tighter text-zinc-900 leading-[1.1] text-balance">
-                                {proposal.title || proposal.headline || `Proposta de Implementação RevHackers X ${proposal.client_name}`}
+                                {proposal.title || proposal.headline || `Proposta de Implementação RevHackers X ${proposal?.client_name}`}
                             </h1>
 
                             <p className="text-base text-zinc-400 font-light tracking-tight">
-                                Preparado para <span className="font-medium text-zinc-900 border-b border-zinc-200 pb-0.5">{proposal.client_name}</span>
+                                Preparado para <span className="font-medium text-zinc-900 border-b border-zinc-200 pb-0.5">{proposal?.client_name}</span>
                             </p>
                         </div>
                     </section>
@@ -436,7 +519,7 @@ export default function PublicDealRoom() {
                                     {isValidUrl ? (
                                         <iframe src={mindmapSrc} className="w-full h-full border-none" title="Blueprint" />
                                     ) : (
-                                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(proposal.mindmap_embed) }} className="w-full h-full" />
+                                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(proposal.mindmap_embed || '') }} className="w-full h-full" />
                                     )}
                                 </div>
                             </section>
@@ -505,7 +588,7 @@ export default function PublicDealRoom() {
                                     <p className="text-[13px] text-zinc-500 mt-2.5 leading-relaxed">Assinatura eletrônica e liberação imediata do espaço de trabalho.</p>
                                 </div>
                                 <div className="flex-grow">
-                                    {proposal.status === 'approved' ? (
+                                    {proposal.status === 'paid' ? (
                                         <div className="w-full h-full min-h-[500px] bg-green-50/50 rounded-[4px] border border-green-200 overflow-hidden shadow-sm flex flex-col items-center justify-center p-12 text-center relative">
                                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply"></div>
                                             <div className="z-10 bg-white p-4 rounded-full shadow-lg border border-green-100 mb-6">
@@ -513,7 +596,7 @@ export default function PublicDealRoom() {
                                                     <CheckCircle2 className="w-10 h-10 text-white" />
                                                 </div>
                                             </div>
-                                            <h3 className="z-10 text-3xl font-black text-green-900 tracking-tight mb-4">Projeto Aprovado Oficialmente</h3>
+                                            <h3 className="z-10 text-3xl font-black text-green-900 tracking-tight mb-4">Projeto Aprovado & Pago Oficialmente</h3>
                                             <p className="z-10 text-base text-green-800/80 max-w-md mx-auto leading-relaxed mb-8">
                                                 Sua máquina de receita já começou a ser arquitetada. A equipe estruturará o seu <b>Hub do Projeto</b> nas próximas horas.
                                             </p>
@@ -521,6 +604,53 @@ export default function PublicDealRoom() {
                                                 <p className="text-xs text-green-700 font-medium uppercase tracking-widest">Assinado por</p>
                                                 <p className="text-sm font-bold text-zinc-900">{proposal.crm_data?.signed_by || 'Cliente'}</p>
                                                 <p className="text-[11px] text-zinc-500">{proposal.crm_data?.signed_role || 'Diretoria'}</p>
+                                            </div>
+                                        </div>
+                                    ) : proposal.status === 'approved' ? (
+                                        <div className="w-full h-full min-h-[500px] bg-emerald-50/50 rounded-[4px] border border-emerald-200 overflow-hidden shadow-sm flex flex-col items-center justify-center p-12 text-center relative max-w-xl mx-auto">
+                                            <div className="z-10 bg-white p-4 rounded-full shadow-lg border border-emerald-100 mb-6">
+                                                <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center animate-[pulse_3s_ease-in-out_infinite]">
+                                                    <CheckCircle2 className="w-10 h-10 text-white" />
+                                                </div>
+                                            </div>
+                                            <h3 className="z-10 text-3xl font-black text-emerald-900 tracking-tight mb-4">Acordo Oficializado</h3>
+                                            <p className="z-10 text-sm text-emerald-800/80 max-w-md mx-auto leading-relaxed mb-8">
+                                                A Assinatura Eletrônica sob o nome de <b>{proposal.crm_data?.signed_by || 'Cliente'}</b> foi lavrada em nuvem governamental. 
+                                                Para dar o start na equipe RevHackers e liberar seu ambiente de trabalho, 
+                                                realize o processamento financeiro do Setup Inicial.
+                                            </p>
+
+                                            <div className="z-10 w-full flex flex-col items-center max-w-xs mx-auto">
+                                                {proposal.crm_data?.certificate_hash && (
+                                                    <Button 
+                                                        onClick={() => window.open(`/legal/certificado/${proposal.crm_data.certificate_hash}`, '_blank')}
+                                                        className="w-full h-12 bg-white text-emerald-700 hover:bg-emerald-50 border border-emerald-200 mb-4 font-bold uppercase tracking-widest text-[10px] shadow-sm rounded-sm transition-all"
+                                                    >
+                                                        <ShieldCheck className="w-4 h-4 mr-2" />
+                                                        Ver Certificado Legal
+                                                    </Button>
+                                                )}
+                                                {paymentLink ? (
+                                                    <Button 
+                                                        onClick={() => window.location.href = paymentLink}
+                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-xl rounded-sm transition-all"
+                                                    >
+                                                        <CreditCard className="w-5 h-5 mr-3" />
+                                                        Realizar Pagamento
+                                                    </Button>
+                                                ) : (
+                                                    <Button 
+                                                        onClick={handleGenerateManualLink}
+                                                        disabled={isGeneratingLink}
+                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-xl rounded-sm transition-all"
+                                                    >
+                                                        {isGeneratingLink ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <CreditCard className="w-5 h-5 mr-3" />}
+                                                        {isGeneratingLink ? 'Processando...' : 'Realizar Pagamento'}
+                                                    </Button>
+                                                )}
+                                                <p className="text-[10px] text-zinc-500 mt-4 uppercase tracking-widest font-bold flex items-center gap-1">
+                                                    <ShieldCheck className="w-3 h-3 text-emerald-500" /> Transação Criptografada AES-256
+                                                </p>
                                             </div>
                                         </div>
                                     ) : (

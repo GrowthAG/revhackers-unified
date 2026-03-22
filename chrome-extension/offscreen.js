@@ -1,45 +1,78 @@
-// Offscreen Document - Handles actual audio recording
-// This runs in a separate context with access to MediaRecorder
+/**
+ * RevHackers Clipper - Offscreen Document
+ *
+ * Este documento roda em um contexto separado com acesso ao MediaRecorder
+ * e ao getUserMedia (o Service Worker nao tem acesso a essas APIs).
+ *
+ * Fluxo:
+ * 1. background.js cria este documento via chrome.offscreen.createDocument
+ * 2. background.js envia mensagem 'startCapture' com o streamId do tab
+ * 3. Este documento captura o audio e armazena os chunks
+ * 4. Ao receber 'stopCapture', monta o Blob e retorna para o background
+ * 5. background.js fecha este documento e faz o upload
+ */
+
+const LOG_PREFIX = '[revhackers-ext]';
 
 let mediaRecorder = null;
-let audioChunks = [];
+let audioChunks   = [];
+
+// ============================================================
+// LISTENER DE MENSAGENS DO BACKGROUND
+// ============================================================
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.target !== 'offscreen') return;
+    if (request.target !== 'offscreen') return false;
 
     if (request.action === 'startCapture') {
         startCapture(request.streamId)
             .then(() => sendResponse({ success: true }))
-            .catch(error => sendResponse({ success: false, error: error.message }));
+            .catch(err => {
+                console.error(`${LOG_PREFIX} offscreen startCapture error:`, err.message);
+                sendResponse({ success: false, error: err.message });
+            });
         return true;
     }
 
     if (request.action === 'stopCapture') {
         stopCapture()
             .then(audioBlob => sendResponse({ success: true, audioBlob }))
-            .catch(error => sendResponse({ success: false, error: error.message }));
+            .catch(err => {
+                console.error(`${LOG_PREFIX} offscreen stopCapture error:`, err.message);
+                sendResponse({ success: false, error: err.message });
+            });
         return true;
     }
+
+    return false;
 });
+
+// ============================================================
+// INICIO DA CAPTURA
+// ============================================================
 
 async function startCapture(streamId) {
     audioChunks = [];
 
-    // Get the stream from the stream ID
+    // Obtem o MediaStream do tab a partir do streamId fornecido pelo background
     const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
             mandatory: {
                 chromeMediaSource: 'tab',
-                chromeMediaSourceId: streamId
-            }
+                chromeMediaSourceId: streamId,
+            },
         },
-        video: false
+        video: false,
     });
 
-    // Create MediaRecorder
+    // Escolhe o melhor codec disponivel
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/webm';
+
     mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 128000
+        mimeType,
+        audioBitsPerSecond: 128000,
     });
 
     mediaRecorder.ondataavailable = (event) => {
@@ -48,43 +81,54 @@ async function startCapture(streamId) {
         }
     };
 
-    mediaRecorder.onerror = (error) => {
-        console.error('MediaRecorder error:', error);
+    mediaRecorder.onerror = (event) => {
+        console.error(`${LOG_PREFIX} MediaRecorder error:`, event.error?.message || 'unknown');
     };
 
-    // Start recording with 1 second chunks
+    // Inicia gravacao com chunks de 1 segundo para permitir progresso incremental
     mediaRecorder.start(1000);
-    console.log('Recording started');
 
-    // FIX: Route audio to speakers so user can hear it
+    // Roteia o audio de volta para os alto-falantes para que o usuario continue ouvindo
     try {
         const audioContext = new AudioContext();
         const source = audioContext.createMediaStreamSource(stream);
         source.connect(audioContext.destination);
     } catch (e) {
-        console.error("Error routing audio to speakers:", e);
+        console.warn(`${LOG_PREFIX} could not route audio to speakers:`, e.message);
     }
+
+    console.log(`${LOG_PREFIX} offscreen capture started, mimeType: ${mimeType}`);
 }
+
+// ============================================================
+// PARADA DA CAPTURA
+// Retorna um Blob com o audio completo.
+// ============================================================
 
 async function stopCapture() {
     return new Promise((resolve, reject) => {
         if (!mediaRecorder) {
-            reject(new Error('No active recording'));
+            reject(new Error('Nenhuma gravacao ativa no offscreen document'));
             return;
         }
 
         mediaRecorder.onstop = () => {
-            // Combine all chunks into a single blob
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            console.log('Recording stopped, blob size:', audioBlob.size);
+            console.log(`${LOG_PREFIX} offscreen capture stopped, blob size: ${audioBlob.size} bytes, chunks: ${audioChunks.length}`);
 
-            // Stop all tracks
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            // Para todas as tracks para liberar o microfone/tab audio
+            try {
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            } catch (e) { /* ignorar */ }
 
             mediaRecorder = null;
-            audioChunks = [];
+            audioChunks   = [];
 
             resolve(audioBlob);
+        };
+
+        mediaRecorder.onerror = (event) => {
+            reject(new Error(`MediaRecorder stop error: ${event.error?.message || 'unknown'}`));
         };
 
         mediaRecorder.stop();

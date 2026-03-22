@@ -1,1 +1,20 @@
 project_id = "eqspbruarsdybpfeijnf"
+
+[functions.auto-enrich-project]
+enabled = true
+verify_jwt = false
+
+[functions.generate-project-tasks]
+enabled = true
+verify_jwt = true
+
+[functions.infinitepay-create-link]
+enabled = true
+verify_jwt = true
+import_map = "./functions/infinitepay-create-link/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/infinitepay-create-link/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/infinitepay-create-link/*.html" ]

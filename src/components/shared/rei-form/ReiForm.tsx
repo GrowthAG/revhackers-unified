@@ -11,6 +11,7 @@ import MarketSection from './MarketSection';
 import SalesSection from './SalesSection';
 import ResourcesSection from './ResourcesSection';
 import ThankYouMessage from './ThankYouMessage';
+import { sendToGHL } from '@/lib/ghlRelay';
 
 const ReiForm = () => {
   const { toast } = useToast();
@@ -168,32 +169,8 @@ const ReiForm = () => {
     setIsSubmitting(true);
     
     try {
-      const webhookUrl = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA';
-      
-      if (!webhookUrl) {
-        toast({
-          title: 'Configuração Pendente',
-          description: 'O webhook ainda não foi configurado. Dados salvos localmente.',
-          variant: 'default'
-        });
-        console.log('Form data:', formData);
-        setIsSubmitted(true);
-        return;
-      }
-
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        throw new Error('Erro ao enviar formulário');
-      }
+      await sendToGHL('rei_completed', formData as unknown as Record<string, unknown>);
+      setIsSubmitted(true);
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({

@@ -6,50 +6,48 @@ import PageLayout from '@/components/layout/PageLayout';
 import REIProjectCard from '@/components/rei/REIProjectCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Home, TrendingUp, AlertCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, Home, TrendingUp, AlertCircle, Users, Target } from 'lucide-react';
 import { REIProject, getProjectsNeedingAttention, groupProjectsByQuarter } from '@/lib/reiQuarterlySystem';
 
-// Mock data - em produção virá do Supabase
-const mockProjects: REIProject[] = [
-    {
-        id: '1',
-        clientName: 'BT Digital',
-        clientEmail: 'contato@btdigital.com',
-        lastREIDate: new Date('2024-10-01'),
-        nextREIDate: new Date('2025-01-01'),
-        quarter: 'Q1',
-        year: 2025,
-        status: 'active',
-        analystEmail: APP_CONFIG.EMAILS.ANALYST
-    },
-    {
-        id: '2',
-        clientName: 'Tikpag',
-        clientEmail: 'growth@tikpag.com',
-        lastREIDate: new Date('2024-06-30'),
-        nextREIDate: new Date('2024-12-24'),
-        quarter: 'Q4',
-        year: 2024,
-        status: 'active',
-        analystEmail: APP_CONFIG.EMAILS.ANALYST
-    },
-    {
-        id: '3',
-        clientName: 'Tegra',
-        clientEmail: 'marketing@tegra.com',
-        lastREIDate: new Date('2024-03-31'),
-        nextREIDate: new Date('2024-12-19'),
-        quarter: 'Q4',
-        year: 2024,
-        status: 'active',
-        analystEmail: APP_CONFIG.EMAILS.ANALYST
-    },
-];
+import { useEffect } from 'react';
+import { getAllReiProjects } from '@/api/reiProjects';
+import LeadWarRoomSheet from '@/components/rei/LeadWarRoomSheet';
 
 const REIDashboard = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
-    const [projects] = useState<REIProject[]>(mockProjects);
+    const [projects, setProjects] = useState<REIProject[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Estado da gaveta de vendas
+    const [selectedLead, setSelectedLead] = useState<any | null>(null);
+
+    useEffect(() => {
+        const loadRealProjects = async () => {
+             try {
+                 const data = await getAllReiProjects();
+                 // Mapeia do banco (snake_case) para a UI (camelCase)
+                 const mapped: REIProject[] = data.map(p => ({
+                     id: p.id,
+                     clientName: p.trade_name || p.client_name,
+                     clientEmail: p.client_email,
+                     lastREIDate: new Date(p.created_at || new Date().toISOString()),
+                     nextREIDate: new Date(p.next_rei_date),
+                     quarter: p.quarter as any || 'Q1',
+                     year: p.year || new Date().getFullYear(),
+                     status: p.status as any,
+                     analystEmail: p.analyst_email
+                 }));
+                 setProjects(mapped);
+             } catch (error) {
+                 console.error("Erro ao carregar projetos reais", error);
+             } finally {
+                 setIsLoading(false);
+             }
+        };
+        loadRealProjects();
+    }, []);
 
     const filteredProjects = useMemo(() => {
         if (!searchQuery.trim()) return projects;
@@ -60,39 +58,42 @@ const REIDashboard = () => {
         );
     }, [projects, searchQuery]);
 
+    const activeClients = useMemo(() => filteredProjects.filter(p => p.status !== 'lead'), [filteredProjects]);
+    const leadProjects = useMemo(() => filteredProjects.filter(p => p.status === 'lead'), [filteredProjects]);
+
     const projectsNeedingAttention = useMemo(() =>
-        getProjectsNeedingAttention(filteredProjects),
-        [filteredProjects]
+        getProjectsNeedingAttention(activeClients),
+        [activeClients]
     );
 
     const projectsByQuarter = useMemo(() =>
-        groupProjectsByQuarter(filteredProjects),
-        [filteredProjects]
+        groupProjectsByQuarter(activeClients),
+        [activeClients]
     );
 
     const stats = useMemo(() => {
-        const overdue = filteredProjects.filter(p => {
+        const overdue = activeClients.filter(p => {
             const days = Math.floor((p.nextREIDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             return days < 0;
         }).length;
 
-        const pending = filteredProjects.filter(p => {
+        const pending = activeClients.filter(p => {
             const days = Math.floor((p.nextREIDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             return days >= 0 && days <= 30;
         }).length;
 
-        const today = filteredProjects.filter(p => {
+        const today = activeClients.filter(p => {
             const days = Math.floor((p.nextREIDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             return days === 0;
         }).length;
 
         return {
-            total: filteredProjects.length,
+            total: activeClients.length,
             overdue,
             pending,
             today
         };
-    }, [filteredProjects]);
+    }, [activeClients]);
 
     return (
         <PageLayout>
@@ -144,7 +145,7 @@ const REIDashboard = () => {
                     {/* Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                            <p className="text-gray-600 text-sm font-medium mb-2">Total de Projetos</p>
+                            <p className="text-gray-600 text-sm font-medium mb-2">Clientes Ativos</p>
                             <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
                         </div>
                         <div className="bg-white border-2 border-red-200 rounded-xl p-6">
@@ -155,9 +156,9 @@ const REIDashboard = () => {
                             <p className="text-yellow-700 text-sm font-medium mb-2">Atenção Necessária</p>
                             <p className="text-3xl font-bold text-yellow-700">{stats.pending}</p>
                         </div>
-                        <div className="bg-white border-2 border-green-200 rounded-xl p-6">
-                            <p className="text-green-700 text-sm font-medium mb-2">Em Dia</p>
-                            <p className="text-3xl font-bold text-green-700">{stats.today}</p>
+                        <div className="bg-white border-2 border-blue-200 rounded-xl p-6">
+                            <p className="text-blue-700 text-sm font-medium mb-2">Leads (Site)</p>
+                            <p className="text-3xl font-bold text-blue-700">{leadProjects.length}</p>
                         </div>
                     </div>
 
@@ -173,48 +174,106 @@ const REIDashboard = () => {
                         />
                     </div>
 
-                    {/* Alerts Section */}
-                    {projectsNeedingAttention.length > 0 && (
-                        <div className="mb-8 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
-                            <div className="flex items-start gap-3 mb-4">
-                                <AlertCircle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" />
-                                <div>
-                                    <h2 className="text-lg font-bold text-yellow-900 mb-1">
-                                        Ação Necessária ({projectsNeedingAttention.length})
-                                    </h2>
-                                    <p className="text-sm text-yellow-800">
-                                        Os seguintes projetos precisam de atenção imediata
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {projectsNeedingAttention.map(project => (
-                                    <REIProjectCard key={project.id} project={project} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <Tabs defaultValue="clients" className="w-full">
+                        <TabsList className="mb-8 bg-gray-200/50 p-1 w-full max-w-sm rounded-xl">
+                            <TabsTrigger value="clients" className="w-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm">
+                                <Users className="w-4 h-4 mr-2" /> Clientes
+                            </TabsTrigger>
+                            <TabsTrigger value="leads" className="w-full rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm">
+                                <Target className="w-4 h-4 mr-2" /> Leads
+                            </TabsTrigger>
+                        </TabsList>
 
-                    {/* All Projects by Quarter */}
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Todos os Projetos</h2>
-                        {Object.entries(projectsByQuarter)
-                            .sort(([a], [b]) => b.localeCompare(a))
-                            .map(([quarter, quarterProjects]) => (
-                                <div key={quarter} className="mb-8">
-                                    <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                                        <span className="bg-gray-200 px-3 py-1 rounded-lg">{quarter}</span>
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {quarterProjects.map(project => (
+                        <TabsContent value="clients" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Alerts Section (Only for active clients) */}
+                            {projectsNeedingAttention.length > 0 && (
+                                <div className="mb-8 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <AlertCircle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" />
+                                        <div>
+                                            <h2 className="text-lg font-bold text-yellow-900 mb-1">
+                                                Ação Necessária ({projectsNeedingAttention.length})
+                                            </h2>
+                                            <p className="text-sm text-yellow-800">
+                                                Os seguintes projetos precisam de atenção imediata
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {projectsNeedingAttention.map(project => (
                                             <REIProjectCard key={project.id} project={project} />
                                         ))}
                                     </div>
                                 </div>
-                            ))}
-                    </div>
+                            )}
+
+                            {/* All Projects by Quarter */}
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Todos os Projetos Ativos</h2>
+                                {Object.entries(projectsByQuarter)
+                                    .sort(([a], [b]) => b.localeCompare(a))
+                                    .map(([quarter, quarterProjects]) => (
+                                        <div key={quarter} className="mb-8">
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                                <span className="bg-gray-200 px-3 py-1 rounded-lg">{quarter}</span>
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {quarterProjects.map(project => (
+                                                    <REIProjectCard key={project.id} project={project} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="leads" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2">Leads de Diagnóstico</h2>
+                                <p className="text-gray-500">Mapeados via Gateway Público (Não convertidos em clientes ainda).</p>
+                            </div>
+                            
+                            {leadProjects.length === 0 ? (
+                                <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-12 text-center text-gray-500">
+                                    Nenhum lead encontrado com seu filtro atual.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {leadProjects.map(project => (
+                                        <div 
+                                            key={project.id} 
+                                            className="opacity-90 grayscale-[20%] hover:grayscale-0 transition-all cursor-pointer"
+                                            onClick={() => setSelectedLead({
+                                                id: project.id,
+                                                name: project.clientName,
+                                                company: project.clientName,
+                                                type: 'funnels_impl', // Fallback
+                                                urgencyScore: 50,
+                                                maturityPct: 30, // Fallback
+                                                nextAction: 'Reunião de Diagnóstico',
+                                                daysSinceActivity: Math.floor((new Date().getTime() - project.lastREIDate.getTime()) / (1000 * 60 * 60 * 24))
+                                            })}
+                                        >
+                                            <REIProjectCard project={project} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
+
+            {/* Injeção do War Room Sheet (Drawer de Vendas) */}
+            <LeadWarRoomSheet 
+                lead={selectedLead} 
+                open={!!selectedLead} 
+                onClose={() => setSelectedLead(null)} 
+                onQualified={() => {
+                    // Após qualificar, atualiza a lista
+                    window.location.reload();
+                }} 
+            />
         </PageLayout>
     );
 };

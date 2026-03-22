@@ -14,7 +14,7 @@ interface SignatureEngineProps {
   referenceType: ReferenceType;
   referenceId: string;
   documentContentToHash: string; // The raw text to hash to ensure integrity
-  onSuccess?: (signerData: { name: string; role: string; cpf: string; email: string }) => void;
+  onSuccess?: (signerData: { name: string; role: string; cpf: string; email: string; hash: string }) => void;
   isOpen?: boolean;
 }
 
@@ -86,7 +86,7 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
 
       setIsSigned(true);
       toast.success('Assinatura Eletrônica Registrada com Sucesso!');
-      if (onSuccess) onSuccess({ name, role, cpf, email });
+      if (onSuccess) onSuccess({ name, role, cpf, email, hash: documentHash });
 
     } catch (err: any) {
       toast.error('Erro ao firmar assinatura: ' + err.message);

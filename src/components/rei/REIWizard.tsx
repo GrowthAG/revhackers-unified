@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { saveReiDiagnostic } from '@/api/reiProjects';
 import { REIType } from '@/types/rei';
 import { ReiScoringService } from '@/services/ReiScoringService';
+import { sendToGHL } from '@/lib/ghlRelay';
 
 // Import dos Steps
 import Step1Identificacao from './steps/Step1Identificacao';
@@ -343,20 +344,16 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                     })
                     .join('\n\n');
 
-                await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/aB9LHVKILBbH1ZL5CymA', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        projectId,
-                        type,
-                        scoreResult,
-                        client_name: projectDetails?.client_name || '',
-                        client_company: projectDetails?.client_company || '',
-                        client_email: projectDetails?.client_email || data.email || '',
-                        formatted_summary: formattedSummary,
-                        ...data,
-                        submittedAt: new Date().toISOString()
-                    })
+                await sendToGHL('rei_completed', {
+                    projectId,
+                    type,
+                    scoreResult,
+                    client_name: projectDetails?.client_name || '',
+                    client_company: projectDetails?.client_company || '',
+                    client_email: projectDetails?.client_email || data.email || '',
+                    formatted_summary: formattedSummary,
+                    ...data,
+                    submittedAt: new Date().toISOString()
                 });
                 console.log("Webhook sent successfully");
             } catch (webhookError) {
@@ -373,17 +370,6 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 console.log("✅ Post-REI enrichment triggered");
             } catch (enrichError) {
                 console.warn("Enrichment trigger failed (non-blocking):", enrichError);
-            }
-
-            // 5. Native Notion Integration - Fase 2: enriquece Sprint + cria Task
-            try {
-                const { supabase } = await import('@/integrations/supabase/client');
-                await supabase.functions.invoke('sync-notion-project', {
-                    body: { phase: 'enrich', projectId, type, scoreResult, data }
-                });
-                console.log("✅ Notion Enrich triggered");
-            } catch (notionError) {
-                console.error("Notion Enrich failed:", notionError);
             }
 
             // JOIN THE DOTS: Clear persistence

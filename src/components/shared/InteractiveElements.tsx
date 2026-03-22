@@ -131,7 +131,7 @@ export const AnimatedBadges = () => {
   const badges = [
     { text: "150+ Clientes", icon: Star, color: "bg-blue-100 text-blue-800" },
     { text: "32% Crescimento Médio", icon: TrendingUp, color: "bg-green-100 text-green-800" },
-    { text: "5x ROI Médio", icon: Target, color: "bg-purple-100 text-purple-800" },
+    { text: "5x ROI Médio", icon: Target, color: "bg-zinc-100 text-zinc-800" },
     { text: "Implementação Rápida", icon: Zap, color: "bg-yellow-100 text-yellow-800" }
   ];
 

@@ -24,3 +24,7 @@ ON public.document_signatures FOR SELECT USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Enable insert access for anonymous users" 
 ON public.document_signatures FOR INSERT WITH CHECK (true);
+
+-- Índices de Alta Performance (1000%)
+CREATE INDEX IF NOT EXISTS document_signatures_ref_idx ON public.document_signatures(reference_id);
+CREATE UNIQUE INDEX IF NOT EXISTS document_signatures_hash_idx ON public.document_signatures(document_hash);

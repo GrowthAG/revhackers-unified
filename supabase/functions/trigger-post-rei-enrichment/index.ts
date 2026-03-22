@@ -34,7 +34,7 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        console.log(`🚀 Starting enrichment for project: ${projectId} (Source: ${source || 'REI'})`);
+        console.log(`[trigger-post-rei-enrichment] Starting enrichment for project: ${projectId} (Source: ${source || 'REI'})`);
 
         // ========================================
         // STEP 1: Fetch REI Data (Base Context)
@@ -42,18 +42,19 @@ serve(async (req) => {
         const { data: reiData, error: reiError } = await supabaseClient
             .from('rei_responses')
             .select('*')
-            .eq('rei_project_id', projectId)
+            .eq('project_id', projectId)
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
 
         // If triggered from Kickoff, we might not have REI data or we want to overwrite it
         // But usually REI exists. If not, we proceed with partial data.
-        const formData = reiData?.form_data || {};
+        // rei_responses.responses is JSONB: { form_data: {...}, radar_data, insights, diagnostic_type }
+        const formData = { ...(reiData?.responses?.form_data || reiData?.responses || {}) };
 
         // MERGE DATA: Kickoff insights take precedence over REI form
         if (source === 'kickoff' && kickoffData) {
-            console.log('🔄 Merging Kickoff Insights into Strategy Context...');
+            console.log('[trigger-post-rei-enrichment] Merging Kickoff Insights into Strategy Context...');
             if (kickoffData.contexto_cliente) formData.contexto = kickoffData.contexto_cliente;
             if (kickoffData.desafios_especificos) formData.desafios = kickoffData.desafios_especificos;
             if (kickoffData.segmento_mercado) formData.segmento = kickoffData.segmento_mercado;
@@ -67,12 +68,13 @@ serve(async (req) => {
             .eq('id', projectId)
             .single();
 
-        const segment = formData.segmento || projectData?.industry || 'B2B SaaS';
-        const ticketMedio = formData.ticketMedio || 'médio';
-        const desafios = formData.desafios || [];
-        const metaCrescimento = formData.metaCrescimento || '20%';
+        const segment = formData.segmento || formData.sector || projectData?.industry || 'B2B SaaS';
+        const ticketMedio = formData.ticketMedio || formData.annualRevenue || formData.monthlyRevenue || 'médio';
+        const desafiosRaw = formData.desafios || formData.mainChallenge || formData.clientPains || '';
+        const desafios = Array.isArray(desafiosRaw) ? desafiosRaw : (desafiosRaw ? [desafiosRaw] : []);
+        const metaCrescimento = formData.metaCrescimento || formData.results12Months || formData.growthStrategies || '20%';
 
-        console.log(`📊 Enriching for segment: ${segment}`);
+        console.log(`[trigger-post-rei-enrichment] Enriching for segment: ${segment}`);
 
         // ========================================
         // STEP 2: Trigger Enrichment (Perplexity)
@@ -100,7 +102,7 @@ serve(async (req) => {
         if (benchmarkRes.ok) {
             const benchmarkData = await benchmarkRes.json();
             benchmark = benchmarkData.result;
-            console.log('✅ Benchmark enriched');
+            console.log('[trigger-post-rei-enrichment] Benchmark enriched');
         }
 
         // Enrich Personas
@@ -123,7 +125,7 @@ serve(async (req) => {
         if (personasRes.ok) {
             const personasData = await personasRes.json();
             personas = personasData.result;
-            console.log('✅ Personas enriched');
+            console.log('[trigger-post-rei-enrichment] Personas enriched');
         }
 
         // Enrich Market
@@ -144,7 +146,7 @@ serve(async (req) => {
         if (marketRes.ok) {
             const marketData = await marketRes.json();
             market = marketData.result;
-            console.log('✅ Market enriched');
+            console.log('[trigger-post-rei-enrichment] Market enriched');
         }
 
         // ========================================
@@ -161,8 +163,8 @@ serve(async (req) => {
                 ticket: ticketMedio,
                 desafios,
                 meta_crescimento: metaCrescimento,
-                canais: formData.canaisAquisicao || [],
-                crm: formData.crm || 'Não definido',
+                canais: formData.canaisAquisicao || formData.salesChannels || formData.adsChannels || [],
+                crm: formData.crm || formData.currentCrm || formData.currentCRM || 'Não definido',
             },
 
             // Enriched Data
@@ -198,13 +200,13 @@ serve(async (req) => {
                     version: (existingPlan.version || 0) + 1,
                 })
                 .eq('id', existingPlan.id);
-            console.log('✅ Updated existing Strategic Plan');
+            console.log('[trigger-post-rei-enrichment] Updated existing Strategic Plan');
         } else {
             // Create new
             await supabaseClient
                 .from('strategic_plans')
                 .insert(strategicPlanData);
-            console.log('✅ Created new Strategic Plan draft');
+            console.log('[trigger-post-rei-enrichment] Created new Strategic Plan draft');
         }
 
         // ========================================
@@ -226,7 +228,7 @@ serve(async (req) => {
             })
             .eq('id', projectId);
 
-        console.log('✅ Post-REI enrichment completed!');
+        console.log('[trigger-post-rei-enrichment] Post-REI enrichment completed!');
 
         return new Response(JSON.stringify({
             success: true,
@@ -254,8 +256,9 @@ serve(async (req) => {
 
 // Helper: Generate OKRs from REI data
 function generateOKRs(formData: any, benchmark: any) {
-    const meta = formData.metaCrescimento || '20%';
-    const desafios = formData.desafios || [];
+    const meta = formData.metaCrescimento || formData.results12Months || formData.growthStrategies || '20%';
+    const desafiosRaw = formData.desafios || formData.mainChallenge || formData.clientPains || '';
+    const desafios = Array.isArray(desafiosRaw) ? desafiosRaw : (desafiosRaw ? [desafiosRaw] : []);
 
     return [
         {
@@ -282,53 +285,53 @@ function generate4CycleTimeline(formData: any) {
     return [
         {
             cycle: 1,
-            name: 'Foundation',
+            name: 'Fundacao',
             weeks: '1-3',
-            focus: 'Setup & Discovery',
+            focus: 'Setup e Descoberta',
             deliverables: [
-                'Diagnóstico completo',
-                'Setup CRM/Automações',
-                'ICP & Personas finalizados',
+                'Diagnostico completo',
+                'Setup CRM e Automacoes',
+                'ICP e Personas finalizados',
                 'Playbook inicial',
             ],
             status: 'pending',
         },
         {
             cycle: 2,
-            name: 'Activation',
+            name: 'Ativacao',
             weeks: '4-6',
             focus: 'Primeiras campanhas',
             deliverables: [
-                'Funis de aquisição ativos',
-                'Conteúdo de conversão',
-                'Automações de nurturing',
-                'Dashboard de métricas',
+                'Funis de aquisicao ativos',
+                'Conteudo de conversao',
+                'Automacoes de nurturing',
+                'Dashboard de metricas',
             ],
             status: 'pending',
         },
         {
             cycle: 3,
-            name: 'Optimization',
+            name: 'Otimizacao',
             weeks: '7-9',
-            focus: 'Otimização baseada em dados',
+            focus: 'Otimizacao baseada em dados',
             deliverables: [
-                'A/B tests implementados',
+                'Testes A/B implementados',
                 'Funis otimizados',
                 'Playbook refinado',
-                'Cadências ajustadas',
+                'Cadencias ajustadas',
             ],
             status: 'pending',
         },
         {
             cycle: 4,
-            name: 'Scale',
+            name: 'Escala',
             weeks: '10-12',
             focus: 'Escala e autonomia',
             deliverables: [
                 'Processos documentados',
                 'Equipe treinada',
-                'Métricas de sucesso atingidas',
-                'Transição para ongoing',
+                'Metricas de sucesso atingidas',
+                'Transicao para ongoing',
             ],
             status: 'pending',
         },

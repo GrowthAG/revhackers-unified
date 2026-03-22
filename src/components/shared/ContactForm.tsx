@@ -14,6 +14,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { saveFormData } from '@/utils/formStorage';
 import { useNavigate } from 'react-router-dom';
+import { sendToGHL } from '@/lib/ghlRelay';
 
 interface ContactFormProps {
   formType?: 'diagnosis' | 'contact' | 'material';
@@ -50,40 +51,30 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
       saveFormData(submissionData);
       console.log('Form data saved to localStorage:', submissionData);
 
-      // Send to webhook
-      const webhookResponse = await fetch('https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/824c1633-dd07-4343-9ca4-2f25653042f5', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData),
+      // Send to GHL relay
+      await sendToGHL('contact_form', submissionData as Record<string, unknown>);
+
+      toast({
+        title: "Sucesso!",
+        description: "Suas informações foram enviadas com sucesso.",
       });
 
-      if (webhookResponse.ok) {
-        toast({
-          title: "Sucesso!",
-          description: "Suas informações foram enviadas com sucesso.",
-        });
-
-        // Redirect based on form type
-        if (formType === 'diagnosis') {
-          navigate('/agenda-diagnostico');
-        } else if (formType === 'material') {
-          navigate('/booking');
-        } else {
-          // Reset form for contact type
-          setFormData({
-            name: '',
-            email: '',
-            company: '',
-            phone: '',
-            industry: '',
-            message: '',
-            role: '',
-          });
-        }
+      // Redirect based on form type
+      if (formType === 'diagnosis') {
+        navigate('/agenda-diagnostico');
+      } else if (formType === 'material') {
+        navigate('/booking');
       } else {
-        throw new Error('Erro no envio');
+        // Reset form for contact type
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          phone: '',
+          industry: '',
+          message: '',
+          role: '',
+        });
       }
     } catch (error) {
       console.error('Error submitting form:', error);

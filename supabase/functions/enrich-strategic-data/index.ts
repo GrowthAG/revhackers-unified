@@ -165,7 +165,7 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'gpt-5.4',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: 'system',
@@ -302,12 +302,6 @@ Gere EXATAMENTE 3 personas com TODOS os campos preenchidos. Todo texto DEVE ter 
         // Add robust avatar URLs ensuring gender match
         if (result?.personas && Array.isArray(result.personas)) {
             result.personas = result.personas.map((persona: any) => {
-                // Strictly enforce gender path for randomuser.me
-                const rawGender = String(persona.genero || '').toLowerCase();
-                const isFemale = rawGender.startsWith('f') || rawGender === 'mulher' || rawGender.includes('feminino');
-                const genderPath = isFemale ? 'women' : 'men';
-                const avatarId = Math.floor(Math.random() * 75) + 1;
-                
                 // Remove prompt leaking if present (AI sometimes copies the instruction)
                 let cleanBio = persona.bio_curta || '';
                 if (cleanBio.includes('Pesquise o que')) {
@@ -320,7 +314,7 @@ Gere EXATAMENTE 3 personas com TODOS os campos preenchidos. Todo texto DEVE ter 
                 return {
                     ...persona,
                     bio_curta: cleanBio,
-                    foto_url: `https://randomuser.me/api/portraits/${genderPath}/${avatarId}.jpg`
+                    foto_url: null // Frontend usa iniciais do nome como avatar
                 };
             });
         }

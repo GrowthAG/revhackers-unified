@@ -461,7 +461,6 @@ ${additionalInfo}
                 : `Erro ao salvar: ${error.message}`;
 
             toast.error(errorMsg);
-            alert(`FALHA NO SALVAMENTO:\n${error.message}\n\nVerifique o Console (F12) para detalhes técnicos.`);
         } finally {
             setIsLoading(false);
         }

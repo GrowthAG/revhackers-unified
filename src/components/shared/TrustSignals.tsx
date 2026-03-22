@@ -22,8 +22,8 @@ const TrustSignals = () => {
           </div>
           
           <div className="flex flex-col items-center space-y-2">
-            <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
-              <Users className="h-6 w-6 text-purple-600" />
+            <div className="h-12 w-12 bg-zinc-100 rounded-full flex items-center justify-center">
+              <Users className="h-6 w-6 text-zinc-700" />
             </div>
             <p className="text-sm font-medium text-gray-900">150+ Clientes</p>
             <p className="text-xs text-gray-600">Empresas B2B</p>

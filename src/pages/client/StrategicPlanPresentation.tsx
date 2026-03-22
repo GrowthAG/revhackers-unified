@@ -359,14 +359,23 @@ export default function StrategicPlanPresentation() {
                                 >
                                     <Upload className="w-4 h-4" /> Enviar Arquivos e Acessos
                                 </button>
+                                
+                                {plan.next_steps_data?.certificate_hash && (
+                                    <button 
+                                        onClick={() => window.open(`/legal/certificado/${plan.next_steps_data.certificate_hash}`, '_blank')}
+                                        className="w-full mt-3 py-3 bg-white border border-zinc-200 text-zinc-700 text-sm font-bold rounded-lg hover:bg-zinc-50 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <ShieldCheck className="w-4 h-4 text-[#00CC6A]" /> Visualizar Cofre Legal (Certificado)
+                                    </button>
+                                )}
                             </div>
 
                             <div className="mt-12 pt-6 border-t border-zinc-200"><span className="text-xs text-zinc-400 uppercase tracking-widest">▲ RevHackers Growth Hub</span></div>
                         </div>
                     ) : isRejected ? (
                         <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
-                            <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+                            <div className="w-12 h-12 bg-zinc-100 border border-zinc-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Loader2 className="w-6 h-6 text-zinc-900 animate-spin" />
                             </div>
                             <h3 className="text-2xl font-black text-black mb-3">Reconstrução em Andamento</h3>
                             <p className="text-zinc-500 text-sm max-w-md mx-auto">
@@ -479,11 +488,12 @@ export default function StrategicPlanPresentation() {
                                         approved_by_name: signerData.name, 
                                         approved_by_email: signerData.email, 
                                         approved_by_cpf: signerData.cpf,
-                                        approved_at_iso: new Date().toISOString()
+                                        approved_at_iso: new Date().toISOString(),
+                                        certificate_hash: signerData.hash
                                     },
                                 }).eq('id', plan.id);
                                 
-                                setPlan({ ...plan, status: 'approved', next_steps_data: { ...(plan.next_steps_data || {}), approved_by_name: signerData.name } });
+                                setPlan({ ...plan, status: 'approved', next_steps_data: { ...(plan.next_steps_data || {}), approved_by_name: signerData.name, certificate_hash: signerData.hash } });
                                 setApprovedName(signerData.name);
                                 setShowSign(false);
                                 setShowApproved(true);
@@ -509,8 +519,8 @@ export default function StrategicPlanPresentation() {
                         ) : (
                             <>
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-900"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
@@ -522,14 +532,14 @@ export default function StrategicPlanPresentation() {
                                     value={rejectText} 
                                     onChange={e => setRejectText(e.target.value)} 
                                     placeholder="Descreva o que sentiu falta, o que precisa ser ajustado ou alguma regra de negócio que deve ser adicionada..." 
-                                    className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400" 
+                                    className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
                                 />
                                 
                                 <div className="flex items-center justify-end gap-3 mt-8">
                                     <button onClick={() => setShowRejectModal(false)} className="px-5 py-3 hover:bg-zinc-50 text-[14px] font-bold text-zinc-600 transition-colors rounded-xl border border-transparent hover:border-zinc-200">
                                         Cancelar
                                     </button>
-                                    <button onClick={handleReject} disabled={!rejectText.trim() || rejecting} className="px-8 py-3 bg-purple-600 text-white text-[14px] font-bold hover:bg-purple-700 transition-colors disabled:opacity-40 rounded-xl shadow-lg shadow-purple-600/20 flex items-center gap-2">
+                                    <button onClick={handleReject} disabled={!rejectText.trim() || rejecting} className="px-8 py-3 bg-zinc-950 text-white text-[14px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 rounded-xl flex items-center gap-2">
                                         {rejecting ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : 'Enviar para Inteligência'}
                                     </button>
                                 </div>

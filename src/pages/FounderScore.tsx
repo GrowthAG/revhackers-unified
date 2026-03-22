@@ -160,7 +160,6 @@ const FounderScore = () => {
         setIsSubmitting(true);
         try {
             const result = getResultMap(score);
-            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7';
 
             // Merge Manual Data with Enriched Data
             const enrichedData = {
@@ -179,7 +178,7 @@ const FounderScore = () => {
                     action: "Agendar Call de Diagnóstico",
                     color: "revgreen"
                 },
-                WEBHOOK_URL
+                'score_captured'
             );
 
             setHasSubmittedLead(true);
@@ -346,13 +345,13 @@ const FounderScore = () => {
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
                                             className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
-                                                ? "bg-[#00CC6A] text-black border-[#00CC6A] shadow-[0_0_15px_rgba(0,204,106,0.4)] scale-[1.02]"
-                                                : "bg-white border-zinc-200 text-zinc-900 hover:border-black hover:text-black hover:shadow-md"
+                                                ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
+                                                : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
                                             <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
-                                                ? "bg-white text-black border-white"
-                                                : "bg-zinc-50 border-zinc-100 text-zinc-400 group-hover:border-black group-hover:text-black"
+                                                ? "bg-white text-zinc-900 border-white"
+                                                : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                                 }`}>
                                                 {String.fromCharCode(65 + idx)}
                                             </div>
@@ -391,17 +390,17 @@ const FounderScore = () => {
                             <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
                                 {/* Coluna Esquerda: Teaser */}
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
-                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${finalScore >= 70 ? 'bg-revgreen' : finalScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
-                                        <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
+                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-800">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${finalScore >= 70 ? 'bg-zinc-200' : finalScore >= 40 ? 'bg-zinc-400' : 'bg-zinc-600'} animate-pulse`}></div>
+                                        <span className="text-[9px] font-mono font-bold text-zinc-400 tracking-wider uppercase">Análise Finalizada</span>
                                     </div>
 
                                     <div className="relative">
-                                        <div className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none shadow-black drop-shadow-2xl">{finalScore}</div>
+                                        <div className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none">{finalScore}</div>
                                     </div>
 
                                     <h3 className="text-sm font-medium text-zinc-400 leading-relaxed max-w-xs">
-                                        Detectamos inconsistências críticas entre sua <span className="text-revgreen font-bold text-white">autoridade digital</span> e sua operação real.
+                                        Detectamos inconsistências críticas entre sua <span className="text-white font-bold">autoridade digital</span> e sua operação real.
                                     </h3>
                                 </div>
 
@@ -426,7 +425,7 @@ const FounderScore = () => {
                         {/* DASHBOARD HEADLINE - Padronizado */}
                         <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
                             <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#00CC6A]"></span>
+                                <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
@@ -452,9 +451,9 @@ const FounderScore = () => {
                                     {/* AI Archetype Card */}
                                     {analysisResult ? (
                                         <div className="relative z-10 space-y-6">
-                                            <div className="inline-flex items-center gap-2 bg-revgreen/10 px-3 py-1 rounded-full border border-revgreen/20">
-                                                <Brain className="w-3 h-3 text-revgreen" />
-                                                <span className="text-[10px] font-mono font-bold text-revgreen uppercase tracking-widest">
+                                            <div className="inline-flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700">
+                                                <Brain className="w-3 h-3 text-zinc-300" />
+                                                <span className="text-[10px] font-mono font-bold text-zinc-300 uppercase tracking-widest">
                                                     Arquétipo Identificado
                                                 </span>
                                             </div>
@@ -463,7 +462,7 @@ const FounderScore = () => {
                                                 <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-2">
                                                     {analysisResult.archetype.toUpperCase()}
                                                 </h2>
-                                                <p className="text-xl text-zinc-400 font-medium italic border-l-2 border-revgreen pl-4">
+                                                <p className="text-xl text-zinc-400 font-medium italic border-l-2 border-zinc-600 pl-4">
                                                     "{analysisResult.headline}"
                                                 </p>
                                             </div>
@@ -475,7 +474,7 @@ const FounderScore = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
                                                 <div>
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                        <span className="w-1.5 h-1.5 bg-revgreen rounded-full"></span> Superpoderes
+                                                        <span className="w-1.5 h-1.5 bg-zinc-300 rounded-full"></span> Vantagens Competitivas
                                                     </h4>
                                                     <ul className="space-y-2">
                                                         {analysisResult.strengths.map((s, i) => (
@@ -563,42 +562,38 @@ const FounderScore = () => {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3 mb-4">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
-                                                O "Custo da Invisibilidade"
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                Se você não publica, o mercado assume que você fechou ou estagnou. Identificamos que sua presença digital não reflete a qualidade real da sua entrega. Você está deixando dinheiro na mesa por "timidez estratégica".
-                                            </p>
-                                        </div>
-                                        <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3 mb-4">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
-                                                Métricas de Vaidade
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                Likes não pagam boletos. O diagnóstico aponta que seu conteúdo (quando existe) não tem "Call to Value" claro. Precisamos transformar leitores em leads qualificados, não apenas fãs.
-                                            </p>
-                                        </div>
-                                        <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3 mb-4">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
-                                                Autoridade Proprietária
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                Falta "Intellectual Property" (IP). Você vende serviços, mas deveria vender Metodologia. Sem frameworks visuais e materiais ricos, você é uma commodity comparável por preço.
-                                            </p>
-                                        </div>
-                                        <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3 mb-4">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
-                                                Máquina de Inbound
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                O objetivo final não é ser "famoso", é ter previsibilidade. Sua operação de Founder Led Sales precisa sair do "post aleatório" para um Sistema de Distribuição que enche a agenda de vendas sozinho.
-                                            </p>
-                                        </div>
+                                        {QUESTIONS.slice(0, 4).map((q, idx) => {
+                                            const userAnswerScore = answers[idx];
+                                            const userAnswerData = q.options.find(o => o.score === userAnswerScore);
+                                            
+                                            // Status based on performance (0-20 scale per question)
+                                            const isCritical = userAnswerScore < 10;
+                                            
+                                            return (
+                                                <div key={idx} className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300 flex flex-col h-full">
+                                                    <div className="flex items-start justify-between mb-4">
+                                                        <h4 className="text-[11px] font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                            <div className={`w-1.5 h-1.5 rounded-full ${isCritical ? 'bg-red-500' : 'bg-black'}`} />
+                                                            Pilar 0{idx + 1}
+                                                        </h4>
+                                                        {isCritical && <span className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold uppercase tracking-widest">Crítico</span>}
+                                                    </div>
+                                                    
+                                                    <h3 className="text-sm font-bold text-zinc-900 mb-3">{q.question}</h3>
+                                                    
+                                                    <div className="mb-4 bg-white border border-zinc-100 p-3 rounded-lg text-xs font-medium text-zinc-600">
+                                                        <span className="block text-[10px] text-zinc-400 uppercase tracking-widest mb-1">Seu Diagnóstico:</span>
+                                                        "{userAnswerData?.label || 'Não Respondido'}"
+                                                    </div>
+                                                    
+                                                    <div className="mt-auto border-t border-zinc-200 pt-4">
+                                                        <p className="!text-zinc-900 text-xs leading-relaxed font-semibold">
+                                                            Atenção: <span className="font-normal text-zinc-600">{q.log}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </section>
 

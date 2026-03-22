@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Search, CheckCircle2, Zap } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StepFounderProps {
     form: UseFormReturn<any>;
@@ -37,24 +38,39 @@ export default function StepFounderLinkedIn({ form }: StepFounderProps) {
 
         setLoading(true);
         try {
-            // Simulated scraping - in production this would call an actual API
-            const mockData: ScrapedProfile = {
-                name: "João Silva",
-                headline: "CEO & Founder | Growth Specialist",
-                about: "Empreendedor com 10+ anos de experiência em tecnologia e growth.",
-                skills: ["Liderança", "Growth Hacking", "Vendas B2B", "Marketing Digital"]
+            // Chamada Real para a Inteligência Artificial (Edge Function)
+            const { data, error } = await supabase.functions.invoke('scrape-profile', {
+                body: { url: linkedInUrl }
+            });
+
+            if (error) {
+                console.error("Supabase EF Error:", error);
+                throw new Error("Falha na chamada da automação DLT");
+            }
+
+            if (!data || !data.name) {
+                throw new Error("Perfil não encontrado ou privado demais");
+            }
+
+            const profileData: ScrapedProfile = {
+                name: data.name,
+                headline: data.headline,
+                about: data.about || data.summary || "",
+                skills: data.skills || data.softSkills || []
             };
 
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate delay
-            setScrapedData(mockData);
+            setScrapedData(profileData);
 
-            form.setValue('founder_name', mockData.name);
-            form.setValue('founder_role', mockData.headline);
-            form.setValue('founder_bio', mockData.about);
+            form.setValue('founder_name', profileData.name);
+            form.setValue('founder_role', profileData.headline);
+            form.setValue('founder_bio', profileData.about);
+            if (data.actionableInsight || data.superpowers) {
+                 form.setValue('founder_superpowers', data.actionableInsight || data.superpowers || "Mapeado via Automação de Perfil.");
+            }
 
             toast({
-                title: "Dados Encontrados e Preenchidos",
-                description: "Revise os campos abaixo.",
+                title: "Inteligência Estratégica Extraída",
+                description: "Dados capturados da Web e enriquecidos via IA. Revise os campos.",
                 className: "bg-black text-white border-zinc-700"
             });
         } catch (error) {

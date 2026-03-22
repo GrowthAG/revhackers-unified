@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
@@ -53,6 +53,7 @@ interface ProposalFormValues {
     call_detail_summary?: string;
     agenda_link?: string;
     booking_url?: string;
+    payment_link?: string;
 }
 
 interface ProposalFormProps {
@@ -111,8 +112,10 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
                 qualified_score: 5,
                 funnel_plan: 'none',
                 funnel_promo_active: false,
-                project_duration: initialData?.crm_data?.project_duration || '3'
-            }
+                project_duration: initialData?.crm_data?.project_duration || '3',
+                payment_link: initialData?.crm_data?.payment_link || ''
+            },
+            payment_link: initialData?.crm_data?.payment_link || ''
         }
     });
 
@@ -404,7 +407,7 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
             if (!validEmail) {
                 const emails = txt.match(emailRegex);
                 if (emails && emails.length > 0) {
-                    const found = emails.find((e: string) => !isInternal(e) && !e.includes('tldv.io') && !e.includes('notetaker'));
+                    const found = emails.find((e: string) => !isInternal(e) && !e.includes('notetaker'));
                     if (found) validEmail = found.toLowerCase();
                 }
             }
@@ -440,32 +443,7 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
         }
     };
 
-    const watchedUrl = watch('recording_url');
-    useEffect(() => {
-        const fetchMetadata = async () => {
-            if (watchedUrl && (watchedUrl.includes('tldv.io') || watchedUrl.includes('call')) && watchedUrl.length > 20) {
-                try {
-                    const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
-                        body: { meetingUrl: watchedUrl }
-                    });
-
-                    if (data?.success && data.data) {
-                        updateFieldsWithMetadata(data.data);
-                        // Automatically generate proposal data if we got a transcript
-                        if (data.data.transcript && data.data.transcript.length > 100) {
-                            // Small delay to let fields populate first
-                            setTimeout(() => {
-                                handleGenerateScope(data.data.transcript);
-                            }, 500);
-                        }
-                    }
-                } catch (e) {
-                    console.warn("Auto-fetch metadata failed:", e);
-                }
-            }
-        };
-        fetchMetadata();
-    }, [watchedUrl, setValue]);
+    // Auto-fetch removido: reunioes agora vem de meeting_recordings via picker
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'document') => {
         if (!e.target.files || e.target.files.length === 0) return;
@@ -545,7 +523,8 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                     bid_document_url: data.bid_document_url || null,
                     call_detail_summary: data.call_detail_summary || null,
                     booking_url: data.booking_url || null,
-                    proposal_source: data.proposal_source || 'call'
+                    proposal_source: data.proposal_source || 'call',
+                    payment_link: data.payment_link || null
                 }
             };
 
@@ -599,17 +578,80 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
     const fetchMeetingHistory = async () => {
         setLoadingHistory(true);
         try {
-            const { data, error } = await supabase.functions.invoke('fetch-tldv-meeting', {
-                body: { action: 'list' }
-            });
-            if (!error && data?.success && Array.isArray(data.data)) {
-                setMeetingHistory(data.data);
+            const { data, error } = await supabase
+                .from('meeting_recordings')
+                .select('id, title, transcript, insights, recording_url, created_at, duration_seconds')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (!error && data) {
+                setMeetingHistory(data.map((r: any) => ({
+                    id: r.id,
+                    name: r.title || 'Reuniao sem titulo',
+                    title: r.title,
+                    transcript: r.transcript,
+                    insights: r.insights,
+                    url: r.recording_url || '',
+                    createdAt: r.created_at,
+                    duration: r.duration_seconds,
+                    // Extrair dados do cliente dos insights da IA
+                    clientName: r.insights?.client_info?.company || r.insights?.client_info?.name || null,
+                    clientContactName: r.insights?.client_info?.name || null,
+                    clientEmail: r.insights?.client_info?.email || null,
+                    crm_data: r.insights,
+                })));
             }
         } catch (e: any) {
-            console.warn("Failed to fetch history:", e);
-            toast({ title: 'Erro ao buscar histórico', description: e.message || 'Verifique se a função foi deployada.', variant: 'destructive' });
+            console.warn("Failed to fetch meeting history:", e);
+            toast({ title: 'Erro ao buscar gravacoes', description: e.message || 'Verifique a tabela meeting_recordings.', variant: 'destructive' });
         } finally {
             setLoadingHistory(false);
+        }
+    };
+
+    const [isGeneratingIP, setIsGeneratingIP] = useState(false);
+
+    const handleGenerateInfinitePay = async () => {
+        if (!initialData?.id) {
+            toast({ title: 'Aviso', description: 'Salve a proposta pela primeira vez antes de gerar o link financeiro.', variant: 'destructive' });
+            return;
+        }
+        
+        const setupFee = getValues('setup_fee');
+        const invTotal = getValues('investment_total');
+        const chargeAmount = Number(setupFee) > 0 ? Number(setupFee) : Number(invTotal);
+        
+        if (!chargeAmount || chargeAmount <= 0) {
+            toast({ title: 'Valores Inválidos', description: 'Defina o Valor do Setup ou Investimento Total primeiro e salve.', variant: 'destructive' });
+            return;
+        }
+
+        setIsGeneratingIP(true);
+        try {
+            const amountInCents = Math.round(chargeAmount * 100);
+            const slug = getValues('slug');
+            
+            const { data, error } = await supabase.functions.invoke('infinitepay-create-link', {
+                body: {
+                    order_nsu: initialData.id,
+                    redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
+                    amount: amountInCents
+                }
+            });
+            
+            if (error) throw error;
+            
+            if (data?.url) {
+                setValue('payment_link', data.url);
+                toast({ title: 'Link Gerado!', description: 'O link da InfinitePay foi criado. Salve a proposta para guardar permanentemente.' });
+            } else {
+                throw new Error("Resposta inválida do Gateway InfinitePay.");
+            }
+        } catch(e: any) {
+            console.error(e);
+            toast({ title: 'Erro ao Gerar Fatura', description: e.message, variant: 'destructive' });
+        } finally {
+            setIsGeneratingIP(false);
         }
     };
 
@@ -862,7 +904,7 @@ Model de JSON de saída:
                         <div className="space-y-6">
                             {/* Meeting Picker Button */}
                             <div className="space-y-4 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
-                                <Label className="text-[10px] font-bold uppercase text-zinc-400">Selecionar Reunião do tl;dv</Label>
+                                <Label className="text-[10px] font-bold uppercase text-zinc-400">Selecionar Reuniao Gravada</Label>
 
                                 <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
                                     <DialogTrigger asChild>
@@ -891,22 +933,24 @@ Model de JSON de saída:
                                                 </div>
                                             ) : meetingHistory.length === 0 ? (
                                                 <div className="text-center py-12 text-zinc-400 text-sm">
-                                                    Nenhuma reunião encontrada. Verifique sua API Key do tl;dv.
+                                                    Nenhuma gravacao encontrada. Use a extensao Chrome para gravar reunioes do Meet.
                                                 </div>
                                             ) : (
                                                 meetingHistory.map((meeting: any) => (
                                                     <div
                                                         key={meeting.id || meeting.url}
-                                                        onClick={async () => {
-                                                            const url = meeting.url || meeting.share_url || `https://tldv.io/app/meetings/${meeting.id}`;
-                                                            setValue('recording_url', url);
+                                                        onClick={() => {
+                                                            setValue('recording_url', meeting.url || '');
                                                             setHistoryOpen(false);
-                                                            // Auto-fetch full details
-                                                            toast({ title: 'Carregando dados...', description: meeting.name || meeting.title });
-                                                            const { data } = await supabase.functions.invoke('fetch-tldv-meeting', { body: { meetingUrl: url } });
-                                                            if (data?.success) {
-                                                                updateFieldsWithMetadata(data.data, true);
-                                                                toast({ title: 'Dados do Cliente Carregados', description: `${data.data.clientName || 'Empresa'} - ${data.data.clientContactName || 'Contato'}` });
+                                                            // Preenche campos com dados ja extraidos da gravacao
+                                                            updateFieldsWithMetadata(meeting, true);
+                                                            toast({
+                                                                title: 'Gravacao Vinculada',
+                                                                description: meeting.clientName || meeting.name || 'Dados carregados'
+                                                            });
+                                                            // Auto-gerar escopo se tem transcricao
+                                                            if (meeting.transcript && meeting.transcript.length > 100) {
+                                                                setTimeout(() => handleGenerateScope(meeting.transcript), 500);
                                                             }
                                                         }}
                                                         className="p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"
@@ -974,7 +1018,7 @@ Model de JSON de saída:
                             >
                                 <div className="text-center">
                                     <Video className="w-12 h-12 text-white/50 mx-auto mb-3" />
-                                    <span className="text-white/80 text-sm font-medium">Clique para assistir no tl;dv</span>
+                                    <span className="text-white/80 text-sm font-medium">Clique para assistir a gravacao</span>
                                     <div className="mt-2">
                                         <ExternalLink className="w-4 h-4 text-white/40 mx-auto" />
                                     </div>
@@ -1033,7 +1077,7 @@ Model de JSON de saída:
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Transcrição da Call</Label>
-                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Importado do tl;dv</Badge>
+                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Transcricao da Call</Badge>
                             </div>
                             <Textarea
                                 {...register('transcript')}
@@ -1205,6 +1249,26 @@ Model de JSON de saída:
                             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
                                 <Label className="text-[10px] uppercase font-bold text-zinc-400">Nº de Parcelas</Label>
                                 <Input {...register('installment_count')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="6" />
+                            </div>
+                        </div>
+
+                        {/* INFINITEPAY LINK */}
+                        <div className="pt-8 border-t border-zinc-100/50">
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">Motor de Faturamento (InfinitePay)</h3>
+                            <div className="p-6 rounded-xl bg-zinc-50 border border-zinc-100 flex flex-col md:flex-row gap-4 items-end">
+                                <div className="flex-1 space-y-2 w-full">
+                                    <Label className="text-xs font-medium text-zinc-700">Link de Pagamento (Público)</Label>
+                                    <Input {...register('payment_link')} className="bg-white h-10 w-full font-mono text-xs" placeholder="https://pay.infinitepay.io/..." />
+                                </div>
+                                <Button 
+                                    type="button" 
+                                    onClick={handleGenerateInfinitePay} 
+                                    disabled={isGeneratingIP || !initialData?.id}
+                                    className="bg-zinc-900 hover:bg-black text-white h-10 px-6 shrink-0 text-xs uppercase tracking-widest font-bold"
+                                >
+                                   {isGeneratingIP ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
+                                   Gerar Link Agora
+                                </Button>
                             </div>
                         </div>
                     </div >

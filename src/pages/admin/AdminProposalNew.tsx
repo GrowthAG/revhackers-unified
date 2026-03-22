@@ -5,6 +5,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import ProposalForm from "@/components/admin/ProposalForm";
 import { getReiProjectById } from "@/api/reiProjects";
 import { getLatestReiResponse } from "@/api/reiResponses";
+import AdminPageLayout from "@/components/layout/AdminPageLayout";
 
 const AdminProposalNew = () => {
     const [searchParams] = useSearchParams();
@@ -65,7 +66,11 @@ const AdminProposalNew = () => {
 
     return (
         <AdminLayout>
-            <ProposalForm initialData={initialData} />
+            <div className="h-full">
+                <AdminPageLayout title="Nova Proposta" backTo="/admin/proposals" backLabel="Voltar às Propostas">
+                    <ProposalForm initialData={initialData} />
+                </AdminPageLayout>
+            </div>
         </AdminLayout>
     );
 };

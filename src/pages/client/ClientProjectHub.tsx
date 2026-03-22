@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { getPublicReiProjectById, type ReiProject } from '@/api/reiProjects';
 import { Button } from '@/components/ui/button';
@@ -86,6 +87,10 @@ const ClientProjectHub = () => {
     const [loading, setLoading] = useState(true);
     const [clientDocs, setClientDocs] = useState<any[]>([]);
     const [npsUnlocked, setNpsUnlocked] = useState(false);
+    
+    // Orqflow Live Data State
+    const [liveTasks, setLiveTasks] = useState<any[]>([]);
+    const [liveSprints, setLiveSprints] = useState<any[]>([]);
 
     useEffect(() => {
         const loadProject = async () => {
@@ -150,6 +155,23 @@ const ClientProjectHub = () => {
                         setClientDocs(publicDocs);
                     }
                 }
+
+                // 4. Fetch Live Orqflow Secure Data (The Heartbeat)
+                const { data: sprintsData } = await supabase
+                    .from('vw_orqflow_public_sprints' as any)
+                    .select('*')
+                    .eq('project_id', id)
+                    .order('created_at', { ascending: false });
+                
+                if (sprintsData) setLiveSprints(sprintsData);
+
+                const { data: tasksData } = await supabase
+                    .from('vw_orqflow_public_tasks' as any)
+                    .select('*')
+                    .eq('project_id', id)
+                    .order('due_date', { ascending: true, nullsFirst: false });
+                
+                if (tasksData) setLiveTasks(tasksData);
 
             } catch (error) {
                 console.error("Error loading project hub:", error);
@@ -298,34 +320,54 @@ const ClientProjectHub = () => {
                             <LayoutTemplate className="w-4 h-4" /> Roadmap de Execução
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            {[
-                                { step: '01', title: 'Setup & Diagnóstico', status: 'done', desc: 'Análise inicial concluída.' },
-                                { step: '02', title: 'Start Oficial', status: project.scheduling_completed ? 'done' : 'active', desc: 'Apresentação do Plano.' },
-                                { step: '03', title: 'Construção', status: 'pending', desc: 'Implementação de Processos.' },
-                                { step: '04', title: 'Go Live', status: 'pending', desc: 'Operação Assistida.' }
-                            ].map((item, i) => (
-                                <div key={i} className={`
-                                    relative p-6 rounded-xl border transition-all duration-300 flex flex-col justify-between h-32
-                                    ${item.status === 'active' ? 'bg-white border-zinc-900 shadow-md ring-1 ring-zinc-900/5' : ''}
-                                    ${item.status === 'done' ? 'bg-zinc-50 border-zinc-200' : ''}
-                                    ${item.status === 'pending' ? 'bg-white border-zinc-100 opacity-60 grayscale' : ''}
-                                `}>
-                                    <div className="flex justify-between items-start">
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${item.status === 'active' ? 'text-zinc-900' : 'text-zinc-400'}`}>
-                                            Fase {item.step}
-                                        </span>
-                                        {item.status === 'done' && <div className="bg-[#00CC6A]/10 text-[#00CC6A] p-1 rounded-md"><Check className="w-3 h-3" /></div>}
-                                    </div>
-                                    <div>
-                                        <h4 className={`font-bold text-sm leading-tight mb-1 ${item.status === 'active' ? 'text-zinc-900' : 'text-zinc-700'}`}>{item.title}</h4>
-                                        <p className="text-xs text-zinc-500 font-medium">
-                                            {item.desc}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        {liveTasks.length > 0 ? (
+                           <div className="flex flex-col gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                               {liveTasks.map(task => {
+                                  let statusColor = "bg-zinc-100 border-zinc-200 text-zinc-500";
+                                  let icon = <Clock className="w-4 h-4 text-zinc-400" />;
+                                  let statusText = "Agendado";
+                                  
+                                  if (task.status === 'done') {
+                                      statusColor = "bg-[#00CC6A]/10 border-[#00CC6A]/20 text-[#00CC6A]";
+                                      icon = <Check className="w-4 h-4 text-[#00CC6A]" />;
+                                      statusText = "Concluído";
+                                  } else if (task.status === 'doing') {
+                                      statusColor = "bg-blue-500/10 border-blue-500/20 text-blue-500";
+                                      icon = <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
+                                      statusText = "Em Progresso";
+                                  } else if (task.status === 'review') {
+                                      statusColor = "bg-orange-500/10 border-orange-500/20 text-orange-500";
+                                      icon = <MessageSquare className="w-4 h-4 text-orange-500" />;
+                                      statusText = "Em Aprovação";
+                                  }
+
+                                  return (
+                                     <div key={task.id} className="relative p-5 rounded-2xl bg-white border border-zinc-200 transition-shadow hover:shadow-md flex items-center justify-between group">
+                                         <div className="flex items-center gap-4">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${statusColor}`}>
+                                               {icon}
+                                            </div>
+                                            <div>
+                                               <h4 className="font-bold text-sm text-zinc-900 group-hover:text-revhackers transition-colors">{task.title}</h4>
+                                               <p className="text-xs text-zinc-500 font-medium">
+                                                  Prazo: {task.due_date ? new Date(task.due_date).toLocaleDateString('pt-BR') : 'A definir'}
+                                               </p>
+                                            </div>
+                                         </div>
+                                         <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border ${statusColor}`}>
+                                             {statusText}
+                                         </span>
+                                     </div>
+                                  )
+                               })}
+                           </div>
+                        ) : (
+                           <div className="text-center py-12 bg-white border border-zinc-200 border-dashed rounded-2xl">
+                               <LayoutTemplate className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
+                               <h4 className="text-sm font-bold text-zinc-900 mb-1">O Roadmap está em construção</h4>
+                               <p className="text-xs text-zinc-500">A equipe RH está alocando o Backlog da Sprint.</p>
+                           </div>
+                        )}
                     </div>
 
                     {/* 3.5. OFFICIAL DOCUMENTATION HANDOVER */}
@@ -346,7 +388,7 @@ const ClientProjectHub = () => {
                                                 if (meta.type === 'external_link' && meta.url) {
                                                     window.open(meta.url, '_blank');
                                                 } else {
-                                                    alert('Visualizador de documentos internos em breve. Se o link não abrir, peça ao analista adicionar a URL pública.');
+                                                    toast.info('Visualizador de documentos internos em breve. Se o link não abrir, peça ao analista adicionar a URL pública.');
                                                 }
                                             }}
                                             className={cn(

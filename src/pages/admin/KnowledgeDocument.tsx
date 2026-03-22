@@ -69,6 +69,17 @@ const KnowledgeDocumentEditor = () => {
         }
     }, [title]);
 
+    // Browser's native "unsaved changes" protection
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isSaving || (!title && !content)) return;
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isSaving, title, content]);
+
     useEffect(() => {
         if (docId && docId !== 'new') {
             loadDocument();
@@ -335,7 +346,10 @@ const KnowledgeDocumentEditor = () => {
                 {/* Navbar */}
                 <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-zinc-100 px-6 h-14 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/knowledge')} className="text-zinc-500 hover:text-black -ml-2">
+                        <Button variant="ghost" size="sm" onClick={() => {
+                            if (window.history.length > 2) navigate(-1);
+                            else navigate('/admin/rei');
+                        }} className="text-zinc-500 hover:text-black -ml-2">
                             <ChevronLeft className="w-4 h-4 mr-1" /> Voltar
                         </Button>
                         <span className="text-zinc-200">|</span>

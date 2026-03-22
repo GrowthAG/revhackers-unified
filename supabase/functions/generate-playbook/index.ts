@@ -77,71 +77,29 @@ serve(async (req: Request) => {
     const rawDiagnostic = reiResponses?.responses || {};
     const strategy = strategicPlan || {};
 
-    // --- INTEGRATION: Notion Transcript Search ---
+    // --- INTEGRATION: Transcript from meeting_recordings (Supabase-native) ---
     let transcriptText = "";
-    // @ts-ignore
-    const NOTION_API_KEY = Deno.env.get('NOTION_API_KEY');
+    try {
+        const { data: recording } = await supabase
+            .from('meeting_recordings')
+            .select('transcript, ai_summary')
+            .eq('rei_project_id', projectId)
+            .eq('transcript_status', 'completed')
+            .order('happened_at', { ascending: false })
+            .limit(1)
+            .single();
 
-    if (NOTION_API_KEY) {
-        try {
-            const contactEmail = rawDiagnostic.email || rawDiagnostic.email_responsavel || rawDiagnostic.contato || '';
-            const companyName = rawDiagnostic.empresa || rawDiagnostic.nome_empresa || rawDiagnostic.company || rawDiagnostic.projectName || '';
-            const founderName = rawDiagnostic.fullName || rawDiagnostic.nome || '';
-            
-            const searchQueries = [contactEmail, companyName, founderName].filter(Boolean);
-
-            if (searchQueries.length > 0) {
-                let notionPageFound = false;
-                for (const query of searchQueries) {
-                    if (notionPageFound || !query) continue;
-                    
-                    const searchRes = await fetch('https://api.notion.com/v1/search', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${NOTION_API_KEY.trim()}`,
-                            'Notion-Version': '2022-06-28',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            query: query,
-                            sort: { direction: 'descending', timestamp: 'last_edited_time' },
-                            page_size: 1
-                        })
-                    });
-
-                    if (searchRes.ok) {
-                        const searchData = await searchRes.json();
-                        if (searchData.results && searchData.results.length > 0) {
-                            const pageId = searchData.results[0].id;
-
-                            const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children?page_size=200`, {
-                                method: 'GET',
-                                headers: {
-                                    'Authorization': `Bearer ${NOTION_API_KEY.trim()}`,
-                                    'Notion-Version': '2022-06-28',
-                                }
-                            });
-
-                            if (blocksRes.ok) {
-                                const blocksData = await blocksRes.json();
-                                const extractedText = blocksData.results.map((b: any) => {
-                                  const type = b.type;
-                                  if (b[type]?.rich_text) {
-                                      return b[type].rich_text.map((t: any) => t.plain_text).join('');
-                                  }
-                                  return '';
-                                }).filter(Boolean).join('\n');
-                                
-                                transcriptText = extractedText;
-                                notionPageFound = true;
-                            }
-                        }
-                    }
-                } 
-            }
-        } catch (e: any) {
-            console.error('[generate-playbook] Error Notion flow:', e.message);
+        if (recording?.transcript) {
+            transcriptText = recording.transcript;
+            console.log(`[generate-playbook] Transcript found in meeting_recordings (${transcriptText.length} chars)`);
+        } else if (recording?.ai_summary) {
+            transcriptText = recording.ai_summary;
+            console.log(`[generate-playbook] Using ai_summary as transcript fallback`);
+        } else {
+            console.log(`[generate-playbook] No transcript found for project ${projectId}`);
         }
+    } catch (e: any) {
+        console.log(`[generate-playbook] Transcript fetch skipped: ${e.message}`);
     }
     // --- END INTEGRATION ---
 
@@ -175,6 +133,7 @@ Persona/ICP Mapeado: ${JSON.stringify(strategy.persona_data || {})}
   3. Matriz de Qualificação ou Regras de Contato (se aplicável ao Foco).
   4. Rotina de Gestão (Como o líder deve olhar os números semanalmente e mensalmente).
 - Mantenha áreas parametrizáveis se necessário (ex: [Nome da Ferramenta]) para o consultor humano preencher depois, sendo este playbook um "Rascunho Premium" de 80%.
+- NUNCA use o caractere em dash (U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 
 GERAR O PLAYBOOK EM MARKDOWN:`;
 

@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ReiResponseInsert } from "./reiResponses";
+import { sendToGHL, GHLEventType } from "@/lib/ghlRelay";
 
 export interface DiagnosticLead {
     name: string;
@@ -12,7 +13,7 @@ export const submitPublicDiagnostic = async (
     answers: Record<string, any>,
     score: number,
     maturity: { level: string; description: string; action: string; color: string; title?: string },
-    webhookUrl?: string
+    ghlEventType?: GHLEventType
 ) => {
     // USE RPC to bypass RLS issues securely (SECURITY DEFINER)
     const fullResponses = {
@@ -43,28 +44,19 @@ export const submitPublicDiagnostic = async (
     // Cast data to expected type
     const { response_id } = data as { project_id: string, response_id: string };
 
-    // 3. Trigger Webhook
-    // URL definition
+    // 3. Trigger GHL relay
     const resultUrl = `${window.location.origin}/diagnostico/resultado/${response_id}`;
 
-    if (webhookUrl) {
-        try {
-            await fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...lead,
-                    score,
-                    maturity: maturity.level,
-                    maturity_title: maturity.title,
-                    diagnostic_type: fullResponses.diagnostic_type,
-                    result_url: resultUrl,
-                    timestamp: new Date().toISOString()
-                })
-            });
-        } catch (e) {
-            console.error('Webhook error:', e);
-        }
+    if (ghlEventType) {
+        await sendToGHL(ghlEventType, {
+            ...lead,
+            score,
+            maturity: maturity.level,
+            maturity_title: maturity.title,
+            diagnostic_type: fullResponses.diagnostic_type,
+            result_url: resultUrl,
+            timestamp: new Date().toISOString()
+        });
     }
 
     // Return structure matching what UI expects (UI doesn't strictly check project object, just success)

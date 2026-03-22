@@ -1,4 +1,7 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore - Supabase Deno environment
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -6,7 +9,7 @@ const corsHeaders = {
 }
 
 // ============================================================
-// OPENAI API CALL (GPT-4o-mini - same pattern as other edge functions)
+// OPENAI API CALL (GPT-4.5-preview Nativo)
 // ============================================================
 
 async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
@@ -17,12 +20,11 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'gpt-5.4',
+            model: 'gpt-4.5-preview',
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
-            ],
-            temperature: 0.3,
+            ]
         }),
     });
 
@@ -76,53 +78,71 @@ REGRAS ABSOLUTAS:
 - Seja especifico nos numeros e metricas. Nao use placeholders genericos.
 - PERSONALIZE tudo ao contexto do cliente. Se recebeu dados do site, diagnostico ou concorrentes, USE-OS.`;
 
+// Sanitiza um campo de texto para injecao segura no prompt
+// Remove caracteres que podem escapar o contexto JSON ou injetar instrucoes
+function sanitizeField(value: unknown, maxLength = 300): string {
+    if (value === null || value === undefined) return '';
+    const str = String(value)
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // control chars
+        .replace(/```/g, "'''")                              // evita code blocks que confundem o LLM
+        .substring(0, maxLength)
+        .trim();
+    return str;
+}
+
 // Build rich context from all available client data
 function buildUserPrompt(segment: string, objective: string, reiResponses?: any, siteAnalysis?: any, competitors?: { nome: string, url?: string }[]): string {
     const lines: string[] = [];
 
-    lines.push(`Segmento: ${segment}`);
-    lines.push(`Objetivo Estrategico: ${objective}`);
+    lines.push(`Segmento: ${sanitizeField(segment, 150)}`);
+    lines.push(`Objetivo Estrategico: ${sanitizeField(objective, 200)}`);
 
     // Extract key client data from REI responses
     if (reiResponses && typeof reiResponses === 'object') {
-        const company = reiResponses.companyName || reiResponses.revops_empresa || reiResponses.nome_empresa || '';
-        const crm = reiResponses.currentCRM || reiResponses.revops_crm_atual || '';
-        const teamSize = reiResponses.teamSize || reiResponses.revops_tamanho_time || '';
-        const revenue = reiResponses.monthlyRevenue || reiResponses.revops_faturamento || '';
-        const mainPain = reiResponses.mainChallenge || reiResponses.revops_maior_dor || reiResponses.biggestPain || '';
+        const company  = sanitizeField(reiResponses.companyName  || reiResponses.revops_empresa       || reiResponses.nome_empresa || '');
+        const crm      = sanitizeField(reiResponses.currentCRM   || reiResponses.revops_crm_atual     || '');
+        const teamSize = sanitizeField(reiResponses.teamSize      || reiResponses.revops_tamanho_time  || '');
+        const revenue  = sanitizeField(reiResponses.monthlyRevenue|| reiResponses.revops_faturamento   || '');
+        const mainPain = sanitizeField(reiResponses.mainChallenge || reiResponses.revops_maior_dor     || reiResponses.biggestPain || '', 400);
         const channels = reiResponses.adsChannels || reiResponses.revops_canais_aquisicao || '';
 
-        if (company) lines.push(`Empresa: ${company}`);
-        if (crm) lines.push(`CRM atual: ${crm}`);
-        if (teamSize) lines.push(`Tamanho do time: ${teamSize}`);
-        if (revenue) lines.push(`Faturamento: ${revenue}`);
-        if (mainPain) lines.push(`Dor principal: ${mainPain}`);
-        if (channels) lines.push(`Canais de aquisicao: ${typeof channels === 'object' ? JSON.stringify(channels) : channels}`);
+        if (company)   lines.push(`Empresa: ${company}`);
+        if (crm)       lines.push(`CRM atual: ${crm}`);
+        if (teamSize)  lines.push(`Tamanho do time: ${teamSize}`);
+        if (revenue)   lines.push(`Faturamento: ${revenue}`);
+        if (mainPain)  lines.push(`Dor principal: ${mainPain}`);
+        if (channels)  lines.push(`Canais de aquisicao: ${sanitizeField(typeof channels === 'object' ? JSON.stringify(channels) : channels, 200)}`);
     }
 
     // Site analysis context
     if (siteAnalysis && typeof siteAnalysis === 'object') {
         lines.push('');
         lines.push('--- Dados do site do cliente ---');
-        if (siteAnalysis.resumo_proposta) lines.push(`Proposta de valor: ${siteAnalysis.resumo_proposta}`);
-        if (siteAnalysis.publico_alvo) lines.push(`Publico-alvo: ${siteAnalysis.publico_alvo}`);
+        if (siteAnalysis.resumo_proposta)   lines.push(`Proposta de valor: ${sanitizeField(siteAnalysis.resumo_proposta, 300)}`);
+        if (siteAnalysis.publico_alvo)      lines.push(`Publico-alvo: ${sanitizeField(siteAnalysis.publico_alvo, 200)}`);
         if (siteAnalysis.produtos_servicos) {
-            const prods = Array.isArray(siteAnalysis.produtos_servicos) ? siteAnalysis.produtos_servicos.join(', ') : siteAnalysis.produtos_servicos;
+            const prods = Array.isArray(siteAnalysis.produtos_servicos)
+                ? siteAnalysis.produtos_servicos.slice(0, 10).map((p: unknown) => sanitizeField(p, 80)).join(', ')
+                : sanitizeField(siteAnalysis.produtos_servicos, 300);
             lines.push(`Produtos/Servicos: ${prods}`);
         }
-        if (siteAnalysis.maturidade_digital) lines.push(`Maturidade digital: ${siteAnalysis.maturidade_digital}`);
+        if (siteAnalysis.maturidade_digital) lines.push(`Maturidade digital: ${sanitizeField(siteAnalysis.maturidade_digital, 100)}`);
         if (siteAnalysis.pontos_fracos_site) {
-            const fraq = Array.isArray(siteAnalysis.pontos_fracos_site) ? siteAnalysis.pontos_fracos_site.join(', ') : siteAnalysis.pontos_fracos_site;
+            const fraq = Array.isArray(siteAnalysis.pontos_fracos_site)
+                ? siteAnalysis.pontos_fracos_site.slice(0, 5).map((p: unknown) => sanitizeField(p, 100)).join(', ')
+                : sanitizeField(siteAnalysis.pontos_fracos_site, 300);
             lines.push(`Pontos fracos do site: ${fraq}`);
         }
     }
 
-    // Competitors
+    // Competitors - limitar a 10 e sanitizar nome/URL individualmente
     if (competitors && competitors.length > 0) {
         lines.push('');
         lines.push('--- Concorrentes citados pelo cliente ---');
-        competitors.forEach(c => {
-            lines.push(`- ${c.nome}${c.url ? ' (' + c.url + ')' : ''}`);
+        competitors.slice(0, 10).forEach(c => {
+            const nome = sanitizeField(c.nome, 100);
+            const urlSafe = c.url ? sanitizeField(c.url, 100) : '';
+            lines.push(`- ${nome}${urlSafe ? ' (' + urlSafe + ')' : ''}`);
         });
         lines.push('PRIORIDADE: Analise estes concorrentes especificamente. Complemente com outros players reais se necessario.');
     }
@@ -165,24 +185,65 @@ Gere EXATAMENTE 3 personas e 3 concorrentes no minimo.`);
 // MAIN HANDLER
 // ============================================================
 
-serve(async (req) => {
+serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
+    // ============================================================
+    // AUTH GATE - JWT required (Phase 2)
+    // Only authenticated RevHackers users can trigger intelligence.
+    // Drops unauthenticated requests immediately - no processing cost.
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // @ts-ignore
+    const SUPABASE_URL_AUTH = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY_AUTH = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAuth = createClient(SUPABASE_URL_AUTH, SUPABASE_SERVICE_KEY_AUTH);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
+        authHeader.replace('Bearer ', '').trim()
+    );
+    if (authError || !user) {
+        return new Response(JSON.stringify({ error: 'Token invalido ou expirado.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
     try {
-        const { segment, objective, rei_responses, siteAnalysis, competitors } = await req.json();
+        const body = await req.json();
+        const { segment, objective, rei_responses, siteAnalysis, competitors, projectId } = body;
 
         if (!segment || !objective) {
             throw new Error('Missing required fields: segment, objective');
         }
 
-        const apiKey = Deno.env.get('OPENAI_API_KEY');
-        if (!apiKey) {
-            throw new Error('OPENAI_API_KEY not configured');
+        // Validacao de tipos basicos para evitar que undefined seja injetado como string "undefined"
+        if (typeof segment !== 'string' || typeof objective !== 'string') {
+            throw new Error('segment e objective devem ser strings');
         }
 
-        console.log(`[market-intelligence] Processing: segment="${segment}", objective="${objective}", hasREI=${!!rei_responses}, hasSite=${!!siteAnalysis}, competitors=${competitors?.length || 0}`);
+        // Limite de tamanho do payload para evitar abuso de custo de API
+        const payloadSize = JSON.stringify(body).length;
+        if (payloadSize > 50_000) {
+            throw new Error('Payload excede o limite de 50KB');
+        }
+
+        // @ts-ignore - Supabase Deno environment
+        const apiKey = Deno.env.get('OPENAI_API_KEY');
+        if (!apiKey) {
+            throw new Error('OPENAI_API_KEY not configured in Supabase Secrets');
+        }
+
+        console.log(`[market-intelligence] Processing via GPT-4.5: segment="${segment}", objective="${objective}"`);
 
         const userPrompt = buildUserPrompt(segment, objective, rei_responses, siteAnalysis, competitors);
 
@@ -199,11 +260,25 @@ serve(async (req) => {
 
         console.log(`[market-intelligence] Success: ${validated.competitor_benchmarks.length} competitors, ${validated.personas.length} personas`);
 
+        if (projectId) {
+            const { error: updateError } = await supabaseAuth
+                .from('rei_projects')
+                .update({ market_data: validated, market_data_updated_at: new Date().toISOString() } as any)
+                .eq('id', projectId);
+
+            if (updateError) {
+                console.error(`[market-intelligence] Failed to persist data for project ${projectId}:`, updateError.message);
+            } else {
+                console.log(`[market-intelligence] Persisted market_data to project ${projectId}`);
+            }
+        }
+
         return new Response(JSON.stringify(validated), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
-    } catch (error) {
+    } catch (err) {
+        const error = err as Error;
         console.error(`[market-intelligence] Error:`, error.message);
         return new Response(JSON.stringify({ error: error.message }), {
             status: 400,

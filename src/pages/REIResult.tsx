@@ -133,8 +133,14 @@ export default function REIResult() {
                         .single();
                     setPlan(updatedPlan);
                 }
-            } catch (intelError) {
+            } catch (intelError: any) {
                 console.error("Error weaving intelligence:", intelError);
+                toast({
+                    title: "Alerta de Enriquecimento Web",
+                    description: intelError.message || "A Inteligência de Mercado (Web Search) falhou ou estorou o timeout. O Plano foi estruturado apenas com a base estática do REI.",
+                    variant: "destructive",
+                    duration: 6000
+                });
             }
 
             toast({

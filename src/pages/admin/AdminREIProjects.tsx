@@ -44,8 +44,9 @@ const AdminREIProjects = () => {
     const navigate = useNavigate();
 
     const filteredProjects = projects?.filter(p =>
-        p.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.client_company || "").toLowerCase().includes(searchTerm.toLowerCase())
+        p.status !== 'lead' &&
+        (p.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.client_company || "").toLowerCase().includes(searchTerm.toLowerCase()))
     ) || [];
 
     const handleSelectAll = (checked: boolean) => {
@@ -206,10 +207,9 @@ const AdminREIProjects = () => {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest">
-                                                    {project.type === 'crm_ops' || project.type === 'CRM_CS_OPS' ? 'CRM & RevOps' :
-                                                        project.type === 'funnels_impl' ? 'Site & Funil' :
-                                                            project.type === 'founder' ? 'Founder' :
-                                                                project.type === 'content_seo' ? 'SEO' : '360º'}
+                                                    {project.type === 'founder' ? 'Founder' :
+                                                        project.type === 'crm_ops' || project.type === 'CRM_CS_OPS' ? 'CRM' :
+                                                            project.type === 'funnels_impl' ? 'Site' : '360º'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="py-4">

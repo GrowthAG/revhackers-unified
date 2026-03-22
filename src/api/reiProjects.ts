@@ -1,16 +1,62 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { createDocumentFromREI } from "./knowledge";
+import { getTemplateForREI } from "./taskTemplates";
 
-export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & { trade_name?: string | null };
+export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & {
+    trade_name?: string | null;
+    linkedin_data?: any | null;
+    linkedin_url?: string | null;
+    linkedin_scraped_at?: string | null;
+    market_data?: any | null;
+    market_data_updated_at?: string | null;
+    /** Dados de enriquecimento automatico: cnpj (BrasilAPI) + site_perf (Google PSI) */
+    enrichment_data?: {
+        enriched_at?: string;
+        cnpj?: {
+            razao_social?: string;
+            nome_fantasia?: string | null;
+            situacao_cadastral?: string;
+            data_abertura?: string;
+            natureza_juridica?: string;
+            porte?: string;
+            capital_social?: number;
+            cnae_principal?: { codigo: string; descricao: string } | null;
+            cnaes_secundarios?: { codigo: string; descricao: string }[];
+            municipio?: string;
+            uf?: string;
+            email?: string | null;
+            telefone?: string | null;
+            qsa?: { nome: string; qualificacao: string }[];
+        } | null;
+        site_perf?: {
+            url?: string;
+            performance_score?: number;
+            seo_score?: number;
+            lcp?: string | null;
+            fid?: string | null;
+            cls?: string | null;
+            fcp?: string | null;
+            tti?: string | null;
+            speed_index?: string | null;
+            rating?: string;
+        } | null;
+    } | null;
+};
 export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'] & { trade_name?: string | null };
-export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { trade_name?: string | null };
+export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { trade_name?: string | null, market_data?: any | null, market_data_updated_at?: string | null };
 
 /**
  * CRIAR PROJETO REI
  * Apenas super_admin pode criar
  */
-export const createReiProject = async (project: ReiProjectInsert): Promise<ReiProject | null> => {
+export type CreateReiProjectResult = {
+    project: ReiProject;
+    tasksInjected: number;
+    tasksError: string | null;
+};
+
+export const createReiProject = async (project: ReiProjectInsert): Promise<CreateReiProjectResult> => {
     const { data, error } = await supabase
         .from('rei_projects')
         .insert(project)
@@ -22,7 +68,49 @@ export const createReiProject = async (project: ReiProjectInsert): Promise<ReiPr
         throw error;
     }
 
-    return data;
+    // Injecao automatica de tarefas do template - APENAS para projetos ativos, nao para leads
+    let tasksInjected = 0;
+    let tasksError: string | null = null;
+
+    const isLead = (data as any).status === 'lead';
+
+    if (data && data.id && !isLead) {
+        try {
+            const template = getTemplateForREI(data.type || '', (data as any).project_duration || '');
+            if (template.length > 0) {
+                const tasksToInsert = template.map(t => ({
+                    ...t,
+                    project_id: data.id,
+                }));
+
+                // Batch de 50 para evitar timeout em templates grandes
+                const BATCH_SIZE = 50;
+                const batchErrors: string[] = [];
+
+                for (let i = 0; i < tasksToInsert.length; i += BATCH_SIZE) {
+                    const batch = tasksToInsert.slice(i, i + BATCH_SIZE);
+                    const { error: batchErr } = await supabase.from('orqflow_tasks').insert(batch);
+                    if (batchErr) {
+                        batchErrors.push(batchErr.message);
+                    } else {
+                        tasksInjected += batch.length;
+                    }
+                }
+
+                if (batchErrors.length > 0) {
+                    tasksError = `${tasksInjected} de ${tasksToInsert.length} tarefas criadas. Falhas: ${batchErrors.join(' | ')}`;
+                    console.error('[createReiProject] Task injection partial failure:', tasksError);
+                } else {
+                    console.log(`[createReiProject] Injected ${tasksInjected} tasks for type="${data.type}"`);
+                }
+            }
+        } catch (e: any) {
+            tasksError = `Falha ao injetar tarefas: ${e.message}`;
+            console.error('[createReiProject] Task injection exception:', e);
+        }
+    }
+
+    return { project: data, tasksInjected, tasksError };
 };
 
 /**
@@ -34,7 +122,7 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
         .from('rei_projects')
         .select(`
             *,
-            clients ( trade_name )
+            clients ( trade_name, linkedin_data, linkedin_url, linkedin_scraped_at )
         `)
         .order('next_rei_date', { ascending: true });
 
@@ -45,8 +133,18 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
 
     return (data || []).map(p => {
         const tradeName = (p.clients as any)?.trade_name;
+        const linkedinData = (p.clients as any)?.linkedin_data;
+        const linkedinUrl = (p.clients as any)?.linkedin_url;
+        const linkedinScrapedAt = (p.clients as any)?.linkedin_scraped_at;
         delete (p as any).clients;
-        return { ...p, trade_name: tradeName } as ReiProject;
+        return {
+            ...p,
+            trade_name: tradeName,
+            linkedin_data: linkedinData,
+            linkedin_url: linkedinUrl,
+            linkedin_scraped_at: linkedinScrapedAt,
+            enrichment_data: (p as any).enrichment_data ?? null,
+        } as ReiProject;
     });
 };
 
@@ -58,7 +156,7 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
         .from('rei_projects')
         .select(`
             *,
-            clients ( trade_name )
+            clients ( trade_name, linkedin_data, linkedin_url, linkedin_scraped_at )
         `)
         .eq('id', id)
         .single();
@@ -69,10 +167,20 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
     }
 
     if (data) {
-        // Map trade_name from the joined table
+        // Map fields from the joined table
         const tradeName = (data.clients as any)?.trade_name;
+        const linkedinData = (data.clients as any)?.linkedin_data;
+        const linkedinUrl = (data.clients as any)?.linkedin_url;
+        const linkedinScrapedAt = (data.clients as any)?.linkedin_scraped_at;
         delete (data as any).clients;
-        return { ...data, trade_name: tradeName } as ReiProject;
+        return {
+            ...data,
+            trade_name: tradeName,
+            linkedin_data: linkedinData,
+            linkedin_url: linkedinUrl,
+            linkedin_scraped_at: linkedinScrapedAt,
+            enrichment_data: (data as any).enrichment_data ?? null,
+        } as ReiProject;
     }
 
     return null;
@@ -286,6 +394,8 @@ export const updateProjectsStatus = async (): Promise<void> => {
 
     // Atualizar status de cada projeto
     for (const project of projects) {
+        if (project.status === 'lead') continue;
+
         const nextReiDate = new Date(project.next_rei_date);
         let newStatus: 'active' | 'pending' | 'overdue';
 

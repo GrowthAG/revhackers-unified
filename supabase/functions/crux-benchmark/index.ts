@@ -63,12 +63,13 @@ async function getCrUXMetrics(
             if (response.status === 404) {
                 return {
                     url: origin,
-                    lcp: { p75: 0, category: 'SLOW' },
-                    cls: { p75: 0, category: 'SLOW' },
-                    inp: { p75: 0, category: 'SLOW' },
-                    ttfb: { p75: 0, category: 'SLOW' },
+                    no_data: true,
+                    lcp: null,
+                    cls: null,
+                    inp: null,
+                    ttfb: null,
                     formFactor,
-                    error: 'Sem dados CrUX (site com pouco tráfego Chrome)'
+                    error: 'Sem dados CrUX - site com pouco trafego Chrome para gerar metricas reais'
                 };
             }
 
@@ -108,10 +109,11 @@ async function getCrUXMetrics(
         console.error('CrUX API Error for', url, ':', error);
         return {
             url,
-            lcp: { p75: 0, category: 'SLOW' },
-            cls: { p75: 0, category: 'SLOW' },
-            inp: { p75: 0, category: 'SLOW' },
-            ttfb: { p75: 0, category: 'SLOW' },
+            no_data: true,
+            lcp: null,
+            cls: null,
+            inp: null,
+            ttfb: null,
             formFactor,
             error: error instanceof Error ? error.message : 'Erro desconhecido'
         };

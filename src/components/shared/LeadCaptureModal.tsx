@@ -33,15 +33,12 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
 
         try {
             // Using the same API/Logic as SiteScore, but just capturing the lead
-            // We can send a "Lead Capture" diagnostic event
-            const WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/oFTw9DcsKRUj6xCiq4mb/webhook-trigger/a35d7d7a-ad2b-47cc-920e-15f1837b6ec7'; // Using existing webhook for now
-
             await submitPublicDiagnostic(
                 { name, email, phone, company, role },
                 { source: 'header_booking_request', type: 'lead_capture' },
                 0,
                 { level: "Lead", description: "Solicitação de Agendamento", action: "Agendar", color: "blue" },
-                WEBHOOK_URL
+                'lead_capture'
             );
 
             toast({

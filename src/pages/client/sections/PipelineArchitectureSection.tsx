@@ -26,7 +26,7 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
         price: 'bg-amber-500',
         ghosted: 'bg-zinc-400',
         competitor: 'bg-blue-500',
-        timing: 'bg-purple-500',
+        timing: 'bg-zinc-600',
         other: 'bg-zinc-300',
     };
 

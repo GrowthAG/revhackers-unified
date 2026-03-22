@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Check, Loader2, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { SignatureEngine } from '@/components/legal/SignatureEngine';
 
 /**
  * PlanSignPage - Página leve para assinatura mobile via QR Code.
@@ -14,9 +15,6 @@ export default function PlanSignPage() {
     const [plan, setPlan] = useState<any>(null);
     const [company, setCompany] = useState('');
     const [signerName, setSignerName] = useState('');
-    const [signerEmail, setSignerEmail] = useState('');
-    const [confirmed, setConfirmed] = useState(false);
-    const [approving, setApproving] = useState(false);
     const [done, setDone] = useState(false);
     const [error, setError] = useState('');
 
@@ -29,7 +27,7 @@ export default function PlanSignPage() {
         try {
             const { data, error: err } = await supabase
                 .from('strategic_plans')
-                .select('id, status, client_id, created_at, next_steps_data')
+                .select('*, rei_projects(id)')
                 .eq('access_token', token)
                 .single();
             if (err) throw err;
@@ -47,29 +45,26 @@ export default function PlanSignPage() {
         }
     }
 
-    async function handleApprove() {
-        if (!plan || !signerName.trim() || !signerEmail.trim() || !confirmed) return;
-        setApproving(true);
+    async function handleSignatureSuccess(signerData: { name: string; email: string; cpf: string; role: string }) {
         try {
             const existing = plan.next_steps_data || {};
             const now = new Date().toISOString();
-            const { error: err } = await supabase.from('strategic_plans').update({
+            await supabase.from('strategic_plans').update({
                 status: 'approved',
                 approved_at: now,
                 next_steps_data: {
                     ...existing,
-                    approved_by_name: signerName.trim(),
-                    approved_by_email: signerEmail.trim().toLowerCase(),
+                    approved_by_name: signerData.name,
+                    approved_by_email: signerData.email,
+                    approved_by_cpf: signerData.cpf,
+                    approved_by_role: signerData.role,
                     approved_at_iso: now,
                 },
             } as any).eq('id', plan.id);
-            if (err) throw err;
+            setSignerName(signerData.name);
             setDone(true);
         } catch (err) {
-            console.error('Erro ao aprovar:', err);
-            setError('Erro ao aprovar. Tente novamente.');
-        } finally {
-            setApproving(false);
+            console.error('Erro ao aprovar plano nativo após assinatura:', err);
         }
     }
 
@@ -123,70 +118,18 @@ export default function PlanSignPage() {
                         </p>
                     </div>
                 ) : (
-                    /* ── FORMULÁRIO DE ASSINATURA ─── */
-                    <div className="bg-white border border-zinc-100 rounded-2xl p-8 shadow-sm space-y-6">
-                        <div className="text-center">
-                            <h1 className="text-xl font-black text-zinc-900 mb-1">Aprovar Planejamento</h1>
-                            <p className="text-xs text-zinc-400">Assinatura digital para autorizar a execução</p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1.5">
-                                    Seu Nome Completo
-                                </label>
-                                <input
-                                    type="text"
-                                    value={signerName}
-                                    onChange={(e) => setSignerName(e.target.value)}
-                                    placeholder="Nome e sobrenome"
-                                    className="w-full px-4 py-3 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-300 focus:border-zinc-400 focus:outline-none transition-colors"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1.5">
-                                    Seu E-mail
-                                </label>
-                                <input
-                                    type="email"
-                                    value={signerEmail}
-                                    onChange={(e) => setSignerEmail(e.target.value)}
-                                    placeholder="email@empresa.com"
-                                    className="w-full px-4 py-3 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-300 focus:border-zinc-400 focus:outline-none transition-colors"
-                                />
-                            </div>
-                        </div>
-
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={confirmed}
-                                onChange={(e) => setConfirmed(e.target.checked)}
-                                className="mt-0.5 w-4 h-4 rounded border-zinc-300 text-[#00CC6A] focus:ring-[#00CC6A] accent-[#00CC6A]"
-                            />
-                            <span className="text-xs text-zinc-500 leading-relaxed">
-                                Declaro que li e concordo com o planejamento estratégico apresentado, autorizando o início da execução.
-                            </span>
-                        </label>
-
-                        {error && <p className="text-xs text-red-500 text-center">{error}</p>}
-
-                        <button
-                            onClick={handleApprove}
-                            disabled={!signerName.trim() || !signerEmail.trim() || !confirmed || approving}
-                            className="w-full py-3.5 bg-[#00CC6A] text-black text-sm font-black rounded-xl hover:bg-[#00FF85] transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {approving ? (
-                                <><Loader2 className="w-4 h-4 animate-spin" /> Processando...</>
-                            ) : (
-                                <><Check className="w-4 h-4" /> Aprovar e Assinar</>
-                            )}
-                        </button>
-
-                        <p className="text-[10px] text-zinc-300 text-center">
-                            Sua assinatura digital será registrada com data e hora.
-                        </p>
+                    <div className="w-full">
+                        <SignatureEngine 
+                            projectId={plan?.rei_projects?.id || ''}
+                            referenceType="strategic_plan"
+                            referenceId={plan.id}
+                            documentContentToHash={JSON.stringify({
+                                thesis: plan.thesis_data,
+                                roadmap: plan.roadmap_data,
+                                sla: plan.sla_data
+                            })}
+                            onSuccess={handleSignatureSuccess}
+                        />
                     </div>
                 )}
             </div>

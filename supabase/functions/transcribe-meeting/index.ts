@@ -143,7 +143,7 @@ serve(async (req) => {
                                         }).join('\n');
 
                                         transcriptSource = 'google_meet_native';
-                                        console.log('✅ Got native transcript from Google Meet API');
+                                        console.log('[transcribe-meeting] Got native transcript from Google Meet API');
                                         break;
                                     }
                                 }
@@ -198,7 +198,7 @@ serve(async (req) => {
             const whisperResult = await whisperResponse.json();
             transcript = whisperResult.text;
             transcriptSource = 'openai_whisper';
-            console.log('✅ Got transcript from Whisper');
+            console.log('[transcribe-meeting] Got transcript from Whisper');
         }
 
         // Update recording with transcript

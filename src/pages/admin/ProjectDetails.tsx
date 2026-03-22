@@ -11,8 +11,13 @@ import {
     Loader2,
     Link as LinkIcon,
     QrCode,
-    Presentation
+    Presentation,
+    Columns,
+    Sparkles,
+    BrainCircuit,
+    CheckCircle2
 } from 'lucide-react';
+import { toast as sonnerToast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,10 +32,12 @@ import { QRCodeSVG } from 'qrcode.react';
 import { getReiProjectById } from '@/api/reiProjects';
 import type { ReiProject } from '@/api/reiProjects';
 import OrchestratedOnboarding from '@/pages/admin/OrchestratedOnboarding';
+import { ProjectOsContainer } from '@/components/project-os/ProjectOsContainer';
 
 import { useToast } from '@/hooks/use-toast';
 import ProjectWiki from './ProjectWiki';
 import { AIPlaybookGenerator } from '@/components/admin/playbook/AIPlaybookGenerator';
+import { MarketIntelligenceTab } from '@/components/project-os/views/MarketIntelligenceTab';
 
 // Placeholders for components to come
 
@@ -81,9 +88,12 @@ const ProjectDetails = () => {
     const { toast } = useToast();
     const [project, setProject] = useState<ReiProject | null>(null);
     const [loading, setLoading] = useState(true);
+    const [qualifying, setQualifying] = useState(false);
 
     // Manage active tab via URL to allow direct linking
-    const activeTab = searchParams.get('tab') || 'jornada';
+    // Se for um lead, a aba padrão deve ser OSINT, pois Orqflow não existe para leads.
+    const activeTabFallback = project?.status === 'lead' ? 'osint' : 'orqflow';
+    const activeTab = searchParams.get('tab') || activeTabFallback;
 
     useEffect(() => {
         if (id) loadProject();
@@ -108,6 +118,29 @@ const ProjectDetails = () => {
 
     const handleTabChange = (value: string) => {
         setSearchParams({ tab: value });
+    };
+
+    const handleQualifyLead = async () => {
+        if (!project) return;
+        setQualifying(true);
+        try {
+            const { supabase: sb } = await import('@/integrations/supabase/client');
+            const { error } = await sb
+                .from('rei_projects')
+                .update({ status: 'active' } as any)
+                .eq('id', project.id);
+            if (error) throw error;
+
+            sonnerToast.success(`${project.trade_name || project.client_name} qualificado!`, {
+                description: 'Status atualizado para Ativo. OrqFlow liberado.',
+            });
+            await loadProject();
+            setSearchParams({ tab: 'orqflow' });
+        } catch (e: any) {
+            sonnerToast.error('Erro ao qualificar', { description: e.message });
+        } finally {
+            setQualifying(false);
+        }
     };
 
     if (loading) {
@@ -138,8 +171,12 @@ const ProjectDetails = () => {
                                 ) : (
                                     getDisplayName(project)
                                 )}
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1 rounded-md">
-                                    {project.status === 'active' ? 'Ativo' : 'Onboarding'}
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${
+                                    project.status === 'lead'
+                                        ? 'text-zinc-500 bg-zinc-100'
+                                        : 'text-[#00CC6A] bg-[#00CC6A]/10'
+                                }`}>
+                                    {project.status === 'lead' ? 'Lead' : project.status === 'active' ? 'Ativo' : 'Onboarding'}
                                 </span>
                                 {(() => {
                                     if (project.status === 'completed') return null;
@@ -184,14 +221,31 @@ const ProjectDetails = () => {
                     </div>
                     {/* Botões de Acesso ao Gerador e Apresentação Estratégica */}
                     <div className="flex items-center gap-3">
-                        <Button 
-                            variant="default" 
-                            size="sm" 
-                            onClick={() => navigate(`/admin/planejamento/${project.id}`)}
-                            className="text-[10px] font-bold uppercase tracking-widest bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
-                        >
-                            <Zap size={12} className="mr-2" /> Módulo Gerador (REI Hub)
-                        </Button>
+                        {/* Lead: botao de qualificacao em destaque */}
+                        {project.status === 'lead' && (
+                            <Button
+                                size="sm"
+                                disabled={qualifying}
+                                onClick={handleQualifyLead}
+                                className="text-[10px] font-black uppercase tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-sm gap-1.5"
+                            >
+                                {qualifying
+                                    ? <><Loader2 size={12} className="animate-spin mr-1" /> Qualificando...</>
+                                    : <><CheckCircle2 size={12} className="mr-1" /> Qualificar como Cliente</>
+                                }
+                            </Button>
+                        )}
+
+                        {project.status !== 'lead' && (
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => navigate(`/admin/planejamento/${project.id}`)}
+                                className="text-[10px] font-bold uppercase tracking-widest bg-zinc-900 hover:bg-zinc-800 text-white shadow-sm"
+                            >
+                                <Sparkles size={12} className="mr-2" /> Módulo Gerador (REI Hub)
+                            </Button>
+                        )}
                         
                         <Button 
                             variant="outline" 
@@ -209,7 +263,7 @@ const ProjectDetails = () => {
                                 <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="text-[10px] font-bold uppercase tracking-widest text-[#00E577] border-[#00E577]/30 bg-[#00E577]/5 hover:bg-[#00E577]/10"
+                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 border-zinc-200 bg-white hover:bg-zinc-50 shadow-sm"
                                 >
                                     <QrCode size={12} className="mr-2" /> QR Code
                                 </Button>
@@ -248,21 +302,36 @@ const ProjectDetails = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 p-8 overflow-y-auto bg-white">
-                    <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-                        <TabsList className="bg-white border border-zinc-200 p-1 h-auto rounded-xl flex-wrap gap-2">
+                <div className={`flex-1 ${activeTab === 'orqflow' ? 'p-0 overflow-hidden' : 'p-8 overflow-y-auto'} bg-white flex flex-col`}>
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
+                        <TabsList className={`bg-white border border-zinc-200 p-1 h-auto rounded-xl flex-wrap gap-2 shrink-0 ${(activeTab === 'orqflow' && project.status !== 'lead') ? 'mx-8 mt-6' : ''}`}>
+                            {project.status !== 'lead' && (
+                                <TabsTrigger value="orqflow" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
+                                    <Columns size={14} /> Orqflow OS
+                                </TabsTrigger>
+                            )}
                             <TabsTrigger value="jornada" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
                                 <Map size={14} /> Jornada
                             </TabsTrigger>
                             <TabsTrigger value="biblioteca" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
                                 <BookOpen size={14} /> Wiki & Documentos
                             </TabsTrigger>
-                            <TabsTrigger value="playbook" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
-                                <Zap size={14} /> Fábrica de Playbook AI
+                            {project.status !== 'lead' && (
+                                <TabsTrigger value="playbook" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
+                                    <Sparkles size={14} /> Fábrica de Playbook AI
+                                </TabsTrigger>
+                            )}
+                            <TabsTrigger value="osint" className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0">
+                                <BrainCircuit size={14} /> Inteligência B2B
                             </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="jornada" className="m-0">
+                        {project.status !== 'lead' && (
+                            <TabsContent value="orqflow" className="m-0 flex-1 flex flex-col pt-4">
+                                <ProjectOsContainer projectId={project.id} />
+                            </TabsContent>
+                        )}
+                        <TabsContent value="jornada" className={`m-0 ${activeTab === 'orqflow' ? 'hidden' : ''}`}>
                             <OrchestratedOnboarding projectId={project.id} embedded={true} />
                         </TabsContent>
                         <TabsContent value="biblioteca" className="m-0">
@@ -270,6 +339,9 @@ const ProjectDetails = () => {
                         </TabsContent>
                         <TabsContent value="playbook" className="m-0">
                             <AIPlaybookGenerator projectId={project.id} projectName={project.client_name} />
+                        </TabsContent>
+                        <TabsContent value="osint" className="m-0 pt-6">
+                            <MarketIntelligenceTab project={project} onUpdateProject={loadProject} />
                         </TabsContent>
                     </Tabs>
                 </div>

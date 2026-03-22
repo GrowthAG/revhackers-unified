@@ -9,7 +9,7 @@ export interface REIProject {
     nextREIDate: Date;
     quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4';
     year: number;
-    status: 'active' | 'pending' | 'overdue';
+    status: 'active' | 'pending' | 'overdue' | 'lead';
     analystEmail: string;
 }
 

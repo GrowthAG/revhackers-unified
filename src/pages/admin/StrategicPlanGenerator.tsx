@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Eye, BrainCircuit, Loader2, Users, TrendingUp, Target, ShieldAlert, BadgeCheck, FileText, ExternalLink, Link as LinkIcon, Copy, Check } from 'lucide-react';
@@ -105,7 +106,8 @@ export default function StrategicPlanGenerator() {
                 
             if (fetchError || !job) throw new Error('Falha ao recuperar os dados completos do Job.');
 
-            const { result_data: aiPlanData, context_data } = job;
+            const aiPlanData = job.result_data as any;
+            const context_data = job.context_data as any;
             if (!context_data) throw new Error('O job nao tem context_data salvo no banco de dados.');
 
             const {
@@ -186,9 +188,9 @@ export default function StrategicPlanGenerator() {
             await loadData();
             
             if (aiSuccess) {
-                alert('✅ Planejamento estratégico gerado com Inteligência de Mercado no Background!');
+                toast({ title: 'Sucesso', description: 'Planejamento estratégico gerado com Inteligência de Mercado no Background!' });
             } else {
-                alert('✅ Planejamento base finalizado no Background!');
+                toast({ title: 'Sucesso', description: 'Planejamento base finalizado no Background!' });
             }
         } catch (e: any) {
             console.error('Finalization error:', e);
@@ -298,10 +300,10 @@ export default function StrategicPlanGenerator() {
             setExistingPlan(updated);
             setEnrichedData(editedData);
             setEditMode(false);
-            alert('✅ Alterações salvas com sucesso!');
+            toast({ title: 'Salvo', description: 'Alterações salvas com sucesso!' });
         } catch (error) {
             console.error('Save failed:', error);
-            alert('Erro ao salvar as alterações.');
+            toast({ title: 'Erro', description: 'Erro ao salvar as alterações.', variant: 'destructive' });
         } finally {
             setSending(false);
         }
@@ -316,7 +318,7 @@ export default function StrategicPlanGenerator() {
                 .eq('id', client.id);
             if (error) throw error;
             setClient({ ...client, logo_url: newLogoUrl });
-            alert('Logo atualizada!');
+            toast({ title: 'Logo atualizada!' });
         } catch (error) {
             console.error('Logo update failed:', error);
         }
@@ -339,7 +341,7 @@ export default function StrategicPlanGenerator() {
                 .maybeSingle();
 
             if (!latestResponse) {
-                alert('Erro: Nenhuma resposta do REI encontrada para este projeto.');
+                toast({ title: 'Erro', description: 'Nenhuma resposta do REI encontrada para este projeto.', variant: 'destructive' });
                 setGenerating(false);
                 return;
             }
@@ -377,7 +379,7 @@ export default function StrategicPlanGenerator() {
             // diagnosticResponse: latestResponse rebuilt with normalized form_data so
             // DiagnosticService.generateDiagnosis() reads correct fields for CRM Ops
             const diagnosticResponse = isCrmOps
-                ? { ...latestResponse, responses: { ...latestResponse.responses, form_data: normalizedAnswers } }
+                ? { ...latestResponse, responses: { ...(latestResponse.responses as any), form_data: normalizedAnswers } }
                 : latestResponse;
 
             // Effective client identity - CRM Ops stores email/company in form, not in rei_projects
@@ -429,7 +431,7 @@ export default function StrategicPlanGenerator() {
                     }
                 } catch (clientCreationCatchError: any) {
                     console.error('Erro na etapa 1 (Criação de Cliente):', clientCreationCatchError);
-                    alert(`Não foi possível gerar pois houve falha ao atrelar um Perfil de Cliente a este Projeto REI: ${clientCreationCatchError.message}`);
+                    toast({ title: 'Falha de Vínculo', description: `Falha ao atrelar Perfil de Cliente neste Projeto REI: ${clientCreationCatchError.message}`, variant: 'destructive' });
                     setGenerating(false);
                     return;
                 }
@@ -751,12 +753,12 @@ export default function StrategicPlanGenerator() {
             };
 
             // CRITICAL: When no segment was filled in the form and we have company context,
-            // instruct the AI to infer the real segment from the company site —
+            // instruct the AI to infer the real segment from the company site -
             // NOT default to the consulting project type (crm_ops, founder, etc.).
             const hasCompanyContext = !!(companyName || companySite);
             const segment = segmentFromAnswers || segmentFromMirror
                 || (hasCompanyContext
-                    ? `Identificar segmento real de ${companyName} (site: ${companySite}) — não informado no formulário`
+                    ? `Identificar segmento real de ${companyName} (site: ${companySite}) - nao informado no formulario`
                     : 'B2B Tech');
 
             const objective = objectiveFromAnswers || objectiveFromMirror || 'Crescimento';
@@ -892,13 +894,13 @@ export default function StrategicPlanGenerator() {
                 if (error) throw error;
                 setExistingPlan(updated);
                 setEnrichedData(diagData.enriched_analysis);
-                alert(`✅ Pesquisa Profunda de ${type} concluída!`);
+                toast({ title: 'Sucesso', description: `Pesquisa Profunda de ${type} concluída!`, variant: 'default' });
             } else {
-                alert('Gere o planejamento base primeiro antes de rodar a pesquisa profunda.');
+                toast({ title: 'Atenção', description: 'Gere o planejamento base primeiro antes de rodar a pesquisa profunda.', variant: 'default' });
             }
         } catch (error) {
             console.error('Deep research failed:', error);
-            alert('Falha na pesquisa profunda.');
+            toast({ title: 'Erro', description: 'Falha na pesquisa profunda.', variant: 'destructive' });
         } finally {
             setIsDeepResearching(null);
         }
@@ -911,10 +913,10 @@ export default function StrategicPlanGenerator() {
             const { error: updateError } = await supabase.from('strategic_plans').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', existingPlan.id);
             if (updateError) throw updateError;
             const clientLink = `${window.location.origin}/plan/${existingPlan.access_token}`;
-            alert(`✅ Planejamento enviado! Link: ${clientLink}`);
+            toast({ title: 'Sucesso', description: `Planejamento enviado! Link: ${clientLink}` });
             await loadData();
         } catch (error) {
-            alert('Erro ao enviar.');
+            toast({ title: 'Erro', description: 'Erro ao enviar.', variant: 'destructive' });
         } finally {
             setSending(false);
         }
@@ -1118,7 +1120,7 @@ export default function StrategicPlanGenerator() {
                     <div className="w-full space-y-4">
                         <div className="flex items-center gap-2 mb-1">
                             <BrainCircuit className="w-4 h-4 text-zinc-400" />
-                            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Inteligência Profunda — Resumo</h3>
+                            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Inteligência Profunda: Resumo</h3>
                             <span className="text-[10px] text-zinc-300 ml-auto">Detalhes completos nos slides do plano</span>
                         </div>
 
