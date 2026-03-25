@@ -14,13 +14,13 @@ export default function PillarScores({ scores }: PillarScoresProps) {
     const getStatusConfig = (status: string) => {
         switch (status) {
             case 'excellent':
-                return { color: 'bg-cyan-400', text: 'text-cyan-400', label: 'EXCELENTE', icon: CheckCircle2 };
+                return { color: 'bg-[#00CC6A]', text: 'text-[#00CC6A]', label: 'EXCELENTE', icon: CheckCircle2 };
             case 'good':
-                return { color: 'bg-green-400', text: 'text-green-400', label: 'BOM', icon: TrendingUp };
+                return { color: 'bg-[#00CC6A]', text: 'text-[#00CC6A]', label: 'BOM', icon: TrendingUp };
             case 'warning':
-                return { color: 'bg-yellow-400', text: 'text-yellow-400', label: 'ATENÇÃO', icon: AlertCircle };
+                return { color: 'bg-zinc-400', text: 'text-zinc-400', label: 'ATENÇÃO', icon: AlertCircle };
             case 'critical':
-                return { color: 'bg-red-400', text: 'text-red-400', label: 'CRÍTICO', icon: XCircle };
+                return { color: 'bg-zinc-500', text: 'text-zinc-500', label: 'CRITICO', icon: XCircle };
             default:
                 return { color: 'bg-zinc-400', text: 'text-zinc-400', label: 'N/A', icon: AlertCircle };
         }

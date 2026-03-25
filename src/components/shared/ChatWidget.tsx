@@ -42,8 +42,6 @@ const ChatWidget = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the data to your backend
-    console.log('Chat form submitted:', { ...formData, initialMessage: message });
     setStep('success');
     
     // Reset after 3 seconds
@@ -60,7 +58,7 @@ const ChatWidget = () => {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full bg-revgreen hover:bg-revgreen/90 shadow-lg hover:shadow-xl transition-all duration-300 animate-bounce-gentle"
+          className="h-14 w-14 rounded-full bg-revgreen hover:bg-revgreen/90 shadow-sm transition-all duration-300 animate-bounce-gentle"
         >
           <MessageCircle className="h-6 w-6 text-white" />
         </Button>
@@ -75,7 +73,7 @@ const ChatWidget = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 w-80 max-w-[calc(100vw-2rem)]">
-      <Card className="bg-white shadow-2xl border-0 overflow-hidden">
+      <Card className="bg-white shadow-sm border-0 overflow-hidden">
         {/* Header */}
         <div className="bg-revgreen text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -104,8 +102,8 @@ const ChatWidget = () => {
         <div className="p-4 h-80 overflow-y-auto">
           {step === 'greeting' && (
             <div className="space-y-4">
-              <div className="bg-gray-100 rounded-lg p-3 max-w-xs">
-                <p className="text-sm text-gray-800">
+              <div className="bg-zinc-100 rounded-lg p-3 max-w-xs">
+                <p className="text-sm text-zinc-800">
                   👋 Olá! Sou da RevHackers. Como posso ajudar você hoje?
                 </p>
               </div>
@@ -115,14 +113,14 @@ const ChatWidget = () => {
                   <button
                     key={index}
                     onClick={() => handleQuickResponse(response)}
-                    className="block w-full text-left p-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="block w-full text-left p-2 text-sm border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
                   >
                     {response}
                   </button>
                 ))}
               </div>
 
-              <div className="flex items-center text-xs text-gray-500 mt-4">
+              <div className="flex items-center text-xs text-zinc-500 mt-4">
                 <Clock className="h-3 w-3 mr-1" />
                 Resposta em até 5 minutos
               </div>
@@ -131,8 +129,8 @@ const ChatWidget = () => {
 
           {step === 'form' && (
             <div className="space-y-4">
-              <div className="bg-gray-100 rounded-lg p-3 max-w-xs">
-                <p className="text-sm text-gray-800">
+              <div className="bg-zinc-100 rounded-lg p-3 max-w-xs">
+                <p className="text-sm text-zinc-800">
                   Perfeito! Me conte um pouco sobre você para eu conectar com o especialista certo:
                 </p>
               </div>

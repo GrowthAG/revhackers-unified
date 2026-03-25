@@ -20,7 +20,7 @@ const BlogHeader = ({
     <div className="bg-black py-24 md:py-32 relative overflow-hidden">
       {/* Sophisticated Dark Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pointer-events-none" />
+      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
 
       <div className="container-custom relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-16">
@@ -37,7 +37,7 @@ const BlogHeader = ({
           <Input
             type="search"
             placeholder="BUSCAR ARTIGOS..."
-            className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-2xl text-xs font-bold uppercase tracking-widest"
+            className="pl-12 pr-4 py-8 bg-zinc-900/30 border-zinc-800 text-white placeholder:text-zinc-600 focus:border-revgreen/50 transition-all rounded-sm shadow-sm text-xs font-bold uppercase tracking-widest"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />

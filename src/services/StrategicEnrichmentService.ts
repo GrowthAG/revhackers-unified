@@ -91,8 +91,6 @@ export class StrategicEnrichmentService {
         }
     ): Promise<StrategicEnrichmentResult> {
         try {
-            console.log('Invoking enrich-strategic-data with:', { segment, type: enrichmentType });
-
             const { data, error } = await supabase.functions.invoke('enrich-strategic-data', {
                 body: {
                     segment,

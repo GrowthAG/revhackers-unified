@@ -207,7 +207,7 @@ export const calculateREIMaturityLevel = (totalScore: number) => {
 
     if (percentage < 50) return {
         level: "Estruturação",
-        color: "text-orange-500",
+        color: "text-zinc-500",
         description: "Você já tem o básico, mas falta integração, automação e dados para escalar de forma previsível.",
         action: "Automação + Integração + Lead Scoring",
         priority: "Alta",
@@ -234,7 +234,7 @@ export const calculateREIMaturityLevel = (totalScore: number) => {
 
     return {
         level: "World Class",
-        color: "text-blue-500",
+        color: "text-zinc-700",
         description: "Nível de excelência operacional. Foco em inovação, novos mercados e melhoria contínua.",
         action: "Consultoria Estratégica de Expansão",
         priority: "Baixa",

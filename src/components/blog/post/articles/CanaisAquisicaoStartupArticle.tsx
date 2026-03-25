@@ -56,7 +56,7 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O vício em Meta Ads">
                     A maioria das startups brasileiras tem a estratégia de aquisição preguiçosa: "Coloca dinheiro no Facebook Ads". Isso funciona até o CAC ficar impagável. Empresas resilientes dominam pelo menos um canal orgânico e um pago.
@@ -79,19 +79,19 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
                     proView="Testar sequencialmente, medir CAC e focar obsessivamente no vencedor."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">As 4 Grandes Categorias</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">As 4 Grandes Categorias</h2>
                 <div className="grid md:grid-cols-2 gap-6 mb-12 not-prose">
                     {channels.map((channel, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 shadow-sm transition-all group overflow-hidden relative">
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 {channel.icon}
                             </div>
-                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-lg">
+                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-sm">
                                 {channel.icon}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2 text-lg">{channel.category}</h3>
-                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{channel.description}</p>
-                            <div className="text-xs font-mono text-gray-400 mt-2 bg-gray-50 p-2 rounded border border-gray-100 italic">
+                            <h3 className="font-bold text-zinc-900 mb-2 text-lg">{channel.category}</h3>
+                            <p className="text-sm text-zinc-600 mb-3 leading-relaxed">{channel.description}</p>
+                            <div className="text-xs font-mono text-zinc-400 mt-2 bg-zinc-50 p-2 rounded border border-zinc-100 italic">
                                 "{channel.example}"
                             </div>
                         </Card>
@@ -99,20 +99,20 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
                 </div>
 
                 <div className="mb-16">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6">Calculadora de ROAS (Paid Media)</h3>
+                    <h3 className="text-xl font-bold text-zinc-900 mb-6">Calculadora de ROAS (Paid Media)</h3>
                     <ROASCalculator />
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Como Aplicar o Bullseye</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Como Aplicar o Bullseye</h2>
                 <div className="space-y-6 mb-16 not-prose">
                     {frameworkSteps.map((step, index) => (
                         <div key={index} className="flex gap-5 p-6 border-l-4 border-black bg-white shadow-sm rounded-r-lg items-start">
-                            <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center shrink-0 font-bold text-sm shadow-md mt-1">
+                            <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center shrink-0 font-bold text-sm shadow-sm mt-1">
                                 {index + 1}
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg mb-2">{step.title}</h3>
-                                <p className="text-gray-700 leading-relaxed text-base">{step.desc}</p>
+                                <h3 className="font-bold text-zinc-900 text-lg mb-2">{step.title}</h3>
+                                <p className="text-zinc-700 leading-relaxed text-base">{step.desc}</p>
                             </div>
                         </div>
                     ))}

@@ -145,7 +145,6 @@ const ReiFounderPage = () => {
     };
 
     const onSubmit = (data: FormData) => {
-        console.log("FOUNDER BRIEFING DATA:", data);
         const calculated = calculateMetrics(data);
         setMetrics(calculated);
         setShowDashboard(true);
@@ -182,7 +181,7 @@ const ReiFounderPage = () => {
                 <div className="container-custom max-w-4xl mx-auto">
 
                     <div className="mb-12">
-                        <Link to="/rei" className="inline-flex items-center text-sm text-gray-500 hover:text-revgreen mb-6 transition-colors">
+                        <Link to="/rei" className="inline-flex items-center text-sm text-zinc-500 hover:text-revgreen mb-6 transition-colors">
                             <ArrowLeft className="w-4 h-4 mr-2" /> Voltar para o Hub
                         </Link>
                         <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
@@ -200,7 +199,7 @@ const ReiFounderPage = () => {
                                 transition={{ duration: 0.5, ease: "easeInOut" }}
                             />
                         </div>
-                        <div className="flex justify-between mt-2 text-xs font-mono-tech text-gray-500 uppercase tracking-widest">
+                        <div className="flex justify-between mt-2 text-xs font-mono-tech text-zinc-500 uppercase tracking-widest">
                             <span>Etapa {currentStep} de {STEPS.length}</span>
                             <span>{STEPS[currentStep - 1].title}</span>
                         </div>
@@ -221,25 +220,25 @@ const ReiFounderPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Identidade & História</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Seu Nome *</label>
-                                            <input {...form.register("fullName")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                            <label className="text-sm font-medium text-zinc-300">Seu Nome *</label>
+                                            <input {...form.register("fullName")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                             {form.formState.errors.fullName && <p className="text-red-500 text-xs">{form.formState.errors.fullName.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Seu LinkedIn Atual</label>
-                                            <input {...form.register("linkedinUrl")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                            <label className="text-sm font-medium text-zinc-300">Seu LinkedIn Atual</label>
+                                            <input {...form.register("linkedinUrl")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                             {form.formState.errors.linkedinUrl && <p className="text-red-500 text-xs">{form.formState.errors.linkedinUrl.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Cargo/Posição Atual *</label>
-                                            <input {...form.register("currentRole")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                            <label className="text-sm font-medium text-zinc-300">Cargo/Posição Atual *</label>
+                                            <input {...form.register("currentRole")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Mini-Bio / História de Origem *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Mini-Bio / História de Origem *</label>
                                             <textarea {...form.register("biography")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-32" placeholder="Resuma quem é você e como chegou aqui..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Seus Diferenciais Estratégicos *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Seus Diferenciais Estratégicos *</label>
                                             <textarea {...form.register("superpowers")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="O que você faz melhor que 90% das pessoas?" />
                                         </div>
                                     </div>
@@ -249,15 +248,15 @@ const ReiFounderPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Pilares de Autoridade</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Sobre quais tópicos você quer ser referência? *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Sobre quais tópicos você quer ser referência? *</label>
                                             <textarea {...form.register("authorityTopics")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-32" placeholder="Ex: Vendas B2B, Liderança Remota, Futuro do Varejo..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quais mitos do seu mercado você discorda? (Hot Takes)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Quais mitos do seu mercado você discorda? (Hot Takes)</label>
                                             <textarea {...form.register("industryMyths")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Seus Valores Inegociáveis *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Seus Valores Inegociáveis *</label>
                                             <textarea {...form.register("coreValues")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -267,18 +266,18 @@ const ReiFounderPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Audiência & Tom</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quem é o público-alvo principal? (Ex: Investidores, Talentos, Clientes) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Quem é o público-alvo principal? (Ex: Investidores, Talentos, Clientes) *</label>
                                             <textarea {...form.register("targetAudience")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Tom de Voz Desejado *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Tom de Voz Desejado *</label>
                                             <select {...form.register("toneVoice")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {TONES.map(t => <option key={t} value={t}>{t}</option>)}
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quem são suas referências de Personal Branding? (Opcional)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Quem são suas referências de Personal Branding? (Opcional)</label>
                                             <input {...form.register("references")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" />
                                         </div>
                                     </div>
@@ -288,21 +287,21 @@ const ReiFounderPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Logística & Conteúdo</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">DIsponibilidade para criar/revisar conteúdo *</label>
+                                            <label className="text-sm font-medium text-zinc-300">DIsponibilidade para criar/revisar conteúdo *</label>
                                             <select {...form.register("contentFrequency")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {FREQUENCY.map(t => <option key={t} value={t}>{t}</option>)}
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Formatos Preferidos *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Formatos Preferidos *</label>
                                             <select {...form.register("preferredFormats")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {FORMATS.map(t => <option key={t} value={t}>{t}</option>)}
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Como deve ser o fluxo de aprovação?</label>
+                                            <label className="text-sm font-medium text-zinc-300">Como deve ser o fluxo de aprovação?</label>
                                             <textarea {...form.register("approvalWorkflow")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -312,15 +311,15 @@ const ReiFounderPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Anti-Metas & Visão</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">O que você NÃO quer ser/parecer? (Anti-Role Models) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">O que você NÃO quer ser/parecer? (Anti-Role Models) *</label>
                                             <textarea {...form.register("antiGoals")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Assuntos proibidos ou sensíveis?</label>
+                                            <label className="text-sm font-medium text-zinc-300">Assuntos proibidos ou sensíveis?</label>
                                             <input {...form.register("topicsToAvoid")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Visão de Sucesso: Como você quer estar daqui a 1 ano? *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Visão de Sucesso: Como você quer estar daqui a 1 ano? *</label>
                                             <textarea {...form.register("successVision")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -333,7 +332,7 @@ const ReiFounderPage = () => {
                             <button
                                 onClick={handleBack}
                                 disabled={currentStep === 1}
-                                className={`text-sm font-medium text-gray-500 hover:text-white transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
+                                className={`text-sm font-medium text-zinc-500 hover:text-white transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
                             >
                                 <ArrowLeft className="w-4 h-4" /> Anterior
                             </button>

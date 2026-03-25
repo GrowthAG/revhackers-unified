@@ -189,7 +189,7 @@ const BlogPostPage = () => {
       <PageLayout>
         <div className="container-custom py-20">
           <div className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-full border-4 border-gray-200 border-t-revgreen animate-spin mb-4"></div>
+            <div className="mx-auto w-16 h-16 rounded-full border-4 border-zinc-200 border-t-revgreen animate-spin mb-4"></div>
             <h3 className="text-2xl font-bold mb-4">Carregando artigo...</h3>
           </div>
         </div>
@@ -227,7 +227,7 @@ const BlogPostPage = () => {
         <div className="container-custom py-20">
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">Erro ao carregar artigo</h3>
-            <p className="text-gray-600 max-w-md mx-auto">{error}</p>
+            <p className="text-zinc-600 max-w-md mx-auto">{error}</p>
             <Button
               variant="outline"
               onClick={() => navigate('/blog')}
@@ -283,7 +283,7 @@ const BlogPostPage = () => {
               className="w-full h-full object-cover blur-xl scale-110"
             />
           </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
+          <div className="absolute inset-0 bg-black/70"></div>
           {/* Noise overlay for texture */}
           <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         </div>
@@ -296,7 +296,7 @@ const BlogPostPage = () => {
                   {post.category}
                 </Badge>
                 <div className="hidden md:block h-px w-8 bg-white/20"></div>
-                <div className="flex items-center gap-4 text-gray-400 text-xs font-medium uppercase tracking-[0.2em]">
+                <div className="flex items-center gap-4 text-zinc-400 text-xs font-medium uppercase tracking-[0.2em]">
                   <span>{post.readTime} reading</span>
                   <span className="text-revgreen/40">•</span>
                   <span>{formatDate(updatedPost.date)}</span>
@@ -320,14 +320,14 @@ const BlogPostPage = () => {
 
           {/* Subheadline/Excerpt - Matching Hero Description */}
           {updatedPost.excerpt && (
-            <p className="text-lg md:text-xl text-gray-300 mb-16 max-w-4xl leading-relaxed font-normal text-balance mx-auto">
+            <p className="text-lg md:text-xl text-zinc-300 mb-16 max-w-4xl leading-relaxed font-normal text-balance mx-auto">
               {updatedPost.excerpt.replace(/<[^>]*>?/gm, "")}
             </p>
           )}
 
           {/* Metadata - Logic from HeroSection pillars */}
           <div className="w-full border-t border-white/10 pt-8 mt-4 animate-fade-in-up delay-300">
-            <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-[0.3em]">
+            <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] md:text-xs font-mono text-zinc-500 uppercase tracking-[0.3em]">
               <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default group">
                 <span className="text-revgreen group-hover:animate-pulse">•</span> {formatDate(updatedPost.date)}
               </div>
@@ -348,16 +348,16 @@ const BlogPostPage = () => {
             onClick={() => contentRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 text-white hover:text-revgreen transition-colors cursor-pointer group z-50 pt-16"
           >
-            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-revgreen bg-black/80 px-4 py-2 rounded-sm border border-revgreen/20 backdrop-blur-md shadow-2xl hover:bg-revgreen hover:text-black transition-all duration-300">
+            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-revgreen bg-black/80 px-4 py-2 rounded-sm border border-revgreen/20 backdrop-blur-md shadow-sm hover:bg-revgreen hover:text-black transition-all duration-300">
               Ler Artigo
             </span>
-            <div className="w-px h-12 bg-gradient-to-b from-revgreen to-transparent opacity-50 group-hover:h-20 transition-all duration-500"></div>
+            <div className="w-px h-12 bg-revgreen/50 group-hover:h-20 transition-all duration-500"></div>
           </motion.button>
         </div>
       </section>
 
       {/* 2. Content Section - White Background (Fixes "Totally Dark" issue) */}
-      <section className="py-20 bg-white border-t border-gray-100">
+      <section className="py-20 bg-white border-t border-zinc-100">
         <div className="container px-4 md:px-6 mx-auto max-w-7xl">
 
           {/* Changed grid to give more space to content (col-span-12 on mobile, col-span-8 or 9 on desktop) */}
@@ -372,7 +372,7 @@ const BlogPostPage = () => {
             </div>
 
             {/* Main Content - Expanded width (col-span-9) */}
-            <div ref={contentRef} className="col-span-12 lg:col-span-9 lg:pl-10 border-l border-gray-50">
+            <div ref={contentRef} className="col-span-12 lg:col-span-9 lg:pl-10 border-l border-zinc-50">
 
               {/* The content below will render either the database 'content' or a custom article component */}
               <div className="animate-fade-in">

@@ -53,7 +53,7 @@ const UrgencyBanner = () => {
 
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 w-full max-w-2xl mx-auto px-4">
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg shadow-2xl p-4 animate-slide-down">
+      <div className="bg-zinc-900 text-white rounded-lg shadow-sm p-4 animate-slide-down">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Clock className="h-6 w-6" />
@@ -62,7 +62,7 @@ const UrgencyBanner = () => {
                 <Flame className="h-4 w-4 text-yellow-300" /> Oferta Limitada - Diagnóstico Gratuito
               </p>
               <div className="flex items-center gap-2">
-                <Timer className="w-4 h-4 text-orange-400" />
+                <Timer className="w-4 h-4 text-zinc-300" />
                 <span className="font-bold text-white tracking-wide text-xs md:text-sm">
                   OFERTA POR TEMPO LIMITADO
                 </span>
@@ -83,7 +83,7 @@ const UrgencyBanner = () => {
               asChild
               variant="secondary"
               size="sm"
-              className="bg-white text-orange-600 hover:bg-gray-100 text-xs"
+              className="bg-white text-zinc-900 hover:bg-zinc-100 text-xs"
             >
               <Link to="/diagnostico" onClick={scrollToTop}>
                 Garantir vaga

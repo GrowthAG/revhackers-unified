@@ -71,15 +71,15 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
 
     return (
         <Card
-            className="bg-white border-2 hover:shadow-lg transition-all duration-300 overflow-hidden"
+            className="bg-white border-2 transition-all duration-300 overflow-hidden"
             style={{ borderLeftWidth: '6px', borderLeftColor: getBorderColor() }}
         >
             <div className="p-6">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">{project.clientName}</h3>
-                        <p className="text-sm text-gray-500">{project.clientEmail}</p>
+                        <h3 className="text-lg font-bold text-zinc-900 mb-1">{project.clientName}</h3>
+                        <p className="text-sm text-zinc-500">{project.clientEmail}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {getStatusIcon()}
@@ -110,22 +110,22 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
 
                 {/* Dates Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="bg-zinc-50 rounded-lg p-4 border border-zinc-200">
                         <div className="flex items-center gap-2 mb-2">
-                            <Calendar className="h-4 w-4 text-gray-500" />
-                            <span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">Último REI</span>
+                            <Calendar className="h-4 w-4 text-zinc-500" />
+                            <span className="text-xs text-zinc-600 font-semibold uppercase tracking-wide">Último REI</span>
                         </div>
-                        <p className="text-base font-bold text-gray-900">
+                        <p className="text-base font-bold text-zinc-900">
                             {project.lastREIDate.toLocaleDateString('pt-BR')}
                         </p>
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="bg-zinc-50 rounded-lg p-4 border border-zinc-200">
                         <div className="flex items-center gap-2 mb-2">
-                            <Clock className="h-4 w-4 text-gray-500" />
-                            <span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">Próximo REI</span>
+                            <Clock className="h-4 w-4 text-zinc-500" />
+                            <span className="text-xs text-zinc-600 font-semibold uppercase tracking-wide">Próximo REI</span>
                         </div>
-                        <p className="text-base font-bold text-gray-900">
+                        <p className="text-base font-bold text-zinc-900">
                             {formatNextREIDate(project.nextREIDate)}
                         </p>
                     </div>
@@ -133,8 +133,8 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
 
                 {/* Quarter Info */}
                 <div className="flex items-center justify-between mb-4 px-2">
-                    <span className="text-sm text-gray-600">Período</span>
-                    <span className="text-sm font-bold text-gray-900">{project.quarter} {project.year}</span>
+                    <span className="text-sm text-zinc-600">Período</span>
+                    <span className="text-sm font-bold text-zinc-900">{project.quarter} {project.year}</span>
                 </div>
 
                 {/* Action Button */}

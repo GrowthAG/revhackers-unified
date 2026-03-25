@@ -28,4 +28,6 @@ export const ENDPOINTS = {
     PROCESS_MEETING_AUDIO: `${EDGE_FUNCTION_BASE_URL}/process-meeting-audio`,
     SCRAPE_PROFILE:        `${EDGE_FUNCTION_BASE_URL}/scrape-profile`,
     REI_PROJECTS_REST:     `${SUPABASE_URL}/rest/v1/rei_projects`,
+    MEETING_RECORDINGS_REST: `${SUPABASE_URL}/rest/v1/meeting_recordings`,
+    MEET_VIDEOS_STORAGE:   `${SUPABASE_URL}/storage/v1/object/meet_videos`,
 };

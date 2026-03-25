@@ -125,7 +125,7 @@ export default function MagicApproval() {
   if (error) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
-        <div className="max-w-md bg-zinc-900 border border-red-900/50 p-8 rounded-2xl text-center shadow-2xl">
+        <div className="max-w-md bg-zinc-900 border border-red-900/50 p-8 rounded-2xl text-center shadow-sm">
            <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
            <h2 className="text-white text-xl font-bold mb-2">Acesso Negado</h2>
            <p className="text-zinc-400 text-sm">{error}</p>
@@ -144,7 +144,7 @@ export default function MagicApproval() {
       <header className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-10 backdrop-blur-xl bg-opacity-80">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
            <div className="flex items-center gap-2">
-             <div className="w-8 h-8 bg-revhackers rounded-lg flex items-center justify-center shadow-lg shadow-revhackers/20 text-black font-black text-xs">RH</div>
+             <div className="w-8 h-8 bg-revhackers rounded-lg flex items-center justify-center shadow-sm shadow-revhackers/20 text-black font-black text-xs">RH</div>
              <span className="font-bold text-sm tracking-widest uppercase text-zinc-300">Approval Room</span>
            </div>
            {isApproved && <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> APROVADO</span>}
@@ -167,7 +167,7 @@ export default function MagicApproval() {
          </div>
 
          {/* Content Box */}
-         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 md:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 relative overflow-hidden">
+         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 md:p-12 shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 relative overflow-hidden">
             {/* Decal Background */}
             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-revhackers/5 rounded-full blur-3xl mix-blend-screen pointer-events-none" />
             
@@ -190,7 +190,7 @@ export default function MagicApproval() {
               <button 
                 onClick={() => handleAction('approved')}
                 disabled={actionLoading}
-                className="flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-xl shadow-emerald-500/20 disabled:opacity-50"
+                className="flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-sm shadow-emerald-500/20 disabled:opacity-50"
               >
                 {actionLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />} APROVAR PEÇA
               </button>

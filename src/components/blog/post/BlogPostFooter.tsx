@@ -23,9 +23,9 @@ const BlogPostFooter = () => {
     }
     window.open(shareLink, '_blank', 'width=600,height=400');
   };
-  return <div className="max-w-3xl mx-auto mt-12 border-t border-gray-100 pt-8">
+  return <div className="max-w-3xl mx-auto mt-12 border-t border-zinc-100 pt-8">
     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-      <span className="text-gray-500">Compartilhe este artigo:</span>
+      <span className="text-zinc-500">Compartilhe este artigo:</span>
       <div className="flex space-x-3">
         <TooltipProvider>
           <Tooltip>
@@ -83,22 +83,22 @@ const BlogPostFooter = () => {
       </div>
     </div>
 
-    <div className="mt-8 pt-6 border-t border-gray-100">
+    <div className="mt-8 pt-6 border-t border-zinc-100">
       <div className="flex justify-center items-center gap-6">
-        <span className="text-gray-500">Siga-nos:</span>
+        <span className="text-zinc-500">Siga-nos:</span>
         <a href="https://www.linkedin.com/company/34579614/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-            <Linkedin className="h-5 w-5 text-gray-600 hover:text-revgreen" />
+            <Linkedin className="h-5 w-5 text-zinc-600 hover:text-revgreen" />
           </Button>
         </a>
         <a href="https://www.instagram.com/revhackers.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-            <Instagram className="h-5 w-5 text-gray-600 hover:text-revgreen" />
+            <Instagram className="h-5 w-5 text-zinc-600 hover:text-revgreen" />
           </Button>
         </a>
         <a href="https://www.youtube.com/@RevHackersTV" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
           <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-            <Youtube className="h-5 w-5 text-gray-600 hover:text-revgreen" />
+            <Youtube className="h-5 w-5 text-zinc-600 hover:text-revgreen" />
           </Button>
         </a>
       </div>

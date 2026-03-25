@@ -43,7 +43,6 @@ const ChatbotManager = () => {
             path === '/agenda'
         ) {
             // Grupo A: Bot de Vendas/Atendimento
-            console.log("Loading Sales Bot...");
             loadChatbot(BOT_SALES_ID);
         } else if (
             path === '/blog' ||
@@ -55,7 +54,6 @@ const ChatbotManager = () => {
             path === '/comunidade'
         ) {
             // Grupo B: Bot de Conteúdo/Nutrição
-            console.log("Loading Content Bot...");
             loadChatbot(BOT_CONTENT_ID);
         } else {
             // Outras páginas (Admin, Login, etc): Remover bot ou usar padrão?

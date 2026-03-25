@@ -225,11 +225,11 @@ const ServicosDetalhe = () => {
             <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
               {service.title}
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed mb-12">
+            <p className="text-xl md:text-2xl text-zinc-300 font-light leading-relaxed mb-12">
               {service.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-14 px-8 text-sm shadow-lg shadow-revgreen/10 cursor-pointer">
+              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-14 px-8 text-sm shadow-sm shadow-revgreen/10 cursor-pointer">
                 Agendar Consultoria
               </Button>
               <Button asChild className="h-14 px-8 text-sm bg-transparent border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
@@ -250,12 +250,12 @@ const ServicosDetalhe = () => {
             {service.whatWeDo.map((item, i) => (
               <Card
                 key={i}
-                className="bg-gray-50 border border-gray-100 shadow-sm hover:border-revgreen transition-all duration-300 h-full group hover:shadow-md cursor-pointer"
+                className="bg-zinc-50 border border-zinc-100 shadow-sm hover:border-revgreen transition-all duration-300 h-full group cursor-pointer"
                 onClick={() => setSelectedService(item)}
               >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-black mb-3 group-hover:text-revgreen transition-colors">{item.title}</CardTitle>
-                  <CardDescription className="text-gray-600 font-light leading-relaxed">
+                  <CardDescription className="text-zinc-600 font-light leading-relaxed">
                     {item.description}
                   </CardDescription>
                   <div className="mt-4 flex items-center text-revgreen text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
@@ -269,14 +269,14 @@ const ServicosDetalhe = () => {
       </Section>
 
       {/* 3. COMO FUNCIONA (How It Works) */}
-      <Section variant="light" className="py-24 bg-gray-50 border-y border-gray-200">
+      <Section variant="light" className="py-24 bg-zinc-50 border-y border-zinc-200">
         <div className="container-custom">
           <h2 className="text-3xl md:text-4xl font-normal mb-16 text-black tracking-tight text-center">
             Como funciona
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             {/* Connector Line (Desktop only) */}
-            <div className="hidden md:block absolute top-[24px] left-0 w-full h-[2px] bg-gray-200 -z-10" />
+            <div className="hidden md:block absolute top-[24px] left-0 w-full h-[2px] bg-zinc-200 -z-10" />
 
             {service.howItWorks.map((step, i) => (
               <div key={i} className="relative group">
@@ -286,7 +286,7 @@ const ServicosDetalhe = () => {
                 </div>
                 <div className="text-center px-4">
                   <h3 className="text-lg font-bold text-black mb-3">{step.title}</h3>
-                  <p className="text-sm text-gray-500 font-light">{step.description}</p>
+                  <p className="text-sm text-zinc-500 font-light">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -306,7 +306,7 @@ const ServicosDetalhe = () => {
                 <div className={`text-4xl md:text-5xl font-bold ${service.accent} mb-4 font-mono-tech group-hover:scale-110 transition-transform duration-300`}>
                   {result.value}
                 </div>
-                <p className="text-gray-400 font-light uppercase tracking-wider text-sm">
+                <p className="text-zinc-400 font-light uppercase tracking-wider text-sm">
                   {result.label}
                 </p>
               </div>
@@ -320,12 +320,12 @@ const ServicosDetalhe = () => {
         <div className="container-custom text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold mb-6 text-black">Pronto para começar?</h2>
-            <p className="text-xl text-gray-500 mb-10 font-light">
+            <p className="text-xl text-zinc-500 mb-10 font-light">
               Agende uma consultoria gratuita e descubra como podemos ajudar sua empresa a escalar.
             </p>
             <Button
               onClick={() => setIsBookingOpen(true)}
-              className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-xl cursor-pointer"
+              className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-sm cursor-pointer"
             >
               Agendar Consultoria Gratuita
             </Button>

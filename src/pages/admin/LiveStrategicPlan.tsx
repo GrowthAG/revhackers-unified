@@ -83,16 +83,20 @@ export default function LiveStrategicPlan() {
                 .from('rei_projects')
                 .select('*, clients(*)')
                 .eq('id', projectId)
+                .neq('status', 'diagnostic')
                 .single();
 
             setProjectInfo(project);
 
             // Fetch strategic plan
-            const { data: plan, error } = await supabase
+            const { data: planArray, error } = await supabase
                 .from('strategic_plans')
                 .select('*')
-                .eq('project_id', projectId)
-                .single();
+                .eq('rei_project_id', projectId)
+                .order('generated_at', { ascending: false })
+                .limit(1);
+
+            const plan = planArray?.[0];
 
             if (plan) {
                 setPlanData(plan as unknown as StrategicPlanData);

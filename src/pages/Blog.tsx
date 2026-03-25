@@ -67,7 +67,6 @@ const Blog = () => {
         if (error) throw error;
 
         if (data) {
-          console.log('✅ [BLOG] Posts carregados do banco:', data.length);
           setApiPosts(data);
         }
       } catch (err: any) {
@@ -202,7 +201,7 @@ const Blog = () => {
       />
 
       <section className="pt-0 pb-12 bg-zinc-50 min-h-screen relative">
-        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black to-transparent pointer-events-none z-20" />
+        <div className="absolute top-0 left-0 right-0 h-16 bg-black/70 pointer-events-none z-20" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
         <div className="container-custom relative z-10">
@@ -230,12 +229,12 @@ const Blog = () => {
 
               {isLoadingMore && (
                 <div className="py-8 text-center flex justify-center">
-                  <div className="w-8 h-8 rounded-full border-4 border-gray-700 border-t-revgreen animate-spin"></div>
+                  <div className="w-8 h-8 rounded-full border-4 border-zinc-700 border-t-revgreen animate-spin"></div>
                 </div>
               )}
 
               {!hasMorePosts && displayedPosts.length > 0 && (
-                <div className="py-12 text-center text-gray-500 text-sm">
+                <div className="py-12 text-center text-zinc-500 text-sm">
                   Você chegou ao fim da lista.
                 </div>
               )}

@@ -32,7 +32,7 @@ export default function PublicDiagnosticResult() {
                 setResult({
                     id: data.id,
                     created_at: data.created_at,
-                    empresa: project?.client_company || project?.client_name || 'Empresa',
+                    empresa: project?.client_name || 'Empresa',
                     tipo_diagnostico: responses?.diagnostic_type || data.source || 'Diagnóstico',
                     score: data.total_score,
                     nivel_maturidade: data.maturity_level,

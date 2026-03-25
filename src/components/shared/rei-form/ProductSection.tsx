@@ -21,7 +21,7 @@ const ProductSection = ({ formData, onChange }: ProductSectionProps) => {
           id="expectedResults"
           value={formData.expectedResults}
           onChange={(e) => onChange('expectedResults', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva seus objetivos e metas..."
           required
         />
@@ -35,7 +35,7 @@ const ProductSection = ({ formData, onChange }: ProductSectionProps) => {
           id="solution"
           value={formData.solution}
           onChange={(e) => onChange('solution', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva detalhadamente sua solução..."
           required
         />
@@ -46,7 +46,7 @@ const ProductSection = ({ formData, onChange }: ProductSectionProps) => {
           Seu produto/serviço tem planos ou pacotes? *
         </Label>
         <Select value={formData.hasPlans} onValueChange={(value) => onChange('hasPlans', value)}>
-          <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
+          <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
             <SelectValue placeholder="Selecione uma opção" />
           </SelectTrigger>
           <SelectContent>
@@ -65,7 +65,7 @@ const ProductSection = ({ formData, onChange }: ProductSectionProps) => {
           id="advantages"
           value={formData.advantages}
           onChange={(e) => onChange('advantages', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[120px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[120px]"
           placeholder="1. Primeira vantagem...&#10;2. Segunda vantagem...&#10;3. Terceira vantagem..."
           required
         />
@@ -79,7 +79,7 @@ const ProductSection = ({ formData, onChange }: ProductSectionProps) => {
           id="targetAudience"
           value={formData.targetAudience}
           onChange={(e) => onChange('targetAudience', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva seu público-alvo..."
           required
         />

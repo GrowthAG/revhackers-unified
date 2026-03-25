@@ -18,16 +18,8 @@ const UpdatePassword = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('🔑 [UpdatePassword] Mounted. Initial check...');
-        console.log('🔗 [UpdatePassword] URL Info:', {
-            path: window.location.pathname,
-            hasHash: !!window.location.hash,
-            hashParams: window.location.hash.substring(1).split('&').map(p => p.split('=')[0])
-        });
-
         const checkSession = async () => {
             const { data: { session }, error } = await supabase.auth.getSession();
-            console.log('🔑 [UpdatePassword] Session check result:', { sessionExists: !!session, error });
 
             if (!session) {
                 console.warn('⚠️ [UpdatePassword] No session found on mount. This happens if the link was already used or expired.');
@@ -40,8 +32,6 @@ const UpdatePassword = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        console.log('🔑 [UpdatePassword] Submitting new password...');
-
         if (password !== confirmPassword) {
             setError('As senhas não coincidem.');
             return;
@@ -53,16 +43,13 @@ const UpdatePassword = () => {
         }
 
         try {
-            console.log('📡 [UpdatePassword] Calling updatePassword...');
             const result = await updatePassword(password);
-            console.log('📊 [UpdatePassword] Result received:', result);
 
             if (result && result.error) {
                 console.error('❌ [UpdatePassword] Update failed:', result.error);
                 setError(`Erro: ${result.error.message || 'Tente novamente.'}`);
                 setLoading(false);
             } else {
-                console.log('✅ [UpdatePassword] Success! Redirecting...');
                 setIsRecoveringPassword(false); // Libera o fluxo de redirecionamento normal
                 setSuccess(true);
                 setTimeout(() => {

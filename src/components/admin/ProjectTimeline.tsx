@@ -38,7 +38,7 @@ export function ProjectTimeline({ currentStage, reiDate, planDate }: ProjectTime
                             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isActive || isCompleted
                                 ? 'bg-black border-black text-white'
                                 : 'bg-white border-zinc-200 text-zinc-300'
-                                } ${isActive ? 'scale-110 shadow-lg' : ''}`}>
+                                } ${isActive ? 'scale-110 shadow-sm' : ''}`}>
                                 <Icon size={16} strokeWidth={isActive || isCompleted ? 2 : 2} />
                             </div>
                             <div className="text-center">

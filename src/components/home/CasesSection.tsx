@@ -79,7 +79,7 @@ const CasesSection = () => {
                   <Link
                     to={`/cases/${item.slug}`}
                     onClick={scrollToTop}
-                    className="group block relative bg-white hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 rounded-[2.5rem] border border-zinc-100 overflow-hidden h-full flex flex-col hover:-translate-y-2"
+                    className="group block relative bg-white hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 rounded-[2.5rem] border border-zinc-100 overflow-hidden h-full flex flex-col hover:-translate-y-2"
                   >
                     {/* Logo Canvas - Ultra Clean */}
                     <div className="h-64 overflow-hidden relative bg-zinc-50 flex items-center justify-center p-12 border-b border-zinc-100 group-hover:bg-white transition-colors duration-500">
@@ -153,7 +153,7 @@ const CasesSection = () => {
           <Link
             to="/cases"
             onClick={scrollToTop}
-            className="group relative px-14 py-6 bg-zinc-900 text-white hover:bg-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 shadow-xl shadow-zinc-200"
+            className="group relative px-14 py-6 bg-zinc-900 text-white hover:bg-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 shadow-sm shadow-zinc-200"
           >
             <span className="relative z-10 flex items-center gap-3">
               Explorar Portfolio

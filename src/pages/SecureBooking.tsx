@@ -37,7 +37,7 @@ const SecureBooking = () => {
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-black border border-white/10 rounded-xl shadow-xl p-6 md:p-8">
+            <Card className="bg-black border border-white/10 rounded-xl shadow-sm p-6 md:p-8">
               <div className="booking-calendar-wrapper relative bg-black rounded-lg overflow-hidden p-1">
                 <div className="absolute inset-0 bg-revgreen/5 opacity-30"></div>
                 <iframe 

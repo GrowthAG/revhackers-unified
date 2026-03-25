@@ -31,6 +31,7 @@ import SlaSection from './sections/SlaSection';
 import QuickWinsSection from './sections/QuickWinsSection';
 import ProjectionsSection from './sections/ProjectionsSection';
 import InvestmentSection from './sections/InvestmentSection';
+import ContractOverviewSection from './sections/ContractOverviewSection';
 
 // ── Navigation ────────────────────────────────────────────────────────────
 // ── Section order reflects the narrative arc:
@@ -53,6 +54,7 @@ const NAV_SECTIONS = [
     { id: 'goals',               name: 'Metas e Indicadores',     chapter: 'Fase 3 • Cronograma', icon: <Target className="w-4 h-4" /> },
     { id: 'roadmap_macro',       name: 'Marcos do Projeto',       chapter: 'Fase 3 • Cronograma', icon: <Calendar className="w-4 h-4" /> },
     { id: 'quick_wins',          name: 'Primeiros 7 Dias',        chapter: 'Fase 3 • Cronograma', icon: <Calendar className="w-4 h-4" /> },
+    { id: 'contract_overview',   name: 'Acordo Definitivo',       chapter: 'Fase 4 • Execução', icon: <ShieldCheck className="w-4 h-4" /> },
     { id: 'onboarding_kickoff',  name: 'Alinhamento & Kickoff',   chapter: 'Fase 4 • Execução', icon: <Calendar className="w-4 h-4" /> },
     { id: 'onboarding_setup',    name: 'Setup & Arquitetura',     chapter: 'Fase 4 • Execução', icon: <Settings className="w-4 h-4" /> },
     { id: 'onboarding_training', name: 'Treinamento & Produção',   chapter: 'Fase 4 • Execução', icon: <Briefcase className="w-4 h-4" /> },
@@ -129,6 +131,7 @@ export default function StrategicPlanPresentation() {
     const [approving, setApproving] = useState(false);
     const [showApproved, setShowApproved] = useState(false);
     const [approvedName, setApprovedName] = useState('');
+    const [contractAccepted, setContractAccepted] = useState(false);
     const [showSign, setShowSign] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectText, setRejectText] = useState('');
@@ -221,6 +224,7 @@ export default function StrategicPlanPresentation() {
             if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setCurrentIndex(i => Math.min(i + 1, sections.length - 1)); scrollToTop(); }
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setCurrentIndex(i => Math.max(i - 1, 0)); scrollToTop(); }
             if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); }
+            if (e.key === 's' || e.key === 'S') { e.preventDefault(); setSidebarOpen(prev => !prev); }
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
@@ -277,8 +281,11 @@ export default function StrategicPlanPresentation() {
         finally { setRejecting(false); }
     }
 
-    function goNext() { if (currentIndex < sections.length - 1) { setCurrentIndex(i => i + 1); scrollToTop(); } }
     function goPrev() { if (currentIndex > 0) { setCurrentIndex(i => i - 1); scrollToTop(); } }
+    function goNext() { 
+        if (sections[currentIndex]?.id === 'contract_overview' && !contractAccepted) return;
+        if (currentIndex < sections.length - 1) { setCurrentIndex(i => i + 1); scrollToTop(); } 
+    }
 
     // ── Loading ─────────────────────────────────────────────────────────────
     if (loading) return (
@@ -329,6 +336,7 @@ export default function StrategicPlanPresentation() {
             case 'methodology': return <MethodologySection plan={plan} />;
             case 'roadmap_macro': return <RoadmapMacroSection plan={plan} />;
             case 'quick_wins': return <QuickWinsSection plan={plan} />;
+            case 'contract_overview': return <ContractOverviewSection plan={plan} project={plan?.rei_projects} contractAccepted={contractAccepted} setContractAccepted={setContractAccepted} />;
             case 'onboarding_kickoff': return <OnboardingKickoffSection plan={plan} />;
             case 'onboarding_setup': return <OnboardingSetupSection plan={plan} />;
             case 'onboarding_training': return <OnboardingTrainingSection plan={plan} clientName={activeCompanyName} />;
@@ -344,18 +352,18 @@ export default function StrategicPlanPresentation() {
                     {isApproved ? (
                         <div className="max-w-md mx-auto">
                             <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center mx-auto mb-6 rounded-full"><Check className="w-8 h-8 text-[#00CC6A]" /></div>
-                            <h2 className="text-3xl font-bold text-black mb-3">Planejamento Aprovado</h2>
+                            <h2 className="text-3xl font-black text-black mb-3">Planejamento Aprovado</h2>
                             <p className="text-zinc-500 text-sm mb-2">Assinado por <strong>{plan.next_steps_data?.approved_by_name || 'cliente'}</strong></p>
                             <p className="text-zinc-500 text-sm mb-8">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
                             
                             <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 text-left">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#00CC6A] mb-2 block">Passo 2 / 2</span>
-                                <h3 className="text-lg font-bold text-zinc-900 mb-2">Anexar Materiais do Projeto</h3>
+                                <h3 className="text-lg font-black text-zinc-900 mb-2">Anexar Materiais do Projeto</h3>
                                 <p className="text-xs text-zinc-500 mb-6">Envie agora os acessos, planilhas, logos ou arquivos necessários para iniciarmos a execução do projeto sem atrasos.</p>
                                 
                                 <button 
                                     onClick={() => window.open(`/upload-materiais/${plan.rei_projects?.id || plan.project_id}`, '_blank')}
-                                    className="w-full py-3 bg-zinc-900 text-white text-sm font-bold rounded-lg hover:bg-black transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-zinc-900 text-white text-sm font-bold rounded-none hover:bg-black transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Upload className="w-4 h-4" /> Enviar Arquivos e Acessos
                                 </button>
@@ -363,7 +371,7 @@ export default function StrategicPlanPresentation() {
                                 {plan.next_steps_data?.certificate_hash && (
                                     <button 
                                         onClick={() => window.open(`/legal/certificado/${plan.next_steps_data.certificate_hash}`, '_blank')}
-                                        className="w-full mt-3 py-3 bg-white border border-zinc-200 text-zinc-700 text-sm font-bold rounded-lg hover:bg-zinc-50 transition-colors flex items-center justify-center gap-2"
+                                        className="w-full mt-3 py-3 bg-white border border-zinc-200 text-zinc-700 text-sm font-bold rounded-none hover:bg-zinc-50 transition-colors flex items-center justify-center gap-2"
                                     >
                                         <ShieldCheck className="w-4 h-4 text-[#00CC6A]" /> Visualizar Cofre Legal (Certificado)
                                     </button>
@@ -419,7 +427,7 @@ export default function StrategicPlanPresentation() {
                                     <div className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center mb-5 shrink-0">
                                         <Smartphone className="w-4 h-4 text-zinc-400" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
+                                    <h3 className="text-lg font-black text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
                                     <p className="text-sm text-zinc-500 leading-relaxed mb-6 px-2">
                                         Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.
                                     </p>
@@ -448,13 +456,13 @@ export default function StrategicPlanPresentation() {
                 <div className="fixed inset-0 bg-zinc-950 z-[60] flex items-center justify-center">
                     <div className="text-center">
                         <div className="w-20 h-20 border-2 border-[#00CC6A] rounded-full flex items-center justify-center mx-auto mb-8"><Check className="w-10 h-10 text-[#00CC6A]" /></div>
-                        <h2 className="text-3xl font-bold text-white mb-3">Planejamento Aprovado</h2>
+                        <h2 className="text-3xl font-black text-white mb-3">Planejamento Aprovado</h2>
                         <p className="text-white/50 text-sm mb-2">Assinado por <strong className="text-white">{plan.next_steps_data?.approved_by_name || approvedName}</strong></p>
                         <p className="text-white/30 text-xs mb-8">Nossa equipe já está em ação. Você receberá as próximas etapas em até 24h.</p>
                         
                         <button 
                             onClick={() => window.open(`/upload-materiais/${plan.rei_projects?.id || plan.project_id}`, '_blank')}
-                            className="w-full py-3 bg-[#00CC6A] text-black text-sm font-bold rounded-lg hover:bg-[#00CC6A]/90 transition-colors flex items-center justify-center gap-2 mb-4"
+                            className="w-full py-3 bg-[#00CC6A] text-black text-sm font-bold rounded-none hover:bg-[#00CC6A]/90 transition-colors flex items-center justify-center gap-2 mb-4"
                         >
                             <Upload className="w-4 h-4" /> Passo 2: Enviar Materiais do Projeto
                         </button>
@@ -472,11 +480,7 @@ export default function StrategicPlanPresentation() {
                             projectId={plan.rei_projects?.id || plan.project_id}
                             referenceType="strategic_plan"
                             referenceId={plan.id}
-                            documentContentToHash={JSON.stringify({
-                                thesis: plan.thesis_data,
-                                roadmap: plan.roadmap_data,
-                                sla: plan.sla_data
-                            })}
+                            documentContentToHash={JSON.stringify({ ...plan.sla_data, legal_ratification: "RATIFICO O ESCOPO, METAS, CONDIÇÕES COMERCIAIS E PRAZOS DO ACORDO DEFINITIVO LIDOS E ACEITOS NESTA SESSÃO." })}
                             isOpen={showSign}
                             onSuccess={async (signerData) => {
                                 // Update native plan status
@@ -507,13 +511,13 @@ export default function StrategicPlanPresentation() {
             {/* Reject modal */}
             {showRejectModal && (
                 <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowRejectModal(false)}>
-                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-sm relative" onClick={e => e.stopPropagation()}>
                         {rejectSent ? (
                             <div className="text-center py-8">
                                 <div className="w-16 h-16 bg-[#00CC6A]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Check className="w-8 h-8 text-[#00CC6A]" />
                                 </div>
-                                <h3 className="text-xl font-bold text-zinc-900 mb-2">Solicitação enviada</h3>
+                                <h3 className="text-xl font-black text-zinc-900 mb-2">Solicitação enviada</h3>
                                 <p className="text-sm text-zinc-500">Nossa Inteligência Artificial está processando seu pedido.</p>
                             </div>
                         ) : (
@@ -523,7 +527,7 @@ export default function StrategicPlanPresentation() {
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-900"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
+                                        <h3 className="text-xl font-black text-zinc-900 tracking-tight">Solicitar Refatoração da IA</h3>
                                         <p className="text-sm text-zinc-500">Aponte o que precisa mudar no plano {typeLabel}.</p>
                                     </div>
                                 </div>
@@ -552,68 +556,211 @@ export default function StrategicPlanPresentation() {
             {/* Edit Toolbar (only visible in edit mode) */}
             <EditToolbar />
 
-            <div className="h-screen bg-white flex flex-col items-center overflow-hidden">
-                {/* Floating Navigation Controls (Bottom Center) - Minimalist Fullscreen approach */}
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-sm print:hidden transition-all duration-300 hover:bg-white">
-                    <button
-                        onClick={goPrev}
-                        disabled={currentIndex === 0}
-                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        title="Voltar"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                    </button>
-
-                    <div className="px-3 flex items-center gap-3">
-                        {currentChapter && (
-                            <span className="hidden sm:inline-flex text-[10px] font-bold text-zinc-500 bg-zinc-100/80 px-2 py-1 rounded-md uppercase tracking-[0.2em]">{currentChapter}</span>
-                        )}
-                        <span className="text-[11px] font-mono text-zinc-900 font-bold tracking-widest whitespace-nowrap">
-                            {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
-                        </span>
+            <div className="h-screen bg-white flex flex-col overflow-hidden">
+                {/* Top Progress Bar - hidden in fullscreen */}
+                {!isFullscreen && (
+                    <div className="w-full h-1 bg-zinc-100 shrink-0 print:hidden">
+                        <div
+                            className="h-full bg-zinc-900 transition-all duration-500 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
                     </div>
+                )}
 
-                    <button
-                        onClick={goNext}
-                        disabled={currentIndex === sections.length - 1}
-                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        title="Avançar"
-                    >
-                        <ArrowRight className="w-4 h-4" />
-                    </button>
+                <div className="flex flex-1 overflow-hidden">
+                    {/* Sidebar Navigation - hidden in fullscreen */}
+                    <aside className={`shrink-0 bg-white border-r border-zinc-200 flex flex-col transition-all duration-300 print:hidden ${isFullscreen ? 'w-0 overflow-hidden border-r-0' : sidebarOpen ? 'w-64' : 'w-0 overflow-hidden border-r-0'}`}>
+                        {sidebarOpen && (
+                            <>
+                                {/* Sidebar Header */}
+                                <div className="px-4 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 block">{typeLabel}</span>
+                                        <span className="text-xs font-bold text-zinc-700 truncate block mt-0.5">{activeCompanyName}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => setSidebarOpen(false)}
+                                        className="p-1.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all"
+                                        title="Fechar menu"
+                                    >
+                                        <PanelLeftClose className="w-4 h-4" />
+                                    </button>
+                                </div>
 
-                    <div className="w-px h-5 bg-zinc-200 mx-1" />
+                                {/* Section List grouped by chapter */}
+                                <nav className="flex-1 overflow-y-auto py-2">
+                                    {(() => {
+                                        const chapters: { name: string; items: typeof sections }[] = [];
+                                        let lastChapter = '';
+                                        for (const sec of sections) {
+                                            if (sec.chapter !== lastChapter) {
+                                                chapters.push({ name: sec.chapter, items: [] });
+                                                lastChapter = sec.chapter;
+                                            }
+                                            chapters[chapters.length - 1].items.push(sec);
+                                        }
+                                        const readSections = plan?.next_steps_data?.read_sections || [];
+                                        return chapters.map((chapter, ci) => (
+                                            <div key={ci} className="mb-1">
+                                                <div className="px-4 pt-3 pb-1">
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-300">
+                                                        {chapter.name}
+                                                    </span>
+                                                </div>
+                                                {chapter.items.map((sec) => {
+                                                    const idx = sections.indexOf(sec);
+                                                    const isActive = idx === currentIndex;
+                                                    const isRead = readSections.includes(sec.id);
+                                                    return (
+                                                        <button
+                                                            key={sec.id}
+                                                            onClick={() => { setCurrentIndex(idx); scrollToTop(); }}
+                                                            className={`w-full text-left px-4 py-2 flex items-center gap-2.5 transition-all text-[11px] font-medium ${
+                                                                isActive
+                                                                    ? 'bg-zinc-950 text-white'
+                                                                    : isRead
+                                                                    ? 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
+                                                                    : 'text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700'
+                                                            }`}
+                                                        >
+                                                            <span className={`shrink-0 ${isActive ? 'text-white' : isRead ? 'text-zinc-400' : 'text-zinc-300'}`}>
+                                                                {sec.icon}
+                                                            </span>
+                                                            <span className="truncate">{sec.name}</span>
+                                                            {isRead && !isActive && (
+                                                                <Check className="w-3 h-3 text-[#00CC6A] shrink-0 ml-auto" />
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ));
+                                    })()}
+                                </nav>
 
-                    <button
-                        onClick={() => setIsEditing(prev => !prev)}
-                        className={`p-2.5 rounded-xl transition-all ${isEditing ? 'bg-zinc-900 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}`}
-                        title={isEditing ? 'Desativar Edição' : 'Ativar Edição'}
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </button>
+                                {/* Sidebar Footer - Status */}
+                                <div className="px-4 py-3 border-t border-zinc-100 shrink-0">
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md inline-block ${badge.cls}`}>
+                                        {badge.label}
+                                    </span>
+                                </div>
+                            </>
+                        )}
+                    </aside>
 
-                    <button
-                        onClick={() => handlePrint()}
-                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
-                        title="Baixar PDF"
-                    >
-                        <Printer className="w-4 h-4" />
-                    </button>
+                    {/* Main Content Area */}
+                    <div className="flex-1 flex flex-col overflow-hidden relative">
+                        {/* Fullscreen hover zone - invisible trigger area at bottom of screen */}
+                        {isFullscreen && (
+                            <div className="fixed bottom-0 left-0 right-0 h-20 z-30 print:hidden group/fs">
+                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-sm opacity-0 group-hover/fs:opacity-100 translate-y-4 group-hover/fs:translate-y-0 transition-all duration-300">
+                                    <button
+                                        onClick={goPrev}
+                                        disabled={currentIndex === 0}
+                                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                    </button>
+                                    <div className="px-3 flex items-center gap-3">
+                                        <span className="text-[11px] font-mono text-zinc-900 font-bold tracking-widest whitespace-nowrap">
+                                            {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={goNext}
+                                        disabled={currentIndex === sections.length - 1}
+                                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <ArrowRight className="w-4 h-4" />
+                                    </button>
+                                    <div className="w-px h-5 bg-zinc-200 mx-1" />
+                                    <button
+                                        onClick={toggleFullscreen}
+                                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
+                                        title="Sair da Tela Cheia"
+                                    >
+                                        <Minimize2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
-                    <button
-                        onClick={toggleFullscreen}
-                        className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
-                        title="Tela Cheia"
-                    >
-                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    </button>
-                </div>
+                        {/* Floating Navigation Controls (Bottom Center) - hidden in fullscreen */}
+                        {!isFullscreen && (
+                        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-zinc-200/80 p-1.5 rounded-2xl shadow-sm print:hidden transition-all duration-300 hover:bg-white">
+                            {/* Sidebar toggle */}
+                            {!sidebarOpen && (
+                                <button
+                                    onClick={() => setSidebarOpen(true)}
+                                    className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
+                                    title="Abrir menu"
+                                >
+                                    <PanelLeftOpen className="w-4 h-4" />
+                                </button>
+                            )}
 
-                {/* Main content - Full Screen Format */}
-                <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth print:hidden">
-                    {/* Slide container - Full bleed no margins */}
-                    <div className="w-full h-full flex flex-col print:hidden">
-                        {renderSectionById(currentSectionId)}
+                            <button
+                                onClick={goPrev}
+                                disabled={currentIndex === 0}
+                                className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="Voltar"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                            </button>
+
+                            <div className="px-3 flex items-center gap-3">
+                                {currentChapter && (
+                                    <span className="hidden sm:inline-flex text-[10px] font-bold text-zinc-500 bg-zinc-100/80 px-2 py-1 rounded-md uppercase tracking-[0.2em]">{currentChapter}</span>
+                                )}
+                                <span className="text-[11px] font-mono text-zinc-900 font-bold tracking-widest whitespace-nowrap">
+                                    {currentIndex + 1} <span className="text-zinc-300 mx-1">/</span> {sections.length}
+                                </span>
+                            </div>
+
+                            <button
+                                onClick={goNext}
+                                disabled={currentIndex === sections.length - 1 || (sections[currentIndex]?.id === 'contract_overview' && !contractAccepted)}
+                                className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="Avançar"
+                            >
+                                <ArrowRight className="w-4 h-4" />
+                            </button>
+
+                            <div className="w-px h-5 bg-zinc-200 mx-1" />
+
+                            <button
+                                onClick={() => setIsEditing(prev => !prev)}
+                                className={`p-2.5 rounded-xl transition-all ${isEditing ? 'bg-zinc-900 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}`}
+                                title={isEditing ? 'Desativar Edição' : 'Ativar Edição'}
+                            >
+                                <Pencil className="w-4 h-4" />
+                            </button>
+
+                            <button
+                                onClick={() => handlePrint()}
+                                className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
+                                title="Baixar PDF"
+                            >
+                                <Printer className="w-4 h-4" />
+                            </button>
+
+                            <button
+                                onClick={toggleFullscreen}
+                                className="p-2.5 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
+                                title="Tela Cheia"
+                            >
+                                <Maximize2 className="w-4 h-4" />
+                            </button>
+                        </div>
+                        )}
+
+                        {/* Main content - Full Screen Format */}
+                        <div ref={scrollRef} className="w-full flex-1 overflow-y-auto bg-white flex flex-col relative scroll-smooth print:hidden">
+                            {/* Slide container - Full bleed no margins */}
+                            <div className="w-full h-full flex flex-col print:hidden">
+                                {renderSectionById(currentSectionId)}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

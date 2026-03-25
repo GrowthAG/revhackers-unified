@@ -33,14 +33,14 @@ const CadastroParceiro = () => {
             <h1 className="text-5xl font-bold leading-tight mb-6">
               Cadastro de <span className="text-revgreen">Parceiro</span>
             </h1>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
               Junte-se à nossa rede de parceiros e cresça conosco. 
               Preencha o formulário abaixo para iniciar nossa parceria.
             </p>
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-black border border-white/10 rounded-xl shadow-xl p-6 md:p-8">
+            <Card className="bg-black border border-white/10 rounded-xl shadow-sm p-6 md:p-8">
               <div className="partner-form-wrapper relative bg-black rounded-lg overflow-hidden p-1">
                 <div className="absolute inset-0 bg-revgreen/5 opacity-30"></div>
                 <iframe 

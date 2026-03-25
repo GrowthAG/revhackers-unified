@@ -54,7 +54,7 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
                         className="flex items-center justify-between p-5 bg-white border border-zinc-100 hover:border-black transition-all cursor-pointer group"
                     >
                         <div className="flex items-center gap-4">
-                            <div className={`w-2 h-2 rounded-full ${project.status === 'active' ? 'bg-emerald-400' : 'bg-orange-400'}`} />
+                            <div className={`w-2 h-2 rounded-full ${project.status === 'active' ? 'bg-emerald-400' : 'bg-zinc-400'}`} />
                             <div>
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                                     {project.type?.toUpperCase() || 'CONSULTING'}
@@ -197,7 +197,7 @@ const ReiHubPage = () => {
                                     </button>
 
                                     {dropdownOpen && (
-                                        <div className="absolute top-full left-0 right-0 bg-white border border-zinc-200 border-t-0 z-50 shadow-xl animate-in fade-in slide-in-from-top-1 duration-150">
+                                        <div className="absolute top-full left-0 right-0 bg-white border border-zinc-200 border-t-0 z-50 shadow-sm animate-in fade-in slide-in-from-top-1 duration-150">
                                             {REI_TYPES.map((type) => (
                                                 <button
                                                     key={type.value}

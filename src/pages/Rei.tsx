@@ -17,7 +17,7 @@ const Rei = () => {
             <h1 className="text-5xl font-bold leading-tight mb-6">
               REI - <span className="text-revgreen">Revenue Excellence Initiative</span>
             </h1>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
               Transforme sua estratégia de receita com metodologias avançadas 
               e acelere o crescimento do seu negócio.
             </p>

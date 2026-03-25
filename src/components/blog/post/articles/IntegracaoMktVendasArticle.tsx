@@ -100,7 +100,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 {/* USER PROVIDED HEADLINE CONTEXT */}
                 <StrategicContext label="O Problema Real">
@@ -110,7 +110,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     <p className="mt-4">
                         O verdadeiro gargalo está na falta de conexão entre os seus times. Imagine que sua empresa capta leads, investe em tráfego pago, gera oportunidades - mas as vendas não escalam e os clientes vão embora.
                     </p>
-                    <p className="mt-4 font-bold text-gray-900">
+                    <p className="mt-4 font-bold text-zinc-900">
                         Isso não é azar. É desalinhamento.
                     </p>
                 </StrategicContext>
@@ -132,41 +132,41 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     proView="Uma máquina unificada. O feedback de CS ajusta o anúncio de Marketing. O CRM de Vendas informa o onboarding de CS."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Por que integrar é o maior ativo estratégico?</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Por que integrar é o maior ativo estratégico?</h2>
                 <p>
                     A maioria das empresas opera como uma corrida de revezamento onde os corredores (times) derrubam o bastão (cliente) a cada troca. A integração elimina esses gaps.
                 </p>
 
-                <div className="flex flex-col md:flex-row gap-8 my-10 bg-gray-50 p-8 rounded-xl border border-gray-100 not-prose">
+                <div className="flex flex-col md:flex-row gap-8 my-10 bg-zinc-50 p-8 rounded-xl border border-zinc-100 not-prose">
                     <div className="flex-1 text-center md:text-left">
-                        <div className="text-4xl font-black text-gray-900 mb-1">19%</div>
-                        <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Crescimento Mais Rápido</div>
+                        <div className="text-4xl font-black text-zinc-900 mb-1">19%</div>
+                        <div className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Crescimento Mais Rápido</div>
                     </div>
-                    <div className="flex-1 text-center md:text-left md:border-l md:border-gray-200 md:pl-8">
+                    <div className="flex-1 text-center md:text-left md:border-l md:border-zinc-200 md:pl-8">
                         <div className="text-4xl font-black text-revgreen mb-1">15%</div>
-                        <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Maior Lucratividade</div>
+                        <div className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Maior Lucratividade</div>
                     </div>
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Combine className="w-6 h-6 text-revgreen" />
                     O Ciclo Unificado (The Revenue Engine)
                 </h2>
                 <div className="not-prose grid gap-4 mb-16">
                     {anatomy.map((item, i) => (
-                        <div key={i} className="group bg-white hover:bg-gray-50 border border-gray-200 p-6 rounded-lg transition-all duration-300 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-gray-200 group-hover:bg-revgreen transition-colors"></div>
+                        <div key={i} className="group bg-white hover:bg-zinc-50 border border-zinc-200 p-6 rounded-lg transition-all duration-300 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-zinc-200 group-hover:bg-revgreen transition-colors"></div>
                             <div className="flex flex-col md:flex-row gap-6 md:items-center ml-2">
-                                <span className="text-xs font-bold text-gray-400 w-24 shrink-0 uppercase tracking-wider group-hover:text-revgreen transition-colors">
+                                <span className="text-xs font-bold text-zinc-400 w-24 shrink-0 uppercase tracking-wider group-hover:text-revgreen transition-colors">
                                     {item.label}
                                 </span>
                                 <div className="flex-1">
-                                    <h4 className="font-bold text-gray-900 text-lg mb-2">{item.title}</h4>
-                                    <p className="text-gray-600 text-sm leading-relaxed m-0">{item.desc}</p>
+                                    <h4 className="font-bold text-zinc-900 text-lg mb-2">{item.title}</h4>
+                                    <p className="text-zinc-600 text-sm leading-relaxed m-0">{item.desc}</p>
                                 </div>
-                                <div className="md:w-48 shrink-0 md:text-right mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
-                                    <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest block mb-1">KPI Principal</span>
-                                    <span className="text-xs font-bold text-gray-900 font-mono">{item.metrics}</span>
+                                <div className="md:w-48 shrink-0 md:text-right mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-zinc-100">
+                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block mb-1">KPI Principal</span>
+                                    <span className="text-xs font-bold text-zinc-900 font-mono">{item.metrics}</span>
                                 </div>
                             </div>
                         </div>
@@ -183,38 +183,38 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     ]}
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Handshake className="w-6 h-6 text-revgreen" />
                     Como Unificar na Prática (RevOps Plays)
                 </h2>
 
-                <div className="space-y-0 mb-16 border border-gray-200 divide-y divide-gray-200">
+                <div className="space-y-0 mb-16 border border-zinc-200 divide-y divide-gray-200">
                     {strategies.map((strategy, index) => (
-                        <div key={index} className="bg-white p-8 group hover:bg-gray-50 transition-colors">
+                        <div key={index} className="bg-white p-8 group hover:bg-zinc-50 transition-colors">
                             <h3 className="text-base font-bold text-black mb-3 flex items-center gap-3 uppercase tracking-wider">
                                 <span className="text-revgreen font-mono">0{index + 1}.</span>
                                 {strategy.title}
                             </h3>
-                            <p className="text-gray-600 mb-6 text-sm leading-relaxed font-light">
+                            <p className="text-zinc-600 mb-6 text-sm leading-relaxed font-light">
                                 {strategy.description}
                             </p>
                             <div className="pl-4 border-l-2 border-revgreen/20">
-                                <p className="text-gray-500 text-xs font-mono italic">"{strategy.example}"</p>
+                                <p className="text-zinc-500 text-xs font-mono italic">"{strategy.example}"</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Users className="w-6 h-6 text-revgreen" />
                     Templates de Alinhamento
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -222,7 +222,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -231,7 +231,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                                     )}
                                 </Button>
                             </div>
-                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-gray-600 bg-white">
+                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-zinc-600 bg-white">
                                 {template.body}
                             </div>
                         </Card>

@@ -49,8 +49,8 @@ const MarkmapViewer = ({ markdown, className = '' }: MarkmapViewerProps) => {
                 maxWidth: 300,
                 color: (node: any) => {
                     // Custom color based on depth
-                    const colors = ['#03FC3B', '#6366F1', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899'];
-                    return colors[node.state?.depth % colors.length] || '#3B82F6';
+                    const colors = ['#18181b', '#3f3f46', '#52525b', '#71717a', '#00CC6A', '#a1a1aa'];
+                    return colors[node.state?.depth % colors.length] || '#3f3f46';
                 },
             }, root);
         }

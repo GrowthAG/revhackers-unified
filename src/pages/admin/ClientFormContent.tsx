@@ -129,7 +129,6 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
 
         setIsSearchingCnpj(true);
         try {
-            console.log("Fetching CNPJ data for:", cleanCnpj);
             let data;
 
             // Try Direct Fetch first (faster, reliable if CORS permitted)

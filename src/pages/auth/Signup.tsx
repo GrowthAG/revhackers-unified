@@ -20,7 +20,6 @@ const Signup = () => {
     // Redirecionar se já estiver logado
     useEffect(() => {
         if (user) {
-            console.log('🏠 Signup: Usuário já autenticado, indo para admin');
             navigate('/admin');
         }
     }, [user, navigate]);

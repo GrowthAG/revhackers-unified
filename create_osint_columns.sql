@@ -1,8 +1,0 @@
-ALTER TABLE clients
-ADD COLUMN IF NOT EXISTS linkedin_url TEXT,
-ADD COLUMN IF NOT EXISTS linkedin_data JSONB,
-ADD COLUMN IF NOT EXISTS linkedin_scraped_at TIMESTAMPTZ;
-
-ALTER TABLE rei_projects
-ADD COLUMN IF NOT EXISTS market_data JSONB,
-ADD COLUMN IF NOT EXISTS market_data_updated_at TIMESTAMPTZ;

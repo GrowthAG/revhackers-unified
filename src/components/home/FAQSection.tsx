@@ -35,13 +35,13 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-zinc-50">
       <div className="container-custom">
         <div className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Perguntas Frequentes
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-zinc-600">
             Respostas para as dúvidas mais comuns sobre nossas soluções de RevOps
           </p>
         </div>
@@ -53,7 +53,7 @@ const FAQSection = () => {
                 <AccordionTrigger className="text-left font-medium">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
+                <AccordionContent className="text-zinc-600">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

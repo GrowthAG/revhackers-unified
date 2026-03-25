@@ -110,7 +110,7 @@ const CompleteProfile = () => {
 
     return (
         <div className="min-h-screen w-full flex bg-[#020202] items-center justify-center p-4 font-sans text-white">
-            <div className="w-full max-w-2xl bg-[#050505] border border-white/5 rounded-none shadow-2xl p-8 lg:p-16 relative overflow-hidden">
+            <div className="w-full max-w-2xl bg-[#050505] border border-white/5 rounded-none shadow-sm p-8 lg:p-16 relative overflow-hidden">
 
                 <div className="mb-12 text-center">
                     <h1 className="text-2xl font-black text-white uppercase tracking-[0.2em] mb-4">Complete seu Cadastro</h1>

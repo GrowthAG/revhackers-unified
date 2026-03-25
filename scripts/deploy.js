@@ -27,7 +27,7 @@ const config = {
     'node_modules/**',
     '.env', // NUNCA FAÇA UPLOAD DO SEU .ENV!!!
   ],
-  deleteRemote: true, // Limpa a pasta Hostinger antes de subir o novo conteúdo
+  deleteRemote: false, // Desativado pra Hostinger não dar timeout limpando a pasta inteira primeiro
   forcePasv: true, // O passivo reduz problemas de firewall
 };
 

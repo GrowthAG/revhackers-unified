@@ -48,7 +48,7 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Diagnóstico">
                     <p>
@@ -78,19 +78,19 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
 
                 {/* Bow Tie Visualization */}
                 <div className="my-16 not-prose">
-                    <h3 className="text-xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-zinc-900 mb-8 flex items-center gap-2">
                         <Filter className="w-6 h-6 text-revgreen rotate-90" />
                         A Anatomia do Growth Moderno
                     </h3>
                     <div className="grid md:grid-cols-3 gap-6">
                         {bowTieStages.map((stage, i) => (
-                            <div key={i} className={`p-6 rounded-lg border relative overflow-hidden ${i === 1 ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-gray-50 border-gray-200'}`}>
+                            <div key={i} className={`p-6 rounded-lg border relative overflow-hidden ${i === 1 ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
                                 <div className="absolute top-0 right-0 p-4 opacity-10">
                                     <h4 className="text-6xl font-bold">{i + 1}</h4>
                                 </div>
-                                <h4 className={`font-bold text-lg mb-2 relative z-10 ${i === 1 ? 'text-white' : 'text-gray-900'}`}>{stage.title}</h4>
-                                <p className={`text-sm mb-4 relative z-10 ${i === 1 ? 'text-gray-400' : 'text-gray-600'}`}>{stage.desc}</p>
-                                <div className={`inline-block px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${i === 1 ? 'bg-revgreen text-white' : 'bg-gray-200 text-gray-700'}`}>
+                                <h4 className={`font-bold text-lg mb-2 relative z-10 ${i === 1 ? 'text-white' : 'text-zinc-900'}`}>{stage.title}</h4>
+                                <p className={`text-sm mb-4 relative z-10 ${i === 1 ? 'text-zinc-400' : 'text-zinc-600'}`}>{stage.desc}</p>
+                                <div className={`inline-block px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${i === 1 ? 'bg-revgreen text-white' : 'bg-zinc-200 text-zinc-700'}`}>
                                     KPI: {stage.metric}
                                 </div>
                             </div>
@@ -98,16 +98,16 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">As 3 Métricas que Ditam a Sobrevivência</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">As 3 Métricas que Ditam a Sobrevivência</h2>
                 <div className="grid gap-6 mb-12">
                     {metrics.map((m, i) => (
-                        <div key={i} className="flex flex-col md:flex-row gap-6 border-b border-gray-100 pb-6 last:border-0 items-start">
+                        <div key={i} className="flex flex-col md:flex-row gap-6 border-b border-zinc-100 pb-6 last:border-0 items-start">
                             <div className="w-full md:w-1/3">
-                                <h3 className="font-bold text-lg text-gray-900">{m.name}</h3>
+                                <h3 className="font-bold text-lg text-zinc-900">{m.name}</h3>
                                 <div className="text-revgreen font-mono font-bold text-2xl mt-1">{m.ideal}</div>
                             </div>
                             <div className="w-full md:w-2/3">
-                                <p className="text-gray-700 leading-relaxed m-0">{m.meaning}</p>
+                                <p className="text-zinc-700 leading-relaxed m-0">{m.meaning}</p>
                             </div>
                         </div>
                     ))}
@@ -128,7 +128,7 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
                         <Microscope className="w-6 h-6 text-revgreen" />
                         O Diagnóstico de Receita
                     </h3>
-                    <p className="text-gray-300 mb-8 max-w-2xl">
+                    <p className="text-zinc-300 mb-8 max-w-2xl">
                         Pare de olhar para métricas de vaidade (likes, visitas, leads). Para consertar seu crescimento, você precisa auditar a passagem de bastão:
                     </p>
                     <ul className="space-y-4">

@@ -21,7 +21,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           id="salesChannels"
           value={formData.salesChannels}
           onChange={(e) => onChange('salesChannels', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Site próprio, marketplace, vendas diretas..."
           required
         />
@@ -35,7 +35,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           id="marketingTools"
           value={formData.marketingTools}
           onChange={(e) => onChange('marketingTools', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="CRM, automação de marketing, redes sociais..."
           required
         />
@@ -50,7 +50,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           value={formData.monthlyAdBudget}
           onChange={(e) => onChange('monthlyAdBudget', e.target.value)}
           placeholder="R$ 5.000,00"
-          className="bg-gray-900 border-gray-700 text-white"
+          className="bg-zinc-900 border-zinc-700 text-white"
         />
       </div>
 
@@ -62,7 +62,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           id="adScheduleRestrictions"
           value={formData.adScheduleRestrictions}
           onChange={(e) => onChange('adScheduleRestrictions', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[80px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[80px]"
           placeholder="Ex: Não veicular aos domingos, apenas horário comercial..."
         />
       </div>
@@ -75,7 +75,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           id="adRegions"
           value={formData.adRegions}
           onChange={(e) => onChange('adRegions', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[80px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[80px]"
           placeholder="São Paulo, Rio de Janeiro, Brasil todo..."
           required
         />
@@ -89,7 +89,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
           id="previousStrategies"
           value={formData.previousStrategies}
           onChange={(e) => onChange('previousStrategies', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Estratégias testadas e resultados..."
         />
       </div>
@@ -102,7 +102,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
             value={formData.sdrCount}
             onChange={(e) => onChange('sdrCount', e.target.value)}
             placeholder="Ex: 2, 5, 10..."
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -114,7 +114,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
             value={formData.closerCount}
             onChange={(e) => onChange('closerCount', e.target.value)}
             placeholder="Ex: 1, 3, 5..."
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -128,7 +128,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
             value={formData.currentCrm}
             onChange={(e) => onChange('currentCrm', e.target.value)}
             placeholder="Ex: HubSpot, Pipedrive, Salesforce..."
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -140,7 +140,7 @@ const SalesSection = ({ formData, onChange }: SalesSectionProps) => {
             value={formData.currentMarketingTool}
             onChange={(e) => onChange('currentMarketingTool', e.target.value)}
             placeholder="Ex: RD Station, HubSpot, Mailchimp..."
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>

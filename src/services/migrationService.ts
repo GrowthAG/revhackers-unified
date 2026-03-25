@@ -5,7 +5,6 @@ import { materialsData } from "@/data/materialsData";
 import { casesData } from "@/data/cases/index.ts"; // Import cases data
 
 export const migratePosts = async () => {
-    console.log("🚀 Iniciando migração de posts...");
     let successCount = 0;
     let failCount = 0;
 
@@ -48,7 +47,6 @@ export const migratePosts = async () => {
 };
 
 export const migrateCases = async () => {
-    console.log("🚀 Iniciando migração de cases...");
     let successCount = 0;
     let failCount = 0;
 
@@ -94,7 +92,6 @@ export const migrateCases = async () => {
 };
 
 export const migrateMaterials = async () => {
-    console.log("🚀 Iniciando migração de materiais...");
     let successCount = 0;
     let failCount = 0;
 

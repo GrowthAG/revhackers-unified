@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { ReiResponseInsert } from "./reiResponses";
 import { sendToGHL, GHLEventType } from "@/lib/ghlRelay";
+import { linkDiagnosticToPipeline } from "@/services/PipelineService";
 
 export interface DiagnosticLead {
     name: string;
@@ -42,7 +43,20 @@ export const submitPublicDiagnostic = async (
     }
 
     // Cast data to expected type
-    const { response_id } = data as { project_id: string, response_id: string };
+    const { project_id, response_id } = data as { project_id: string, response_id: string };
+
+    // 2. Link the diagnostic project to the pipeline (non-blocking)
+    const diagnosticType = answers.diagnostic_type || 'growth';
+    linkDiagnosticToPipeline({
+        projectId: project_id,
+        diagnosticType,
+        score,
+        leadName: lead.name,
+        leadEmail: lead.email,
+        leadCompany: lead.company,
+    }).catch((err) => {
+        console.error('[publicDiagnostic] Pipeline link failed (non-blocking):', err);
+    });
 
     // 3. Trigger GHL relay
     const resultUrl = `${window.location.origin}/diagnostico/resultado/${response_id}`;

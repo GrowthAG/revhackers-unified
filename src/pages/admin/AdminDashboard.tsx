@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import AdminLayout from '@/components/layout/AdminLayout';
+import { OrphanedRecordingsAlert } from '@/components/admin/OrphanedRecordingsAlert';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -165,6 +166,7 @@ export const AdminDashboard: React.FC = () => {
     const { data } = await supabase
       .from('rei_projects')
       .select('id, client_name, client_company, trade_name, type, status, created_at, updated_at')
+      .eq('status', 'active')
       .order('updated_at', { ascending: false });
     setProjects(data || []);
   };
@@ -364,6 +366,12 @@ export const AdminDashboard: React.FC = () => {
 
       {/* ── ZONA CLARA - Conteudo ───────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-8 md:px-12 py-10">
+
+        {/* Orphaned Recordings Alert */}
+        <div className="mb-8">
+          <OrphanedRecordingsAlert />
+        </div>
+
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
           {/* LEFT - Projetos + Velocidade (2/3) */}

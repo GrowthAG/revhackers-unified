@@ -112,7 +112,7 @@ export default function MaterialLanding() {
                         <div className="pt-8">
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="group inline-flex items-center gap-3 bg-zinc-900 hover:bg-black text-white font-semibold text-sm px-8 py-4 rounded-full transition-all duration-300 hover:shadow-2xl hover:shadow-zinc-300/50 hover:-translate-y-0.5"
+                                className="group inline-flex items-center gap-3 bg-zinc-900 hover:bg-black text-white font-semibold text-sm px-8 py-4 rounded-full transition-all duration-300 hover:shadow-sm hover:shadow-zinc-300/50 hover:-translate-y-0.5"
                             >
                                 <Download className="w-4 h-4" />
                                 Baixar Gratuitamente

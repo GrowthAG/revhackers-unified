@@ -5,6 +5,10 @@ import { getTemplateForREI } from "./taskTemplates";
 
 export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & {
     trade_name?: string | null;
+    site_analysis?: any | null;
+    materials_status?: 'delivered' | 'pending';
+    materials_delay_accepted?: boolean;
+    final_expectations?: string | null;
     linkedin_data?: any | null;
     linkedin_url?: string | null;
     linkedin_scraped_at?: string | null;
@@ -44,7 +48,14 @@ export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & {
     } | null;
 };
 export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'] & { trade_name?: string | null };
-export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { trade_name?: string | null, market_data?: any | null, market_data_updated_at?: string | null };
+export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { 
+    trade_name?: string | null, 
+    market_data?: any | null, 
+    market_data_updated_at?: string | null,
+    materials_status?: 'delivered' | 'pending',
+    materials_delay_accepted?: boolean,
+    final_expectations?: string | null 
+};
 
 /**
  * CRIAR PROJETO REI
@@ -100,8 +111,6 @@ export const createReiProject = async (project: ReiProjectInsert): Promise<Creat
                 if (batchErrors.length > 0) {
                     tasksError = `${tasksInjected} de ${tasksToInsert.length} tarefas criadas. Falhas: ${batchErrors.join(' | ')}`;
                     console.error('[createReiProject] Task injection partial failure:', tasksError);
-                } else {
-                    console.log(`[createReiProject] Injected ${tasksInjected} tasks for type="${data.type}"`);
                 }
             }
         } catch (e: any) {
@@ -124,6 +133,7 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
             *,
             clients ( trade_name, linkedin_data, linkedin_url, linkedin_scraped_at )
         `)
+        .neq('status', 'diagnostic')
         .order('next_rei_date', { ascending: true });
 
     if (error) {

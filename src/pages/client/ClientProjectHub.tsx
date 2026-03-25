@@ -106,7 +106,7 @@ const ClientProjectHub = () => {
                         .update({ last_login_at: new Date().toISOString() } as any)
                         .eq('id', id)
                         .then(({ error }) => {
-                            if (error) console.log('RLS might block direct update, consider RPC for login tracking.', error);
+                            if (error) console.warn('RLS might block direct update, consider RPC for login tracking.', error);
                         });
                 }
 
@@ -236,12 +236,12 @@ const ClientProjectHub = () => {
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
                             <span className="font-bold text-white text-xs tracking-wider">
-                                {((project as any).trade_name || project.client_company || project.client_name || 'CL').substring(0, 2).toUpperCase()}
+                                {((project as any).trade_name || (project as any).client_company || project.client_name || 'CL').substring(0, 2).toUpperCase()}
                             </span>
                         </div>
                         <div>
                             <h1 className="text-sm font-bold text-zinc-900 leading-none mb-1">
-                                {(project as any).trade_name || project.client_company || project.client_name}
+                                {(project as any).trade_name || (project as any).client_company || project.client_name}
                             </h1>
                             <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Growth Hub</p>
                         </div>
@@ -332,17 +332,17 @@ const ClientProjectHub = () => {
                                       icon = <Check className="w-4 h-4 text-[#00CC6A]" />;
                                       statusText = "Concluído";
                                   } else if (task.status === 'doing') {
-                                      statusColor = "bg-blue-500/10 border-blue-500/20 text-blue-500";
-                                      icon = <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
+                                      statusColor = "bg-zinc-500/10 border-zinc-500/20 text-zinc-700";
+                                      icon = <Loader2 className="w-4 h-4 text-zinc-700 animate-spin" />;
                                       statusText = "Em Progresso";
                                   } else if (task.status === 'review') {
-                                      statusColor = "bg-orange-500/10 border-orange-500/20 text-orange-500";
-                                      icon = <MessageSquare className="w-4 h-4 text-orange-500" />;
+                                      statusColor = "bg-zinc-400/10 border-zinc-400/20 text-zinc-500";
+                                      icon = <MessageSquare className="w-4 h-4 text-zinc-500" />;
                                       statusText = "Em Aprovação";
                                   }
 
                                   return (
-                                     <div key={task.id} className="relative p-5 rounded-2xl bg-white border border-zinc-200 transition-shadow hover:shadow-md flex items-center justify-between group">
+                                     <div key={task.id} className="relative p-5 rounded-2xl bg-white border border-zinc-200 transition-shadow flex items-center justify-between group">
                                          <div className="flex items-center gap-4">
                                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${statusColor}`}>
                                                {icon}
@@ -393,7 +393,7 @@ const ClientProjectHub = () => {
                                             }}
                                             className={cn(
                                                 "group relative border rounded-2xl p-5 transition-all cursor-pointer flex flex-col justify-between overflow-hidden",
-                                                isFinal ? "bg-zinc-900 border-zinc-800 text-white shadow-xl hover:bg-black" : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-300 hover:shadow-sm"
+                                                isFinal ? "bg-zinc-900 border-zinc-800 text-white shadow-sm hover:bg-black" : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-300"
                                             )}
                                         >
                                             <div className="flex justify-between items-start z-10 relative mb-6">

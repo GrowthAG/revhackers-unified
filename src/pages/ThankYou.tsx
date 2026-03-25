@@ -9,7 +9,7 @@ const ThankYou = () => {
   return (
     <PageLayout>
       <div className="min-h-screen bg-white flex items-center justify-center py-16 px-4">
-        <Card className="max-w-2xl mx-auto p-12 text-center bg-white border border-gray-200 shadow-lg">
+        <Card className="max-w-2xl mx-auto p-12 text-center bg-white border border-zinc-200 shadow-sm">
           {/* Success Icon */}
           <div className="flex justify-center mb-8">
             <CheckCircle className="w-20 h-20 text-revgreen animate-bounceGentle" />
@@ -48,7 +48,7 @@ const ThankYou = () => {
             <Button 
               asChild 
               variant="outline"
-              className="border-gray-300 text-black hover:bg-gray-50 px-8 py-3 rounded-lg transition-all duration-300 min-w-48"
+              className="border-zinc-300 text-black hover:bg-zinc-50 px-8 py-3 rounded-lg transition-all duration-300 min-w-48"
               size="lg"
             >
               <Link to="/servicos">

@@ -67,8 +67,6 @@ export const useDownloadForm = (
         actionType: 'send_material_email'
       };
 
-      console.log('Sending email webhook with data:', emailData);
-
       await sendToGHL('email_material', emailData as Record<string, unknown>);
     } catch (error) {
       console.error('Error sending email request:', error);
@@ -115,9 +113,6 @@ export const useDownloadForm = (
       source: window.location.href,
       timestamp: new Date().toISOString()
     };
-
-    console.log('Form submitted with linkMaterial:', linkMaterial);
-    console.log('Full webhook data:', webhookData);
 
     try {
       // Save form data to localStorage for use on booking page

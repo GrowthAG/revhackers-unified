@@ -52,7 +52,7 @@ export default function CertificateOfAuthenticity() {
                 <ShieldCheck className="w-16 h-16 text-zinc-300 mb-4" />
                 <h1 className="text-2xl font-bold text-zinc-900 mb-2">Certificado não encontrado</h1>
                 <p className="text-zinc-500 mb-8 max-w-sm">O hash fornecido não corresponde a nenhum documento assinado em nossos cofres jurídicos.</p>
-                <Link to="/" className="text-blue-600 hover:underline">Voltar para o início</Link>
+                <Link to="/" className="text-zinc-900 hover:underline">Voltar para o início</Link>
             </div>
         );
     }
@@ -76,10 +76,10 @@ export default function CertificateOfAuthenticity() {
             {/* Certificate Container */}
             <div 
                 ref={printRef}
-                className="max-w-3xl w-full bg-white border border-zinc-200 shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border-none print:rounded-none relative"
+                className="max-w-3xl w-full bg-white border border-zinc-200 shadow-sm rounded-2xl overflow-hidden print:shadow-none print:border-none print:rounded-none relative"
             >
                 {/* Decorative Elements */}
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-600" />
+                <div className="absolute top-0 left-0 w-full h-2 bg-[#00CC6A]" />
                 <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                     <ShieldCheck className="w-64 h-64" />
                 </div>
@@ -134,25 +134,25 @@ export default function CertificateOfAuthenticity() {
                     </div>
 
                     {/* Audit Trail Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 border border-slate-200 rounded-xl p-6 mb-12">
-                        <div className="col-span-1 md:col-span-2 flex items-center gap-2 border-b border-slate-200 pb-3 mb-1">
-                            <Server className="w-4 h-4 text-slate-600" />
-                            <h3 className="text-sm font-bold text-slate-900 uppercase">Trilha de Auditoria Técnica</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-12">
+                        <div className="col-span-1 md:col-span-2 flex items-center gap-2 border-b border-zinc-200 pb-3 mb-1">
+                            <Server className="w-4 h-4 text-zinc-600" />
+                            <h3 className="text-sm font-bold text-zinc-900 uppercase">Trilha de Auditoria Técnica</h3>
                         </div>
                         
                         <div>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarClock className="w-3 h-3" /> Data e Hora (Timestamp)</p>
-                            <p className="text-xs font-mono font-semibold text-slate-900">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarClock className="w-3 h-3" /> Data e Hora (Timestamp)</p>
+                            <p className="text-xs font-mono font-semibold text-zinc-900">
                                 {format(new Date(signature.signed_at || signature.created_at), "dd 'de' MMMM 'de' yyyy, 'às' HH:mm:ss", { locale: ptBR })}
                             </p>
                         </div>
                         <div>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">IP do Dispositivo</p>
-                            <p className="text-xs font-mono font-semibold text-slate-900">{signature.signer_ip}</p>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">IP do Dispositivo</p>
+                            <p className="text-xs font-mono font-semibold text-zinc-900">{signature.signer_ip}</p>
                         </div>
                         <div className="col-span-1 md:col-span-2">
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">User-Agent (Navegador/Sistema)</p>
-                            <p className="text-[11px] font-mono font-medium text-slate-600 truncate" title={signature.user_agent}>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">User-Agent (Navegador/Sistema)</p>
+                            <p className="text-[11px] font-mono font-medium text-zinc-600 truncate" title={signature.user_agent}>
                                 {signature.user_agent}
                             </p>
                         </div>

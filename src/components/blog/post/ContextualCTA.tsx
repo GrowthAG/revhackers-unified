@@ -52,31 +52,31 @@ const ContextualCTA = ({ title, category }: ContextualCTAProps) => {
 
     return (
         <div className="my-16 w-full">
-            <div className="relative bg-[#F5F5F7] border border-gray-200 rounded-lg p-8 md:p-10 overflow-hidden group hover:border-black/20 transition-all duration-500">
+            <div className="relative bg-[#F5F5F7] border border-zinc-200 rounded-lg p-8 md:p-10 overflow-hidden group hover:border-black/20 transition-all duration-500">
                 {/* Background Decoration */}
-                <div className="absolute right-0 top-0 w-64 h-64 bg-gradient-to-br from-gray-200/50 to-transparent rounded-bl-full pointer-events-none -mr-16 -mt-16"></div>
+                <div className="absolute right-0 top-0 w-64 h-64 bg-zinc-200/50 rounded-bl-full pointer-events-none -mr-16 -mt-16"></div>
 
                 <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                    <div className="flex-shrink-0 bg-white p-6 rounded-full shadow-sm border border-gray-100 group-hover:scale-110 transition-transform duration-500">
+                    <div className="flex-shrink-0 bg-white p-6 rounded-full shadow-sm border border-zinc-100 group-hover:scale-110 transition-transform duration-500">
                         {data.icon}
                     </div>
 
                     <div className="flex-1 text-center md:text-left">
                         <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                             <span className="w-2 h-2 bg-revgreen rounded-full animate-pulse"></span>
-                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400">Recomendado para você</span>
+                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400">Recomendado para você</span>
                         </div>
                         <h3 className="text-2xl font-black text-black mb-2 uppercase tracking-tight">
                             {data.title}
                         </h3>
-                        <p className="text-gray-600 font-medium leading-relaxed max-w-xl">
+                        <p className="text-zinc-600 font-medium leading-relaxed max-w-xl">
                             {data.desc}
                         </p>
                     </div>
 
                     <div className="flex-shrink-0">
                         <Link to={data.link}>
-                            <Button className="h-14 px-8 bg-black hover:bg-revgreen hover:text-black text-white rounded-none uppercase font-bold text-xs tracking-widest transition-all duration-300 shadow-xl group-hover:shadow-2xl">
+                            <Button className="h-14 px-8 bg-black hover:bg-revgreen hover:text-black text-white rounded-none uppercase font-bold text-xs tracking-widest transition-all duration-300 shadow-sm">
                                 {data.btn}
                                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Button>

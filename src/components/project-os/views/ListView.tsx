@@ -62,8 +62,8 @@ export const ListView = ({ projectId, sprintId, onTaskClick }: { projectId: stri
         const val = info.getValue() || 'medium';
         const colorClass = 
           val === 'urgent' ? 'bg-red-900/40 text-red-400 border-red-500/20' :
-          val === 'high' ? 'bg-orange-900/40 text-orange-400 border-orange-500/20' :
-          val === 'medium' ? 'bg-blue-900/40 text-blue-400 border-blue-500/20' :
+          val === 'high' ? 'bg-zinc-700 text-zinc-300 border-zinc-500/20' :
+          val === 'medium' ? 'bg-zinc-800 text-zinc-300 border-zinc-600/20' :
           'bg-zinc-800 text-zinc-400 border-zinc-700/50';
           
         return (

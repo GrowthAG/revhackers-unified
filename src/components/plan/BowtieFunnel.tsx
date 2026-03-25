@@ -44,7 +44,7 @@ export default function BowtieFunnel({
                 </div>
 
                 {/* Centro: O Nó */}
-                <div className="w-16 h-36 md:h-44 self-center bg-black z-10 flex items-center justify-center shadow-2xl rounded-sm">
+                <div className="w-16 h-36 md:h-44 self-center bg-black z-10 flex items-center justify-center shadow-sm rounded-sm">
                     <span className="text-white text-xs uppercase font-black tracking-widest -rotate-90 whitespace-nowrap">{centerTitle}</span>
                 </div>
 

@@ -11,7 +11,7 @@ const StrategicContext = ({ children, label = "Contexto Estratégico" }: Strateg
     return (
         <div className="pl-6 border-l-2 border-revgreen my-8 not-prose">
             <h3 className="font-bold text-black text-xs uppercase tracking-widest mb-1">{label}</h3>
-            <div className="text-gray-600 m-0 text-base leading-relaxed italic">
+            <div className="text-zinc-600 m-0 text-base leading-relaxed italic">
                 {children}
             </div>
         </div>

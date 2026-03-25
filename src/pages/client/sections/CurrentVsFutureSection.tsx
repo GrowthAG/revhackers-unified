@@ -96,10 +96,10 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
 
                     {/* Current State - Light */}
                     <div className="bg-white p-10 md:p-14 border-b lg:border-b-0 lg:border-r border-zinc-200/60 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/20 to-transparent" />
+                        <div className="absolute top-0 left-0 w-full h-1 bg-zinc-300" />
                         <div className="flex items-center gap-3 mb-10">
-                            <span className="w-2 h-2 rounded-full bg-red-500" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-red-500">
+                            <span className="w-2 h-2 rounded-full bg-zinc-400" />
+                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">
                                 O Seu Gargalo Hoje
                             </span>
                         </div>
@@ -125,7 +125,7 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
 
                     {/* Future State - Dark */}
                     <div className="bg-[#0A0A0A] p-10 md:p-14 relative overflow-hidden shadow-[inset_0_0_80px_rgba(0,204,106,0.03)]">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00CC6A] to-transparent" />
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[#00CC6A]" />
                         <div className="flex items-center gap-3 mb-10">
                             <span className="w-2 h-2 rounded-full bg-[#00CC6A] shadow-[0_0_12px_rgba(0,204,106,0.5)]" />
                             <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">

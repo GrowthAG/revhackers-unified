@@ -21,7 +21,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
             id="name"
             value={formData.name}
             onChange={(e) => onChange('name', e.target.value)}
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -32,7 +32,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
             id="role"
             value={formData.role}
             onChange={(e) => onChange('role', e.target.value)}
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -44,7 +44,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
             type="email"
             value={formData.email}
             onChange={(e) => onChange('email', e.target.value)}
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -57,7 +57,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
             id="companyName"
             value={formData.companyName}
             onChange={(e) => onChange('companyName', e.target.value)}
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
             required
           />
         </div>
@@ -69,7 +69,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
             value={formData.companySite}
             onChange={(e) => onChange('companySite', e.target.value)}
             placeholder="https://exemplo.com"
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-zinc-900 border-zinc-700 text-white"
           />
         </div>
       </div>
@@ -77,7 +77,7 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
       <div className="space-y-2">
         <Label htmlFor="sector" className="text-white">Setor *</Label>
         <Select value={formData.sector} onValueChange={(value) => onChange('sector', value)}>
-          <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
+          <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
             <SelectValue placeholder="Selecione o setor" />
           </SelectTrigger>
           <SelectContent>

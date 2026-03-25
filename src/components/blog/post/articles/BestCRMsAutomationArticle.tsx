@@ -91,7 +91,7 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O 'Frankenstack' vs Revenue OS">
                     <p>
@@ -119,28 +119,28 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                     proView="O CRM captura emails, calls e reuniões sozinho. O vendedor só entra para mover o Deal de estágio e ver o próximo passo."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">As 4 Camadas do Stack de Receita</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">As 4 Camadas do Stack de Receita</h2>
                 <p>
                     Não pense em ferramentas isoladas. Pense em camadas de funcionalidade. Se você remover uma, a pirâmide cai.
                 </p>
 
                 <div className="space-y-8 mb-16 mt-8">
                     {stackLayers.map((layer, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold shadow-md">{index + 1}</span>
+                        <Card key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold shadow-sm">{index + 1}</span>
                                 {layer.title}
                             </h3>
-                            <p className="text-gray-700 mb-6 font-medium text-lg">
+                            <p className="text-zinc-700 mb-6 font-medium text-lg">
                                 {layer.description}
                             </p>
-                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 flex gap-4 items-start">
+                            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100 flex gap-4 items-start">
                                 <div className="shrink-0 mt-1">
                                     <div className="w-1 h-full bg-revgreen rounded-full"></div>
                                 </div>
                                 <div>
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Exemplo Prático</h4>
-                                    <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{layer.example}"</p>
+                                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Exemplo Prático</h4>
+                                    <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{layer.example}"</p>
                                 </div>
                             </div>
                             <div className="mt-6 flex items-center gap-2 text-sm text-emerald-700 font-bold bg-emerald-50 w-fit px-3 py-1 rounded-full border border-emerald-100">
@@ -161,34 +161,34 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                     ]}
                 />
 
-                <Card className="my-16 bg-gray-50 border border-gray-200 p-8 rounded-xl not-prose shadow-inner relative overflow-hidden">
+                <Card className="my-16 bg-zinc-50 border border-zinc-200 p-8 rounded-xl not-prose shadow-inner relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <ShieldCheck className="w-24 h-24 text-gray-900" />
+                        <ShieldCheck className="w-24 h-24 text-zinc-900" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 relative z-10">
+                    <h3 className="text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2 relative z-10">
                         <ShieldCheck className="w-6 h-6 text-revgreen" />
                         Checklist de Higiene de Dados
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 relative z-10">
                         {integrationChecklist.map((item, i) => (
-                            <div key={i} className="flex items-start gap-3 p-3 border border-gray-200 rounded bg-white shadow-sm hover:shadow-md transition-shadow">
+                            <div key={i} className="flex items-start gap-3 p-3 border border-zinc-200 rounded bg-white shadow-sm transition-shadow">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
-                                <span className="text-sm font-medium text-gray-700">{item}</span>
+                                <span className="text-sm font-medium text-zinc-700">{item}</span>
                             </div>
                         ))}
                     </div>
                 </Card>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Zap className="w-6 h-6 text-revgreen" />
                     Fluxos Lógicos (Blueprints)
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -196,7 +196,7 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -206,10 +206,10 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-xs text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

@@ -40,7 +40,7 @@ const FounderMetricsArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="Vaidade vs. Valuation">
                     Founders amam falar de número de usuários e tamanho do time. VCs (Venture Capitalists) só ligam para eficiência de capital e retenção. Se você quer levantar uma Series A em 2024, pare de otimizar para 'Likes' e comece a otimizar para 'Unit Economics'.
@@ -63,37 +63,37 @@ const FounderMetricsArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                     proView="Saber exatamente quanto lucro marginal cada novo cliente traz (LTV - CAC)."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">As 4 Métricas de Sobrevivência</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">As 4 Métricas de Sobrevivência</h2>
                 <div className="grid md:grid-cols-2 gap-6 mb-12 not-prose">
                     {metrics.map((metric, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 shadow-sm transition-all group overflow-hidden relative">
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 {metric.icon}
                             </div>
-                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-lg">
+                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-sm">
                                 {metric.icon}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2 text-lg">{metric.title}</h3>
-                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{metric.desc}</p>
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 font-mono text-xs border border-gray-200">
+                            <h3 className="font-bold text-zinc-900 mb-2 text-lg">{metric.title}</h3>
+                            <p className="text-sm text-zinc-600 mb-3 leading-relaxed">{metric.desc}</p>
+                            <Badge variant="secondary" className="bg-zinc-100 text-zinc-700 font-mono text-xs border border-zinc-200">
                                 Bench: {metric.benchmark}
                             </Badge>
                         </Card>
                     ))}
                 </div>
 
-                <Card className="bg-gray-50 border border-gray-200 shadow-inner p-8 rounded-xl not-prose mb-16 relative overflow-hidden">
+                <Card className="bg-zinc-50 border border-zinc-200 shadow-inner p-8 rounded-xl not-prose mb-16 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <AlertOctagon className="w-24 h-24 text-gray-900" />
+                        <AlertOctagon className="w-24 h-24 text-zinc-900" />
                     </div>
-                    <h3 className="text-gray-900 font-bold text-lg mb-4 flex items-center gap-2 relative z-10">
+                    <h3 className="text-zinc-900 font-bold text-lg mb-4 flex items-center gap-2 relative z-10">
                         <AlertOctagon className="w-5 h-5 text-revgreen" />
                         O Teste do Elevador (Para Investors)
                     </h3>
-                    <p className="text-gray-600 mb-6 relative z-10">
+                    <p className="text-zinc-600 mb-6 relative z-10">
                         Se um investidor te perguntar "Como está a tração?", não responda "Está boa". Responda com precisão:
                     </p>
-                    <div className="bg-white p-5 rounded-lg border-l-4 border-revgreen shadow-sm font-mono text-sm text-gray-700 italic relative z-10">
+                    <div className="bg-white p-5 rounded-lg border-l-4 border-revgreen shadow-sm font-mono text-sm text-zinc-700 italic relative z-10">
                         "Estamos crescendo 15% MoM (Month-over-Month), com um CAC de R$ 500 e Payback de 4 meses. Nosso NRR é 120% devido à expansão de contas Enterprise."
                     </div>
                 </Card>

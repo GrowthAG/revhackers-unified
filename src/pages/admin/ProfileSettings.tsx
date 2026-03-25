@@ -105,7 +105,6 @@ const ProfileSettings = () => {
         setUploading(true);
 
         try {
-            console.log("Iniciando upload para user:", user?.id);
             if (!user?.id) throw new Error("Usuário não autenticado.");
 
             // Passamos user.id para criar estrutura de pasta (ex: user_id/foto.jpg)
@@ -173,7 +172,7 @@ const ProfileSettings = () => {
         return (
             <AdminLayout>
                 <div className="flex h-[50vh] items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                 </div>
             </AdminLayout>
         );

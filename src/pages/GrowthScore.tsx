@@ -9,90 +9,68 @@ import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
 import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
 import { BenchmarkBar } from '@/components/diagnostics/BenchmarkBar';
-import { CallDiagnosticModal } from '@/components/diagnostics/CallDiagnosticModal';
+import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
 import { QuestionProgressBar } from '@/components/diagnostics/QuestionProgressBar';
 import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
-// Questions centered on "Growth Maturity" - 7 dimensões, total = 100pts
+// Questions centered on "Visão Holística (REI 360)" - 5 dimensões, total = 100pts
 const QUESTIONS = [
     {
         id: 1,
-        question: "Como você define sua estratégia de aquisição hoje?",
+        question: "Se você tivesse uma varinha mágica hoje, qual problema resolveria primeiro no seu negócio?",
         options: [
-            { label: "Previsível e multicanal (Inbound + Outbound + Ads)", score: 16 },
-            { label: "Dependente de um único canal (Ex: só Ads ou só Indicação)", score: 8 },
-            { label: "Oscilante, sem processos claros", score: 4 },
-            { label: "Passiva (espero o cliente vir)", score: 0 }
+            { label: "Operação (Tudo roda, mas eu não durmo - gargalo sou eu)", score: 0 },
+            { label: "Reter (Fechamos bem, mas churn tá alto)", score: 5 },
+            { label: "Converter (Entra lead bom, mas o time não fecha)", score: 10 },
+            { label: "Tracionar aquisição (Não entra lead suficiente)", score: 20 }
         ],
-        log: "Multicanalidade é a única defesa contra o aumento do custo de mídia."
+        log: "O maior limitador de crescimento raramente é onde os leads entram, é onde eles se perdem."
     },
     {
         id: 2,
-        question: "Você sabe exatamente quanto paga por um cliente (CAC)?",
+        question: "Hoje, você sabe exatamente quantos meses um cliente precisa ficar para a aquisição dele 'se pagar' (LTV/CAC)?",
         options: [
-            { label: "Sim, por canal e acompanho semanalmente", score: 16 },
-            { label: "Tenho uma média geral", score: 8 },
-            { label: "Tenho uma ideia, mas não meço", score: 4 },
-            { label: "Não faço ideia", score: 0 }
+            { label: "Sim, LTV/CAC > 3 (Saudável)", score: 20 },
+            { label: "Empatamos, ele se paga nos primeiros meses", score: 10 },
+            { label: "Damos prejuízo no início para lucrar depois", score: 5 },
+            { label: "Não calculo essas margens juntas", score: 0 }
         ],
-        log: "Se você não mede por canal, está queimando dinheiro no lugar errado."
+        log: "A ausência de métricas de unidade (Unit Economics) é a causa #1 de falência rápida."
     },
     {
         id: 3,
-        question: "Como é seu processo de vendas?",
+        question: "Como está distribuída a sua matriz de risco em Vendas e Marketing?",
         options: [
-            { label: "CRM estruturado com etapas, playbooks e automação", score: 16 },
-            { label: "Uso CRM, mas depende muito do vendedor", score: 8 },
-            { label: "Uso planilhas ou controle manual", score: 4 },
-            { label: "Não tenho processo definido", score: 0 }
+            { label: "100% distribuída (Inbound, Outbound, Indicação, Ads)", score: 20 },
+            { label: "Temos dois canais principais funcionando bem", score: 10 },
+            { label: "Dependemos quase 100% de tráfego pago (Meta/Google)", score: 5 },
+            { label: "Vivemos de indicação e network", score: 0 }
         ],
-        log: "Processo vence talento. Sem playbook, sua receita depende de 'heróis'."
+        log: "Depender de indicação não é estratégia de venda, é rezar pelo melhor."
     },
     {
         id: 4,
-        question: "Sua retenção (LTV) é monitorada?",
+        question: "Se dobrarmos a sua entrada de leads amanhã, sua operação quebra?",
         options: [
-            { label: "Sim, temos ações ativas de CS e upsell", score: 16 },
-            { label: "Acompanhamos apenas o Churn (cancelamentos)", score: 8 },
-            { label: "Só percebemos quando o cliente sai", score: 4 },
-            { label: "Não monitoramos", score: 0 }
+            { label: "Não, os processos já estão montados e automatizados", score: 20 },
+            { label: "Quebra a entrega/produto", score: 10 },
+            { label: "Quebra o time comercial (muito processo manual)", score: 5 },
+            { label: "Eu surto, porque eu mesmo faço as duas coisas", score: 0 }
         ],
-        log: "Reter custa 5x menos que adquirir. Upsell é lucro líquido."
+        log: "Você não controla o que você não processualiza. Sem processo, você tem limite físico de caixa."
     },
     {
         id: 5,
-        question: "Seu time de Growth/Marketing tem metas de receita?",
+        question: "Como é a primeira hora da segunda-feira dos gestores do negócio?",
         options: [
-            { label: "Sim, respondem por pipeline e receita gerada", score: 16 },
-            { label: "Medimos métricas de vaidade (likes, seguidores)", score: 8 },
-            { label: "Não tem metas definidas", score: 0 },
-            { label: "Não tenho time de marketing", score: 0 }
+            { label: "Análise preditiva em dashboards em tempo real", score: 20 },
+            { label: "Olhando planilhas atualizadas na 'mão' no final de semana", score: 10 },
+            { label: "Reuniões longas perguntando 'E aí, como foi a semana?'", score: 5 },
+            { label: "Apagando incêndio de cliente no WhatsApp", score: 0 }
         ],
-        log: "Metas de vaidade não enchem o caixa da empresa."
-    },
-    {
-        id: 6,
-        question: "Como é sua estratégia de conteúdo e inbound marketing?",
-        options: [
-            { label: "Estratégia editorial ativa com SEO, blog e materiais ricos", score: 10 },
-            { label: "Postamos nas redes sociais de forma esporádica", score: 5 },
-            { label: "Não temos produção de conteúdo regular", score: 2 },
-            { label: "Não investimos em conteúdo", score: 0 }
-        ],
-        log: "Conteúdo é o único ativo de marketing que valoriza com o tempo."
-    },
-    {
-        id: 7,
-        question: "Como você utiliza dados para tomar decisões de crescimento?",
-        options: [
-            { label: "Dashboards em tempo real com KPIs claros (CAC, LTV, Churn)", score: 10 },
-            { label: "Relatórios mensais em planilha ou BI básico", score: 5 },
-            { label: "Olho métricas esporadicamente quando surge problema", score: 2 },
-            { label: "Decisões baseadas em intuição", score: 0 }
-        ],
-        log: "Sem dados, você está dirigindo no escuro."
+        log: "C-Levels gerenciam relógios, não tarefas. Dados pautam escala."
     }
 ];
 
@@ -189,8 +167,8 @@ const GrowthScore = () => {
 
     return (
         <DiagnosticLayout
-            title={step === 'results' ? "" : "Growth Score"}
-            subtitle={step === 'results' ? "" : "Diagnóstico Técnico de Crescimento v3.0"}
+            title={step === 'results' ? "" : "Diagnóstico 360"}
+            subtitle={step === 'results' ? "" : "Visão Holística: Produto, Operação, Aquisição e Retenção"}
             variant={step === 'results' ? 'dark' : 'light'}
             hideHeader={step === 'results'}
             centered={step === 'results'}
@@ -302,10 +280,10 @@ const GrowthScore = () => {
                                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
-                                Relatório de <span className="text-zinc-600">Crescimento</span>
+                                Diagnóstico <span className="text-zinc-600">360</span>
                             </h1>
                             <p className="text-zinc-500 font-medium max-w-xl mx-auto">
-                                Diagnóstico tático dos vetores de aquisição e expansão.
+                                Análise estrutural do gargalo de retenção, vendas e tracionamento.
                             </p>
                         </div>
 
@@ -466,11 +444,23 @@ const GrowthScore = () => {
                                 {/* BENCHMARK */}
                                 <BenchmarkBar userScore={score} type="growth" variant="light" />
 
-                                {/* CTA */}
                                 <DiagnosticActionSection
-                                    title="Construa sua Máquina de Vendas em 30 dias."
-                                    onCtaClick={() => setIsBookingModalOpen(true)}
-                                />
+                                title="Destrave sua Operação."
+                                subtitle="Agende um diagnóstico gratuito com um especialista para desenhar seu plano de ação."
+                                onCtaClick={() => setIsBookingModalOpen(true)}
+                            />
+
+                            <DiagnosticBookingModal
+                                isOpen={isBookingModalOpen}
+                                onClose={() => setIsBookingModalOpen(false)}
+                                diagnosticType="growth"
+                            />
+
+                            {/* Fallback MoFu CTA */}
+                                <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
+                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                    <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Veja Nossas Aulas e Playbooks (Grátis)</button>
+                                </div>
 
                                 {/* Share + PDF */}
                                 <div className="flex justify-center pt-8">
@@ -482,12 +472,6 @@ const GrowthScore = () => {
                                         RevHackers // Intelligence Unit
                                     </span>
                                 </div>
-
-                                <CallDiagnosticModal
-                                    isOpen={isBookingModalOpen}
-                                    onClose={() => setIsBookingModalOpen(false)}
-                                    source="growth-score"
-                                />
                             </div>
                         </div>
                     </div>

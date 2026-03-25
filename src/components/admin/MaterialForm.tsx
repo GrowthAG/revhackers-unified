@@ -144,7 +144,7 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
             <div className="flex items-center justify-between border-b pb-4">
                 <div>
                     <h1 className="text-2xl font-bold">{isEditing ? 'Editar Material' : 'Novo Material'}</h1>
-                    <p className="text-sm text-gray-500">Gerencie materiais ricos, templates e playbooks.</p>
+                    <p className="text-sm text-zinc-500">Gerencie materiais ricos, templates e playbooks.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 mr-2">

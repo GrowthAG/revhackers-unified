@@ -118,7 +118,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
       
       {/* Slide-over Right Panel (Linear/Notion style) */}
       <div 
-        className="fixed inset-y-0 right-0 w-full md:w-[800px] max-w-full bg-white dark:bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl z-50 flex flex-col transform transition-transform animate-in slide-in-from-right duration-300"
+        className="fixed inset-y-0 right-0 w-full md:w-[800px] max-w-full bg-white dark:bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 shadow-sm z-50 flex flex-col transform transition-transform animate-in slide-in-from-right duration-300"
       >
         {!task ? (
           <div className="flex-1 flex items-center justify-center text-zinc-500">

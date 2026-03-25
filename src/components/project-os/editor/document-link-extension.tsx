@@ -31,7 +31,7 @@ const DocumentLinkComponent = (props: any) => {
       className="inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-medium text-sm transition-colors border border-zinc-200 dark:border-zinc-700 cursor-pointer shadow-sm select-none"
       onClick={handleClick}
     >
-      {isExternal ? <ExternalLink className="w-3.5 h-3.5 text-blue-500" /> : <FileText className="w-3.5 h-3.5 text-revhackers" />}
+      {isExternal ? <ExternalLink className="w-3.5 h-3.5 text-zinc-700" /> : <FileText className="w-3.5 h-3.5 text-revhackers" />}
       {title}
     </NodeViewWrapper>
   );

@@ -121,10 +121,37 @@ serve(async (req: Request) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    // ============================================================
+    // AUTH GATE - JWT ou Service Role Key
+    // Aceita chamadas do frontend (JWT de usuario) e de outras
+    // edge functions (service role key via supabase.functions.invoke)
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
     // @ts-ignore
     const SUPABASE_URL         = Deno.env.get('SUPABASE_URL') ?? ''
     // @ts-ignore
     const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
+    if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.replace('Bearer ', '').trim()
+        // Se o token NAO for o service role key, validar como JWT de usuario
+        if (token !== SUPABASE_SERVICE_KEY) {
+            const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+            const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
+            if (authError || !user) {
+                return new Response(JSON.stringify({ error: 'Token invalido ou expirado.' }), {
+                    status: 401,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                })
+            }
+        }
+        // Se for service role key, passou - e uma chamada interna confiavel
+    } else {
+        return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+    }
     // @ts-ignore
     const PSI_API_KEY          = Deno.env.get('PSI_API_KEY') ?? Deno.env.get('GOOGLE_API_KEY') ?? ''
 

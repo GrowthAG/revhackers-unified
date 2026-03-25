@@ -219,6 +219,7 @@ export default function StrategicPlanGenerator() {
                 .from('rei_projects')
                 .select('*')
                 .eq('id', reiProjectId)
+                .neq('status', 'diagnostic')
                 .single();
 
             if (projectError) throw projectError;
@@ -243,7 +244,7 @@ export default function StrategicPlanGenerator() {
             if (!clientFinal) {
                 clientFinal = {
                     id: 'legacy-or-missing',
-                    company_name: project.client_company || project.client_name || 'N/A',
+                    company_name: project.client_name || 'N/A',
                     contact_name: project.client_name || 'N/A',
                     email: project.client_email || 'N/A',
                     logo_url: '/revhackers-logo.png' // Default fallback
@@ -253,11 +254,14 @@ export default function StrategicPlanGenerator() {
             setClient(clientFinal);
 
             // Check if plan already exists
-            const { data: planData } = await supabase
+            const { data: planDataArray } = await supabase
                 .from('strategic_plans')
                 .select('*')
                 .eq('rei_project_id', reiProjectId)
-                .maybeSingle();
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            const planData = planDataArray?.[0];
 
             if (planData) {
                 setExistingPlan(planData);
@@ -331,7 +335,6 @@ export default function StrategicPlanGenerator() {
 
         try {
             // 1. Fetch REI Responses first - needed for email resolution and CRM Ops normalization
-            console.log('Fetching latest REI responses...');
             const { data: latestResponse } = await supabase
                 .from('rei_responses')
                 .select('*')
@@ -392,7 +395,6 @@ export default function StrategicPlanGenerator() {
 
             if (!clientId || clientId === 'legacy-or-missing') {
                 try {
-                    console.log('Buscando cliente pelo email:', effectiveEmail);
                     const { data: existingClient, error: fetchError } = await supabase
                         .from('clients')
                         .select('id')
@@ -405,9 +407,7 @@ export default function StrategicPlanGenerator() {
 
                     if (existingClient && existingClient.id) {
                         clientId = existingClient.id;
-                        console.log('Cliente encontrado com ID:', clientId);
                     } else {
-                        console.log('Cliente não encontrado. Criando novo cliente lead...');
                         const { data: newClient, error: createClientError } = await supabase
                             .from('clients')
                             .insert({
@@ -426,7 +426,6 @@ export default function StrategicPlanGenerator() {
 
                         if (newClient) {
                             clientId = newClient.id;
-                            console.log('Novo cliente criado com ID:', clientId);
                         }
                     }
                 } catch (clientCreationCatchError: any) {
@@ -460,8 +459,6 @@ export default function StrategicPlanGenerator() {
                 || answers.metaCrescimento
                 || answers.objetivoPrincipal
                 || (isCrmOps ? 'Eficiência Operacional & Escala RevOps' : 'Crescimento');
-            console.log('[Generator] segment:', segment, '| companyName:', companyName, '| companySite:', companySite);
-
             // Extract competitors from REI context if any (from Gap 2 addition)
             const competitorsList: { nome: string, url?: string }[] = [];
             if (normalizedAnswers.concorrente1_nome) competitorsList.push({ nome: normalizedAnswers.concorrente1_nome, url: normalizedAnswers.concorrente1_site });
@@ -473,7 +470,6 @@ export default function StrategicPlanGenerator() {
             let aiSuccess = false;
 
             try {
-                console.log('Invoking StrategicEnrichmentService...');
                 const aiResult = await StrategicEnrichmentService.getFullEnrichment(segment, {
                     objective,
                     rei_responses: normalizedAnswers,
@@ -548,9 +544,7 @@ export default function StrategicPlanGenerator() {
             const reiFallbackTrends = DiagnosticService.generateDefaultTrends(normalizedAnswers);
 
             if (!aiSuccess) {
-                console.log(
-                    `[Generator] Perplexity unavailable. Using REI fallback: ${reiFallbackPersonas.length} persona(s), ${reiFallbackCompetitors.length} competitor(s).`
-                );
+                // Perplexity unavailable - using REI fallback data
             }
 
             // ── Build persona_data (for PersonaSection + BenchmarkSection) ────
@@ -612,8 +606,8 @@ export default function StrategicPlanGenerator() {
             setPendingJob(newJob);
 
             // ── AI Base Generation (GPT-4o via Edge Function) in Background ──
-            console.log('Invoking Base AI Generation (GPT-4o) in background...');
             supabase.functions.invoke('generate-strategic-plan', {
+                headers: { 'Prefer': 'respond-async' },
                 body: {
                     jobId: newJob.id,
                     rei_responses: answers,
@@ -762,19 +756,6 @@ export default function StrategicPlanGenerator() {
                     : 'B2B Tech');
 
             const objective = objectiveFromAnswers || objectiveFromMirror || 'Crescimento';
-
-            // Debug log - will appear in browser console
-            console.log('[DeepResearch] Debug:', {
-                type,
-                reiProjectType: reiProject?.type,
-                isCrmType,
-                segment,
-                objective,
-                hasAnswers: Object.keys(answers).length > 0,
-                hasContextMirror: Object.keys(contextMirror).length > 0,
-                companyName: enrichedContext.companyName,
-                companySite: enrichedContext.companySite,
-            });
 
 
             // Extract competitors from normalized fields (try all sources)
@@ -931,7 +912,7 @@ export default function StrategicPlanGenerator() {
     if (!reiProject || !client) return <div>Projeto não encontrado.</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 p-8 font-sans">
+        <div className="min-h-screen bg-zinc-50 p-8 font-sans">
             <div className="max-w-7xl mx-auto">
                 <ProjectTimeline currentStage={existingPlan ? (existingPlan.status === 'sent' ? 3 : 2) : 2} reiDate={reiProject?.created_at} planDate={existingPlan?.created_at} />
 

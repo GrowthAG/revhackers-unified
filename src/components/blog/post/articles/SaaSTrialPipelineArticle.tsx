@@ -77,7 +77,7 @@ Abs,
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Cemitério dos Trials">
                     <p className="mb-4">
@@ -105,36 +105,36 @@ Abs,
                     proView="Alguém que convidou 2 teammates, usou a feature core X e visitou a página de preços nas últimas 24h."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6 tracking-tight">Os 4 Pilares da Arquitetura de Trial</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6 tracking-tight">Os 4 Pilares da Arquitetura de Trial</h2>
                 <div className="bg-white border-l-2 border-black pl-6 py-2 mb-12">
                     <ul className="space-y-6">
                         <li className="flex flex-col md:flex-row gap-2 md:gap-3">
                             <span className="font-bold text-black whitespace-nowrap text-sm uppercase tracking-wider">1. Welcome Logic:</span>
-                            <span className="text-gray-600 font-light">Não pergunte "Nome da Empresa". Pergunte "O que você quer resolver hoje?". Segmente a experiência (CEO x Dev) desde o segundo zero.</span>
+                            <span className="text-zinc-600 font-light">Não pergunte "Nome da Empresa". Pergunte "O que você quer resolver hoje?". Segmente a experiência (CEO x Dev) desde o segundo zero.</span>
                         </li>
                         <li className="flex flex-col md:flex-row gap-2 md:gap-3">
                             <span className="font-bold text-black whitespace-nowrap text-sm uppercase tracking-wider">2. Empty State Zero:</span>
-                            <span className="text-gray-600 font-light">Ninguém gosta de ver um dashboard vazio. Se o usuário não tem dados, forneça dados de exemplo (Dummy Data) para ele ver o 'Estado Final' do sucesso.</span>
+                            <span className="text-zinc-600 font-light">Ninguém gosta de ver um dashboard vazio. Se o usuário não tem dados, forneça dados de exemplo (Dummy Data) para ele ver o 'Estado Final' do sucesso.</span>
                         </li>
                         <li className="flex flex-col md:flex-row gap-2 md:gap-3">
                             <span className="font-bold text-black whitespace-nowrap text-sm uppercase tracking-wider">3. Checklist Gamificado:</span>
-                            <span className="text-gray-600 font-light">Substitua o tour guiado chato por uma checklist de progresso. "Complete 3 tarefas para ganhar +7 dias de trial". O ser humano odeia barras de progresso incompletas.</span>
+                            <span className="text-zinc-600 font-light">Substitua o tour guiado chato por uma checklist de progresso. "Complete 3 tarefas para ganhar +7 dias de trial". O ser humano odeia barras de progresso incompletas.</span>
                         </li>
                         <li className="flex flex-col md:flex-row gap-2 md:gap-3">
                             <span className="font-bold text-black whitespace-nowrap text-sm uppercase tracking-wider">4. Paywall Estratégico:</span>
-                            <span className="text-gray-600 font-light">Deixe o usuário usar, mas bloqueie a exportação ou o compartilhamento. Deixe ele sentir o gosto, mas não deixe ele levar o jantar para casa sem pagar.</span>
+                            <span className="text-zinc-600 font-light">Deixe o usuário usar, mas bloqueie a exportação ou o compartilhamento. Deixe ele sentir o gosto, mas não deixe ele levar o jantar para casa sem pagar.</span>
                         </li>
                     </ul>
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6 tracking-tight">3 Assassinos de Conversão (Churn Silencioso)</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6 tracking-tight">3 Assassinos de Conversão (Churn Silencioso)</h2>
                 <div className="grid md:grid-cols-3 gap-6 mb-12 not-prose">
                     {conversionKillers.map((item, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 hover:border-black transition-colors shadow-none rounded-sm">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 hover:border-black transition-colors shadow-none rounded-sm">
                             <XCircle className="w-6 h-6 text-black mb-4" />
-                            <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                            <p className="text-sm text-gray-500 mb-4 font-light leading-relaxed">{item.description}</p>
-                            <div className="text-xs bg-gray-50 p-3 rounded-sm border border-gray-100 text-gray-900 font-medium flex gap-2 items-start">
+                            <h3 className="font-bold text-zinc-900 mb-2">{item.title}</h3>
+                            <p className="text-sm text-zinc-500 mb-4 font-light leading-relaxed">{item.description}</p>
+                            <div className="text-xs bg-zinc-50 p-3 rounded-sm border border-zinc-100 text-zinc-900 font-medium flex gap-2 items-start">
                                 <CheckCircle2 className="w-3 h-3 text-black shrink-0 mt-0.5" />
                                 {item.fix}
                             </div>
@@ -142,16 +142,16 @@ Abs,
                     ))}
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">O Framework de Resgate (Templates de Email)</h2>
-                <p className="text-gray-600 mb-8">
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">O Framework de Resgate (Templates de Email)</h2>
+                <p className="text-zinc-600 mb-8">
                     Não espere os 14 dias acabarem para falar com o usuário. A maioria dos SaaS envia uma sequência baseada em tempo (Dia 1, Dia 3, Dia 7). Isso é preguiça. Intervenha baseada em <strong>comportamento (triggers)</strong>.
                 </p>
 
                 <div className="space-y-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                     <Mail className="w-4 h-4 text-revgreen" />
                                     {template.name}
                                 </div>
@@ -159,7 +159,7 @@ Abs,
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -169,10 +169,10 @@ Abs,
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-gray-700">
+                                <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-zinc-700">
                                     {template.body}
                                 </pre>
                             </div>

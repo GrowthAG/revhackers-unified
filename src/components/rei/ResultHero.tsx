@@ -31,10 +31,10 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
 
     // Determinar classificação e cor
     const getClassification = (score: number) => {
-        if (score >= 80) return { label: 'HIGH PERFORMER', color: 'text-cyan-400', bg: 'bg-cyan-400/10', icon: TrendingUp };
-        if (score >= 60) return { label: 'EM CRESCIMENTO', color: 'text-green-400', bg: 'bg-green-400/10', icon: TrendingUp };
-        if (score >= 40) return { label: 'ZONA DE ATENÇÃO', color: 'text-yellow-400', bg: 'bg-yellow-400/10', icon: AlertTriangle };
-        return { label: 'ZONA DE RISCO CRÍTICO', color: 'text-red-400', bg: 'bg-red-400/10', icon: TrendingDown };
+        if (score >= 80) return { label: 'HIGH PERFORMER', color: 'text-[#00CC6A]', bg: 'bg-[#00CC6A]/10', icon: TrendingUp };
+        if (score >= 60) return { label: 'EM CRESCIMENTO', color: 'text-zinc-600', bg: 'bg-zinc-600/10', icon: TrendingUp };
+        if (score >= 40) return { label: 'ZONA DE ATENÇÃO', color: 'text-zinc-400', bg: 'bg-zinc-400/10', icon: AlertTriangle };
+        return { label: 'ZONA DE RISCO CRÍTICO', color: 'text-zinc-400', bg: 'bg-zinc-400/10', icon: TrendingDown };
     };
 
     // Calcular impacto financeiro (exemplo simplificado)
@@ -49,7 +49,7 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
     const impact = calculateImpact(score);
 
     return (
-        <div className="relative overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 border border-zinc-700 p-12 mb-8">
+        <div className="relative overflow-hidden bg-zinc-900 border border-zinc-700 p-12 mb-8">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0" style={{
@@ -85,10 +85,10 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
                             </div>
                             <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                                 <div
-                                    className={`h-full transition-all duration-1000 ease-out ${score >= 80 ? 'bg-cyan-400' :
-                                            score >= 60 ? 'bg-green-400' :
-                                                score >= 40 ? 'bg-yellow-400' :
-                                                    'bg-red-400'
+                                    className={`h-full transition-all duration-1000 ease-out ${score >= 80 ? 'bg-[#00CC6A]' :
+                                            score >= 60 ? 'bg-zinc-600' :
+                                                score >= 40 ? 'bg-zinc-300' :
+                                                    'bg-zinc-500'
                                         }`}
                                     style={{ width: `${displayScore}%` }}
                                 />
@@ -109,7 +109,7 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
                         <div className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">
                             IMPACTO FINANCEIRO ESTIMADO
                         </div>
-                        <div className="text-5xl font-black text-red-400 mb-2">
+                        <div className="text-5xl font-black text-zinc-400 mb-2">
                             R$ {(impact / 1000).toFixed(0)}K
                         </div>
                         <div className="text-sm text-zinc-400 leading-relaxed">

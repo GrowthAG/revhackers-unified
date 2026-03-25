@@ -9,90 +9,68 @@ import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
 import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
 import { BenchmarkBar } from '@/components/diagnostics/BenchmarkBar';
-import { CallDiagnosticModal } from '@/components/diagnostics/CallDiagnosticModal';
+import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
 import { QuestionProgressBar } from '@/components/diagnostics/QuestionProgressBar';
 import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
-// Questions centered on "Revenue Maturity" - 7 dimensões, total = 100pts
+// Questions centered on "REI CRM (RevOps)" - 5 dimensões, total = 100pts
 const QUESTIONS = [
     {
         id: 1,
-        question: "Previsibilidade de Receita",
+        question: "Seja honesto: Qual é a relação real do seu time comercial com o CRM hoje?",
         options: [
-            { label: "Receita Recorrente (MRR) domina o faturamento (>80%)", score: 16 },
-            { label: "Misto entre recorrente e projetos pontuais", score: 8 },
-            { label: "Dependente de grandes contratos sazonais", score: 4 },
-            { label: "Venda única / Não previsível", score: 0 }
+            { label: "É a única fonte da verdade, automação total", score: 20 },
+            { label: "Eles usam, mas atualizam como obrigação no fim do dia", score: 10 },
+            { label: "Odeiam. Tem muita informação no caderno e WhatsApp", score: 5 },
+            { label: "Comercial não usa CRM", score: 0 }
         ],
-        log: "A previsibilidade reduz drasticamente o risco do Equity."
+        log: "Um CRM desatualizado é apenas uma planilha muito cara."
     },
     {
         id: 2,
-        question: "Como é a estrutura do time comercial?",
+        question: "Quando um lead 'levanta a mão' pedindo contato, em quanto tempo ele é atendido?",
         options: [
-            { label: "Especializado (SDR, Closer, CS separados)", score: 16 },
-            { label: "Vendedores fazem tudo (Prospecção ao Fechamento)", score: 8 },
-            { label: "Apenas fundadores vendem", score: 0 },
-            { label: "Não existe time comercial ativo", score: 0 }
+            { label: "< 5 minutos, roleta automatizada para o SDR livre", score: 20 },
+            { label: "No mesmo dia, em algumas horas", score: 10 },
+            { label: "Pode demorar mais de 24h dependendo da demanda", score: 5 },
+            { label: "Depende de quem estiver olhando o email de contato", score: 0 }
         ],
-        log: "Especialização é o primeiro passo para escalar vendas outbound."
+        log: "Depois de 5 minutos, a chance de conversão cai em 80%."
     },
     {
         id: 3,
-        question: "Qual sua taxa de conversão média (Leads -> Vendas)?",
+        question: "O que acontece com um lead que não fecha na primeira reunião de venda?",
         options: [
-            { label: "Acima de 20% (Alta eficiência)", score: 16 },
-            { label: "Entre 5% e 15% (Padrão de mercado)", score: 8 },
-            { label: "Abaixo de 5% (Baixa eficiência)", score: 0 },
-            { label: "Não monitoramos", score: 0 }
+            { label: "Entra num fluxo automático no CRM (emails/tarefas)", score: 20 },
+            { label: "O Closer anota na agenda para ligar daqui 1 semana", score: 10 },
+            { label: "Fica perdido no pipeline até alguém resolver limpar", score: 5 },
+            { label: "Damos como perdido", score: 0 }
         ],
-        log: "Conversão baixa indica problemas de qualificação ou oferta."
+        log: "A maior parte do dinheiro B2B está no follow-up, não na primeira touch."
     },
     {
         id: 4,
-        question: "Uso de CRM e Tecnologia",
+        question: "Quem é que caça ('prospecta') e quem é que esfola ('fecha') na sua empresa?",
         options: [
-            { label: "CRM integrado com Marketing e Automação total", score: 16 },
-            { label: "CRM usado apenas para registro básico", score: 8 },
-            { label: "Planilhas ou Caderno", score: 0 },
-            { label: "Nenhuma ferramenta", score: 0 }
+            { label: "Processo especialista completo (SDR qualifica, Closer fecha)", score: 20 },
+            { label: "Estamos testando divisões agora", score: 10 },
+            { label: "Modelo Full-Cycle (o mesmo caça e esfola)", score: 5 },
+            { label: "Apenas os fundadores fecham vendas", score: 0 }
         ],
-        log: "Sem CRM integrado, seus dados estão desconexos e inoperantes."
+        log: "Vendedores full-cycle chegam num teto de tédio e prospecção intermitente."
     },
     {
         id: 5,
-        question: "Ciclo de Vendas Médio",
+        question: "Qual dessas métricas seu gestor de vendas domina hoje?",
         options: [
-            { label: "Rápido (< 30 dias)", score: 16 },
-            { label: "Médio (30-90 dias)", score: 8 },
-            { label: "Longo (> 90 dias)", score: 4 },
-            { label: "Imprevisível", score: 0 }
+            { label: "Deal Velocity, Win Rate e Taxa por Etapa", score: 20 },
+            { label: "Ocorreu/Atingido da Meta e Ticket Médio", score: 10 },
+            { label: "Volume de Leads e Reuniões Agendadas", score: 5 },
+            { label: "Faturamento Mensal (e só)", score: 0 }
         ],
-        log: "Ciclos longos sem nutrição automatizada geram 'Pipeline Fantasma'."
-    },
-    {
-        id: 6,
-        question: "Como é sua estratégia de retenção e sucesso do cliente?",
-        options: [
-            { label: "CS estruturado com health score, QBRs e playbooks de retenção", score: 10 },
-            { label: "Acompanhamos satisfação básica e reagimos ao churn", score: 5 },
-            { label: "Suporte reativo apenas quando o cliente reclama", score: 2 },
-            { label: "Não temos nenhum processo pós-venda", score: 0 }
-        ],
-        log: "Reter custa 5x menos que adquirir. Sem CS, seu balde está furado."
-    },
-    {
-        id: 7,
-        question: "Você gera receita de expansão (upsell, cross-sell) nos clientes atuais?",
-        options: [
-            { label: "Processo ativo de expansion revenue com meta definida", score: 10 },
-            { label: "Fazemos upsell quando o cliente pede ou surge oportunidade", score: 5 },
-            { label: "Raramente tentamos, focamos em novos clientes", score: 2 },
-            { label: "Não temos estratégia de expansão", score: 0 }
-        ],
-        log: "Expansion Revenue é a receita mais lucrativa que existe."
+        log: "Saber quanto vendeu é atuar no fim. Saber a Taxa de Conversão por Etapa é atuar no meio."
     }
 ];
 
@@ -105,6 +83,7 @@ const RevenueScore = () => {
     const [score, setScore] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasSubmittedLead, setHasSubmittedLead] = useState(false);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [showLog, setShowLog] = useState(false);
@@ -112,8 +91,6 @@ const RevenueScore = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const insights = getDiagnosticInsights('revenue', score);
     const currentQData = QUESTIONS[currentQ];
-
-    const [hasSubmittedLead, setHasSubmittedLead] = useState(false);
 
     // Estado do Protocolo e Logs
     const handleAnswer = (optionScore: number, optionIdx: number) => {
@@ -190,8 +167,8 @@ const RevenueScore = () => {
 
     return (
         <DiagnosticLayout
-            title={step === 'results' ? "" : "Revenue Score"}
-            subtitle={step === 'results' ? "" : "Diagnóstico de Eficiência de Receita (RevOps)"}
+            title={step === 'results' ? "" : "Diagnóstico CRM"}
+            subtitle={step === 'results' ? "" : "RevOps, Pipeline, Ferramentas e Processo Comercial"}
             variant={step === 'results' ? 'dark' : 'light'}
             centered={step === 'results'}
             hideHeader={step === 'results'}
@@ -303,10 +280,10 @@ const RevenueScore = () => {
                                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
-                                Relatório de <span className="text-zinc-600">Receita</span>
+                                Diagnóstico <span className="text-zinc-600">CRM</span>
                             </h1>
                             <p className="text-zinc-500 font-medium max-w-xl mx-auto">
-                                Diagnóstico da eficiência do funil e arquitetura de receita.
+                                Deep dive na sua infraestrutura de Revenue e Vendas.
                             </p>
                         </div>
 
@@ -463,11 +440,23 @@ const RevenueScore = () => {
                                 {/* BENCHMARK */}
                                 <BenchmarkBar userScore={score} type="revenue" variant="light" />
 
-                                {/* CTA */}
                                 <DiagnosticActionSection
-                                    title="Transforme esse diagnóstico em plano de ação."
+                                    title="Destrave sua Receita."
+                                    subtitle="Agende um diagnóstico gratuito com um especialista para desenhar seu plano de ação."
                                     onCtaClick={() => setIsBookingModalOpen(true)}
                                 />
+
+                                <DiagnosticBookingModal
+                                    isOpen={isBookingModalOpen}
+                                    onClose={() => setIsBookingModalOpen(false)}
+                                    diagnosticType="revenue"
+                                />
+
+                                {/* Fallback MoFu CTA */}
+                                <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
+                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                    <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook REI CRM (Grátis)</button>
+                                </div>
 
                                 {/* Share + PDF */}
                                 <div className="flex justify-center pt-8">
@@ -479,12 +468,6 @@ const RevenueScore = () => {
                                         RevHackers // Intelligence Unit
                                     </span>
                                 </div>
-
-                                <CallDiagnosticModal
-                                    isOpen={isBookingModalOpen}
-                                    onClose={() => setIsBookingModalOpen(false)}
-                                    source="revenue-score"
-                                />
                             </div>
                         </div>
                     </div>

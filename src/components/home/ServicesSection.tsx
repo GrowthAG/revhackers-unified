@@ -61,7 +61,7 @@ const ServicesSection = () => {
             </h2>
           </div>
           <div className="mb-2">
-            <Link to="/servicos" onClick={scrollToTop} className="text-gray-400 hover:text-revgreen uppercase tracking-wider text-xs border-b border-transparent hover:border-revgreen transition-all pb-1">
+            <Link to="/servicos" onClick={scrollToTop} className="text-zinc-400 hover:text-revgreen uppercase tracking-wider text-xs border-b border-transparent hover:border-revgreen transition-all pb-1">
               Ver Todos os Serviços
             </Link>
           </div>
@@ -77,8 +77,8 @@ const ServicesSection = () => {
               className={`group relative h-96 p-8 bg-white/5 border border-white/10 flex flex-col justify-between transition-all duration-500 hover:bg-white/10 ${service.border}`}
             >
               <div className="flex justify-between items-start">
-                <span className="font-mono-tech text-gray-600 text-xs tracking-widest">{service.id}</span>
-                <ArrowUpRight className={`w-6 h-6 text-gray-600 transition-colors duration-300 ${service.color}`} />
+                <span className="font-mono-tech text-zinc-600 text-xs tracking-widest">{service.id}</span>
+                <ArrowUpRight className={`w-6 h-6 text-zinc-600 transition-colors duration-300 ${service.color}`} />
               </div>
 
               <div>
@@ -87,7 +87,7 @@ const ServicesSection = () => {
                   <br />
                   <span className="opacity-70">{service.subtitle}</span>
                 </h3>
-                <p className="mt-4 text-gray-500 text-sm font-light tracking-wide group-hover:text-gray-300 transition-colors">
+                <p className="mt-4 text-zinc-500 text-sm font-light tracking-wide group-hover:text-zinc-300 transition-colors">
                   {service.desc}
                 </p>
               </div>

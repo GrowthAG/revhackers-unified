@@ -311,8 +311,6 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 console.warn("Could not fetch extra project details for webhook", err);
             }
 
-            console.log("Saving REI Data:", { projectId, type, data, scoreResult });
-
             // 2. Save to DB with 4 arguments: projectId, type, formData, analysisResult
             const responseId = await saveReiDiagnostic(projectId, type, data, scoreResult);
 
@@ -355,7 +353,6 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                     ...data,
                     submittedAt: new Date().toISOString()
                 });
-                console.log("Webhook sent successfully");
             } catch (webhookError) {
                 console.error("Webhook failed:", webhookError);
             }
@@ -367,7 +364,6 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 await supabase.functions.invoke('trigger-post-rei-enrichment', {
                     body: { projectId, reiType: type }
                 });
-                console.log("✅ Post-REI enrichment triggered");
             } catch (enrichError) {
                 console.warn("Enrichment trigger failed (non-blocking):", enrichError);
             }

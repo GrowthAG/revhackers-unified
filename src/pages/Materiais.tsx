@@ -57,7 +57,7 @@ const Materiais = () => {
 
         if (data) {
           setApiMaterials(data);
-          console.log('✅ [DATABASE] Materiais carregados:', data.length);
+
         }
       } catch (err: any) {
         console.warn('⚠️ [DATABASE] Falha ao buscar materiais (usando offline/static):', err.message);
@@ -167,7 +167,7 @@ const Materiais = () => {
                       navigate(`/materiais/${slug}`);
                     }}
                   >
-                    <div className="h-full flex flex-col p-8 rounded-sm border border-zinc-200 bg-white shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative cursor-pointer group">
+                    <div className="h-full flex flex-col p-8 rounded-sm border border-zinc-200 bg-white shadow-sm hover:-translate-y-1 transition-all duration-500 relative cursor-pointer group">
                       <div className="flex justify-between items-start mb-6">
                         <span className="text-[9px] font-black uppercase tracking-widest text-black bg-white px-2 py-1 rounded-sm border border-zinc-200">
                           {type}
@@ -218,7 +218,7 @@ const Materiais = () => {
               <Button
                 size="lg"
                 onClick={() => setIsBookingOpen(true)}
-                className="bg-black text-white hover:bg-revgreen hover:text-black font-black tracking-widest uppercase px-10 h-16 rounded-sm text-xs transition-all duration-500 shadow-2xl hover:shadow-revgreen/20"
+                className="bg-black text-white hover:bg-revgreen hover:text-black font-black tracking-widest uppercase px-10 h-16 rounded-sm text-xs transition-all duration-500 shadow-sm hover:shadow-revgreen/20"
               >
                 Agendar Conversa
               </Button>

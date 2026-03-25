@@ -91,10 +91,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Admin Pages (Never loaded by public visitors)
 const Admin = lazy(() => import("./pages/Admin"));
-const AdminPostNew = lazy(() => import("./pages/AdminPostNew"));
-const AdminPostEdit = lazy(() => import("./pages/AdminPostEdit"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
-const AdminPosts = lazy(() => import("./pages/admin/AdminPosts"));
 const ProfileSettings = lazy(() => import("./pages/admin/ProfileSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const Settings = lazy(() => import("./pages/admin/Settings"));
@@ -127,10 +124,20 @@ const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
 
 // Client Pages
 const StrategicPlanPresentation = lazy(() => import("./pages/client/StrategicPlanPresentation"));
-const PlanSignPage = lazy(() => import("./pages/platform/client/PlanSignPage"));
 const ClientProjectHub = lazy(() => import("./pages/client/ClientProjectHub"));
 
-const queryClient = new QueryClient();
+// Pitch Deck (Cinema Mode para Vendas)
+const PitchDeckPresentation = lazy(() => import("./pages/admin/PitchDeckPresentation"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // IMPEDE PERDA DE DADOS EM FORMS AO TROCAR DE ABA
+      refetchOnReconnect: false,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -142,8 +149,9 @@ const App = () => (
             <Sonner />
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public Routes */}
+              <ErrorBoundary>
+                <Routes>
+                  {/* Public Routes */}
               <Route path="/" element={<Index />} />
               <Route path="/p/:slug" element={<PublicDealRoom />} /> {/* Public Deal Room Route */}
               <Route path="/blog" element={<Blog />} />
@@ -226,8 +234,6 @@ const App = () => (
               {/* Admin Management - GROWTHHUB */}
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
-              <Route path="/admin/rei" element={<ProtectedRoute><AdminREIProjects /></ProtectedRoute>} />
-              <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
               <Route path="/admin/strategic-plan/:projectId" element={<ProtectedRoute><LiveStrategicPlan /></ProtectedRoute>} />
 
@@ -241,9 +247,10 @@ const App = () => (
               <Route path="/admin/clients/edit/:id" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
 
               {/* Admin - Posts */}
-              <Route path="/admin/posts" element={<ProtectedRoute><AdminPosts /></ProtectedRoute>} />
-              <Route path="/admin/posts/new" element={<ProtectedRoute><AdminPostNew /></ProtectedRoute>} />
-              <Route path="/admin/posts/edit/:id" element={<ProtectedRoute><AdminPostEdit /></ProtectedRoute>} />
+              {/* Admin - Posts (Rotas removidas) */}
+
+              {/* Pitch Deck (Cinema Mode) */}
+              <Route path="/admin/pitch/:id" element={<ProtectedRoute><PitchDeckPresentation /></ProtectedRoute>} />
 
               {/* Admin - Materials */}
               <Route path="/admin/materials" element={<ProtectedRoute><AdminMaterials /></ProtectedRoute>} />
@@ -294,12 +301,13 @@ const App = () => (
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />
-              <Route path="/plan/:token/sign" element={<PlanSignPage />} />
+              {/* Rota PlanSignPage removida */}
               <Route path="/hub/:id" element={<ClientProjectHub />} />
 
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                  {/* 404 Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
             </Suspense>
           </>
         </AuthProvider>

@@ -95,7 +95,6 @@ export default function REIResult() {
             try {
                 // Use the answers we already fetched
                 if (answers) {
-                    console.log("[REIResult] Generating Intelligence for Plan...");
                     const { DiagnosticService } = await import('@/services/DiagnosticService');
                     const { MarketIntelligenceService } = await import('@/services/MarketIntelligenceService');
 
@@ -338,11 +337,11 @@ export default function REIResult() {
                                 </div>
 
                                 {/* Additional Context */}
-                                <div className="bg-blue-50 border border-blue-100 p-6 rounded-lg mt-8">
-                                    <h4 className="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-lg mt-8">
+                                    <h4 className="text-sm font-bold text-zinc-900 mb-2 flex items-center gap-2">
                                         <Globe className="w-4 h-4" /> Benchmark de Mercado
                                     </h4>
-                                    <p className="text-sm text-blue-800 leading-relaxed">
+                                    <p className="text-sm text-zinc-700 leading-relaxed">
                                         Empresas do seu segmento com este perfil geralmente investem <strong>15-20%</strong> da receita em Growth para manter competitividade. Seu score indica oportunidades claras de otimização imediata.
                                     </p>
                                 </div>
@@ -350,7 +349,7 @@ export default function REIResult() {
 
                             {/* Right: Action Plan (Sticky) */}
                             <div className="lg:col-span-5 no-print">
-                                <div className="sticky top-24 bg-zinc-950 text-white p-8 rounded-xl shadow-2xl">
+                                <div className="sticky top-24 bg-zinc-950 text-white p-8 rounded-xl shadow-sm">
                                     <div className="mb-8">
                                         <h3 className="text-lg font-bold mb-2">Próximos Passos</h3>
                                         <p className="text-zinc-400 text-sm leading-relaxed">

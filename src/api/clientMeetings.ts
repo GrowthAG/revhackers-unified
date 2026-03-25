@@ -83,9 +83,9 @@ export function getMeetingEmbedUrl(driveFileId: string): string {
 export const MEETING_TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; emoji: string }> = {
     proposta: { label: 'Proposta', color: 'text-yellow-700', bg: 'bg-yellow-50 border-yellow-200', emoji: '🟡' },
     kickoff: { label: 'Kickoff', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', emoji: '🟢' },
-    planejamento: { label: 'Planejamento', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', emoji: '🔵' },
+    planejamento: { label: 'Planejamento', color: 'text-zinc-700', bg: 'bg-zinc-50 border-zinc-200', emoji: '🔵' },
     review: { label: 'Review', color: 'text-zinc-700', bg: 'bg-zinc-50 border-zinc-300', emoji: '⬜' },
-    suporte: { label: 'Suporte', color: 'text-orange-700', bg: 'bg-orange-50 border-orange-200', emoji: '🟠' },
+    suporte: { label: 'Suporte', color: 'text-zinc-600', bg: 'bg-zinc-50 border-zinc-200', emoji: '🟠' },
     outro: { label: 'Reunião', color: 'text-zinc-600', bg: 'bg-zinc-50 border-zinc-200', emoji: '⚪' },
 };
 

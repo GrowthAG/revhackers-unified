@@ -175,8 +175,8 @@ export function EditToolbar() {
                     <Pencil className="w-3.5 h-3.5 text-[#00CC6A]" />
                     <span className="text-xs font-bold text-white uppercase tracking-widest">Modo Edição - Admin</span>
                     {hasChanges && (
-                        <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-amber-400 font-mono">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-zinc-400 font-mono">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
                             {Object.keys(pendingChanges).length} alteração{Object.keys(pendingChanges).length !== 1 ? 'ões' : ''} não salva{Object.keys(pendingChanges).length !== 1 ? 's' : ''}
                         </span>
                     )}

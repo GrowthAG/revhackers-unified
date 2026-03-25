@@ -177,7 +177,7 @@ const ContextCard = ({ label, value }: { label: string, value: string }) => (
 );
 
 const DecisionBlock = ({ decision }: { decision: StrategicDecision }) => (
-    <div className="bg-white border border-zinc-200 p-6 flex flex-col md:flex-row gap-8 shadow-sm hover:shadow-md transition-all">
+    <div className="bg-white border border-zinc-200 p-6 flex flex-col md:flex-row gap-8 shadow-sm transition-all">
         <div className="md:w-1/3">
             <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-5 h-5 text-black" />

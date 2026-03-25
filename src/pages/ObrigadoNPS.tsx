@@ -20,7 +20,7 @@ const ObrigadoNPS = () => {
               <CheckCircle className="w-20 h-20 text-revgreen mx-auto mb-6 animate-scale-in" />
               
               <h1 className="section-title mb-6 text-foreground">
-                <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">Obrigado</span> pelo seu feedback!
+                <span className="text-[#00CC6A]">Obrigado</span> pelo seu feedback!
               </h1>
               
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">

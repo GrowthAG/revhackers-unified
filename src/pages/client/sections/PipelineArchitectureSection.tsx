@@ -22,11 +22,11 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
     };
 
     const categoryColors: Record<string, string> = {
-        bad_fit: 'bg-red-500',
-        price: 'bg-amber-500',
+        bad_fit: 'bg-zinc-900',
+        price: 'bg-zinc-700',
         ghosted: 'bg-zinc-400',
-        competitor: 'bg-blue-500',
-        timing: 'bg-zinc-600',
+        competitor: 'bg-zinc-600',
+        timing: 'bg-zinc-500',
         other: 'bg-zinc-300',
     };
 
@@ -82,7 +82,7 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                 {lostReasons.length > 0 && (
                     <div className="mt-16 pt-12 border-t border-zinc-100">
                         <div className="flex items-center gap-3 mb-8">
-                            <div className="w-2.5 h-2.5 bg-red-500 rounded-full" />
+                            <div className="w-2.5 h-2.5 bg-zinc-900 rounded-full" />
                             <h3 className="text-[15px] font-bold text-zinc-900 tracking-wider uppercase">
                                 Motivos de Perda (Lost Reasons)
                             </h3>

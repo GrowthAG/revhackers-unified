@@ -19,7 +19,6 @@ const AdminMaterialEdit = () => {
         const fetchMaterial = async () => {
             if (!id) return;
 
-            console.log('Fetching material:', id);
             const { data, error } = await supabase
                 .from('materials')
                 .select('*')
@@ -31,7 +30,6 @@ const AdminMaterialEdit = () => {
                 setFetchError(error.message);
                 toast.error(`Erro ao buscar material: ${error.message}`);
             } else {
-                console.log('Material data:', data);
                 setMaterial(data);
             }
             setLoading(false);
@@ -44,7 +42,7 @@ const AdminMaterialEdit = () => {
         return (
             <AdminLayout>
                 <div className="flex h-screen items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                 </div>
             </AdminLayout>
         );
@@ -56,7 +54,7 @@ const AdminMaterialEdit = () => {
                 <AdminPageLayout title="Erro" backTo="/admin/materials" backLabel="Voltar">
                     <div className="p-8 text-center">
                         <h2 className="text-xl font-bold text-red-500 mb-2">Falha ao carregar material</h2>
-                        <p className="text-gray-600 mb-4">{fetchError}</p>
+                        <p className="text-zinc-600 mb-4">{fetchError}</p>
                         <button onClick={() => window.location.reload()} className="underline">Tentar novamente</button>
                     </div>
                 </AdminPageLayout>

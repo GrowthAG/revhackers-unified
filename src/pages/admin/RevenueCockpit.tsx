@@ -1,330 +1,488 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  Phone, Send, Zap, AlertTriangle, CheckCircle2,
-  ChevronRight, Plus, Target,
-  ArrowUpRight, BarChart3, Flame,
-  RefreshCw, Activity
+  UserPlus, UserCheck, ClipboardCheck, FileEdit, Send, Eye,
+  MessageSquare, Trophy, Rocket, Activity, CheckCircle2,
+  XCircle, UserMinus, RefreshCw, Plus, ChevronRight,
+  Flame, AlertTriangle, Phone, Target, Zap, BarChart3,
+  CalendarCheck, ShieldAlert, TrendingUp, Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { LeadWarRoomSheet } from '@/components/rei/LeadWarRoomSheet';
+import { FastLeadDrawer } from '@/components/rei/FastLeadDrawer';
+import { DealClosingModal } from '@/components/admin/DealClosingModal';
+import {
+  PipelineStage,
+  STAGE_CONFIGS,
+  STAGE_CATEGORIES,
+  OpportunityData,
+  LEAD_SOURCE_LABELS,
+  LeadSource,
+} from '@/types/pipeline';
+import { advanceStage } from '@/services/PipelineService';
+import { useToast } from '@/hooks/use-toast';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ---- Icon map (lucide) keyed by STAGE_CONFIGS.icon string ----
+const ICON_MAP: Record<string, React.ElementType> = {
+  UserPlus, UserCheck, ClipboardCheck, FileEdit, Send, Eye,
+  MessageSquare, Trophy, Rocket, Activity, CheckCircle2,
+  XCircle, UserMinus,
+};
 
-type Stage =
-  | 'lead'
-  | 'diagnosticado'
-  | 'proposta_enviada'
-  | 'proposta_vista'
-  | 'aprovado'
-  | 'em_execucao'
-  | 'concluido';
+function stageIcon(stage: PipelineStage): React.ElementType {
+  return ICON_MAP[STAGE_CONFIGS[stage].icon] || Activity;
+}
 
-interface Opportunity {
+// ---- Types ----
+
+interface ProjectRow {
   id: string;
-  name: string;
-  company: string;
+  client_name: string;
+  client_company: string | null;
+  trade_name: string | null;
   type: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
-  // REI
-  maturityPct: number;
-  reiScore: number;
-  reiCompletedAt: string | null;
+  pipeline_stage: PipelineStage | null;
+  lead_source: string | null;
+  opportunity_data: OpportunityData | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  maturity_pct: number;
+  rei_score: number;
   // Plan
-  planStatus: string | null;
-  planSentAt: string | null;
-  planViewedAt: string | null;
-  planApprovedAt: string | null;
+  plan_status: string | null;
   // Tasks
-  totalTasks: number;
-  doneTasks: number;
-  overdueTasks: number;
+  total_tasks: number;
+  done_tasks: number;
+  overdue_tasks: number;
   // Derived
-  stage: Stage;
-  urgencyScore: number;
-  daysSinceActivity: number;
-  nextAction: string;
+  display_name: string;
+  days_in_stage: number;
 }
 
-interface PriorityAction {
-  id: string;
-  icon: React.ElementType;
-  label: string;
-  detail: string;
-  urgency: 'critical' | 'high' | 'medium';
-  projectId: string;
-}
-
-interface FunnelMetric {
-  stage: Stage;
-  label: string;
-  count: number;
-}
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const STAGE_ORDER: Stage[] = [
-  'lead', 'diagnosticado', 'proposta_enviada', 'proposta_vista',
-  'aprovado', 'em_execucao', 'concluido',
-];
-
-const STAGE_LABELS: Record<Stage, string> = {
-  lead: 'Lead',
-  diagnosticado: 'Diagnosticado',
-  proposta_enviada: 'Proposta',
-  proposta_vista: 'Proposta Vista',
-  aprovado: 'Aprovado',
-  em_execucao: 'Em Execucao',
-  concluido: 'Concluido',
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  consulting: '360', founder: 'LinkedIn', dev: 'Site',
-  crm_ops: 'RevOps', funnels_impl: 'Funis',
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function detectStage(opp: Partial<Opportunity>): Stage {
-  if (opp.status === 'completed') return 'concluido';
-  // Projeto marcado como active pelo admin = esta em execucao (fechado e entregando)
-  if (opp.status === 'active') return 'em_execucao';
-  // Plano aprovado com tarefas = execucao tambem
-  if (opp.planStatus === 'approved' && opp.totalTasks && opp.totalTasks > 0) return 'em_execucao';
-  if (opp.planStatus === 'approved') return 'aprovado';
-  if (opp.planStatus === 'viewed') return 'proposta_vista';
-  if (opp.planStatus === 'sent') return 'proposta_enviada';
-  if (opp.maturityPct && opp.maturityPct > 0) return 'diagnosticado';
-  return 'lead';
-}
-
-function calcUrgency(opp: Partial<Opportunity>): number {
-  let score = 0;
-  const days = opp.daysSinceActivity || 0;
-
-  // Silence is the biggest urgency signal
-  score += Math.min(days * 3, 60);
-
-  // Pending proposal with no response = needs followup
-  if (opp.planStatus === 'sent' && days > 3) score += 25;
-  if (opp.planStatus === 'viewed' && days > 1) score += 20;
-
-  // High maturity with no proposal = opportunity being wasted
-  if ((opp.maturityPct || 0) > 75 && !opp.planStatus) score += 30;
-
-  // Delivery at risk = churn risk
-  if ((opp.overdueTasks || 0) > 0) score += (opp.overdueTasks || 0) * 10;
-
-  // Approved but no tasks = kickoff missing
-  if (opp.planStatus === 'approved' && (opp.totalTasks || 0) === 0) score += 35;
-
-  return Math.min(score, 100);
-}
-
-function calcNextAction(opp: Partial<Opportunity>): string {
-  if (opp.planStatus === 'approved' && (opp.totalTasks || 0) === 0) return 'Criar kickoff no OrqFlow';
-  if ((opp.overdueTasks || 0) > 0) return `Revisar ${opp.overdueTasks} tarefa(s) atrasada(s)`;
-  if (opp.planStatus === 'viewed' && (opp.daysSinceActivity || 0) > 1) return 'Followup - proposta vista sem resposta';
-  if (opp.planStatus === 'sent' && (opp.daysSinceActivity || 0) > 3) return 'Followup - proposta sem leitura';
-  if ((opp.maturityPct || 0) > 75 && !opp.planStatus) return 'Gerar plano estrategico';
-  if ((opp.maturityPct || 0) > 0 && !opp.planStatus) return 'Finalizar diagnostico';
-  if (!opp.reiCompletedAt) return 'Agendar REI com o cliente';
-  return 'Monitorar progresso';
-}
+// ---- Helpers ----
 
 function daysSince(iso: string | null): number {
   if (!iso) return 0;
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 }
 
-function formatCurrency(val: string | null): string {
+function formatCurrency(val: number): string {
   if (!val) return '-';
-  const n = parseFloat(val.replace(/[^0-9.]/g, ''));
-  if (isNaN(n)) return val;
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency', currency: 'BRL', maximumFractionDigits: 0,
+  }).format(val);
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+function pipelineValue(projects: ProjectRow[]): number {
+  return projects.reduce((sum, p) => {
+    const opp = p.opportunity_data;
+    if (!opp?.investimento_estimado) return sum;
+    const avg = (opp.investimento_estimado.range_min + opp.investimento_estimado.range_max) / 2;
+    return sum + avg;
+  }, 0);
+}
 
-const MaturityArc = ({ pct }: { pct: number }) => {
-  const r = 18;
-  const circ = 2 * Math.PI * r;
-  const filled = (pct / 100) * circ;
-  const color = pct >= 75 ? '#00CC6A' : pct >= 40 ? '#18181b' : '#a1a1aa';
+// ---- Stage grouping ----
 
-  return (
-    <div className="relative w-12 h-12 shrink-0">
-      <svg viewBox="0 0 44 44" className="w-full h-full -rotate-90">
-        <circle cx="22" cy="22" r={r} fill="none" stroke="#f4f4f5" strokeWidth="4" />
-        <circle
-          cx="22" cy="22" r={r} fill="none"
-          stroke={color} strokeWidth="4"
-          strokeDasharray={`${filled} ${circ}`}
-          strokeLinecap="round"
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[10px] font-black text-zinc-900">{pct}%</span>
-      </div>
-    </div>
-  );
-};
+const DIAGNOSTICO_STAGES: PipelineStage[] = ['lead_inbound', 'lead_qualified', 'diagnostic_done'];
+const VENDAS_STAGES: PipelineStage[] = ['proposal_draft', 'proposal_sent', 'proposal_viewed', 'negotiation'];
+const EXECUCAO_STAGES: PipelineStage[] = ['won', 'onboarding', 'active', 'completed'];
 
-const StagePipeline = ({ current }: { current: Stage }) => {
-  const idx = STAGE_ORDER.indexOf(current);
-  const visible: Stage[] = ['lead', 'diagnosticado', 'aprovado', 'em_execucao', 'concluido'];
+// ---- Sub-components ----
 
-  return (
-    <div className="flex items-center gap-1">
-      {visible.map((s, i) => {
-        const sIdx = STAGE_ORDER.indexOf(s);
-        const done = sIdx < idx;
-        const active = s === current || (current === 'proposta_enviada' && s === 'aprovado') || (current === 'proposta_vista' && s === 'aprovado');
-        const isCurrent = sIdx === idx || (current === 'proposta_enviada' && s === 'aprovado') || (current === 'proposta_vista' && s === 'aprovado');
-
-        return (
-          <React.Fragment key={s}>
-            <div
-              title={STAGE_LABELS[s]}
-              className={cn(
-                'w-1.5 h-1.5 rounded-full transition-all',
-                done ? 'bg-[#00CC6A]' :
-                isCurrent ? 'w-2 h-2 bg-zinc-900' :
-                'bg-zinc-200'
-              )}
-            />
-            {i < visible.length - 1 && (
-              <div className={cn('h-px w-3', done ? 'bg-[#00CC6A]' : 'bg-zinc-200')} />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-};
-
-const UrgencyBar = ({ score }: { score: number }) => (
-  <div
-    className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl transition-all"
-    style={{
-      backgroundColor: score >= 70 ? '#ef4444' : score >= 40 ? '#a1a1aa' : '#e4e4e7',
-    }}
-  />
-);
-
-const OpportunityCard = ({ opp, onClick }: { opp: Opportunity; onClick: () => void }) => (
-  <div
-    onClick={onClick}
-    className="relative bg-white border border-zinc-200 rounded-2xl p-5 cursor-pointer hover:border-zinc-400 hover:shadow-sm transition-all group overflow-hidden"
-  >
-    <UrgencyBar score={opp.urgencyScore} />
-
-    {/* Header */}
-    <div className="flex items-start justify-between gap-3 mb-4 pl-2">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-          <span className="text-sm font-black text-zinc-900 truncate">{opp.name}</span>
-          <span className="text-[9px] font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded shrink-0">
-            {TYPE_LABELS[opp.type] ?? opp.type}
-          </span>
-          {opp.urgencyScore >= 70 && (
-            <span className="text-[9px] font-black uppercase tracking-widest bg-red-50 text-red-500 border border-red-100 px-2 py-0.5 rounded shrink-0 flex items-center gap-1">
-              <Flame className="w-2.5 h-2.5" /> urgente
-            </span>
-          )}
-          {opp.stage === 'aprovado' && (
-            <span className="text-[9px] font-black uppercase tracking-widest bg-[#00CC6A]/10 text-[#00CC6A] border border-[#00CC6A]/20 px-2 py-0.5 rounded shrink-0">
-              aprovado
-            </span>
-          )}
-        </div>
-        <StagePipeline current={opp.stage} />
-      </div>
-      <MaturityArc pct={opp.maturityPct} />
-    </div>
-
-    {/* Stats */}
-    <div className="grid grid-cols-3 gap-2 pl-2 mb-4">
-      <div>
-        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">REI Score</p>
-        <p className="text-sm font-black text-zinc-900">{opp.maturityPct}%</p>
-      </div>
-      <div>
-        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Etapa</p>
-        <p className="text-[10px] font-black text-zinc-700">{STAGE_LABELS[opp.stage]}</p>
-      </div>
-      <div>
-        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Inativo</p>
-        <p className={cn('text-sm font-black', opp.daysSinceActivity > 7 ? 'text-red-400' : 'text-zinc-600')}>
-          {opp.daysSinceActivity}d
-        </p>
-      </div>
-    </div>
-
-    {/* Next action */}
-    <div className="pl-2 flex items-center justify-between border-t border-zinc-100 pt-3">
-      <p className="text-[11px] font-bold text-zinc-500 truncate flex-1">{opp.nextAction}</p>
-      {opp.stage === 'lead' ? (
-        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-900 bg-zinc-50 border border-zinc-200 px-2 py-0.5 rounded transition-colors shrink-0 ml-2">
-          Dossi
-        </span>
-      ) : (
-        <ArrowUpRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-700 shrink-0 ml-2 transition-colors" />
-      )}
-    </div>
+const MetricCard = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
+  <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-5">
+    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-1">{label}</p>
+    <p className="text-2xl font-black text-zinc-900 tracking-tight">{value}</p>
+    {sub && <p className="text-[11px] font-medium text-zinc-400 mt-0.5">{sub}</p>}
   </div>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+const FunnelBar = ({ label, count, max, accent }: { label: string; count: number; max: number; accent?: boolean }) => {
+  const pct = max > 0 ? (count / max) * 100 : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 w-24 text-right shrink-0">
+        {label}
+      </span>
+      <div className="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{
+            width: `${Math.max(pct, count > 0 ? 4 : 0)}%`,
+            backgroundColor: accent ? '#00CC6A' : '#18181b',
+          }}
+        />
+      </div>
+      <span className={cn('text-sm font-black w-8', count === 0 ? 'text-zinc-300' : 'text-zinc-900')}>
+        {count}
+      </span>
+    </div>
+  );
+};
+
+const StageBadge = ({ stage }: { stage: PipelineStage }) => {
+  const config = STAGE_CONFIGS[stage];
+  const isWon = stage === 'won';
+  return (
+    <span className={cn(
+      'text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded inline-flex items-center gap-1',
+      isWon
+        ? 'bg-[#00CC6A]/10 text-[#00CC6A] border border-[#00CC6A]/20'
+        : 'bg-zinc-100 text-zinc-500 border border-zinc-200',
+    )}>
+      {config.labelShort}
+    </span>
+  );
+};
+
+const StageActionButton = ({
+  label,
+  onClick,
+  loading,
+  variant = 'default',
+}: {
+  label: string;
+  onClick: () => void;
+  loading?: boolean;
+  variant?: 'default' | 'accent' | 'danger';
+}) => (
+  <button
+    onClick={(e) => { e.stopPropagation(); onClick(); }}
+    disabled={loading}
+    className={cn(
+      'text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border transition-all disabled:opacity-50',
+      variant === 'accent' && 'bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20 hover:bg-[#00CC6A]/20',
+      variant === 'danger' && 'bg-zinc-100 text-zinc-400 border-zinc-200 hover:text-zinc-600',
+      variant === 'default' && 'bg-zinc-950 text-white border-zinc-950 hover:bg-zinc-800',
+    )}
+  >
+    {loading ? '...' : label}
+  </button>
+);
+
+// ---- Lead Row (Diagnostico section) ----
+
+const DiagnosticoRow = ({
+  project,
+  onAction,
+  onOpenWarRoom,
+  transitioning,
+}: {
+  project: ProjectRow;
+  onAction: (id: string, stage: PipelineStage) => void;
+  onOpenWarRoom: (p: ProjectRow) => void;
+  transitioning: string | null;
+}) => {
+  const Icon = stageIcon(project.pipeline_stage || 'lead_inbound');
+  const source = project.lead_source as LeadSource | null;
+  return (
+    <div
+      onClick={() => onOpenWarRoom(project)}
+      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4 text-zinc-900" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
+            <StageBadge stage={project.pipeline_stage || 'lead_inbound'} />
+          </div>
+          <div className="flex items-center gap-3 text-[10px] font-medium text-zinc-400">
+            {source && <span>{LEAD_SOURCE_LABELS[source] || source}</span>}
+            {project.maturity_pct > 0 && <span>Score: {project.maturity_pct}%</span>}
+            <span>{project.days_in_stage}d neste estagio</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {project.pipeline_stage === 'lead_inbound' && (
+            <StageActionButton
+              label="Qualificar"
+              onClick={() => onAction(project.id, 'lead_qualified')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {project.pipeline_stage === 'lead_qualified' && (
+            <StageActionButton
+              label="Agendar Diagnostico"
+              onClick={() => onAction(project.id, 'diagnostic_done')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {project.pipeline_stage === 'diagnostic_done' && (
+            <StageActionButton
+              label="Criar Proposta"
+              variant="accent"
+              onClick={() => onAction(project.id, 'proposal_draft')}
+              loading={transitioning === project.id}
+            />
+          )}
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-600 transition-colors" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---- Opportunity Row (Vendas section) ----
+
+const VendasRow = ({
+  project,
+  onAction,
+  onOpenWarRoom,
+  transitioning,
+}: {
+  project: ProjectRow;
+  onAction: (id: string, stage: PipelineStage) => void;
+  onOpenWarRoom: (p: ProjectRow) => void;
+  transitioning: string | null;
+}) => {
+  const Icon = stageIcon(project.pipeline_stage || 'proposal_draft');
+  const opp = project.opportunity_data;
+  const investMin = opp?.investimento_estimado?.range_min || 0;
+  const investMax = opp?.investimento_estimado?.range_max || 0;
+  const investAvg = investMin && investMax ? (investMin + investMax) / 2 : 0;
+
+  return (
+    <div
+      onClick={() => onOpenWarRoom(project)}
+      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+          <Icon className="w-4 h-4 text-zinc-900" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
+            <StageBadge stage={project.pipeline_stage || 'proposal_draft'} />
+          </div>
+          <div className="grid grid-cols-4 gap-3 mt-2">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Fechamento</p>
+              <p className="text-sm font-black text-zinc-900">{opp?.score_fechamento ?? '-'}%</p>
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Objecoes</p>
+              <p className="text-sm font-black text-zinc-900">{opp?.objecoes_detectadas?.length ?? 0}</p>
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Sinais</p>
+              <p className="text-sm font-black text-zinc-900">{opp?.sinais_compra?.length ?? 0}</p>
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Investimento</p>
+              <p className="text-sm font-black text-zinc-900">{investAvg > 0 ? formatCurrency(investAvg) : '-'}</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          {project.pipeline_stage === 'proposal_draft' && (
+            <StageActionButton
+              label="Enviar Proposta"
+              onClick={() => onAction(project.id, 'proposal_sent')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {project.pipeline_stage === 'proposal_sent' && (
+            <StageActionButton
+              label="Negociacao"
+              onClick={() => onAction(project.id, 'negotiation')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {(project.pipeline_stage === 'proposal_viewed' || project.pipeline_stage === 'negotiation') && (
+            <StageActionButton
+              label="Fechar Venda"
+              variant="accent"
+              onClick={() => onAction(project.id, 'won')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {project.pipeline_stage !== 'won' && (
+            <StageActionButton
+              label="Perdido"
+              variant="danger"
+              onClick={() => onAction(project.id, 'lost')}
+              loading={transitioning === project.id}
+            />
+          )}
+          <span className="text-[10px] font-medium text-zinc-400 mt-0.5">{project.days_in_stage}d</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---- Project Row (Execucao section) ----
+
+const ExecucaoRow = ({
+  project,
+  onAction,
+  transitioning,
+}: {
+  project: ProjectRow;
+  onAction: (id: string, stage: PipelineStage) => void;
+  transitioning: string | null;
+}) => {
+  const navigate = useNavigate();
+  const Icon = stageIcon(project.pipeline_stage || 'active');
+  const pctDone = project.total_tasks > 0 ? Math.round((project.done_tasks / project.total_tasks) * 100) : 0;
+
+  return (
+    <div
+      onClick={() => navigate(`/admin/projects/${project.id}`)}
+      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+    >
+      <div className="flex items-center gap-3">
+        <div className={cn(
+          'w-9 h-9 rounded-xl flex items-center justify-center shrink-0',
+          project.pipeline_stage === 'won'
+            ? 'border border-[#00CC6A]/20 shadow-[0_0_15px_rgba(0,204,106,0.1)]'
+            : 'bg-zinc-50 border border-zinc-200',
+        )}>
+          <Icon className={cn(
+            'w-4 h-4',
+            project.pipeline_stage === 'won' ? 'text-[#00CC6A]' : 'text-zinc-900',
+          )} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
+            <StageBadge stage={project.pipeline_stage || 'active'} />
+          </div>
+          <div className="flex items-center gap-4 mt-1">
+            <div className="flex items-center gap-1.5">
+              <div className="w-20 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-zinc-900 transition-all"
+                  style={{ width: `${pctDone}%` }}
+                />
+              </div>
+              <span className="text-[10px] font-black text-zinc-500">{pctDone}%</span>
+            </div>
+            <span className="text-[10px] font-medium text-zinc-400">
+              {project.done_tasks}/{project.total_tasks} tarefas
+            </span>
+            {project.overdue_tasks > 0 && (
+              <span className="text-[10px] font-black text-red-400 flex items-center gap-0.5">
+                <AlertTriangle className="w-2.5 h-2.5" /> {project.overdue_tasks} atrasada(s)
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {project.pipeline_stage === 'won' && (
+            <StageActionButton
+              label="Iniciar Onboarding"
+              onClick={() => onAction(project.id, 'onboarding')}
+              loading={transitioning === project.id}
+            />
+          )}
+          {project.pipeline_stage === 'onboarding' && (
+            <StageActionButton
+              label="Ativar Projeto"
+              variant="accent"
+              onClick={() => onAction(project.id, 'active')}
+              loading={transitioning === project.id}
+            />
+          )}
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-600 transition-colors" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---- Section Header (inline, for left-aligned admin headers) ----
+
+const SectionTitle = ({
+  eyebrow,
+  title,
+  description,
+  count,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  count?: number;
+}) => (
+  <div className="mb-6">
+    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">{eyebrow}</p>
+    <div className="flex items-baseline gap-3">
+      <h2 className="text-3xl font-black tracking-tight text-zinc-900">{title}</h2>
+      {count !== undefined && (
+        <span className="text-lg font-black text-zinc-300">{count}</span>
+      )}
+    </div>
+    {description && (
+      <p className="text-[15px] font-medium text-zinc-500 mt-1 leading-relaxed">{description}</p>
+    )}
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── Main Component ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
 
 export const RevenueCockpit: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<Stage | 'all'>('all');
+  const [transitioning, setTransitioning] = useState<string | null>(null);
 
   // War Room sheet state
   const [warRoomOpen, setWarRoomOpen] = useState(false);
-  const [selectedLead, setSelectedLead] = useState<Opportunity | null>(null);
+  const [selectedLead, setSelectedLead] = useState<ProjectRow | null>(null);
 
-  useEffect(() => {
-    loadAll();
-  }, []);
+  // Fast Lead Drawer state
+  const [leadDrawerOpen, setLeadDrawerOpen] = useState(false);
 
-  const loadAll = async () => {
-    setLoading(true);
-    try {
-      // 1. Projects
-      const { data: projects } = await supabase
+  // Deal Closing state
+  const [dealClosingModalOpen, setDealClosingModalOpen] = useState(false);
+  const [selectedLeadForClosing, setSelectedLeadForClosing] = useState<ProjectRow | null>(null);
+
+  // ---- Data loading (React Query) ----
+
+  const { data: projects = [], isLoading: loading, refetch: loadAll } = useQuery({
+    queryKey: ['revenue-projects'],
+    queryFn: async () => {
+      // 1. Projects with pipeline_stage
+      const { data: rawProjects, error } = await supabase
         .from('rei_projects')
-        .select('id, client_name, client_company, trade_name, type, status, created_at, updated_at')
+        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage, lead_source, opportunity_data, created_at, updated_at')
+        .or('status.neq.diagnostic,pipeline_stage.not.is.null')
         .order('updated_at', { ascending: false });
 
-      if (!projects?.length) { setOpportunities([]); return; }
+      if (error) throw error;
+      if (!rawProjects?.length) return [];
 
-      const ids = projects.map(p => p.id);
+      const ids = rawProjects.map(p => p.id);
 
       // 2. REI Responses (latest per project)
       const { data: responses } = await supabase
         .from('rei_responses')
-        .select('project_id, maturity_percentage, total_score, completed_at')
+        .select('project_id, maturity_percentage, total_score')
         .in('project_id', ids)
         .order('completed_at', { ascending: false });
 
-      // 3. Strategic Plans (latest per project)
+      // 3. Strategic Plans
       const { data: plans } = await supabase
         .from('strategic_plans')
-        .select('rei_project_id, status, sent_at, viewed_at, approved_at')
+        .select('rei_project_id, status')
         .in('rei_project_id', ids)
         .order('created_at', { ascending: false });
 
-      // 4. Tasks (aggregated per project)
+      // 4. Tasks
       const { data: tasks } = await supabase
         .from('orqflow_tasks')
         .select('id, project_id, status, due_date')
@@ -332,161 +490,153 @@ export const RevenueCockpit: React.FC = () => {
         .not('status', 'eq', 'archived');
 
       // Build lookup maps
-      const responseMap = new Map<string, typeof responses[0]>();
-      responses?.forEach(r => { if (!responseMap.has(r.project_id)) responseMap.set(r.project_id, r); });
+      const responseMap = new Map<string, { maturity_percentage: number; total_score: number }>();
+      responses?.forEach(r => {
+        if (!responseMap.has(r.project_id)) responseMap.set(r.project_id, r);
+      });
 
-      const planMap = new Map<string, typeof plans[0]>();
-      plans?.forEach(p => { if (!planMap.has(p.rei_project_id)) planMap.set(p.rei_project_id, p); });
+      const planMap = new Map<string, { status: string }>();
+      plans?.forEach(p => {
+        if (!planMap.has(p.rei_project_id)) planMap.set(p.rei_project_id, p);
+      });
 
       const todayIso = new Date().toISOString();
 
-      // Build opportunities
-      const opps: Opportunity[] = projects.map(proj => {
+      const rows: ProjectRow[] = rawProjects.map((proj: any) => {
         const rei = responseMap.get(proj.id);
         const plan = planMap.get(proj.id);
         const ptasks = tasks?.filter(t => t.project_id === proj.id) || [];
         const done = ptasks.filter(t => t.status === 'done').length;
         const overdue = ptasks.filter(t => t.due_date && t.due_date < todayIso && t.status !== 'done').length;
 
-        const lastActivity = proj.updated_at || proj.created_at;
-        const days = daysSince(lastActivity);
-
-        const partial: Partial<Opportunity> = {
-          status: proj.status,
-          maturityPct: Math.round(rei?.maturity_percentage ?? 0),
-          reiScore: rei?.total_score ?? 0,
-          reiCompletedAt: rei?.completed_at ?? null,
-          planStatus: plan?.status ?? null,
-          planSentAt: plan?.sent_at ?? null,
-          planViewedAt: plan?.viewed_at ?? null,
-          planApprovedAt: plan?.approved_at ?? null,
-          totalTasks: ptasks.length,
-          doneTasks: done,
-          overdueTasks: overdue,
-          daysSinceActivity: days,
-        };
-
-        const stage = detectStage(partial);
-        const urgencyScore = calcUrgency({ ...partial, stage });
-        const nextAction = calcNextAction({ ...partial, stage });
-
         return {
           id: proj.id,
-          name: proj.trade_name || proj.client_company || proj.client_name,
-          company: proj.client_company || proj.client_name,
+          client_name: proj.client_name,
+          client_company: proj.client_company,
+          trade_name: proj.trade_name,
           type: proj.type,
-          ...partial,
-          stage,
-          urgencyScore,
-          nextAction,
-        } as Opportunity;
+          status: proj.status,
+          pipeline_stage: proj.pipeline_stage || null,
+          lead_source: proj.lead_source || null,
+          opportunity_data: proj.opportunity_data || null,
+          created_at: proj.created_at,
+          updated_at: proj.updated_at,
+          maturity_pct: Math.round(rei?.maturity_percentage ?? 0),
+          rei_score: rei?.total_score ?? 0,
+          plan_status: plan?.status ?? null,
+          total_tasks: ptasks.length,
+          done_tasks: done,
+          overdue_tasks: overdue,
+          display_name: proj.trade_name || proj.client_company || proj.client_name,
+          days_in_stage: daysSince(proj.updated_at),
+        };
       });
 
-      // Sort: critical first, then by urgency score
-      opps.sort((a, b) => b.urgencyScore - a.urgencyScore);
-      setOpportunities(opps);
-    } finally {
-      setLoading(false);
+      return rows;
     }
-  };
+  });
 
-  // Priority Actions (auto-generated from signals)
-  const priorityActions = useMemo((): PriorityAction[] => {
-    const actions: PriorityAction[] = [];
+  // ---- Stage transition handler ----
 
-    opportunities.forEach(opp => {
-      if (opp.planStatus === 'approved' && opp.totalTasks === 0) {
-        actions.push({
-          id: `kickoff-${opp.id}`,
-          icon: Zap,
-          label: `Criar kickoff: ${opp.name}`,
-          detail: 'Proposta aprovada sem tarefas criadas',
-          urgency: 'critical',
-          projectId: opp.id,
-        });
+  const handleAdvance = useCallback(async (projectId: string, newStage: PipelineStage) => {
+    if (newStage === 'won') {
+      const p = projects.find(x => x.id === projectId);
+      if (p) {
+        setSelectedLeadForClosing(p);
+        setDealClosingModalOpen(true);
+        return;
       }
-      if (opp.overdueTasks > 0) {
-        actions.push({
-          id: `overdue-${opp.id}`,
-          icon: AlertTriangle,
-          label: `${opp.overdueTasks} tarefa(s) atrasada(s): ${opp.name}`,
-          detail: 'Risco de insatisfacao do cliente',
-          urgency: 'critical',
-          projectId: opp.id,
-        });
-      }
-      if (opp.planStatus === 'viewed' && opp.daysSinceActivity > 1) {
-        actions.push({
-          id: `viewed-${opp.id}`,
-          icon: Phone,
-          label: `Followup: ${opp.name}`,
-          detail: `Proposta vista ha ${opp.daysSinceActivity} dias sem resposta`,
-          urgency: 'high',
-          projectId: opp.id,
-        });
-      }
-      if (opp.planStatus === 'sent' && opp.daysSinceActivity > 3) {
-        actions.push({
-          id: `sent-${opp.id}`,
-          icon: Send,
-          label: `Followup: ${opp.name}`,
-          detail: `Proposta enviada ha ${opp.daysSinceActivity} dias sem leitura`,
-          urgency: 'high',
-          projectId: opp.id,
-        });
-      }
-      if (opp.maturityPct >= 75 && !opp.planStatus) {
-        actions.push({
-          id: `ready-${opp.id}`,
-          icon: Target,
-          label: `Gerar proposta: ${opp.name}`,
-          detail: `REI ${opp.maturityPct}% - pronto para proposta`,
-          urgency: 'medium',
-          projectId: opp.id,
-        });
-      }
+    }
+
+    setTransitioning(projectId);
+    const result = await advanceStage(projectId, newStage);
+    setTransitioning(null);
+
+    if (!result.success) {
+      toast({ title: 'Erro na transicao', description: result.error, variant: 'destructive' });
+      return;
+    }
+
+    toast({
+      title: 'Estagio atualizado',
+      description: `Movido para ${STAGE_CONFIGS[newStage].label}`,
     });
 
-    return actions
-      .sort((a, b) => {
-        const order = { critical: 0, high: 1, medium: 2 };
-        return order[a.urgency] - order[b.urgency];
-      })
-      .slice(0, 8);
-  }, [opportunities]);
+    queryClient.invalidateQueries({ queryKey: ['revenue-projects'] });
+  }, [queryClient, toast]);
 
-  // Deal Rooms = APENAS pipeline de vendas. Projetos ativos vao para /admin/rei.
-  const PIPELINE_STAGES: Stage[] = ['lead', 'diagnosticado', 'proposta_enviada', 'proposta_vista', 'aprovado'];
-  const pipeline = useMemo(
-    () => opportunities.filter(o => PIPELINE_STAGES.includes(o.stage)),
-    [opportunities]
+  // ---- Open War Room ----
+
+  const openWarRoom = useCallback((p: ProjectRow) => {
+    setSelectedLead(p);
+    setWarRoomOpen(true);
+  }, []);
+
+  // ---- Grouped data ----
+
+  const diagnostico = useMemo(
+    () => projects.filter(p => p.pipeline_stage && DIAGNOSTICO_STAGES.includes(p.pipeline_stage)),
+    [projects],
   );
 
-  // Funil - apenas etapas de venda
-  const funnel = useMemo((): FunnelMetric[] => {
-    const counts = { lead: 0, diagnosticado: 0, proposta_enviada: 0, proposta_vista: 0, aprovado: 0 };
-    pipeline.forEach(o => {
-      const k = o.stage as keyof typeof counts;
-      if (k in counts) counts[k]++;
+  const vendas = useMemo(
+    () => projects.filter(p => p.pipeline_stage && VENDAS_STAGES.includes(p.pipeline_stage)),
+    [projects],
+  );
+
+  const execucao = useMemo(
+    () => projects.filter(p => p.pipeline_stage && EXECUCAO_STAGES.includes(p.pipeline_stage)),
+    [projects],
+  );
+
+  // ---- Aggregate metrics ----
+
+  const totalPipelineValue = useMemo(() => pipelineValue(vendas), [vendas]);
+
+  const stageCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of projects) {
+      const s = p.pipeline_stage || 'unknown';
+      counts[s] = (counts[s] || 0) + 1;
+    }
+    return counts;
+  }, [projects]);
+
+  const maxStageCount = useMemo(() => {
+    return Math.max(...Object.values(stageCounts), 1);
+  }, [stageCounts]);
+
+  // Lead source breakdown
+  const sourceBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    diagnostico.forEach(p => {
+      const src = p.lead_source || 'manual';
+      map[src] = (map[src] || 0) + 1;
     });
-    return [
-      { stage: 'lead',           label: 'Leads',          count: counts.lead },
-      { stage: 'diagnosticado',  label: 'Diagnosticados', count: counts.diagnosticado },
-      { stage: 'proposta_enviada', label: 'Proposta',     count: counts.proposta_enviada + counts.proposta_vista },
-      { stage: 'aprovado',       label: 'Aprovados',      count: counts.aprovado },
-    ];
-  }, [pipeline]);
+    return Object.entries(map).sort((a, b) => b[1] - a[1]);
+  }, [diagnostico]);
 
-  const filtered =
-    filter === 'all'
-      ? pipeline
-      : pipeline.filter(o =>
-          filter === 'proposta_enviada'
-            ? o.stage === 'proposta_enviada' || o.stage === 'proposta_vista'
-            : o.stage === filter
-        );
+  // Win rate
+  const winRate = useMemo(() => {
+    const wonCount = projects.filter(p => EXECUCAO_STAGES.includes(p.pipeline_stage as PipelineStage)).length;
+    const lostCount = projects.filter(p => p.pipeline_stage === 'lost').length;
+    const total = wonCount + lostCount;
+    return total > 0 ? Math.round((wonCount / total) * 100) : 0;
+  }, [projects]);
 
-  const critical = pipeline.filter(o => o.urgencyScore >= 70).length;
+  // Avg days in vendas stages
+  const avgDaysVendas = useMemo(() => {
+    if (vendas.length === 0) return 0;
+    return Math.round(vendas.reduce((s, p) => s + p.days_in_stage, 0) / vendas.length);
+  }, [vendas]);
+
+  // Overdue count for execucao
+  const totalOverdue = useMemo(
+    () => execucao.reduce((s, p) => s + p.overdue_tasks, 0),
+    [execucao],
+  );
+
+  // ---- Loading state ----
 
   if (loading) {
     return (
@@ -498,266 +648,312 @@ export const RevenueCockpit: React.FC = () => {
     );
   }
 
+  // ════════════════════════════════════════════════════════════════════════════
+  // ── Render ──────────────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════════════════
+
   return (
     <>
-    <AdminLayout>
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1400px] mx-auto px-8 md:px-12 py-12">
+      <AdminLayout>
+        <div className="min-h-screen bg-white">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-14 py-8">
 
-        {/* ── Header ───────────────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-10 border-b border-zinc-100">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-3">Cockpit de Receita</p>
-            <h1 className="text-5xl md:text-6xl font-black text-zinc-900 tracking-tight leading-[1.05]">
-              {pipeline.length === 0
-                ? 'Pipeline vazio'
-                : `${pipeline.length} oportunidade${pipeline.length > 1 ? 's' : ''}`}
-            </h1>
-            <p className="text-[15px] font-medium text-zinc-500 mt-3 leading-relaxed">
-              {critical > 0
-                ? `${critical} requer${critical > 1 ? 'em' : ''} atencao imediata.`
-                : pipeline.length === 0
-                ? 'Nenhuma oportunidade ativa. Crie um novo lead para comecar.'
-                : 'Pipeline saudavel. Nenhuma acao critica no momento.'}
-            </p>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={loadAll}
-              className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 text-zinc-500" />
-            </button>
-            <Button
-              onClick={() => navigate('/admin/rei/novo?lead=true')}
-              className="bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] rounded-xl h-10 px-6 gap-2"
-            >
-              <Plus className="w-4 h-4" /> Nova Oportunidade
-            </Button>
-          </div>
-        </div>
-
-        {/* ── Three-column layout ───────────────────────────────────────── */}
-        <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr_220px] gap-6">
-
-          {/* LEFT - Priority Actions */}
-          <div className="space-y-4">
-            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
-              <div className="px-5 pt-5 pb-4 border-b border-zinc-100">
-                <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-zinc-400" />
-                  <h2 className="text-[11px] font-black uppercase tracking-widest text-zinc-900">Acoes Prioritarias</h2>
-                </div>
-                <p className="text-[10px] text-zinc-400 font-medium mt-1">Calculado por sinais de urgencia</p>
+            {/* ── Top bar ─────────────────────────────────────────────────── */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-8 border-b border-zinc-100">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-3">
+                  Cockpit de Receita
+                </p>
+                <h1 className="text-5xl md:text-6xl font-black text-zinc-900 tracking-tight leading-[1.05]">
+                  Pipeline
+                </h1>
               </div>
-
-              {priorityActions.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <CheckCircle2 className="w-6 h-6 text-[#00CC6A] mx-auto mb-2" />
-                  <p className="text-xs font-bold text-zinc-500">Nenhuma acao urgente.</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-zinc-50">
-                  {priorityActions.map(action => {
-                    const opp = opportunities.find(o => o.id === action.projectId);
-                    const isLead = opp?.stage === 'lead';
-                    return (
-                    <button
-                      key={action.id}
-                      onClick={() => {
-                        if (isLead && opp) {
-                          setSelectedLead(opp);
-                          setWarRoomOpen(true);
-                        } else {
-                          navigate(`/admin/projects/${action.projectId}`);
-                        }
-                      }}
-                      className="w-full text-left px-5 py-3.5 hover:bg-zinc-50 transition-colors group flex items-start gap-3"
-                    >
-                      <div className={cn(
-                        'w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
-                        action.urgency === 'critical' ? 'bg-red-50' :
-                        action.urgency === 'high' ? 'bg-zinc-100' : 'bg-zinc-50'
-                      )}>
-                        <action.icon className={cn(
-                          'w-3 h-3',
-                          action.urgency === 'critical' ? 'text-red-500' :
-                          action.urgency === 'high' ? 'text-zinc-600' : 'text-zinc-400'
-                        )} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-bold text-zinc-900 leading-snug truncate">{action.label}</p>
-                        <p className="text-[10px] text-zinc-400 font-medium mt-0.5 leading-snug">{action.detail}</p>
-                      </div>
-                      <ChevronRight className="w-3 h-3 text-zinc-300 group-hover:text-zinc-500 shrink-0 mt-1 transition-colors" />
-                    </button>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={() => loadAll()}
+                  className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4 text-zinc-500" />
+                </button>
+                <Button
+                  onClick={() => setLeadDrawerOpen(true)}
+                  className="bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] rounded-xl h-10 px-6 gap-2"
+                >
+                  <Plus className="w-4 h-4" /> Novo Lead
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {/* CENTER - Cards */}
-          <div className="space-y-4">
-            {/* Stage filter pills */}
-            <div className="flex gap-2 flex-wrap">
-              {([
-                ['all',            'Todos',          pipeline.length],
-                ['lead',           'Leads',          funnel.find(f=>f.stage==='lead')?.count ?? 0],
-                ['diagnosticado',  'Diagnosticados', funnel.find(f=>f.stage==='diagnosticado')?.count ?? 0],
-                ['proposta_enviada','Proposta',       funnel.find(f=>f.stage==='proposta_enviada')?.count ?? 0],
-                ['aprovado',       'Aprovados',      funnel.find(f=>f.stage==='aprovado')?.count ?? 0],
-              ] as [Stage | 'all', string, number][])
-                .filter(([,, count]) => count > 0)
-                .map(([s, label, count]) => (
-                  <button
-                    key={s}
-                    onClick={() => setFilter(s)}
-                    className={cn(
-                      'text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border transition-all',
-                      filter === s
-                        ? 'bg-zinc-950 text-white border-zinc-950'
-                        : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-400'
-                    )}
-                  >
-                    {label} <span className="opacity-60 font-medium ml-1">{count}</span>
-                  </button>
+            {/* ── KPI Row ─────────────────────────────────────────────────── */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <MetricCard label="Leads" value={diagnostico.length} sub="Top de funil" />
+              <MetricCard label="Oportunidades" value={vendas.length} sub={`Win rate: ${winRate}%`} />
+              <MetricCard label="Projetos Ativos" value={execucao.length} sub={totalOverdue > 0 ? `${totalOverdue} tarefa(s) atrasada(s)` : 'Sem atrasos'} />
+              <MetricCard label="Receita Pipeline" value={formatCurrency(totalPipelineValue)} sub={`Media: ${avgDaysVendas}d no estagio`} />
+            </div>
+
+            {/* ── Conversion Funnel (horizontal bars) ─────────────────────── */}
+            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-5 mb-10">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="w-4 h-4 text-zinc-400" />
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Funil Completo</p>
+              </div>
+              <div className="space-y-2">
+                {DIAGNOSTICO_STAGES.map(s => (
+                  <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
                 ))}
-            </div>
-
-            {/* Cards grid */}
-            {filtered.length === 0 ? (
-              <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-20 text-center">
-                <Activity className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
-                <p className="text-sm font-black text-zinc-400 mb-1">
-                  {pipeline.length === 0 ? 'Pipeline vazio' : 'Nenhuma oportunidade neste filtro'}
-                </p>
-                <p className="text-xs font-medium text-zinc-300">
-                  {pipeline.length === 0 ? 'Crie um novo lead para comecar.' : 'Mude o filtro acima.'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {filtered.map(opp => (
-                  <OpportunityCard
-                    key={opp.id}
-                    opp={opp}
-                    onClick={() => {
-                      if (opp.stage === 'lead') {
-                        // Lead → abre War Room (dossi de vendas sem mudar de rota)
-                        setSelectedLead(opp);
-                        setWarRoomOpen(true);
-                      } else {
-                        // Outros stages → vai direto para o projeto
-                        navigate(`/admin/projects/${opp.id}`);
-                      }
-                    }}
+                {VENDAS_STAGES.map(s => (
+                  <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
+                ))}
+                {EXECUCAO_STAGES.map(s => (
+                  <FunnelBar
+                    key={s}
+                    label={STAGE_CONFIGS[s].labelShort}
+                    count={stageCounts[s] || 0}
+                    max={maxStageCount}
+                    accent={s === 'won'}
                   />
                 ))}
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* RIGHT - Funnel Metrics */}
-          <div className="space-y-4">
-            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
-              <div className="px-5 pt-5 pb-4 border-b border-zinc-100 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-zinc-400" />
-                <h2 className="text-[11px] font-black uppercase tracking-widest text-zinc-900">Funil</h2>
-              </div>
-              <div className="p-5 space-y-3">
-                {funnel.map((f, i) => {
-                  const maxCount = Math.max(...funnel.map(x => x.count), 1);
-                  const pct = (f.count / maxCount) * 100;
-                  return (
-                    <div key={f.stage}>
-                      <div className="flex items-center justify-between mb-1">
-                        <button
-                          onClick={() => setFilter(f.stage === filter ? 'all' : f.stage)}
-                          className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors"
-                        >
-                          {f.label}
-                        </button>
-                        <span className={cn(
-                          'text-sm font-black',
-                          f.count === 0 ? 'text-zinc-300' : 'text-zinc-900'
-                        )}>
-                          {f.count}
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-700"
-                          style={{
-                            width: `${pct}%`,
-                            backgroundColor: f.stage === 'aprovado' ? '#00CC6A' : '#18181b',
-                          }}
-                        />
-                      </div>
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            {/* ── SECTION 1: DIAGNOSTICO (Top Funnel) ─────────────────────── */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            <div className="mb-14">
+              <SectionTitle
+                eyebrow="Top de Funil"
+                title="Diagnostico"
+                description="Leads captados, qualificados e diagnosticados"
+                count={diagnostico.length}
+              />
+
+              {/* Source breakdown */}
+              {sourceBreakdown.length > 0 && (
+                <div className="flex flex-wrap gap-3 mb-5">
+                  {sourceBreakdown.map(([src, count]) => (
+                    <div key={src} className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-1.5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        {LEAD_SOURCE_LABELS[src as LeadSource] || src}
+                      </span>
+                      <span className="text-[10px] font-black text-zinc-900">{count}</span>
                     </div>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Stage sub-groups */}
+              {DIAGNOSTICO_STAGES.map(stage => {
+                const stageProjects = diagnostico.filter(p => p.pipeline_stage === stage);
+                if (stageProjects.length === 0) return null;
+                return (
+                  <div key={stage} className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        {STAGE_CONFIGS[stage].label}
+                      </p>
+                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                    </div>
+                    <div className="space-y-3">
+                      {stageProjects.map(p => (
+                        <DiagnosticoRow
+                          key={p.id}
+                          project={p}
+                          onAction={handleAdvance}
+                          onOpenWarRoom={openWarRoom}
+                          transitioning={transitioning}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {diagnostico.length === 0 && (
+                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                  <UserPlus className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
+                  <p className="text-sm font-black text-zinc-400">Nenhum lead no funil</p>
+                  <p className="text-xs font-medium text-zinc-300 mt-1">Crie um novo lead para comecar.</p>
+                </div>
+              )}
             </div>
 
-            {/* Score legend */}
-            <div className="bg-zinc-950 rounded-2xl p-5 space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Score de Urgencia</p>
-              {[
-                { color: '#ef4444', label: 'Critico (70+)', desc: 'Acao imediata' },
-                { color: '#a1a1aa', label: 'Alto (40-69)', desc: 'Acompanhar hoje' },
-                { color: '#e4e4e7', label: 'Normal (0-39)', desc: 'Monitorar' },
-              ].map(({ color, label, desc }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <div className="w-1.5 h-6 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                  <div>
-                    <p className="text-[10px] font-black text-zinc-300">{label}</p>
-                    <p className="text-[9px] font-medium text-zinc-600">{desc}</p>
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            {/* ── SECTION 2: VENDAS (Middle Funnel) ───────────────────────── */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            <div className="mb-14">
+              <SectionTitle
+                eyebrow="Meio de Funil"
+                title="Vendas"
+                description={`${vendas.length} oportunidade${vendas.length !== 1 ? 's' : ''} em negociacao | Pipeline: ${formatCurrency(totalPipelineValue)}`}
+                count={vendas.length}
+              />
+
+              {/* Vendas KPIs */}
+              {vendas.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Pipeline</p>
+                    <p className="text-lg font-black text-zinc-900 mt-0.5">{formatCurrency(totalPipelineValue)}</p>
+                  </div>
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Win Rate</p>
+                    <p className="text-lg font-black text-zinc-900 mt-0.5">{winRate}%</p>
+                  </div>
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Media Dias</p>
+                    <p className="text-lg font-black text-zinc-900 mt-0.5">{avgDaysVendas}d</p>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Stage sub-groups */}
+              {VENDAS_STAGES.map(stage => {
+                const stageProjects = vendas.filter(p => p.pipeline_stage === stage);
+                if (stageProjects.length === 0) return null;
+                return (
+                  <div key={stage} className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        {STAGE_CONFIGS[stage].label}
+                      </p>
+                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                    </div>
+                    <div className="space-y-3">
+                      {stageProjects.map(p => (
+                        <VendasRow
+                          key={p.id}
+                          project={p}
+                          onAction={handleAdvance}
+                          onOpenWarRoom={openWarRoom}
+                          transitioning={transitioning}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {vendas.length === 0 && (
+                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                  <Send className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
+                  <p className="text-sm font-black text-zinc-400">Nenhuma oportunidade ativa</p>
+                  <p className="text-xs font-medium text-zinc-300 mt-1">Mova leads qualificados para vendas.</p>
+                </div>
+              )}
             </div>
 
-            {/* REI maturity legend */}
-            <div className="bg-white border border-zinc-200 rounded-2xl p-5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Maturidade REI</p>
-              {[
-                { color: '#00CC6A', label: '75%+', desc: 'Pronto p/ proposta' },
-                { color: '#18181b', label: '40-74%', desc: 'Qualificando' },
-                { color: '#a1a1aa', label: '0-39%', desc: 'Fase inicial' },
-              ].map(({ color, label, desc }) => (
-                <div key={label} className="flex items-center gap-3 mb-2 last:mb-0">
-                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                  <div className="flex-1 flex items-center justify-between">
-                    <span className="text-[10px] font-black text-zinc-500">{label}</span>
-                    <span className="text-[10px] font-medium text-zinc-400">{desc}</span>
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            {/* ── SECTION 3: EXECUCAO (Active Projects) ───────────────────── */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            <div className="mb-14">
+              <SectionTitle
+                eyebrow="Projetos"
+                title="Execucao"
+                description={`${execucao.length} projeto${execucao.length !== 1 ? 's' : ''} em andamento`}
+                count={execucao.length}
+              />
+
+              {/* Execucao KPIs */}
+              {execucao.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tarefas Feitas</p>
+                    <p className="text-lg font-black text-zinc-900 mt-0.5">
+                      {execucao.reduce((s, p) => s + p.done_tasks, 0)}/{execucao.reduce((s, p) => s + p.total_tasks, 0)}
+                    </p>
+                  </div>
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Atrasadas</p>
+                    <p className={cn(
+                      'text-lg font-black mt-0.5',
+                      totalOverdue > 0 ? 'text-zinc-900' : 'text-zinc-300',
+                    )}>{totalOverdue}</p>
+                  </div>
+                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Em Onboarding</p>
+                    <p className="text-lg font-black text-zinc-900 mt-0.5">
+                      {execucao.filter(p => p.pipeline_stage === 'onboarding').length}
+                    </p>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Stage sub-groups */}
+              {EXECUCAO_STAGES.map(stage => {
+                const stageProjects = execucao.filter(p => p.pipeline_stage === stage);
+                if (stageProjects.length === 0) return null;
+                return (
+                  <div key={stage} className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        stage === 'won' ? 'bg-[#00CC6A]' : 'bg-zinc-600',
+                      )} />
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        {STAGE_CONFIGS[stage].label}
+                      </p>
+                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                    </div>
+                    <div className="space-y-3">
+                      {stageProjects.map(p => (
+                        <ExecucaoRow
+                          key={p.id}
+                          project={p}
+                          onAction={handleAdvance}
+                          transitioning={transitioning}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {execucao.length === 0 && (
+                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                  <Rocket className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
+                  <p className="text-sm font-black text-zinc-400">Nenhum projeto em execucao</p>
+                  <p className="text-xs font-medium text-zinc-300 mt-1">Feche vendas para iniciar projetos.</p>
+                </div>
+              )}
             </div>
+
           </div>
         </div>
-      </div>
-    </div>
-    </AdminLayout>
+      </AdminLayout>
 
-    {/* War Room Sheet - Lead Dossie */}
-    <LeadWarRoomSheet
-      lead={selectedLead ? {
-        id:                selectedLead.id,
-        name:              selectedLead.name,
-        company:           selectedLead.company,
-        type:              selectedLead.type,
-        urgencyScore:      selectedLead.urgencyScore,
-        maturityPct:       selectedLead.maturityPct,
-        nextAction:        selectedLead.nextAction,
-        daysSinceActivity: selectedLead.daysSinceActivity,
-      } : null}
-      open={warRoomOpen}
-      onClose={() => { setWarRoomOpen(false); setSelectedLead(null); }}
-      onQualified={loadAll}
-    />
+      {/* War Room Sheet - Lead Dossie */}
+      <LeadWarRoomSheet
+        lead={selectedLead ? {
+          id: selectedLead.id,
+          name: selectedLead.display_name,
+          company: selectedLead.client_company || selectedLead.client_name,
+          type: selectedLead.type,
+          urgencyScore: 0,
+          maturityPct: selectedLead.maturity_pct,
+          nextAction: STAGE_CONFIGS[selectedLead.pipeline_stage || 'lead_inbound'].description,
+          daysSinceActivity: selectedLead.days_in_stage,
+        } : null}
+        open={warRoomOpen}
+        onClose={() => { setWarRoomOpen(false); setSelectedLead(null); }}
+        onQualified={loadAll}
+      />
+
+      {/* Fast Lead Drawer (Novo Lead) */}
+      <FastLeadDrawer
+        open={leadDrawerOpen}
+        onClose={() => setLeadDrawerOpen(false)}
+        onSuccess={loadAll}
+      />
+
+      <DealClosingModal
+        isOpen={dealClosingModalOpen}
+        onClose={() => { setDealClosingModalOpen(false); setSelectedLeadForClosing(null); }}
+        project={selectedLeadForClosing}
+        onSuccess={loadAll}
+      />
     </>
   );
 };

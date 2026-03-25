@@ -1,45 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { EditableField, usePlanEdit } from '@/components/plan/PlanEditContext';
 import { MessageSquare, Mail, Instagram, Facebook, Globe, Youtube, Linkedin, Send, Flame, Zap } from 'lucide-react';
 import SectionHeader from '@/components/plan/SectionHeader';
 
-// ── Female name list for avatar gender detection ──────────────────────────
-const femaleNames = ['maria', 'ana', 'mariana', 'juliana', 'fernanda', 'patricia', 'carla', 'claudia', 'lucia', 'beatriz', 'camila', 'amanda', 'priscila', 'gabriela', 'alessandra', 'bruna', 'larissa', 'natalia', 'leticia', 'aline'];
+// Avatar de iniciais - zero dependencia externa
+const AVATAR_COLORS = [
+    'bg-zinc-800', 'bg-zinc-700', 'bg-zinc-900',
+    'bg-zinc-600', 'bg-zinc-950',
+];
 
-function detectGender(name: string) {
-    const first = name.split(' ')[0].toLowerCase();
-    return femaleNames.some(f => first.includes(f)) ? 'women' : 'men';
+function getInitials(name: string): string {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return (name.charAt(0) || '?').toUpperCase();
 }
 
-function nameToIndex(name: string, idx: number) {
-    let hash = idx * 7;
-    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 70;
-    return Math.abs(hash) + 1;
-}
-
-// ── Persona Avatar ────────────────────────────────────────────────────────
 function PersonaAvatar({ name, index }: { name: string; index: number }) {
-    const gender = detectGender(name);
-    const imgIdx = nameToIndex(name, index);
-    const url = `https://randomuser.me/api/portraits/${gender}/${imgIdx}.jpg`;
-    const initial = name?.charAt(0) || '?';
-    const [error, setError] = useState(false);
-
-    if (error) {
-        return (
-            <div className="w-12 h-12 rounded-full bg-zinc-700 border-2 border-zinc-600 flex items-center justify-center shrink-0">
-                <span className="text-white text-xl font-bold">{initial}</span>
-            </div>
-        );
-    }
+    const initials = getInitials(name);
+    const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
 
     return (
-        <img
-            src={url}
-            alt={name}
-            className="w-12 h-12 rounded-full object-cover shrink-0 border-2 border-white/20"
-            onError={() => setError(true)}
-        />
+        <div className={`w-12 h-12 rounded-full ${colorClass} border-2 border-zinc-600 flex items-center justify-center shrink-0`}>
+            <span className="text-white text-sm font-black tracking-tight">{initials}</span>
+        </div>
     );
 }
 

@@ -13,8 +13,6 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
     const [isUploading, setIsUploading] = useState(false);
 
     const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
-        console.group('[ELIMINAÇÃO] Evento Drop Detectado');
-        console.log(`- Recebidos: ${acceptedFiles.length} aceitos, ${rejectedFiles.length} rejeitados.`);
 
         if (rejectedFiles.length > 0) {
             rejectedFiles.forEach((rej, i) => {
@@ -24,9 +22,8 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
         }
 
         if (acceptedFiles.length === 0 && rejectedFiles.length === 0) {
-            console.error('- Nenhum arquivo foi detectado pelo Dropzone (Vazio).');
+            console.error('Nenhum arquivo foi detectado pelo Dropzone.');
             toast.error('O sistema de drag-and-drop não detectou nenhum arquivo.');
-            console.groupEnd();
             return;
         }
 
@@ -49,19 +46,16 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
                 name.endsWith('.json') ||
                 name.endsWith('.docx');
 
-            console.log(`- Validando: ${file.name} (${file.type || 'sem tipo'}) -> ${isMatch ? 'ACEITO' : 'REJEITADO (FILTRO)'}`);
             return isMatch;
         });
 
         if (validFiles.length > 0) {
             toast.success(`${validFiles.length} arquivo(s) preparado(s) no estado local.`);
-            console.log(`- Enviando ${validFiles.length} arquivos para o estado do Builder.`);
             onFilesChange([...files, ...validFiles]);
         } else if (acceptedFiles.length > 0) {
             toast.error('Formato não suportado. Use PDF, DOCX, TXT, MD, CSV ou JSON.');
         }
 
-        console.groupEnd();
     }, [files, onFilesChange]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({

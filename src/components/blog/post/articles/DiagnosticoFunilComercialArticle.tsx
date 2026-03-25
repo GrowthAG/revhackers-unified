@@ -10,11 +10,11 @@ import RedFlags from '../components/RedFlags';
 
 const DiagnosticoFunilComercialArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     return (
-        <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-gray-900 leading-relaxed">
+        <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-zinc-900 leading-relaxed">
 
             {/* Strategic Context */}
             <StrategicContext label="Arquitetura de Vendas">
-                <p className="text-xl font-medium text-gray-900">
+                <p className="text-xl font-medium text-zinc-900">
                     Se você não sabe onde seu dinheiro está emperrando, você está sangrando receita.
                     A maioria dos times de vendas opera no "feeling", ignorando que um funil comercial é um
                     <span className="font-bold border-b border-revgreen mx-1">sistema hidráulico</span>.
@@ -34,8 +34,8 @@ const DiagnosticoFunilComercialArticle = ({ onCTAClick }: { onCTAClick?: () => v
 
             {/* Introduction */}
             <div className="mb-16">
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 tracking-tight">Onde os Deals Morrem?</h2>
-                <p className="text-lg text-gray-600 mb-8 font-light leading-relaxed">
+                <h2 className="text-3xl font-bold mb-6 text-zinc-900 tracking-tight">Onde os Deals Morrem?</h2>
+                <p className="text-lg text-zinc-600 mb-8 font-light leading-relaxed">
                     A morte silenciosa de um deal raramente acontece na resposta "Não". Ela acontece no "Vou ver internamente e te retorno".
                     A falta de tensão e compromisso (Next Steps) é o que mata pipelines. Vamos dissecar as falhas estruturais mais comuns.
                 </p>

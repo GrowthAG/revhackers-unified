@@ -9,30 +9,30 @@ const DiagnosticoGateway = () => {
 
   const diagnostics = [
     {
+      id: 'growth',
+      title: 'Diagnóstico 360',
+      description: 'Visão Holística: Produto, Operação, Aquisição e Retenção para encontrar o gargalo da sua empresa.',
+      icon: TrendingUp,
+      path: '/score',
+    },
+    {
       id: 'revenue',
-      title: 'Revenue Score',
-      description: 'Análise completa da sua operação de Receita (Marketing & Vendas).',
+      title: 'Diagnóstico CRM',
+      description: 'Deep Dive em Vendas: RevOps, Pipeline, Ferramentas e Processo Comercial.',
       icon: BarChart2,
       path: '/score-revenue',
     },
     {
       id: 'founder',
-      title: 'Founder Score',
-      description: 'Avalie sua autoridade pessoal e posicionamento no mercado.',
+      title: 'Diagnóstico Founder',
+      description: 'Como a sua autoridade e dependência operacional afetam o crescimento.',
       icon: User,
       path: '/score-founder',
     },
     {
-      id: 'growth',
-      title: 'Growth Score',
-      description: 'Mapeamento de maturidade e alavancas de crescimento.',
-      icon: TrendingUp,
-      path: '/score',
-    },
-    {
       id: 'site',
-      title: 'Site Score',
-      description: 'Diagnóstico técnico de performance e conversão do site.',
+      title: 'Diagnóstico Site',
+      description: 'Auditoria técnica de Infraestrutura, Vitals, Conversão e Tracking.',
       icon: Globe,
       path: '/score-site',
     },

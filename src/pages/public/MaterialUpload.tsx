@@ -125,13 +125,30 @@ export default function MaterialUpload() {
       return;
     }
 
-    if (sourceType === 'link' && !linkUrl.trim()) {
-      toast({
-        title: 'Informe o link',
-        description: 'Cole o link do material.',
-        variant: 'destructive',
-      });
-      return;
+    if (sourceType === 'link') {
+      const url = linkUrl.trim().toLowerCase();
+      if (!url) {
+        toast({
+          title: 'Informe o link',
+          description: 'Cole o link do material.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      // Block JS-heavy/Auth-walled apps that the backend scraper can't read
+      const blockedDomains = ['miro.com', 'notion.so', 'notion.site', 'figma.com', 'canva.com', 'drive.google.com', 'mindmeister.com', 'lucidchart.com'];
+      const isBlocked = blockedDomains.some(domain => url.includes(domain));
+      
+      if (isBlocked) {
+        toast({
+          title: 'Link não suportado pela IA',
+          description: 'Ferramentas como Miro, Notion, Google Drive e Figma bloqueiam a leitura automática. Por favor, exporte seu arquivo como PDF e use a aba "Upload".',
+          variant: 'destructive',
+          className: 'bg-red-50 text-red-900 border-red-200'
+        });
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -396,14 +413,12 @@ export default function MaterialUpload() {
                 className="border-zinc-200"
               />
               <p className="text-[11px] text-zinc-400 mt-1.5">
-                Google Drive, Miro, Notion, Figma ou qualquer link compartilhável.
+                Links de artigos, blogs, sites institucionais ou PDFs públicos (Ex: AWS S3).
               </p>
               <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
                 <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
                 <p className="text-[11px] text-amber-700 leading-relaxed">
-                  <strong>Importante:</strong> Certifique-se de que o compartilhamento do link esteja ativo 
-                  (acesso público ou "qualquer pessoa com o link") para que nossa equipe e a IA 
-                  possam acessar o conteúdo do material.
+                  <strong>Arquivos Fechados:</strong> Ferramentas como Miro, Notion, Figma ou Google Drive <strong>não permitem</strong> que nossa IA leia os dados. Para esses casos, exporte como PDF e faça o Upload manual.
                 </p>
               </div>
             </div>

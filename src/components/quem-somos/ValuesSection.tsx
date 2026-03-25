@@ -57,7 +57,7 @@ const ValuesSection = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-100 border border-zinc-100 max-w-7xl mx-auto shadow-2xl shadow-zinc-200/50">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-100 border border-zinc-100 max-w-7xl mx-auto shadow-sm shadow-zinc-200/50">
           {values.map((value, index) => (
             <div
               key={index}

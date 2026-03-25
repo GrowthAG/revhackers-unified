@@ -64,7 +64,7 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Cliente Silencioso">
                     O cliente que reclama ainda quer comprar. O cliente perigoso é aquele que para de abrir tickets, para de logar e te ignora. O silêncio precede o churn.
@@ -81,8 +81,8 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
                 />
 
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0 text-3xl md:text-4xl">O Manual Anti-Churn: Retenção como Estratégia</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0 text-3xl md:text-4xl">O Manual Anti-Churn: Retenção como Estratégia</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         Manter um cliente é 5x a 25x mais barato que adquirir um novo. Mesmo assim, 80% do budget vai para aquisição. Vamos inverter essa lógica com playbooks de defesa.
                     </p>
                 </div>
@@ -94,22 +94,22 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
                     proView="O Health Score caiu de 80 para 60 essa semana. Vou ligar agora."
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <ShieldAlert className="w-6 h-6 text-revgreen" />
                     Táticas de Defesa (The Moat)
                 </h2>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-16 not-prose">
                     {tactics.map((tactic, index) => (
-                        <Card key={index} className="p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative bg-white">
+                        <Card key={index} className="p-6 border border-zinc-200 shadow-sm transition-all group overflow-hidden relative bg-white">
                             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 {tactic.icon}
                             </div>
                             <div className="mb-4">
                                 {tactic.icon}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900 mb-2">{tactic.title}</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed">{tactic.description}</p>
+                            <h3 className="font-bold text-lg text-zinc-900 mb-2">{tactic.title}</h3>
+                            <p className="text-zinc-600 text-sm leading-relaxed">{tactic.description}</p>
                         </Card>
                     ))}
                 </div>
@@ -124,16 +124,16 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
                     ]}
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <UserCheck className="w-6 h-6 text-revgreen" />
                     Templates de Resgate
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                     <UserX className="w-4 h-4 text-revgreen" />
                                     {template.name}
                                 </div>
@@ -141,7 +141,7 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -151,10 +151,10 @@ SLIDE 5: O que precisamos de vocês para conseguir isso.`
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-sm text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

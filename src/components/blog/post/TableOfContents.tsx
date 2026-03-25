@@ -87,7 +87,7 @@ const TableOfContents = ({ containerRef }: TableOfContentsProps) => {
     <div className="sticky top-32 mb-8 hidden lg:block pr-8">
       <nav className="toc-nav relative">
         {/* Continuous Line */}
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-100 z-0"></div>
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-zinc-100 z-0"></div>
 
         <ul className="space-y-0 relative z-10 w-full">
           {headings.map((heading, index) => {
@@ -112,8 +112,8 @@ const TableOfContents = ({ containerRef }: TableOfContentsProps) => {
                   className={cn(
                     "block py-3 pl-6 border-l-2 text-xs leading-relaxed transition-all duration-300",
                     isActive
-                      ? "border-revgreen font-bold text-black bg-gradient-to-r from-revgreen/5 to-transparent"
-                      : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200"
+                      ? "border-revgreen font-bold text-black bg-revgreen/5"
+                      : "border-transparent text-zinc-400 hover:text-zinc-600 hover:border-zinc-200"
                   )}
                 >
                   {heading.text}

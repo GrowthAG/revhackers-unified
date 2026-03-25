@@ -376,7 +376,7 @@ const AdminKnowledgeBase = () => {
                                         <div
                                             key={lib.id}
                                             onClick={() => handleSelectLibrary(lib)}
-                                            className="group relative bg-white border border-zinc-100 rounded-2xl p-6 hover:border-zinc-300 hover:shadow-sm transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
+                                            className="group relative bg-white border border-zinc-100 rounded-2xl p-6 hover:border-zinc-300 transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
                                         >
                                             <div className="flex items-start justify-between mb-6">
                                                 <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500 border border-zinc-100/50">

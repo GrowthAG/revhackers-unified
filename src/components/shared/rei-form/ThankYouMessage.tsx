@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const ThankYouMessage = () => {
   return (
-    <Card className="max-w-3xl mx-auto bg-black border border-zinc-800 p-12 text-center rounded-2xl shadow-2xl overflow-hidden relative">
+    <Card className="max-w-3xl mx-auto bg-black border border-zinc-800 p-12 text-center rounded-2xl shadow-sm overflow-hidden relative">
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-revgreen/10 blur-[120px] rounded-full pointer-events-none" />
 

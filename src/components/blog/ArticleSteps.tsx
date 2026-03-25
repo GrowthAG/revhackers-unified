@@ -26,12 +26,12 @@ export const ArticleSteps: React.FC<ArticleStepsProps> = ({ title, steps }) => {
                         key={index}
                         className={`p-5 border rounded-lg ${step.isHighlight
                                 ? 'bg-revgreen border-revgreen'
-                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                : 'bg-white border-zinc-200 hover:border-zinc-300'
                             } transition-all`}
                     >
                         <div className="flex items-start gap-4">
                             <div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${step.isHighlight ? 'bg-black text-revgreen' : 'bg-gray-100 text-black'
+                                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${step.isHighlight ? 'bg-black text-revgreen' : 'bg-zinc-100 text-black'
                                     }`}
                             >
                                 {step.number}
@@ -44,7 +44,7 @@ export const ArticleSteps: React.FC<ArticleStepsProps> = ({ title, steps }) => {
                                     {step.title}
                                 </h4>
                                 <p
-                                    className={`text-xs leading-relaxed ${step.isHighlight ? 'text-gray-900' : 'text-gray-600'
+                                    className={`text-xs leading-relaxed ${step.isHighlight ? 'text-zinc-900' : 'text-zinc-600'
                                         }`}
                                 >
                                     {step.description}

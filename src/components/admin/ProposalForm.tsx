@@ -793,12 +793,9 @@ Model de JSON de saída:
                 }
             });
 
-            console.log('[AI GEN] Response received:', { success: !error, hasData: !!data, errorMsg: error?.message });
-
             if (error) throw error;
 
             const rawResponse = data?.response || data?.choices?.[0]?.message?.content || "";
-            console.log('[AI GEN] Raw response length:', rawResponse?.length || 0);
 
             if (!rawResponse || rawResponse.length < 50) {
                 throw new Error("Resposta da IA muito curta ou vazia. Tente novamente.");
@@ -883,7 +880,7 @@ Model de JSON de saída:
                 <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-blue-500" />
+                            <div className="w-1 h-1 rounded-full bg-zinc-800" />
                             Fonte de Dados & Review
                         </h2>
                         {watch('recording_url') && (
@@ -1014,7 +1011,7 @@ Model de JSON de saída:
                                 href={watch('recording_url')}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="rounded-xl overflow-hidden relative shadow-lg shadow-zinc-900/5 border border-zinc-100 bg-zinc-900 aspect-video group flex items-center justify-center hover:bg-zinc-800 transition-all cursor-pointer"
+                                className="rounded-xl overflow-hidden relative shadow-sm shadow-zinc-900/5 border border-zinc-100 bg-zinc-900 aspect-video group flex items-center justify-center hover:bg-zinc-800 transition-all cursor-pointer"
                             >
                                 <div className="text-center">
                                     <Video className="w-12 h-12 text-white/50 mx-auto mb-3" />
@@ -1037,7 +1034,7 @@ Model de JSON de saída:
                         type="button"
                         onClick={() => handleGenerateScope()}
                         disabled={generating || !watch('recording_url')}
-                        className="h-12 px-8 bg-zinc-900 hover:bg-black text-white rounded-full font-bold uppercase tracking-widest text-xs shadow-xl shadow-zinc-900/20 active:scale-95 transition-all"
+                        className="h-12 px-8 bg-zinc-900 hover:bg-black text-white rounded-full font-bold uppercase tracking-widest text-xs shadow-sm shadow-zinc-900/20 active:scale-95 transition-all"
                     >
                         {generating ? (
                             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analisando Call...</>
@@ -1093,7 +1090,7 @@ Model de JSON de saída:
                                     href="https://whimsical.com/mind-maps"
                                     target="_blank"
                                     rel="noopener"
-                                    className="text-[10px] text-blue-500 hover:underline flex items-center gap-1"
+                                    className="text-[10px] text-zinc-700 hover:underline flex items-center gap-1"
                                 >
                                     <ExternalLink className="w-3 h-3" />
                                     Criar no Whimsical
@@ -1206,7 +1203,7 @@ Model de JSON de saída:
                                         type="checkbox"
                                         id="funnel_promo"
                                         {...register('crm_data.funnel_promo_active')}
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-600"
                                     />
                                     <label
                                         htmlFor="funnel_promo"
@@ -1275,7 +1272,7 @@ Model de JSON de saída:
                 </div >
 
                 <div className="flex justify-end pt-8">
-                    <Button type="submit" disabled={loading} className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-green-900/10">
+                    <Button type="submit" disabled={loading} className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-sm shadow-green-900/10">
                         <Save className="w-4 h-4 mr-2" />
                         Salvar Proposta
                     </Button>

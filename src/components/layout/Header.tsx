@@ -30,7 +30,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   // Helper variables for styling based on variant/scroll state
   const isLightMode = variant === 'light' && !scrolled;
 
-  const textColor = isLightMode ? "text-zinc-600 hover:text-black" : "text-gray-300 hover:text-white";
+  const textColor = isLightMode ? "text-zinc-600 hover:text-black" : "text-zinc-300 hover:text-white";
   const navBg = isLightMode ? "bg-white border-zinc-200/50 shadow-sm" : "bg-white/5 border-white/10";
   const hoverBg = isLightMode ? "hover:bg-zinc-100" : "hover:bg-white/5";
   const logoClass = isLightMode ? "invert" : "";
@@ -48,7 +48,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
   const MobileNavLink = ({ to, onClick, children }: { to: string, onClick: () => void, children: React.ReactNode }) => (
     <Link
       to={to}
-      className={`text-xl font-medium transition-colors py-2 border-b block ${isLightMode ? "text-zinc-800 border-zinc-100" : "text-gray-300 border-white/5 hover:text-revgreen"}`}
+      className={`text-xl font-medium transition-colors py-2 border-b block ${isLightMode ? "text-zinc-800 border-zinc-100" : "text-zinc-300 border-white/5 hover:text-revgreen"}`}
       onClick={onClick}
     >
       {children}
@@ -125,7 +125,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
         className={cn(
           "w-full fixed top-0 left-0 right-0 z-[60] transition-all duration-300 border-b",
           scrolled
-            ? "bg-black/95 backdrop-blur-md border-white/10 shadow-lg py-4"
+            ? "bg-black/95 backdrop-blur-md border-white/10 shadow-sm py-4"
             : isLightMode
               ? "bg-white/80 backdrop-blur-md border-zinc-200/50 py-6"
               : "bg-black border-transparent py-6"
@@ -154,29 +154,29 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <DropdownMenu>
                   <DropdownMenuTrigger className={cn(
                     "px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex items-center gap-1 focus:outline-none data-[state=open]:bg-white/5",
-                    isLightMode ? "text-zinc-600 hover:text-black data-[state=open]:text-black data-[state=open]:bg-zinc-100" : "text-gray-300 hover:text-white data-[state=open]:text-white"
+                    isLightMode ? "text-zinc-600 hover:text-black data-[state=open]:text-black data-[state=open]:bg-zinc-100" : "text-zinc-300 hover:text-white data-[state=open]:text-white"
                   )}>
                     Diagnósticos <ChevronDown className="w-3 h-3 opacity-50" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent sideOffset={8} className="bg-black/95 border-white/10 p-2 backdrop-blur-xl w-[220px] z-[70]">
                     <DropdownMenuItem asChild>
-                      <Link to="/score-site" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                      <Link to="/score-site" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
                         <Activity className="w-4 h-4 text-revgreen" /> Site / Conversão
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/score-founder" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                      <Link to="/score-founder" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
                         <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/score-revenue" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                      <Link to="/score-revenue" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
                         <TrendingUp className="w-4 h-4 text-revgreen" /> Máquina de Vendas
                       </Link>
                     </DropdownMenuItem>
                     <div className="h-px bg-white/10 my-1" />
                     <DropdownMenuItem asChild>
-                      <Link to="/score" className="flex items-center gap-2 text-gray-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                      <Link to="/score" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
                         <BarChart2 className="w-4 h-4 text-white" /> Diagnóstico Geral
                       </Link>
                     </DropdownMenuItem>
@@ -216,17 +216,17 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-black/95 border-white/10 p-2 backdrop-blur-xl w-[200px] z-[70]">
                   <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-revgreen">
-                    <Link to="/admin/profile" className="flex items-center gap-2 text-gray-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
+                    <Link to="/admin/profile" className="flex items-center gap-2 text-zinc-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
                       <User className="w-4 h-4" /> Meu Perfil
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-revgreen">
-                    <Link to="/admin" className="flex items-center gap-2 text-gray-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
+                    <Link to="/admin" className="flex items-center gap-2 text-zinc-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
                       <Lock className="w-4 h-4" /> Admin Hub
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-revgreen">
-                    <Link to="/admin/settings" className="flex items-center gap-2 text-gray-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
+                    <Link to="/admin/settings" className="flex items-center gap-2 text-zinc-300 cursor-pointer px-3 py-2 rounded-sm outline-none">
                       <Settings className="w-4 h-4" /> Configurações
                     </Link>
                   </DropdownMenuItem>
@@ -283,15 +283,15 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <MobileNavLink to="/" onClick={scrollToTop}>Home</MobileNavLink>
 
                 <div className="py-2 border-b border-white/5">
-                  <div className="text-xs font-mono-tech text-gray-500 uppercase mb-3">Diagnósticos Gratuitos</div>
+                  <div className="text-xs font-mono-tech text-zinc-500 uppercase mb-3">Diagnósticos Gratuitos</div>
                   <div className="space-y-4 pl-2">
-                    <Link to="/score-site" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-gray-300 hover:text-revgreen">
+                    <Link to="/score-site" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
                       <Activity className="w-4 h-4 text-revgreen" /> Site / Conversão
                     </Link>
-                    <Link to="/score-founder" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-gray-300 hover:text-revgreen">
+                    <Link to="/score-founder" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
                       <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
                     </Link>
-                    <Link to="/score-revenue" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-gray-300 hover:text-revgreen">
+                    <Link to="/score-revenue" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
                       <TrendingUp className="w-4 h-4 text-revgreen" /> Máquina de Vendas
                     </Link>
                   </div>
@@ -307,7 +307,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                   <Link
                     to={user ? "/admin" : "/login"}
                     onClick={scrollToTop}
-                    className="text-xl font-medium text-gray-400 hover:text-white transition-colors block py-2"
+                    className="text-xl font-medium text-zinc-400 hover:text-white transition-colors block py-2"
                   >
                     {user ? "Acessar Admin" : "Login Membros"}
                   </Link>

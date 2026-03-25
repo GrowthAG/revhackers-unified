@@ -10,64 +10,42 @@ import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/Dia
 import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
 import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
-import { CallDiagnosticModal } from '@/components/diagnostics/CallDiagnosticModal';
+import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 
-// Perguntas Padronizadas (Sentence Case)
+// Perguntas Padronizadas REI Site (3 dimensões, total = 100pts)
 const QUESTIONS = [
     {
         id: 1,
-        question: "Como seu site se comporta em dispositivos móveis?",
-        log: "Mais de 70% do tráfego B2B ocorre via mobile. Falhas aqui impactam diretamente o CAC.",
+        question: "Velocidade de Carregamento (Percepção do Usuário)",
+        log: "Mais de 50% dos usuários B2B abandonam sites que demoram mais de 3 segundos para carregar o conteúdo principal.",
         options: [
-            { label: "Funciona corretamente e mantém boa legibilidade", score: 20 },
-            { label: "Funciona, mas apresenta problemas pontuais", score: 10 },
-            { label: "É uma adaptação limitada da versão desktop", score: 5 },
-            { label: "Apresenta falhas frequentes ou não sei informar", score: 0 }
+            { label: "Quase instantâneo. Sem tempo de tela preta/branca.", score: 34 },
+            { label: "Demora alguns segundos para renderizar completamente.", score: 15 },
+            { label: "Muito lento. Às vezes o usuário precisa atualizar a página.", score: 5 },
+            { label: "Carregamento instável ou frequentemente quebrado.", score: 0 }
         ]
     },
     {
         id: 2,
-        question: "Qual a percepção de velocidade de carregamento?",
-        log: "A cada segundo de espera, a taxa de conversão cai em média 7%.",
+        question: "Otimização para Dispositivos Móveis (Mobile First)",
+        log: "A maioria das pesquisas de descoberta B2B agora ocorre via celular. Um site engessado afugenta tomadores de decisão.",
         options: [
-            { label: "Carregamento imediato (sem tela branca)", score: 20 },
-            { label: "Carregamento padrão (2-3 segundos)", score: 15 },
-            { label: "Carregamento lento (perceptível)", score: 0 },
-            { label: "Instável ou falha ocasionalmente", score: 0 }
+            { label: "Experiência perfeita. Design fluido, botões acessíveis e navegação fácil no celular.", score: 33 },
+            { label: "Responsivo, mas o texto fica pequeno e alguns elementos quebram.", score: 15 },
+            { label: "Difícil de usar. O usuário precisa dar zoom para ler.", score: 5 },
+            { label: "Versão Desktop encolhida na tela do celular.", score: 0 }
         ]
     },
     {
         id: 3,
-        question: "A proposta de valor está clara na primeira tela?",
-        log: "O tempo médio de atenção é de 3 segundos. Clareza no Hero é fundamental.",
+        question: "Rastreamento e Governança de Dados (Analytics & Pixels)",
+        log: "Falta de rastreamento cega sua operação de marketing, impedindo a mensuração de ROI.",
         options: [
-            { label: "Sim, contém promessa clara e CTA visível", score: 20 },
-            { label: "Contém apenas banner genérico ou boas-vindas", score: 5 },
-            { label: "Foca em texto institucional da empresa", score: 0 },
-            { label: "Informação confusa ou excessiva", score: 0 }
-        ]
-    },
-    {
-        id: 4,
-        question: "Qual o nível de rastreamento de dados?",
-        log: "Sem atribuição correta, o cálculo de ROI de campanhas torna-se impossível.",
-        options: [
-            { label: "Completo (UTMs, Pixel, Analytics e CRM)", score: 20 },
-            { label: "Parcial (Origem aproximada manual)", score: 10 },
-            { label: "Básico (Analytics instalado mas pouco uso)", score: 5 },
-            { label: "Inexistente ou não sei informar", score: 0 }
-        ]
-    },
-    {
-        id: 5,
-        question: "Qual a percepção visual e de marca?",
-        log: "Design premium aumenta a percepção de valor e reduz a fricção de venda.",
-        options: [
-            { label: "Moderna, premium e alinhada ao mercado", score: 20 },
-            { label: "Funcional, baseada em templates padrão", score: 10 },
-            { label: "Desatualizada em relação aos concorrentes", score: 0 },
-            { label: "Amadora ou improvisada", score: 0 }
+            { label: "GTM implementado, tags disparando corretamente sem duplicidade e compliance LGPD/GDPR.", score: 33 },
+            { label: "Tags instaladas, mas com incerteza sobre a precisão dos dados recebidos.", score: 15 },
+            { label: "Apenas Google Analytics cru. Pixel do Meta sem configuração avançada.", score: 5 },
+            { label: "Não fazemos rastreio inteligente do tráfego.", score: 0 }
         ]
     }
 ];
@@ -375,8 +353,8 @@ const SiteScore = () => {
     if (step === 'url-input') {
         return (
             <DiagnosticLayout
-                title="Auditoria"
-                subtitle="Setup Inicial"
+                title="Diagnóstico Site"
+                subtitle="Auditoria Técnica de Conversão B2B"
                 variant="light"
                 centered={true}
                 hideHeader={false}
@@ -486,7 +464,7 @@ const SiteScore = () => {
     if (step === 'questions') {
         const question = QUESTIONS[currentQ];
         return (
-            <DiagnosticLayout title="Auditoria" subtitle="Em análise" variant="light" centered={true} hideHeader={false} headerVariant="default">
+            <DiagnosticLayout title="Diagnóstico Site" subtitle="Em análise" variant="light" centered={true} hideHeader={false} headerVariant="default">
                 <div className="max-w-3xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center px-4 md:px-0">
 
                     {/* Header Clean */}
@@ -654,7 +632,7 @@ const SiteScore = () => {
                             <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
-                            Relatório de <span className="text-zinc-600">Performance</span>
+                            Diagnóstico <span className="text-zinc-600">Site</span>
                         </h1>
                         <p className="text-zinc-500 font-medium max-w-xl mx-auto">
                             Análise técnica completa dos vetores de crescimento e infraestrutura.
@@ -1014,15 +992,22 @@ const SiteScore = () => {
                             </section>
 
                             <DiagnosticActionSection
-                                title="Otimize sua Infraestrutura para Conversão Máxima."
+                                title="Destrave sua Performance."
+                                subtitle="Agende um diagnóstico gratuito com um especialista técnico para desenhar seu plano de ação."
                                 onCtaClick={() => setIsBookingModalOpen(true)}
                             />
 
-                            <CallDiagnosticModal
+                            <DiagnosticBookingModal
                                 isOpen={isBookingModalOpen}
                                 onClose={() => setIsBookingModalOpen(false)}
-                                source="site-score"
+                                diagnosticType="site"
                             />
+
+                            {/* Fallback MoFu CTA */}
+                            <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
+                                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Checklist de Conversão (Grátis)</button>
+                            </div>
                         </div>
                     </div>
                 </div>

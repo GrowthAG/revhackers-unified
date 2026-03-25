@@ -88,8 +88,6 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the data to your backend
-    console.log('Lead magnet form submitted:', { ...formData, magnet });
     setStep('success');
 
     // Auto close after 5 seconds
@@ -102,11 +100,11 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full bg-[#0F0F11] border border-white/10 shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
+      <Card className="max-w-lg w-full bg-[#0F0F11] border border-white/10 shadow-sm relative overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
+          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors z-10"
         >
           <X className="h-5 w-5" />
         </button>
@@ -121,7 +119,7 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
               <h2 className="text-2xl font-bold mb-2 text-white">
                 {currentMagnet.title}
               </h2>
-              <p className="text-gray-400">
+              <p className="text-zinc-400">
                 {currentMagnet.subtitle}
               </p>
             </div>
@@ -145,7 +143,7 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
                   placeholder="Nome*"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="bg-[#18181b] border-white/10 text-white placeholder-gray-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
+                  className="bg-[#18181b] border-white/10 text-white placeholder-zinc-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
                   required
                 />
                 <Input
@@ -153,7 +151,7 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
                   placeholder="Email*"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="bg-[#18181b] border-white/10 text-white placeholder-gray-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
+                  className="bg-[#18181b] border-white/10 text-white placeholder-zinc-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
                   required
                 />
               </div>
@@ -162,7 +160,7 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
                 placeholder="Empresa*"
                 value={formData.company}
                 onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                className="bg-[#18181b] border-white/10 text-white placeholder-gray-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
+                className="bg-[#18181b] border-white/10 text-white placeholder-zinc-500 focus:border-revgreen focus:ring-revgreen/10 transition-all"
                 required
               />
 

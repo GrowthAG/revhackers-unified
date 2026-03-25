@@ -45,8 +45,10 @@ const AdminREIProjects = () => {
 
     const filteredProjects = projects?.filter(p =>
         p.status !== 'lead' &&
+        p.status !== 'diagnostic' &&
         (p.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.client_company || "").toLowerCase().includes(searchTerm.toLowerCase()))
+        (p.client_company || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ((p as any).trade_name || "").toLowerCase().includes(searchTerm.toLowerCase()))
     ) || [];
 
     const handleSelectAll = (checked: boolean) => {
@@ -200,7 +202,7 @@ const AdminREIProjects = () => {
                                                 />
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{(project as any).trade_name || cleanCompanyName(project.client_company || project.client_name)}</div>
+                                                <div className="font-bold text-black text-sm uppercase tracking-tight">{(project as any).trade_name || (project.client_company ? cleanCompanyName(project.client_company) : project.client_name)}</div>
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="text-zinc-500 text-xs uppercase tracking-widest font-medium">{project.client_name || '-'}</div>

@@ -122,7 +122,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
             {/* Reject/AI Adjustment Dialog */}
             {showReject && (
                 <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowReject(false)}>
-                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-sm" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-900"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>

@@ -73,7 +73,7 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
             {/* Hero Banner */}
 
 
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed">
 
                 <StrategicContext label="Fato Brutal">
                     68% dos novos produtos B2B falham não por falta de tecnologia, mas por falta de uma estratégia de GTM clara. O custo da inércia é maior que o custo da mudança.
@@ -91,15 +91,15 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
                 {/* Intro Text */}
                 <div className="mb-16">
-                    <h2 id="o-que-e-gtm" className="font-bold tracking-tight text-gray-900 mt-0 text-3xl md:text-4xl">GTM: O Motor de Sobrevivência B2B</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="o-que-e-gtm" className="font-bold tracking-tight text-zinc-900 mt-0 text-3xl md:text-4xl">GTM: O Motor de Sobrevivência B2B</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         Muitas empresas tratam o Go-To-Market como se fosse apenas um plano de marketing ou um checklist de lançamento. Na realidade, o GTM é a <strong>estratégia de alinhamento total</strong> entre Produto, Marketing e Vendas para entregar valor a um mercado específico.
                     </p>
                 </div>
 
                 {/* Anatomy Section */}
                 <div className="mb-20">
-                    <h2 id="pilares-gtm" className="font-bold text-gray-900 mb-8 border-b border-gray-100 pb-4 uppercase tracking-tight">Os 9 Pilares do GTM de Alta Performance</h2>
+                    <h2 id="pilares-gtm" className="font-bold text-zinc-900 mb-8 border-b border-zinc-100 pb-4 uppercase tracking-tight">Os 9 Pilares do GTM de Alta Performance</h2>
                     <div className="not-prose grid gap-6">
                         {[
                             { label: "01. MANIFESTO", title: "Causa e Consequência", desc: "Qual é a mudança no mundo que torna seu produto inevitável?" },
@@ -112,11 +112,11 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                             { label: "08. MÉTRICAS", title: "Os Sinais de Saúde", desc: "Payback, Churn e LTV/CAC: a verdade nua e crua dos seus números." },
                             { label: "09. FRAMEWORK", title: "Execução Contínua", desc: "O ciclo de teste, aprendizado e escala que nunca para." }
                         ].map((item, i) => (
-                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                                <span className="bg-gray-100 px-3 py-1 text-[10px] font-bold text-black w-24 shrink-0 uppercase tracking-widest text-center rounded">{item.label}</span>
+                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-zinc-100 pb-6 last:border-0 last:pb-0">
+                                <span className="bg-zinc-100 px-3 py-1 text-[10px] font-bold text-black w-24 shrink-0 uppercase tracking-widest text-center rounded">{item.label}</span>
                                 <div>
-                                    <h4 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h4>
-                                    <p className="text-gray-600 leading-relaxed m-0 text-base">{item.desc}</p>
+                                    <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
+                                    <p className="text-zinc-600 leading-relaxed m-0 text-base">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -125,7 +125,7 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
                 {/* Strategies Section */}
                 <div className="mb-20">
-                    <h2 id="estrategias-gtm" className="font-bold text-gray-900 mb-10 text-3xl">Playbook de Execução</h2>
+                    <h2 id="estrategias-gtm" className="font-bold text-zinc-900 mb-10 text-3xl">Playbook de Execução</h2>
                     <div className="space-y-16">
                         {strategies.map((strategy, index) => (
                             <div key={index} className="group">
@@ -133,14 +133,14 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                                     <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg shrink-0 group-hover:bg-revgreen transition-colors">
                                         {index + 1}
                                     </div>
-                                    <h3 className="font-bold text-2xl text-gray-900 m-0">{strategy.title}</h3>
+                                    <h3 className="font-bold text-2xl text-zinc-900 m-0">{strategy.title}</h3>
                                 </div>
-                                <p className="text-gray-700 text-lg mb-6 leading-relaxed pl-14">{strategy.description}</p>
+                                <p className="text-zinc-700 text-lg mb-6 leading-relaxed pl-14">{strategy.description}</p>
 
                                 <div className="pl-14 space-y-4">
-                                    <div className="bg-gray-50 border-l-2 border-revgreen p-6 rounded-r-lg">
+                                    <div className="bg-zinc-50 border-l-2 border-revgreen p-6 rounded-r-lg">
                                         <span className="text-xs font-bold text-revgreen uppercase tracking-widest block mb-2">Exemplo Prático</span>
-                                        <p className="text-gray-600 italic m-0">"{strategy.example}"</p>
+                                        <p className="text-zinc-600 italic m-0">"{strategy.example}"</p>
                                     </div>
                                     <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                         <TrendingUp className="w-4 h-4 text-revgreen" />
@@ -164,12 +164,12 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
                 {/* Templates Section */}
                 <div className="mb-20">
-                    <h2 id="templates-gtm" className="font-bold text-gray-900 mb-10 text-3xl">Recursos de Implementação</h2>
+                    <h2 id="templates-gtm" className="font-bold text-zinc-900 mb-10 text-3xl">Recursos de Implementação</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         {templates.map((template, index) => (
-                            <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                    <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                                <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                    <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                         <Target className="w-4 h-4 text-revgreen" />
                                         {template.name}
                                     </div>
@@ -177,7 +177,7 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -187,10 +187,10 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                                     </Button>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                        <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                    <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                        <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                     </div>
-                                    <pre className="font-mono text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    <pre className="font-mono text-sm text-zinc-700 whitespace-pre-wrap leading-relaxed">
                                         {template.body}
                                     </pre>
                                 </div>

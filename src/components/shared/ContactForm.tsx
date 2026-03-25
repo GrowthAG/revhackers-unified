@@ -49,8 +49,6 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
 
       // Save to localStorage
       saveFormData(submissionData);
-      console.log('Form data saved to localStorage:', submissionData);
-
       // Send to GHL relay
       await sendToGHL('contact_form', submissionData as Record<string, unknown>);
 

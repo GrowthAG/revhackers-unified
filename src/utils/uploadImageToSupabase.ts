@@ -6,11 +6,21 @@ import { supabase } from '@/integrations/supabase/client';
  * @param file O arquivo selecionado pelo usuário.
  * @returns string | null - A URL pública, ou null em caso de erro.
  */
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif'];
+
 export const uploadImageToSupabase = async (file: File, bucketName = 'blog-covers', userId?: string) => {
+  // Validacao de tamanho
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error(`Arquivo muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Limite: 10MB.`);
+  }
+
+  // Validacao de tipo MIME
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error(`Tipo de arquivo nao permitido: ${file.type}. Use JPG, PNG, WebP, SVG ou GIF.`);
+  }
+
   const bucket = bucketName;
-  // Se userId for fornecido, cria estrutura de pasta: userId/timestamp_filename
-  // Se não, usa apenas timestamp_filename (comportamento antigo)
-  // Gera um nome único usando UUID para evitar conflitos e caracteres especiais
   const fileExt = file.name.split('.').pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
 

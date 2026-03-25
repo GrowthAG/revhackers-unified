@@ -24,7 +24,9 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
-            ]
+            ],
+            tools: [{ type: 'web_search_preview' }],
+            web_search_preview: true
         }),
     });
 
@@ -74,7 +76,9 @@ REGRAS ABSOLUTAS:
 - Todas as respostas em portugues brasileiro.
 - Responda APENAS com JSON valido, sem texto adicional.
 - NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
-- Baseie-se em dados reais de mercado. Cite empresas reais do segmento no Brasil.
+- ACIONE A BUSCA NA WEB nativa para buscar concorrentes, precos e pesquisas da industria.
+- OBRIGATORIO INDICAR FONTES (ex: "segundo IDC / Statista Brasil...").
+- Baseie-se em dados reais de mercado e de concorrentes ativos. Nao invente.
 - Seja especifico nos numeros e metricas. Nao use placeholders genericos.
 - PERSONALIZE tudo ao contexto do cliente. Se recebeu dados do site, diagnostico ou concorrentes, USE-OS.`;
 

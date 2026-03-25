@@ -64,7 +64,7 @@ CTA (Ação): Começar Grátis Agora (Sem cartão)`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="Tráfego é Vaidade">
                     Você pode dobrar seu faturamento de duas formas: dobrando o tráfego (caro e difícil) ou dobrando a conversão (barato e técnico). CRO (Conversion Rate Optimization) é a arte de fazer mais com o mesmo tráfego. É a alavanca mais subestimada do Growth.
@@ -87,25 +87,25 @@ CTA (Ação): Começar Grátis Agora (Sem cartão)`
                     proView="Entender a psicologia do usuário, remover fricção e aumentar a motivação suficiente para o 'pulo de fé'."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">A Tríade da Conversão (Heurísticas)</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">A Tríade da Conversão (Heurísticas)</h2>
                 <div className="grid md:grid-cols-3 gap-6 mb-12 not-prose">
                     {heuristics.map((item, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 hover:border-revgreen/50 transition-colors shadow-sm">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 hover:border-revgreen/50 transition-colors shadow-sm">
                             <div className="bg-zinc-900 p-3 rounded-full w-fit mb-4 border border-zinc-800">
                                 {item.icon}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                            <p className="text-sm text-gray-600 mb-0 leading-relaxed">{item.description}</p>
+                            <h3 className="font-bold text-zinc-900 mb-2">{item.title}</h3>
+                            <p className="text-sm text-zinc-600 mb-0 leading-relaxed">{item.description}</p>
                         </Card>
                     ))}
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Ferramentas de Diagnóstico (Templates)</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Ferramentas de Diagnóstico (Templates)</h2>
                 <div className="space-y-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -113,7 +113,7 @@ CTA (Ação): Começar Grátis Agora (Sem cartão)`
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -122,7 +122,7 @@ CTA (Ação): Começar Grátis Agora (Sem cartão)`
                                     )}
                                 </Button>
                             </div>
-                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-gray-600 bg-white">
+                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-zinc-600 bg-white">
                                 {template.body}
                             </div>
                         </Card>
@@ -149,7 +149,7 @@ CTA (Ação): Começar Grátis Agora (Sem cartão)`
                 <div className="mt-12 not-prose">
                     <Button
                         size="lg"
-                        className="w-full md:w-auto bg-revgreen text-black hover:bg-revgreen/90 font-bold text-lg px-8 h-14 rounded-full shadow-lg"
+                        className="w-full md:w-auto bg-revgreen text-black hover:bg-revgreen/90 font-bold text-lg px-8 h-14 rounded-full shadow-sm"
                         onClick={onCTAClick}
                     >
                         <span className="flex items-center justify-center gap-2">

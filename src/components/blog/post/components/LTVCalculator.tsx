@@ -69,13 +69,13 @@ const LTVCalculator = () => {
         <Card className="bg-white border-2 border-black p-0 overflow-hidden max-w-3xl mx-auto my-16 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none relative min-h-[500px] flex flex-col font-sans not-prose">
 
             {/* Header / Meta */}
-            <div className="flex justify-between items-center p-6 border-b-2 border-dashed border-gray-200">
+            <div className="flex justify-between items-center p-6 border-b-2 border-dashed border-zinc-200">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-revgreen rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-gray-400">System: LTV_Audit_v2.1</span>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">System: LTV_Audit_v2.1</span>
                 </div>
                 {['arpu', 'margin', 'churn'].includes(step) && (
-                    <span className="text-xl font-black font-mono text-gray-200">{getStepNumber()}/03</span>
+                    <span className="text-xl font-black font-mono text-zinc-200">{getStepNumber()}/03</span>
                 )}
             </div>
 
@@ -87,14 +87,14 @@ const LTVCalculator = () => {
                         <div className="inline-block relative">
                             <h3 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-black leading-[0.9]">
                                 Calculated<br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-500">Growth.</span>
+                                <span className="text-zinc-500">Growth.</span>
                             </h3>
                             <div className="absolute -top-4 -right-8">
                                 <MonitorPlay className="w-8 h-8 text-revgreen" />
                             </div>
                         </div>
 
-                        <p className="text-gray-500 text-lg md:text-xl font-medium leading-relaxed max-w-md mx-auto">
+                        <p className="text-zinc-500 text-lg md:text-xl font-medium leading-relaxed max-w-md mx-auto">
                             Unit Economics não é opinião. É matemática. Descubra a saúde real do seu negócio agora.
                         </p>
 
@@ -121,12 +121,12 @@ const LTVCalculator = () => {
 
                         <div className="space-y-8">
                             <div className="relative group">
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-black text-gray-300 group-focus-within:text-black transition-colors">R$</span>
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-black text-zinc-300 group-focus-within:text-black transition-colors">R$</span>
                                 <input
                                     type="number"
                                     value={arpu}
                                     onChange={(e) => setArpu(Number(e.target.value))}
-                                    className="w-full pl-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-gray-100 focus:border-black transition-all placeholder-gray-200"
+                                    className="w-full pl-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-zinc-100 focus:border-black transition-all placeholder-zinc-200"
                                     autoFocus
                                 />
                             </div>
@@ -136,11 +136,11 @@ const LTVCalculator = () => {
                                 max={10000}
                                 step={10}
                                 onValueChange={(vals) => setArpu(vals[0])}
-                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-lg [&_.border-primary]:border-black"
+                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-sm [&_.border-primary]:border-black"
                             />
                         </div>
 
-                        <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all absolute bottom-8 right-8 flex items-center justify-center shadow-lg hover:scale-105">
+                        <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all absolute bottom-8 right-8 flex items-center justify-center shadow-sm hover:scale-105">
                             <ArrowRight className="w-8 h-8" />
                         </Button>
                     </div>
@@ -162,10 +162,10 @@ const LTVCalculator = () => {
                                     type="number"
                                     value={margin}
                                     onChange={(e) => setMargin(Number(e.target.value))}
-                                    className="w-full pr-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-gray-100 focus:border-black transition-all placeholder-gray-200"
+                                    className="w-full pr-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-zinc-100 focus:border-black transition-all placeholder-zinc-200"
                                     autoFocus
                                 />
-                                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-4xl font-black text-gray-300 group-focus-within:text-black transition-colors">%</span>
+                                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-4xl font-black text-zinc-300 group-focus-within:text-black transition-colors">%</span>
                             </div>
                             <Slider
                                 value={[margin]}
@@ -173,15 +173,15 @@ const LTVCalculator = () => {
                                 max={100}
                                 step={1}
                                 onValueChange={(vals) => setMargin(vals[0])}
-                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-lg [&_.border-primary]:border-black"
+                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-sm [&_.border-primary]:border-black"
                             />
                         </div>
 
                         <div className="flex gap-4 absolute bottom-8 right-8">
-                            <Button variant="ghost" onClick={() => setStep('arpu')} className="h-14 w-14 rounded-full border border-gray-200 p-0 text-gray-400 hover:text-black hover:border-black">
+                            <Button variant="ghost" onClick={() => setStep('arpu')} className="h-14 w-14 rounded-full border border-zinc-200 p-0 text-zinc-400 hover:text-black hover:border-black">
                                 <RotateCcw className="w-5 h-5" />
                             </Button>
-                            <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all flex items-center justify-center shadow-lg hover:scale-105">
+                            <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all flex items-center justify-center shadow-sm hover:scale-105">
                                 <ArrowRight className="w-8 h-8" />
                             </Button>
                         </div>
@@ -204,10 +204,10 @@ const LTVCalculator = () => {
                                     type="number"
                                     value={churn}
                                     onChange={(e) => setChurn(Number(e.target.value))}
-                                    className="w-full pr-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-gray-100 focus:border-black transition-all placeholder-gray-200"
+                                    className="w-full pr-16 py-4 text-7xl font-black text-black outline-none bg-transparent border-b-4 border-zinc-100 focus:border-black transition-all placeholder-zinc-200"
                                     autoFocus
                                 />
-                                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-4xl font-black text-gray-300 group-focus-within:text-black transition-colors">%</span>
+                                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-4xl font-black text-zinc-300 group-focus-within:text-black transition-colors">%</span>
                             </div>
                             <Slider
                                 value={[churn]}
@@ -215,7 +215,7 @@ const LTVCalculator = () => {
                                 max={30}
                                 step={0.1}
                                 onValueChange={(vals) => setChurn(vals[0])}
-                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-lg [&_.border-primary]:border-black"
+                                className="[&_.bg-primary]:bg-black [&_.bg-primary]:w-4 [&_.bg-primary]:h-4 [&_.bg-primary]:border-2 [&_.bg-primary]:border-white [&_.bg-primary]:shadow-sm [&_.border-primary]:border-black"
                             />
                             {churn > 10 && (
                                 <p className="text-red-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2 animate-pulse">
@@ -226,10 +226,10 @@ const LTVCalculator = () => {
                         </div>
 
                         <div className="flex gap-4 absolute bottom-8 right-8">
-                            <Button variant="ghost" onClick={() => setStep('margin')} className="h-14 w-14 rounded-full border border-gray-200 p-0 text-gray-400 hover:text-black hover:border-black">
+                            <Button variant="ghost" onClick={() => setStep('margin')} className="h-14 w-14 rounded-full border border-zinc-200 p-0 text-zinc-400 hover:text-black hover:border-black">
                                 <RotateCcw className="w-5 h-5" />
                             </Button>
-                            <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all flex items-center justify-center shadow-lg hover:scale-105">
+                            <Button onClick={nextStep} className="w-24 h-24 rounded-full bg-black text-white hover:bg-revgreen hover:text-black transition-all flex items-center justify-center shadow-sm hover:scale-105">
                                 <CheckCircle2 className="w-8 h-8" />
                             </Button>
                         </div>
@@ -240,7 +240,7 @@ const LTVCalculator = () => {
                 {step === 'calculating' && (
                     <div className="text-center space-y-8 animate-in zoom-in-95 duration-500 h-full flex flex-col justify-center items-center">
                         <div className="relative">
-                            <div className="w-24 h-24 border-8 border-gray-100 rounded-full"></div>
+                            <div className="w-24 h-24 border-8 border-zinc-100 rounded-full"></div>
                             <div className="w-24 h-24 border-8 border-black border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
                         </div>
                         <h3 className="text-2xl font-black uppercase tracking-widest animate-pulse">Processando...</h3>
@@ -257,15 +257,15 @@ const LTVCalculator = () => {
                         <h3 className="text-4xl font-black uppercase tracking-tight mb-2 max-w-md leading-none">
                             Relatório<br />Pronto.
                         </h3>
-                        <p className="text-gray-500 text-lg mb-8 max-w-xs">
+                        <p className="text-zinc-500 text-lg mb-8 max-w-xs">
                             Desbloqueie sua análise completa de unit economics.
                         </p>
 
                         <form onSubmit={handleUnlock} className="space-y-6 w-full max-w-sm">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Nome Completo</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nome Completo</label>
                                 <Input
-                                    className="border-0 border-b-2 border-gray-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-gray-200 bg-transparent transition-colors"
+                                    className="border-0 border-b-2 border-zinc-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-zinc-200 bg-transparent transition-colors"
                                     required
                                     value={name}
                                     onChange={e => setName(e.target.value)}
@@ -273,9 +273,9 @@ const LTVCalculator = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">E-mail Corporativo</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">E-mail Corporativo</label>
                                 <Input
-                                    className="border-0 border-b-2 border-gray-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-gray-200 bg-transparent transition-colors"
+                                    className="border-0 border-b-2 border-zinc-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-zinc-200 bg-transparent transition-colors"
                                     required
                                     type="email"
                                     value={email}
@@ -299,9 +299,9 @@ const LTVCalculator = () => {
                     <div className="h-full flex flex-col animate-in zoom-in-95 duration-500">
                         <div className="flex items-start justify-between mb-8">
                             <div>
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Lifetime Value</span>
+                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1 block">Lifetime Value</span>
                                 <h3 className="text-6xl md:text-7xl font-black text-black tracking-tighter leading-none">
-                                    <span className="text-2xl align-top mr-1 text-gray-400 font-bold">R$</span>
+                                    <span className="text-2xl align-top mr-1 text-zinc-400 font-bold">R$</span>
                                     {ltv.toLocaleString('pt-BR', { maximumFractionDigits: 0, notation: 'compact' })}
                                 </h3>
                             </div>
@@ -312,24 +312,24 @@ const LTVCalculator = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-8 flex-1 content-center border-t border-b border-gray-100 py-8 my-4">
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-8 flex-1 content-center border-t border-b border-zinc-100 py-8 my-4">
                             <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Health Score</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Health Score</span>
                                 <div className="flex items-center gap-2">
                                     <div className={`w-3 h-3 rounded-full ${ltv > arpu * 3 ? 'bg-revgreen' : 'bg-yellow-400'}`}></div>
                                     <span className="font-bold text-xl">{ltv > arpu * 3 ? 'Saudável' : 'Atenção'}</span>
                                 </div>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Lifetime</span>
-                                <span className="font-black font-mono text-2xl">{lifetime.toFixed(1)} <span className="text-sm font-bold text-gray-400">meses</span></span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Lifetime</span>
+                                <span className="font-black font-mono text-2xl">{lifetime.toFixed(1)} <span className="text-sm font-bold text-zinc-400">meses</span></span>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Ticket Médio</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Ticket Médio</span>
                                 <span className="font-black font-mono text-2xl">R$ {arpu}</span>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Margem</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Margem</span>
                                 <span className="font-black font-mono text-2xl">{margin}%</span>
                             </div>
                         </div>

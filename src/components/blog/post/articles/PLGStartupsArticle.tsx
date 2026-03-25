@@ -78,7 +78,7 @@ Abs,
     const anatomy = [
         { label: "ACQ", title: "Aquisição", desc: "O produto é a isca. SEO e Conteúdo trazem o usuário para testar grátis.", icon: <Users className="w-5 h-5 text-zinc-600" /> },
         { label: "ACT", title: "Ativação", desc: "O usuário sente o valor (Aha Moment) antes de pagar.", icon: <Zap className="w-5 h-5 text-yellow-500" /> },
-        { label: "RET", title: "Retenção", desc: "O produto cria hábito. O uso se torna diário/semanal.", icon: <TrendingUp className="w-5 h-5 text-blue-500" /> },
+        { label: "RET", title: "Retenção", desc: "O produto cria hábito. O uso se torna diário/semanal.", icon: <TrendingUp className="w-5 h-5 text-zinc-700" /> },
         { label: "REF", title: "Referral", desc: "O usuário ama tanto que convida outros (Growth Loop).", icon: <Rocket className="w-5 h-5 text-revgreen" /> }
     ];
 
@@ -94,7 +94,7 @@ Abs,
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="PLG no Brasil é Diferente">
                     <p>
@@ -122,12 +122,12 @@ Abs,
                     proView="O grátis é um canal de aquisição. O produto deve ter gatilhos psicológicos que forçam a conversão para o pago (Seat limits, Features, Storage)."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">A Anatomia do Crescimento pelo Produto</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">A Anatomia do Crescimento pelo Produto</h2>
                 <div className="grid md:grid-cols-2 gap-6 mb-16 not-prose">
                     {anatomy.map((item, i) => (
-                        <div key={i} className="group relative bg-white p-8 rounded-2xl border border-gray-200 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:border-revgreen/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                        <div key={i} className="group relative bg-white p-8 rounded-2xl border border-zinc-200 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:border-revgreen/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
                             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <div className="text-gray-900 scale-150 transform origin-top-right">
+                                <div className="text-zinc-900 scale-150 transform origin-top-right">
                                     {item.icon}
                                 </div>
                             </div>
@@ -137,16 +137,16 @@ Abs,
                                     {item.label}
                                 </div>
 
-                                <h4 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-black transition-colors">
+                                <h4 className="text-2xl font-bold text-zinc-900 mb-3 group-hover:text-black transition-colors">
                                     {item.title}
                                 </h4>
 
-                                <p className="text-gray-600 leading-relaxed font-medium">
+                                <p className="text-zinc-600 leading-relaxed font-medium">
                                     {item.desc}
                                 </p>
                             </div>
 
-                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-revgreen to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-revgreen transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                         </div>
                     ))}
                 </div>
@@ -169,20 +169,20 @@ Abs,
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">3 Pilares para Implementar Hoje</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">3 Pilares para Implementar Hoje</h2>
                 <div className="space-y-12 mb-16 mt-8">
                     {strategies.map((strategy, index) => (
-                        <div key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                        <div key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
                                 <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                                 {strategy.title}
                             </h3>
-                            <p className="text-gray-700 mb-6 font-medium">
+                            <p className="text-zinc-700 mb-6 font-medium">
                                 {strategy.description}
                             </p>
-                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Benchmark</h4>
-                                <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
+                            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100">
+                                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Benchmark</h4>
+                                <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
                             </div>
                             <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-bold">
                                 <TrendingUp className="w-4 h-4" />
@@ -192,16 +192,16 @@ Abs,
                     ))}
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <MousePointerClick className="w-6 h-6 text-revgreen" />
                     Templates de Ativação
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -209,7 +209,7 @@ Abs,
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -218,7 +218,7 @@ Abs,
                                     )}
                                 </Button>
                             </div>
-                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-gray-600 bg-white">
+                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-zinc-600 bg-white">
                                 {template.body}
                             </div>
                         </Card>
@@ -234,7 +234,7 @@ Abs,
                         {checklist.map((item, i) => (
                             <div key={i} className="flex items-start gap-3 p-3 border border-white/10 rounded bg-white/5">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
-                                <span className="text-sm font-medium text-gray-300">{item}</span>
+                                <span className="text-sm font-medium text-zinc-300">{item}</span>
                             </div>
                         ))}
                     </div>

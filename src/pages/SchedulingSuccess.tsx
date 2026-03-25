@@ -59,7 +59,7 @@ const SchedulingSuccess = () => {
                         </div>
 
                         <div className="relative">
-                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-zinc-100 to-transparent -z-10 rounded-full blur-3xl opacity-50"></div>
+                            <div className="absolute top-0 left-0 w-full h-full bg-zinc-100 -z-10 rounded-full blur-3xl opacity-50"></div>
                             <h3 className="text-3xl font-bold tracking-tight mb-4">
                                 O que acontece agora?
                             </h3>

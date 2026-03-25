@@ -149,7 +149,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
   const fixedAvatar = getFixedAuthorAvatar(authorAvatar);
 
   return (
-    <article className="bg-white text-gray-900 overflow-hidden antialiased">
+    <article className="bg-white text-zinc-900 overflow-hidden antialiased">
       <div className="max-w-4xl mx-auto">
         {dynamicV2Config ? (
           <DynamicV2Renderer config={dynamicV2Config} onCTAClick={onCTAClick} />
@@ -176,7 +176,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
               src={fixedAvatar}
               alt={authorName}
               loading="lazy"
-              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl"
+              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png';
               }}

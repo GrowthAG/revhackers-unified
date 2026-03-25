@@ -100,15 +100,15 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
             <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden my-8"
+                className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-sm overflow-hidden my-8"
             >
                 {/* Header Section */}
-                <div className="bg-gradient-to-r from-zinc-900 to-zinc-950 p-8 text-center border-b border-zinc-800">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6">
-                        <Star className="w-8 h-8 text-blue-400" />
+                <div className="bg-zinc-950 p-8 text-center border-b border-zinc-800">
+                    <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6">
+                        <Star className="w-8 h-8 text-zinc-300" />
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                        Bem-vindo(a) ao seu <span className="text-transparent bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text">Hub Estratégico</span>
+                        Bem-vindo(a) ao seu <span className="text-[#00CC6A]">Hub Estratégico</span>
                     </h2>
                     <p className="text-zinc-400 text-lg max-w-xl mx-auto">
                         Olá {clientName}, seu kickoff foi concluído com sucesso. Antes de liberar todos os seus acessos e playbooks, queremos te ouvir rapidinho.
@@ -129,7 +129,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                                     onClick={() => setScore(num)}
                                     className={`w-10 h-12 sm:w-12 sm:h-14 rounded-lg font-bold text-lg transition-all duration-200 border
                                         ${score === num 
-                                            ? 'bg-blue-600 border-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] transform scale-110' 
+                                            ? 'bg-zinc-900 border-zinc-700 text-white shadow-[0_0_15px_rgba(0,0,0,0.3)] transform scale-110' 
                                             : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white hover:border-zinc-500'
                                         }
                                     `}
@@ -157,7 +157,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                                 </label>
                                 <Textarea 
                                     placeholder="Conta pra gente o que mais gostou ou no que podemos melhorar drasticamente..."
-                                    className="min-h-[100px] bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600 focus-visible:ring-blue-500"
+                                    className="min-h-[100px] bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-600 focus-visible:ring-zinc-500"
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -168,7 +168,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                     <Button 
                         onClick={handleSubmit} 
                         disabled={isSubmitting || score === null}
-                        className="w-full h-14 text-white text-lg font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5"
+                        className="w-full h-14 text-white text-lg font-bold rounded-xl bg-zinc-900 hover:bg-black transition-all shadow-sm hover:-translate-y-0.5"
                     >
                         {isSubmitting ? (
                             <>

@@ -55,7 +55,7 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                             <img
                                 src={client.logo_url}
                                 alt={companyName}
-                                className="h-12 object-contain brightness-0 invert opacity-50"
+                                className="h-12 object-contain brightness-0 invert opacity-80"
                             />
                         </div>
                     )}

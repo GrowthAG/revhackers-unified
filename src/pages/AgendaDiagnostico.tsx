@@ -29,7 +29,6 @@ const AgendaDiagnosticoPage = () => {
         company: storedData.company || '',
       });
 
-      console.log('Retrieved form data for diagnosis booking:', storedData);
     }
 
     // Create a script element for the form embed
@@ -73,13 +72,13 @@ const AgendaDiagnosticoPage = () => {
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
               Agendar <span className="text-revgreen">Sessão Estratégica</span>
             </h1>
-            <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
+            <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto">
               Selecione o melhor horário abaixo.
             </p>
           </div>
 
           {/* Calendar Container */}
-          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm shadow-2xl relative">
+          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm shadow-sm relative">
             {/* Loader / Placeholder */}
             <div className="absolute inset-0 flex items-center justify-center -z-10">
               <div className="w-8 h-8 border-2 border-revgreen border-t-transparent rounded-full animate-spin"></div>

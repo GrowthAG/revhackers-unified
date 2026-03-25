@@ -1,436 +1,285 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RevHackers Clipper</title>
-    <style>
-        /* ============================================================
-           DESIGN SYSTEM: Nobibecode
-           Paleta: zinc scale + #00CC6A como unico accent
-           Sem gradientes, sem cores vibrantes, sem shadow-lg
-           ============================================================ */
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RevHackers Clipper</title>
+  <style>
+    /* Estilo Apple/Minimalista para o Popup */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #ffffff;
+      color: #09090b;
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
 
-        :root {
-            --zinc-950: #09090b;
-            --zinc-900: #18181b;
-            --zinc-800: #27272a;
-            --zinc-700: #3f3f46;
-            --zinc-500: #71717a;
-            --zinc-400: #a1a1aa;
-            --zinc-300: #d4d4d8;
-            --zinc-200: #e4e4e7;
-            --zinc-100: #f4f4f5;
-            --zinc-50:  #fafafa;
-            --accent:   #00CC6A;
-        }
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #09090b;
+      border-bottom: 1px solid #27272a;
+    }
 
-        body {
-            width: 340px;
-            min-height: 400px;
-            background: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: var(--zinc-900);
-            font-size: 13px;
-        }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        /* --- HEADER --- */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 16px;
-            background: var(--zinc-950);
-            border-bottom: 1px solid var(--zinc-800);
-        }
+    .logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00CC6A;
+      font-weight: 900;
+      font-size: 12px;
+      font-family: monospace;
+    }
 
-        .header-logo {
-            width: 28px;
-            height: 28px;
-            background: var(--zinc-900);
-            border: 1px solid var(--zinc-800);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+    .header-text {
+      display: flex;
+      flex-direction: column;
+    }
 
-        .header-logo-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
+    .header-title {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #fafafa;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
 
-        .header-title {
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: #fff;
-        }
+    .header-subtitle {
+      font-size: 9px;
+      font-weight: 600;
+      color: #71717a;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1;
+    }
 
-        .header-subtitle {
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--zinc-500);
-            letter-spacing: 0.05em;
-        }
+    .auth-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3f3f46;
+      transition: background 0.3s;
+    }
+    .auth-dot.ok { background: #00CC6A; box-shadow: 0 0 8px rgba(0, 204, 106, 0.4); }
 
-        /* --- AUTH GATE --- */
-        #auth-panel {
-            padding: 20px 16px;
-        }
+    /* CONTEUDO DINAMICO */
+    #content {
+      padding: 16px;
+    }
 
-        .auth-hint {
-            font-size: 11px;
-            color: var(--zinc-500);
-            line-height: 1.5;
-            margin-bottom: 12px;
-            padding: 10px 12px;
-            background: var(--zinc-50);
-            border: 1px solid var(--zinc-200);
-            border-radius: 8px;
-        }
+    .panel {
+      background: #ffffff;
+      padding-bottom: 16px;
+    }
 
-        .input-group {
-            margin-bottom: 10px;
-        }
+    .context-label {
+      font-size: 10px;
+      font-weight: 900;
+      color: #71717a;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+    }
 
-        .input-label {
-            display: block;
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--zinc-500);
-            margin-bottom: 5px;
-        }
+    /* BADGES DE STATUS */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      margin-bottom: 16px;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
 
-        .input-field {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--zinc-200);
-            border-radius: 6px;
-            font-size: 13px;
-            color: var(--zinc-900);
-            background: #fff;
-            outline: none;
-            transition: border-color 0.15s;
-        }
+    .status-badge.recording {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
 
-        .input-field:focus {
-            border-color: var(--zinc-400);
-        }
+    .status-badge.linkedin {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
 
-        /* --- MAIN PANEL --- */
-        #main-panel {
-            padding: 16px;
-        }
+    .rec-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #a1a1aa;
+    }
 
-        /* --- SECTION LABEL --- */
-        .section-label {
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--zinc-400);
-            margin-bottom: 8px;
-        }
+    .status-badge.recording .rec-dot {
+      background: #ef4444;
+      animation: pulse 1s infinite alternate;
+    }
 
-        /* --- STATUS BLOCK --- */
-        .status-block {
-            padding: 10px 12px;
-            background: var(--zinc-50);
-            border: 1px solid var(--zinc-200);
-            border-radius: 8px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .status-badge.linkedin .rec-dot { background: #3b82f6; }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            background: var(--zinc-300);
-        }
+    #badgeText, .status-badge span {
+      font-size: 12px;
+      font-weight: 800;
+      color: #52525b;
+      flex: 1;
+    }
+    .status-badge.recording #badgeText { color: #b91c1c; }
+    .status-badge.linkedin span { color: #1d4ed8; }
 
-        .status-dot.meet    { background: var(--accent); }
-        .status-dot.rec     { background: #ef4444; animation: blink 1s infinite; }
-        .status-dot.process { background: var(--accent); }
+    /* TIMER */
+    .timer {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 28px;
+      font-weight: 900;
+      color: #09090b;
+      text-align: center;
+      margin: 20px 0;
+      letter-spacing: -1px;
+    }
 
-        .status-text {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--zinc-500);
-            flex: 1;
-        }
+    /* BOTOES */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #09090b;
+      color: #fafafa;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-        .status-text.active { color: var(--zinc-900); }
+    .btn-primary:hover {
+      background: #18181b;
+      transform: translateY(-1px);
+    }
 
-        .timer-text {
-            font-size: 12px;
-            font-weight: 900;
-            font-variant-numeric: tabular-nums;
-            color: #ef4444;
-            font-family: 'SF Mono', 'Consolas', monospace;
-            display: none;
-        }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.3; }
-        }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        /* --- PROJECT SELECTOR --- */
-        .project-block {
-            margin-bottom: 14px;
-        }
+    .btn-primary.stop {
+      background: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+    .btn-primary.stop:hover { background: #dc2626; }
 
-        .project-select {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--zinc-200);
-            border-radius: 6px;
-            font-size: 13px;
-            color: var(--zinc-900);
-            background: #fff;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
-        }
+    .btn-primary.sync { background: #2563eb; }
+    .btn-primary.sync:hover { background: #1d4ed8; }
 
-        .project-select:focus {
-            border-color: var(--zinc-400);
-        }
+    /* INFORMACOES SECUNDARIAS */
+    .info {
+      font-size: 11px;
+      color: #71717a;
+      line-height: 1.6;
+      background: #fdfdfd;
+    }
+    .info strong { color: #09090b; font-weight: 700; }
 
-        /* --- BOTOES --- */
-        .btn {
-            width: 100%;
-            padding: 11px 16px;
-            border: 1px solid var(--zinc-800);
-            background: var(--zinc-950);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
+    /* TELAS DE ERRO / NO-AUTH */
+    .not-auth {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .not-auth p {
+      font-size: 13px;
+      color: #52525b;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .not-auth a {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #09090b;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
 
-        .btn:hover:not(:disabled) {
-            background: var(--zinc-800);
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .btn.btn-stop {
-            background: #fff;
-            color: var(--zinc-900);
-            border-color: var(--zinc-200);
-        }
-
-        .btn.btn-stop:hover:not(:disabled) {
-            background: var(--zinc-50);
-        }
-
-        .btn.btn-linkedin {
-            background: #fff;
-            color: var(--zinc-700);
-            border-color: var(--zinc-200);
-        }
-
-        .btn.btn-linkedin:hover:not(:disabled) {
-            background: var(--zinc-50);
-        }
-
-        .btn-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-            display: inline-block;
-        }
-
-        /* --- DIVIDER --- */
-        .divider {
-            height: 1px;
-            background: var(--zinc-200);
-            margin: 14px 0;
-        }
-
-        /* --- MENSAGEM DE STATUS --- */
-        #status-msg {
-            font-size: 11px;
-            color: var(--zinc-500);
-            padding: 8px 10px;
-            border-radius: 6px;
-            background: var(--zinc-50);
-            border: 1px solid var(--zinc-200);
-            line-height: 1.5;
-            display: none;
-            margin-top: 8px;
-        }
-
-        #status-msg.success {
-            color: #052e16;
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-
-        #status-msg.error {
-            color: #450a0a;
-            background: #fef2f2;
-            border-color: #fecaca;
-        }
-
-        /* --- FOOTER DE AUTH --- */
-        .footer-auth {
-            padding: 10px 16px;
-            border-top: 1px solid var(--zinc-200);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .footer-user {
-            font-size: 10px;
-            color: var(--zinc-400);
-            font-weight: 600;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 220px;
-        }
-
-        .logout-btn {
-            font-size: 10px;
-            color: var(--zinc-400);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 0;
-        }
-
-        .logout-btn:hover {
-            color: var(--zinc-700);
-        }
-    </style>
+    @keyframes pulse {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0.5; transform: scale(0.8); }
+    }
+    
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #52525b;
+      cursor: pointer;
+    }
+    .settings-row input {
+      accent-color: #09090b;
+      width: 14px;
+      height: 14px;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-logo">
-            <div class="header-logo-dot"></div>
-        </div>
-        <div>
-            <div class="header-title">RevHackers Clipper</div>
-            <div class="header-subtitle">OSINT + Meeting Recorder</div>
-        </div>
+  <!-- Header sempre visivel -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="logo">R</div>
+      <div class="header-text">
+        <div class="header-title">RevHackers</div>
+        <div class="header-subtitle">OSINT + Recorder</div>
+      </div>
     </div>
-
-    <!-- PAINEL DE LOGIN -->
-    <div id="auth-panel" style="display: none;">
-        <p class="auth-hint">
-            Cole o JWT do seu usuario RevHackers para autenticar a extensao.
-            Encontre-o em: App RevHackers - Perfil - Token da sessao.
-        </p>
-        <div class="input-group">
-            <label class="input-label" for="jwt-input">JWT Token</label>
-            <input
-                type="password"
-                id="jwt-input"
-                class="input-field"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5..."
-                autocomplete="off"
-            />
-        </div>
-        <div class="input-group">
-            <label class="input-label" for="email-input">Email (opcional)</label>
-            <input
-                type="email"
-                id="email-input"
-                class="input-field"
-                placeholder="voce@revhackers.com"
-                autocomplete="off"
-            />
-        </div>
-        <button class="btn" id="login-btn">Entrar</button>
-        <div id="status-msg"></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div class="auth-dot" id="authDot"></div>
+      <div id="authInfo" style="display:none; font-size:9px; color:#71717a; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+      <button id="logoutBtn" style="display:none; background:none; border:1px solid #3f3f46; border-radius:4px; color:#71717a; font-size:8px; font-weight:800; padding:2px 6px; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em;">Sair</button>
     </div>
+  </div>
 
-    <!-- PAINEL PRINCIPAL -->
-    <div id="main-panel" style="display: none;">
+  <!-- Conteudo dinamico injetado pelo popup.js -->
+  <div id="content"></div>
 
-        <!-- STATUS DA REUNIAO -->
-        <div class="section-label">Status</div>
-        <div class="status-block" id="meet-status-block">
-            <div class="status-dot" id="meet-dot"></div>
-            <span class="status-text" id="meet-status-text">Aguardando Google Meet...</span>
-            <span class="timer-text" id="timer">00:00:00</span>
-        </div>
-
-        <!-- PROJETO VINCULADO -->
-        <div class="project-block">
-            <div class="section-label">Vincular ao Projeto</div>
-            <select class="project-select" id="project-select">
-                <option value="">Selecione um projeto...</option>
-            </select>
-        </div>
-
-        <!-- BOTAO DE GRAVACAO -->
-        <button class="btn" id="record-btn" disabled>
-            <span class="btn-dot" style="background: #ef4444;"></span>
-            Iniciar Gravacao
-        </button>
-
-        <div class="divider"></div>
-
-        <!-- BOTAO LINKEDIN -->
-        <div class="section-label">LinkedIn OSINT</div>
-        <button class="btn btn-linkedin" id="linkedin-btn" disabled>
-            Coletar Perfil Atual
-        </button>
-
-        <!-- MENSAGEM DE RETORNO -->
-        <div id="status-msg"></div>
-
-    </div>
-
-    <!-- FOOTER (visivel apenas no painel principal) -->
-    <div class="footer-auth" id="footer-auth" style="display: none;">
-        <span class="footer-user" id="footer-email"></span>
-        <button class="logout-btn" id="logout-btn">Sair</button>
-    </div>
-
-    <script src="popup.js"></script>
+  <script src="popup.js"></script>
 </body>
 </html>

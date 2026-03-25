@@ -80,7 +80,7 @@ NOSSA RESPOSTA (Sistema):
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed">
 
                 <StrategicContext label="Insight">
                     Uma melhora de 5% na retenção (fim da jornada) pode aumentar os lucros em 25% a 95%. Pare de focar só em aquisição.
@@ -98,41 +98,41 @@ NOSSA RESPOSTA (Sistema):
 
                 {/* Intro + Stats */}
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0">O Caminho do Cliente</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0">O Caminho do Cliente</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         Mapear a jornada do usuário é a única forma de entender onde você está perdendo dinheiro. É como um raio-X da sua operação.
                     </p>
 
-                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-gray-200 py-8 not-prose">
+                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-zinc-200 py-8 not-prose">
                         <div className="flex-1">
                             <div className="text-4xl font-bold text-black mb-1">X</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">O mapa não é o território</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">O mapa não é o território</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">70%</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Das empresas falham em CX</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Das empresas falham em CX</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">Gap</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Entre expectativa e realidade</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Entre expectativa e realidade</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Anatomy - Definition List */}
                 <div className="mb-20">
-                    <h2 id="anatomia" className="font-bold text-gray-900 mb-8">As 5 Etapas (Framework Clássico)</h2>
-                    <p className="text-gray-700 mb-8">O ciclo de vida completo do cliente.</p>
+                    <h2 id="anatomia" className="font-bold text-zinc-900 mb-8">As 5 Etapas (Framework Clássico)</h2>
+                    <p className="text-zinc-700 mb-8">O ciclo de vida completo do cliente.</p>
 
                     <div className="not-prose grid gap-6">
                         {anatomy.map((item, i) => (
-                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-gray-100 p-2 text-center rounded-sm">
+                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-zinc-100 pb-6 last:border-0 last:pb-0">
+                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-zinc-100 p-2 text-center rounded-sm">
                                     {item.label}
                                 </span>
                                 <div>
-                                    <h4 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h4>
-                                    <p className="text-gray-600 leading-relaxed m-0">{item.desc}</p>
+                                    <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
+                                    <p className="text-zinc-600 leading-relaxed m-0">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -144,40 +144,40 @@ NOSSA RESPOSTA (Sistema):
                     <div className="grid md:grid-cols-3 gap-6 not-italic">
                         <div>
                             <span className="font-bold text-revgreen block mb-1">PROFISSIOALISMO:</span>
-                            <p className="text-sm text-gray-600">A primeira impressão técnica. O sistema é robusto e confiável?</p>
+                            <p className="text-sm text-zinc-600">A primeira impressão técnica. O sistema é robusto e confiável?</p>
                         </div>
                         <div>
                             <span className="font-bold text-revgreen block mb-1">PERCEPÇÃO (VALOR):</span>
-                            <p className="text-sm text-gray-600">O usuário sentiu o "Aha Moment" logo no primeiro dia?</p>
+                            <p className="text-sm text-zinc-600">O usuário sentiu o "Aha Moment" logo no primeiro dia?</p>
                         </div>
                         <div>
                             <span className="font-bold text-revgreen block mb-1">PROXIMIDADE:</span>
-                            <p className="text-sm text-gray-600">O suporte é rápido nos momentos de dúvida crítica?</p>
+                            <p className="text-sm text-zinc-600">O suporte é rápido nos momentos de dúvida crítica?</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Strategies - Numbered List */}
                 <div className="mb-20">
-                    <h2 id="estrategias" className="font-bold text-gray-900 mb-10">
+                    <h2 id="estrategias" className="font-bold text-zinc-900 mb-10">
                         3 Técnicas de Mapeamento
                     </h2>
 
                     <div className="space-y-12">
                         {strategies.map((strategy, index) => (
                             <div key={index} className="pl-0">
-                                <h3 className="font-bold text-xl text-gray-900 mb-3 mt-0 flex items-baseline gap-3">
+                                <h3 className="font-bold text-xl text-zinc-900 mb-3 mt-0 flex items-baseline gap-3">
                                     <span className="text-revgreen text-base font-normal">0{index + 1}.</span>
                                     {strategy.title}
                                 </h3>
-                                <p className="text-gray-700 mb-4">{strategy.description}</p>
+                                <p className="text-zinc-700 mb-4">{strategy.description}</p>
 
-                                <div className="bg-gray-50 border-l-2 border-gray-300 pl-4 py-2 italic text-gray-600 text-base mb-2">
+                                <div className="bg-zinc-50 border-l-2 border-zinc-300 pl-4 py-2 italic text-zinc-600 text-base mb-2">
                                     "{strategy.example}"
                                 </div>
 
                                 <div className="text-sm font-medium text-black mt-2">
-                                    <span className="text-gray-500 font-normal mr-2">Resultado:</span>
+                                    <span className="text-zinc-500 font-normal mr-2">Resultado:</span>
                                     {strategy.results}
                                 </div>
                             </div>
@@ -187,13 +187,13 @@ NOSSA RESPOSTA (Sistema):
 
                 {/* Templates Grid */}
                 <div className="mb-20">
-                    <h2 id="templates" className="font-bold text-gray-900 mb-10">Templates de Pesquisa</h2>
+                    <h2 id="templates" className="font-bold text-zinc-900 mb-10">Templates de Pesquisa</h2>
 
                     <div className="grid md:grid-cols-2 gap-8">
                         {templates.map((template, index) => (
-                            <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                    <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                                <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                    <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                         <Compass className="w-4 h-4 text-revgreen" />
                                         {template.name}
                                     </div>
@@ -201,7 +201,7 @@ NOSSA RESPOSTA (Sistema):
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -211,10 +211,10 @@ NOSSA RESPOSTA (Sistema):
                                     </Button>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                        <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                    <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                        <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                     </div>
-                                    <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-gray-700">
+                                    <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap text-zinc-700">
                                         {template.body}
                                     </pre>
                                 </div>
@@ -224,13 +224,13 @@ NOSSA RESPOSTA (Sistema):
                 </div>
 
                 {/* Checklist - Paper Style */}
-                <Card className="mb-20 bg-gray-50 border border-gray-200 p-8 md:p-12 shadow-inner relative overflow-hidden not-prose">
+                <Card className="mb-20 bg-zinc-50 border border-zinc-200 p-8 md:p-12 shadow-inner relative overflow-hidden not-prose">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <ShieldCheck className="w-32 h-32 text-gray-900" />
+                        <ShieldCheck className="w-32 h-32 text-zinc-900" />
                     </div>
-                    <div className="flex items-center gap-3 mb-8 border-b border-gray-200 pb-4 relative z-10">
+                    <div className="flex items-center gap-3 mb-8 border-b border-zinc-200 pb-4 relative z-10">
                         <ShieldCheck className="w-6 h-6 text-revgreen" />
-                        <h2 id="checklist" className="text-xl font-bold text-gray-900 m-0">Checklist de Otimização</h2>
+                        <h2 id="checklist" className="text-xl font-bold text-zinc-900 m-0">Checklist de Otimização</h2>
                     </div>
                     <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 relative z-10">
                         {[
@@ -243,7 +243,7 @@ NOSSA RESPOSTA (Sistema):
                             "Velocidade de Carregamento mobile",
                             "Mystery Shopper (Compre seu próprio produto)"
                         ].map((item, i) => (
-                            <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-200 last:border-0 text-gray-700">
+                            <div key={i} className="flex items-start gap-3 py-2 border-b border-zinc-200 last:border-0 text-zinc-700">
                                 <CheckCircle2 className="w-4 h-4 text-revgreen mt-1" />
                                 <span className="text-sm font-medium">{item}</span>
                             </div>

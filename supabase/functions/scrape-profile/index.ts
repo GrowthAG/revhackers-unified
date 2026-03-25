@@ -343,7 +343,7 @@ serve(async (req: Request) => {
                 ? `Skills: ${profile.topSkills!.slice(0, 5).map(s => safe(s, 50)).join(', ')}`
                 : null,
             (profile.recentPostSnippets ?? []).length > 0
-                ? `Amostras de posts: "${profile.recentPostSnippets!.slice(0, 2).map(s => safe(s, 200)).join('" | "'")}"`
+                ? `Amostras de posts: "${profile.recentPostSnippets!.slice(0, 2).map(s => safe(s, 200)).join(' | ')}"`
                 : null,
         ].filter(Boolean).join('\n');
 
@@ -488,6 +488,29 @@ Retorne EXATAMENTE este JSON (sem campos extras):
                 console.warn(`[scrape-profile] Failed to persist to clients/${profile.clientId}: ${updateError.message}`);
             } else {
                 console.log(`[scrape-profile] Persisted to clients/${profile.clientId}`);
+            }
+        } else if (profile.projectId) {
+            // STEP 5: Persist to Lead Object if it's not a closed client yet (War Room)
+            const { data: projData } = await supabase
+                .from('rei_projects')
+                .select('market_data')
+                .eq('id', profile.projectId)
+                .single();
+            
+            if (projData) {
+                const updatedMarket = (projData as any).market_data || {};
+                updatedMarket.linkedin_osint = result;
+
+                const { error: pErr } = await supabase
+                    .from('rei_projects')
+                    .update({ market_data: updatedMarket } as any)
+                    .eq('id', profile.projectId);
+                    
+                if (pErr) {
+                    console.warn(`[scrape-profile] Failed to persist OSINT to rei_projects/${profile.projectId}: ${pErr.message}`);
+                } else {
+                    console.log(`[scrape-profile] OSINT Persisted perfectly to rei_projects/${profile.projectId}`);
+                }
             }
         }
 

@@ -36,7 +36,7 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
     );
 
     return (
-        <div className="bg-zinc-900 border border-zinc-800 p-6 shadow-xl mb-6 relative overflow-hidden group">
+        <div className="bg-zinc-900 border border-zinc-800 p-6 shadow-sm mb-6 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
                 <Bot size={120} className="text-white" />
             </div>

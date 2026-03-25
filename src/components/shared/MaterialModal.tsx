@@ -37,7 +37,7 @@ const MaterialModal = ({ isOpen, onClose, material, onSuccess }: MaterialModalPr
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-white border border-gray-100 p-12 shadow-none rounded-none">
+            <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-white border border-zinc-100 p-12 shadow-none rounded-none">
                 <DialogHeader className="mb-10 text-left space-y-4">
                     <DialogTitle className="text-sm font-bold text-black uppercase tracking-[0.3em] border-b border-black pb-4 w-fit">
                         {material.type === 'Consultoria' || material.type === 'Diagnóstico' ? 'Solicitação de Diagnóstico' : 'Acesso ao Material'}

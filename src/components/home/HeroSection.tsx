@@ -25,7 +25,7 @@ const HeroSection = () => {
         </div>
 
         {/* Headline - Strictly 2 lines V5 */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 leading-[1.1] tracking-tight w-full max-w-[90rem] mx-auto">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white mb-8 leading-[1.05] tracking-tighter w-full max-w-[90rem] mx-auto">
           <span className="md:whitespace-nowrap">Aumente suas <span className="text-revgreen">Conversões em +10x</span></span> <br className="hidden md:block" />
           <span className="md:whitespace-nowrap">e Reduza Custos de Marketing e Vendas.</span>
         </h1>

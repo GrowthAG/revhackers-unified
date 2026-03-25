@@ -20,7 +20,7 @@ const MarketSection = ({ formData, onChange }: MarketSectionProps) => {
           id="challenges"
           value={formData.challenges}
           onChange={(e) => onChange('challenges', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Principais desafios enfrentados..."
           required
         />
@@ -34,7 +34,7 @@ const MarketSection = ({ formData, onChange }: MarketSectionProps) => {
           id="differentiation"
           value={formData.differentiation}
           onChange={(e) => onChange('differentiation', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Principais diferenciais competitivos..."
           required
         />
@@ -48,7 +48,7 @@ const MarketSection = ({ formData, onChange }: MarketSectionProps) => {
           id="competitors"
           value={formData.competitors}
           onChange={(e) => onChange('competitors', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Liste seus principais concorrentes..."
           required
         />
@@ -62,7 +62,7 @@ const MarketSection = ({ formData, onChange }: MarketSectionProps) => {
           id="marketTrends"
           value={formData.marketTrends}
           onChange={(e) => onChange('marketTrends', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Tendências de mercado relevantes..."
           required
         />

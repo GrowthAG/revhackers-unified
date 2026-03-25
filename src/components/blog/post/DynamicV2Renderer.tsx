@@ -56,7 +56,7 @@ const DynamicV2Renderer = ({ config, onCTAClick }: DynamicV2RendererProps) => {
                 switch (section.type) {
                     case 'text':
                         return (
-                            <div key={index} className="prose prose-lg max-w-none text-gray-900 mb-8">
+                            <div key={index} className="prose prose-lg max-w-none text-zinc-900 mb-8">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(section.content || '') }} />
                             </div>
                         );

@@ -113,6 +113,8 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
                 { role: 'user', content: userPrompt }
             ],
             temperature: 0.4,
+            tools: [{ type: 'web_search_preview' }],
+            web_search_preview: true
         }),
     });
 
@@ -416,6 +418,32 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    // ============================================================
+    // AUTH GATE - JWT required
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // @ts-ignore
+    const SUPABASE_URL_AUTH = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY_AUTH = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAuth = createClient(SUPABASE_URL_AUTH, SUPABASE_SERVICE_KEY_AUTH);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
+        authHeader.replace('Bearer ', '').trim()
+    );
+    if (authError || !user) {
+        return new Response(JSON.stringify({ error: 'Token invalido ou expirado.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
     let jobId: string | undefined;
 
     try {
@@ -436,7 +464,8 @@ serve(async (req) => {
 
         const systemPrompt = `Você é o Head de Pesquisa Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
 Você tem 15+ anos de experiência em consultoria estratégica (McKinsey, Bain, BCG).
-Sua especialidade é transformar diagnósticos brutos em inteligência de mercado acionável.
+Sua especialidade é transformar diagnósticos brutos em inteligência de mercado acionável e real.
+UTILIZE A FERRAMENTA DE BUSCA NA WEB PARA ANCORAR SEUS DADOS: Pesquise os concorrentes, TAM/SAM/SOM e traga números factuais, citando fontes reais do Brasil.
 Cada análise que você produz é HIPER-PERSONALIZADA ao negócio real do cliente, nunca genérica.
 Responda APENAS com JSON válido. Sem markdown, sem explicações extras.
 NUNCA use o caractere em dash (U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).

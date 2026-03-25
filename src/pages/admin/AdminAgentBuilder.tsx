@@ -71,13 +71,7 @@ const AdminAgentBuilder = () => {
     const [allLibraries, setAllLibraries] = useState<any[]>([]);
     const [agentLibraryIds, setAgentLibraryIds] = useState<string[]>([]);
 
-    // Logger de estado para eliminação
-    useEffect(() => {
-        console.log(`[ELIMINAÇÃO] Estado 'files' atualizado:`, files.length, "arquivos.");
-        if (files.length > 0) {
-            files.forEach((f, i) => console.log(`   - File[${i}]: ${f.name} (${f.size} bytes)`));
-        }
-    }, [files]);
+    // State logger removed during console.log cleanup
     // Test Mode (Chat State)
     const [testMessages, setTestMessages] = useState<{ role: string, content: string }[]>([]);
     const [testInput, setTestInput] = useState('');
@@ -132,7 +126,6 @@ const AdminAgentBuilder = () => {
                 }
 
                 // Fetch documents via Edge Function (List action bypasses RLS)
-                console.log(`[RAG DEBUG] Carregando documentos via Edge Function para agente ${id}...`);
                 const { data: ragDocs, error: listError } = await supabase.functions.invoke('agent-documents', {
                     body: { action: 'list', agentId: id }
                 });
@@ -153,7 +146,6 @@ const AdminAgentBuilder = () => {
                 }
 
                 function processDocs(docs: any[]) {
-                    console.log(`[RAG DEBUG] Role: ${userRole} | Docs processados:`, docs.length, "itens");
 
                     if (docs.length > 0) {
                         const grouped: Record<string, KnowledgeSource> = {};
@@ -203,7 +195,6 @@ const AdminAgentBuilder = () => {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
                     const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    console.log('[DEBUG] Profile DB:', profile);
                 }
             }
         } catch (error: any) {
@@ -220,7 +211,6 @@ const AdminAgentBuilder = () => {
 
         // 1. PDF Handling
         if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
-            console.log(`[RAG DEBUG] Extraindo PDF: ${file.name}...`);
             try {
                 if (!(window as any).pdfjsLib) {
                     await new Promise((resolve, reject) => {
@@ -252,7 +242,6 @@ const AdminAgentBuilder = () => {
 
         // 2. DOCX Handling (Mammoth)
         if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || fileName.endsWith('.docx')) {
-            console.log(`[RAG DEBUG] Extraindo DOCX: ${file.name}...`);
             try {
                 if (!(window as any).mammoth) {
                     await new Promise((resolve, reject) => {
@@ -381,10 +370,8 @@ ${additionalInfo}
                 const text = await extractTextFromFile(file);
 
                 const chunks = chunkText(text);
-                console.log(`[RAG DEBUG] Arquivo ${file.name}: ${chunks.length} chunks gerados.`);
 
                 chunks.forEach((c, i) => {
-                    if (i === 0) console.log(`   [PEEK CHUNK 0] "${c.substring(0, 100).replace(/\n/g, ' ')}..."`);
                     allChunks.push({
                         filename: file.name,
                         content: c,
@@ -393,11 +380,9 @@ ${additionalInfo}
                 });
             }
 
-            console.log(`[RAG DEBUG] AgentID: ${agentData.id} | Total de chunks preparados: ${allChunks.length}`);
             if (allChunks.length > 0) {
                 // First delete old documents for this agent to avoid duplicates/stale data
                 if (id) {
-                    console.log(`[RAG DEBUG] Agente existente (${id}): Deletando conhecimento antigo...`);
                     toast.loading('Limpando conhecimento antigo do cérebro...', { id: loadingToast });
 
                     const { error: delError } = await supabase.functions.invoke('agent-documents', {
@@ -411,13 +396,6 @@ ${additionalInfo}
                 for (let i = 0; i < allChunks.length; i += SEGMENT_SIZE) {
                     const segment = allChunks.slice(i, i + SEGMENT_SIZE);
                     const progress = Math.round(((i + segment.length) / allChunks.length) * 100);
-
-                    console.log(`[RAG DEBUG] Enviando segmento ${Math.floor(i / SEGMENT_SIZE) + 1} (${segment.length} chunks)...`);
-
-                    // Debug: Peek at some content
-                    segment.forEach((s, idx) => {
-                        console.log(`   [CHUNK ${i + idx}] ${s.filename}: "${s.content.substring(0, 50)}..."`);
-                    });
 
                     toast.loading(`Treinando o cérebro: ${progress}% concluído...`, {
                         id: loadingToast,
@@ -440,10 +418,8 @@ ${additionalInfo}
                         console.error('[RAG DEBUG] Erro retornado pela função:', ragData?.error);
                         throw new Error(ragData?.error || "Erro no processamento RAG");
                     }
-                    console.log(`[RAG DEBUG] Segmento ${Math.floor(i / SEGMENT_SIZE) + 1} OK.`);
                 }
             } else {
-                console.log('[RAG DEBUG] Nenhum novo conhecimento para fazer upload.');
             }
 
             toast.success('Agente salvo com sucesso e cérebro treinado!', { id: loadingToast });
@@ -498,13 +474,6 @@ ${additionalInfo}
                 console.warn(`Contexto de conhecimento muito grande (${knowledgeContext.length} chars). Truncando para ${MAX_CONTEXT_CHARS}.`);
                 knowledgeContext = knowledgeContext.substring(0, MAX_CONTEXT_CHARS) + "\n\n[...CONTEÚDO TRUNCADO NO PREVIEW PARA EVITAR ERRO DE TAMANHO...]";
             }
-
-            console.log('Invocando agent-chat com:', {
-                agent: name || 'Agente de Teste',
-                model: chatModel,
-                contextLen: knowledgeContext.length,
-                msgCount: newMessages.length
-            });
 
             const { data, error } = await supabase.functions.invoke('agent-chat', {
                 body: {
@@ -696,7 +665,7 @@ ${additionalInfo}
         return (
             <button
                 onClick={() => setActiveKnowledgeModal(type)}
-                className="text-left p-6 bg-white border border-zinc-100 rounded-2xl hover:border-zinc-200 hover:shadow-sm transition-all group"
+                className="text-left p-6 bg-white border border-zinc-100 rounded-2xl hover:border-zinc-200 transition-all group"
             >
                 <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform">
@@ -1087,7 +1056,7 @@ ${additionalInfo}
                 {/* Tab: Metas & Arquitetura */}
                 {activeTab === 'goals' && (
                     <div className="space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="bg-gradient-to-br from-zinc-50 to-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
+                        <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
                             <div className="flex items-start gap-4 mb-4">
                                 <div className="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center shadow-sm text-zinc-900">
                                     <Target className="w-5 h-5" />

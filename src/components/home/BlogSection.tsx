@@ -71,10 +71,10 @@ const BlogSection = () => {
       <div className="container-custom">
         <div className="flex flex-col md:flex-row justify-between items-start mb-16">
           <div className="max-w-lg mb-8 md:mb-0">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-black mb-4">
               Blog RevHackers
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-zinc-600">
               Conteúdo estratégico e especializado sobre crescimento, tecnologia e dados para empresas B2B.
             </p>
           </div>
@@ -96,11 +96,11 @@ const BlogSection = () => {
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="rounded-full border-4 border-gray-200 border-t-revgreen animate-spin h-12 w-12"></div>
+            <div className="rounded-full border-4 border-zinc-200 border-t-revgreen animate-spin h-12 w-12"></div>
           </div>
         ) : featuredArticles.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Nenhum artigo disponível no momento.</p>
+            <p className="text-zinc-500">Nenhum artigo disponível no momento.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -112,7 +112,7 @@ const BlogSection = () => {
 
               return (
                 <Link to={`/blog/${article.slug}`} key={article.id} className="group block h-full">
-                  <Card className="overflow-hidden card-hover h-full border-0 shadow-sm hover:shadow-md transition-all duration-300">
+                  <Card className="overflow-hidden card-hover h-full border-0 shadow-sm transition-all duration-300">
                     <div className="h-48 overflow-hidden relative">
                       <img
                         src={articleImage}
@@ -129,7 +129,7 @@ const BlogSection = () => {
                       <h3 className="text-xl font-bold mb-2 line-clamp-2 group-hover:text-revgreen transition-colors">
                         {title}
                       </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-2">
+                      <p className="text-zinc-600 mb-4 line-clamp-2">
                         {excerpt}
                       </p>
 
@@ -141,7 +141,7 @@ const BlogSection = () => {
                           </Avatar>
                           <div>
                             <p className="text-sm font-medium">{article.author.name}</p>
-                            <p className="text-xs text-gray-500">{article.author.role}</p>
+                            <p className="text-xs text-zinc-500">{article.author.role}</p>
                           </div>
                         </div>
                         <span className="text-revgreen opacity-0 group-hover:opacity-100 transition-opacity">

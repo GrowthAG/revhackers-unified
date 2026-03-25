@@ -179,7 +179,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                 {/* Left: Radar */}
                 <div className="bg-white rounded-none p-8 border border-zinc-100 shadow-sm flex flex-col items-center justify-center relative min-h-[350px]">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black via-zinc-500 to-zinc-200" />
+                    <div className="absolute top-0 left-0 w-full h-1 bg-zinc-800" />
                     <h3 className="absolute top-6 left-6 text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">Matriz de Performance</h3>
                     <RadarChart data={radarData} />
                 </div>
@@ -212,7 +212,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                         <div className="flex gap-4">
                             <Button
                                 onClick={() => window.open('/agenda-luna', '_blank')}
-                                className="bg-revgreen hover:bg-emerald-400 text-black flex-1 rounded-sm h-14 text-xs uppercase tracking-widest font-black transition-all hover:scale-[1.02]"
+                                className="bg-revgreen hover:bg-[#00CC6A] text-black flex-1 rounded-sm h-14 text-xs uppercase tracking-widest font-black transition-all hover:scale-[1.02]"
                             >
                                 {content.cta} <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>

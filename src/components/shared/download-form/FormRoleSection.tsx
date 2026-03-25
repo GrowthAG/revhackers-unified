@@ -12,7 +12,7 @@ interface FormRoleSectionProps {
 const FormRoleSection = ({ formData, handleRadioChange }: FormRoleSectionProps) => {
   return (
     <div className="col-span-1 md:col-span-2 space-y-2 pt-1">
-      <Label className="text-gray-900 text-xs font-bold uppercase tracking-wider">Perfil de Tomada de Decisão *</Label>
+      <Label className="text-zinc-900 text-xs font-bold uppercase tracking-wider">Perfil de Tomada de Decisão *</Label>
       <RadioGroup
         value={formData.roleType}
         onValueChange={handleRadioChange}
@@ -24,8 +24,8 @@ const FormRoleSection = ({ formData, handleRadioChange }: FormRoleSectionProps) 
         >
           <RadioGroupItem value="decision-maker" id="decision-maker" className="mt-1 border-zinc-300 text-black data-[state=checked]:border-black data-[state=checked]:bg-black" />
           <div className="space-y-0.5">
-            <span className="font-bold text-gray-900 text-[11px] uppercase tracking-wider block">Decisor</span>
-            <p className="text-[10px] text-gray-400 leading-tight">Tenho autonomia de aprovação.</p>
+            <span className="font-bold text-zinc-900 text-[11px] uppercase tracking-wider block">Decisor</span>
+            <p className="text-[10px] text-zinc-400 leading-tight">Tenho autonomia de aprovação.</p>
           </div>
         </label>
 
@@ -35,8 +35,8 @@ const FormRoleSection = ({ formData, handleRadioChange }: FormRoleSectionProps) 
         >
           <RadioGroupItem value="influencer" id="influencer" className="mt-1 border-zinc-300 text-black data-[state=checked]:border-black data-[state=checked]:bg-black" />
           <div className="space-y-0.5">
-            <span className="font-bold text-gray-900 text-[11px] uppercase tracking-wider block">Influenciador</span>
-            <p className="text-[10px] text-gray-400 leading-tight">Influencio e recomendo soluções.</p>
+            <span className="font-bold text-zinc-900 text-[11px] uppercase tracking-wider block">Influenciador</span>
+            <p className="text-[10px] text-zinc-400 leading-tight">Influencio e recomendo soluções.</p>
           </div>
         </label>
       </RadioGroup>

@@ -224,7 +224,6 @@ const ReiConsultingPage = () => {
     };
 
     const onSubmit = (data: FormData) => {
-        console.log("FINAL FORM DATA:", data);
         const calculated = calculateMetrics(data);
         setMetrics(calculated);
         setShowDashboard(true);

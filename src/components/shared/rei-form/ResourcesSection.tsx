@@ -21,7 +21,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="salesCycle"
           value={formData.salesCycle}
           onChange={(e) => onChange('salesCycle', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva as etapas do seu ciclo de vendas..."
           required
         />
@@ -35,7 +35,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="leadNurturing"
           value={formData.leadNurturing}
           onChange={(e) => onChange('leadNurturing', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Processos de nutrição e pós-vendas..."
         />
       </div>
@@ -48,7 +48,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="decisionFactors"
           value={formData.decisionFactors}
           onChange={(e) => onChange('decisionFactors', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Principais fatores de decisão..."
           required
         />
@@ -62,7 +62,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="growthStrategies"
           value={formData.growthStrategies}
           onChange={(e) => onChange('growthStrategies', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Estratégias de crescimento desejadas..."
           required
         />
@@ -73,7 +73,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           Sua empresa possui materiais de marketing existentes (PDFs, vídeos, apresentações)?
         </Label>
         <Select value={formData.marketingMaterials} onValueChange={(value) => onChange('marketingMaterials', value)}>
-          <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
+          <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white">
             <SelectValue placeholder="Selecione uma opção" />
           </SelectTrigger>
           <SelectContent>
@@ -93,7 +93,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="kpis"
           value={formData.kpis}
           onChange={(e) => onChange('kpis', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="ROI, CAC, LTV, taxa de conversão..."
           required
         />
@@ -107,7 +107,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="limitations"
           value={formData.limitations}
           onChange={(e) => onChange('limitations', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[80px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[80px]"
           placeholder="Limitações regulamentares, técnicas, orçamentárias..."
         />
       </div>
@@ -120,7 +120,7 @@ const ResourcesSection = ({ formData, onChange }: ResourcesSectionProps) => {
           id="approvalProcess"
           value={formData.approvalProcess}
           onChange={(e) => onChange('approvalProcess', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva o processo de aprovação..."
           required
         />

@@ -146,7 +146,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const ProjectRow = ({ project, navigate }: any) => {
-  const displayName = project.client_company || project.client_name || 'Projeto sem nome';
+  const displayName = project.client_name || 'Projeto sem nome';
   const displayInitial = displayName.charAt(0).toUpperCase();
   const typeLabel = TYPE_LABELS[project.type] || project.type || '';
   const duration = (project as any).project_duration || '';
@@ -154,7 +154,7 @@ const ProjectRow = ({ project, navigate }: any) => {
   return (
     <div
       onClick={() => navigate(`/admin/jornada/${project.id}`)}
-      className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm hover:shadow-md"
+      className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm"
     >
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-300 group-hover:bg-zinc-900 group-hover:text-white transition-all font-bold text-xs">

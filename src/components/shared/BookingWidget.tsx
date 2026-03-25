@@ -21,7 +21,6 @@ const BookingWidget = () => {
         phone: storedData.phone || '',
         company: storedData.company || ''
       });
-      console.log('Retrieved form data for booking widget:', storedData);
     }
 
     // Create a script element for the form embed
@@ -46,7 +45,7 @@ const BookingWidget = () => {
   // Monitor any changes to the calendar
   useEffect(() => {
     if (calendarLoaded) {
-      console.log("Calendar loaded and ready with user data:", userData);
+      // Calendar loaded and ready
     }
   }, [calendarLoaded, userData]);
 
@@ -63,7 +62,7 @@ const BookingWidget = () => {
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-xl">
-        <div className="bg-zinc-900/50 backdrop-blur-3xl rounded-[2.5rem] p-10 md:p-14 border border-white/10 shadow-2xl shadow-revgreen/5 hover:border-white/20 transition-all duration-700">
+        <div className="bg-zinc-900/50 backdrop-blur-3xl rounded-[2.5rem] p-10 md:p-14 border border-white/10 shadow-sm shadow-revgreen/5 hover:border-white/20 transition-all duration-700">
           <div className="mb-12 text-center">
             <h3 className="text-3xl font-black text-white tracking-tighter mb-4">
               Agende um <span className="text-revgreen">Diagnóstico.</span>

@@ -74,7 +74,7 @@ Abs,`
 
   return (
     <article className="w-full mx-auto">
-      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
         <StrategicContext label="A Verdade sobre o Sales Nav">
           <p>
@@ -102,7 +102,7 @@ Abs,`
           proView="Receber uma lista diária de 5 leads novos no email que acabaram de entrar no seu ICP (ex: Novo Diretor de MKT em empresa de Varejo)."
         />
 
-        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Por que Pagar por isso?</h2>
+        <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Por que Pagar por isso?</h2>
         <p>
           A busca gratuita do LinkedIn é limitada comercialmente (limite de visualizações, sem filtros avançados). O Sales Navigator desbloqueia o <strong>Grafo Econômico</strong> completo.
         </p>
@@ -110,24 +110,24 @@ Abs,`
           Se você vende B2B e seu ticket é &gt; R$ 5k, uma única venda paga a licença anual. O ROI é matemático.
         </p>
 
-        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+        <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
           <Filter className="w-6 h-6 text-revgreen" />
           3 Táticas para achar "Ouro"
         </h2>
 
         <div className="space-y-12 mb-16">
           {strategies.map((strategy, index) => (
-            <div key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+            <div key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+              <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                 {strategy.title}
               </h3>
-              <p className="text-gray-700 mb-6 font-medium">
+              <p className="text-zinc-700 mb-6 font-medium">
                 {strategy.description}
               </p>
-              <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
-                <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
+              <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100">
+                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
+                <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
               </div>
               <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-bold">
                 <Search className="w-4 h-4" />
@@ -156,21 +156,21 @@ Abs,`
             {workflow.map((item, i) => (
               <div key={i} className="flex items-start gap-3 p-3 border border-white/10 rounded bg-white/5">
                 <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
-                <span className="text-sm font-medium text-gray-300">{item}</span>
+                <span className="text-sm font-medium text-zinc-300">{item}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+        <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
           <MessageSquare className="w-6 h-6 text-revgreen" />
           Templates de Conexão (Human-First)
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           {templates.map((template, index) => (
-            <Card key={index} className="bg-white border-gray-200 text-gray-800 overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <Card key={index} className="bg-white border-zinc-200 text-zinc-800 overflow-hidden shadow-sm transition-shadow">
+              <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
                 <div className="text-xs font-mono text-revgreen uppercase tracking-wider font-bold truncate pr-4">
                   {template.name}
                 </div>
@@ -178,7 +178,7 @@ Abs,`
                   variant="ghost"
                   size="sm"
                   onClick={() => handleCopy(template.body, index)}
-                  className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-white transition-colors"
+                  className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-white transition-colors"
                 >
                   {copiedIndex === index ? (
                     <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

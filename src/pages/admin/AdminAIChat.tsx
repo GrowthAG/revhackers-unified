@@ -1108,7 +1108,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
                     <div className="flex-1 overflow-y-auto p-8 space-y-8">
                         {/* Search Query */}
-                        <div className="p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm transition-all hover:shadow-md">
+                        <div className="p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm transition-all">
                             <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block mb-2">Analyzing Query</span>
                             <p className="text-sm font-bold text-zinc-800 italic">"{input || 'Explorando novas fronteiras...'}"</p>
                         </div>
@@ -1141,7 +1141,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
                         {/* Live Preview Placeholder */}
                         <div className="p-4 bg-zinc-900 rounded-2xl border border-white/5 relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-[#00CC6A]/10 to-transparent opacity-50 transition-opacity group-hover:opacity-100" />
+                            <div className="absolute inset-0 bg-[#00CC6A]/10 opacity-50 transition-opacity group-hover:opacity-100" />
                             <div className="relative z-10 flex items-center gap-3 mb-4">
                                 <Globe className="w-4 h-4 text-[#00CC6A]" />
                                 <span className="text-[10px] font-black text-[#00CC6A] uppercase tracking-widest">Live Preview</span>

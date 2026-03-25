@@ -36,7 +36,7 @@ const RelatedPosts = ({ posts }: RelatedPostsProps) => {
   if (posts.length === 0) return null;
   
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-zinc-50 py-16">
       <div className="container-custom">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold">Artigos relacionados</h2>

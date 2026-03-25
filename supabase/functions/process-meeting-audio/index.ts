@@ -51,42 +51,49 @@ serve(async (req) => {
         const meetUrl = formData.get('meetUrl') as string;
         const meetTitle = formData.get('meetTitle') as string;
         const recordedAt = formData.get('recordedAt') as string;
-        // Vinculo explicito de projeto - enviado pela extensao quando o usuario
-        // seleciona o projeto antes de iniciar a gravacao (elimina o ILIKE fragil)
+        // Transcript do Web Speech API (gratis, tempo real no Chrome)
+        const webSpeechTranscript = (formData.get('transcript') as string) || '';
+        // Vinculo explicito de projeto
         const explicitProjectId = (formData.get('projectId') as string) || null;
 
-        if (!audioFile) {
-            throw new Error('No audio file provided');
-        }
-
         const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-        if (!OPENAI_API_KEY) {
-            throw new Error('OPENAI_API_KEY not configured');
-        }
 
         console.log(`[process-meeting-audio] Processing meeting: "${meetTitle}" | project: ${explicitProjectId || 'nao vinculado'} | user: ${user.email}`);
 
         // ========================================
-        // STEP 1: Transcribe with Whisper
+        // STEP 1: Obter transcript
+        // Prioridade: Web Speech API (gratis) > Whisper (pago, fallback)
         // ========================================
-        const whisperFormData = new FormData();
-        whisperFormData.append('file', audioFile, 'audio.webm');
-        whisperFormData.append('model', 'whisper-1');
-        whisperFormData.append('language', 'pt');
+        let transcript = '';
 
-        const whisperResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` },
-            body: whisperFormData,
-        });
+        if (webSpeechTranscript && webSpeechTranscript.length > 50) {
+            // Caminho gratis: transcript ja veio pronto do Chrome Web Speech API
+            transcript = webSpeechTranscript;
+            console.log(`[process-meeting-audio] Using Web Speech API transcript (${transcript.length} chars) - Whisper SKIPPED`);
+        } else if (audioFile && OPENAI_API_KEY) {
+            // Fallback pago: transcrever com Whisper
+            console.log(`[process-meeting-audio] No Web Speech transcript, falling back to Whisper...`);
+            const whisperFormData = new FormData();
+            whisperFormData.append('file', audioFile, 'audio.webm');
+            whisperFormData.append('model', 'whisper-1');
+            whisperFormData.append('language', 'pt');
 
-        if (!whisperResponse.ok) {
-            const errorText = await whisperResponse.text();
-            throw new Error(`Whisper error: ${errorText}`);
+            const whisperResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` },
+                body: whisperFormData,
+            });
+
+            if (!whisperResponse.ok) {
+                const errorText = await whisperResponse.text();
+                throw new Error(`Whisper error: ${errorText}`);
+            }
+
+            const whisperResult = await whisperResponse.json();
+            transcript = whisperResult.text;
+        } else {
+            throw new Error('Nenhum transcript disponivel: Web Speech vazio e Whisper sem API key.');
         }
-
-        const whisperResult = await whisperResponse.json();
-        const transcript = whisperResult.text;
 
         console.log(`Transcript length: ${transcript.length} chars`);
 
@@ -100,7 +107,7 @@ serve(async (req) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-5.4',
+                model: 'gpt-4o-mini',
                 messages: [
                     {
                         role: 'system',
@@ -170,7 +177,8 @@ Retorne APENAS um JSON válido (sem markdown) com a seguinte estrutura:
 REGRAS:
 - Se for Kickoff/Onboarding/Start, classifique como "kickoff" e preencha "kickoff_data" e "inteligencia_estrategica".
 - Extraia o MÁXIMO de URLs ou nomes de concorrentes para nosso scraper.
-- Seja técnico e estratégico.`
+- Seja tecnico e estrategico.
+- NUNCA use o caractere em dash (traco longo). Use hifen simples (-) como separador.`
                     },
                     {
                         role: 'user',
@@ -207,43 +215,25 @@ REGRAS:
         console.log(`Meeting type: ${analysis.tipo_reuniao}`);
 
         // ========================================
-        // STEP 3: Save Recording
-        // ========================================
-        const { data: recording, error: recordingError } = await supabaseClient
-            .from('meeting_recordings')
-            .insert({
-                title: meetTitle || 'Reuniao sem titulo',
-                drive_web_view_link: meetUrl || null,
-                transcript: transcript,
-                ai_summary: analysis.resumo_executivo,
-                ai_insights: analysis,
-                happened_at: recordedAt || new Date().toISOString(),
-                transcript_status: 'completed',
-                transcribed_at: new Date().toISOString(),
-                ai_analyzed_at: new Date().toISOString(),
-            })
-            .select()
-            .single();
-
-        if (recordingError) {
-            console.error('Error saving recording:', recordingError);
-        }
-
-        // ========================================
-        // STEP 4: Update Client/Project Based on Type with Rich Artifacts
+        // STEP 3: Resolve Client and Project Links (Before Inserting)
         // ========================================
         // Estrategia de vinculo (prioridade decrescente):
         //   1. explicitProjectId passado pela extensao (confiavel)
-        //   2. ILIKE por email/empresa extraido pelo GPT (fallback fragil)
+        //   2. ILIKE por email/empresa extraido pelo GPT no clients + rei_projects ativos
+        //   3. Match direto em rei_projects com status 'lead' ou 'diagnostic' (oportunidades top-of-funnel)
         let resolvedProjectId: string | null = null;
         let resolvedClientId: string | null = null;
         let existingData: any = {};
+        // Tracking: 'explicit' | 'client_match' | 'opportunity_match' | 'unlinked'
+        let linkStatus: string = 'unlinked';
+        // Se o match foi com oportunidade (lead/diagnostic), nao com projeto ativo
+        let isOpportunityMatch = false;
 
         if (explicitProjectId) {
             // Caminho feliz: extensao informou o projeto antes de gravar
             const { data: proj } = await supabaseClient
                 .from('rei_projects')
-                .select('id, client_id, diagnostic_data')
+                .select('id, client_id, diagnostic_data, status')
                 .eq('id', explicitProjectId)
                 .single();
 
@@ -251,14 +241,9 @@ REGRAS:
                 resolvedProjectId = proj.id;
                 resolvedClientId = proj.client_id || null;
                 existingData = proj.diagnostic_data || {};
-
-                if (recording) {
-                    await supabaseClient
-                        .from('meeting_recordings')
-                        .update({ rei_project_id: resolvedProjectId, client_id: resolvedClientId })
-                        .eq('id', recording.id);
-                }
-                console.log(`[process-meeting-audio] Project resolved via explicit id: ${resolvedProjectId}`);
+                linkStatus = 'explicit';
+                isOpportunityMatch = (proj.status === 'lead' || proj.status === 'diagnostic');
+                console.log(`[process-meeting-audio] Project resolved via explicit id: ${resolvedProjectId} (status: ${proj.status})`);
             } else {
                 console.warn(`[process-meeting-audio] explicitProjectId ${explicitProjectId} not found in rei_projects`);
             }
@@ -279,17 +264,9 @@ REGRAS:
 
                 if (matchingClients && matchingClients.length > 0) {
                     resolvedClientId = matchingClients[0].id;
-
-                    if (recording) {
-                        await supabaseClient
-                            .from('meeting_recordings')
-                            .update({ client_id: resolvedClientId })
-                            .eq('id', recording.id);
-                    }
-
                     const { data: projects } = await supabaseClient
                         .from('rei_projects')
-                        .select('id, client_id, diagnostic_data')
+                        .select('id, client_id, diagnostic_data, status')
                         .eq('client_id', resolvedClientId)
                         .order('created_at', { ascending: false })
                         .limit(1);
@@ -297,23 +274,80 @@ REGRAS:
                     if (projects && projects.length > 0) {
                         resolvedProjectId = projects[0].id;
                         existingData = projects[0].diagnostic_data || {};
-
-                        if (recording) {
-                            await supabaseClient
-                                .from('meeting_recordings')
-                                .update({ rei_project_id: resolvedProjectId })
-                                .eq('id', recording.id);
-                        }
-                        console.log(`[process-meeting-audio] Project resolved via ILIKE: ${resolvedProjectId}`);
+                        linkStatus = 'client_match';
+                        isOpportunityMatch = (projects[0].status === 'lead' || projects[0].status === 'diagnostic');
+                        console.log(`[process-meeting-audio] Project resolved via ILIKE: ${resolvedProjectId} (status: ${projects[0].status})`);
                     }
                 } else {
-                    console.warn(`[process-meeting-audio] No client matched via ILIKE. Recording saved without project link.`);
+                    console.warn(`[process-meeting-audio] No client matched via ILIKE.`);
+                }
+            }
+
+            // ── STEP 3b: Fallback - match diretamente em rei_projects (oportunidades/leads) ──
+            // Se nao encontrou via clients, tenta match direto no rei_projects
+            // pelo client_email ou client_company (leads criados pelo GHL webhook)
+            if (!resolvedProjectId && (clientInfo?.email || clientInfo?.empresa)) {
+                console.log(`[process-meeting-audio] No active project found. Trying opportunity match in rei_projects (lead/diagnostic)...`);
+
+                let oppQuery = supabaseClient
+                    .from('rei_projects')
+                    .select('id, client_id, client_email, client_company, diagnostic_data, status')
+                    .in('status', ['lead', 'diagnostic']);
+
+                if (clientInfo.email) {
+                    oppQuery = oppQuery.ilike('client_email', `%${clientInfo.email}%`);
+                } else if (clientInfo.empresa) {
+                    oppQuery = oppQuery.ilike('client_company', `%${clientInfo.empresa}%`);
+                }
+
+                const { data: opportunities } = await oppQuery
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (opportunities && opportunities.length > 0) {
+                    const opp = opportunities[0];
+                    resolvedProjectId = opp.id;
+                    resolvedClientId = opp.client_id || null;
+                    existingData = opp.diagnostic_data || {};
+                    linkStatus = 'opportunity_match';
+                    isOpportunityMatch = true;
+                    console.log(`[process-meeting-audio] Opportunity matched: ${opp.id} (status: ${opp.status}, email: ${opp.client_email}, company: ${opp.client_company})`);
+                } else {
+                    console.warn(`[process-meeting-audio] No opportunity matched. Recording will be saved as unlinked.`);
                 }
             }
         }
 
+        console.log(`[process-meeting-audio] Link resolution: status=${linkStatus}, projectId=${resolvedProjectId}, isOpportunity=${isOpportunityMatch}`);
+
+        // ========================================
+        // STEP 4: Save Recording to DB
+        // ========================================
+        const { data: recording, error: recordingError } = await supabaseClient
+            .from('meeting_recordings')
+            .insert({
+                title: meetTitle || 'Reuniao sem titulo',
+                transcript: transcript,
+                ai_summary: analysis.resumo_executivo,
+                ai_insights: analysis,
+                happened_at: recordedAt || new Date().toISOString(),
+                transcript_status: 'completed',
+                rei_project_id: resolvedProjectId,
+                client_id: resolvedClientId
+            })
+            .select()
+            .single();
+
+        if (recordingError) {
+            console.error('Error saving recording:', recordingError);
+            throw new Error(`Database Insert Error: ${recordingError.message}`);
+        }
+
         if (resolvedProjectId) {
             const projectId = resolvedProjectId;
+
+            // ── ENRICHMENT BRANCH A: Active projects (existing behavior) ──
+            if (!isOpportunityMatch) {
 
                     // Update project based on meeting type
                     if (analysis.tipo_reuniao === 'proposta' && analysis.proposta) {
@@ -338,7 +372,6 @@ REGRAS:
                         await supabaseClient
                             .from('rei_projects')
                             .update({
-                                status: 'proposal_sent',
                                 diagnostic_data: proposalData,
                                 last_meeting_at: new Date().toISOString(),
                             })
@@ -370,7 +403,6 @@ REGRAS:
                         await supabaseClient
                             .from('rei_projects')
                             .update({
-                                status: 'onboarding',
                                 diagnostic_data: onboardingData,
                                 last_meeting_at: new Date().toISOString(),
                             })
@@ -414,7 +446,204 @@ REGRAS:
                             console.error("[process-meeting-audio] Failed to invoke enrichment:", err);
                         }
                     }
+
+            } else {
+                // ── ENRICHMENT BRANCH B: Opportunity/Lead enrichment (top-of-funnel) ──
+                // This branch handles rei_projects with status 'lead' or 'diagnostic'.
+                // These are prospects who booked a diagnostic call via GHL but have not
+                // yet signed as clients.
+                console.log(`[process-meeting-audio] Enriching OPPORTUNITY ${projectId} (top-of-funnel lead)`);
+
+                const clientInfo = analysis.cliente || analysis.cliente_identificado || {};
+                const strategicIntel = analysis.inteligencia_estrategica || {};
+
+                if (analysis.tipo_reuniao === 'proposta' && analysis.proposta) {
+                    // PROPOSTA meeting on a lead - enrich with sales intelligence
+                    // This is the critical path: diagnostic call where we pitch the service
+                    const opportunityEnrichment = {
+                        ...existingData,
+                        opportunity_data: {
+                            score_fechamento: analysis.proposta.score_fechamento || 0,
+                            sinais_compra: analysis.proposta.sinais_compra || [],
+                            objecoes_detectadas: analysis.proposta.objecoes_detectadas || [],
+                            investimento_estimado: analysis.proposta.investimento_estimado || {},
+                            visao_projeto: analysis.proposta.visao_projeto || '',
+                            escopo_sugerido: analysis.proposta.escopo_sugerido || [],
+                            timeline_sugerida: analysis.proposta.timeline_sugerida || [],
+                            proximos_passos: analysis.proposta.proximos_passos || [],
+                            sentimento: analysis.sentimento || 'neutro',
+                            score_engajamento: analysis.score_engajamento || 0,
+                            enriched_at: new Date().toISOString(),
+                            meeting_id: recording?.id,
+                        },
+                        client_profile: {
+                            nome_contato: clientInfo.nome_contato || '',
+                            empresa: clientInfo.empresa || '',
+                            email: clientInfo.email || '',
+                            cargo: clientInfo.cargo || '',
+                            segmento_mercado: clientInfo.segmento_mercado || '',
+                        },
+                        strategic_intelligence: strategicIntel,
+                        last_meeting_summary: analysis.resumo_executivo,
+                    };
+
+                    await supabaseClient
+                        .from('rei_projects')
+                        .update({
+                            diagnostic_data: opportunityEnrichment,
+                            last_meeting_at: new Date().toISOString(),
+                        })
+                        .eq('id', projectId);
+
+                    console.log(`[process-meeting-audio] Enriched OPPORTUNITY with proposta data: score_fechamento=${analysis.proposta.score_fechamento}, sinais=${analysis.proposta.sinais_compra?.length || 0}, objecoes=${analysis.proposta.objecoes_detectadas?.length || 0}`);
+
+                } else {
+                    // Any other meeting type on a lead - save general intelligence
+                    const generalEnrichment = {
+                        ...existingData,
+                        meeting_intelligence: {
+                            tipo_reuniao: analysis.tipo_reuniao,
+                            resumo: analysis.resumo_executivo || '',
+                            acoes_proximas: analysis.acoes_proximas || [],
+                            sentimento: analysis.sentimento || 'neutro',
+                            score_engajamento: analysis.score_engajamento || 0,
+                            enriched_at: new Date().toISOString(),
+                            meeting_id: recording?.id,
+                        },
+                        client_profile: {
+                            nome_contato: clientInfo.nome_contato || '',
+                            empresa: clientInfo.empresa || '',
+                            email: clientInfo.email || '',
+                            cargo: clientInfo.cargo || '',
+                            segmento_mercado: clientInfo.segmento_mercado || '',
+                        },
+                        strategic_intelligence: strategicIntel,
+                        last_meeting_summary: analysis.resumo_executivo,
+                    };
+
+                    await supabaseClient
+                        .from('rei_projects')
+                        .update({
+                            diagnostic_data: generalEnrichment,
+                            last_meeting_at: new Date().toISOString(),
+                        })
+                        .eq('id', projectId);
+
+                    console.log(`[process-meeting-audio] Enriched OPPORTUNITY with general meeting data (type: ${analysis.tipo_reuniao})`);
+                }
+            }
         } // end if resolvedProjectId
+
+        // ========================================
+        // STEP 5: Auto-advance pipeline_stage based on meeting type
+        // ========================================
+        if (resolvedProjectId) {
+            try {
+                // Define the forward-only stage order
+                const STAGE_ORDER = [
+                    'lead_inbound',
+                    'lead_qualified',
+                    'diagnostic_done',
+                    'proposal_draft',
+                    'proposal_sent',
+                    'proposal_viewed',
+                    'negotiation',
+                    'won',
+                    'onboarding',
+                    'active',
+                    'completed',
+                ];
+
+                // Fetch current pipeline_stage
+                const { data: currentProject } = await supabaseClient
+                    .from('rei_projects')
+                    .select('pipeline_stage')
+                    .eq('id', resolvedProjectId)
+                    .single();
+
+                const currentStage = currentProject?.pipeline_stage || 'lead_inbound';
+                const currentIdx = STAGE_ORDER.indexOf(currentStage);
+
+                let targetStage: string | null = null;
+                let stageNote = '';
+
+                const meetingType = (analysis.tipo_reuniao || '').toLowerCase().trim();
+
+                // Rule 1: "proposta" meeting + stage is lead_qualified or diagnostic_done
+                //   -> advance to diagnostic_done (they had the diagnostic call)
+                if (meetingType === 'proposta' && (currentStage === 'lead_qualified' || currentStage === 'lead_inbound')) {
+                    targetStage = 'diagnostic_done';
+                    stageNote = 'Auto-advanced: proposta meeting detected via process-meeting-audio';
+                }
+
+                // Rule 2: "kickoff" or "onboarding" meeting + stage is won or onboarding
+                //   -> advance to onboarding
+                if ((meetingType === 'kickoff' || meetingType === 'onboarding') && (currentStage === 'won' || currentStage === 'onboarding')) {
+                    targetStage = 'onboarding';
+                    stageNote = `Auto-advanced: ${meetingType} meeting detected via process-meeting-audio`;
+                }
+
+                // Rule 3: "proposta" + high score_fechamento (>= 70)
+                //   -> if stage is proposal_sent or proposal_viewed, advance to negotiation
+                const scoreFechamento = analysis.proposta?.score_fechamento || 0;
+                if (meetingType === 'proposta' && scoreFechamento >= 70) {
+                    if (currentStage === 'proposal_sent' || currentStage === 'proposal_viewed') {
+                        targetStage = 'negotiation';
+                        stageNote = `Auto-advanced: proposta meeting with high score_fechamento (${scoreFechamento}/100) via process-meeting-audio`;
+                    }
+                }
+
+                // Rule 4: "proposta" meeting + stage is diagnostic_done
+                //   -> advance to proposal_draft (diagnostico feito, call de proposta aconteceu)
+                if (meetingType === 'proposta' && currentStage === 'diagnostic_done') {
+                    targetStage = 'proposal_draft';
+                    stageNote = 'Auto-advanced: proposta meeting after diagnostic via process-meeting-audio';
+                }
+
+                // Rule 5: "proposta" meeting + stage is proposal_draft
+                //   -> advance to proposal_sent (proposta foi apresentada ao vivo na call)
+                if (meetingType === 'proposta' && currentStage === 'proposal_draft') {
+                    targetStage = 'proposal_sent';
+                    stageNote = 'Auto-advanced: proposta presented live in meeting via process-meeting-audio';
+                }
+
+                // Only advance if target is forward from current position
+                if (targetStage) {
+                    const targetIdx = STAGE_ORDER.indexOf(targetStage);
+
+                    if (targetIdx > currentIdx) {
+                        console.log(`[process-meeting-audio] Pipeline stage advancing: ${currentStage} -> ${targetStage}`);
+
+                        await supabaseClient
+                            .from('rei_projects')
+                            .update({ pipeline_stage: targetStage })
+                            .eq('id', resolvedProjectId);
+
+                        try {
+                            await supabaseClient
+                                .from('pipeline_stage_history')
+                                .insert({
+                                    rei_project_id: resolvedProjectId,
+                                    from_stage: currentStage,
+                                    to_stage: targetStage,
+                                    changed_at: new Date().toISOString(),
+                                    changed_by: 'process_meeting_audio',
+                                    notes: stageNote,
+                                });
+
+                            console.log(`[process-meeting-audio] Pipeline stage history recorded: ${currentStage} -> ${targetStage}`);
+                        } catch (historyErr: any) {
+                            console.error(`[process-meeting-audio] pipeline_stage_history insert failed (non-blocking): ${historyErr.message}`);
+                        }
+                    } else {
+                        console.log(`[process-meeting-audio] Pipeline stage NOT advanced (would go backward): current=${currentStage} (idx ${currentIdx}), target=${targetStage} (idx ${targetIdx})`);
+                    }
+                }
+            } catch (stageErr: any) {
+                // Non-blocking - pipeline stage advancement is not critical
+                console.error(`[process-meeting-audio] Pipeline stage advancement failed (non-blocking): ${stageErr.message}`);
+            }
+        }
 
         return new Response(JSON.stringify({
             success: true,
@@ -422,6 +651,9 @@ REGRAS:
             meetingType: analysis.tipo_reuniao,
             summary: analysis.resumo_executivo,
             clientIdentified: analysis.cliente || analysis.cliente_identificado || null,
+            linkStatus,
+            isOpportunity: isOpportunityMatch,
+            projectId: resolvedProjectId,
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });

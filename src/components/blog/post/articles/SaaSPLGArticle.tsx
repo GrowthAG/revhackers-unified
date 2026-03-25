@@ -70,7 +70,7 @@ Abs,
             {/* Hero Banner */}
 
 
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Novo Playbook do SaaS">
                     <p>
@@ -98,12 +98,12 @@ Abs,
                     proView="Identificar usuários 'quentes' no trial e entrar com consultoria humana para fechar o contrato Enterprise."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">O Funil de Conversão SaaS PLG</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">O Funil de Conversão SaaS PLG</h2>
                 <div className="grid md:grid-cols-3 gap-6 mb-16 not-prose">
                     {strategies.map((strategy, index) => (
                         <div key={index} className="bg-white p-8 border border-zinc-200 rounded animate-in fade-in slide-in-from-bottom-2 duration-500 delay-150">
                             <h4 className="font-bold text-lg mb-4 text-black uppercase tracking-tight">{strategy.title}</h4>
-                            <p className="text-sm text-gray-600 mb-6 leading-relaxed">{strategy.description}</p>
+                            <p className="text-sm text-zinc-600 mb-6 leading-relaxed">{strategy.description}</p>
                             <div className="text-xs font-mono text-revgreen bg-revgreen/5 p-3 border-l border-revgreen">
                                 Benchmark: {strategy.example}
                             </div>
@@ -111,16 +111,16 @@ Abs,
                     ))}
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-zinc-900 mb-8 flex items-center gap-3">
                     <Mail className="w-6 h-6 text-revgreen" />
                     Scripts de Conversão (Vendas Produt-Led)
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -128,7 +128,7 @@ Abs,
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -137,7 +137,7 @@ Abs,
                                     )}
                                 </Button>
                             </div>
-                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-gray-600 bg-white">
+                            <div className="p-6 font-mono text-xs leading-relaxed whitespace-pre-wrap text-zinc-600 bg-white">
                                 {template.body}
                             </div>
                         </Card>

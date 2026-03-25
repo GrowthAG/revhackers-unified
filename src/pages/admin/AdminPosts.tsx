@@ -155,7 +155,7 @@ const AdminPosts = () => {
                             </div>
 
                             {/* Hover Actions */}
-                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-black/70 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
                                 <button
                                     onClick={(e) => handleDelete(post.id, e)}
                                     className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-sm backdrop-blur-md transition-colors"

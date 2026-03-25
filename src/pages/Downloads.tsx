@@ -152,7 +152,7 @@ const Downloads = () => {
       description: "Seu download está sendo preparado. Você receberá o material por e-mail em instantes.",
     });
     setShowForm(false);
-    console.log(`Material ${selectedMaterial?.id} requested for download`);
+
   };
 
   const getSlugFromTitle = (title: string) => {
@@ -165,7 +165,7 @@ const Downloads = () => {
 
   return (
     <PageLayout>
-      <section className="pt-32 pb-10 bg-white text-gray-900 relative">
+      <section className="pt-32 pb-10 bg-white text-zinc-900 relative">
         <div className="absolute inset-0 z-0 opacity-20">
           <img
             src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
@@ -176,7 +176,7 @@ const Downloads = () => {
         <div className="container-custom relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Materiais Gratuitos</h1>
-            <p className="text-xl text-gray-300 mb-8">
+            <p className="text-xl text-zinc-300 mb-8">
               Baixe nossos conteúdos exclusivos sobre Revenue Operations,
               Account Based Marketing e estratégias de crescimento para empresas B2B
             </p>
@@ -184,15 +184,15 @@ const Downloads = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-zinc-50">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {materials.map((material, index) => {
               const materialSlug = getSlugFromTitle(material.title);
 
               return (
-                <Card key={index} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow h-full flex flex-col">
-                  <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+                <Card key={index} className="overflow-hidden shadow-sm transition-shadow h-full flex flex-col">
+                  <CardHeader className="bg-zinc-50 border-b">
                     <div className="flex items-center justify-between">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-revgreen/10 text-revgreen">
                         {material.type}
@@ -202,11 +202,11 @@ const Downloads = () => {
                     <CardTitle className="mt-4">{material.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6 flex-grow">
-                    <CardDescription className="text-gray-600 mb-4">
+                    <CardDescription className="text-zinc-600 mb-4">
                       {material.description}
                     </CardDescription>
                   </CardContent>
-                  <CardFooter className="bg-gray-50 border-t">
+                  <CardFooter className="bg-zinc-50 border-t">
                     <Button
                       className="w-full"
                       variant="default"
@@ -222,7 +222,7 @@ const Downloads = () => {
           </div>
 
           {showForm && selectedMaterial && (
-            <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 border">
+            <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-6 md:p-8 border">
               <h2 className="text-2xl font-bold mb-6">
                 Preencha seus dados para baixar "{selectedMaterial.title}"
               </h2>
@@ -244,7 +244,7 @@ const Downloads = () => {
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">
                   Precisa de conteúdo personalizado?
                 </h2>
-                <p className="text-gray-300 mb-6">
+                <p className="text-zinc-300 mb-6">
                   Entre em contato conosco para solicitar materiais exclusivos
                   ou uma análise personalizada para seu negócio B2B.
                 </p>

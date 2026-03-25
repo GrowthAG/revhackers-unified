@@ -95,7 +95,7 @@ RITUAL DE GESTÃO:
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Problema Invisível">
                     <p>
@@ -123,7 +123,7 @@ RITUAL DE GESTÃO:
                     proView="Um sistema operacional vivo, integrado ao CRM, que guia cada ação do vendedor desde a prospecção até o fechamento."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Por que construir Playbooks agora?</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Por que construir Playbooks agora?</h2>
                 <p>
                     O mercado B2B mudou. Em 2025, a confiança é baixa e a exigência é alta. Seus compradores não têm tempo para amadores. Eles esperam uma experiência de compra fluida, consultiva e rápida.
                 </p>
@@ -135,59 +135,59 @@ RITUAL DE GESTÃO:
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12 not-prose">
                     <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">-40%</div>
-                        <div className="text-sm text-gray-400 uppercase tracking-wider">Tempo de Ramp-up de Novos Contratados</div>
+                        <div className="text-sm text-zinc-400 uppercase tracking-wider">Tempo de Ramp-up de Novos Contratados</div>
                     </div>
                     <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">+28%</div>
-                        <div className="text-sm text-gray-400 uppercase tracking-wider">Aumento na Conversão do Funil</div>
+                        <div className="text-sm text-zinc-400 uppercase tracking-wider">Aumento na Conversão do Funil</div>
                     </div>
                     <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">100%</div>
-                        <div className="text-sm text-gray-400 uppercase tracking-wider">Propriedade Intelectual da Empresa (Não do Vendedor)</div>
+                        <div className="text-sm text-zinc-400 uppercase tracking-wider">Propriedade Intelectual da Empresa (Não do Vendedor)</div>
                     </div>
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Layers className="w-6 h-6 text-revgreen" />
                     Anatomia de um Playbook Vencedor
                 </h2>
-                <p className="text-gray-700 mb-8 max-w-2xl">
+                <p className="text-zinc-700 mb-8 max-w-2xl">
                     Um playbook deve ser acionável. Esqueça a teoria. Fobque na estrutura de engenharia: <strong>Input -&gt; Processamento -&gt; Output</strong>.
                 </p>
 
                 <div className="not-prose grid gap-4 mb-16">
                     {anatomy.map((item, i) => (
-                        <div key={i} className="flex flex-col md:flex-row gap-6 p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gray-200 to-gray-300 group-hover:from-revgreen group-hover:to-emerald-600 transition-colors"></div>
+                        <div key={i} className="flex flex-col md:flex-row gap-6 p-6 bg-white border border-zinc-200 rounded-lg shadow-sm transition-shadow relative overflow-hidden group">
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-zinc-200 group-hover:bg-revgreen transition-colors"></div>
                             <div className="md:w-32 shrink-0 flex flex-col justify-center">
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">{item.label}</span>
+                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">{item.label}</span>
                             </div>
                             <div>
-                                <h4 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-black transition-colors">{item.title}</h4>
-                                <p className="text-gray-600 text-sm leading-relaxed m-0">{item.desc}</p>
+                                <h4 className="font-bold text-zinc-900 text-lg mb-2 group-hover:text-black transition-colors">{item.title}</h4>
+                                <p className="text-zinc-600 text-sm leading-relaxed m-0">{item.desc}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Target className="w-6 h-6 text-revgreen" />
                     Os 3 Pilares Indispensáveis
                 </h2>
 
                 <div className="space-y-12 mb-16">
                     {strategies.map((strategy, index) => (
-                        <div key={index} className="bg-gray-50 p-8 rounded-xl border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <div key={index} className="bg-zinc-50 p-8 rounded-xl border border-zinc-100">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-2">
                                 <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                                 {strategy.title}
                             </h3>
-                            <p className="text-gray-700 mb-6 font-medium">
+                            <p className="text-zinc-700 mb-6 font-medium">
                                 {strategy.description}
                             </p>
-                            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-4">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
-                                <p className="text-gray-600 text-sm font-mono leading-relaxed">{strategy.example}</p>
+                            <div className="bg-white p-6 rounded-lg border border-zinc-200 shadow-sm mb-4">
+                                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
+                                <p className="text-zinc-600 text-sm font-mono leading-relaxed">{strategy.example}</p>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-emerald-700 font-bold">
                                 <CheckCircle2 className="w-4 h-4" />
@@ -197,7 +197,7 @@ RITUAL DE GESTÃO:
                     ))}
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <FileText className="w-6 h-6 text-revgreen" />
                     Templates Prontos para Copiar e Colar
                 </h2>
@@ -207,9 +207,9 @@ RITUAL DE GESTÃO:
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -217,7 +217,7 @@ RITUAL DE GESTÃO:
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -227,10 +227,10 @@ RITUAL DE GESTÃO:
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-xs text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

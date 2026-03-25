@@ -94,8 +94,8 @@ const AdminAgents = () => {
                     {/* Main Interaction Area */}
                     <div className="mb-20">
                         <div className="max-w-2xl mx-auto relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-zinc-100 to-zinc-50 rounded-sm blur opacity-50 group-focus-within:opacity-75 transition duration-500"></div>
-                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-sm p-1.5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div className="absolute -inset-1 bg-zinc-100 rounded-sm blur opacity-50 group-focus-within:opacity-75 transition duration-500"></div>
+                            <div className="relative flex items-center bg-white border border-zinc-200 rounded-sm p-1.5 shadow-sm transition-all duration-300">
                                 <div className="w-10 h-10 flex items-center justify-center text-zinc-400">
                                     <Sparkles className="w-4 h-4" />
                                 </div>
@@ -151,7 +151,7 @@ const AdminAgents = () => {
                                 <div
                                     key={agent.id}
                                     onClick={() => navigate(`/admin/ai-chat?agent=${agent.id}`)}
-                                    className="group relative bg-white border border-zinc-100 rounded-sm p-5 hover:border-zinc-300 hover:shadow-sm transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
+                                    className="group relative bg-white border border-zinc-100 rounded-sm p-5 hover:border-zinc-300 transition-all duration-300 cursor-pointer flex flex-col h-[280px]"
                                 >
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="w-12 h-12 bg-zinc-50 rounded-sm flex items-center justify-center text-black group-hover:scale-105 transition-transform duration-500 border border-zinc-100/50">

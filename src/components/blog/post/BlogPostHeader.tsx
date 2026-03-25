@@ -46,7 +46,7 @@ const BlogPostHeader = ({
   return <>
     {/* Back to Blog Link */}
     <div className="mb-8">
-      <Link to="/blog" onClick={scrollToTop} className="inline-flex items-center text-gray-600 hover:text-revgreen">
+      <Link to="/blog" onClick={scrollToTop} className="inline-flex items-center text-zinc-600 hover:text-revgreen">
         <ArrowLeft className="h-4 w-4 mr-2" />
         <span>Voltar para o blog</span>
       </Link>
@@ -73,11 +73,11 @@ const BlogPostHeader = ({
           </Avatar>
           <div>
             <p className="font-medium">{post.author.name}</p>
-            <p className="text-sm text-gray-500">{post.author.role}</p>
+            <p className="text-sm text-zinc-500">{post.author.role}</p>
           </div>
         </div>
 
-        <div className="flex text-sm text-gray-500 space-x-4">
+        <div className="flex text-sm text-zinc-500 space-x-4">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
             <span>{formatDate(post.date)}</span>

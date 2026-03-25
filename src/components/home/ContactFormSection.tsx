@@ -11,7 +11,7 @@ const ContactFormSection = () => {
           {/* Left Column: Authority & Protocol */}
           <div className="lg:col-span-5 space-y-16 pt-10 md:pt-14">
             <div>
-              <h2 className="text-5xl md:text-6xl font-bold text-black tracking-tighter leading-none mb-8">
+              <h2 className="text-5xl md:text-6xl font-black text-black tracking-tighter leading-none mb-8">
                 Inicie o <br />
                 <span className="text-zinc-300">Protocolo.</span>
               </h2>
@@ -56,7 +56,7 @@ const ContactFormSection = () => {
 
           {/* Right Column: "Application" Form - Cleanest Possible */}
           <div className="lg:col-span-7">
-            <div className="bg-zinc-50 border border-zinc-100 p-10 md:p-14 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 hover:-translate-y-1">
+            <div className="bg-zinc-50 border border-zinc-100 p-10 md:p-14 rounded-[2.5rem] shadow-sm hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 hover:-translate-y-1">
               <div className="mb-12">
                 <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-3">Formulário de Aplicação</h3>
                 <p className="text-[15px] text-zinc-500 font-normal leading-relaxed">Preencha seus dados para análise técnica de perfil.</p>

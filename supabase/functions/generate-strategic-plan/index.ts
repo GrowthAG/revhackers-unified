@@ -216,6 +216,117 @@ serve(async (req: Request) => {
     }
     // --- END MATERIALS INTEGRATION ---
 
+    // --- INTEGRATION: Meeting Intelligence from diagnostic_data ---
+    // The process-meeting-audio function saves structured intelligence to
+    // rei_projects.diagnostic_data under keys: strategic_intelligence,
+    // onboarding_artifacts, proposal_artifacts, last_meeting_summary.
+    // This data is richer than the raw transcript and should feed the plan.
+    let meetingIntelligenceContext = "";
+    if (projectId) {
+      try {
+        const projRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/rei_projects?id=eq.${projectId}&select=diagnostic_data`,
+          {
+            headers: {
+              'apikey': SUPABASE_SERVICE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+              'Accept': 'application/json',
+            }
+          }
+        );
+
+        if (projRes.ok) {
+          const projects: any[] = await projRes.json();
+          if (projects && projects.length > 0) {
+            const diagData = projects[0].diagnostic_data || {};
+            const parts: string[] = [];
+
+            // Strategic Intelligence (competitors, benchmarks, challenges, tech stack)
+            const si = diagData.strategic_intelligence;
+            if (si && typeof si === 'object') {
+              parts.push('--- INTELIGENCIA ESTRATEGICA DA REUNIAO ---');
+              if (si.concorrentes_mencionados?.length) {
+                const names = si.concorrentes_mencionados.map((c: any) => {
+                  if (typeof c === 'string') return c;
+                  return `${c.nome || c.name || ''}${c.contexto ? ' (' + c.contexto + ')' : ''}`;
+                }).join(', ');
+                parts.push(`Concorrentes citados pelo cliente: ${names}`);
+              }
+              if (si.referencias_benchmarking?.length) {
+                parts.push(`Referencias de benchmarking: ${si.referencias_benchmarking.join(', ')}`);
+              }
+              if (si.desafios_especificos?.length) {
+                parts.push(`Desafios especificos relatados: ${si.desafios_especificos.join('; ')}`);
+              }
+              if (si.objetivos_curto_prazo?.length) {
+                parts.push(`Objetivos de curto prazo: ${si.objetivos_curto_prazo.join('; ')}`);
+              }
+              if (si.stack_tecnologica?.length) {
+                parts.push(`Stack tecnologica mencionada: ${si.stack_tecnologica.join(', ')}`);
+              }
+              parts.push('');
+            }
+
+            // Onboarding Artifacts (client context, strengths, bottlenecks, personas, timeline)
+            const oa = diagData.onboarding_artifacts;
+            if (oa && typeof oa === 'object') {
+              parts.push('--- ARTEFATOS DE ONBOARDING DA REUNIAO ---');
+              if (oa.contexto_cliente) parts.push(`Contexto do cliente: ${oa.contexto_cliente}`);
+              if (oa.pontos_fortes?.length) {
+                parts.push(`Pontos fortes identificados: ${oa.pontos_fortes.join('; ')}`);
+              }
+              if (oa.gargalos_atuais?.length) {
+                parts.push(`Gargalos atuais: ${oa.gargalos_atuais.join('; ')}`);
+              }
+              if (oa.personas_alvo?.length) {
+                const personaNames = oa.personas_alvo.map((p: any) =>
+                  typeof p === 'string' ? p : `${p.titulo || p.nome || ''} - ${p.descricao || ''}`
+                ).join('; ');
+                parts.push(`Personas-alvo identificadas: ${personaNames}`);
+              }
+              if (oa.cronograma_macrometras) {
+                const cronStr = typeof oa.cronograma_macrometras === 'string'
+                  ? oa.cronograma_macrometras
+                  : JSON.stringify(oa.cronograma_macrometras);
+                parts.push(`Cronograma e macro-metas: ${cronStr}`);
+              }
+              if (oa.definicao_sucesso) parts.push(`Definicao de sucesso: ${oa.definicao_sucesso}`);
+              parts.push('');
+            }
+
+            // Proposal Artifacts (project vision, suggested scope, timeline)
+            const pa = diagData.proposal_artifacts;
+            if (pa && typeof pa === 'object') {
+              parts.push('--- PROPOSTA EXTRAIDA DA REUNIAO ---');
+              if (pa.visao_projeto) parts.push(`Visao do projeto: ${pa.visao_projeto}`);
+              if (pa.escopo_sugerido) {
+                const escopoStr = typeof pa.escopo_sugerido === 'string'
+                  ? pa.escopo_sugerido
+                  : Array.isArray(pa.escopo_sugerido) ? pa.escopo_sugerido.join('; ') : JSON.stringify(pa.escopo_sugerido);
+                parts.push(`Escopo sugerido: ${escopoStr}`);
+              }
+              if (pa.timeline_sugerida) parts.push(`Timeline sugerida: ${pa.timeline_sugerida}`);
+              parts.push('');
+            }
+
+            // Last meeting summary
+            if (diagData.last_meeting_summary) {
+              parts.push(`Resumo da ultima reuniao: ${diagData.last_meeting_summary}`);
+              parts.push('');
+            }
+
+            if (parts.length > 0) {
+              meetingIntelligenceContext = parts.join('\n');
+              console.log(`[generate-strategic-plan] Meeting intelligence loaded from diagnostic_data: ${meetingIntelligenceContext.length} chars`);
+            }
+          }
+        }
+      } catch (miError: any) {
+        console.warn('[generate-strategic-plan] Meeting intelligence fetch failed (non-blocking):', miError.message);
+      }
+    }
+    // --- END MEETING INTELLIGENCE INTEGRATION ---
+
     // Determine effective project duration
     const effectiveDuration = projectDuration || (isDev ? '6 semanas' : '90 dias');
     console.log(`[generate-strategic-plan] Using project duration: ${effectiveDuration}`);
@@ -411,7 +522,7 @@ O "Vale da Morte" é a transição de crescimento orgânico para crescimento pre
 Use esses conceitos ao estruturar geração de demanda, pipeline e OKRs do plano.`;
     }
 
-    const prompt = `Você é o Diretor Estratégico "World-Class" de Growth & RevOps na RevHackers.
+    const prompt = `Você é o Diretor Estratégico "World-Class" de Growth & RevOps na RevHackers. Você age com autoridade absoluta, pragmatismo brutal e foco obsessivo em eficiência e MRR. Você não tem pena de cortar "gordura" processual ou apontar falhas na arquitetura que o cliente desenhou.
 Acabamos de realizar o Onboarding/Diagnóstico (Kickoff) com um cliente.
 As respostas do diagnóstico (REI) fornecidas revelam os gargalos, o caos interno e as restrições da empresa.
 
@@ -481,15 +592,28 @@ ${materialsContext ? `
 <MATERIAIS_REFERENCIA>
 ${materialsContext}
 </MATERIAIS_REFERENCIA>
-[INSTRUÇÃO MATERIAIS]: O cliente forneceu materiais de referência próprios. Use-os ativamente:
-- Alinhe a linguagem do plano com frameworks e metodologias que o cliente já usa
-- Identifique gaps entre processos documentados nos materiais e o processo ideal
-- Referencie explicitamente os materiais nas recomendações (ex: "Conforme identificado no playbook de vendas fornecido...")
+[INSTRUÇÃO MATERIAIS]: O cliente forneceu materiais de referência próprios (transcrições, mapas mentais, MindMeister, fluxogramas). Use-os como arma tática primária:
+- SE QUESTIONE: "O que o cliente desenhou no material dele está maduro o suficiente? Se não, onde estão as falhas operacionais?"
+- APROPRIAÇÃO CRÍTICA: Se nos materiais o cliente mapeou "Fases de CS", "Níveis de Escala", ou um "Roadmap de NMRR", você DEVE obrigatoriamente sugar esses conceitos e expandi-los taticamente de forma assustadoramente detalhada nos "pilares" e "roadmap_phases".
+- NUNCA descarte o que eles enviaram. Transforme os rascunhos que eles anexaram num plano de guerra prático!
+- Referencie explicitamente os materiais nas recomendações (ex: "Conforme mapeado no MindMeister de vocês na fase The Attack...")
 - Baseia projeções e metas em dados reais encontrados nos materiais (não em benchmarks genéricos)
-- Se houver planilhas ou dados numéricos, extraia métricas reais para calibrar os OKRs` : ''}
+- Se houver planilhas ou metas de MRR no material (ex: 350K Target), crie OKRs voltados EXATAMENTE para o número deles.` : ''}
 ${siteContext}
 ${pipelineContext}
 ${enrichmentContext}
+${meetingIntelligenceContext ? `
+<INTELIGENCIA_DA_REUNIAO>
+${meetingIntelligenceContext}
+</INTELIGENCIA_DA_REUNIAO>
+[INSTRUCAO REUNIAO]: Os dados acima foram extraidos e estruturados por IA a partir da gravacao da reuniao de kickoff. Eles representam fatos confirmados pelo cliente durante a call.
+- Concorrentes citados DEVEM aparecer na analise competitiva e nos pilares.
+- Desafios especificos DEVEM fundamentar os riscos e o diagnostico.
+- Objetivos de curto prazo DEVEM ser refletidos nos OKRs e quick wins.
+- Gargalos atuais DEVEM ser atacados nos primeiros ciclos do roadmap.
+- Personas-alvo identificadas DEVEM ser consideradas na estrategia de aquisicao.
+- A visao do projeto e escopo sugerido DEVEM ser incorporados ao executive_summary e thesis_statement.
+` : ''}
 ${strategicContext}
 
 [REGRA CRITICA - PRIORIDADE MAXIMA - ANTI-CONTAMINACAO DE BENCHMARKS]:
@@ -656,6 +780,64 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       console.error('[generate-strategic-plan] Parse error on raw output:', content);
       throw new Error('Failed to parse JSON out of AI response');
     }
+
+    // --- DEFENSIVE VALIDATION / FALLBACKS ---
+    // Previne alucinacoes ou omissoes estruturais da IA que quebram o frontend 
+    const enforceValidStructure = (data: any) => {
+      const safe = { ...data };
+
+      // 1. Executive Summary Fallback
+      if (!safe.executive_summary || typeof safe.executive_summary !== 'object') {
+         safe.executive_summary = {
+           context: "Contexto operacional omitido pela Inteligência Artificial.",
+           problem: "Gargalo central não detalhado durante a inferência.",
+           solution: "Implementação da metodologia RevHackers padrão para estabilidade.",
+           expected_outcome: "Estruturação de dados centralizada e cadência operacional garantida."
+         };
+      } else {
+         safe.executive_summary.context = safe.executive_summary.context || "Contexto não detalhado.";
+         safe.executive_summary.problem = safe.executive_summary.problem || "Problema não detalhado.";
+         safe.executive_summary.solution = safe.executive_summary.solution || "Solução não detalhada.";
+         safe.executive_summary.expected_outcome = safe.executive_summary.expected_outcome || "Resultado esperado não detalhado.";
+      }
+
+      // 2. Quick Wins Fallback
+      if (!Array.isArray(safe.quick_wins) || safe.quick_wins.length === 0) {
+         safe.quick_wins = [
+           { day: "Dia 1", action: "Revisão do diagnóstico As-Is e processos", outcome: "Alinhamento concluído", owner: "ambos" },
+           { day: "Dia 2", action: "Configuração base e higienização", outcome: "Ambiente pronto para uso inicial", owner: "revhackers" },
+           { day: "Dia 3", action: "Fornecimento de acessos corporativos (Ads, CRM, Banco de Dados)", outcome: "Credenciais liberadas para operação", owner: "cliente" },
+           { day: "Dia 4-5", action: "Implementação de propriedades operacionais", outcome: "Estruturas processuais no lugar", owner: "revhackers" },
+           { day: "Dia 6", action: "Automação e auditoria sistêmica", outcome: "Relatório de conformidade verificado", owner: "revhackers" },
+           { day: "Dia 7", action: "Rito de fechamento e go-live inicial", outcome: "Fundação sólida atestada", owner: "ambos" }
+         ];
+      } else {
+         // Force correct keys if AI hallucinated alternative property names
+         safe.quick_wins = safe.quick_wins.map((qw: any, i: number) => ({
+             day: qw.day || qw.dia || "Dia " + (i + 1).toString(),
+             action: qw.action || qw.acao || qw.titulo || qw.title || "Ação a definir",
+             outcome: qw.outcome || qw.resultado || qw.impacto || qw.impact || "Entregável a definir",
+             owner: qw.owner || qw.dono || qw.responsavel || "ambos"
+         }));
+      }
+
+      // 3. Arrays Fallback
+      if (!Array.isArray(safe.okrs)) safe.okrs = [];
+      if (!Array.isArray(safe.roadmap_phases)) safe.roadmap_phases = [];
+      if (!Array.isArray(safe.pillars)) safe.pillars = [];
+      if (!Array.isArray(safe.thesis_pillars)) safe.thesis_pillars = [];
+      if (!Array.isArray(safe.methodology_steps)) safe.methodology_steps = [];
+      if (!Array.isArray(safe.decisions)) safe.decisions = [];
+      if (!Array.isArray(safe.signals)) safe.signals = [];
+      if (!Array.isArray(safe.risks)) safe.risks = [];
+      if (!Array.isArray(safe.current_vs_future?.current)) {
+          safe.current_vs_future = { current: ["Sintomas pendentes de mapeamento"], future: ["Meta operacional de longo prazo"] };
+      }
+      
+      return safe;
+    };
+    
+    planData = enforceValidStructure(planData);
 
     // Post-processamento: garantir que nenhum em dash (-) ou en dash (–) sobreviveu.
     // Regra absoluta do projeto (CLAUDE.md) - substitui por hifen simples.

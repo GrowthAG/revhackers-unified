@@ -10,6 +10,7 @@ export const getAllREIProjects = async (): Promise<REIProject[]> => {
     const { data, error } = await supabase
         .from('rei_projects')
         .select('*')
+        .neq('status', 'diagnostic')
         .order('created_at', { ascending: false });
 
     if (error) {

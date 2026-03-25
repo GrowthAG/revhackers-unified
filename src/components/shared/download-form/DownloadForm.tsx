@@ -25,8 +25,8 @@ const DownloadForm = ({ materialId, materialType, onSubmit, linkMaterial }: Down
           </svg>
         </div>
 
-        <h3 className="text-xl font-bold text-gray-900 uppercase tracking-[0.25em] mb-3">Acesso Liberado</h3>
-        <p className="text-gray-500 text-sm mb-10 max-w-sm leading-relaxed">
+        <h3 className="text-xl font-bold text-zinc-900 uppercase tracking-[0.25em] mb-3">Acesso Liberado</h3>
+        <p className="text-zinc-500 text-sm mb-10 max-w-sm leading-relaxed">
           Seu conteúdo está disponível. Clique no botão abaixo para iniciar o download ou visualização.
         </p>
 
@@ -42,7 +42,7 @@ const DownloadForm = ({ materialId, materialType, onSubmit, linkMaterial }: Down
           Abrir Material
         </button>
 
-        <div className="border-t border-gray-100 pt-8 w-full">
+        <div className="border-t border-zinc-100 pt-8 w-full">
           <div className="flex items-start gap-4 text-left">
             <div className="text-zinc-400 mt-1">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -51,8 +51,8 @@ const DownloadForm = ({ materialId, materialType, onSubmit, linkMaterial }: Down
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 text-[10px] uppercase tracking-widest mb-1.5">Verificação de E-mail</h4>
-              <p className="text-gray-400 text-[10px] leading-relaxed">
+              <h4 className="font-bold text-zinc-900 text-[10px] uppercase tracking-widest mb-1.5">Verificação de E-mail</h4>
+              <p className="text-zinc-400 text-[10px] leading-relaxed">
                 Enviamos um convite exclusivo. Caso não encontre na caixa de entrada, verifique sua pasta de spans ou promoções.
               </p>
             </div>

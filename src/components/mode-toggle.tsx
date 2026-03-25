@@ -20,14 +20,14 @@ export function ModeToggle() {
                     <span className="sr-only">Toggle theme</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 z-[80]">
-                <DropdownMenuItem onClick={() => setTheme("light")} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+            <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 z-[80]">
+                <DropdownMenuItem onClick={() => setTheme("light")} className="text-zinc-900 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer">
                     Clean (Light)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+                <DropdownMenuItem onClick={() => setTheme("dark")} className="text-zinc-900 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer">
                     Dark (Premium)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")} className="text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+                <DropdownMenuItem onClick={() => setTheme("system")} className="text-zinc-900 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer">
                     Sistema
                 </DropdownMenuItem>
             </DropdownMenuContent>

@@ -77,10 +77,10 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
         <div className="flex-1 flex flex-col pr-4">
           {/* Badge & Meta */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-black bg-gray-100 px-2 py-1 rounded-none border border-transparent">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-black bg-zinc-100 px-2 py-1 rounded-none border border-transparent">
               {post.category}
             </span>
-            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
               {post.readTime || '5 MIN'}
             </span>
           </div>
@@ -91,27 +91,27 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
           </h3>
 
           {/* Excerpt - Clean & Minimal */}
-          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide line-clamp-3 mb-6 leading-relaxed">
+          <p className="text-zinc-500 text-xs font-medium uppercase tracking-wide line-clamp-3 mb-6 leading-relaxed">
             {cleanExcerpt}
           </p>
 
           {/* Footer / Author - Ultra clean */}
-          <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100">
+          <div className="mt-auto pt-4 flex items-center justify-between border-t border-zinc-100">
             <div className="flex items-center gap-3">
               <img
                   src={post.author?.avatar || '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png'}
                   alt={post.author?.name || 'Giulliano Alves'}
-                  className="w-8 h-8 rounded-full object-cover border border-gray-100"
+                  className="w-8 h-8 rounded-full object-cover border border-zinc-100"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = '/uploads/0cf4734e-5153-4c6e-8f33-4b382577e479.png';
                   }}
                 />
               <div className="flex flex-col">
                 <span className="text-[9px] font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
-                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{post.author?.role}</span>
+                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest">{post.author?.role}</span>
               </div>
             </div>
-            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-black transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-transform group-hover:translate-x-1" />
           </div>
         </div>
       </article>

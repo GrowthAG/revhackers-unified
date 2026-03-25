@@ -68,8 +68,6 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
     };
 
     const handleComplete = () => {
-        console.log('REI Form Completed:', formData);
-
         toast({
             title: "Diagnóstico REI Concluído!",
             description: `Obrigado, ${formData.responsible}! Nosso time irá analisar as informações da ${formData.company}.`,
@@ -135,29 +133,29 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
     if (stage === 'welcome') {
         return (
             <div className="min-h-[60vh] flex items-center justify-center py-12">
-                <Card className="bg-white border border-gray-200 p-8 md:p-12 max-w-2xl w-full mx-auto shadow-sm">
+                <Card className="bg-white border border-zinc-200 p-8 md:p-12 max-w-2xl w-full mx-auto shadow-sm">
                     <div className="text-center mb-8">
-                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-gray-200 shadow-sm">
+                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
                             <img
                                 src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/68eec7ea4ae0e04e5deea3de.jpeg"
                                 alt="RevHackers"
                                 className="w-12 h-12 object-contain"
                             />
                         </div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                        <h2 className="text-4xl font-bold text-zinc-900 mb-4">
                             Bem-vindo ao Onboarding REVHACKERS
                         </h2>
-                        <p className="text-lg text-gray-600 max-w-md mx-auto mb-2">
+                        <p className="text-lg text-zinc-600 max-w-md mx-auto mb-2">
                             <strong>Revenue Excellence Initiative</strong>
                         </p>
-                        <p className="text-gray-600">
+                        <p className="text-zinc-600">
                             Vamos mapear sua operação para criar uma estratégia de crescimento personalizada.
                         </p>
                     </div>
 
                     <form onSubmit={handleWelcomeSubmit} className="space-y-6">
                         <div>
-                            <Label htmlFor="company" className="text-gray-700 font-semibold">Nome da Empresa *</Label>
+                            <Label htmlFor="company" className="text-zinc-700 font-semibold">Nome da Empresa *</Label>
                             <Input
                                 id="company"
                                 value={formData.company}
@@ -169,13 +167,13 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         </div>
 
                         <div>
-                            <Label htmlFor="segment" className="text-gray-700 font-semibold">Segmento de Atuação *</Label>
+                            <Label htmlFor="segment" className="text-zinc-700 font-semibold">Segmento de Atuação *</Label>
                             <select
                                 id="segment"
                                 value={formData.segment}
                                 onChange={(e) => handleFieldChange('segment', e.target.value)}
                                 required
-                                className="mt-2 flex h-12 w-full items-center justify-between rounded-md border border-gray-300 bg-white text-gray-900 px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-revgreen focus:border-revgreen disabled:cursor-not-allowed disabled:opacity-50"
+                                className="mt-2 flex h-12 w-full items-center justify-between rounded-md border border-zinc-300 bg-white text-zinc-900 px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-revgreen focus:border-revgreen disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <option value="">Selecione seu segmento</option>
                                 <option value="SaaS">SaaS (Software as a Service)</option>
@@ -197,7 +195,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         </div>
 
                         <div>
-                            <Label htmlFor="responsible" className="text-gray-700 font-semibold">Seu Nome *</Label>
+                            <Label htmlFor="responsible" className="text-zinc-700 font-semibold">Seu Nome *</Label>
                             <Input
                                 id="responsible"
                                 value={formData.responsible}
@@ -209,7 +207,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         </div>
 
                         <div>
-                            <Label htmlFor="email" className="text-gray-700 font-semibold">Email Profissional *</Label>
+                            <Label htmlFor="email" className="text-zinc-700 font-semibold">Email Profissional *</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -229,7 +227,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         </Button>
                     </form>
 
-                    <p className="text-center text-sm text-gray-500 mt-6">
+                    <p className="text-center text-sm text-zinc-500 mt-6">
                         ⏱️ Tempo estimado: 15-20 minutos
                     </p>
                 </Card>
@@ -240,44 +238,44 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
     // Intro Screen
     if (stage === 'intro') {
         return (
-            <Card className="bg-white border border-gray-200 p-8 md:p-12 max-w-4xl mx-auto shadow-sm">
+            <Card className="bg-white border border-zinc-200 p-8 md:p-12 max-w-4xl mx-auto shadow-sm">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200 text-gray-700 text-sm font-semibold mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-sm font-semibold mb-6">
                         <Target className="w-4 h-4" />
                         Onboarding REVHACKERS
                     </div>
 
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-6">
                         Bem-vindo, {formData.responsible}! 👋
                     </h2>
 
-                    <p className="text-xl text-gray-700 mb-4">
-                        Vamos iniciar o onboarding da <span className="font-bold text-gray-900">{formData.company}</span> na REVHACKERS
+                    <p className="text-xl text-zinc-700 mb-4">
+                        Vamos iniciar o onboarding da <span className="font-bold text-zinc-900">{formData.company}</span> na REVHACKERS
                     </p>
 
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+                    <p className="text-lg text-zinc-600 max-w-2xl mx-auto mb-10">
                         Nas próximas seções, vamos mapear 6 dimensões críticas da sua operação para criar um plano de crescimento personalizado:
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                     {reiSections.map((section, index) => (
-                        <div key={section.id} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-colors">
+                        <div key={section.id} className="bg-white border border-zinc-200 rounded-xl p-5 hover:border-zinc-300 transition-colors">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-2xl">
+                                <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-2xl">
                                     {section.icon}
                                 </div>
-                                <span className="text-xs font-semibold text-gray-500">Seção {index + 1}</span>
+                                <span className="text-xs font-semibold text-zinc-500">Seção {index + 1}</span>
                             </div>
-                            <h4 className="font-bold text-gray-900 mb-1">{section.title}</h4>
-                            <p className="text-sm text-gray-600">{section.description}</p>
+                            <h4 className="font-bold text-zinc-900 mb-1">{section.title}</h4>
+                            <p className="text-sm text-zinc-600">{section.description}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
-                    <p className="text-center text-gray-700">
-                        <strong className="text-gray-900">Ao final,</strong> você receberá um plano de ação completo com insights acionáveis e próximos passos para <span className="font-bold text-gray-900">{formData.company}</span>.
+                <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-8">
+                    <p className="text-center text-zinc-700">
+                        <strong className="text-zinc-900">Ao final,</strong> você receberá um plano de ação completo com insights acionáveis e próximos passos para <span className="font-bold text-zinc-900">{formData.company}</span>.
                     </p>
                 </div>
 
@@ -298,24 +296,24 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
         return (
             <div className="max-w-4xl mx-auto space-y-6">
                 {/* Score Card */}
-                <Card className="bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 p-8 md:p-12 text-center">
-                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-gray-200 shadow-sm">
+                <Card className="bg-white border-2 border-zinc-200 p-8 md:p-12 text-center">
+                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
                         <Award className="h-10 w-10 text-revgreen" />
                     </div>
 
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl font-bold text-zinc-900 mb-2">
                         Diagnóstico da {formData.company}
                     </h2>
-                    <p className="text-gray-600 mb-8">
+                    <p className="text-zinc-600 mb-8">
                         Análise concluída por <strong>{formData.responsible}</strong>
                     </p>
 
                     {/* Score Display */}
-                    <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 mb-8">
+                    <div className="bg-white border-2 border-zinc-200 rounded-2xl p-8 mb-8">
                         <div className="flex items-center justify-center gap-4 mb-6">
                             <TrendingUp className={`w-8 h-8 ${score.color}`} />
                             <div>
-                                <div className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                                <div className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-1">
                                     Nível de Maturidade
                                 </div>
                                 <div className={`text-4xl font-bold ${score.color}`}>
@@ -327,28 +325,28 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         {/* Progress Bar */}
                         <div className="mb-6">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-medium text-gray-600">Score REI</span>
-                                <span className="text-sm font-bold text-gray-900">{score.percentage}%</span>
+                                <span className="text-sm font-medium text-zinc-600">Score REI</span>
+                                <span className="text-sm font-bold text-zinc-900">{score.percentage}%</span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div className="w-full bg-zinc-200 rounded-full h-3">
                                 <div
                                     className="bg-revgreen h-3 rounded-full transition-all duration-500"
                                     style={{ width: `${score.percentage}%` }}
                                 />
                             </div>
-                            <div className="text-xs text-gray-500 mt-2">
+                            <div className="text-xs text-zinc-500 mt-2">
                                 {score.total} de {score.maxScore} pontos
                             </div>
                         </div>
 
-                        <p className="text-gray-700 text-lg leading-relaxed">
+                        <p className="text-zinc-700 text-lg leading-relaxed">
                             {score.description}
                         </p>
                     </div>
 
                     {/* Recommendations */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8 text-left">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-8 text-left">
+                        <h3 className="text-lg font-bold text-zinc-900 mb-4 flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 text-revgreen" />
                             Recomendações Prioritárias
                         </h3>
@@ -358,31 +356,31 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                                     <div className="w-6 h-6 bg-revgreen/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <span className="text-xs font-bold text-revgreen">{index + 1}</span>
                                     </div>
-                                    <p className="text-gray-700">{rec}</p>
+                                    <p className="text-zinc-700">{rec}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Next Steps */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 text-left">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Próximos Passos:</h3>
+                    <div className="bg-white border border-zinc-200 rounded-xl p-6 mb-8 text-left">
+                        <h3 className="text-lg font-bold text-zinc-900 mb-4">Próximos Passos:</h3>
                         <div className="space-y-3">
                             <div className="flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen flex-shrink-0 mt-0.5" />
-                                <p className="text-gray-700">
+                                <p className="text-zinc-700">
                                     Nosso time irá analisar as informações da <strong>{formData.company}</strong>
                                 </p>
                             </div>
                             <div className="flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen flex-shrink-0 mt-0.5" />
-                                <p className="text-gray-700">
+                                <p className="text-zinc-700">
                                     Você receberá um relatório detalhado em até 48h
                                 </p>
                             </div>
                             <div className="flex items-start gap-3">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen flex-shrink-0 mt-0.5" />
-                                <p className="text-gray-700">
+                                <p className="text-zinc-700">
                                     Agendaremos uma sessão estratégica para apresentar o plano de ação
                                 </p>
                             </div>
@@ -400,7 +398,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         <Button
                             variant="outline"
                             onClick={() => navigate('/dashboard')}
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50 h-12 px-8"
+                            className="border-zinc-300 text-zinc-700 hover:bg-zinc-50 h-12 px-8"
                         >
                             Voltar ao Hub
                         </Button>
@@ -416,14 +414,14 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
             {/* Progress */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-zinc-700">
                         Seção {currentSectionIndex + 1} de {totalSections}
                     </span>
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-zinc-700">
                         {Math.round(progress)}% completo
                     </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-zinc-200 rounded-full h-2">
                     <div
                         className="bg-revgreen h-2 rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
@@ -432,46 +430,46 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
             </div>
 
             {/* Section Card */}
-            <Card className="bg-white border border-gray-200 p-8 md:p-10">
+            <Card className="bg-white border border-zinc-200 p-8 md:p-10">
                 {/* Section Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-3xl">
+                        <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center text-3xl">
                             {currentSection.icon}
                         </div>
                         <div>
-                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                            <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-1">
                                 Seção {currentSectionIndex + 1}
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900">{currentSection.title}</h3>
+                            <h3 className="text-2xl font-bold text-zinc-900">{currentSection.title}</h3>
                         </div>
                     </div>
-                    <p className="text-gray-600">{currentSection.description}</p>
+                    <p className="text-zinc-600">{currentSection.description}</p>
                 </div>
 
                 {/* Fields */}
                 <div className="space-y-6">
                     {currentSection.fields.map((field) => (
                         <div key={field.id}>
-                            <Label htmlFor={field.id} className="text-gray-700 font-medium mb-2 block">
+                            <Label htmlFor={field.id} className="text-zinc-700 font-medium mb-2 block">
                                 {field.label}
                                 {field.required && <span className="text-red-500 ml-1">*</span>}
                             </Label>
                             {renderField(field)}
                             {field.helpText && (
-                                <p className="text-sm text-gray-500 mt-1">{field.helpText}</p>
+                                <p className="text-sm text-zinc-500 mt-1">{field.helpText}</p>
                             )}
                         </div>
                     ))}
                 </div>
 
                 {/* Navigation */}
-                <div className="flex justify-between mt-10 pt-8 border-t border-gray-200">
+                <div className="flex justify-between mt-10 pt-8 border-t border-zinc-200">
                     <Button
                         variant="ghost"
                         onClick={handleBack}
                         disabled={currentSectionIndex === 0}
-                        className="text-gray-600 hover:text-gray-900"
+                        className="text-zinc-600 hover:text-zinc-900"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
                     </Button>

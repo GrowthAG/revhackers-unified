@@ -177,9 +177,9 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
 
                         const metrics = [
                             { label: 'CAC Médio', value: cacBenchmark, accent: '#00CC6A', icon: <Target className="w-3.5 h-3.5" />, dark: true },
-                            { label: convParsed.label || 'Conversão', value: convParsed.value || conv, accent: '#3B82F6', icon: <PieChart className="w-3.5 h-3.5" />, dark: false },
-                            { label: cicloParsed.label || 'Ciclo Médio', value: cicloParsed.value || ciclo, accent: '#F59E0B', icon: <TrendingUp className="w-3.5 h-3.5" />, dark: false },
-                            { label: ltvParsed.label || 'LTV:CAC', value: ltvParsed.value || ltvcac, accent: '#8B5CF6', icon: <BarChart3 className="w-3.5 h-3.5" />, dark: false },
+                            { label: convParsed.label || 'Conversão', value: convParsed.value || conv, accent: '#71717a', icon: <PieChart className="w-3.5 h-3.5" />, dark: false },
+                            { label: cicloParsed.label || 'Ciclo Médio', value: cicloParsed.value || ciclo, accent: '#52525b', icon: <TrendingUp className="w-3.5 h-3.5" />, dark: false },
+                            { label: ltvParsed.label || 'LTV:CAC', value: ltvParsed.value || ltvcac, accent: '#3f3f46', icon: <BarChart3 className="w-3.5 h-3.5" />, dark: false },
                         ].filter(m => m.value);
 
                         return (

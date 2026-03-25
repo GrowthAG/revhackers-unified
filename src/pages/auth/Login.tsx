@@ -18,10 +18,7 @@ const Login = () => {
     // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
     useEffect(() => {
         if (user && !isRecoveringPassword) {
-            console.log('🏠 Login: Usuário já autenticado e sem pendências de recuperação, indo para admin');
             navigate('/admin');
-        } else if (user && isRecoveringPassword) {
-            console.log('🔑 Login: Fluxo de recuperação detectado pelo contexto. Mantendo na página.');
         }
     }, [user, navigate, isRecoveringPassword]);
 

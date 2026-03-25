@@ -83,20 +83,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             created_at: new Date().toISOString()
         };
 
-        console.log('🔓 DEV BYPASS ATIVADO:', email);
         setUser(fakeUser);
         setUserRole('super_admin');
         setIsLoading(false);
     };
 
     useEffect(() => {
-        console.log('🔐 [AUTH STATE] Updated:', {
-            hasUser: !!user,
-            isLoading,
-            userRole,
-            currentPath: window.location.pathname
-        });
-
         // Safety timeout to prevent infinite loading
         const safetyTimeout = setTimeout(() => {
             if (isLoading) {
@@ -109,12 +101,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [user, isLoading, userRole]);
 
     useEffect(() => {
-        console.log('🚀 [AUTH] Provider: Initializing onAuthStateChange listener...');
-
         if (window.location.hash.includes('type=recovery') ||
             window.location.hash.includes('access_token=') ||
             window.location.pathname === '/reset-password') {
-            console.log('🔑 [AUTH] Initial recovery state detected via URL');
             setIsRecoveringPassword(true);
         }
 
@@ -150,13 +139,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (!mounted) return;
 
-            console.log(`🔄 [AUTH EVENT] ${_event}`, {
-                sessionExists: !!session,
-                userId: session?.user?.id,
-                path: window.location.pathname
-            });
-
-            // Sincronizar estados básicos imediatamente
+            // Sincronizar estados basicos imediatamente
             setSession(session);
             setUser(session?.user ?? null);
 
@@ -181,11 +164,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             if (_event === 'PASSWORD_RECOVERY') {
-                console.log('🔑 [AUTH] PASSWORD_RECOVERY detected. Locking redirect flow.');
                 setIsRecoveringPassword(true);
 
                 if (window.location.pathname !== '/reset-password') {
-                    console.log('🚀 [AUTH] Navigating to /reset-password');
                     navigate('/reset-password', { replace: true });
                 }
             }
@@ -266,19 +247,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             // Usar o origin atual em vez de localhost fixo
             const redirectUrl = window.location.origin + '/reset-password';
 
-            console.log('🔐 Reset Password: Enviando para', email);
-            console.log('🔐 Redirect URL:', redirectUrl);
-
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl,
             });
 
-            if (error) {
-                console.error('🔐 Reset Password: Erro', error);
-                throw error;
-            }
-
-            console.log('✅ Reset Password: Email enviado com sucesso!');
+            if (error) throw error;
             return { error: null };
         } catch (error: any) {
             console.error("Reset password error:", error.message);
@@ -288,9 +261,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const updatePassword = async (password: string) => {
         try {
-            console.log('📡 [AUTH] Attempting to update password... Session status:', !!session);
-
-            // Timeout de 20 segundos para atualização de senha
+            // Timeout de 20 segundos para atualizacao de senha
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Tempo limite excedido ao atualizar senha. Verifique sua conexão.')), 20000)
             );
@@ -305,7 +276,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             const result = await Promise.race([updatePromise, timeoutPromise]) as any;
 
-            console.log('✅ [AUTH] Password update call finished:', !!result);
             return { error: null };
         } catch (error: any) {
             console.error("Update password error detailed:", error);

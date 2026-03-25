@@ -32,12 +32,12 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
 
     return (
         <div className="my-12 not-prose">
-            {title && <h2 className="text-2xl font-bold text-gray-900 mb-6">{title}</h2>}
+            {title && <h2 className="text-2xl font-bold text-zinc-900 mb-6">{title}</h2>}
             <div className="space-y-6">
                 {templates.map((template, index) => (
-                    <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                        <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                            <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-revgreen" />
                                 {template.name}
                             </div>
@@ -45,7 +45,7 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleCopy(template.body, index)}
-                                className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                             >
                                 {copiedIndex === index ? (
                                     <span className="flex items-center gap-1 text-revgreen">
@@ -59,10 +59,10 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
                             </Button>
                         </div>
                         <div className="p-6">
-                            <div className="text-xs text-gray-500 mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                <span className="font-bold text-gray-700 shrink-0 uppercase tracking-wide text-[10px] mt-0.5">Assunto:</span> {template.subject}
+                            <div className="text-xs text-zinc-500 mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                <span className="font-bold text-zinc-700 shrink-0 uppercase tracking-wide text-[10px] mt-0.5">Assunto:</span> {template.subject}
                             </div>
-                            <div className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700 font-normal">
+                            <div className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-700 font-normal">
                                 {template.body}
                             </div>
                         </div>

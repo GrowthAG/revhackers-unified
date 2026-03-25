@@ -23,7 +23,6 @@ const Cases = () => {
       try {
         const data = await getAllCases();
         if (data) {
-          console.log('✅ [API] Cases carregados:', data.length);
           setCases(data);
         }
       } catch (err: any) {
@@ -99,7 +98,7 @@ const Cases = () => {
               {filteredCases.map((study, index) => (
                 <Link to={`/cases/${study.slug}`} className="group h-full" key={study.id || index}>
                   <div className={`
-                    bg-white overflow-hidden h-full flex flex-col transition-all duration-500 relative rounded-sm border border-zinc-200 hover:border-black shadow-sm hover:shadow-2xl hover:-translate-y-1
+                    bg-white overflow-hidden h-full flex flex-col transition-all duration-500 relative rounded-sm border border-zinc-200 hover:border-black shadow-sm hover:-translate-y-1
                   `}>
                     <div className="h-56 overflow-hidden bg-zinc-50 flex items-center justify-center border-b border-zinc-100 relative transition-all">
                       <div className="w-full h-full flex items-center justify-center p-10 transition-transform duration-700 group-hover:scale-105">
@@ -146,13 +145,13 @@ const Cases = () => {
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center">
             <div className="flex-1">
               <h2 className="text-3xl font-normal mb-6 text-black tracking-tight">Sua empresa será nosso próximo case?</h2>
-              <p className="text-lg text-gray-500 mb-8 font-light">
+              <p className="text-lg text-zinc-500 mb-8 font-light">
                 Entre em contato agora mesmo e descubra como podemos ajudar sua empresa
                 a obter resultados excepcionais como estes.
               </p>
             </div>
 
-            <div className="w-full md:w-auto bg-white p-8 rounded-sm shadow-sm border border-gray-200 flex-1">
+            <div className="w-full md:w-auto bg-white p-8 rounded-sm shadow-sm border border-zinc-200 flex-1">
               <ContactForm formType="diagnosis" />
             </div>
           </div>

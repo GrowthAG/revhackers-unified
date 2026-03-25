@@ -36,13 +36,13 @@ const stats = [
 
 const StatsSection = () => {
   return (
-    <section className="section-padding-sm bg-gray-50/50">
+    <section className="section-padding-sm bg-zinc-50/50">
       <div className="container-custom">
         <div className="max-w-4xl mx-auto text-center mb-20">
           <h2 className="section-title mb-6 animate-fadeUp">
-            Resultados que <span className="text-transparent bg-gradient-to-r from-revgreen to-green-600 bg-clip-text">entregamos</span>
+            Resultados que <span className="text-[#00CC6A]">entregamos</span>
           </h2>
-          <p className="text-xl text-gray-600 animate-fade-in-delayed">
+          <p className="text-xl text-zinc-600 animate-fade-in-delayed">
             Números que mostram o impacto real que geramos
           </p>
         </div>
@@ -52,14 +52,14 @@ const StatsSection = () => {
             const IconComponent = stat.icon;
             return (
               <Card key={index} className="interactive-card p-8 text-center group glow-effect animate-slide-in-stagger" style={{ '--stagger-delay': `${index * 0.1}s` } as React.CSSProperties}>
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-revgreen/20 to-green-100 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00CC6A]/10 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
                   <IconComponent className="h-8 w-8" />
                 </div>
-                <p className="text-5xl md:text-6xl font-bold bg-gradient-to-br from-revgreen to-green-600 bg-clip-text text-transparent mb-3 animate-gradient-shift">
+                <p className="text-5xl md:text-6xl font-black text-[#00CC6A] mb-3">
                   <StatsCounter end={stat.value} suffix={stat.suffix} />
                 </p>
-                <p className="text-xl font-semibold mb-3 text-gray-800">{stat.label}</p>
-                <p className="text-sm text-gray-500 leading-relaxed">{stat.description}</p>
+                <p className="text-xl font-semibold mb-3 text-zinc-800">{stat.label}</p>
+                <p className="text-sm text-zinc-500 leading-relaxed">{stat.description}</p>
               </Card>
             );
           })}

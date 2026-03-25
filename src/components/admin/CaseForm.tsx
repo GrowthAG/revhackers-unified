@@ -247,7 +247,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
 
                     <div className="space-y-2">
                         <Label className="text-[12px] font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full" /> A Solução (Solution)
+                            <div className="w-2 h-2 bg-zinc-800 rounded-full" /> A Solução (Solution)
                         </Label>
                         <Textarea
                             {...register('solution')}

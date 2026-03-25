@@ -20,7 +20,7 @@ const CustomerSection = ({ formData, onChange }: CustomerSectionProps) => {
           id="whereCustomersSearch"
           value={formData.whereCustomersSearch}
           onChange={(e) => onChange('whereCustomersSearch', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Google, redes sociais, fóruns, indicações..."
           required
         />
@@ -34,7 +34,7 @@ const CustomerSection = ({ formData, onChange }: CustomerSectionProps) => {
           id="problemCauses"
           value={formData.problemCauses}
           onChange={(e) => onChange('problemCauses', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Principais causas dos problemas..."
           required
         />
@@ -48,7 +48,7 @@ const CustomerSection = ({ formData, onChange }: CustomerSectionProps) => {
           id="customerLocations"
           value={formData.customerLocations}
           onChange={(e) => onChange('customerLocations', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Eventos, grupos online, redes sociais específicas..."
           required
         />
@@ -62,7 +62,7 @@ const CustomerSection = ({ formData, onChange }: CustomerSectionProps) => {
           id="keywords"
           value={formData.keywords}
           onChange={(e) => onChange('keywords', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="palavra-chave 1, palavra-chave 2, palavra-chave 3..."
           required
         />

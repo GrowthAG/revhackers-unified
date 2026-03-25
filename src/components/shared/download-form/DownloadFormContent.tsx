@@ -71,7 +71,7 @@ const DownloadFormContent: React.FC<DownloadFormContentProps> = ({
           )}
         </Button>
 
-        <p className="text-[10px] text-gray-400 mt-2 text-center flex items-center justify-center gap-1.5">
+        <p className="text-[10px] text-zinc-400 mt-2 text-center flex items-center justify-center gap-1.5">
           <Lock className="w-3 h-3" />
           Seus dados estão seguros conosco. Não fazemos spam.
         </p>

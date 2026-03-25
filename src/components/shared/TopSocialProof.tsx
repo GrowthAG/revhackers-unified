@@ -151,11 +151,11 @@ const TopSocialProof = () => {
     <div className={`fixed top-20 right-2 md:right-4 z-40 transition-all duration-500 transform ${
       isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'
     }`}>
-      <div className="bg-white border-2 border-gray-100 rounded-xl shadow-2xl p-3 md:p-4 max-w-xs md:max-w-sm mx-2 relative">
+      <div className="bg-white border-2 border-zinc-100 rounded-xl shadow-sm p-3 md:p-4 max-w-xs md:max-w-sm mx-2 relative">
         {/* Botão X para fechar */}
         <button
           onClick={closeNotification}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full"
+          className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600 transition-colors p-1 hover:bg-zinc-100 rounded-full"
           aria-label="Fechar notificação"
         >
           <X className="w-4 h-4" />
@@ -169,24 +169,24 @@ const TopSocialProof = () => {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm md:text-base font-bold text-gray-900 truncate">
+              <p className="text-sm md:text-base font-bold text-zinc-900 truncate">
                 {currentNotification.name}
               </p>
             </div>
             <p className="text-xs md:text-sm text-green-700 font-semibold mb-1">
               {currentNotification.company}
             </p>
-            <p className="text-xs md:text-sm text-gray-700 leading-relaxed font-medium">
+            <p className="text-xs md:text-sm text-zinc-700 leading-relaxed font-medium">
               {getActionText(currentNotification.action, currentNotification.material)}
             </p>
-            <p className="text-xs text-gray-500 font-medium mt-2">
+            <p className="text-xs text-zinc-500 font-medium mt-2">
               {currentNotification.timeAgo}
             </p>
           </div>
         </div>
         
         {/* Progress bar showing time remaining */}
-        <div className="mt-3 w-full bg-gray-100 rounded-full h-1.5">
+        <div className="mt-3 w-full bg-zinc-100 rounded-full h-1.5">
           <div 
             className="bg-green-600 h-1.5 rounded-full transition-all duration-300" 
             style={{

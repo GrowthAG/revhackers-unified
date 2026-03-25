@@ -58,7 +58,7 @@ export const SlashCommandList = forwardRef((props: SlashCommandListProps, ref) =
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl overflow-hidden w-64 animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1">
+    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden w-64 animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1">
       <div className="px-2 py-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-400">
         Blocos Básicos
       </div>

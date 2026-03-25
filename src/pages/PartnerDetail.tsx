@@ -28,7 +28,7 @@ const PartnerDetail = () => {
   return (
     <PageLayout>
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-white text-gray-900 relative">
+      <section className="pt-32 pb-20 bg-white text-zinc-900 relative">
         <div className="absolute inset-0 z-0 opacity-20">
           <img
             src={partner.coverImage}
@@ -37,7 +37,7 @@ const PartnerDetail = () => {
           />
         </div>
         <div className="container-custom relative z-10">
-          <Link to="/cases" className="inline-flex items-center text-gray-300 hover:text-white mb-10">
+          <Link to="/cases" className="inline-flex items-center text-zinc-300 hover:text-white mb-10">
             <ArrowLeft className="mr-2 h-4 w-4" />
             <span>Voltar para todos os parceiros</span>
           </Link>
@@ -55,12 +55,12 @@ const PartnerDetail = () => {
                 {partner.category}
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{partner.name}</h1>
-              <p className="text-xl text-gray-300 mb-6">
+              <p className="text-xl text-zinc-300 mb-6">
                 {partner.description}
               </p>
               <div className="flex flex-wrap gap-3">
                 {partner.tags.map((tag, index) => (
-                  <span key={index} className="px-3 py-1 bg-white/10 text-gray-100 rounded-full text-sm">
+                  <span key={index} className="px-3 py-1 bg-white/10 text-zinc-100 rounded-full text-sm">
                     {tag}
                   </span>
                 ))}
@@ -77,12 +77,12 @@ const PartnerDetail = () => {
             <h2 className="text-3xl font-bold mb-6">Estratégia implementada</h2>
             <div className="prose prose-lg max-w-none mb-12">
               {partner.caseStudy.map((paragraph, index) => (
-                <p key={index} className="mb-4 text-gray-700">{paragraph}</p>
+                <p key={index} className="mb-4 text-zinc-700">{paragraph}</p>
               ))}
             </div>
 
             {/* Results */}
-            <div className="bg-gray-50 rounded-xl p-8 mb-12">
+            <div className="bg-zinc-50 rounded-xl p-8 mb-12">
               <h3 className="text-2xl font-bold mb-6">Resultados alcançados</h3>
               <ul className="space-y-4">
                 {partner.results.map((result, index) => (
@@ -99,16 +99,16 @@ const PartnerDetail = () => {
             {/* Quote */}
             {partner.testimonial && (
               <div className="border-l-4 border-green-500 pl-6 py-2 mb-12">
-                <p className="text-xl italic text-gray-600 mb-4">{partner.testimonial.quote}</p>
+                <p className="text-xl italic text-zinc-600 mb-4">{partner.testimonial.quote}</p>
                 <p className="font-bold">{partner.testimonial.author}</p>
-                <p className="text-sm text-gray-500">{partner.testimonial.role}, {partner.name}</p>
+                <p className="text-sm text-zinc-500">{partner.testimonial.role}, {partner.name}</p>
               </div>
             )}
 
             {/* CTA with Dialog */}
             <div className="text-center mb-12">
               <h3 className="text-2xl font-bold mb-4">Quer resultados como esses?</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-zinc-600 mb-6">
                 Nossos especialistas estão prontos para desenvolver uma estratégia personalizada para o seu negócio.
               </p>
               <Dialog>

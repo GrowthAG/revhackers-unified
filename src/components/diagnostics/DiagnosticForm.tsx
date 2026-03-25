@@ -82,7 +82,7 @@ export const DiagnosticForm = ({
                                 <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0 border-b`}>
                                     <SelectValue placeholder="Selecione seu papel" />
                                 </SelectTrigger>
-                                <SelectContent className={isDark ? "bg-zinc-950 border-zinc-800 text-zinc-50 rounded-none shadow-2xl" : "bg-white border-zinc-100 text-black rounded-none shadow-2xl"}>
+                                <SelectContent className={isDark ? "bg-zinc-950 border-zinc-800 text-zinc-50 rounded-none shadow-sm" : "bg-white border-zinc-100 text-black rounded-none shadow-sm"}>
                                     <SelectItem value="vp" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Founders / C-Level</SelectItem>
                                     <SelectItem value="diretor" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Diretoria</SelectItem>
                                     <SelectItem value="gerente" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Gerência / Coordenação</SelectItem>
@@ -120,7 +120,7 @@ export const DiagnosticForm = ({
                             disabled={isSubmitting}
                             className={`w-full px-16 h-14 font-black tracking-[0.3em] uppercase text-[11px] rounded-sm transition-all duration-500 border ${isDark
                                 ? "bg-revgreen text-black hover:bg-white hover:text-black border-transparent"
-                                : "bg-black text-white hover:bg-revgreen hover:text-black shadow-2xl shadow-zinc-200 border-black"
+                                : "bg-black text-white hover:bg-revgreen hover:text-black shadow-sm shadow-zinc-200 border-black"
                                 }`}
                         >
                             {isSubmitting ? 'PROCESSANDO_DADOS...' : 'LIBERAR RELATÓRIO OFICIAL'}

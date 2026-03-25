@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       agent_documents: {
@@ -715,6 +690,8 @@ export type Database = {
           created_at: string | null
           email: string
           id: string
+          linkedin_data: Json | null
+          linkedin_scraped_at: string | null
           linkedin_url: string | null
           logo_url: string | null
           name: string
@@ -741,6 +718,8 @@ export type Database = {
           created_at?: string | null
           email: string
           id?: string
+          linkedin_data?: Json | null
+          linkedin_scraped_at?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name: string
@@ -767,6 +746,8 @@ export type Database = {
           created_at?: string | null
           email?: string
           id?: string
+          linkedin_data?: Json | null
+          linkedin_scraped_at?: string | null
           linkedin_url?: string | null
           logo_url?: string | null
           name?: string
@@ -1044,6 +1025,7 @@ export type Database = {
           title: string | null
           transcript: string | null
           transcript_status: string | null
+          video_url: string | null
         }
         Insert: {
           ai_insights?: Json | null
@@ -1058,6 +1040,7 @@ export type Database = {
           title?: string | null
           transcript?: string | null
           transcript_status?: string | null
+          video_url?: string | null
         }
         Update: {
           ai_insights?: Json | null
@@ -1072,6 +1055,7 @@ export type Database = {
           title?: string | null
           transcript?: string | null
           transcript_status?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -1500,6 +1484,41 @@ export type Database = {
           },
         ]
       }
+      orqflow_magic_links: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          status: string | null
+          task_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          status?: string | null
+          task_id: string
+          token?: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          status?: string | null
+          task_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orqflow_magic_links_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "orqflow_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orqflow_sprints: {
         Row: {
           created_at: string | null
@@ -1537,6 +1556,47 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orqflow_task_attachments: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          storage_path: string
+          task_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path: string
+          task_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path?: string
+          task_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orqflow_task_attachments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "orqflow_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -1660,6 +1720,7 @@ export type Database = {
           priority: string | null
           project_id: string
           sprint_id: string | null
+          start_date: string | null
           status: string | null
           title: string
           updated_at: string | null
@@ -1675,6 +1736,7 @@ export type Database = {
           priority?: string | null
           project_id: string
           sprint_id?: string | null
+          start_date?: string | null
           status?: string | null
           title: string
           updated_at?: string | null
@@ -1690,6 +1752,7 @@ export type Database = {
           priority?: string | null
           project_id?: string
           sprint_id?: string | null
+          start_date?: string | null
           status?: string | null
           title?: string
           updated_at?: string | null
@@ -1745,6 +1808,44 @@ export type Database = {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "orqflow_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_stage_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          from_stage: string | null
+          id: string
+          notes: string | null
+          rei_project_id: string
+          to_stage: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          from_stage?: string | null
+          id?: string
+          notes?: string | null
+          rei_project_id: string
+          to_stage: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          from_stage?: string | null
+          id?: string
+          notes?: string | null
+          rei_project_id?: string
+          to_stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stage_history_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1819,9 +1920,6 @@ export type Database = {
           id: string
           is_active: boolean | null
           job_title: string | null
-          linkedin_data: Json | null
-          linkedin_scraped_at: string | null
-          linkedin_url: string | null
           name: string | null
           onboarding_completed: boolean | null
           onboarding_step: number | null
@@ -2044,6 +2142,7 @@ export type Database = {
           payment_terms: string | null
           proposal_source: string | null
           recording_url: string | null
+          rei_project_id: string | null
           setup_fee: string | null
           slug: string
           status: string | null
@@ -2084,6 +2183,7 @@ export type Database = {
           payment_terms?: string | null
           proposal_source?: string | null
           recording_url?: string | null
+          rei_project_id?: string | null
           setup_fee?: string | null
           slug: string
           status?: string | null
@@ -2124,6 +2224,7 @@ export type Database = {
           payment_terms?: string | null
           proposal_source?: string | null
           recording_url?: string | null
+          rei_project_id?: string | null
           setup_fee?: string | null
           slug?: string
           status?: string | null
@@ -2147,6 +2248,13 @@ export type Database = {
             columns: ["origin_template_id"]
             isOneToOne: false
             referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -2207,15 +2315,23 @@ export type Database = {
           client_name: string
           client_site: string | null
           created_at: string | null
+          diagnostico_id: string | null
+          enrichment_data: Json | null
           id: string
           last_rei_date: string | null
+          lead_source: string | null
+          market_data: Json | null
+          market_data_updated_at: string | null
           next_rei_date: string
           notion_sprint_id: string | null
+          opportunity_data: Json | null
           organization_id: string | null
+          pipeline_stage: string | null
           project_duration: string | null
           quarter: string
           scheduling_completed: boolean | null
           site_analysis: Json | null
+          source: string | null
           status: string
           technical_evidences: Json | null
           trade_name: string | null
@@ -2231,15 +2347,23 @@ export type Database = {
           client_name: string
           client_site?: string | null
           created_at?: string | null
+          diagnostico_id?: string | null
+          enrichment_data?: Json | null
           id?: string
           last_rei_date?: string | null
+          lead_source?: string | null
+          market_data?: Json | null
+          market_data_updated_at?: string | null
           next_rei_date: string
           notion_sprint_id?: string | null
+          opportunity_data?: Json | null
           organization_id?: string | null
+          pipeline_stage?: string | null
           project_duration?: string | null
           quarter: string
           scheduling_completed?: boolean | null
           site_analysis?: Json | null
+          source?: string | null
           status?: string
           technical_evidences?: Json | null
           trade_name?: string | null
@@ -2255,15 +2379,23 @@ export type Database = {
           client_name?: string
           client_site?: string | null
           created_at?: string | null
+          diagnostico_id?: string | null
+          enrichment_data?: Json | null
           id?: string
           last_rei_date?: string | null
+          lead_source?: string | null
+          market_data?: Json | null
+          market_data_updated_at?: string | null
           next_rei_date?: string
           notion_sprint_id?: string | null
+          opportunity_data?: Json | null
           organization_id?: string | null
+          pipeline_stage?: string | null
           project_duration?: string | null
           quarter?: string
           scheduling_completed?: boolean | null
           site_analysis?: Json | null
+          source?: string | null
           status?: string
           technical_evidences?: Json | null
           trade_name?: string | null
@@ -2277,6 +2409,20 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rei_projects_diagnostico_id_fkey"
+            columns: ["diagnostico_id"]
+            isOneToOne: false
+            referencedRelation: "diagnosticos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rei_projects_diagnostico_id_fkey"
+            columns: ["diagnostico_id"]
+            isOneToOne: false
+            referencedRelation: "diagnosticos_resumo"
             referencedColumns: ["id"]
           },
           {
@@ -2813,9 +2959,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

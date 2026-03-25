@@ -71,7 +71,7 @@ Abs,
 
   return (
     <article className="w-full mx-auto">
-      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
         <StrategicContext label="O Mito do Momento Eureca">
           Fundadores acham que o Product-Market Fit (PMF) é um evento binário: ou você tem, ou não tem. Errado. PMF é um espectro. Você pode ter "Weak PMF" (clientes pagam mas cancelam rápido) ou "Strong PMF" (clientes pagam e trazem amigos). E o mais perigoso: Você pode perder o PMF se o mercado mudar.
@@ -94,27 +94,27 @@ Abs,
           proView="Quando a demanda pelo produto excede sua capacidade de entrega, e a retenção se mantém estável."
         />
 
-        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">3 Sinais Científicos de PMF</h2>
+        <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">3 Sinais Científicos de PMF</h2>
         <div className="grid md:grid-cols-3 gap-6 mb-12 not-prose">
           {pmfSignals.map((item, i) => (
-            <Card key={i} className="p-6 bg-white border border-gray-200 hover:border-revgreen/50 transition-colors shadow-sm">
+            <Card key={i} className="p-6 bg-white border border-zinc-200 hover:border-revgreen/50 transition-colors shadow-sm">
               <div className="bg-zinc-900 p-3 rounded-full w-fit mb-4 border border-zinc-800">
                 {item.icon}
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-              <p className="text-sm text-gray-600 mb-0 leading-relaxed">{item.description}</p>
+              <h3 className="font-bold text-zinc-900 mb-2">{item.title}</h3>
+              <p className="text-sm text-zinc-600 mb-0 leading-relaxed">{item.description}</p>
             </Card>
           ))}
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Como Medir (Templates)</h2>
+        <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Como Medir (Templates)</h2>
         <div className="space-y-8 mb-16">
           {templates.map((template, index) => (
-            <div key={index} className="bg-zinc-950 text-gray-300 p-8 rounded-xl border border-zinc-800 shadow-xl not-prose">
+            <div key={index} className="bg-zinc-950 text-zinc-300 p-8 rounded-xl border border-zinc-800 shadow-sm not-prose">
               <div className="flex justify-between items-start mb-6 border-b border-zinc-800 pb-4">
                 <div>
                   <h3 className="text-white font-bold text-lg">{template.name}</h3>
-                  <p className="text-xs text-gray-500 font-mono mt-1">{template.subject}</p>
+                  <p className="text-xs text-zinc-500 font-mono mt-1">{template.subject}</p>
                 </div>
                 <Button
                   variant="ghost"

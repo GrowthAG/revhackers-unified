@@ -81,7 +81,7 @@ Não use exclamações.`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="A Era do 'AI-Augmented SDR'">
                     <p>
@@ -109,7 +109,7 @@ Não use exclamações.`
                     proView="Quero uma IA que analise 10.000 leads e me diga quais os 50 que eu devo ligar pessoalmente agora."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">O Fim do Trabalho Braçal</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">O Fim do Trabalho Braçal</h2>
                 <p>
                     Estudos mostram que SDRs gastam apenas 30% do tempo vendendo. O resto é perdido em CRM, pesquisa e tarefas administrativas. A IA inverte essa pirâmide.
                 </p>
@@ -117,24 +117,24 @@ Não use exclamações.`
                     Imagine um estagiário genial que leu toda a internet, decorou seu playbook de vendas e trabalho 24h por dia. Esse é o seu novo assistente de IA.
                 </p>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Cpu className="w-6 h-6 text-revgreen" />
                     3 Aplicações Práticas (Setup em 24h)
                 </h2>
 
                 <div className="space-y-12 mb-16">
                     {applications.map((app, index) => (
-                        <div key={index} className="bg-white border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                        <div key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
                                 <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                                 {app.title}
                             </h3>
-                            <p className="text-gray-700 mb-6 font-medium">
+                            <p className="text-zinc-700 mb-6 font-medium">
                                 {app.description}
                             </p>
-                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Exemplo Real</h4>
-                                <p className="text-gray-600 text-sm font-mono leading-relaxed italic">"{app.example}"</p>
+                            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100">
+                                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Exemplo Real</h4>
+                                <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{app.example}"</p>
                             </div>
                             <div className="mt-4 flex items-center gap-2 text-sm text-emerald-700 font-bold">
                                 <Zap className="w-4 h-4" />
@@ -163,20 +163,20 @@ Não use exclamações.`
                         {workflow.map((item, i) => (
                             <div key={i} className="flex items-start gap-3 p-3 border border-white/10 rounded bg-white/5">
                                 <CheckCircle2 className="w-5 h-5 text-revgreen mt-0.5 shrink-0" />
-                                <span className="text-sm font-medium text-gray-300">{item}</span>
+                                <span className="text-sm font-medium text-zinc-300">{item}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Terminal className="w-6 h-6 text-revgreen" />
                     Prompts de Engenharia de Vendas
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-zinc-950 border-zinc-800 text-zinc-300 overflow-hidden shadow-xl">
+                        <Card key={index} className="bg-zinc-950 border-zinc-800 text-zinc-300 overflow-hidden shadow-sm">
                             <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                                 <div className="text-xs font-mono text-revgreen uppercase tracking-wider font-bold truncate pr-4">
                                     {template.name}

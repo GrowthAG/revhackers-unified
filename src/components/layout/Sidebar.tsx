@@ -113,7 +113,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
         >
             <button
                 onClick={toggle}
-                className="absolute -right-3 top-24 h-6 w-6 bg-revgreen text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer z-50 border border-black"
+                className="absolute -right-3 top-24 h-6 w-6 bg-revgreen text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-sm cursor-pointer z-50 border border-black"
             >
                 <ChevronLeft size={14} className={cn("transition-transform duration-300", !isOpen && "rotate-180")} />
             </button>

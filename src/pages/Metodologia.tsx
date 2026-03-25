@@ -35,7 +35,7 @@ const Metodologia = () => {
                         </p>
 
                         <div className="mt-12 flex justify-center gap-4">
-                            <Button asChild className="bg-black text-white hover:bg-zinc-800 h-14 px-10 rounded-sm text-xs font-bold uppercase tracking-widest shadow-xl hover:shadow-2xl transition-all">
+                            <Button asChild className="bg-black text-white hover:bg-zinc-800 h-14 px-10 rounded-sm text-xs font-bold uppercase tracking-widest shadow-sm transition-all">
                                 <Link to="/booking">Agendar Diagnóstico</Link>
                             </Button>
                         </div>
@@ -57,7 +57,7 @@ const Metodologia = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                         {/* Pillar 1 */}
-                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm hover:shadow-xl">
+                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm">
                             <div className="w-12 h-12 rounded-sm bg-white flex items-center justify-center mb-8 text-black border border-zinc-200 shadow-sm">
                                 <Database className="w-5 h-5" />
                             </div>
@@ -68,7 +68,7 @@ const Metodologia = () => {
                         </div>
 
                         {/* Pillar 2 */}
-                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm hover:shadow-xl">
+                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm">
                             <div className="w-12 h-12 rounded-sm bg-white flex items-center justify-center mb-8 text-black border border-zinc-200 shadow-sm">
                                 <Network className="w-5 h-5" />
                             </div>
@@ -79,7 +79,7 @@ const Metodologia = () => {
                         </div>
 
                         {/* Pillar 3 */}
-                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm hover:shadow-xl">
+                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm">
                             <div className="w-12 h-12 rounded-sm bg-white flex items-center justify-center mb-8 text-black border border-zinc-200 shadow-sm">
                                 <Zap className="w-5 h-5" />
                             </div>
@@ -90,7 +90,7 @@ const Metodologia = () => {
                         </div>
 
                         {/* Pillar 4 */}
-                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm hover:shadow-xl">
+                        <div className="group p-10 rounded-sm bg-zinc-50 border border-zinc-200 hover:border-black transition-all duration-500 relative overflow-hidden shadow-sm">
                             <div className="w-12 h-12 rounded-sm bg-white flex items-center justify-center mb-8 text-black border border-zinc-200 shadow-sm">
                                 <Cpu className="w-5 h-5" />
                             </div>
@@ -161,7 +161,7 @@ const Metodologia = () => {
                     <p className="text-xl text-zinc-500 mb-12 max-w-2xl mx-auto font-medium tracking-tight">
                         Pare de adivinhar e comece a escalar com previsibilidade.
                     </p>
-                    <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black h-16 px-12 rounded-sm text-xs font-black tracking-widest uppercase transition-all shadow-2xl hover:translate-y-[-2px]">
+                    <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black h-16 px-12 rounded-sm text-xs font-black tracking-widest uppercase transition-all shadow-sm hover:translate-y-[-2px]">
                         <Link to="/booking">Agendar Diagnóstico</Link>
                     </Button>
 

@@ -55,7 +55,7 @@ const BenefitsSection = () => {
               className="card-apple p-12 md:p-14 group border-none bg-zinc-50"
             >
               <div className="flex flex-col items-start text-left">
-                <div className="h-20 w-20 bg-zinc-900 rounded-[1.5rem] flex items-center justify-center mb-12 shadow-2xl shadow-zinc-200 group-hover:bg-black group-hover:scale-105 transition-all duration-700">
+                <div className="h-20 w-20 bg-zinc-900 rounded-[1.5rem] flex items-center justify-center mb-12 shadow-sm shadow-zinc-200 group-hover:bg-black group-hover:scale-105 transition-all duration-700">
                   <benefit.icon className="h-10 w-10 text-white" />
                 </div>
                 <h3 className="text-3xl font-black mb-6 text-zinc-900 tracking-tighter leading-tight">

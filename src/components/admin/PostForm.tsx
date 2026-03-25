@@ -169,9 +169,9 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-zinc-100">
             <div className="flex items-center justify-between mb-6">
-                <Button type="button" variant="ghost" onClick={() => navigate('/admin/posts')} className="text-gray-500 hover:text-black hover:bg-gray-100 h-9 px-3">
+                <Button type="button" variant="ghost" onClick={() => navigate('/admin/posts')} className="text-zinc-500 hover:text-black hover:bg-zinc-100 h-9 px-3">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                 </Button>
                 <h1 className="text-2xl font-bold">{isEditing ? 'Editar Artigo' : 'Novo Artigo'}</h1>
@@ -199,12 +199,12 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Selecione uma categoria" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white text-black border-gray-200 shadow-xl z-50">
-                                <SelectItem value="Growth" className="text-black hover:bg-gray-100 focus:bg-gray-100 focus:text-black cursor-pointer">Growth</SelectItem>
-                                <SelectItem value="Vendas" className="text-black hover:bg-gray-100 focus:bg-gray-100 focus:text-black cursor-pointer">Vendas</SelectItem>
-                                <SelectItem value="Marketing" className="text-black hover:bg-gray-100 focus:bg-gray-100 focus:text-black cursor-pointer">Marketing</SelectItem>
-                                <SelectItem value="RevOps" className="text-black hover:bg-gray-100 focus:bg-gray-100 focus:text-black cursor-pointer">RevOps</SelectItem>
-                                <SelectItem value="Tecnologia" className="text-black hover:bg-gray-100 focus:bg-gray-100 focus:text-black cursor-pointer">Tecnologia</SelectItem>
+                            <SelectContent className="bg-white text-black border-zinc-200 shadow-sm z-50">
+                                <SelectItem value="Growth" className="text-black hover:bg-zinc-100 focus:bg-zinc-100 focus:text-black cursor-pointer">Growth</SelectItem>
+                                <SelectItem value="Vendas" className="text-black hover:bg-zinc-100 focus:bg-zinc-100 focus:text-black cursor-pointer">Vendas</SelectItem>
+                                <SelectItem value="Marketing" className="text-black hover:bg-zinc-100 focus:bg-zinc-100 focus:text-black cursor-pointer">Marketing</SelectItem>
+                                <SelectItem value="RevOps" className="text-black hover:bg-zinc-100 focus:bg-zinc-100 focus:text-black cursor-pointer">RevOps</SelectItem>
+                                <SelectItem value="Tecnologia" className="text-black hover:bg-zinc-100 focus:bg-zinc-100 focus:text-black cursor-pointer">Tecnologia</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -217,7 +217,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
 
                 <div className="space-y-4">
                     <Label>Capa do Artigo</Label>
-                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px] hover:bg-gray-50 transition-colors relative overflow-hidden">
+                    <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px] hover:bg-zinc-50 transition-colors relative overflow-hidden">
                         {imagePreview ? (
                             <>
                                 <img src={imagePreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-50" />
@@ -229,8 +229,8 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                             </>
                         ) : (
                             <div className="text-center">
-                                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                                <p className="text-sm text-gray-500 mb-2">Arraste ou clique para enviar</p>
+                                <Upload className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
+                                <p className="text-sm text-zinc-500 mb-2">Arraste ou clique para enviar</p>
                                 <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('image-upload')?.click()}>
                                     Selecionar Arquivo
                                 </Button>
@@ -262,18 +262,18 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                     className="font-mono text-sm min-h-[400px]"
                     placeholder="Escreva seu conteúdo aqui..."
                 />
-                <p className="text-xs text-gray-500">Aceita formatação HTML básica ou Markdown (se suportado pelo renderizador).</p>
+                <p className="text-xs text-zinc-500">Aceita formatação HTML básica ou Markdown (se suportado pelo renderizador).</p>
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+            <div className="flex items-center justify-between pt-6 border-t border-zinc-100">
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                    <div className="flex items-center space-x-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
                         <Switch
                             id="published"
                             checked={!!watch('published')}
                             onCheckedChange={(checked) => setValue('published', checked)}
                         />
-                        <Label htmlFor="published" className="cursor-pointer font-medium text-gray-700 text-sm">
+                        <Label htmlFor="published" className="cursor-pointer font-medium text-zinc-700 text-sm">
                             {watch('published') ? 'Publicado' : 'Rascunho'}
                         </Label>
                     </div>
@@ -284,7 +284,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                             variant="ghost"
                             onClick={handleDelete}
                             disabled={loading || uploading}
-                            className="text-gray-400 hover:text-red-600 hover:bg-red-50 h-10 px-4 transition-colors"
+                            className="text-zinc-400 hover:text-red-600 hover:bg-red-50 h-10 px-4 transition-colors"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Excluir Artigo

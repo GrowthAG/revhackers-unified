@@ -18,14 +18,14 @@ const FormCompanySection = ({
   return (
     <>
       <div className="space-y-1">
-        <Label htmlFor="company" className="text-gray-900 text-xs font-bold uppercase tracking-wider">Empresa *</Label>
+        <Label htmlFor="company" className="text-zinc-900 text-xs font-bold uppercase tracking-wider">Empresa *</Label>
         <Input
           id="company"
           name="company"
           value={formData.company}
           onChange={handleInputChange}
           placeholder="Nome da sua empresa"
-          className="bg-white border-zinc-200 text-gray-900 placeholder:text-zinc-300 focus-visible:ring-0 focus-visible:border-black h-10 rounded-sm transition-all shadow-none"
+          className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-300 focus-visible:ring-0 focus-visible:border-black h-10 rounded-sm transition-all shadow-none"
           required
         />
       </div>
@@ -33,15 +33,15 @@ const FormCompanySection = ({
 
 
       <div className="space-y-1">
-        <Label htmlFor="industry" className="text-gray-900 text-xs font-bold uppercase tracking-wider">Setor *</Label>
+        <Label htmlFor="industry" className="text-zinc-900 text-xs font-bold uppercase tracking-wider">Setor *</Label>
         <Select
           value={formData.industry}
           onValueChange={(value) => handleSelectChange('industry', value)}
         >
-          <SelectTrigger id="industry" className="bg-white border-zinc-200 text-gray-900 h-10 rounded-sm focus:ring-0 focus:border-black shadow-none font-medium">
+          <SelectTrigger id="industry" className="bg-white border-zinc-200 text-zinc-900 h-10 rounded-sm focus:ring-0 focus:border-black shadow-none font-medium">
             <SelectValue placeholder="Selecione..." />
           </SelectTrigger>
-          <SelectContent className="bg-white border-zinc-200 text-gray-900 shadow-none rounded-sm">
+          <SelectContent className="bg-white border-zinc-200 text-zinc-900 shadow-none rounded-sm">
             <SelectItem value="saas" className="focus:bg-zinc-50 focus:text-black cursor-pointer">SaaS</SelectItem>
             <SelectItem value="tech" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Tecnologia</SelectItem>
             <SelectItem value="startup" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Startup</SelectItem>
@@ -55,13 +55,13 @@ const FormCompanySection = ({
       </div>
 
       <div className="col-span-1 md:col-span-2 space-y-1">
-        <Label htmlFor="role" className="text-gray-900 text-xs font-bold uppercase tracking-wider">Cargo *</Label>
+        <Label htmlFor="role" className="text-zinc-900 text-xs font-bold uppercase tracking-wider">Cargo *</Label>
         <Input
           id="role"
           name="role"
           value={formData.role}
           onChange={handleInputChange}
-          className="bg-white border-zinc-200 text-gray-900 placeholder:text-zinc-300 focus-visible:ring-0 focus-visible:border-black h-10 rounded-sm transition-all shadow-none"
+          className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-300 focus-visible:ring-0 focus-visible:border-black h-10 rounded-sm transition-all shadow-none"
           required
           placeholder="Ex: CEO, Head de Growth..."
         />

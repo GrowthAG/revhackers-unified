@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -127,6 +129,32 @@ async function getCrUXMetrics(
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
+    }
+
+    // ============================================================
+    // AUTH GATE - JWT required
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // @ts-ignore
+    const SUPABASE_URL_AUTH = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY_AUTH = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAuth = createClient(SUPABASE_URL_AUTH, SUPABASE_SERVICE_KEY_AUTH);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
+        authHeader.replace('Bearer ', '').trim()
+    );
+    if (authError || !user) {
+        return new Response(JSON.stringify({ error: 'Token invalido ou expirado.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
     }
 
     try {

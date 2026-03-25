@@ -31,11 +31,11 @@ const ArticleCTA = ({
                     <div className="h-px w-8 bg-revgreen/30"></div>
                 </div>
 
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 tracking-tight leading-none">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-zinc-900 tracking-tight leading-none">
                     {title}
                 </h2>
 
-                <p className="text-lg text-gray-600 mb-10 max-w-3xl font-light leading-relaxed text-balance">
+                <p className="text-lg text-zinc-600 mb-10 max-w-3xl font-light leading-relaxed text-balance">
                     {description}
                 </p>
 
@@ -60,7 +60,7 @@ const ArticleCTA = ({
             </div>
 
             {/* Minimalist Background Decoration */}
-            <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-gray-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+            <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-zinc-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         </div>
     );
 };

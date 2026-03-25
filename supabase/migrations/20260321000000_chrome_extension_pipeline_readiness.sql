@@ -62,7 +62,7 @@ END $$;
 --
 -- CRITICO - ADICIONADO RECENTEMENTE (estava hardcoded):
 --
---   TLDV_API_KEY            → 14539301-bff7-4b91-9689-3af63ae7d5cc
+--   TLDV_API_KEY            → (configurar via supabase secrets set)
 --                             (fetch-tldv-meeting vai retornar 500 sem este Secret)
 --
 -- DESCONTINUADOS (podem ser removidos apos migracao completa para extensao Chrome):

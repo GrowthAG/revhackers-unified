@@ -32,12 +32,18 @@ import ReiDashboard from '@/components/rei/ReiDashboard'; // Added ReiDashboard 
  * Extracts trade/brand name from full legal name (razão social).
  * "TUNAD MOMENT MARKETING PLATAFORM LTDA" → "Tunad"
  * "REVHACKERS CONSULTORIA LTDA" → "RevHackers"
+ * "SARAH PENIDO ARQUITETURA E DESIGN LTDA" → "Arquiter"
  * Falls back to client_name if no company name.
  */
 function getDisplayName(project: ReiProject | null): string {
     if (!project) return 'Projeto';
     if (project.trade_name) return project.trade_name;
-    const raw = project.client_company || project.client_name || 'Projeto';
+    const raw = project.client_name || 'Projeto';
+    
+    // Explicit Override Rule
+    if (raw.toUpperCase().includes('SARAH PENIDO')) return 'Arquiter';
+    if (raw.toUpperCase().includes('TUNAD')) return 'Tunad';
+
     // Strip common legal suffixes
     const cleaned = raw
         .replace(/\s+(LTDA|EIRELI|S\.?A\.?|ME|EPP|S\/S|SERVICOS|SERVIÇOS|MARKETING|CONSULTORIA|TECNOLOGIA|PLATAFORM|PLATFORM|DIGITAL|SOLUCOES|SOLUÇÕES|MOMENT|GROUP|BRASIL)\b/gi, '')

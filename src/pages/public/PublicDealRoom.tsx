@@ -94,7 +94,7 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
 
                         {/* Content Card */}
                         <div className={`flex-1 w-full pl-12 lg:pl-0 ${isEven ? 'lg:pr-8 lg:text-right' : 'lg:pl-8 lg:text-left'}`}>
-                            <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:shadow-md transition-all group hover:-translate-y-1 duration-300">
+                            <div className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm transition-all group hover:-translate-y-1 duration-300">
                                 <span className={`inline-block text-[10px] font-bold tracking-widest uppercase text-emerald-600 mb-2 bg-emerald-50 px-2 py-1 rounded-md`}>
                                     {phase.duration || `Fase ${idx + 1}`}
                                 </span>
@@ -120,7 +120,7 @@ const RoadmapDisplay = ({ scope, proposal }: { scope: any, proposal: any }) => {
             {/* Success Node */}
             <div className="relative flex justify-center pt-8">
                 <div className="z-10 bg-emerald-50 p-2 rounded-full border border-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                    <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg animate-pulse">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm animate-pulse">
                         <Zap className="w-6 h-6 fill-white" />
                     </div>
                 </div>
@@ -408,7 +408,7 @@ export default function PublicDealRoom() {
 
                     {/* Section 2: Video (The Centerpiece) */}
                     <section className="space-y-8">
-                        <div className="group relative w-full aspect-[16/9] bg-zinc-900 rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
+                        <div className="group relative w-full aspect-[16/9] bg-zinc-900 rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden transition-all duration-500">
                             {proposal.recording_url ? (
                                 <iframe
                                     src={proposal.recording_url.includes('/embed')
@@ -515,7 +515,7 @@ export default function PublicDealRoom() {
                                     <span className="w-2 h-2 rounded-full bg-zinc-200"></span>
                                     <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-[0.2em] text-center">Arquitetura da Solução</h3>
                                 </div>
-                                <div className="w-full aspect-[16/9] bg-white rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-500">
+                                <div className="w-full aspect-[16/9] bg-white rounded-[2px] border border-zinc-200 shadow-sm overflow-hidden transition-shadow duration-500">
                                     {isValidUrl ? (
                                         <iframe src={mindmapSrc} className="w-full h-full border-none" title="Blueprint" />
                                     ) : (
@@ -552,7 +552,7 @@ export default function PublicDealRoom() {
                             {Object.values(casesData)
                                 .filter(c => c.quote && c.quote.length > 20)
                                 .map((c, index) => (
-                                    <div key={index} className="snap-center shrink-0 w-[85vw] md:w-[400px] bg-white p-8 rounded-[4px] border border-zinc-100 shadow-sm hover:shadow-md transition-all space-y-6 flex flex-col justify-between select-none">
+                                    <div key={index} className="snap-center shrink-0 w-[85vw] md:w-[400px] bg-white p-8 rounded-[4px] border border-zinc-100 shadow-sm transition-all space-y-6 flex flex-col justify-between select-none">
                                         <div className="space-y-4">
                                             <Quote className="w-6 h-6 text-zinc-200" />
                                             <p className="text-sm text-zinc-600 leading-relaxed italic">
@@ -591,7 +591,7 @@ export default function PublicDealRoom() {
                                     {proposal.status === 'paid' ? (
                                         <div className="w-full h-full min-h-[500px] bg-green-50/50 rounded-[4px] border border-green-200 overflow-hidden shadow-sm flex flex-col items-center justify-center p-12 text-center relative">
                                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-multiply"></div>
-                                            <div className="z-10 bg-white p-4 rounded-full shadow-lg border border-green-100 mb-6">
+                                            <div className="z-10 bg-white p-4 rounded-full shadow-sm border border-green-100 mb-6">
                                                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center animate-[pulse_3s_ease-in-out_infinite]">
                                                     <CheckCircle2 className="w-10 h-10 text-white" />
                                                 </div>
@@ -608,7 +608,7 @@ export default function PublicDealRoom() {
                                         </div>
                                     ) : proposal.status === 'approved' ? (
                                         <div className="w-full h-full min-h-[500px] bg-emerald-50/50 rounded-[4px] border border-emerald-200 overflow-hidden shadow-sm flex flex-col items-center justify-center p-12 text-center relative max-w-xl mx-auto">
-                                            <div className="z-10 bg-white p-4 rounded-full shadow-lg border border-emerald-100 mb-6">
+                                            <div className="z-10 bg-white p-4 rounded-full shadow-sm border border-emerald-100 mb-6">
                                                 <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center animate-[pulse_3s_ease-in-out_infinite]">
                                                     <CheckCircle2 className="w-10 h-10 text-white" />
                                                 </div>
@@ -633,7 +633,7 @@ export default function PublicDealRoom() {
                                                 {paymentLink ? (
                                                     <Button 
                                                         onClick={() => window.location.href = paymentLink}
-                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-xl rounded-sm transition-all"
+                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-sm rounded-sm transition-all"
                                                     >
                                                         <CreditCard className="w-5 h-5 mr-3" />
                                                         Realizar Pagamento
@@ -642,7 +642,7 @@ export default function PublicDealRoom() {
                                                     <Button 
                                                         onClick={handleGenerateManualLink}
                                                         disabled={isGeneratingLink}
-                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-xl rounded-sm transition-all"
+                                                        className="w-full h-14 bg-black hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-sm shadow-sm rounded-sm transition-all"
                                                     >
                                                         {isGeneratingLink ? <Loader2 className="w-5 h-5 animate-spin mr-3" /> : <CreditCard className="w-5 h-5 mr-3" />}
                                                         {isGeneratingLink ? 'Processando...' : 'Realizar Pagamento'}

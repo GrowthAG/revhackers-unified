@@ -73,7 +73,7 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="Incentivos Movem o Mundo">
                     "Show me the incentive and I will show you the outcome." (Charlie Munger). Se você está recebendo leads ruins, provavelmente está pagando seu Marketing por volume, não por qualidade.
@@ -90,8 +90,8 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
                 />
 
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0 text-3xl md:text-4xl">Comissionamento de Vendas: A Engenharia do Comportamento</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0 text-3xl md:text-4xl">Comissionamento de Vendas: A Engenharia do Comportamento</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         Seu plano de compensação é a ferramenta de gestão mais poderosa que você tem. Ele dita quem fica, quem sai e como sua equipe trata seus clientes.
                     </p>
                 </div>
@@ -103,22 +103,22 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
                     proView="Defino um OTE competitivo de mercado e estruturo a meta para que seja atingível e escalável."
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Target className="w-6 h-6 text-revgreen" />
                     Modelos de Incentivo Estratégico
                 </h2>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-16 not-prose">
                     {models.map((model, index) => (
-                        <Card key={index} className="p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative bg-white">
+                        <Card key={index} className="p-6 border border-zinc-200 shadow-sm transition-all group overflow-hidden relative bg-white">
                             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 {model.icon}
                             </div>
                             <div className="mb-4">
                                 {model.icon}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900 mb-2">{model.title}</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed">{model.description}</p>
+                            <h3 className="font-bold text-lg text-zinc-900 mb-2">{model.title}</h3>
+                            <p className="text-zinc-600 text-sm leading-relaxed">{model.description}</p>
                         </Card>
                     ))}
                 </div>
@@ -133,16 +133,16 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
                     ]}
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Award className="w-6 h-6 text-revgreen" />
                     Templates de Planos
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                     <Wallet className="w-4 h-4 text-revgreen" />
                                     {template.name}
                                 </div>
@@ -150,7 +150,7 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -160,10 +160,10 @@ Variável Alvo (OTE): R$ 5.000 (Total R$ 10.000)
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-sm text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

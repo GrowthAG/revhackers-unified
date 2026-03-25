@@ -196,13 +196,13 @@ const ReiForm = () => {
         <h2 className="text-3xl font-bold text-white mb-4">
           REI - Revenue Excellence Initiative
         </h2>
-        <div className="w-full bg-gray-800 rounded-full h-2 mb-4">
+        <div className="w-full bg-zinc-800 rounded-full h-2 mb-4">
           <div 
             className="bg-revgreen h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="text-gray-300">
+        <p className="text-zinc-300">
           Seção {currentSection + 1} de {sections.length}: {sections[currentSection].title}
         </p>
       </div>
@@ -212,7 +212,7 @@ const ReiForm = () => {
         onChange={handleInputChange}
       />
 
-      <div className="flex justify-between mt-8 pt-6 border-t border-gray-700">
+      <div className="flex justify-between mt-8 pt-6 border-t border-zinc-700">
         <Button
           type="button"
           variant="outline"

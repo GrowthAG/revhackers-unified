@@ -146,7 +146,6 @@ const ReiDevPage = () => {
     };
 
     const onSubmit = (data: FormData) => {
-        console.log("DEV BRIEFING DATA:", data);
         const calculated = calculateMetrics(data);
         setMetrics(calculated);
         setShowDashboard(true);
@@ -183,7 +182,7 @@ const ReiDevPage = () => {
                 <div className="container-custom max-w-4xl mx-auto">
 
                     <div className="mb-12">
-                        <Link to="/rei" className="inline-flex items-center text-sm text-gray-500 hover:text-revgreen mb-6 transition-colors">
+                        <Link to="/rei" className="inline-flex items-center text-sm text-zinc-500 hover:text-revgreen mb-6 transition-colors">
                             <ArrowLeft className="w-4 h-4 mr-2" /> Voltar para o Hub
                         </Link>
                         <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
@@ -201,7 +200,7 @@ const ReiDevPage = () => {
                                 transition={{ duration: 0.5, ease: "easeInOut" }}
                             />
                         </div>
-                        <div className="flex justify-between mt-2 text-xs font-mono-tech text-gray-500 uppercase tracking-widest">
+                        <div className="flex justify-between mt-2 text-xs font-mono-tech text-zinc-500 uppercase tracking-widest">
                             <span>Etapa {currentStep} de {STEPS.length}</span>
                             <span>{STEPS[currentStep - 1].title}</span>
                         </div>
@@ -222,30 +221,30 @@ const ReiDevPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Visão Geral</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Nome do Projeto/Empresa *</label>
-                                            <input {...form.register("projectName")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                            <label className="text-sm font-medium text-zinc-300">Nome do Projeto/Empresa *</label>
+                                            <input {...form.register("projectName")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                             {form.formState.errors.projectName && <p className="text-red-500 text-xs">{form.formState.errors.projectName.message}</p>}
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium text-gray-300">Nome do Responsável *</label>
-                                                <input {...form.register("mainContact")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                                <label className="text-sm font-medium text-zinc-300">Nome do Responsável *</label>
+                                                <input {...form.register("mainContact")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                                 {form.formState.errors.mainContact && <p className="text-red-500 text-xs">{form.formState.errors.mainContact.message}</p>}
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium text-gray-300">E-mail de contato *</label>
-                                                <input {...form.register("email")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" />
+                                                <label className="text-sm font-medium text-zinc-300">E-mail de contato *</label>
+                                                <input {...form.register("email")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" />
                                                 {form.formState.errors.email && <p className="text-red-500 text-xs">{form.formState.errors.email.message}</p>}
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quem são os tomadores de decisão? *</label>
-                                            <input {...form.register("decisionMakers")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" placeholder="Ex: Eu e o sócio..." />
+                                            <label className="text-sm font-medium text-zinc-300">Quem são os tomadores de decisão? *</label>
+                                            <input {...form.register("decisionMakers")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" placeholder="Ex: Eu e o sócio..." />
                                             {form.formState.errors.decisionMakers && <p className="text-red-500 text-xs">{form.formState.errors.decisionMakers.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Qual o prazo desejado/ideal para lançamento? *</label>
-                                            <input {...form.register("deadline")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-gray-700" placeholder="Ex: 30 dias, para Black Friday..." />
+                                            <label className="text-sm font-medium text-zinc-300">Qual o prazo desejado/ideal para lançamento? *</label>
+                                            <input {...form.register("deadline")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all placeholder:text-zinc-700" placeholder="Ex: 30 dias, para Black Friday..." />
                                             {form.formState.errors.deadline && <p className="text-red-500 text-xs">{form.formState.errors.deadline.message}</p>}
                                         </div>
                                     </div>
@@ -255,7 +254,7 @@ const ReiDevPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Estratégia e Objetivos</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Tipo de Projeto *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Tipo de Projeto *</label>
                                             <select {...form.register("projectType")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {PROJECT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -263,17 +262,17 @@ const ReiDevPage = () => {
                                             {form.formState.errors.projectType && <p className="text-red-500 text-xs">{form.formState.errors.projectType.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Qual o objetivo principal do novo site? *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Qual o objetivo principal do novo site? *</label>
                                             <textarea {...form.register("primaryGoal")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Ex: Aumentar conversão de leads, Posicionamento de marca..." />
                                             {form.formState.errors.primaryGoal && <p className="text-red-500 text-xs">{form.formState.errors.primaryGoal.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">O que definirá que o projeto foi um sucesso? (KPIs) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">O que definirá que o projeto foi um sucesso? (KPIs) *</label>
                                             <textarea {...form.register("successKpi")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                             {form.formState.errors.successKpi && <p className="text-red-500 text-xs">{form.formState.errors.successKpi.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Quem são os principais concorrentes? (Por favor, cite o site se possível: ex: www.concorrente.com.br)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Quem são os principais concorrentes? (Por favor, cite o site se possível: ex: www.concorrente.com.br)</label>
                                             <textarea {...form.register("competitors")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -283,7 +282,7 @@ const ReiDevPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Identidade Visual (Look & Feel)</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Situação atual da Marca *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Situação atual da Marca *</label>
                                             <select {...form.register("brandGuidelines")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {BRAND_STATUS.map(t => <option key={t} value={t}>{t}</option>)}
@@ -291,17 +290,17 @@ const ReiDevPage = () => {
                                             {form.formState.errors.brandGuidelines && <p className="text-red-500 text-xs">{form.formState.errors.brandGuidelines.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Descreva o estilo visual desejado (Vibe) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Descreva o estilo visual desejado (Vibe) *</label>
                                             <textarea {...form.register("visualStyle")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Ex: Minimalista, Dark mode, Industrial, Tech, Luxuoso..." />
                                             {form.formState.errors.visualStyle && <p className="text-red-500 text-xs">{form.formState.errors.visualStyle.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Sites de Referência (Links) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Sites de Referência (Links) *</label>
                                             <textarea {...form.register("inspirationSites")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Cole aqui os links de sites que você acha incríveis." />
                                             {form.formState.errors.inspirationSites && <p className="text-red-500 text-xs">{form.formState.errors.inspirationSites.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">O que você NÃO quer de jeito nenhum? (Anti-referências)</label>
+                                            <label className="text-sm font-medium text-zinc-300">O que você NÃO quer de jeito nenhum? (Anti-referências)</label>
                                             <textarea {...form.register("dontLike")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -311,7 +310,7 @@ const ReiDevPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Conteúdo & Estrutura</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Status do Conteúdo (Textos/Imagens) *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Status do Conteúdo (Textos/Imagens) *</label>
                                             <select {...form.register("contentStatus")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
                                                 <option value="">Selecione...</option>
                                                 {CONTENT_STATUS.map(t => <option key={t} value={t}>{t}</option>)}
@@ -319,11 +318,11 @@ const ReiDevPage = () => {
                                             {form.formState.errors.contentStatus && <p className="text-red-500 text-xs">{form.formState.errors.contentStatus.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Estrutura de páginas sugerida (Sitemap)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Estrutura de páginas sugerida (Sitemap)</label>
                                             <textarea {...form.register("sitemap")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Ex: Home, Sobre, Serviços, Contato..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Palavras-chave para SEO (se houver)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Palavras-chave para SEO (se houver)</label>
                                             <textarea {...form.register("seoKeywords")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                     </div>
@@ -333,20 +332,20 @@ const ReiDevPage = () => {
                                     <div className="space-y-6">
                                         <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Especificações Técnicas</h2>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Situação do Domínio e Hospedagem *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Situação do Domínio e Hospedagem *</label>
                                             <input {...form.register("domainStatus")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" placeholder="Ex: Já tenho domínio no GoDaddy..." />
                                             {form.formState.errors.domainStatus && <p className="text-red-500 text-xs">{form.formState.errors.domainStatus.message}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Preferência de Plataforma? (Opcional)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Preferência de Plataforma? (Opcional)</label>
                                             <input {...form.register("platformPreference")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" placeholder="Ex: WordPress, React, Webflow..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Integrações necessárias (CRM, Pixel, Chat)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Integrações necessárias (CRM, Pixel, Chat)</label>
                                             <textarea {...form.register("integrations")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-300">Scripts de Tracking necessários?</label>
+                                            <label className="text-sm font-medium text-zinc-300">Scripts de Tracking necessários?</label>
                                             <input {...form.register("tracking")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" placeholder="GTM, Analytics, Hotjar..." />
                                         </div>
                                     </div>
@@ -359,7 +358,7 @@ const ReiDevPage = () => {
                             <button
                                 onClick={handleBack}
                                 disabled={currentStep === 1}
-                                className={`text-sm font-medium text-gray-500 hover:text-white transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
+                                className={`text-sm font-medium text-zinc-500 hover:text-white transition-colors flex items-center gap-2 ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
                             >
                                 <ArrowLeft className="w-4 h-4" /> Anterior
                             </button>

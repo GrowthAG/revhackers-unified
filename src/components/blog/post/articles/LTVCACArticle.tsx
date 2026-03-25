@@ -60,7 +60,7 @@ LTV / CAC = 1.600 / 200 = 8x.
 
   return (
     <article className="w-full mx-auto">
-      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+      <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
         <StrategicContext label="O Cemitério das Startups">
           Muitas empresas quebram com LTV:CAC de 5x ou 10x. Por quê? <strong>Payback Period</strong>. Se você gasta R$ 1.000 para trazer um cliente que paga R$ 50/mês, você leva 20 meses para recuperar o dinheiro. Se você crescer rápido demais nesse modelo, vai quebrar o caixa antes do lucro chegar. Cash is King.
@@ -83,14 +83,14 @@ LTV / CAC = 1.600 / 200 = 8x.
           proView="3:1 é o padrão saudável. Acima de 5:1, você está investindo pouco em crescimento. Abaixo de 1:1, você está pagando para trabalhar."
         />
 
-        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">3 Erros que Mascaram a Realidade</h2>
+        <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">3 Erros que Mascaram a Realidade</h2>
         <div className="grid md:grid-cols-3 gap-6 mb-12 not-prose">
           {calculationMistakes.map((item, i) => (
-            <Card key={i} className="p-6 bg-white border border-gray-200 hover:border-revgreen/50 transition-colors shadow-sm">
+            <Card key={i} className="p-6 bg-white border border-zinc-200 hover:border-revgreen/50 transition-colors shadow-sm">
               <AlertCircle className="w-8 h-8 text-red-500 mb-4" />
-              <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-              <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-              <div className="text-xs bg-gray-50 p-2 rounded border border-gray-100 text-gray-700 font-mono font-bold flex gap-2">
+              <h3 className="font-bold text-zinc-900 mb-2">{item.title}</h3>
+              <p className="text-sm text-zinc-600 mb-4">{item.description}</p>
+              <div className="text-xs bg-zinc-50 p-2 rounded border border-zinc-100 text-zinc-700 font-mono font-bold flex gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
                 {item.fix}
               </div>
@@ -98,28 +98,28 @@ LTV / CAC = 1.600 / 200 = 8x.
           ))}
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Calculando na Prática</h2>
+        <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Calculando na Prática</h2>
         <div className="mb-16">
           <LTVCalculator />
         </div>
 
-        <div className="my-16 bg-gray-50 p-8 rounded-xl not-prose border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <div className="my-16 bg-zinc-50 p-8 rounded-xl not-prose border border-zinc-200">
+          <h3 className="text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
             <TrendingDown className="w-6 h-6 text-red-500" />
             Como consertar um LTV:CAC ruim?
           </h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h4 className="font-bold text-gray-900 mb-2 uppercase text-xs tracking-wider">Opção 1: Aumentar LTV</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <h4 className="font-bold text-zinc-900 mb-2 uppercase text-xs tracking-wider">Opção 1: Aumentar LTV</h4>
+              <ul className="space-y-2 text-sm text-zinc-600">
                 <li>• Aumentar preço (Pricing Power)</li>
                 <li>• Upsell/Cross-sell (Expansion)</li>
                 <li>• Reduzir Churn (Customer Success)</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 mb-2 uppercase text-xs tracking-wider">Opção 2: Reduzir CAC</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <h4 className="font-bold text-zinc-900 mb-2 uppercase text-xs tracking-wider">Opção 2: Reduzir CAC</h4>
+              <ul className="space-y-2 text-sm text-zinc-600">
                 <li>• Otimizar conversão de Landing Page (CRO)</li>
                 <li>• Mudar para canais orgânicos (SEO/Content)</li>
                 <li>• Melhorar qualificação de leads (Menos lixo no funil)</li>

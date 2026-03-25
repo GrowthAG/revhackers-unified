@@ -249,7 +249,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                                 navigate(`/admin/knowledge/${wikiLibrary.id}/doc/${doc.id}`);
                             }
                         }}
-                        className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-zinc-300 hover:shadow-sm transition-all cursor-pointer h-48 flex flex-col justify-between overflow-hidden"
+                        className="group relative bg-white border border-zinc-200 rounded-2xl p-5 hover:border-zinc-300 transition-all cursor-pointer h-48 flex flex-col justify-between overflow-hidden"
                     >
                         {/* Status/Meta Badge */}
                         <div className="flex justify-between items-start z-10 relative">
@@ -261,7 +261,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                                     <span className={cn(
                                         "px-2 py-0.5 border rounded-md text-[8px] font-black uppercase tracking-widest",
                                         doc.metadata.visibility === 'internal' ? "bg-zinc-100 text-zinc-500 border-zinc-200" :
-                                        doc.metadata.visibility === 'shared' ? "bg-blue-50 text-blue-600 border-blue-200" :
+                                        doc.metadata.visibility === 'shared' ? "bg-zinc-100 text-zinc-700 border-zinc-200" :
                                         "bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20"
                                     )}>
                                         {doc.metadata.visibility === 'internal' ? 'Interno' : doc.metadata.visibility === 'shared' ? 'Compartilhado' : 'Oficial'}

@@ -10,64 +10,55 @@ import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/Dia
 import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
 import { MetricCard } from '@/components/diagnostics/MetricCard';
 import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
+import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
+import DiagnosticBookingEmbed from '@/components/diagnostics/DiagnosticBookingEmbed';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
 
-// Questions centered on "Founder Led Sales & Authority"
+// Questions centered on "Founder Authority & Bottleneck" - 4 dimensões, total = 100pts
 const QUESTIONS = [
     {
         id: 1,
-        question: "Como você classificaria seu Perfil no LinkedIn hoje?",
+        question: "Quantas horas da sua semana são dedicadas a 'apagar incêndios' em tarefas operacionais?",
         options: [
-            { label: "É uma 'Sales Letter': Converte visitantes em reuniões sozinho.", score: 20 },
-            { label: "É um currículo digital bem feito, mas passivo.", score: 10 },
-            { label: "Desatualizado ou incompleto (Vitrine abandonada).", score: 5 },
-            { label: "Não tenho perfil ou não uso.", score: 0 }
+            { label: "Quase zero. Atuo na estratégia (CEO de fato)", score: 25 },
+            { label: "20-40% do tempo. Ainda controlo entregas críticas", score: 15 },
+            { label: "A empresa para se eu tirar 15 dias de férias", score: 5 },
+            { label: "100%. Eu sou o produto/serviço.", score: 0 }
         ],
-        log: "Seu perfil é sua landing page pessoal. Ignore-o e perca dinheiro."
+        log: "O verdadeiro valor do founder não é a força bruta, é o poder de alavancagem."
     },
     {
         id: 2,
-        question: "Qual sua constância de produção de conteúdo?",
+        question: "Quando um cliente B2B decide pesquisar o seu nome (não o da empresa), o que ele encontra?",
         options: [
-            { label: "Consistente (3-5x/semana) com estratégia editorial clara.", score: 20 },
-            { label: "Esporádico (Posto quando dá vontade ou sobra tempo).", score: 10 },
-            { label: "Raro (Menos de 2x por mês).", score: 5 },
-            { label: "Apenas repostagens ou conteúdo institucional chato.", score: 0 }
+            { label: "Uma máquina de influência: Materiais ricos, tese validada", score: 25 },
+            { label: "Um perfil do LinkedIn atualizado e arrumado", score: 15 },
+            { label: "Citações tímidas na página Institucional", score: 5 },
+            { label: "Basicamente o fantasma do Orkut. Zero presença.", score: 0 }
         ],
-        log: "Constância gera confiança. Confiança gera vendas."
+        log: "Pessoas compram de pessoas. Sua autoridade reduz o atrito e abaixa o CAC da empresa."
     },
     {
         id: 3,
-        question: "Você produz 'Material Rico' (Ebooks, Frameworks, Playbooks)?",
+        question: "Seu esforço nas Redes Sociais gera tapinhas nas costas ou Pipeline de Vendas?",
         options: [
-            { label: "Sim, empacoto meu conhecimento em ativos proprietários.", score: 20 },
-            { label: "Apenas textos curtos ou artigos de opinião.", score: 10 },
-            { label: "Tenho vontade, mas nunca parei para escrever.", score: 5 },
-            { label: "Não, acho que conteúdo longo não funciona.", score: 0 }
+            { label: "Post gera leads qualificados e mensagens no Inbox para fechar", score: 25 },
+            { label: "Engajamento ok, reputação sobe, mas vendas são raras", score: 15 },
+            { label: "Tenho likes de colegas e funcionários apenas", score: 5 },
+            { label: "Só tenho tempo de repostar artes da empresa", score: 0 }
         ],
-        log: "Conteúdo denso (Long-Form) separa especialistas de amadores."
+        log: "Autoridade que não se traduz em captação de receita é apenas ego digital."
     },
     {
         id: 4,
-        question: "Seus posts enchem a agenda do comercial?",
+        question: "Você vende um serviço 'como o do concorrente', ou possui uma metodologia proprietária inconfundível?",
         options: [
-            { label: "Sim, geramos reuniões qualificadas toda semana via Content.", score: 20 },
-            { label: "Geram engajamento (likes/comentários), mas poucas vendas.", score: 10 },
-            { label: "Tenho visibilidade, mas zero conversão em receita.", score: 5 },
-            { label: "Não sei mensurar ou não geram nada.", score: 0 }
+            { label: "Temos um framework único para resolver a dor, somos incomparáveis", score: 25 },
+            { label: "Temos um bom pitch, mas o produto final é padrão de mercado", score: 15 },
+            { label: "Diferenciamos por ter 'mais qualidade e atendimento'", score: 5 },
+            { label: "A guerra é 100% no preço (Commodity)", score: 0 }
         ],
-        log: "Engajamento sem conversão é apenas massagem no ego."
-    },
-    {
-        id: 5,
-        question: "Como o mercado percebe sua autoridade?",
-        options: [
-            { label: "Sou visto como referência/especialista no meu nicho.", score: 20 },
-            { label: "Sou conhecido apenas pela minha rede próxima.", score: 10 },
-            { label: "Sou 'mais um' na multidão.", score: 5 },
-            { label: "Sou invisível para o mercado.", score: 0 }
-        ],
-        log: "Autoridade é a moeda mais forte da nova economia."
+        log: "Sem fosso competitivo ('Moat'), você é forçado a ceder desconto para liderar mercado."
     }
 ];
 
@@ -213,7 +204,7 @@ const FounderScore = () => {
     if (step === 'start') {
         return (
             <DiagnosticLayout
-                title="Diagnóstico de Founder"
+                title="Diagnóstico Founder"
                 subtitle="Identifique se você é um CEO Estrategista ou um Gargalo Operacional."
                 showGovernanceFooter={false}
                 variant="light"
@@ -296,7 +287,7 @@ const FounderScore = () => {
 
     return (
         <DiagnosticLayout
-            title={step === 'results' ? "" : "Founder Score"}
+            title={step === 'results' ? "" : "Diagnóstico Founder"}
             subtitle={step === 'results' ? "" : "Diagnóstico de Autoridade & Posicionamento"}
             variant={step === 'results' ? 'dark' : 'light'}
             centered={step === 'results'}
@@ -429,7 +420,7 @@ const FounderScore = () => {
                                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
-                                Relatório de <span className="text-zinc-600">Autoridade</span>
+                                Diagnóstico <span className="text-zinc-600">Founder</span>
                             </h1>
                             <p className="text-zinc-500 font-medium max-w-xl mx-auto">
                                 Análise de posicionamento digital e alinhamento estratégico.
@@ -600,8 +591,22 @@ const FounderScore = () => {
                                 {/* Final CTA Area - Standardized */}
                                 <div className="mt-20">
                                     <DiagnosticActionSection
-                                        title="Transforme esse diagnóstico em plano de ação de 30 dias."
+                                        title="Retome o Controle."
+                                        subtitle="Agende um diagnóstico gratuito com um especialista para desenhar seu plano de ação e descentralizar."
+                                        onCtaClick={() => setIsBookingModalOpen(true)}
                                     />
+
+                                    <DiagnosticBookingModal
+                                        isOpen={isBookingModalOpen}
+                                        onClose={() => setIsBookingModalOpen(false)}
+                                        diagnosticType="founder"
+                                    />
+
+                                    {/* Fallback MoFu CTA */}
+                                    <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
+                                        <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                        <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook de Authority (Grátis)</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -20,7 +20,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="idealCustomerProfiles"
           value={formData.idealCustomerProfiles}
           onChange={(e) => onChange('idealCustomerProfiles', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[120px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[120px]"
           placeholder="Perfil 1: ...&#10;Perfil 2: ...&#10;Perfil 3: ..."
           required
         />
@@ -34,7 +34,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="demographicProfile"
           value={formData.demographicProfile}
           onChange={(e) => onChange('demographicProfile', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Idade, gênero, localização, renda, escolaridade..."
           required
         />
@@ -48,7 +48,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="recurringProblems"
           value={formData.recurringProblems}
           onChange={(e) => onChange('recurringProblems', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Liste os principais problemas que você resolve..."
           required
         />
@@ -62,7 +62,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="customerPains"
           value={formData.customerPains}
           onChange={(e) => onChange('customerPains', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva as principais dores dos clientes..."
           required
         />
@@ -76,7 +76,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="consequencesOfNotBuying"
           value={formData.consequencesOfNotBuying}
           onChange={(e) => onChange('consequencesOfNotBuying', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Consequências de não adquirir sua solução..."
           required
         />
@@ -90,7 +90,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="emotionalResponses"
           value={formData.emotionalResponses}
           onChange={(e) => onChange('emotionalResponses', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Descreva as respostas emocionais..."
         />
       </div>
@@ -103,7 +103,7 @@ const ProblemSection = ({ formData, onChange }: ProblemSectionProps) => {
           id="savesTimeOrMoney"
           value={formData.savesTimeOrMoney}
           onChange={(e) => onChange('savesTimeOrMoney', e.target.value)}
-          className="bg-gray-900 border-gray-700 text-white min-h-[100px]"
+          className="bg-zinc-900 border-zinc-700 text-white min-h-[100px]"
           placeholder="Como sua solução economiza tempo ou dinheiro..."
           required
         />

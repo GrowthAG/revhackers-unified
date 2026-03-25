@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
     Loader2, Zap, Target, Search, Linkedin, Activity,
     BrainCircuit, Users, Building2, Globe, TrendingUp,
-    BarChart2, RefreshCw, Lightbulb, AlertCircle
+    BarChart2, RefreshCw, Lightbulb, AlertCircle, Wrench, Focus, Crosshair
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -37,7 +37,7 @@ function ScoreBar({ score, label }: { score: number; label: string }) {
             <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{label}</p>
                 <p className="text-xs font-bold text-zinc-700">
-                    {score >= 90 ? 'Excelente' : score >= 50 ? 'Melhorar' : 'Critico'}
+                    {score >= 90 ? 'Excelente' : score >= 50 ? 'Melhorar' : 'Crítico'}
                 </p>
             </div>
         </div>
@@ -53,7 +53,10 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
     const enrichmentData  = project.enrichment_data ?? null;
     const cnpjData        = enrichmentData?.cnpj ?? null;
     const sitePerf        = enrichmentData?.site_perf ?? null;
+    
+    // Ouro escondido que descobrimos no log (Gerado pelo inspect-website)
     const siteInspection  = (project as any).site_analysis ?? null;
+    const aiAnalysis      = siteInspection?.ai_analysis ?? null;
 
     // ── Gerar inteligencia de mercado GPT ────────────────────────────────────
 
@@ -69,7 +72,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
             };
 
             const payload = {
-                segment:      project.client_company || project.client_name || '',
+                segment:      project.client_name || '',
                 objective:    objectiveByType[project.type || ''] || 'Escalar vendas e marketing digital',
                 project_type: project.type,
                 clientName:   project.trade_name || project.client_name || '',
@@ -91,7 +94,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
             if (updateError) throw updateError;
 
-            toast.success('Inteligencia de Mercado gerada!', {
+            toast.success('Inteligência de Mercado gerada!', {
                 description: 'TAM/SAM/SOM, personas e concorrentes importados do GPT-4.5.'
             });
 
@@ -99,7 +102,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
         } catch (e: any) {
             console.error(e);
-            toast.error('Falha ao gerar inteligencia', { description: e.message || 'Erro de conexao' });
+            toast.error('Falha ao gerar inteligência', { description: e.message || 'Erro de conexão' });
         } finally {
             setIsGenerating(false);
         }
@@ -127,19 +130,19 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
     // ── Titulo dinamico por tipo ─────────────────────────────────────────────
 
-    const tabTitle = project.type === 'founder'      ? 'Inteligencia Founder & OSINT'
-                   : project.type === 'crm_ops'      ? 'Inteligencia de Vendas B2B'
-                   : project.type === 'dev'           ? 'Inteligencia de Aquisicao & Site'
-                   : project.type === 'funnels_impl'  ? 'Inteligencia de Aquisicao & Funis'
-                   : 'Inteligencia de Mercado 360';
+    const tabTitle = project.type === 'founder'      ? 'Inteligência Founder & OSINT'
+                   : project.type === 'crm_ops'      ? 'Inteligência de Vendas B2B'
+                   : project.type === 'dev'           ? 'Inteligência de Aquisição & Site'
+                   : project.type === 'funnels_impl'  ? 'Inteligência de Aquisição & Funis'
+                   : 'Inteligência de Mercado 360';
 
     const tabSubtitle = project.type === 'founder'
-        ? 'Visao de Autoridade LinkedIn (OSINT) e Personas de Posicionamento B2B.'
+        ? 'Visão de Autoridade LinkedIn (OSINT) e Personas de Posicionamento B2B.'
         : project.type === 'crm_ops'
         ? 'Mapeamento de ICP, Pipeline B2B e Concorrentes do segmento.'
         : project.type === 'dev' || project.type === 'funnels_impl'
-        ? 'Analise de aquisicao, benchmark de conversao e mapeamento de canais.'
-        : 'Analise de Mercado TAM/SAM/SOM, Personas e Dados Setoriais.';
+        ? 'Análise de aquisição, benchmark de conversão e mapeamento de canais.'
+        : 'Análise de Mercado TAM/SAM/SOM, Personas e Dados Setoriais.';
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-16">
@@ -172,11 +175,187 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                     >
                         {isGenerating
                             ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> GPT-4.5...</>
-                            : <><Zap className="w-3.5 h-3.5 mr-1.5" /> Gerar Analise IA</>
+                            : <><Zap className="w-3.5 h-3.5 mr-1.5" /> Gerar Análise IA</>
                         }
                     </Button>
                 </div>
             </div>
+
+            {/* ── BLOCO 0.5: LINKEDIN OSINT & AUTORIDADE DIGITAL ── */}
+            {marketData?.linkedin_osint ? (
+                <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-[#0A66C2]/5">
+                        <Linkedin className="w-4 h-4 text-[#0A66C2]" />
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-700">
+                            OSINT: Perfil & Autoridade Digital
+                        </h3>
+                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#0A66C2] border border-[#0A66C2]/30 px-2 py-0.5 rounded bg-white">
+                            Scraping IA
+                        </span>
+                    </div>
+                    <div className="p-6 md:p-8 bg-white grid grid-cols-1 md:grid-cols-12 gap-8">
+                        {/* Status Lateral Esquerdo */}
+                        <div className="md:col-span-4 space-y-6">
+                            <div>
+                                <h4 className="text-xl font-black text-zinc-900 tracking-tight">{marketData.linkedin_osint.fullName}</h4>
+                                <p className="text-xs text-zinc-500 font-medium leading-snug mt-1">{marketData.linkedin_osint.headline}</p>
+                                <a href={marketData.linkedin_osint.profileUrl} target="_blank" rel="noreferrer" className="text-[10px] uppercase font-bold text-[#0A66C2] hover:underline mt-2 inline-block tracking-widest">
+                                    Ver Perfil
+                                </a>
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <div className="border border-zinc-100 rounded-xl p-4 bg-zinc-50/50">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1">Arquétipo Dominante</p>
+                                    <p className="text-sm font-black text-zinc-900 mb-2">{marketData.linkedin_osint.archetype} ({marketData.linkedin_osint.managementStyle})</p>
+                                    <p className="text-[11px] text-zinc-500 leading-snug italic">"{marketData.linkedin_osint.archetypeReason}"</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-1 border border-zinc-100 rounded-xl p-4 bg-zinc-50/50 text-center">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Score de Autoridade</p>
+                                        <p className="text-2xl font-black text-zinc-900 mt-1">{marketData.linkedin_osint.authorityScore}<span className="text-sm text-zinc-400 font-bold">/100</span></p>
+                                    </div>
+                                    <div className="flex-1 border border-zinc-100 rounded-xl p-4 bg-zinc-50/50 text-center">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Seguidores</p>
+                                        <p className="text-2xl font-black text-zinc-900 mt-1">{marketData.linkedin_osint.followerCount?.toLocaleString('pt-BR') || '-'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Análise de Gaps Direita */}
+                        <div className="md:col-span-8 flex flex-col justify-between">
+                            <div className="mb-6">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 flex items-center gap-2">
+                                    <Focus size={14} className="text-zinc-500" /> Resumo do Posicionamento
+                                </p>
+                                <p className="text-sm text-zinc-700 leading-relaxed font-medium">
+                                    {marketData.linkedin_osint.summary}
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-3 border-b border-red-100 pb-2">Blind Spots (Pontos Cegos)</p>
+                                    <ul className="space-y-2">
+                                        {(marketData.linkedin_osint.blindSpots || []).map((spot: string, i: number) => (
+                                            <li key={i} className="text-[11px] font-medium text-zinc-600 flex items-start gap-2">
+                                                <span className="text-red-400 mt-0.5">•</span> {spot}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-3 border-b border-amber-100 pb-2">Branding Gaps</p>
+                                    <ul className="space-y-2">
+                                        {(marketData.linkedin_osint.brandingGaps || []).map((gap: string, i: number) => (
+                                            <li key={i} className="text-[11px] font-medium text-zinc-600 flex items-start gap-2">
+                                                <span className="text-amber-400 mt-0.5">•</span> {gap}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 border border-[#00CC6A]/20 bg-[#00CC6A]/5 rounded-xl p-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] mb-1">Ação Prática Imediata (Insight)</p>
+                                <p className="text-sm font-bold text-zinc-800 leading-snug">{marketData.linkedin_osint.actionableInsight}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+
+            {/* ── BLOCO 1: DOSSIÊ EXECUTIVO (SITE UX & GAPS) - BRUTALIST ── */}
+            {aiAnalysis ? (
+                 <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-800 bg-zinc-950 text-white">
+                        <Target className="w-4 h-4 text-[#00CC6A]" />
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                            Dossiê de Fricção Comercial (Site Analysis)
+                        </h3>
+                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#00CC6A]/60 border border-[#00CC6A]/30 px-2 py-0.5 rounded">
+                            {aiAnalysis.segmento}
+                        </span>
+                    </div>
+                    <div className="bg-white">
+                        {/* Hipótese Central */}
+                        <div className="p-8 border-b border-zinc-100 bg-zinc-50/50">
+                            <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                <AlertCircle size={12} /> Problema Identificado (O Gargalo)
+                            </p>
+                            <p className="text-lg font-medium text-zinc-900 leading-snug tracking-tight">
+                                "{aiAnalysis.problema_identificado}"
+                            </p>
+                            <div className="mt-4 flex gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                <span>Maturidade: <span className="text-zinc-800">{aiAnalysis.maturidade_digital}</span></span>
+                                <span>|</span>
+                                <span>Tom: <span className="text-zinc-800">{aiAnalysis.tom_comunicacao}</span></span>
+                                <span>|</span>
+                                <span>Proposta Clara? <span className={aiAnalysis.proposta_de_valor_clara ? 'text-[#00CC6A]' : 'text-red-500'}>{aiAnalysis.proposta_de_valor_clara ? 'Sim' : 'Não'}</span></span>
+                            </div>
+                        </div>
+
+                        {/* Colunas Gaps vs Oportunidades */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
+                            {/* Pontos Fracos */}
+                            <div className="p-8 space-y-4">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                                    <Crosshair size={14} className="text-red-400" /> Vazamentos (Gaps)
+                                </p>
+                                <ul className="space-y-4">
+                                    {(aiAnalysis.pontos_fracos_site || []).map((gap: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3 text-sm text-zinc-700 leading-tight">
+                                            <span className="text-red-400 font-black mt-0.5">X</span>
+                                            {gap}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            
+                            {/* Plano de Ação (Oportunidades) */}
+                            <div className="p-8 space-y-4 bg-zinc-50/30">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                                    <Zap size={14} className="text-[#00CC6A]" /> Plano de Ação Estratégico
+                                </p>
+                                <ul className="space-y-4">
+                                    {(aiAnalysis.oportunidades_estrategicas || []).map((opt: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3 text-sm text-zinc-700 leading-tight">
+                                            <span className="text-[#00CC6A] font-black mt-0.5 text-[10px]">0{i+1}</span>
+                                            {opt}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Tecnologias Mapeadas */}
+                        {aiAnalysis.ferramentas_detectadas && (
+                            <div className="p-6 border-t border-zinc-100 bg-zinc-50 flex flex-wrap gap-4 items-center">
+                                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest w-full md:w-auto">Tech Stack Identificada:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {aiAnalysis.ferramentas_detectadas.split(',').map((tech: string, i: number) => (
+                                        <span key={i} className="px-3 py-1 bg-white border border-zinc-200 text-zinc-600 text-[10px] font-bold uppercase tracking-wider rounded-lg">
+                                            {tech.trim()}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                 </div>
+            ) : project.client_site ? (
+                <div className="border border-dashed border-zinc-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 bg-zinc-50/50 text-center">
+                     <Wrench className="w-8 h-8 text-zinc-300" />
+                     <div>
+                         <p className="text-sm font-black text-zinc-500 uppercase tracking-widest">Dossiê de Conversão Pendente</p>
+                         <p className="text-xs font-medium text-zinc-400 mt-1 max-w-sm">
+                             Este projeto ainda não possui a análise qualitativa do site (Gaps e Oportunidades). Você pode processar isso ativando o Web Scraper e a IA para varrer o site '{project.client_site}'.
+                         </p>
+                     </div>
+                </div>
+            ) : null}
+
 
             {/* ── BLOCO 1: Dados da Empresa (CNPJ / Receita Federal) ── */}
             {cnpjData ? (
@@ -192,14 +371,14 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                     </div>
                     <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-5">
                         {[
-                            { label: 'Razao Social',         value: cnpjData.razao_social },
+                            { label: 'Razão Social',         value: cnpjData.razao_social },
                             { label: 'Nome Fantasia',        value: cnpjData.nome_fantasia || '-' },
-                            { label: 'Situacao Cadastral',   value: cnpjData.situacao_cadastral },
+                            { label: 'Situação Cadastral',   value: cnpjData.situacao_cadastral },
                             { label: 'Abertura',             value: cnpjData.data_abertura ? new Date(cnpjData.data_abertura).toLocaleDateString('pt-BR') : '-' },
                             { label: 'Porte',                value: cnpjData.porte || '-' },
                             { label: 'Capital Social',       value: cnpjData.capital_social ? `R$ ${Number(cnpjData.capital_social).toLocaleString('pt-BR')}` : '-' },
-                            { label: 'Municipio / UF',       value: cnpjData.municipio && cnpjData.uf ? `${cnpjData.municipio} / ${cnpjData.uf}` : '-' },
-                            { label: 'Natureza Juridica',    value: cnpjData.natureza_juridica || '-' },
+                            { label: 'Município / UF',       value: cnpjData.municipio && cnpjData.uf ? `${cnpjData.municipio} / ${cnpjData.uf}` : '-' },
+                            { label: 'Natureza Jurídica',    value: cnpjData.natureza_juridica || '-' },
                             { label: 'Contato',              value: cnpjData.telefone || cnpjData.email || '-' },
                         ].map(({ label, value }) => (
                             <div key={label}>
@@ -216,30 +395,8 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             </p>
                         </div>
                     )}
-                    {cnpjData.qsa && cnpjData.qsa.length > 0 && (
-                        <div className="px-6 pb-5 border-t border-zinc-100 pt-4">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Quadro Societario</p>
-                            <div className="flex flex-wrap gap-2">
-                                {cnpjData.qsa.map((s: any, i: number) => (
-                                    <span key={i} className="text-xs font-bold bg-zinc-50 border border-zinc-200 text-zinc-700 px-3 py-1 rounded-lg">
-                                        {s.nome}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                 </div>
-            ) : (
-                <div className="border border-dashed border-zinc-200 rounded-2xl p-6 flex items-center gap-4 bg-zinc-50/50">
-                    <Building2 className="w-8 h-8 text-zinc-200 shrink-0" />
-                    <div>
-                        <p className="text-sm font-black text-zinc-400">Dados da Receita Federal nao carregados</p>
-                        <p className="text-xs font-medium text-zinc-400 mt-0.5">
-                            Clique em "CNPJ + Site" para buscar automaticamente. Requer CNPJ cadastrado no perfil do cliente.
-                        </p>
-                    </div>
-                </div>
-            )}
+            ) : null}
 
             {/* ── BLOCO 2: Performance do Site (Google PSI) ── */}
             {sitePerf ? (
@@ -247,7 +404,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                     <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                         <Globe className="w-4 h-4 text-zinc-400" />
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                            Performance do Site
+                            Performance Bruta do Site
                         </h3>
                         <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-zinc-300">
                             Google PageSpeed
@@ -275,107 +432,9 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         </div>
                     </div>
                 </div>
-            ) : project.client_site ? (
-                <div className="border border-dashed border-zinc-200 rounded-2xl p-6 flex items-center gap-4 bg-zinc-50/50">
-                    <Globe className="w-8 h-8 text-zinc-200 shrink-0" />
-                    <div>
-                        <p className="text-sm font-black text-zinc-400">Performance do site nao analisada ainda</p>
-                        <p className="text-xs font-medium text-zinc-400 mt-0.5">
-                            Site: <span className="font-bold text-zinc-600">{project.client_site}</span> - Clique em "CNPJ + Site" para analisar.
-                        </p>
-                    </div>
-                </div>
             ) : null}
 
-            {/* ── BLOCO 3: LinkedIn OSINT (apenas founder) ── */}
-            {project.type === 'founder' && (
-                <div className="border border-zinc-200 rounded-2xl overflow-hidden">
-                    <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
-                        <Linkedin className="w-4 h-4 text-[#0077b5]" />
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                            Perfil LinkedIn - OSINT
-                        </h3>
-                    </div>
-                    <div className="p-6">
-                        {linkedinData ? (
-                            <div className="flex flex-col md:flex-row gap-6 items-start">
-                                <div className="flex-1 space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-zinc-100 rounded-xl flex items-center justify-center text-zinc-400 overflow-hidden">
-                                            {linkedinData.profileImageUrl ? (
-                                                <img src={linkedinData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <Linkedin className="w-5 h-5" />
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h4 className="text-lg font-black text-zinc-900 tracking-tight leading-none">
-                                                {linkedinData.fullName || 'Nome nao encontrado'}
-                                            </h4>
-                                            <p className="text-xs font-semibold text-zinc-400 mt-0.5 line-clamp-1">
-                                                {linkedinData.headline || 'Headline nao disponivel'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-2 flex-wrap">
-                                        <span className="bg-zinc-100 text-zinc-600 border border-zinc-200 px-3 py-1 rounded-lg text-xs font-bold">
-                                            {(linkedinData.followerCount ?? 0).toLocaleString('pt-BR')} seguidores
-                                        </span>
-                                        {linkedinData.isTopVoice && (
-                                            <span className="bg-amber-50 text-amber-700 border-amber-200 border px-3 py-1 rounded-lg text-xs font-bold">
-                                                LinkedIn Top Voice
-                                            </span>
-                                        )}
-                                        {linkedinData.archetype && (
-                                            <span className="bg-zinc-50 text-zinc-600 border border-zinc-200 px-3 py-1 rounded-lg text-xs font-bold">
-                                                {linkedinData.archetype}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {linkedinData.actionableInsight && (
-                                        <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1.5">Gatilho Tatico</p>
-                                            <p className="text-sm font-medium text-zinc-700 leading-relaxed italic">
-                                                "{linkedinData.actionableInsight}"
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="w-full md:w-48 shrink-0 bg-zinc-50 border border-zinc-100 rounded-2xl p-5 text-center">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Authority Score</p>
-                                    <div className="flex items-end justify-center gap-1 mt-2">
-                                        <span className="text-5xl font-black tracking-tighter text-zinc-900">
-                                            {linkedinData.authorityScore ?? 0}
-                                        </span>
-                                        <span className="text-base font-bold text-zinc-400 mb-1">/100</span>
-                                    </div>
-                                    <div className="w-full h-1.5 bg-zinc-200 rounded-full mt-3 overflow-hidden">
-                                        <div
-                                            className={cn('h-full rounded-full',
-                                                (linkedinData.authorityScore ?? 0) > 75 ? 'bg-[#00CC6A]' :
-                                                (linkedinData.authorityScore ?? 0) > 40 ? 'bg-amber-400' : 'bg-red-400'
-                                            )}
-                                            style={{ width: `${linkedinData.authorityScore ?? 0}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-4">
-                                <Linkedin className="w-8 h-8 text-zinc-200 shrink-0" />
-                                <div>
-                                    <p className="text-sm font-black text-zinc-400">Sem dados OSINT do LinkedIn</p>
-                                    <p className="text-xs font-medium text-zinc-400 mt-0.5">
-                                        Use a extensao Chrome RevHackers no perfil LinkedIn do cliente para coletar.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* ── BLOCO 4: TAM / SAM / SOM ── */}
+            {/* ── BLOCO 4: TAM / SAM / SOM (Se marketData existir) ── */}
             {marketData ? (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -384,39 +443,16 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             { label: 'SAM - Serviceable Market',       value: marketData.market_sizing?.sam, accent: 'border-[#00CC6A]/30' },
                             { label: 'SOM - Obtainable Market',        value: marketData.market_sizing?.som, accent: 'border-zinc-200' },
                         ].map(({ label, value, accent }) => (
-                            <div key={label} className={cn('border rounded-2xl p-6 bg-white', accent)}>
+                            <div key={label} className={cn('border rounded-2xl p-6 bg-white shadow-sm', accent)}>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">{label}</p>
-                                <p className="font-bold text-zinc-900 leading-snug text-sm">{value || 'Dados indisponiveis'}</p>
+                                <p className="font-bold text-zinc-900 leading-snug text-sm">{value || 'Dados indisponíveis'}</p>
                             </div>
                         ))}
                     </div>
 
-                    {/* Tendencias do setor */}
-                    {marketData.industry_trends?.length > 0 && (
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden">
-                            <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
-                                <TrendingUp className="w-4 h-4 text-zinc-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                                    Tendencias do Setor
-                                </h3>
-                            </div>
-                            <div className="p-6 space-y-3">
-                                {marketData.industry_trends.map((trend: string, i: number) => (
-                                    <div key={i} className="flex items-start gap-3">
-                                        <span className="text-[10px] font-black text-[#00CC6A] bg-[#00CC6A]/10 rounded px-1.5 py-0.5 shrink-0 mt-0.5">
-                                            {String(i + 1).padStart(2, '0')}
-                                        </span>
-                                        <p className="text-sm font-medium text-zinc-700 leading-snug">{trend}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Personas + Concorrentes */}
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         {/* Buyer Personas */}
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+                        <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
                             <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                                 <Users className="w-4 h-4 text-zinc-400" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
@@ -446,7 +482,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         </div>
 
                         {/* Radar de Concorrentes */}
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+                        <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
                             <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                                 <Search className="w-4 h-4 text-zinc-400" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
@@ -464,36 +500,9 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             </div>
                         </div>
                     </div>
-
-                    {/* Conselho Estrategico */}
-                    {marketData.strategic_advice && (
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden">
-                            <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
-                                <Lightbulb className="w-4 h-4 text-zinc-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                                    Conselho Estrategico
-                                </h3>
-                                <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-zinc-300">GPT-4.5</span>
-                            </div>
-                            <div className="p-6">
-                                <p className="text-sm font-medium text-zinc-700 leading-relaxed">
-                                    {marketData.strategic_advice}
-                                </p>
-                            </div>
-                        </div>
-                    )}
                 </>
-            ) : (
-                <div className="flex flex-col items-center justify-center py-16 bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-2xl">
-                    <div className="w-14 h-14 bg-white border border-zinc-100 rounded-xl flex items-center justify-center mb-4">
-                        <BrainCircuit className="w-7 h-7 text-zinc-300" />
-                    </div>
-                    <h3 className="text-sm font-black text-zinc-900 mb-1">Analise IA nao gerada</h3>
-                    <p className="text-xs font-medium text-zinc-400 max-w-xs text-center leading-relaxed">
-                        Clique em "Gerar Analise IA" para processar TAM/SAM/SOM, Personas e Concorrentes com GPT-4.5.
-                    </p>
-                </div>
-            )}
+            ) : null}
+
         </div>
     );
 };

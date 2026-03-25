@@ -47,10 +47,10 @@ const JourneySection = () => {
           {journeySteps.map((step, index) => (
             <div
               key={index}
-              className="bg-white border border-zinc-100 p-10 md:p-12 rounded-[2.5rem] relative group hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 shadow-sm flex flex-col h-full"
+              className="bg-white border border-zinc-100 p-10 md:p-12 rounded-[2.5rem] relative group hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 shadow-sm flex flex-col h-full"
             >
               {/* Number Badge - Inverted Mono */}
-              <div className="w-16 h-16 bg-zinc-900 text-white font-mono text-xl flex items-center justify-center mb-10 group-hover:bg-black transition-all duration-500 rounded-2xl shadow-xl shadow-zinc-200 group-hover:scale-110">
+              <div className="w-16 h-16 bg-zinc-900 text-white font-mono text-xl flex items-center justify-center mb-10 group-hover:bg-black transition-all duration-500 rounded-2xl shadow-sm shadow-zinc-200 group-hover:scale-110">
                 {step.id}
               </div>
 

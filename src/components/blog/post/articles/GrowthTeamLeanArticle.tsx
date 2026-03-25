@@ -50,7 +50,7 @@ const GrowthTeamLeanArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Mito do Growth Hacker">
                     Muitos founders acham que vão contratar "um menino de Growth" que vai resolver todos os problemas de aquisição com "hacks" mágicos. Isso não existe. Growth é um esporte de time, que exige Engenharia, Design e Dados trabalhando juntos.
@@ -73,32 +73,32 @@ const GrowthTeamLeanArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                     proView="Engenheiros e Marketers sentados na mesma mesa, com o mesmo KPI."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Os 4 Pilares de um Time de Elite</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Os 4 Pilares de um Time de Elite</h2>
                 <div className="grid md:grid-cols-2 gap-6 mb-12 not-prose">
                     {roles.map((role, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 shadow-sm transition-all group overflow-hidden relative">
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 {role.icon}
                             </div>
-                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-lg">
+                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-sm">
                                 {role.icon}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2 text-lg">{role.title}</h3>
-                            <p className="text-sm text-gray-600 mb-0 leading-relaxed">{role.desc}</p>
+                            <h3 className="font-bold text-zinc-900 mb-2 text-lg">{role.title}</h3>
+                            <p className="text-sm text-zinc-600 mb-0 leading-relaxed">{role.desc}</p>
                         </Card>
                     ))}
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Evolução da Estrutura</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Evolução da Estrutura</h2>
                 <div className="space-y-6 mb-16 not-prose">
                     {stages.map((stage, index) => (
                         <div key={index} className="flex gap-5 p-6 border-l-4 border-black bg-white shadow-sm rounded-r-lg items-start">
-                            <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center shrink-0 font-bold text-sm shadow-md mt-1">
+                            <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center shrink-0 font-bold text-sm shadow-sm mt-1">
                                 {index + 1}
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg mb-2">{stage.title}</h3>
-                                <p className="text-gray-700 leading-relaxed text-base">{stage.desc}</p>
+                                <h3 className="font-bold text-zinc-900 text-lg mb-2">{stage.title}</h3>
+                                <p className="text-zinc-700 leading-relaxed text-base">{stage.desc}</p>
                             </div>
                         </div>
                     ))}

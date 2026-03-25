@@ -140,7 +140,7 @@ BEGIN
     jsonb_build_object(
       'steps', jsonb_build_array(
         jsonb_build_object('name', 'Canais certos', 'description', 'Foco em Meta Ads (Instagram/Facebook), combinando segmentação local e criativos adaptados à linguagem emocional da persona.'),
-        jsonb_build_object('name', 'Comunicação realista', 'description', 'Narrativas simples e diretas, com foco em histórias reais de superação — sem promessas vagas e com clareza sobre o que é e o que não é bolsa.'),
+        jsonb_build_object('name', 'Comunicação realista', 'description', 'Narrativas simples e diretas, com foco em historias reais de superacao - sem promessas vagas e com clareza sobre o que e e o que nao e bolsa.'),
         jsonb_build_object('name', 'Acompanhamento ativo', 'description', 'Nutrição contínua via CRM e SDR, reforçando acolhimento, esclarecendo dúvidas e construindo confiança até a matrícula.')
       )
     ),

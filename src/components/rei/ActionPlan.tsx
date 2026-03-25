@@ -46,7 +46,7 @@ export default function ActionPlan({ score }: ActionPlanProps) {
     ];
 
     return (
-        <div className="bg-gradient-to-br from-black via-zinc-900 to-black border border-zinc-800 p-12">
+        <div className="bg-zinc-950 border border-zinc-800 p-12">
             {/* Header */}
             <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-revgreen/10 border border-revgreen/30 text-revgreen mb-6">

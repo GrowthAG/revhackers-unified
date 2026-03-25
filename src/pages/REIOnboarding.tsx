@@ -27,7 +27,7 @@ const REIOnboardingPage = () => {
 
     return (
         <PageLayout>
-            <Section variant="light" className="py-16 bg-gray-50 min-h-screen">
+            <Section variant="light" className="py-16 bg-zinc-50 min-h-screen">
                 <div className="container-custom">
                     <REIWizard />
                 </div>

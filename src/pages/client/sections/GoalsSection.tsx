@@ -161,7 +161,7 @@ export default function GoalsSection({ plan }: { plan: any }) {
                         <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-6">
                             {(okr.krs || []).slice(0, 3).map((kr: any, j: number) => (
                                 <div key={j} className="bg-zinc-50/50 border border-zinc-200/60 rounded-xl p-6 relative group overflow-hidden">
-                                    <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#00CC6A] to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="absolute top-0 left-0 w-full h-[3px] bg-[#00CC6A] opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="flex items-center justify-between mb-4">
                                         <span className="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-900 transition-colors">{kr.label}</span>
                                         {kr.target && <span className="text-[10px] font-bold text-zinc-500 bg-white border border-zinc-200 px-2 py-0.5 rounded-full">{kr.target}</span>}

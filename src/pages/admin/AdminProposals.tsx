@@ -205,7 +205,7 @@ const AdminProposals = () => {
                                 key={clientName}
                                 open={openClients[clientName]}
                                 onOpenChange={() => toggleClient(clientName)}
-                                className="bg-white border border-zinc-200 shadow-sm hover:shadow-md transition-all group overflow-hidden"
+                                className="bg-white border border-zinc-200 shadow-sm transition-all group overflow-hidden"
                             >
                                 <div className="flex items-center justify-between p-6 cursor-pointer bg-white group-hover:bg-zinc-50/50 transition-colors" onClick={() => toggleClient(clientName)}>
                                     <div className="flex items-center gap-6">

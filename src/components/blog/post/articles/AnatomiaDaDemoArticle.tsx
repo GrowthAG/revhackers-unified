@@ -82,7 +82,7 @@ Abs,
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="O Erro Comum">
                     A maioria dos vendedores acha que a Demo é um "treinamento de produto". Errado. A Demo é a prova de que o "Futuro Prometido" é real. Se você está ensinando a clicar em botões, você está perdendo a venda.
@@ -99,8 +99,8 @@ Abs,
                 />
 
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0 text-3xl md:text-4xl">A Anatomia da Demo Perfeita</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0 text-3xl md:text-4xl">A Anatomia da Demo Perfeita</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         Existe uma diferença brutal entre apresentar um produto e fechar um contrato. A Demo de alta conversão não é sobre o seu software; é sobre a história do cliente mudando de um estado de dor para um estado de glória.
                     </p>
                 </div>
@@ -112,22 +112,22 @@ Abs,
                     proView="Vou mostrar apenas os 20% do sistema que entregam 80% do valor para este cliente específico."
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <MonitorPlay className="w-6 h-6 text-revgreen" />
                     O Arco Narrativo da Demo (4 Atos)
                 </h2>
 
                 <div className="space-y-12 mb-16">
                     {scriptSteps.map((step, index) => (
-                        <div key={index} className="bg-gray-50 p-8 rounded-xl border border-gray-100">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">{step.title}</h3>
+                        <div key={index} className="bg-zinc-50 p-8 rounded-xl border border-zinc-100">
+                            <h3 className="text-xl font-bold text-zinc-900 mb-4">{step.title}</h3>
                             <div className="mb-4">
-                                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Objetivo:</span>
-                                <p className="text-gray-700 m-0">{step.goal}</p>
+                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Objetivo:</span>
+                                <p className="text-zinc-700 m-0">{step.goal}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-4">
+                            <div className="bg-white p-6 rounded-lg border border-zinc-200 shadow-sm mb-4">
                                 <span className="text-xs font-bold text-revgreen uppercase tracking-wider block mb-2">Script / Fala Sugerida</span>
-                                <p className="text-gray-900 font-medium italic m-0">"{step.script}"</p>
+                                <p className="text-zinc-900 font-medium italic m-0">"{step.script}"</p>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-emerald-700 font-bold">
                                 <Zap className="w-4 h-4" />
@@ -147,16 +147,16 @@ Abs,
                     ]}
                 />
 
-                <h2 className="font-bold text-gray-900 mb-8 mt-16 flex items-center gap-3">
+                <h2 className="font-bold text-zinc-900 mb-8 mt-16 flex items-center gap-3">
                     <Video className="w-6 h-6 text-revgreen" />
                     Templates para Copiar e Colar
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-sm font-bold text-zinc-900 flex items-center gap-2">
                                     <Target className="w-4 h-4 text-revgreen" />
                                     {template.name}
                                 </div>
@@ -164,7 +164,7 @@ Abs,
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -174,10 +174,10 @@ Abs,
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-sm text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

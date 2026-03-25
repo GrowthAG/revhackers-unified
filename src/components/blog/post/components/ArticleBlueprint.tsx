@@ -19,15 +19,15 @@ interface ArticleBlueprintProps {
 const ArticleBlueprint = ({ title, description, number = "01", items, result }: ArticleBlueprintProps) => {
     return (
         <section className="mb-16 mt-12">
-            <div className="border-t border-gray-100 pt-6 mb-8">
+            <div className="border-t border-zinc-100 pt-6 mb-8">
                 <span className="text-xs font-bold text-revgreen uppercase tracking-widest block mb-3">
                     Blueprint {number}
                 </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-tight">
+                <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 tracking-tight leading-tight">
                     {title}
                 </h2>
                 {description && (
-                    <p className="text-gray-500 mt-4 text-lg font-light leading-relaxed max-w-3xl">
+                    <p className="text-zinc-500 mt-4 text-lg font-light leading-relaxed max-w-3xl">
                         {description}
                     </p>
                 )}
@@ -38,8 +38,8 @@ const ArticleBlueprint = ({ title, description, number = "01", items, result }: 
                     <div
                         key={index}
                         className={cn(
-                            "group flex flex-col md:grid md:grid-cols-[180px_1fr] py-6 border-b border-gray-200 transition-colors hover:bg-gray-50",
-                            item.isHighlight && "bg-gray-50"
+                            "group flex flex-col md:grid md:grid-cols-[180px_1fr] py-6 border-b border-zinc-200 transition-colors hover:bg-zinc-50",
+                            item.isHighlight && "bg-zinc-50"
                         )}
                     >
                         <span className={cn(
@@ -48,7 +48,7 @@ const ArticleBlueprint = ({ title, description, number = "01", items, result }: 
                         )}>
                             {item.label}
                         </span>
-                        <span className="text-gray-700 leading-relaxed text-base">
+                        <span className="text-zinc-700 leading-relaxed text-base">
                             {item.content}
                         </span>
                     </div>
@@ -56,7 +56,7 @@ const ArticleBlueprint = ({ title, description, number = "01", items, result }: 
             </div>
 
             {result && (
-                <div className="mt-8 flex items-start gap-4 p-6 bg-black text-white rounded-sm shadow-xl">
+                <div className="mt-8 flex items-start gap-4 p-6 bg-black text-white rounded-sm shadow-sm">
                     <div className="w-16 text-revgreen font-bold text-xs uppercase tracking-widest pt-1 shrink-0">
                         Result
                     </div>

@@ -76,7 +76,7 @@ const BookingPageTemplate = ({
                         </p>
                     </div>
 
-                    <div className="bg-white rounded-xl overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-xl shadow-zinc-100/50">
+                    <div className="bg-white rounded-xl overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-sm shadow-zinc-100/50">
                         <iframe
                             src={iframeSrc}
                             style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}

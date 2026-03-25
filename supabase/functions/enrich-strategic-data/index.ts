@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -97,6 +99,32 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    // ============================================================
+    // AUTH GATE - JWT required
+    // ============================================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // @ts-ignore
+    const SUPABASE_URL_AUTH = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY_AUTH = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAuth = createClient(SUPABASE_URL_AUTH, SUPABASE_SERVICE_KEY_AUTH);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(
+        authHeader.replace('Bearer ', '').trim()
+    );
+    if (authError || !user) {
+        return new Response(JSON.stringify({ error: 'Token invalido ou expirado.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
     try {
         const { segment, ticket, objective, isB2B, enrichmentType, rei_responses, competitors, siteAnalysis, projectType }: EnrichmentRequest = await req.json();
 
@@ -169,11 +197,13 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é o Diretor de Inteligência Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Você analisa mercados, constrói ICPs e gera benchmarks com precisão cirúrgica. Seus dados são SEMPRE baseados no mercado brasileiro real, com empresas e números realistas. Você NUNCA gera conteúdo genérico - cada resposta é hiper-personalizada ao contexto do cliente. REGRA ABSOLUTA DE ORTOGRAFIA: todo texto gerado DEVE estar em português brasileiro correto, com TODAS as acentuações obrigatórias (é, á, ã, õ, ç, ê, ô, etc). Palavras como "negociação", "operação", "atualização", "previsão", "caótica", "análise", "decisão" DEVEM ter acentos. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
+                    content: 'Você é o Diretor de Inteligência Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Você analisa mercados, constrói ICPs e gera benchmarks com precisão cirúrgica. Seus dados são SEMPRE baseados no mercado brasileiro real, com empresas e números realistas. Você NUNCA gera conteúdo genérico - cada resposta é hiper-personalizada ao contexto do cliente. USE A BUSCA NA WEB (`web_search_preview`) PARA ACHAR DADOS ATUAIS COMO PREÇOS, CONCORRENTES E TAM/SAM/SOM SEMPRE QUE POSSÍVEL. Cite suas fontes na resposta se apropriado. REGRA ABSOLUTA DE ORTOGRAFIA: todo texto gerado DEVE estar em português brasileiro correto, com TODAS as acentuações obrigatórias (é, á, ã, õ, ç, ê, ô, etc). Palavras como "negociação", "operação", "atualização", "previsão", "caótica", "análise", "decisão" DEVEM ter acentos. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
                 },
                 { role: 'user', content: prompt }
             ],
             temperature: 0.3,
+            tools: [{ type: 'web_search_preview' }],
+            web_search_preview: true
         }),
     });
 

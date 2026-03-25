@@ -1,1 +1,0 @@
-import{j as o}from"./ui-BOey4D7i.js";import{A as r}from"./AdminLayout-D0zGAXdz.js";import{P as m}from"./ProposalForm-DwCbyZDY.js";import"./vendor-Dpv31O69.js";import"./index-o9e_J5d7.js";import"./utils-Cb31Ujw5.js";import"./index.esm-Kc5g3HxL.js";const x=()=>o.jsx(r,{children:o.jsx(m,{})});export{x as default};

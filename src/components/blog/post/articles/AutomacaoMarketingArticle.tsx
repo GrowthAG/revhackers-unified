@@ -81,7 +81,7 @@ Abs.`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed">
 
                 <StrategicContext label="A Regra de Ouro">
                     Se você faz a mesma tarefa no computador mais de 3 vezes por semana, ela deve ser automatizada. Libere humanos para fazer trabalho humano (conversar, negociar, criar).
@@ -99,41 +99,41 @@ Abs.`
 
                 {/* Intro + Stats */}
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0">Escalando sem Contratar</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0">Escalando sem Contratar</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         A promessa da automação não é apenas "ganhar tempo". É garantir consistência. Um robô nunca esquece de fazer o follow-up, nunca tem um "dia ruim" e nunca deixa um lead esfriar por distração.
                     </p>
 
-                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-gray-200 py-8 not-prose">
+                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-zinc-200 py-8 not-prose">
                         <div className="flex-1">
                             <div className="text-4xl font-bold text-black mb-1">14.5%</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Aumento em Produtividade de Vendas</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Aumento em Produtividade de Vendas</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">80%</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Leads Nurtured fecham melhor</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Leads Nurtured fecham melhor</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">3x</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Retenção com Onboarding Auto</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Retenção com Onboarding Auto</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Anatomy - Definition List */}
                 <div className="mb-20">
-                    <h2 id="anatomia" className="font-bold text-gray-900 mb-8">Anatomia de um Workflow</h2>
-                    <p className="text-gray-700 mb-8">A lógica 'If This Then That' aplicada a receita.</p>
+                    <h2 id="anatomia" className="font-bold text-zinc-900 mb-8">Anatomia de um Workflow</h2>
+                    <p className="text-zinc-700 mb-8">A lógica 'If This Then That' aplicada a receita.</p>
 
                     <div className="not-prose grid gap-6">
                         {anatomy.map((item, i) => (
-                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-gray-100 p-2 text-center rounded-sm">
+                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-zinc-100 pb-6 last:border-0 last:pb-0">
+                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-zinc-100 p-2 text-center rounded-sm">
                                     {item.label}
                                 </span>
                                 <div>
-                                    <h4 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h4>
-                                    <p className="text-gray-600 leading-relaxed m-0">{item.desc}</p>
+                                    <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
+                                    <p className="text-zinc-600 leading-relaxed m-0">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -142,25 +142,25 @@ Abs.`
 
                 {/* Strategies - Numbered List */}
                 <div className="mb-20">
-                    <h2 id="estrategias" className="font-bold text-gray-900 mb-10">
+                    <h2 id="estrategias" className="font-bold text-zinc-900 mb-10">
                         4 Automações Obrigatórias
                     </h2>
 
                     <div className="space-y-12">
                         {strategies.map((strategy, index) => (
                             <div key={index} className="pl-0">
-                                <h3 className="font-bold text-xl text-gray-900 mb-3 mt-0 flex items-baseline gap-3">
+                                <h3 className="font-bold text-xl text-zinc-900 mb-3 mt-0 flex items-baseline gap-3">
                                     <span className="text-revgreen text-base font-normal">0{index + 1}.</span>
                                     {strategy.title}
                                 </h3>
-                                <p className="text-gray-700 mb-4">{strategy.description}</p>
+                                <p className="text-zinc-700 mb-4">{strategy.description}</p>
 
-                                <div className="bg-gray-50 border-l-2 border-gray-300 pl-4 py-2 italic text-gray-600 text-base mb-2">
+                                <div className="bg-zinc-50 border-l-2 border-zinc-300 pl-4 py-2 italic text-zinc-600 text-base mb-2">
                                     "{strategy.example}"
                                 </div>
 
                                 <div className="text-sm font-medium text-black mt-2">
-                                    <span className="text-gray-500 font-normal mr-2">Resultado:</span>
+                                    <span className="text-zinc-500 font-normal mr-2">Resultado:</span>
                                     {strategy.results}
                                 </div>
                             </div>
@@ -170,13 +170,13 @@ Abs.`
 
                 {/* Templates Grid */}
                 <div className="mb-20">
-                    <h2 id="templates" className="font-bold text-gray-900 mb-10">Scripts de Automação</h2>
+                    <h2 id="templates" className="font-bold text-zinc-900 mb-10">Scripts de Automação</h2>
 
                     <div className="grid md:grid-cols-2 gap-8 mb-16">
                         {templates.map((template, index) => (
-                            <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                    <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                            <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                                <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                    <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                         {template.name}
                                     </div>
@@ -184,7 +184,7 @@ Abs.`
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -194,10 +194,10 @@ Abs.`
                                     </Button>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                        <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                    <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                        <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                     </div>
-                                    <pre className="font-mono text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                    <pre className="font-mono text-xs text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                         {template.body}
                                     </pre>
                                 </div>
@@ -208,7 +208,7 @@ Abs.`
 
                 {/* Checklist - Black Box */}
                 <div className="mb-20 bg-neutral-900 text-white p-8 md:p-12">
-                    <div className="flex items-center gap-3 mb-8 border-b border-gray-800 pb-4">
+                    <div className="flex items-center gap-3 mb-8 border-b border-zinc-800 pb-4">
                         <ShieldCheck className="w-6 h-6 text-revgreen" />
                         <h2 id="checklist" className="text-xl font-bold text-white m-0">Checklist de Setup</h2>
                     </div>
@@ -223,7 +223,7 @@ Abs.`
                             "SLA de Vendas (Tempo de resposta monitorado)",
                             "Higienização de lista (Hard Bounces removidos)"
                         ].map((item, i) => (
-                            <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-800 last:border-0 text-gray-300">
+                            <div key={i} className="flex items-start gap-3 py-2 border-b border-zinc-800 last:border-0 text-zinc-300">
                                 <span className="text-revgreen mt-1">✓</span>
                                 <span className="text-sm">{item}</span>
                             </div>
@@ -232,17 +232,17 @@ Abs.`
                 </div>
 
                 {/* CTA Final */}
-                <div className="text-center py-12 border-t border-gray-200">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <div className="text-center py-12 border-t border-zinc-200">
+                    <h3 className="text-2xl font-bold text-zinc-900 mb-4">
                         Sua operação roda no automático?
                     </h3>
-                    <p className="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+                    <p className="text-zinc-600 mb-8 max-w-lg mx-auto text-lg">
                         Solicite um diagnóstico. Desenhamos o mapa completo das suas automações de receita.
                     </p>
                     <div className="flex justify-center">
                         <Button
                             size="lg"
-                            className="bg-black text-white hover:bg-gray-800 font-bold px-10 h-14 rounded-none uppercase tracking-wider text-sm"
+                            className="bg-black text-white hover:bg-zinc-800 font-bold px-10 h-14 rounded-none uppercase tracking-wider text-sm"
                             onClick={onCTAClick}
                         >
                             <span className="flex items-center gap-2">

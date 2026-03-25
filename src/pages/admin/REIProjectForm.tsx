@@ -28,6 +28,9 @@ type FormData = {
     type: string;
     project_duration: string;
     next_rei_date: string;
+    materials_status: 'delivered' | 'pending';
+    materials_delay_accepted: boolean;
+    final_expectations?: string;
 };
 
 const DURATION_OPTIONS = [
@@ -61,7 +64,9 @@ const REIProjectForm = () => {
             year: new Date().getFullYear(),
             quarter: 'Q1',
             type: 'crm_ops',
-            project_duration: '90 dias'
+            project_duration: '90 dias',
+            materials_status: 'delivered',
+            materials_delay_accepted: false
         }
     });
 
@@ -95,7 +100,7 @@ const REIProjectForm = () => {
                 }
                 if (draft.clientSite) setClientSite(draft.clientSite);
                 if (draft.siteAnalysis) setSiteAnalysis(draft.siteAnalysis);
-                console.log('[Draft] Rascunho restaurado do localStorage');
+
             }
         } catch (e) {
             console.warn('[Draft] Erro ao restaurar rascunho:', e);
@@ -263,8 +268,6 @@ const REIProjectForm = () => {
     const year = watch('year');
 
     // [HANDOFF AUTOMATION]
-    const location = useLocation();
-
     useEffect(() => {
         if (!loadingClients && clients.length > 0 && location.state?.handoffData) {
             const { client_name, client_email } = location.state.handoffData;
@@ -308,6 +311,11 @@ const REIProjectForm = () => {
             return;
         }
 
+        if (data.materials_status === 'pending' && !data.materials_delay_accepted) {
+            toast({ title: 'Atenção ao Cronograma', description: 'Se o material está pendente, é obrigatório dar o "De Acordo" na reter do cronograma.', variant: 'destructive' });
+            return;
+        }
+
         setLoading(true);
         try {
             const projectData: any = {
@@ -325,6 +333,9 @@ const REIProjectForm = () => {
                 last_rei_date: new Date().toISOString(),
                 client_site: clientSite || null,
                 site_analysis: siteAnalysis || null,
+                materials_status: data.materials_status,
+                materials_delay_accepted: data.materials_delay_accepted,
+                final_expectations: data.final_expectations || null,
                 // Lead mode: nao injeta tarefas, nao cria sprint, status diferente
                 ...(isLeadMode ? { status: 'lead' } : {}),
             };
@@ -682,7 +693,54 @@ const REIProjectForm = () => {
                             </div>
                         </div>
 
-                        {/* Seção de Documentos removida - Proposta é funcionalidade de pré-venda */}
+                        {/* 3. COLETA DE ATIVOS */}
+                        <div className="space-y-6">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2 flex items-center gap-2">
+                                <FileText className="w-3.5 h-3.5" /> 03. Coleta de Ativos
+                            </h3>
+                            <div className="p-6 bg-zinc-50 border border-zinc-200 rounded-xl space-y-6">
+                                <div className="space-y-3">
+                                    <Label className={labelClasses}>Status dos Materiais (Brandbook, Acessos, Arquivos)</Label>
+                                    <div className="flex gap-4">
+                                        <label className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-all uppercase text-[10px] font-bold tracking-widest ${watch('materials_status') === 'delivered' ? 'bg-black text-white border-black ring-2 ring-black/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
+                                            <input type="radio" value="delivered" {...register('materials_status')} className="hidden" />
+                                            Materiais na Mão (Liberar Planejamento)
+                                        </label>
+                                        <label className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-all uppercase text-[10px] font-bold tracking-widest ${watch('materials_status') === 'pending' ? 'bg-red-50 text-red-600 border-red-200 ring-2 ring-red-500/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
+                                            <input type="radio" value="pending" {...register('materials_status')} className="hidden" />
+                                            Pendente (Travar Cronograma)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {watch('materials_status') === 'pending' && (
+                                    <div className="p-4 bg-red-50/50 border border-red-100 rounded-lg">
+                                        <label className="flex items-start gap-3 cursor-pointer">
+                                            <input type="checkbox" {...register('materials_delay_accepted')} className="mt-1 w-4 h-4 rounded-sm border-red-300 text-red-600 focus:ring-red-600" />
+                                            <div>
+                                                <p className="text-[11px] font-black text-red-800 uppercase tracking-widest leading-none">Termo de Retenção de Cronograma (Assinatura)</p>
+                                                <p className="text-xs text-red-600/80 mt-1 font-medium leading-relaxed">Declaro estar totalmente ciente de que o Hub do projeto ficará bloqueado e o Planejamento Estratégico suspenso até que a totalidade dos ativos e materiais sensíveis seja inserida oficialmente na plataforma.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 4. CHAVE DE OURO */}
+                        <div className="space-y-6">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] border-b border-[#00CC6A]/30 pb-2 flex items-center gap-2">
+                                <Target className="w-3.5 h-3.5" /> 04. Pergunta de Ouro
+                            </h3>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-bold text-zinc-900 tracking-tight">"Para finalizarmos com chave de ouro: há algum desafio crítico ou expectativa de negócio que não exploramos hoje e você gostaria de registrar?"</Label>
+                                <textarea
+                                    {...register('final_expectations')}
+                                    placeholder="Insights finais, medos do decisor, omissões importantes da call..."
+                                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#00CC6A]/20 focus:border-[#00CC6A] focus:outline-none min-h-[120px] transition-all resize-none mt-2"
+                                />
+                            </div>
+                        </div>
 
                         <div className="pt-8 flex gap-4">
                             <Button

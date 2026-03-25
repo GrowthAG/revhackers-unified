@@ -26,11 +26,11 @@ export const ArticleBlueprint: React.FC<ArticleBlueprintProps> = ({ title, items
                         key={index}
                         className={`flex gap-4 p-5 border rounded-lg transition-all ${item.isHighlight
                                 ? 'bg-black border-black text-white'
-                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                : 'bg-white border-zinc-200 hover:border-zinc-300'
                             }`}
                     >
                         <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${item.isHighlight ? 'bg-revgreen text-black' : 'bg-gray-100 text-black'
+                            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${item.isHighlight ? 'bg-revgreen text-black' : 'bg-zinc-100 text-black'
                                 }`}
                         >
                             {item.number}
@@ -43,7 +43,7 @@ export const ArticleBlueprint: React.FC<ArticleBlueprintProps> = ({ title, items
                                 {item.title}
                             </h4>
                             <p
-                                className={`text-sm leading-relaxed ${item.isHighlight ? 'text-gray-300' : 'text-gray-600'
+                                className={`text-sm leading-relaxed ${item.isHighlight ? 'text-zinc-300' : 'text-zinc-600'
                                     }`}
                             >
                                 {item.description}

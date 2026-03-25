@@ -103,14 +103,14 @@ const Servicos = () => {
             {capabilities.map((item) => (
               <div
                 key={item.id}
-                className="group relative bg-white p-10 md:p-12 hover:shadow-2xl hover:shadow-zinc-200/50 transition-all duration-700 rounded-[2.5rem] border border-zinc-100 flex flex-col h-full overflow-hidden"
+                className="group relative bg-white p-10 md:p-12 hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 rounded-[2.5rem] border border-zinc-100 flex flex-col h-full overflow-hidden"
               >
                 {/* Header Card */}
                 <div className="flex justify-between items-start mb-12">
                   <span className="font-mono text-5xl md:text-6xl font-black text-zinc-50 group-hover:text-zinc-100 transition-colors duration-500 tracking-tighter">
                     {item.id}
                   </span>
-                  <div className="p-5 bg-zinc-900 rounded-[1.25rem] shadow-xl shadow-zinc-200 group-hover:bg-black transition-all duration-500 group-hover:scale-110">
+                  <div className="p-5 bg-zinc-900 rounded-[1.25rem] shadow-sm shadow-zinc-200 group-hover:bg-black transition-all duration-500 group-hover:scale-110">
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                 </div>

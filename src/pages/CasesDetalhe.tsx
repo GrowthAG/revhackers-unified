@@ -25,7 +25,6 @@ const CasesDetalhe = () => {
       }
       setLoading(true);
       try {
-        console.log(`🔄 Fetching case from Supabase: ${slug}`);
         const dbCase = await getCaseBySlug(slug);
 
         if (dbCase) {
@@ -92,7 +91,7 @@ const CasesDetalhe = () => {
       <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-32 pb-24 overflow-hidden bg-white">
         <div className="absolute inset-0 z-0 opacity-40">
           {/* Subtle gradient instead of noise */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-50 via-white to-white"></div>
+          <div className="absolute inset-0 bg-zinc-50"></div>
         </div>
 
         <div className="container-custom flex flex-col items-center text-center max-w-6xl relative z-10">
@@ -154,12 +153,12 @@ const CasesDetalhe = () => {
             onClick={() => contentRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-zinc-300 hover:text-black transition-colors cursor-pointer group z-50 md:bottom-10"
           >
-            <div className="w-px h-12 bg-gradient-to-b from-transparent to-zinc-300 group-hover:to-black transition-colors"></div>
+            <div className="w-px h-12 bg-zinc-300 group-hover:bg-black transition-colors"></div>
           </motion.button>
         </div>
       </section>
 
-      <section className="py-20 bg-white border-t border-gray-100 min-h-screen">
+      <section className="py-20 bg-white border-t border-zinc-100 min-h-screen">
         <div className="container px-4 md:px-6 mx-auto max-w-7xl">
           <div className="grid grid-cols-12 gap-8 lg:gap-16">
 
@@ -196,7 +195,7 @@ const CasesDetalhe = () => {
               </div>
             </div>
 
-            <div ref={contentRef} className="col-span-12 lg:col-span-9 lg:pl-10 lg:border-l border-gray-50 order-1 lg:order-2">
+            <div ref={contentRef} className="col-span-12 lg:col-span-9 lg:pl-10 lg:border-l border-zinc-50 order-1 lg:order-2">
 
               <div className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-revgreen">
                 <div className="mb-16">

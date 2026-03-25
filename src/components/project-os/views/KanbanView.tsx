@@ -12,7 +12,7 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-500/10';
-      case 'high': return 'text-orange-700 bg-orange-100 dark:text-orange-400 dark:bg-orange-500/10';
+      case 'high': return 'text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-700/10';
       case 'medium': return 'text-amber-700 bg-amber-100 dark:text-yellow-500 dark:bg-yellow-500/10';
       default: return 'text-zinc-600 bg-zinc-100 dark:text-zinc-400 dark:bg-zinc-800';
     }
@@ -69,7 +69,7 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
   const columnColors: Record<TaskStatus, string> = {
     backlog: 'bg-zinc-100/50 dark:bg-zinc-800',
     todo: 'bg-zinc-200/50 dark:bg-zinc-700',
-    doing: 'bg-blue-50/50 border-blue-200 dark:bg-blue-900/40 dark:border-blue-500/50',
+    doing: 'bg-zinc-100/50 border-zinc-300 dark:bg-zinc-800/40 dark:border-zinc-600/50',
     review: 'bg-amber-50/50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-500/50',
     done: 'bg-green-50/80 border-green-200 dark:bg-green-900/20 dark:border-green-500/50',
     archived: 'bg-zinc-100 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-950',
@@ -146,7 +146,7 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
                                 {...provided.dragHandleProps}
                                 onClick={() => onTaskClick(task.id)}
                                 className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-grab active:cursor-grabbing ${
-                                  snapshot.isDragging ? 'shadow-xl ring-2 ring-zinc-900/10 dark:ring-revhackers/50 rotate-2 z-50' : ''
+                                  snapshot.isDragging ? 'shadow-sm ring-2 ring-zinc-900/10 dark:ring-revhackers/50 rotate-2 z-50' : ''
                                 }`}
                               >
                                 <div className="flex justify-between items-start mb-2">

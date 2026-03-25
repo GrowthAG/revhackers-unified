@@ -90,7 +90,7 @@ Abs.`
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed">
 
                 <StrategicContext label="O Conceito">
                     Em vez de gastar dinheiro com Ads para levar pessoas a uma Landing Page, gaste dinheiro construindo algo útil que as pessoas procuram no Google.
@@ -108,41 +108,41 @@ Abs.`
 
                 {/* Intro + Stats */}
                 <div className="mb-16">
-                    <h2 id="intro" className="font-bold tracking-tight text-gray-900 mt-0">Marketing com Utilidade</h2>
-                    <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                    <h2 id="intro" className="font-bold tracking-tight text-zinc-900 mt-0">Marketing com Utilidade</h2>
+                    <p className="text-lg md:text-xl text-zinc-600 leading-relaxed">
                         As pessoas estão cansadas de baixar ebooks que nunca leem. Elas querem resolver problemas. Quando sua marca oferece a solução gratuita para um problema pequeno, você ganha a confiança para vender a solução para o problema grande.
                     </p>
 
-                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-gray-200 py-8 not-prose">
+                    <div className="flex flex-col md:flex-row gap-8 my-10 border-y border-zinc-200 py-8 not-prose">
                         <div className="flex-1">
                             <div className="text-4xl font-bold text-black mb-1">5x</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Mais barato que Ads (Longo Prazo)</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Mais barato que Ads (Longo Prazo)</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">40%</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Conversão de Ferramenta -&gt; Lead</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Conversão de Ferramenta -&gt; Lead</div>
                         </div>
-                        <div className="flex-1 md:border-l md:border-gray-200 md:pl-8">
+                        <div className="flex-1 md:border-l md:border-zinc-200 md:pl-8">
                             <div className="text-4xl font-bold text-black mb-1">SEO</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-widest font-medium">Ímã de Backlinks</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-widest font-medium">Ímã de Backlinks</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Anatomy - Definition List */}
                 <div className="mb-20">
-                    <h2 id="anatomia" className="font-bold text-gray-900 mb-8">Anatomia de um Sidecar Product</h2>
-                    <p className="text-gray-700 mb-8">Como projetar uma ferramenta de marketing.</p>
+                    <h2 id="anatomia" className="font-bold text-zinc-900 mb-8">Anatomia de um Sidecar Product</h2>
+                    <p className="text-zinc-700 mb-8">Como projetar uma ferramenta de marketing.</p>
 
                     <div className="not-prose grid gap-6">
                         {anatomy.map((item, i) => (
-                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-gray-100 p-2 text-center rounded-sm">
+                            <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-zinc-100 pb-6 last:border-0 last:pb-0">
+                                <span className="text-xs font-bold text-black w-24 shrink-0 uppercase tracking-wider bg-zinc-100 p-2 text-center rounded-sm">
                                     {item.label}
                                 </span>
                                 <div>
-                                    <h4 className="font-bold text-gray-900 text-lg mb-1">{item.title}</h4>
-                                    <p className="text-gray-600 leading-relaxed m-0">{item.desc}</p>
+                                    <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
+                                    <p className="text-zinc-600 leading-relaxed m-0">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -151,25 +151,25 @@ Abs.`
 
                 {/* Strategies - Numbered List */}
                 <div className="mb-20">
-                    <h2 id="estrategias" className="font-bold text-gray-900 mb-10">
+                    <h2 id="estrategias" className="font-bold text-zinc-900 mb-10">
                         4 Tipos de Engenharia como Marketing
                     </h2>
 
                     <div className="space-y-12">
                         {strategies.map((strategy, index) => (
                             <div key={index} className="pl-0">
-                                <h3 className="font-bold text-xl text-gray-900 mb-3 mt-0 flex items-baseline gap-3">
+                                <h3 className="font-bold text-xl text-zinc-900 mb-3 mt-0 flex items-baseline gap-3">
                                     <span className="text-revgreen text-base font-normal">0{index + 1}.</span>
                                     {strategy.title}
                                 </h3>
-                                <p className="text-gray-700 mb-4">{strategy.description}</p>
+                                <p className="text-zinc-700 mb-4">{strategy.description}</p>
 
-                                <div className="bg-gray-50 border-l-2 border-gray-300 pl-4 py-2 italic text-gray-600 text-base mb-2">
+                                <div className="bg-zinc-50 border-l-2 border-zinc-300 pl-4 py-2 italic text-zinc-600 text-base mb-2">
                                     "{strategy.example}"
                                 </div>
 
                                 <div className="text-sm font-medium text-black mt-2">
-                                    <span className="text-gray-500 font-normal mr-2">Resultado:</span>
+                                    <span className="text-zinc-500 font-normal mr-2">Resultado:</span>
                                     {strategy.results}
                                 </div>
                             </div>
@@ -179,13 +179,13 @@ Abs.`
 
                 {/* Templates Grid */}
                 <div className="mb-20">
-                    <h2 id="templates" className="font-bold text-gray-900 mb-10">Ideias para Construir</h2>
+                    <h2 id="templates" className="font-bold text-zinc-900 mb-10">Ideias para Construir</h2>
 
                     <div className="grid md:grid-cols-2 gap-8 mb-16">
                         {templates.map((template, index) => (
-                            <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                    <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                            <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                                <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                    <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                         {template.name}
                                     </div>
@@ -193,7 +193,7 @@ Abs.`
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -203,10 +203,10 @@ Abs.`
                                     </Button>
                                 </div>
                                 <div className="p-6">
-                                    <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                        <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                    <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                        <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                     </div>
-                                    <pre className="font-mono text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                    <pre className="font-mono text-xs text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                         {template.body}
                                     </pre>
                                 </div>
@@ -216,13 +216,13 @@ Abs.`
                 </div>
 
                 {/* Checklist - Paper Style */}
-                <Card className="mb-20 bg-gray-50 border border-gray-200 p-8 md:p-12 shadow-inner relative overflow-hidden not-prose">
+                <Card className="mb-20 bg-zinc-50 border border-zinc-200 p-8 md:p-12 shadow-inner relative overflow-hidden not-prose">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                        <ShieldCheck className="w-32 h-32 text-gray-900" />
+                        <ShieldCheck className="w-32 h-32 text-zinc-900" />
                     </div>
-                    <div className="flex items-center gap-3 mb-8 border-b border-gray-200 pb-4 relative z-10">
+                    <div className="flex items-center gap-3 mb-8 border-b border-zinc-200 pb-4 relative z-10">
                         <ShieldCheck className="w-6 h-6 text-revgreen" />
-                        <h2 id="checklist" className="text-xl font-bold text-gray-900 m-0">Checklist de Lançamento</h2>
+                        <h2 id="checklist" className="text-xl font-bold text-zinc-900 m-0">Checklist de Lançamento</h2>
                     </div>
                     <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 relative z-10">
                         {[
@@ -235,7 +235,7 @@ Abs.`
                             "Funciona perfeitamente no Mobile?",
                             "O design é profissional (confiança)?"
                         ].map((item, i) => (
-                            <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-200 last:border-0 text-gray-700">
+                            <div key={i} className="flex items-start gap-3 py-2 border-b border-zinc-200 last:border-0 text-zinc-700">
                                 <CheckCircle2 className="w-4 h-4 text-revgreen mt-1" />
                                 <span className="text-sm font-medium">{item}</span>
                             </div>

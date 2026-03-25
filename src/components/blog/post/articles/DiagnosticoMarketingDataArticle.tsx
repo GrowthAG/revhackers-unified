@@ -74,7 +74,7 @@ Próximos Passos:
 
     return (
         <article className="w-full mx-auto">
-            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-900 leading-relaxed font-sans">
+            <div className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-zinc-900 leading-relaxed font-sans">
 
                 <StrategicContext label="Dados não tomam decisão">
                     Ter um dashboard lindo no PowerBI não resolve nada se ninguém sabe o que fazer com ele. A maioria das empresas sofre de "Paralisia por Análise". O objetivo dos dados é matar opiniões e acelerar decisões, não criar reuniões de 4 horas para discutir a cor do gráfico.
@@ -97,25 +97,25 @@ Próximos Passos:
                     proView="Rodar experimentos controlados, medir resultados com significância estatística e iterar."
                 />
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">A Pirâmide de Métricas</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">A Pirâmide de Métricas</h2>
                 <div className="grid md:grid-cols-3 gap-6 mb-12 not-prose">
                     {metricsFramework.map((item, i) => (
-                        <Card key={i} className="p-6 bg-white border border-gray-200 hover:border-revgreen/50 transition-colors shadow-sm">
+                        <Card key={i} className="p-6 bg-white border border-zinc-200 hover:border-revgreen/50 transition-colors shadow-sm">
                             <div className="bg-zinc-900 p-3 rounded-full w-fit mb-4 border border-zinc-800">
                                 {item.icon}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                            <p className="text-sm text-gray-600 mb-0 leading-relaxed">{item.description}</p>
+                            <h3 className="font-bold text-zinc-900 mb-2">{item.title}</h3>
+                            <p className="text-sm text-zinc-600 mb-0 leading-relaxed">{item.description}</p>
                         </Card>
                     ))}
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Templates de Governança</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Templates de Governança</h2>
                 <div className="grid md:grid-cols-2 gap-8 mb-16">
                     {templates.map((template, index) => (
-                        <Card key={index} className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                                <div className="text-xs font-bold text-gray-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
+                        <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
+                            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+                                <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-revgreen"></div>
                                     {template.name}
                                 </div>
@@ -123,7 +123,7 @@ Próximos Passos:
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-gray-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>
@@ -133,10 +133,10 @@ Próximos Passos:
                                 </Button>
                             </div>
                             <div className="p-6">
-                                <div className="text-xs text-gray-500 font-mono mb-4 border-b border-gray-100 pb-2 flex gap-2">
-                                    <span className="font-bold text-gray-700">Assunto:</span> {template.subject}
+                                <div className="text-xs text-zinc-500 font-mono mb-4 border-b border-zinc-100 pb-2 flex gap-2">
+                                    <span className="font-bold text-zinc-700">Assunto:</span> {template.subject}
                                 </div>
-                                <pre className="font-mono text-xs text-gray-600 whitespace-pre-wrap leading-relaxed">
+                                <pre className="font-mono text-xs text-zinc-600 whitespace-pre-wrap leading-relaxed">
                                     {template.body}
                                 </pre>
                             </div>

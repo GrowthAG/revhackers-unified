@@ -11,11 +11,11 @@ import RedFlags from '../components/RedFlags';
 
 const ABMPracticeArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
     return (
-        <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-gray-900 leading-relaxed">
+        <article className="max-w-4xl mx-auto px-6 py-12 font-sans text-zinc-900 leading-relaxed">
 
             {/* Strategic Context */}
             <StrategicContext label="Enterprise Growth">
-                <p className="text-xl font-medium text-gray-900">
+                <p className="text-xl font-medium text-zinc-900">
                     Marketing tradicional é pescar com rede: você pega muitos peixes pequenos e muito lixo.
                     <span className="font-bold border-b border-revgreen mx-1">Account-Based Marketing (ABM)</span>
                     é pescar com arpão. Você escolhe o alvo, estuda o movimento dele e dispara com precisão letal.
@@ -35,27 +35,27 @@ const ABMPracticeArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
 
             {/* Introduction */}
             <div className="mb-16">
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 tracking-tight">Os 3 Níveis de Ataque</h2>
-                <p className="text-lg text-gray-600 mb-8 font-light leading-relaxed">
+                <h2 className="text-3xl font-bold mb-6 text-zinc-900 tracking-tight">Os 3 Níveis de Ataque</h2>
+                <p className="text-lg text-zinc-600 mb-8 font-light leading-relaxed">
                     Muitas empresas falham no ABM porque tentam fazer "personalização artesanal" para 1.000 contas.
                     Isso é insustentável. O segredo é segmentar sua lista em camadas (Tiers) e ajustar o esforço de engenharia para cada uma.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border border-gray-200 bg-gray-50 p-6">
-                    <div className="p-4 bg-white border border-gray-100 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border border-zinc-200 bg-zinc-50 p-6">
+                    <div className="p-4 bg-white border border-zinc-100 shadow-sm">
                         <div className="font-black text-revgreen text-2xl mb-1">Tier 1</div>
                         <h3 className="font-bold text-black text-sm uppercase tracking-wide mb-2">Strategic (1:1)</h3>
-                        <p className="text-xs text-gray-500">Top 10 contas. Orçamento ilimitado. Campanha feita do zero exclusivamente para elas.</p>
+                        <p className="text-xs text-zinc-500">Top 10 contas. Orçamento ilimitado. Campanha feita do zero exclusivamente para elas.</p>
                     </div>
-                    <div className="p-4 bg-white border border-gray-100 shadow-sm">
+                    <div className="p-4 bg-white border border-zinc-100 shadow-sm">
                         <div className="font-black text-black text-2xl mb-1">Tier 2</div>
                         <h3 className="font-bold text-black text-sm uppercase tracking-wide mb-2">Scale (1:Few)</h3>
-                        <p className="text-xs text-gray-500">Top 50 contas. Segmentadas por indústria. Conteúdo adaptado, não exclusivo.</p>
+                        <p className="text-xs text-zinc-500">Top 50 contas. Segmentadas por indústria. Conteúdo adaptado, não exclusivo.</p>
                     </div>
-                    <div className="p-4 bg-white border border-gray-100 shadow-sm">
-                        <div className="font-black text-gray-400 text-2xl mb-1">Tier 3</div>
+                    <div className="p-4 bg-white border border-zinc-100 shadow-sm">
+                        <div className="font-black text-zinc-400 text-2xl mb-1">Tier 3</div>
                         <h3 className="font-bold text-black text-sm uppercase tracking-wide mb-2">Programmatic (1:Many)</h3>
-                        <p className="text-xs text-gray-500">Top 500 contas. Personalização via token (Nome/Empresa) e Ads dinâmicos.</p>
+                        <p className="text-xs text-zinc-500">Top 500 contas. Personalização via token (Nome/Empresa) e Ads dinâmicos.</p>
                     </div>
                 </div>
             </div>

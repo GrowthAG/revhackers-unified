@@ -101,7 +101,7 @@ const YouTubeFeed = ({ apiKey, channelId, query = "Revenue Operations" }: { apiK
                         href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group relative block bg-black rounded-xl overflow-hidden aspect-video shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        className="group relative block bg-black rounded-xl overflow-hidden aspect-video shadow-sm transition-all duration-300 transform hover:-translate-y-1"
                     >
                         {/* Thumbnail */}
                         <img
@@ -118,7 +118,7 @@ const YouTubeFeed = ({ apiKey, channelId, query = "Revenue Operations" }: { apiK
                         </div>
 
                         {/* Title Overlay (Bottom) */}
-                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/80">
                             <h4 className="text-white text-sm font-bold leading-tight line-clamp-2 mb-1">
                                 {video.snippet.title}
                             </h4>
