@@ -83,13 +83,14 @@ export const DiagnosticForm = ({
                                     <SelectValue placeholder="Selecione seu papel" />
                                 </SelectTrigger>
                                 <SelectContent className={isDark ? "bg-zinc-950 border-zinc-800 text-zinc-50 rounded-none shadow-sm" : "bg-white border-zinc-100 text-black rounded-none shadow-sm"}>
-                                    <SelectItem value="vp" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Founders / C-Level</SelectItem>
-                                    <SelectItem value="diretor" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Diretoria</SelectItem>
-                                    <SelectItem value="gerente" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Gerência / Coordenação</SelectItem>
-                                    <SelectItem value="vendedor" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Executivo de Vendas</SelectItem>
-                                    <SelectItem value="analista" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Especialista / Analista</SelectItem>
-                                    <SelectItem value="growth" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Growth & Marketing</SelectItem>
-                                    <SelectItem value="outros" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Outros</SelectItem>
+                                    <SelectItem value="executivo-senior" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Executivo sênior</SelectItem>
+                                    <SelectItem value="socio-vp" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Sócio / VP</SelectItem>
+                                    <SelectItem value="chefe-diretor" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Chefe / Diretor</SelectItem>
+                                    <SelectItem value="gerente-lider" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Gerente / Líder de equipe</SelectItem>
+                                    <SelectItem value="especialista-consultor" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Especialista / Consultor</SelectItem>
+                                    <SelectItem value="colaborador-individual" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Colaborador individual</SelectItem>
+                                    <SelectItem value="autonomo" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Autônomo</SelectItem>
+                                    <SelectItem value="estudante" className={isDark ? "text-zinc-100 focus:bg-zinc-900 focus:text-white cursor-pointer" : "cursor-pointer"}>Estudante</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

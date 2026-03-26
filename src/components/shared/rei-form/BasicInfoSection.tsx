@@ -28,13 +28,21 @@ const BasicInfoSection = ({ formData, onChange }: BasicInfoSectionProps) => {
 
         <div className="space-y-2">
           <Label htmlFor="role" className="text-white">Cargo *</Label>
-          <Input
-            id="role"
-            value={formData.role}
-            onChange={(e) => onChange('role', e.target.value)}
-            className="bg-zinc-900 border-zinc-700 text-white"
-            required
-          />
+          <Select value={formData.role} onValueChange={(value) => onChange('role', value)}>
+            <SelectTrigger id="role" className="bg-zinc-900 border-zinc-700 text-white">
+              <SelectValue placeholder="Selecione sua função" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="executivo-senior">Executivo sênior</SelectItem>
+              <SelectItem value="socio-vp">Sócio / VP</SelectItem>
+              <SelectItem value="chefe-diretor">Chefe / Diretor</SelectItem>
+              <SelectItem value="gerente-lider">Gerente / Líder de equipe</SelectItem>
+              <SelectItem value="especialista-consultor">Especialista / Consultor</SelectItem>
+              <SelectItem value="colaborador-individual">Colaborador individual</SelectItem>
+              <SelectItem value="autonomo">Autônomo</SelectItem>
+              <SelectItem value="estudante">Estudante</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

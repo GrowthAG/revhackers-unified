@@ -55,6 +55,9 @@ export interface REIFormData {
     hasMarketingMaterials: 'complete' | 'basic' | 'none' | 'some';
     legalRestrictions: string;
     approvalProcess: string;
+    mqlSqlAttributes: string;
+    marketingSalesSla: string;
+    cacCeilingTarget: string;
 }
 
 export interface REISection {
@@ -84,9 +87,9 @@ export const reiSections: REISection[] = [
         fields: [
             {
                 id: 'expectedResults',
-                label: 'Quais resultados você espera alcançar nos próximos 12 meses?',
+                label: 'Qual é a sua meta anual, e como ela se desdobra até o nível diário (ex: leads/dia)?',
                 type: 'textarea',
-                placeholder: 'Descreva seus objetivos e metas...',
+                placeholder: 'Descreva sua meta anual e o desdobramento diário necessário...',
                 required: true,
             },
             {
@@ -124,9 +127,9 @@ export const reiSections: REISection[] = [
         fields: [
             {
                 id: 'idealCustomerProfiles',
-                label: 'Liste e descreva os perfis ideais dos seus clientes',
+                label: 'O ICP está documentado com clareza? Se sim, descreva os critérios exatos:',
                 type: 'textarea',
-                placeholder: 'Ex: CEO de empresas B2B SaaS com 10-50 funcionários...',
+                placeholder: 'Ex: CEO de empresas B2B SaaS, $10M ARR...',
                 required: true,
             },
             {
@@ -273,6 +276,13 @@ export const reiSections: REISection[] = [
                 required: false,
             },
             {
+                id: 'cacCeilingTarget',
+                label: 'Qual é o seu CAC (Custo de Aquisição) teto atual e qual seria o ideal?',
+                type: 'text',
+                placeholder: 'CAC Teto: R$ 500 | CAC Ideal: R$ 150',
+                required: true,
+            },
+            {
                 id: 'adScheduleRestrictions',
                 label: 'Existe alguma restrição de horário para seus anúncios serem veiculados? Se sim, qual? (Caso não tenha, apenas responda "Não")',
                 type: 'textarea',
@@ -342,6 +352,20 @@ export const reiSections: REISection[] = [
                 type: 'textarea',
                 placeholder: 'Processo de nutrição e pós-venda...',
                 required: false,
+            },
+            {
+                id: 'mqlSqlAttributes',
+                label: 'Quais atributos qualificam um lead como pronto pra vendas (critérios de MQL/SQL)?',
+                type: 'textarea',
+                placeholder: 'Ex: BANT, SPIN, Budget mínimo...',
+                required: true,
+            },
+            {
+                id: 'marketingSalesSla',
+                label: 'Existe um SLA formal assinado entre Marketing e Vendas?',
+                type: 'textarea',
+                placeholder: 'Descreva como é o acordo de passagem de bastão...',
+                required: true,
             },
             {
                 id: 'decisionFactor',
@@ -428,4 +452,7 @@ export const getInitialFormData = (): REIFormData => ({
     hasMarketingMaterials: 'none',
     legalRestrictions: '',
     approvalProcess: '',
+    mqlSqlAttributes: '',
+    marketingSalesSla: '',
+    cacCeilingTarget: '',
 });

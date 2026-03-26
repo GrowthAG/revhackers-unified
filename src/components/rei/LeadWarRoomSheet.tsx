@@ -99,12 +99,17 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
     const [manualTradeName, setManualTradeName] = useState('');
     const [savingTradeName, setSavingTradeName] = useState(false);
 
+    // Meeting Recordings State
+    const [meetings, setMeetings] = useState<any[]>([]);
+
     // Carrega dados completos quando o sheet abre
     useEffect(() => {
         if (open && lead?.id) {
             loadFullData(lead.id);
+            loadMeetings(lead.id);
         } else {
             setFullData(null);
+            setMeetings([]);
             setCnpjInput('');
             setNewNote('');
         }
@@ -137,6 +142,19 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
             console.error('[LeadWarRoomSheet] loadFullData error:', e);
         } finally {
             setLoadingData(false);
+        }
+    };
+
+    const loadMeetings = async (projectId: string) => {
+        try {
+            const { data } = await supabase
+                .from('meeting_recordings')
+                .select('id, title, happened_at, ai_insights')
+                .eq('rei_project_id', projectId)
+                .order('happened_at', { ascending: false });
+            setMeetings(data || []);
+        } catch (e) {
+            console.error('[LeadWarRoomSheet] loadMeetings error:', e);
         }
     };
 
@@ -462,6 +480,36 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
                                 </div>
                                 <p className="text-[10px] font-medium text-zinc-400 mt-2">Ao salvar, a entidade será atualizada em todo o RevOps.</p>
                             </div>
+
+                            {/* GRAVAÇÕES DE REUNIÕES (REVNOTES AI) */}
+                            {meetings.length > 0 && (
+                                <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex flex-col gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <PlayCircle className="w-3.5 h-3.5 text-zinc-400" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Gravações de Pré-Venda (RevNotes AI)</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {meetings.map((m) => (
+                                            <div key={m.id} className="bg-white border border-zinc-200 rounded-lg p-3 flex items-center justify-between shadow-sm">
+                                                <div className="min-w-0 pr-2">
+                                                    <p className="text-[11px] font-black text-zinc-900 truncate">{m.title || 'Reunião C-Level'}</p>
+                                                    <p className="text-[9px] font-medium text-zinc-400 mt-0.5">
+                                                        {new Date(m.happened_at).toLocaleDateString('pt-BR')}
+                                                    </p>
+                                                </div>
+                                                <Button 
+                                                    size="sm"
+                                                    onClick={() => window.open(`/admin/recording/${m.id}`, '_blank')}
+                                                    className="shrink-0 h-7 px-3 bg-zinc-900 hover:bg-black text-white text-[9px] font-black uppercase tracking-widest gap-1.5"
+                                                    title="Ver vídeo, inteligência extraída e transcrição"
+                                                >
+                                                    <PlayCircle className="w-3 h-3 text-[#FF004D]" /> Assistir RAW
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* WAR NOTES (Linha do Tempo de Reuniões) */}
                             <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex flex-col gap-4">

@@ -228,8 +228,7 @@ function createBadge() {
             // Dispara START_RECORDING_NATIVE (acorda DesktopCapture)
             chrome.runtime.sendMessage({ action: 'START_RECORDING_NATIVE' }, (res) => {
                 if (!res || !res.success) {
-                    const errStr = res ? res.error : 'NO_MESSAGE_REPLY';
-                    actionBtn.innerHTML = `❌ ${errStr}`;
+                    actionBtn.innerHTML = '❌ Cancelado ou Erro';
                     actionBtn.style.background = '#FEE2E2';
                     actionBtn.style.color = '#B91C1C';
                     setTimeout(() => {
@@ -238,7 +237,7 @@ function createBadge() {
                             actionBtn.style.background = '#FFFFFF';
                             actionBtn.style.color = '#000000';
                         }
-                    }, 8000);
+                    }, 4000);
                 }
                 // Se success for true, o badge receberá updateBadge('recording') do webhook do background!
             });

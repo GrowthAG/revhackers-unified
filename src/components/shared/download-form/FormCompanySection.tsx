@@ -56,15 +56,24 @@ const FormCompanySection = ({
 
       <div className="col-span-1 md:col-span-2 space-y-1">
         <Label htmlFor="role" className="text-zinc-900 text-xs font-bold uppercase tracking-wider">Cargo *</Label>
-        <Input
-          id="role"
-          name="role"
+        <Select
           value={formData.role}
-          onChange={handleInputChange}
-          className="bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-300 focus-visible:ring-0 focus-visible:border-black h-10 rounded-sm transition-all shadow-none"
-          required
-          placeholder="Ex: CEO, Head de Growth..."
-        />
+          onValueChange={(value) => handleSelectChange('role', value)}
+        >
+          <SelectTrigger id="role" className="bg-white border-zinc-200 text-zinc-900 h-10 rounded-sm focus:ring-0 focus:border-black shadow-none font-medium">
+            <SelectValue placeholder="Selecione sua função" />
+          </SelectTrigger>
+          <SelectContent className="bg-white border-zinc-200 text-zinc-900 shadow-none rounded-sm">
+            <SelectItem value="executivo-senior" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Executivo sênior</SelectItem>
+            <SelectItem value="socio-vp" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Sócio / VP</SelectItem>
+            <SelectItem value="chefe-diretor" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Chefe / Diretor</SelectItem>
+            <SelectItem value="gerente-lider" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Gerente / Líder de equipe</SelectItem>
+            <SelectItem value="especialista-consultor" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Especialista / Consultor</SelectItem>
+            <SelectItem value="colaborador-individual" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Colaborador individual</SelectItem>
+            <SelectItem value="autonomo" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Autônomo</SelectItem>
+            <SelectItem value="estudante" className="focus:bg-zinc-50 focus:text-black cursor-pointer">Estudante</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </>
   );

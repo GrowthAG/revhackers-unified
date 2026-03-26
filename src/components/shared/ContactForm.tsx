@@ -182,11 +182,14 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
               <SelectValue placeholder="Selecione seu cargo" />
             </SelectTrigger>
             <SelectContent className="bg-white border-zinc-200">
-              <SelectItem value="ceo">C-Level / Fundador</SelectItem>
-              <SelectItem value="vp">VP / Diretor</SelectItem>
-              <SelectItem value="manager">Gerente / Coordenador</SelectItem>
-              <SelectItem value="analyst">Analista / Especialista</SelectItem>
-              <SelectItem value="other">Outro</SelectItem>
+              <SelectItem value="executivo-senior">Executivo sênior</SelectItem>
+              <SelectItem value="socio-vp">Sócio / VP</SelectItem>
+              <SelectItem value="chefe-diretor">Chefe / Diretor</SelectItem>
+              <SelectItem value="gerente-lider">Gerente / Líder de equipe</SelectItem>
+              <SelectItem value="especialista-consultor">Especialista / Consultor</SelectItem>
+              <SelectItem value="colaborador-individual">Colaborador individual</SelectItem>
+              <SelectItem value="autonomo">Autônomo</SelectItem>
+              <SelectItem value="estudante">Estudante</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -30,14 +30,14 @@ const QUESTIONS = [
     },
     {
         id: 2,
-        question: "Hoje, você sabe exatamente quantos meses um cliente precisa ficar para a aquisição dele 'se pagar' (LTV/CAC)?",
+        question: "Qual é a sua real clareza financeira sobre o Custo de Aquisição (CAC) 'Teto' versus o CAC Ideal?",
         options: [
-            { label: "Sim, LTV/CAC > 3 (Saudável)", score: 20 },
-            { label: "Empatamos, ele se paga nos primeiros meses", score: 10 },
-            { label: "Damos prejuízo no início para lucrar depois", score: 5 },
-            { label: "Não calculo essas margens juntas", score: 0 }
+            { label: "Sei de cor por canais/cohort. Monitoramos o limite (Break-even) semanalmente", score: 20 },
+            { label: "Sei o custo médio. Mas não delimitei o 'teto' onde começo a tomar prejuízo bruto", score: 10 },
+            { label: "Olho majoritariamente para o Custo Por Lead (CPL) na camada de aquisição Ads", score: 5 },
+            { label: "Ignoro Unit Economics isolado. Só meço de forma primária gastos vs receita total", score: 0 }
         ],
-        log: "A ausência de métricas de unidade (Unit Economics) é a causa #1 de falência rápida."
+        log: "A ausência ou desconhecimento do CAC Teto (Break-even) é o que cega a alavancagem de orçamentos e mata caixas."
     },
     {
         id: 3,
@@ -63,14 +63,14 @@ const QUESTIONS = [
     },
     {
         id: 5,
-        question: "Como é a primeira hora da segunda-feira dos gestores do negócio?",
+        question: "Em relação ao seu Perfil Ideal de Cliente (ICP), quão refinada é a segmentação do seu go-to-market hoje?",
         options: [
-            { label: "Análise preditiva em dashboards em tempo real", score: 20 },
-            { label: "Olhando planilhas atualizadas na 'mão' no final de semana", score: 10 },
-            { label: "Reuniões longas perguntando 'E aí, como foi a semana?'", score: 5 },
-            { label: "Apagando incêndio de cliente no WhatsApp", score: 0 }
+            { label: "Tese cirúrgica. Nossa engenharia processual qualifica firmemente nicho, dor e tamanho", score: 20 },
+            { label: "Saber qual o ICP sabemos, mas nossa cópia e mídia atraem frequentes curiosos genéricos", score: 10 },
+            { label: "Nosso ICP é um tiro muito vasto (Ex: 'Atendemos MPEs e médias do Brasil todo')", score: 5 },
+            { label: "Nenhuma barreira de entrada. Qualquer um que se interessar pelo produto, deixamos entrar", score: 0 }
         ],
-        log: "C-Levels gerenciam relógios, não tarefas. Dados pautam escala."
+        log: "Comunicação para todos ecoa para ninguém. Alvo amplo é ausência fatal de posicionamento em B2B."
     }
 ];
 

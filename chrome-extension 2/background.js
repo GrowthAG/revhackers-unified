@@ -42,32 +42,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'START_RECORDING_NATIVE':
             const sourceTab = sender.tab;
             if (!sourceTab) {
-                sendResponse({ success: false, error: 'NO_TAB' });
+                sendResponse({ success: false, error: 'Apenas funciona dentro de uma aba ativa' });
                 return true;
             }
             
-            try {
-                chrome.desktopCapture.chooseDesktopMedia(['tab', 'audio'], sourceTab, async (streamId) => {
-                    const lastErr = chrome.runtime.lastError?.message;
-                    if (lastErr) {
-                        sendResponse({ success: false, error: 'CHROME_ERR: ' + lastErr });
-                        return;
-                    }
-                    if (!streamId) {
-                        sendResponse({ success: false, error: 'NO_STREAM' });
-                        return;
-                    }
-                    
-                    try {
-                        await handleStartRecording(sourceTab.id, streamId);
-                        sendResponse({ success: true });
-                    } catch(err) {
-                        sendResponse({ success: false, error: 'HANDLE_ERR: ' + err.message });
-                    }
-                });
-            } catch (err) {
-                sendResponse({ success: false, error: 'TRYCATCH: ' + err.message });
-            }
+            // Usamos desktopCapture para burlar a restrição de user_gesture do tabCapture
+            // Isso abrirá o prompt nativo do Chrome para o usuário.
+            chrome.desktopCapture.chooseDesktopMedia(['tab', 'audio'], sourceTab, async (streamId) => {
+                if (!streamId) {
+                    sendResponse({ success: false, error: 'Cancelado pelo usuário. Selecione a aba atual e clique em Partilhar.' });
+                    return;
+                }
+                
+                try {
+                    await handleStartRecording(sourceTab.id, streamId);
+                    // O success=true diz para o botão atualizar
+                    sendResponse({ success: true });
+                } catch(err) {
+                    sendResponse({ success: false, error: err.message });
+                }
+            });
             return true;
 
         case 'STOP_RECORDING':

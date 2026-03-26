@@ -41,36 +41,36 @@ const QUESTIONS = [
     },
     {
         id: 3,
-        question: "O que acontece com um lead que não fecha na primeira reunião de venda?",
+        question: "Quais atributos objetivos qualificam um lead como pronto para o seu time comercial (MQL para SQL)?",
         options: [
-            { label: "Entra num fluxo automático no CRM (emails/tarefas)", score: 20 },
-            { label: "O Closer anota na agenda para ligar daqui 1 semana", score: 10 },
-            { label: "Fica perdido no pipeline até alguém resolver limpar", score: 5 },
-            { label: "Damos como perdido", score: 0 }
+            { label: "Aplicamos matriz BANT/SPIN. Vendas só recebe lead no perfil de Budget e Momento", score: 20 },
+            { label: "Temos critérios básicos (tamanho, cargo), mas às vezes passam leads fora", score: 10 },
+            { label: "O Marketing envia qualquer um que baixe um material ou levante a mão", score: 5 },
+            { label: "Não existe qualificação. Caiu no form ou Zap, o vendedor tenta fechar", score: 0 }
         ],
-        log: "A maior parte do dinheiro B2B está no follow-up, não na primeira touch."
+        log: "Conversar com curiosos e leads desqualificados é o dinheiro mais caro que a sua empresa queima hoje."
     },
     {
         id: 4,
-        question: "Quem é que caça ('prospecta') e quem é que esfola ('fecha') na sua empresa?",
+        question: "Como funciona o Acordo de Nível de Serviço (SLA) entre a atração (MKT) e fechamento (Vendas)?",
         options: [
-            { label: "Processo especialista completo (SDR qualifica, Closer fecha)", score: 20 },
-            { label: "Estamos testando divisões agora", score: 10 },
-            { label: "Modelo Full-Cycle (o mesmo caça e esfola)", score: 5 },
-            { label: "Apenas os fundadores fecham vendas", score: 0 }
+            { label: "SLA assinado. Vendas tem tempo limite para abordar e reportar perda por etapa", score: 20 },
+            { label: "Combinado de boca. MKT reclama de Vendas e Vendas de MKT", score: 10 },
+            { label: "Não tem SLA, usamos canais separados e só nos falaremos via mensagem", score: 5 },
+            { label: "Não existe divisão. Tenta-se anunciar de dia e ser vendedor à noite", score: 0 }
         ],
-        log: "Vendedores full-cycle chegam num teto de tédio e prospecção intermitente."
+        log: "Guerra ou silos entre marketing e vendas chegam a custar 20% da receita anual das empresas B2B."
     },
     {
         id: 5,
-        question: "Qual dessas métricas seu gestor de vendas domina hoje?",
+        question: "Como a meta anual agressiva da empresa foi desdobrada estruturalmente para as Vendas?",
         options: [
-            { label: "Deal Velocity, Win Rate e Taxa por Etapa", score: 20 },
-            { label: "Ocorreu/Atingido da Meta e Ticket Médio", score: 10 },
-            { label: "Volume de Leads e Reuniões Agendadas", score: 5 },
-            { label: "Faturamento Mensal (e só)", score: 0 }
+            { label: "Até o nível diário. O AE e BDR sabem as ligações/propostas requeridas no dia", score: 20 },
+            { label: "Temos metas mensais claras, mas o volume diário flutua por instinto", score: 10 },
+            { label: "Apenas metas gerais e trimestrais (ex: 'faturar mais do que o mês passado')", score: 5 },
+            { label: "Nossa meta restringe-se a conseguir lucro ou pagar os custos fixos operacionais", score: 0 }
         ],
-        log: "Saber quanto vendeu é atuar no fim. Saber a Taxa de Conversão por Etapa é atuar no meio."
+        log: "Esperança não é estratégia comercial. Meta que não é fracionada até a atividade diária torna-se inatingível de se administrar."
     }
 ];
 

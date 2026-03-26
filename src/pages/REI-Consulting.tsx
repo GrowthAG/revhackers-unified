@@ -57,6 +57,7 @@ const section6Schema = z.object({
     salesChannels: z.string().min(2, "Campo obrigatório"),
     marketingTools: z.string().min(2, "Campo obrigatório"),
     adBudget: z.string().optional(),
+    cacCeilingTarget: z.string().min(2, "Campo obrigatório"),
     adRestrictions: z.string().optional(),
     adRegions: z.string().min(2, "Campo obrigatório"),
     pastStrategies: z.string().optional(),
@@ -69,6 +70,8 @@ const section6Schema = z.object({
 const section7Schema = z.object({
     salesCycle: z.string().min(2, "Campo obrigatório"),
     leadNurturing: z.string().optional(),
+    mqlSqlAttributes: z.string().min(2, "Campo obrigatório"),
+    marketingSalesSla: z.string().min(2, "Campo obrigatório"),
     mainDecisionFactor: z.string().min(2, "Campo obrigatório"),
     growthStrategies: z.string().min(2, "Campo obrigatório"),
     marketingMaterials: z.string().min(1, "Selecione uma opção"),
@@ -374,8 +377,8 @@ const ReiConsultingPage = () => {
                                     <div className="space-y-8">
                                         <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Produto e Expectativas</h2>
                                         <div className="space-y-3">
-                                            <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">O que você espera ter de resultados nos próximos 12 meses? *</label>
-                                            <textarea {...form.register("results12Months")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Descreva seus objetivos..." />
+                                            <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Qual é a sua meta anual, e como ela se desdobra até o nível diário? *</label>
+                                            <textarea {...form.register("results12Months")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Qual a meta macro e quanto precisa vender por dia/semana?" />
                                             {form.formState.errors.results12Months && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.results12Months.message}</p>}
                                         </div>
                                         <div className="space-y-3">
@@ -409,8 +412,8 @@ const ReiConsultingPage = () => {
                                         <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Problemas e Dores</h2>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-3">
-                                                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Descrição do ICP *</label>
-                                                <textarea {...form.register("icp")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-24 resize-none" placeholder="Perfil de cliente ideal..." />
+                                                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">O ICP está documentado com clareza? *</label>
+                                                <textarea {...form.register("icp")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-24 resize-none" placeholder="Se sim, descreva os critérios e atributos exatos do seu ICP..." />
                                                 {form.formState.errors.icp && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.icp.message}</p>}
                                             </div>
                                             <div className="space-y-3">
@@ -479,9 +482,16 @@ const ReiConsultingPage = () => {
                                             </div>
                                         ))}
 
-                                        <div className="space-y-3">
-                                            <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Investimento Mensal (Mídia)</label>
-                                            <input {...form.register("adBudget")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium" placeholder="R$ 5.000,00" />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 space-y-3 md:space-y-0">
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Investimento Mensal (Mídia)</label>
+                                                <input {...form.register("adBudget")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium" placeholder="R$ 5.000,00" />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">CAC Teto e CAC Ideal *</label>
+                                                <input {...form.register("cacCeilingTarget")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium" placeholder="Ex: Teto R$ 500, Ideal R$ 100" />
+                                                {form.formState.errors.cacCeilingTarget && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.cacCeilingTarget.message}</p>}
+                                            </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -503,6 +513,8 @@ const ReiConsultingPage = () => {
                                         {[
                                             { id: "salesCycle", label: "Ciclo de vendas típico *" },
                                             { id: "leadNurturing", label: "Nutrição de leads?" },
+                                            { id: "mqlSqlAttributes", label: "Critérios de MQL e SQL para Vendas *" },
+                                            { id: "marketingSalesSla", label: "Existe SLA formal entre MKT e Vendas? *" },
                                             { id: "mainDecisionFactor", label: "Fator de decisão *" },
                                             { id: "growthStrategies", label: "Estratégias para crescer *" },
                                             { id: "approvalProcess", label: "Processo de aprovação *" }

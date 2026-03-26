@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import {
     Video,
@@ -262,6 +263,7 @@ function TranscriptViewer({ transcript }: { transcript: string }) {
 }
 
 function MeetingCard({ meeting, isLatest }: { meeting: MeetingRecording; isLatest: boolean }) {
+    const navigate = useNavigate();
     const [showInsights, setShowInsights] = useState(false);
     const [showTranscript, setShowTranscript] = useState(false);
 
@@ -300,15 +302,26 @@ function MeetingCard({ meeting, isLatest }: { meeting: MeetingRecording; isLates
                             )}
                         </div>
                     </div>
-                    {meeting.video_url && (
+                    <div className="flex items-center gap-2 shrink-0">
+                        {meeting.video_url && (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(meeting.video_url!, '_blank')}
+                                className="text-zinc-600 border-zinc-200 hover:bg-zinc-50 text-[10px] font-bold uppercase tracking-widest h-8 px-2"
+                                title="Baixar Video (Raw)"
+                            >
+                                <Video size={14} />
+                            </Button>
+                        )}
                         <Button
                             size="sm"
-                            onClick={() => window.open(meeting.video_url!, '_blank')}
-                            className="bg-zinc-950 hover:bg-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest h-8 gap-1.5 shrink-0"
+                            onClick={() => navigate(`/admin/recording/${meeting.id}`)}
+                            className="bg-black hover:bg-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest h-8 gap-1.5"
                         >
-                            <PlayCircle size={12} /> Assistir
+                            <FileText size={12} /> Abrir Documento
                         </Button>
-                    )}
+                    </div>
                 </div>
 
                 {/* AI Summary */}

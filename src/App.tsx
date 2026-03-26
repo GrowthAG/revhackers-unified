@@ -121,6 +121,7 @@ const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
 const RevenueCockpit = lazy(() => import("./pages/admin/RevenueCockpit"));
 const AdminProposalNew = lazy(() => import("./pages/admin/AdminProposalNew"));
 const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
+const MeetingRecordingDoc = lazy(() => import("./pages/admin/MeetingRecordingDoc"));
 
 // Client Pages
 const StrategicPlanPresentation = lazy(() => import("./pages/client/StrategicPlanPresentation"));
@@ -279,6 +280,9 @@ const App = () => (
               {/* Project Wiki / Document Editor */}
               <Route path="/admin/knowledge/:libraryId/doc/new" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
               <Route path="/admin/knowledge/:libraryId/doc/:docId" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
+              
+              {/* Meeting Recording Notion-Style Viewer */}
+              <Route path="/admin/recording/:id" element={<ProtectedRoute><MeetingRecordingDoc /></ProtectedRoute>} />
               
               {/* Legacy Redirects */}
               <Route path="/admin/jornada" element={<Navigate to="/admin/rei" replace />} />

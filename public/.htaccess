@@ -7,3 +7,17 @@
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteRule . /index.html [L]
 </IfModule>
+
+<IfModule mod_headers.c>
+  # 1. NO CACHE para o motor central (HTML, JSON, XML)
+  <FilesMatch "\.(html|htm|json|xml)$">
+      Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+      Header set Pragma "no-cache"
+      Header set Expires "0"
+  </FilesMatch>
+
+  # 2. CACHE LONGO para os assets imutáveis (JS, CSS, Imagens) gerados pelo Vite com hash
+  <FilesMatch "\.(js|css|webp|png|jpg|jpeg|gif|ico|woff|woff2|ttf|svg)$">
+      Header set Cache-Control "max-age=31536000, public"
+  </FilesMatch>
+</IfModule>
