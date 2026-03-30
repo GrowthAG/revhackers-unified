@@ -19,7 +19,6 @@ interface AuthContextType {
     resetPassword: (email: string) => Promise<{ error: any }>;
     updatePassword: (password: string) => Promise<{ error: any }>;
     signOut: () => Promise<void>;
-    setDevBypass: (email: string) => void; // NOVO: Para bypass de desenvolvimento
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    const fetchUserRole = async (userId: string) => {
+    const fetchUserRole = async (userId: string, silent = false) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -62,30 +61,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err) {
             console.error('Failed to fetch profile:', err);
         } finally {
-            setIsProfileLoading(false);
+            // Só desliga loading se foi ligado (evita re-render desnecessario no refresh silencioso)
+            if (!silent) {
+                setIsProfileLoading(false);
+            }
         }
-    };
-
-    // NOVO: Bypass de desenvolvimento - Protegido contra produção
-    const setDevBypass = (email: string) => {
-        // Bloqueio rigoroso em produção
-        if (import.meta.env.PROD) {
-            console.error('❌ SEGURANÇA: Dev Bypass bloqueado em produção.');
-            return;
-        }
-
-        const fakeUser: any = {
-            id: 'dev-bypass-user',
-            email: email,
-            app_metadata: {},
-            user_metadata: {},
-            aud: 'authenticated',
-            created_at: new Date().toISOString()
-        };
-
-        setUser(fakeUser);
-        setUserRole('super_admin');
-        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -156,11 +136,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 return;
             }
 
-            // Lógica de perfil para qualquer evento que traga um usuário
-            if (session?.user && (_event === 'SIGNED_IN' || _event === 'USER_UPDATED' || _event === 'INITIAL_SESSION' || _event === 'TOKEN_REFRESHED')) {
+            // Lógica de perfil para eventos que realmente mudam o usuario
+            // TOKEN_REFRESHED NAO dispara loading - o perfil/role nao muda quando o token renova.
+            // Isso evita desmontar componentes filhos (e perder estado de formularios) ao trocar de aba.
+            if (session?.user && (_event === 'SIGNED_IN' || _event === 'USER_UPDATED' || _event === 'INITIAL_SESSION')) {
                 setIsProfileLoading(true);
-                // Não dar await aqui para não bloquear o loop de eventos do Supabase
                 fetchUserRole(session.user.id);
+            } else if (session?.user && _event === 'TOKEN_REFRESHED') {
+                // Refresh silencioso - atualiza perfil em background sem loading state
+                // Isso preserva formularios e estado dos componentes ao trocar de aba
+                fetchUserRole(session.user.id, true);
             }
 
             if (_event === 'PASSWORD_RECOVERY') {
@@ -340,8 +325,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             signUp,
             resetPassword,
             updatePassword,
-            signOut,
-            setDevBypass
+            signOut
         }}>
             {children}
         </AuthContext.Provider>
