@@ -76,7 +76,7 @@ export const GanttView = ({ projectId, sprintId }: { projectId: string, sprintId
          <h3 className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <Clock className="w-4 h-4 text-revhackers" /> Timeline do Projeto
          </h3>
-         <div className="text-[10px] font-bold px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-500 tracking-widest uppercase">
+         <div className="text-xxs font-bold px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-500 tracking-widest uppercase">
            Timeline Dinamica ({daysArray.length} Dias)
          </div>
       </div>
@@ -96,7 +96,7 @@ export const GanttView = ({ projectId, sprintId }: { projectId: string, sprintId
            <div className="flex sticky top-0 z-10 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 pl-64 shadow-sm">
              {daysArray.map((day, idx) => (
                 <div key={idx} className={`w-12 flex-shrink-0 border-r border-zinc-200 dark:border-zinc-800/50 py-3 flex flex-col items-center justify-center ${isSameDay(day, today) ? 'bg-revhackers/5 dark:bg-revhackers/10' : ''}`}>
-                   <span className="text-[10px] text-zinc-500 font-bold uppercase">{format(day, 'EEE', { locale: ptBR })}</span>
+                   <span className="text-xxs text-zinc-500 font-bold uppercase">{format(day, 'EEE', { locale: ptBR })}</span>
                    <span className={`text-sm font-bold ${isSameDay(day, today) ? 'text-revhackers' : 'text-zinc-800 dark:text-zinc-300'}`}>{format(day, 'dd')}</span>
                 </div>
              ))}
@@ -146,7 +146,7 @@ export const GanttView = ({ projectId, sprintId }: { projectId: string, sprintId
                         return (
                           <div
                             key="bar"
-                            className={`absolute top-1/2 -translate-y-1/2 h-5 rounded-md pointer-events-none z-10 ${
+                            className={`absolute top-1/2 -translate-y-1/2 h-5 pointer-events-none z-10 ${
                               isDone
                                 ? 'bg-zinc-200 dark:bg-zinc-700'
                                 : isOver
@@ -156,7 +156,7 @@ export const GanttView = ({ projectId, sprintId }: { projectId: string, sprintId
                             style={{ left: `${barLeft}px`, width: `${Math.max(barWidth, 24)}px` }}
                           >
                             {/* Due date dot at the end */}
-                            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/80" />
+                            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-white/80" />
                           </div>
                         );
                       })()}
@@ -179,7 +179,7 @@ export const GanttView = ({ projectId, sprintId }: { projectId: string, sprintId
                               >
                                 {task.status === 'done'
                                   ? <CheckCircle2 className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
-                                  : <div className="w-2 h-2 rounded-full bg-white dark:bg-black" />
+                                  : <div className="w-2 h-2 bg-white dark:bg-black" />
                                 }
                               </div>
                             </div>

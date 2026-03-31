@@ -42,7 +42,7 @@ const TimelineSection = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-1 h-1 bg-black rounded-full" />
-                <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.4em] font-black">
+                <span className="font-mono text-xxs text-zinc-400 uppercase tracking-[0.4em] font-black">
                   // Evolutionary_Roadmap
                 </span>
               </div>
@@ -79,7 +79,7 @@ const TimelineSection = () => {
                     <h3 className="text-sm font-mono font-black text-zinc-400 uppercase tracking-widest mb-4">
                       PROTOCOL :: {event.title}
                     </h3>
-                    <p className="text-zinc-600 font-medium leading-relaxed text-[16px] max-w-3xl">
+                    <p className="text-zinc-600 font-medium leading-relaxed text-base max-w-3xl">
                       {event.description}
                     </p>
                   </div>

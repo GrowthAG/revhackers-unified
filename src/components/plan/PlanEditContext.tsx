@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Pencil, Loader2, Check, Download } from 'lucide-react';
+import { Pencil, Loader2, Check, Download, Copy } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface PlanEditContextType {
@@ -11,6 +11,7 @@ interface PlanEditContextType {
     setField: (path: string, value: any) => void;
     save: () => Promise<void>;
     pendingChanges: Record<string, any>;
+    plan: any;
 }
 
 // ── Context ────────────────────────────────────────────────────────────────
@@ -46,12 +47,14 @@ export function PlanEditProvider({
     planId,
     isEditing,
     onPlanUpdate,
+    tableName = 'strategic_plans'
 }: {
     children: React.ReactNode;
     plan: any;
     planId: string;
     isEditing: boolean;
     onPlanUpdate: (plan: any) => void;
+    tableName?: string;
 }) {
     const [pendingChanges, setPendingChanges] = useState<Record<string, any>>({});
     const [saving, setSaving] = useState(false);
@@ -78,7 +81,7 @@ export function PlanEditProvider({
             const payload: Record<string, any> = {};
             topKeys.forEach(k => { payload[k] = updated[k]; });
 
-            const { error } = await supabase.from('strategic_plans').update(payload).eq('id', planId);
+            const { error } = await supabase.from((tableName || 'strategic_plans') as any).update(payload).eq('id', planId);
             if (error) throw error;
 
             onPlanUpdate(updated);
@@ -105,7 +108,7 @@ export function PlanEditProvider({
     }, [pendingChanges, isEditing, save, pendingCount]);
 
     return (
-        <PlanEditCtx.Provider value={{ isEditing, saving, savedAt, getField, setField, save, pendingChanges }}>
+        <PlanEditCtx.Provider value={{ isEditing, saving, savedAt, getField, setField, save, pendingChanges, plan }}>
             {children}
         </PlanEditCtx.Provider>
     );
@@ -154,58 +157,136 @@ export function EditableField({
 
 // ── EditToolbar ────────────────────────────────────────────────────────────
 export function EditToolbar() {
-    const { isEditing, saving, savedAt, save, pendingChanges } = usePlanEdit();
+    const { isEditing, saving, savedAt, save, pendingChanges, plan } = usePlanEdit();
     const hasChanges = Object.keys(pendingChanges).length > 0;
+
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyText = async () => {
+        try {
+            if (!plan) return;
+            let text = `# PLANEJAMENTO ESTRATÉGICO\n`;
+            const company = plan.rei_projects?.trade_name || plan.client_company || 'Cliente';
+            text += `Empresa: ${company}\n\n`;
+
+            const d = plan.diagnostic_data || {};
+            if (d.context_mirror) {
+                text += `## CONTEXTO E CENÁRIO\n`;
+                text += `- Segmento: ${d.context_mirror.segment || '-'}\n`;
+                text += `- Objetivo Principal: ${d.context_mirror.objective || '-'}\n`;
+                text += `- Maturidade Digital: ${d.context_mirror.maturity || '-'}\n`;
+                text += `- Restrições: ${d.context_mirror.restrictions || '-'}\n\n`;
+            }
+
+            if (d.signals && d.signals.length) {
+                text += `## SINAIS ESTRATÉGICOS\n`;
+                d.signals.forEach((s: any, i: number) => {
+                    text += `${i + 1}. ${s.text}\n   Impacto: ${s.impact}\n\n`;
+                });
+            }
+
+            if (d.risks && d.risks.length) {
+                text += `## CAUSAS RAIZ E RISCOS\n`;
+                d.risks.forEach((r: any, i: number) => {
+                    text += `${i + 1}. ${r.text}\n   Mitigação: ${r.mitigation}\n\n`;
+                });
+            }
+
+            if (d.decisions && d.decisions.length) {
+                text += `## DECISÕES MANDATÓRIAS\n`;
+                d.decisions.forEach((dec: any) => {
+                    text += `- ${dec.title}: ${dec.recommendation}\n`;
+                });
+                text += `\n`;
+            }
+            
+            if (plan.thesis) {
+                 text += `## TESE DE CRESCIMENTO\n${plan.thesis}\n\n`;
+            }
+            
+            if (plan.premises && plan.premises.length) {
+                text += `## PREMISSAS\n`;
+                plan.premises.forEach((p: any) => { text += `- ${p.title}: ${p.description}\n`; });
+                text += `\n`;
+            }
+
+            if (plan.goals && plan.goals.length) {
+                text += `## METAS E INDICADORES\n`;
+                plan.goals.forEach((g: any) => {
+                    text += `- ${g.title}: ${g.target} (${g.metric})\n`;
+                });
+                text += `\n`;
+            }
+
+            if (plan.sprints && plan.sprints.length) {
+                text += `## MARCOS DO PROJETO\n`;
+                plan.sprints.forEach((s: any, i: number) => {
+                    text += `Sprint ${i + 1}: ${s.title}\n${s.description}\n\n`;
+                });
+            }
+
+            if (plan.quick_wins && plan.quick_wins.length) {
+                text += `## QUICK WINS (Primeiros 7 Dias)\n`;
+                plan.quick_wins.forEach((qw: any) => {
+                    text += `- ${qw.title}: ${qw.description}\n`;
+                });
+                text += `\n`;
+            }
+
+            await navigator.clipboard.writeText(text.trim());
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Falha ao copiar:', err);
+        }
+    };
 
     if (!isEditing) return null;
 
     return (
-        <>
-            <style>{`
-        @media print {
-          .plan-edit-bar, header, footer { display: none !important; }
-          body, html { height: auto !important; overflow: visible !important; }
-          .plan-presentation { height: auto !important; overflow: visible !important; }
-          main { overflow: visible !important; height: auto !important; }
-          @page { margin: 15mm; size: A4; }
-        }
-      `}</style>
-            <div className="plan-edit-bar fixed top-0 left-0 right-0 z-[200] bg-zinc-950 border-b border-[#00CC6A]/30 flex items-center justify-between px-6 py-2.5">
-                <div className="flex items-center gap-2">
-                    <Pencil className="w-3.5 h-3.5 text-[#00CC6A]" />
-                    <span className="text-xs font-bold text-white uppercase tracking-widest">Modo Edição - Admin</span>
-                    {hasChanges && (
-                        <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-zinc-400 font-mono">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
-                            {Object.keys(pendingChanges).length} alteração{Object.keys(pendingChanges).length !== 1 ? 'ões' : ''} não salva{Object.keys(pendingChanges).length !== 1 ? 's' : ''}
-                        </span>
-                    )}
-                    {savedAt && !hasChanges && (
-                        <span className="ml-2 text-[10px] text-[#00CC6A] font-mono flex items-center gap-1">
-                            <Check className="w-3 h-3" />
-                            Salvo às {savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                    )}
-                </div>
-                <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-zinc-500">Clique em qualquer texto para editar</span>
-                    <button
-                        onClick={() => window.print()}
-                        title="Exportar como PDF"
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors"
-                    >
-                        <Download className="w-3 h-3" /> PDF
-                    </button>
+        <div className="plan-edit-bar fixed top-0 left-0 right-0 z-[200] bg-zinc-950 border-b border-[#00CC6A]/30 flex items-center justify-between px-6 py-2.5">
+            <div className="flex items-center gap-2">
+                <Pencil className="w-3.5 h-3.5 text-[#00CC6A]" />
+                <span className="text-xs font-bold text-white uppercase tracking-widest">Modo Edição - Admin</span>
+                {hasChanges && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-xxs text-zinc-400 font-mono">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
+                        {Object.keys(pendingChanges).length} alteração{Object.keys(pendingChanges).length !== 1 ? 'ões' : ''} não salva{Object.keys(pendingChanges).length !== 1 ? 's' : ''}
+                    </span>
+                )}
+                {savedAt && !hasChanges && (
+                    <span className="ml-2 text-xxs text-[#00CC6A] font-mono flex items-center gap-1">
+                        <Check className="w-3 h-3" />
+                        Salvo às {savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                )}
+            </div>
+            <div className="flex items-center gap-3">
+                <span className="text-xxs text-zinc-500">Clique em qualquer texto para editar</span>
+                <button
+                    onClick={handleCopyText}
+                    title="Copiar Texto Puro"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xxs font-bold uppercase tracking-widest bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors w-28 justify-center"
+                >
+                    {copied ? <Check className="w-3 h-3 text-[#00CC6A]" /> : <Copy className="w-3 h-3" />}
+                    {copied ? 'Copiado!' : 'Copiar Texto'}
+                </button>
+                <button
+                    onClick={() => window.print()}
+                    title="Exportar como PDF"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xxs font-bold uppercase tracking-widest bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                >
+                    <Download className="w-3 h-3" /> PDF
+                </button>
                     <button
                         onClick={save}
                         disabled={saving || !hasChanges}
-                        className={`flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${hasChanges ? 'bg-[#00CC6A] text-black hover:bg-[#00AA55]' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`}
+                        className={`flex items-center gap-2 px-4 py-1.5 text-xxs font-black uppercase tracking-widest transition-all ${hasChanges ? 'bg-[#00CC6A] text-black hover:bg-[#00AA55]' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`}
                     >
                         {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
                         {saving ? 'Salvando...' : 'Salvar Alterações'}
                     </button>
                 </div>
             </div>
-        </>
     );
 }

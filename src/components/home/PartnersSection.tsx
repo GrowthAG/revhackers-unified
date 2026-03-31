@@ -26,7 +26,7 @@ const PartnersSection = () => {
     <Section variant="light" className="bg-white border-b border-zinc-100 py-16 md:py-24">
       <div className="container-custom">
         <div className="text-center mb-16">
-          <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">
+          <span className="font-mono text-xxs text-zinc-400 uppercase tracking-[0.3em] font-bold">
             LÍDERES DE MERCADO QUE CONFIAM NO NOSSO ECOSSISTEMA
           </span>
         </div>
@@ -36,7 +36,7 @@ const PartnersSection = () => {
           {partners.map((partner: any, index) => (
             <div
               key={index}
-              className="h-24 w-full flex items-center justify-center bg-zinc-50/50 rounded-2xl p-4 hover:bg-white hover:shadow-sm hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-500 group border border-zinc-100/50 cursor-pointer overflow-hidden"
+              className="h-24 w-full flex items-center justify-center bg-zinc-50/50 p-4 hover:bg-white hover:shadow-sm hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-500 group border border-zinc-100/50 cursor-pointer overflow-hidden"
             >
               <img
                 src={partner.logo}

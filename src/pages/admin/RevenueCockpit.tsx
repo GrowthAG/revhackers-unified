@@ -7,7 +7,7 @@ import {
   MessageSquare, Trophy, Rocket, Activity, CheckCircle2,
   XCircle, UserMinus, RefreshCw, Plus, ChevronRight,
   Flame, AlertTriangle, Phone, Target, Zap, BarChart3,
-  CalendarCheck, ShieldAlert, TrendingUp, Clock
+  CalendarCheck, ShieldAlert, TrendingUp, Clock, Radar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -17,13 +17,18 @@ import { FastLeadDrawer } from '@/components/rei/FastLeadDrawer';
 import { DealClosingModal } from '@/components/admin/DealClosingModal';
 import {
   PipelineStage,
+  OpportunityStage,
+  ProjectStage,
   STAGE_CONFIGS,
+  OPPORTUNITY_STAGE_CONFIGS,
+  PROJECT_STAGE_CONFIGS,
   STAGE_CATEGORIES,
   OpportunityData,
   LEAD_SOURCE_LABELS,
   LeadSource,
 } from '@/types/pipeline';
 import { advanceStage } from '@/services/PipelineService';
+import { advanceOpportunityStage } from '@/api/opportunities';
 import { useToast } from '@/hooks/use-toast';
 
 // ---- Icon map (lucide) keyed by STAGE_CONFIGS.icon string ----
@@ -67,17 +72,7 @@ interface ProjectRow {
 
 // ---- Helpers ----
 
-function daysSince(iso: string | null): number {
-  if (!iso) return 0;
-  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-}
-
-function formatCurrency(val: number): string {
-  if (!val) return '-';
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency', currency: 'BRL', maximumFractionDigits: 0,
-  }).format(val);
-}
+import { getDisplayName, formatCurrency, getDaysSince } from '@/lib/projectUtils';
 
 function pipelineValue(projects: ProjectRow[]): number {
   return projects.reduce((sum, p) => {
@@ -97,10 +92,12 @@ const EXECUCAO_STAGES: PipelineStage[] = ['won', 'onboarding', 'active', 'comple
 // ---- Sub-components ----
 
 const MetricCard = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
-  <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-5">
-    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-1">{label}</p>
-    <p className="text-2xl font-black text-zinc-900 tracking-tight">{value}</p>
-    {sub && <p className="text-[11px] font-medium text-zinc-400 mt-0.5">{sub}</p>}
+  <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between hover:border-zinc-400 transition-colors duration-300 group">
+    <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-2 group-hover:text-zinc-700 transition-colors">{label}</p>
+    <div>
+      <p className="text-3xl font-black text-zinc-900 tracking-tight">{value}</p>
+      {sub && <p className="text-xs font-medium text-zinc-400 mt-1">{sub}</p>}
+    </div>
   </div>
 );
 
@@ -108,12 +105,12 @@ const FunnelBar = ({ label, count, max, accent }: { label: string; count: number
   const pct = max > 0 ? (count / max) * 100 : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 w-24 text-right shrink-0">
+      <span className="text-xxs font-black uppercase tracking-widest text-zinc-500 w-24 text-right shrink-0">
         {label}
       </span>
-      <div className="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-3 bg-zinc-100 overflow-hidden rounded-r-sm">
         <div
-          className="h-full rounded-full transition-all duration-700"
+          className="h-full transition-all duration-1000 ease-in-out"
           style={{
             width: `${Math.max(pct, count > 0 ? 4 : 0)}%`,
             backgroundColor: accent ? '#00CC6A' : '#18181b',
@@ -132,13 +129,103 @@ const StageBadge = ({ stage }: { stage: PipelineStage }) => {
   const isWon = stage === 'won';
   return (
     <span className={cn(
-      'text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded inline-flex items-center gap-1',
+      'text-2xs font-black uppercase tracking-widest px-2 py-0.5 inline-flex items-center gap-1',
       isWon
-        ? 'bg-[#00CC6A]/10 text-[#00CC6A] border border-[#00CC6A]/20'
+        ? 'bg-[#00CC6A]/10 text-zinc-900 border border-[#00CC6A]/30'
         : 'bg-zinc-100 text-zinc-500 border border-zinc-200',
     )}>
       {config.labelShort}
     </span>
+  );
+};
+
+const RevOpsCopilot = ({
+  activeTab,
+  vendas,
+  diagnostico,
+  execucao,
+}: {
+  activeTab: 'vendas' | 'projetos';
+  vendas: ProjectRow[];
+  diagnostico: ProjectRow[];
+  execucao: ProjectRow[];
+}) => {
+  let insight = '';
+  let type: 'alert' | 'success' | 'neutral' = 'neutral';
+
+  // Heurística de Vendas
+  if (activeTab === 'vendas') {
+    const stagnant = vendas.filter(v => v.pipeline_stage === 'proposal_sent' && v.days_in_stage > 7);
+    if (stagnant.length > 0) {
+      const riskValue = pipelineValue(stagnant);
+      insight = `Atenção Crítica: Você tem ${stagnant.length} proposta(s) parada(s) há mais de 7 dias. Risco estimado de ${formatCurrency(riskValue)} de vazamento no pipeline.`;
+      type = 'alert';
+    } else if (diagnostico.length < 3) {
+      insight = 'Topo do Funil reduzido: Apenas captação orgânica insuficiente para bater metas de fechamento. Aumente geração de Inbound.';
+      type = 'alert';
+    } else {
+      const biggestDeal = vendas.reduce((max, v) => {
+        const val = pipelineValue([v]);
+        const mVal = pipelineValue([max]);
+        return val > mVal ? v : max;
+      }, vendas[0]);
+
+      if (biggestDeal && pipelineValue([biggestDeal]) > 0) {
+        insight = `Ação Ouro: A oportunidade "${biggestDeal.display_name}" tem o maior impacto esperado atual (${formatCurrency(pipelineValue([biggestDeal]))}). Dê máxima atenção em follow-up hoje.`;
+        type = 'success';
+      } else {
+        insight = 'Pipeline de Vendas operando dentro da normalidade rotineira. Explore prospecção outbound (Hunting).';
+        type = 'neutral';
+      }
+    }
+  } 
+  // Heurística de Execução
+  else {
+    const churnRisk = execucao.find(p => p.pipeline_stage === 'onboarding' && p.overdue_tasks > 0 && p.days_in_stage > 10);
+    if (churnRisk) {
+      insight = `Risco de Atrito/Churn: O projeto "${churnRisk.display_name}" travou no Onboarding há ${churnRisk.days_in_stage} dias com tarefas crônicas atrasadas.`;
+      type = 'alert';
+    } else {
+      const totalOverdue = execucao.reduce((sum, p) => sum + p.overdue_tasks, 0);
+      if (totalOverdue === 0 && execucao.length > 0) {
+        insight = `Excepcional: Todos os ${execucao.length} projetos base ativos estão 100% em dia. TTV (Time-to-Value) acelerado e retenção blindada.`;
+        type = 'success';
+      } else if (totalOverdue > 5) {
+        insight = `Queda de Velocidade: A base total acumula ${totalOverdue} tarefas pendentes. Realoque os times de backoffice para destravar a infra.`;
+        type = 'alert';
+      } else {
+         insight = 'Acompanhamento base operando sem gargalos de serviço catastróficos sistêmicos.';
+         type = 'neutral';
+      }
+    }
+  }
+
+  return (
+    <div className="bg-white border border-zinc-200 p-6 flex items-start gap-4 mb-10 relative overflow-hidden">
+      {/* Accent line */}
+      <div className={cn(
+        "absolute top-0 left-0 w-1 h-full",
+        type === 'alert' ? 'bg-zinc-900' : type === 'success' ? 'bg-[#00CC6A]' : 'bg-zinc-200'
+      )} />
+      
+      <div className="mt-0.5 shrink-0">
+        <Radar className={cn(
+          "w-5 h-5",
+          type === 'alert' ? 'text-zinc-900' : type === 'success' ? 'text-[#00CC6A]' : 'text-zinc-400'
+        )} />
+      </div>
+      <div>
+        <h4 className="flex items-center gap-2 text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 mb-2">
+          CRO Copilot Analytics
+          {type === 'alert' && (
+            <span className="text-3xs font-black uppercase tracking-widest text-white bg-zinc-900 px-1.5 py-0.5">
+              Attention
+            </span>
+          )}
+        </h4>
+        <p className="text-sm font-medium text-zinc-500 leading-relaxed max-w-4xl">{insight}</p>
+      </div>
+    </div>
   );
 };
 
@@ -157,10 +244,10 @@ const StageActionButton = ({
     onClick={(e) => { e.stopPropagation(); onClick(); }}
     disabled={loading}
     className={cn(
-      'text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border transition-all disabled:opacity-50',
-      variant === 'accent' && 'bg-[#00CC6A]/10 text-[#00CC6A] border-[#00CC6A]/20 hover:bg-[#00CC6A]/20',
+      'text-2xs font-black uppercase tracking-widest px-2.5 py-1 border transition-all disabled:opacity-50',
+      variant === 'accent' && 'bg-[#00CC6A]/10 text-zinc-900 border-[#00CC6A]/30 hover:bg-[#00CC6A]/20',
       variant === 'danger' && 'bg-zinc-100 text-zinc-400 border-zinc-200 hover:text-zinc-600',
-      variant === 'default' && 'bg-zinc-950 text-white border-zinc-950 hover:bg-zinc-800',
+      variant === 'default' && 'border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950',
     )}
   >
     {loading ? '...' : label}
@@ -173,11 +260,13 @@ const DiagnosticoRow = ({
   project,
   onAction,
   onOpenWarRoom,
+  onCreateProposal,
   transitioning,
 }: {
   project: ProjectRow;
   onAction: (id: string, stage: PipelineStage) => void;
   onOpenWarRoom: (p: ProjectRow) => void;
+  onCreateProposal?: (opportunityId: string) => void;
   transitioning: string | null;
 }) => {
   const Icon = stageIcon(project.pipeline_stage || 'lead_inbound');
@@ -185,10 +274,10 @@ const DiagnosticoRow = ({
   return (
     <div
       onClick={() => onOpenWarRoom(project)}
-      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+      className="bg-white border border-zinc-200 p-4 cursor-pointer hover:border-zinc-400 transition-all group"
     >
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
+        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 flex items-center justify-center shrink-0">
           <Icon className="w-4 h-4 text-zinc-900" />
         </div>
         <div className="flex-1 min-w-0">
@@ -196,32 +285,30 @@ const DiagnosticoRow = ({
             <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
             <StageBadge stage={project.pipeline_stage || 'lead_inbound'} />
           </div>
-          <div className="flex items-center gap-3 text-[10px] font-medium text-zinc-400">
+          <div className="flex items-center gap-3 text-xxs font-medium text-zinc-400">
             {source && <span>{LEAD_SOURCE_LABELS[source] || source}</span>}
             {project.maturity_pct > 0 && <span>Score: {project.maturity_pct}%</span>}
             <span>{project.days_in_stage}d neste estagio</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {project.pipeline_stage === 'lead_inbound' && (
+          <select
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => onAction(project.id, e.target.value as PipelineStage)}
+            value={project.pipeline_stage || 'lead_inbound'}
+            disabled={transitioning === project.id}
+            className="text-xs font-black uppercase tracking-widest text-zinc-700 bg-zinc-50 border border-zinc-200 outline-none p-1.5 focus:border-zinc-900 cursor-pointer disabled:opacity-50"
+          >
+            <option value="lead_inbound">Lead Inbound</option>
+            <option value="lead_qualified">Qualificado</option>
+            <option value="diagnostic_done">Diagnóstico Realizado</option>
+            <option value="lost">Desqualificado / Perdido</option>
+          </select>
+          {project.pipeline_stage === 'diagnostic_done' && onCreateProposal && (
             <StageActionButton
-              label="Qualificar"
-              onClick={() => onAction(project.id, 'lead_qualified')}
-              loading={transitioning === project.id}
-            />
-          )}
-          {project.pipeline_stage === 'lead_qualified' && (
-            <StageActionButton
-              label="Agendar Diagnostico"
-              onClick={() => onAction(project.id, 'diagnostic_done')}
-              loading={transitioning === project.id}
-            />
-          )}
-          {project.pipeline_stage === 'diagnostic_done' && (
-            <StageActionButton
-              label="Criar Proposta"
+              label="Criar Novo Deal Room"
               variant="accent"
-              onClick={() => onAction(project.id, 'proposal_draft')}
+              onClick={() => onCreateProposal(project.id)}
               loading={transitioning === project.id}
             />
           )}
@@ -238,11 +325,13 @@ const VendasRow = ({
   project,
   onAction,
   onOpenWarRoom,
+  onSendProposal,
   transitioning,
 }: {
   project: ProjectRow;
   onAction: (id: string, stage: PipelineStage) => void;
   onOpenWarRoom: (p: ProjectRow) => void;
+  onSendProposal?: (opportunityId: string) => void;
   transitioning: string | null;
 }) => {
   const Icon = stageIcon(project.pipeline_stage || 'proposal_draft');
@@ -254,10 +343,10 @@ const VendasRow = ({
   return (
     <div
       onClick={() => onOpenWarRoom(project)}
-      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+      className="bg-white border border-zinc-200 p-4 cursor-pointer hover:border-zinc-400 transition-all group"
     >
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+        <div className="w-9 h-9 bg-zinc-50 border border-zinc-200 flex items-center justify-center shrink-0 mt-0.5">
           <Icon className="w-4 h-4 text-zinc-900" />
         </div>
         <div className="flex-1 min-w-0">
@@ -267,55 +356,56 @@ const VendasRow = ({
           </div>
           <div className="grid grid-cols-4 gap-3 mt-2">
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Fechamento</p>
+              <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Fechamento</p>
               <p className="text-sm font-black text-zinc-900">{opp?.score_fechamento ?? '-'}%</p>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Objecoes</p>
+              <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Objeções</p>
               <p className="text-sm font-black text-zinc-900">{opp?.objecoes_detectadas?.length ?? 0}</p>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Sinais</p>
+              <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Sinais</p>
               <p className="text-sm font-black text-zinc-900">{opp?.sinais_compra?.length ?? 0}</p>
             </div>
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Investimento</p>
+              <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Investimento</p>
               <p className="text-sm font-black text-zinc-900">{investAvg > 0 ? formatCurrency(investAvg) : '-'}</p>
             </div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5 shrink-0">
-          {project.pipeline_stage === 'proposal_draft' && (
+          <select
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              if (e.target.value === 'lost') {
+                if (window.confirm(`Deseja mesmo arquivar "${project.display_name}" como PERDIDO?`)) {
+                  onAction(project.id, 'lost');
+                } else {
+                  e.target.value = project.pipeline_stage || 'proposal_draft';
+                }
+              } else {
+                onAction(project.id, e.target.value as PipelineStage);
+              }
+            }}
+            value={project.pipeline_stage || 'proposal_draft'}
+            disabled={transitioning === project.id}
+            className="text-xs font-black uppercase tracking-widest text-zinc-700 bg-zinc-50 border border-zinc-200 outline-none p-1.5 focus:border-zinc-900 cursor-pointer disabled:opacity-50"
+          >
+            <option value="proposal_draft">Em Elaboração</option>
+            <option value="proposal_sent">Enviada</option>
+            <option value="proposal_viewed">Visualizada</option>
+            <option value="negotiation">Em Negociação</option>
+            <option value="won">Fechar Venda (Won)</option>
+            <option value="lost">Perdido</option>
+          </select>
+          {project.pipeline_stage === 'proposal_draft' && onSendProposal && (
             <StageActionButton
-              label="Enviar Proposta"
-              onClick={() => onAction(project.id, 'proposal_sent')}
+              label="Enviar Link (Público)"
+              onClick={() => onSendProposal(project.id)}
               loading={transitioning === project.id}
             />
           )}
-          {project.pipeline_stage === 'proposal_sent' && (
-            <StageActionButton
-              label="Negociacao"
-              onClick={() => onAction(project.id, 'negotiation')}
-              loading={transitioning === project.id}
-            />
-          )}
-          {(project.pipeline_stage === 'proposal_viewed' || project.pipeline_stage === 'negotiation') && (
-            <StageActionButton
-              label="Fechar Venda"
-              variant="accent"
-              onClick={() => onAction(project.id, 'won')}
-              loading={transitioning === project.id}
-            />
-          )}
-          {project.pipeline_stage !== 'won' && (
-            <StageActionButton
-              label="Perdido"
-              variant="danger"
-              onClick={() => onAction(project.id, 'lost')}
-              loading={transitioning === project.id}
-            />
-          )}
-          <span className="text-[10px] font-medium text-zinc-400 mt-0.5">{project.days_in_stage}d</span>
+          <span className="text-xxs font-medium text-zinc-400 mt-0.5">{project.days_in_stage}d</span>
         </div>
       </div>
     </div>
@@ -337,16 +427,25 @@ const ExecucaoRow = ({
   const Icon = stageIcon(project.pipeline_stage || 'active');
   const pctDone = project.total_tasks > 0 ? Math.round((project.done_tasks / project.total_tasks) * 100) : 0;
 
+  let onboardingStep = '';
+  if (project.pipeline_stage === 'onboarding') {
+    if (pctDone === 0) onboardingStep = 'Setup Inicial & Kickoff';
+    else if (pctDone < 30) onboardingStep = 'Integrações & Tracking';
+    else if (pctDone < 60) onboardingStep = 'Diagnóstico Técnico';
+    else if (pctDone < 90) onboardingStep = 'Plano Estratégico';
+    else onboardingStep = 'Aprovação Final';
+  }
+
   return (
     <div
       onClick={() => navigate(`/admin/projects/${project.id}`)}
-      className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-4 cursor-pointer hover:border-zinc-400 transition-all group"
+      className="bg-white border border-zinc-200 p-4 cursor-pointer hover:border-zinc-400 transition-all group"
     >
       <div className="flex items-center gap-3">
         <div className={cn(
-          'w-9 h-9 rounded-xl flex items-center justify-center shrink-0',
+          'w-9 h-9 flex items-center justify-center shrink-0',
           project.pipeline_stage === 'won'
-            ? 'border border-[#00CC6A]/20 shadow-[0_0_15px_rgba(0,204,106,0.1)]'
+            ? 'border border-[#00CC6A]/20'
             : 'bg-zinc-50 border border-zinc-200',
         )}>
           <Icon className={cn(
@@ -358,43 +457,46 @@ const ExecucaoRow = ({
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
             <StageBadge stage={project.pipeline_stage || 'active'} />
+            {onboardingStep && (
+              <span className="text-3xs font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-0.5 ml-1">
+                etapa: {onboardingStep}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-4 mt-1">
             <div className="flex items-center gap-1.5">
-              <div className="w-20 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div className="w-20 h-1.5 bg-zinc-100 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-zinc-900 transition-all"
+                  className="h-full bg-zinc-900 transition-all"
                   style={{ width: `${pctDone}%` }}
                 />
               </div>
-              <span className="text-[10px] font-black text-zinc-500">{pctDone}%</span>
+              <span className="text-xxs font-black text-zinc-500">{pctDone}%</span>
             </div>
-            <span className="text-[10px] font-medium text-zinc-400">
+            <span className="text-xxs font-medium text-zinc-400">
               {project.done_tasks}/{project.total_tasks} tarefas
             </span>
             {project.overdue_tasks > 0 && (
-              <span className="text-[10px] font-black text-red-400 flex items-center gap-0.5">
+              <span className="text-xxs font-black text-zinc-900 flex items-center gap-0.5">
                 <AlertTriangle className="w-2.5 h-2.5" /> {project.overdue_tasks} atrasada(s)
               </span>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {project.pipeline_stage === 'won' && (
-            <StageActionButton
-              label="Iniciar Onboarding"
-              onClick={() => onAction(project.id, 'onboarding')}
-              loading={transitioning === project.id}
-            />
-          )}
-          {project.pipeline_stage === 'onboarding' && (
-            <StageActionButton
-              label="Ativar Projeto"
-              variant="accent"
-              onClick={() => onAction(project.id, 'active')}
-              loading={transitioning === project.id}
-            />
-          )}
+          <select
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => onAction(project.id, e.target.value as PipelineStage)}
+            value={project.pipeline_stage || 'active'}
+            disabled={transitioning === project.id}
+            className="text-xs font-black uppercase tracking-widest text-zinc-700 bg-zinc-50 border border-zinc-200 outline-none p-1.5 focus:border-zinc-900 cursor-pointer disabled:opacity-50"
+          >
+            <option value="won">Aguardando Onboarding</option>
+            <option value="onboarding">Em Onboarding</option>
+            <option value="active">Em Execução (Ativo)</option>
+            <option value="completed">Concluído</option>
+            <option value="churned">Churn / Pausado</option>
+          </select>
           <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-600 transition-colors" />
         </div>
       </div>
@@ -416,7 +518,7 @@ const SectionTitle = ({
   count?: number;
 }) => (
   <div className="mb-6">
-    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">{eyebrow}</p>
+    <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">{eyebrow}</p>
     <div className="flex items-baseline gap-3">
       <h2 className="text-3xl font-black tracking-tight text-zinc-900">{title}</h2>
       {count !== undefined && (
@@ -424,7 +526,7 @@ const SectionTitle = ({
       )}
     </div>
     {description && (
-      <p className="text-[15px] font-medium text-zinc-500 mt-1 leading-relaxed">{description}</p>
+      <p className="text-body font-medium text-zinc-500 mt-1 leading-relaxed">{description}</p>
     )}
   </div>
 );
@@ -440,6 +542,9 @@ export const RevenueCockpit: React.FC = () => {
 
   const [transitioning, setTransitioning] = useState<string | null>(null);
 
+  // Tab navigation
+  const [activeTab, setActiveTab] = useState<'vendas' | 'projetos'>('vendas');
+
   // War Room sheet state
   const [warRoomOpen, setWarRoomOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<ProjectRow | null>(null);
@@ -453,14 +558,61 @@ export const RevenueCockpit: React.FC = () => {
 
   // ---- Data loading (React Query) ----
 
-  const { data: projects = [], isLoading: loading, refetch: loadAll } = useQuery({
+  // OPPORTUNITIES: leads + vendas (pre-sale)
+  const { data: opportunities = [], isLoading: loadingOpps, refetch: refetchOpps } = useQuery({
+    queryKey: ['revenue-opportunities'],
+    queryFn: async () => {
+      const { data: rawOpps, error } = await supabase
+        .from('opportunities')
+        .select(`
+          id, client_name, client_company, trade_name, type, pipeline_stage,
+          lead_source, opportunity_data, enrichment_data, diagnostico_id,
+          created_at, updated_at,
+          diagnosticos ( score, tipo )
+        `)
+        .neq('pipeline_stage', 'won')
+        .neq('pipeline_stage', 'lost')
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      if (!rawOpps?.length) return [];
+
+      return (rawOpps as any[]).map((opp: any) => ({
+        id: opp.id,
+        client_name: opp.client_name,
+        client_company: opp.client_company,
+        trade_name: opp.trade_name,
+        type: opp.type,
+        status: 'opportunity',
+        pipeline_stage: opp.pipeline_stage || 'lead_inbound',
+        lead_source: opp.lead_source || null,
+        opportunity_data: opp.opportunity_data || null,
+        enrichment_data: opp.enrichment_data || null,
+        created_at: opp.created_at,
+        updated_at: opp.updated_at,
+        maturity_pct: 0,
+        rei_score: 0,
+        plan_status: null,
+        total_tasks: 0,
+        done_tasks: 0,
+        overdue_tasks: 0,
+        display_name: getDisplayName({ trade_name: opp.trade_name, client_company: opp.client_company, client_name: opp.client_name }),
+        days_in_stage: getDaysSince(opp.updated_at),
+        // Diagnostico data (joined)
+        diagnostico_score: opp.diagnosticos?.score || null,
+        diagnostico_tipo: opp.diagnosticos?.tipo || null,
+      } as ProjectRow));
+    }
+  });
+
+  // PROJECTS: execucao (post-sale)
+  const { data: projects = [], isLoading: loadingProjects, refetch: refetchProjects } = useQuery({
     queryKey: ['revenue-projects'],
     queryFn: async () => {
-      // 1. Projects with pipeline_stage
       const { data: rawProjects, error } = await supabase
         .from('rei_projects')
-        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage, lead_source, opportunity_data, created_at, updated_at')
-        .or('status.neq.diagnostic,pipeline_stage.not.is.null')
+        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage, created_at, updated_at')
+        .in('pipeline_stage', ['won', 'onboarding', 'active', 'completed'])
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -468,43 +620,16 @@ export const RevenueCockpit: React.FC = () => {
 
       const ids = rawProjects.map(p => p.id);
 
-      // 2. REI Responses (latest per project)
-      const { data: responses } = await supabase
-        .from('rei_responses')
-        .select('project_id, maturity_percentage, total_score')
-        .in('project_id', ids)
-        .order('completed_at', { ascending: false });
-
-      // 3. Strategic Plans
-      const { data: plans } = await supabase
-        .from('strategic_plans')
-        .select('rei_project_id, status')
-        .in('rei_project_id', ids)
-        .order('created_at', { ascending: false });
-
-      // 4. Tasks
+      // Tasks for execution projects
       const { data: tasks } = await supabase
         .from('orqflow_tasks')
         .select('id, project_id, status, due_date')
         .in('project_id', ids)
         .not('status', 'eq', 'archived');
 
-      // Build lookup maps
-      const responseMap = new Map<string, { maturity_percentage: number; total_score: number }>();
-      responses?.forEach(r => {
-        if (!responseMap.has(r.project_id)) responseMap.set(r.project_id, r);
-      });
-
-      const planMap = new Map<string, { status: string }>();
-      plans?.forEach(p => {
-        if (!planMap.has(p.rei_project_id)) planMap.set(p.rei_project_id, p);
-      });
-
       const todayIso = new Date().toISOString();
 
-      const rows: ProjectRow[] = rawProjects.map((proj: any) => {
-        const rei = responseMap.get(proj.id);
-        const plan = planMap.get(proj.id);
+      return rawProjects.map((proj: any) => {
         const ptasks = tasks?.filter(t => t.project_id === proj.id) || [];
         const done = ptasks.filter(t => t.status === 'done').length;
         const overdue = ptasks.filter(t => t.due_date && t.due_date < todayIso && t.status !== 'done').length;
@@ -516,40 +641,50 @@ export const RevenueCockpit: React.FC = () => {
           trade_name: proj.trade_name,
           type: proj.type,
           status: proj.status,
-          pipeline_stage: proj.pipeline_stage || null,
-          lead_source: proj.lead_source || null,
-          opportunity_data: proj.opportunity_data || null,
+          pipeline_stage: proj.pipeline_stage || 'active',
+          lead_source: null,
+          opportunity_data: null,
           created_at: proj.created_at,
           updated_at: proj.updated_at,
-          maturity_pct: Math.round(rei?.maturity_percentage ?? 0),
-          rei_score: rei?.total_score ?? 0,
-          plan_status: plan?.status ?? null,
-          total_tasks: ptasks.length,
-          done_tasks: done,
-          overdue_tasks: overdue,
-          display_name: proj.trade_name || proj.client_company || proj.client_name,
-          days_in_stage: daysSince(proj.updated_at),
-        };
+          maturity_pct: 0,
+          rei_score: 0,
+          plan_status: null,
+          display_name: getDisplayName({ trade_name: proj.trade_name, client_company: proj.client_company, client_name: proj.client_name }),
+          days_in_stage: getDaysSince(proj.updated_at),
+        } as ProjectRow;
       });
-
-      return rows;
     }
   });
 
+  const loading = loadingOpps || loadingProjects;
+  const loadAll = () => { refetchOpps(); refetchProjects(); };
+
   // ---- Stage transition handler ----
 
-  const handleAdvance = useCallback(async (projectId: string, newStage: PipelineStage) => {
-    if (newStage === 'won') {
-      const p = projects.find(x => x.id === projectId);
-      if (p) {
-        setSelectedLeadForClosing(p);
+  const handleAdvance = useCallback(async (entityId: string, newStage: PipelineStage) => {
+    // Check if this is an opportunity (pre-sale) or project (execution)
+    const isOpp = opportunities.some(o => o.id === entityId);
+
+    if (newStage === 'won' && isOpp) {
+      const opp = opportunities.find(x => x.id === entityId);
+      if (opp) {
+        setSelectedLeadForClosing(opp);
         setDealClosingModalOpen(true);
         return;
       }
     }
 
-    setTransitioning(projectId);
-    const result = await advanceStage(projectId, newStage);
+    setTransitioning(entityId);
+
+    let result;
+    if (isOpp) {
+      // Advance opportunity stage
+      result = await advanceOpportunityStage(entityId, newStage as any);
+    } else {
+      // Advance project stage
+      result = await advanceStage(entityId, newStage);
+    }
+
     setTransitioning(null);
 
     if (!result.success) {
@@ -562,8 +697,9 @@ export const RevenueCockpit: React.FC = () => {
       description: `Movido para ${STAGE_CONFIGS[newStage].label}`,
     });
 
+    queryClient.invalidateQueries({ queryKey: ['revenue-opportunities'] });
     queryClient.invalidateQueries({ queryKey: ['revenue-projects'] });
-  }, [queryClient, toast]);
+  }, [queryClient, toast, opportunities]);
 
   // ---- Open War Room ----
 
@@ -572,16 +708,65 @@ export const RevenueCockpit: React.FC = () => {
     setWarRoomOpen(true);
   }, []);
 
+  // ---- Send Proposal (copy link + advance stage) ----
+
+  const handleSendProposal = useCallback(async (opportunityId: string) => {
+    setTransitioning(opportunityId);
+    try {
+      // Find linked proposal
+      const { data: proposals } = await supabase
+        .from('proposals')
+        .select('id, slug')
+        .eq('opportunity_id', opportunityId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (proposals && proposals.length > 0) {
+        const slug = proposals[0].slug;
+        const url = `${window.location.origin}/p/${slug}`;
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(url);
+
+        // Update proposal status to sent
+        await supabase
+          .from('proposals')
+          .update({ status: 'sent' })
+          .eq('id', proposals[0].id);
+
+        // Advance opportunity stage
+        await advanceOpportunityStage(opportunityId, 'proposal_sent' as any, 'Proposta enviada ao cliente');
+
+        toast({
+          title: 'Link copiado e proposta enviada',
+          description: `Link da proposta copiado para a area de transferencia`,
+        });
+
+        queryClient.invalidateQueries({ queryKey: ['revenue-opportunities'] });
+      } else {
+        toast({
+          title: 'Nenhuma proposta encontrada',
+          description: 'Crie uma proposta primeiro antes de enviar.',
+          variant: 'destructive',
+        });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally {
+      setTransitioning(null);
+    }
+  }, [toast, queryClient]);
+
   // ---- Grouped data ----
 
   const diagnostico = useMemo(
-    () => projects.filter(p => p.pipeline_stage && DIAGNOSTICO_STAGES.includes(p.pipeline_stage)),
-    [projects],
+    () => opportunities.filter(p => p.pipeline_stage && DIAGNOSTICO_STAGES.includes(p.pipeline_stage)),
+    [opportunities],
   );
 
   const vendas = useMemo(
-    () => projects.filter(p => p.pipeline_stage && VENDAS_STAGES.includes(p.pipeline_stage)),
-    [projects],
+    () => opportunities.filter(p => p.pipeline_stage && VENDAS_STAGES.includes(p.pipeline_stage)),
+    [opportunities],
   );
 
   const execucao = useMemo(
@@ -595,12 +780,18 @@ export const RevenueCockpit: React.FC = () => {
 
   const stageCounts = useMemo(() => {
     const counts: Record<string, number> = {};
+    // Count from opportunities (pre-sale)
+    for (const o of opportunities) {
+      const s = o.pipeline_stage || 'unknown';
+      counts[s] = (counts[s] || 0) + 1;
+    }
+    // Count from projects (execution)
     for (const p of projects) {
       const s = p.pipeline_stage || 'unknown';
       counts[s] = (counts[s] || 0) + 1;
     }
     return counts;
-  }, [projects]);
+  }, [opportunities, projects]);
 
   const maxStageCount = useMemo(() => {
     return Math.max(...Object.values(stageCounts), 1);
@@ -616,13 +807,13 @@ export const RevenueCockpit: React.FC = () => {
     return Object.entries(map).sort((a, b) => b[1] - a[1]);
   }, [diagnostico]);
 
-  // Win rate
+  // Win rate (based on execution projects vs lost opportunities)
   const winRate = useMemo(() => {
     const wonCount = projects.filter(p => EXECUCAO_STAGES.includes(p.pipeline_stage as PipelineStage)).length;
-    const lostCount = projects.filter(p => p.pipeline_stage === 'lost').length;
+    const lostCount = opportunities.filter(p => p.pipeline_stage === 'lost').length;
     const total = wonCount + lostCount;
     return total > 0 ? Math.round((wonCount / total) * 100) : 0;
-  }, [projects]);
+  }, [projects, opportunities]);
 
   // Avg days in vendas stages
   const avgDaysVendas = useMemo(() => {
@@ -635,6 +826,19 @@ export const RevenueCockpit: React.FC = () => {
     () => execucao.reduce((s, p) => s + p.overdue_tasks, 0),
     [execucao],
   );
+
+  // WbD Metrics: Activation Rate
+  const activationRate = useMemo(() => {
+    if (execucao.length === 0) return 0;
+    const activeProjects = execucao.filter(p => p.done_tasks > 0).length;
+    return Math.round((activeProjects / execucao.length) * 100);
+  }, [execucao]);
+
+  // WbD Metrics: Avg days in execution (TTV proxy)
+  const avgTTV = useMemo(() => {
+    if (execucao.length === 0) return 0;
+    return Math.round(execucao.reduce((s, p) => s + p.days_in_stage, 0) / execucao.length);
+  }, [execucao]);
 
   // ---- Loading state ----
 
@@ -661,7 +865,7 @@ export const RevenueCockpit: React.FC = () => {
             {/* ── Top bar ─────────────────────────────────────────────────── */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 pb-8 border-b border-zinc-100">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-3">
+                <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400 mb-3">
                   Cockpit de Receita
                 </p>
                 <h1 className="text-5xl md:text-6xl font-black text-zinc-900 tracking-tight leading-[1.05]">
@@ -671,59 +875,119 @@ export const RevenueCockpit: React.FC = () => {
               <div className="flex gap-2 shrink-0">
                 <button
                   onClick={() => loadAll()}
-                  className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors"
+                  className="w-10 h-10 border border-zinc-200 flex items-center justify-center hover:bg-zinc-50 transition-colors"
                 >
                   <RefreshCw className="w-4 h-4 text-zinc-500" />
                 </button>
-                <Button
-                  onClick={() => setLeadDrawerOpen(true)}
-                  className="bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] rounded-xl h-10 px-6 gap-2"
-                >
-                  <Plus className="w-4 h-4" /> Novo Lead
-                </Button>
+                {activeTab === 'vendas' && (
+                  <Button
+                    onClick={() => setLeadDrawerOpen(true)}
+                    className="border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 font-black uppercase tracking-widest text-xs rounded-none h-10 px-6 flex items-center gap-2 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" /> <span>Novo Lead</span>
+                  </Button>
+                )}
               </div>
             </div>
 
             {/* ── KPI Row ─────────────────────────────────────────────────── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <MetricCard label="Leads" value={diagnostico.length} sub="Top de funil" />
-              <MetricCard label="Oportunidades" value={vendas.length} sub={`Win rate: ${winRate}%`} />
-              <MetricCard label="Projetos Ativos" value={execucao.length} sub={totalOverdue > 0 ? `${totalOverdue} tarefa(s) atrasada(s)` : 'Sem atrasos'} />
-              <MetricCard label="Receita Pipeline" value={formatCurrency(totalPipelineValue)} sub={`Media: ${avgDaysVendas}d no estagio`} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+              {activeTab === 'vendas' ? (
+                <>
+                  <MetricCard label="Qualified Leads" value={diagnostico.length} sub="Topo de funil (Inbound & Outbound)" />
+                  <MetricCard label="Active Deals" value={vendas.length} sub={totalPipelineValue > 0 ? `${formatCurrency(totalPipelineValue)} no Pipe real` : 'Pipeline vazio'} />
+                  <MetricCard label="Average Cycle" value={`${avgDaysVendas}d`} sub="Dias médios em negociação" />
+                  <MetricCard label="Win Rate" value={`${winRate}%`} sub="Conversão histórica apurada" />
+                </>
+              ) : (
+                <>
+                  <MetricCard label="Active Portfolio" value={execucao.length} sub="Projetos vivos na base" />
+                  <MetricCard label="Activation Rate" value={`${activationRate}%`} sub="Engajamento inicial Pós-Venda" />
+                  <MetricCard label="Time-To-Value" value={`${avgTTV}d`} sub="Dias médios até ativação" />
+                  <MetricCard label="Overdue Risk" value={totalOverdue} sub={totalOverdue > 0 ? "Tarefas cronicamente atrasadas" : "Gargalo zero"} />
+                </>
+              )}
             </div>
 
-            {/* ── Conversion Funnel (horizontal bars) ─────────────────────── */}
-            <div className="bg-white border border-zinc-200 rounded-2xl shadow-sm p-5 mb-10">
+            {/* ── Tab Navigator ───────────────────────────────────────── */}
+            <div className="flex items-center gap-0 mb-8 border-b border-zinc-200">
+              <button
+                onClick={() => setActiveTab('vendas')}
+                className={cn(
+                  'px-6 py-3 text-xs font-black uppercase tracking-[0.15em] border-b-2 transition-all',
+                  activeTab === 'vendas'
+                    ? 'border-zinc-900 text-zinc-900'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-600',
+                )}
+              >
+                Pipeline de Vendas
+              </button>
+              <button
+                onClick={() => setActiveTab('projetos')}
+                className={cn(
+                  'px-6 py-3 text-xs font-black uppercase tracking-[0.15em] border-b-2 transition-all flex items-center gap-2',
+                  activeTab === 'projetos'
+                    ? 'border-zinc-900 text-zinc-900'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-600',
+                )}
+              >
+                Projeção de Projetos
+                {totalOverdue > 0 && (
+                  <span className={cn(
+                    "w-4 h-4 text-[10px] font-black flex items-center justify-center rounded-sm leading-none",
+                    activeTab === 'projetos' ? "bg-zinc-900 text-white" : "bg-zinc-200 text-zinc-500"
+                  )}>
+                    {totalOverdue}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* ── Copilot Engine ────────────────────────────────────────── */}
+            <RevOpsCopilot 
+              activeTab={activeTab} 
+              diagnostico={diagnostico} 
+              vendas={vendas} 
+              execucao={execucao} 
+            />
+
+            {/* ── Visualização de VENDAS ──────────────────────────────── */}
+            <div className="bg-white border border-zinc-200 p-5 mb-10">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-4 h-4 text-zinc-400" />
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Funil Completo</p>
+                <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
+                  {activeTab === 'vendas' ? 'Funil de Vendas' : 'Funil de Execução'}
+                </p>
               </div>
               <div className="space-y-2">
-                {DIAGNOSTICO_STAGES.map(s => (
-                  <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
-                ))}
-                {VENDAS_STAGES.map(s => (
-                  <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
-                ))}
-                {EXECUCAO_STAGES.map(s => (
-                  <FunnelBar
-                    key={s}
-                    label={STAGE_CONFIGS[s].labelShort}
-                    count={stageCounts[s] || 0}
-                    max={maxStageCount}
-                    accent={s === 'won'}
-                  />
-                ))}
+                {activeTab === 'vendas' ? (
+                  <>
+                    {DIAGNOSTICO_STAGES.map(s => (
+                      <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
+                    ))}
+                    {VENDAS_STAGES.map(s => (
+                      <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
+                    ))}
+                  </>
+                ) : (
+                  EXECUCAO_STAGES.map(s => (
+                    <FunnelBar
+                      key={s}
+                      label={STAGE_CONFIGS[s].labelShort}
+                      count={stageCounts[s] || 0}
+                      max={maxStageCount}
+                      accent={s === 'won'}
+                    />
+                  ))
+                )}
               </div>
             </div>
 
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            {/* ── SECTION 1: DIAGNOSTICO (Top Funnel) ─────────────────────── */}
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            <div className="mb-14">
+            {/* ── SECTION 1: DIAGNOSTICO ──────────────────────────────────────── */}
+            {activeTab === 'vendas' && <div className="mb-14">
               <SectionTitle
                 eyebrow="Top de Funil"
-                title="Diagnostico"
+                title="Diagnóstico"
                 description="Leads captados, qualificados e diagnosticados"
                 count={diagnostico.length}
               />
@@ -732,11 +996,11 @@ export const RevenueCockpit: React.FC = () => {
               {sourceBreakdown.length > 0 && (
                 <div className="flex flex-wrap gap-3 mb-5">
                   {sourceBreakdown.map(([src, count]) => (
-                    <div key={src} className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-1.5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    <div key={src} className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-200 px-3 py-1.5">
+                      <span className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                         {LEAD_SOURCE_LABELS[src as LeadSource] || src}
                       </span>
-                      <span className="text-[10px] font-black text-zinc-900">{count}</span>
+                      <span className="text-xxs font-black text-zinc-900">{count}</span>
                     </div>
                   ))}
                 </div>
@@ -749,11 +1013,11 @@ export const RevenueCockpit: React.FC = () => {
                 return (
                   <div key={stage} className="mb-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                      <div className="w-1.5 h-1.5 bg-zinc-400" />
+                      <p className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                         {STAGE_CONFIGS[stage].label}
                       </p>
-                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                      <span className="text-xxs font-medium text-zinc-300">{stageProjects.length}</span>
                     </div>
                     <div className="space-y-3">
                       {stageProjects.map(p => (
@@ -762,6 +1026,7 @@ export const RevenueCockpit: React.FC = () => {
                           project={p}
                           onAction={handleAdvance}
                           onOpenWarRoom={openWarRoom}
+                          onCreateProposal={(oppId) => navigate(`/admin/proposals/new?opportunity_id=${oppId}`)}
                           transitioning={transitioning}
                         />
                       ))}
@@ -771,42 +1036,24 @@ export const RevenueCockpit: React.FC = () => {
               })}
 
               {diagnostico.length === 0 && (
-                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                <div className="bg-white border-2 border-dashed border-zinc-200 py-14 text-center">
                   <UserPlus className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
                   <p className="text-sm font-black text-zinc-400">Nenhum lead no funil</p>
                   <p className="text-xs font-medium text-zinc-300 mt-1">Crie um novo lead para comecar.</p>
                 </div>
               )}
-            </div>
+            </div>}
 
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            {/* ── SECTION 2: VENDAS (Middle Funnel) ───────────────────────── */}
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            <div className="mb-14">
+            {/* ── SECTION 2: VENDAS ───────────────────────────────────────────────── */}
+            {activeTab === 'vendas' && <div className="mb-14">
               <SectionTitle
                 eyebrow="Meio de Funil"
                 title="Vendas"
-                description={`${vendas.length} oportunidade${vendas.length !== 1 ? 's' : ''} em negociacao | Pipeline: ${formatCurrency(totalPipelineValue)}`}
+                description={`${vendas.length} oportunidade${vendas.length !== 1 ? 's' : ''} em negociação | Pipeline: ${formatCurrency(totalPipelineValue)}`}
                 count={vendas.length}
               />
 
-              {/* Vendas KPIs */}
-              {vendas.length > 0 && (
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Pipeline</p>
-                    <p className="text-lg font-black text-zinc-900 mt-0.5">{formatCurrency(totalPipelineValue)}</p>
-                  </div>
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Win Rate</p>
-                    <p className="text-lg font-black text-zinc-900 mt-0.5">{winRate}%</p>
-                  </div>
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Media Dias</p>
-                    <p className="text-lg font-black text-zinc-900 mt-0.5">{avgDaysVendas}d</p>
-                  </div>
-                </div>
-              )}
+              {/* Vendas KPIs foram movidos para o Top Bar */}
 
               {/* Stage sub-groups */}
               {VENDAS_STAGES.map(stage => {
@@ -815,11 +1062,11 @@ export const RevenueCockpit: React.FC = () => {
                 return (
                   <div key={stage} className="mb-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                      <div className="w-1.5 h-1.5 bg-zinc-500" />
+                      <p className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                         {STAGE_CONFIGS[stage].label}
                       </p>
-                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                      <span className="text-xxs font-medium text-zinc-300">{stageProjects.length}</span>
                     </div>
                     <div className="space-y-3">
                       {stageProjects.map(p => (
@@ -828,6 +1075,7 @@ export const RevenueCockpit: React.FC = () => {
                           project={p}
                           onAction={handleAdvance}
                           onOpenWarRoom={openWarRoom}
+                          onSendProposal={handleSendProposal}
                           transitioning={transitioning}
                         />
                       ))}
@@ -837,49 +1085,24 @@ export const RevenueCockpit: React.FC = () => {
               })}
 
               {vendas.length === 0 && (
-                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                <div className="bg-white border-2 border-dashed border-zinc-200 py-14 text-center">
                   <Send className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
                   <p className="text-sm font-black text-zinc-400">Nenhuma oportunidade ativa</p>
                   <p className="text-xs font-medium text-zinc-300 mt-1">Mova leads qualificados para vendas.</p>
                 </div>
               )}
-            </div>
+            </div>}
 
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            {/* ── SECTION 3: EXECUCAO (Active Projects) ───────────────────── */}
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            <div className="mb-14">
+            {/* ── SECTION 3: EXECUÇÃO ────────────────────────────────────────── */}
+            {activeTab === 'projetos' && <div className="mb-14">
               <SectionTitle
-                eyebrow="Projetos"
-                title="Execucao"
+                eyebrow="Projeção de Projetos"
+                title="Execução"
                 description={`${execucao.length} projeto${execucao.length !== 1 ? 's' : ''} em andamento`}
                 count={execucao.length}
               />
 
-              {/* Execucao KPIs */}
-              {execucao.length > 0 && (
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tarefas Feitas</p>
-                    <p className="text-lg font-black text-zinc-900 mt-0.5">
-                      {execucao.reduce((s, p) => s + p.done_tasks, 0)}/{execucao.reduce((s, p) => s + p.total_tasks, 0)}
-                    </p>
-                  </div>
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Atrasadas</p>
-                    <p className={cn(
-                      'text-lg font-black mt-0.5',
-                      totalOverdue > 0 ? 'text-zinc-900' : 'text-zinc-300',
-                    )}>{totalOverdue}</p>
-                  </div>
-                  <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Em Onboarding</p>
-                    <p className="text-lg font-black text-zinc-900 mt-0.5">
-                      {execucao.filter(p => p.pipeline_stage === 'onboarding').length}
-                    </p>
-                  </div>
-                </div>
-              )}
+              {/* Execucao KPIs foram movidos para o Top Bar */}
 
               {/* Stage sub-groups */}
               {EXECUCAO_STAGES.map(stage => {
@@ -889,13 +1112,13 @@ export const RevenueCockpit: React.FC = () => {
                   <div key={stage} className="mb-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className={cn(
-                        'w-1.5 h-1.5 rounded-full',
+                        'w-1.5 h-1.5 ',
                         stage === 'won' ? 'bg-[#00CC6A]' : 'bg-zinc-600',
                       )} />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                      <p className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                         {STAGE_CONFIGS[stage].label}
                       </p>
-                      <span className="text-[10px] font-medium text-zinc-300">{stageProjects.length}</span>
+                      <span className="text-xxs font-medium text-zinc-300">{stageProjects.length}</span>
                     </div>
                     <div className="space-y-3">
                       {stageProjects.map(p => (
@@ -912,13 +1135,13 @@ export const RevenueCockpit: React.FC = () => {
               })}
 
               {execucao.length === 0 && (
-                <div className="bg-white border-2 border-dashed border-zinc-200 rounded-2xl py-14 text-center">
+                <div className="bg-white border-2 border-dashed border-zinc-200 py-14 text-center">
                   <Rocket className="w-7 h-7 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-sm font-black text-zinc-400">Nenhum projeto em execucao</p>
+                  <p className="text-sm font-black text-zinc-400">Nenhum projeto em execução</p>
                   <p className="text-xs font-medium text-zinc-300 mt-1">Feche vendas para iniciar projetos.</p>
                 </div>
               )}
-            </div>
+            </div>}
 
           </div>
         </div>
@@ -935,6 +1158,7 @@ export const RevenueCockpit: React.FC = () => {
           maturityPct: selectedLead.maturity_pct,
           nextAction: STAGE_CONFIGS[selectedLead.pipeline_stage || 'lead_inbound'].description,
           daysSinceActivity: selectedLead.days_in_stage,
+          status: selectedLead.status,
         } : null}
         open={warRoomOpen}
         onClose={() => { setWarRoomOpen(false); setSelectedLead(null); }}
@@ -951,7 +1175,7 @@ export const RevenueCockpit: React.FC = () => {
       <DealClosingModal
         isOpen={dealClosingModalOpen}
         onClose={() => { setDealClosingModalOpen(false); setSelectedLeadForClosing(null); }}
-        project={selectedLeadForClosing}
+        opportunity={selectedLeadForClosing}
         onSuccess={loadAll}
       />
     </>

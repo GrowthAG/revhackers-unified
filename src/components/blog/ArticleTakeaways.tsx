@@ -13,7 +13,7 @@ interface ArticleTakeawaysProps {
 
 export const ArticleTakeaways: React.FC<ArticleTakeawaysProps> = ({ title, items }) => {
     return (
-        <div className="my-12 p-6 bg-zinc-50 border border-zinc-200 rounded-lg">
+        <div className="my-12 p-6 bg-zinc-50 border border-zinc-200 ">
             <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
                     <Lightbulb className="w-4 h-4 text-revgreen" />

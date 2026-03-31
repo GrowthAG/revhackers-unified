@@ -12,19 +12,24 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, FileSignature } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { advanceStage } from "@/services/PipelineService";
+import {
+  advanceOpportunityStage,
+  convertOpportunityToProject,
+  updateOpportunity,
+} from "@/api/opportunities";
 
 interface DealClosingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  project: any;
+  /** Opportunity row (from opportunities table) */
+  opportunity: any;
   onSuccess: () => void;
 }
 
 export function DealClosingModal({
   isOpen,
   onClose,
-  project,
+  opportunity,
   onSuccess,
 }: DealClosingModalProps) {
   const [loading, setLoading] = useState(false);
@@ -42,14 +47,16 @@ export function DealClosingModal({
   });
 
   useEffect(() => {
-    if (project && isOpen) {
+    if (opportunity && isOpen) {
       setFormData((prev) => ({
         ...prev,
-        legal_company_name: project.client_company || "",
-        representative_name: project.client_name || "",
+        legal_company_name: opportunity.client_company || opportunity.trade_name || "",
+        representative_name: opportunity.client_name || "",
+        // Pre-fill CNPJ from enrichment if available
+        cnpj: opportunity.enrichment_data?.cnpj?.cnpj || opportunity.opportunity_data?.cnpj || "",
       }));
     }
-  }, [project, isOpen]);
+  }, [opportunity, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,45 +67,43 @@ export function DealClosingModal({
     setLoading(true);
 
     try {
-      // 1. Get current opportunity data
-      const { data: projData, error: projError } = await supabase
-        .from("rei_projects")
-        .select("opportunity_data")
-        .eq("id", project.id)
-        .single();
+      const existingData = (opportunity?.opportunity_data as Record<string, any>) || {};
 
-      if (projError) throw projError;
-
-      const existingData = (projData?.opportunity_data as Record<string, any>) || {};
-      
-      // Armazenando no JSONB exatamente as variáveis para o Dynamic Legal Engine
+      // 1. Salva dados contratuais na oportunidade
       const newOpportunityData = {
         ...existingData,
         contract_data: formData,
       };
 
-      // 2. Patch do Banco de Dados
-      const { error: updateError } = await supabase
-        .from("rei_projects")
-        .update({ opportunity_data: newOpportunityData })
-        .eq("id", project.id);
+      await updateOpportunity(opportunity.id, {
+        opportunity_data: newOpportunityData,
+      } as any);
 
-      if (updateError) throw updateError;
+      // 2. Avanca para won
+      const stageResult = await advanceOpportunityStage(opportunity.id, "won", "Deal fechado via DealClosingModal");
+      if (!stageResult.success) throw new Error(stageResult.error);
 
-      // 3. Força o avanço para a coluna Won do Pipeline
-      const result = await advanceStage(project.id, "won");
-      if (!result.success) throw new Error(result.error);
-
-      toast({
-        title: "Deal Closed! 🏆",
-        description: "Contrato gerado dinamicamente no Kickoff. Cliente ativado.",
-      });
+      // 3. Converte oportunidade em projeto (RPC atomico)
+      const { projectId, error: convertErr } = await convertOpportunityToProject(opportunity.id);
+      if (convertErr) {
+        console.error("[DealClosing] Projeto nao criado:", convertErr);
+        // Nao bloqueia - oportunidade ja esta como won
+        toast({
+          title: "Deal Fechado",
+          description: "Oportunidade marcada como ganha. Projeto sera criado manualmente.",
+        });
+      } else {
+        toast({
+          title: "Deal Closed!",
+          description: `Projeto criado (${projectId?.substring(0, 8)}...). Cliente ativado para onboarding.`,
+        });
+      }
 
       onSuccess();
       onClose();
     } catch (err: any) {
       toast({
-        title: "Erro ao fechar negócio",
+        title: "Erro ao fechar negocio",
         description: err.message,
         variant: "destructive",
       });
@@ -107,35 +112,35 @@ export function DealClosingModal({
     }
   };
 
-  if (!project) return null;
+  if (!opportunity) return null;
+
+  const displayName = opportunity.display_name || opportunity.trade_name || opportunity.client_company || opportunity.client_name;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl bg-white border-zinc-200 p-0 overflow-hidden shadow-2xl block">
-        
-        {/* Header Elegante Minalista */}
+
         <div className="p-6 sm:p-8 flex items-start justify-between border-b border-zinc-100">
             <div>
                 <DialogTitle className="text-2xl font-semibold text-zinc-900 tracking-tight flex items-center gap-2">
                     <FileSignature className="w-5 h-5 text-zinc-400" />
-                    Gerar Contrato (Deal Won)
+                    Fechar Negocio (Deal Won)
                 </DialogTitle>
                 <DialogDescription className="text-zinc-500 mt-2 font-medium max-w-lg leading-relaxed text-sm">
-                    Você está movendo <strong className="text-zinc-900 font-semibold">{project.display_name}</strong> para Execução. 
-                    Preencha as variáveis abaixo para gerar o Master Services Agreement dinâmico no Kickoff.
+                    Voce esta convertendo <strong className="text-zinc-900 font-semibold">{displayName}</strong> em projeto de execucao.
+                    Preencha as variaveis para gerar o contrato dinamico no Kickoff.
                 </DialogDescription>
             </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Bloco Jurídico Legal */}
+
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 pb-2">Entidade Legal</h3>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="legal_company_name" className="text-xs font-bold text-zinc-600">Razão Social</Label>
+                <Label htmlFor="legal_company_name" className="text-xs font-bold text-zinc-600">Razao Social</Label>
                 <Input
                   id="legal_company_name"
                   name="legal_company_name"
@@ -185,9 +190,8 @@ export function DealClosingModal({
               </div>
             </div>
 
-            {/* Bloco Comercial & Financeiro */}
             <div className="space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 pb-2">Condições Comerciais</h3>
+              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 pb-2">Condicoes Comerciais</h3>
 
               <div className="space-y-2">
                 <Label htmlFor="setup_fee" className="text-xs font-bold text-zinc-600">Valor de Setup (BRL)</Label>
@@ -265,9 +269,9 @@ export function DealClosingModal({
             <Button
               type="submit"
               disabled={loading}
-              className="bg-black hover:bg-zinc-800 text-white rounded-md font-semibold text-sm h-10 px-6"
+              className="bg-black hover:bg-zinc-800 text-white font-semibold text-sm h-10 px-6"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Gerar Contrato & Ativar"}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Fechar Negocio & Criar Projeto"}
             </Button>
           </div>
         </form>

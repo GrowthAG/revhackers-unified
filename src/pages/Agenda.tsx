@@ -7,7 +7,7 @@ const Agenda = () => {
             title="Agende seu Diagnóstico"
             iframeSrc="https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh"
         >
-            <div className="space-y-8 bg-zinc-50 p-6 md:p-8 rounded-xl border border-zinc-100">
+            <div className="space-y-8 bg-zinc-50 p-6 md:p-8 border border-zinc-100">
                 <h3 className="text-lg md:text-xl font-bold text-zinc-900 uppercase tracking-tight">
                     O que você vai descobrir nesta sessão estratégica:
                 </h3>

@@ -281,14 +281,14 @@ const AdminKnowledgeBase = () => {
                                 <Button
                                     variant="ghost"
                                     onClick={() => setSelectedLibrary(null)}
-                                    className="w-10 h-10 rounded-full p-0 flex items-center justify-center hover:bg-zinc-100"
+                                    className="w-10 h-10 p-0 flex items-center justify-center hover:bg-zinc-100"
                                 >
                                     <ArrowRight className="w-5 h-5 rotate-180" />
                                 </Button>
                             )}
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 bg-zinc-950 rounded-lg flex items-center justify-center text-white">
+                                    <div className="w-8 h-8 bg-zinc-950 flex items-center justify-center text-white">
                                         <Brain size={18} />
                                     </div>
                                     <h1 className="text-3xl font-bold tracking-tight text-black">
@@ -305,7 +305,7 @@ const AdminKnowledgeBase = () => {
                         {!selectedLibrary ? (
                             <Button
                                 onClick={() => setIsCreateModalOpen(true)}
-                                className="bg-black text-white rounded-full px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm"
+                                className="bg-black text-white px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm"
                             >
                                 <Plus className="w-4 h-4 mr-2" />
                                 Nova Biblioteca
@@ -314,7 +314,7 @@ const AdminKnowledgeBase = () => {
                             <div className="flex items-center gap-3">
                                 <label className="cursor-pointer">
                                     <input type="file" multiple className="hidden" onChange={handleUploadToLibrary} disabled={isUploading} />
-                                    <Button disabled={isUploading} asChild className="bg-black text-white rounded-full px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm">
+                                    <Button disabled={isUploading} asChild className="bg-black text-white px-6 h-10 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-sm">
                                         <span>
                                             <Upload className="w-4 h-4 mr-2" />
                                             Adicionar Documentos
@@ -329,19 +329,19 @@ const AdminKnowledgeBase = () => {
                         <>
                             {/* Stats */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                                <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                                <div className="p-6 bg-zinc-50 border border-zinc-100 ">
                                     <Layers className="text-zinc-400 mb-4" size={24} />
                                     <h3 className="text-2xl font-bold text-black">{libraries.length}</h3>
                                     <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Bibliotecas Ativas</p>
                                 </div>
-                                <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                                <div className="p-6 bg-zinc-50 border border-zinc-100 ">
                                     <FileText className="text-zinc-400 mb-4" size={24} />
                                     <h3 className="text-2xl font-bold text-black">
                                         {libraries.reduce((acc, lib) => acc + (lib.document_count || 0), 0)}
                                     </h3>
                                     <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Documentos Totais</p>
                                 </div>
-                                <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                                <div className="p-6 bg-zinc-50 border border-zinc-100 ">
                                     <Globe className="text-zinc-400 mb-4" size={24} />
                                     <h3 className="text-lg font-bold text-black">Acesso Global</h3>
                                     <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Sincronização Ativa</p>
@@ -351,7 +351,7 @@ const AdminKnowledgeBase = () => {
                             {/* List Controls */}
                             <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Bibliotecas Estratégicas</span>
+                                    <span className="text-xxs font-bold uppercase tracking-[0.2em] text-zinc-400">Bibliotecas Estratégicas</span>
                                 </div>
                                 <div className="relative group w-64">
                                     <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-300 w-3.5 h-3.5 transition-colors group-focus-within:text-black" />
@@ -376,16 +376,16 @@ const AdminKnowledgeBase = () => {
                                         <div
                                             key={lib.id}
                                             onClick={() => handleSelectLibrary(lib)}
-                                            className="group relative bg-white border border-zinc-100 rounded-2xl p-6 hover:border-zinc-300 transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
+                                            className="group relative bg-white border border-zinc-100 p-6 hover:border-zinc-300 transition-all duration-500 cursor-pointer flex flex-col h-[280px]"
                                         >
                                             <div className="flex items-start justify-between mb-6">
-                                                <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500 border border-zinc-100/50">
+                                                <div className="w-12 h-12 bg-zinc-50 flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500 border border-zinc-100/50">
                                                     <BookOpen size={20} className="text-zinc-700" />
                                                 </div>
                                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                                     <button
                                                         onClick={(e) => handleDeleteLibrary(lib.id, e)}
-                                                        className="w-8 h-8 bg-zinc-50 hover:bg-zinc-900 hover:text-white flex items-center justify-center text-zinc-400 rounded-lg transition-all"
+                                                        className="w-8 h-8 bg-zinc-50 hover:bg-zinc-900 hover:text-white flex items-center justify-center text-zinc-400 transition-all"
                                                     >
                                                         <Trash2 size={12} />
                                                     </button>
@@ -395,9 +395,9 @@ const AdminKnowledgeBase = () => {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     {lib.is_global ? (
-                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 border border-zinc-200">Global</span>
+                                                        <span className="text-3xs font-bold uppercase tracking-wider px-2 py-0.5 bg-zinc-100 text-zinc-500 border border-zinc-200">Global</span>
                                                     ) : (
-                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-500 border border-zinc-200">Privada</span>
+                                                        <span className="text-3xs font-bold uppercase tracking-wider px-2 py-0.5 bg-zinc-100 text-zinc-500 border border-zinc-200">Privada</span>
                                                     )}
                                                 </div>
                                                 <h3 className="text-lg font-bold text-black tracking-tight mb-2">{lib.name}</h3>
@@ -409,9 +409,9 @@ const AdminKnowledgeBase = () => {
                                             <div className="mt-auto pt-4 border-t border-zinc-50 flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <FileText size={12} className="text-zinc-300" />
-                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{lib.document_count} Documentos</span>
+                                                    <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">{lib.document_count} Documentos</span>
                                                 </div>
-                                                <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 text-white">
+                                                <div className="w-8 h-8 bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 text-white">
                                                     <ArrowRight size={14} />
                                                 </div>
                                             </div>
@@ -430,21 +430,21 @@ const AdminKnowledgeBase = () => {
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                             <div className="grid grid-cols-1 gap-4">
                                 {libDocs.length > 0 ? libDocs.map(doc => (
-                                    <div key={doc.id} className="flex items-center justify-between p-5 bg-white border border-zinc-100 rounded-3xl hover:border-zinc-200 transition-all group">
+                                    <div key={doc.id} className="flex items-center justify-between p-5 bg-white border border-zinc-100 hover:border-zinc-200 transition-all group">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center text-zinc-400">
+                                            <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400">
                                                 <FileText size={20} />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-black">{doc.filename}</p>
-                                                <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest">
+                                                <p className="text-xxs text-zinc-400 font-medium uppercase tracking-widest">
                                                     {Math.round(doc.content?.length / 1024)} KB • {doc.metadata?.total_chunks || 1} Fragmentos (Chunks)
                                                 </p>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => handleRemoveDoc(doc.id)}
-                                            className="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                            className="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 transition-all opacity-0 group-hover:opacity-100"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -464,9 +464,9 @@ const AdminKnowledgeBase = () => {
                 {isCreateModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 sm:p-0">
                         <div className="absolute inset-0 bg-white/80 backdrop-blur-xl" onClick={() => setIsCreateModalOpen(false)} />
-                        <div className="relative bg-white border border-zinc-200 w-full max-w-lg rounded-2xl shadow-sm overflow-hidden p-8 animate-in fade-in zoom-in duration-300">
+                        <div className="relative bg-white border border-zinc-200 w-full max-w-lg shadow-sm overflow-hidden p-8 animate-in fade-in zoom-in duration-300">
                             <div className="mb-8 text-center">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
+                                <div className="w-12 h-12 bg-zinc-950 flex items-center justify-center text-white mx-auto mb-4">
                                     <Plus size={24} />
                                 </div>
                                 <h2 className="text-2xl font-bold text-black tracking-tight">Nova Biblioteca</h2>
@@ -475,22 +475,22 @@ const AdminKnowledgeBase = () => {
 
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1">Nome da Biblioteca</label>
+                                    <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400 ml-1">Nome da Biblioteca</label>
                                     <Input
                                         value={newLibName}
                                         onChange={(e) => setNewLibName(e.target.value)}
                                         placeholder="Ex: Guia de Copywriting PRO"
-                                        className="h-12 bg-zinc-50 border-zinc-100 rounded-2xl focus:ring-black focus:border-black transition-all"
+                                        className="h-12 bg-zinc-50 border-zinc-100 focus:ring-black focus:border-black transition-all"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1">Descrição (Contexto)</label>
+                                    <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400 ml-1">Descrição (Contexto)</label>
                                     <textarea
                                         value={newLibDesc}
                                         onChange={(e) => setNewLibDesc(e.target.value)}
                                         placeholder="Para que serve este conhecimento?"
-                                        className="w-full min-h-[120px] bg-zinc-50 border border-zinc-100 rounded-2xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all resize-none"
+                                        className="w-full min-h-[120px] bg-zinc-50 border border-zinc-100 p-4 text-sm focus:outline-none focus:ring-1 focus:ring-black transition-all resize-none"
                                     />
                                 </div>
 
@@ -498,14 +498,14 @@ const AdminKnowledgeBase = () => {
                                     <Button
                                         variant="outline"
                                         onClick={() => setIsCreateModalOpen(false)}
-                                        className="flex-1 rounded-full h-12 border-zinc-200 font-bold text-zinc-500 hover:bg-zinc-50"
+                                        className="flex-1 h-12 border-zinc-200 font-bold text-zinc-500 hover:bg-zinc-50"
                                     >
                                         Cancelar
                                     </Button>
                                     <Button
                                         disabled={isSubmitting}
                                         onClick={handleCreateLibrary}
-                                        className="flex-[2] rounded-xl h-12 bg-black text-white font-bold hover:bg-zinc-800 transition-all shadow-sm"
+                                        className="flex-[2] h-12 bg-black text-white font-bold hover:bg-zinc-800 transition-all shadow-sm"
                                     >
                                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Criar Biblioteca'}
                                     </Button>

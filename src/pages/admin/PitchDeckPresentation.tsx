@@ -21,22 +21,22 @@ export default function PitchDeckPresentation() {
 
     if (!project) {
         return (
-            <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+            <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center">
                 <Loader2 className="w-12 h-12 text-[#FF004D] animate-spin mb-4" />
-                <p className="text-zinc-600 font-black uppercase tracking-widest text-xs">Carregando Motor de ROI...</p>
+                <p className="text-zinc-400 font-black uppercase tracking-widest text-xs">Carregando Motor de ROI...</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white relative">
+        <div className="min-h-screen bg-zinc-50 text-zinc-900 relative">
             <Button 
                 variant="ghost" 
-                className="fixed top-6 left-6 z-50 text-zinc-500 hover:text-white hover:bg-white/10 font-bold uppercase tracking-widest text-[9px]" 
+                className="fixed top-6 left-6 z-50 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50 font-bold uppercase tracking-widest text-2xs" 
                 onClick={() => window.close()}
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Encerrar Apresentação (Voltar ao Dossiê)
+                Encerrar Calculadora (Voltar ao Dossiê)
             </Button>
             
             <div className="pt-24 px-8 pb-12">

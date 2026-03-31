@@ -14,14 +14,14 @@ export default function StepCrmOps5Retencao({ form }: Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Retenção, CS Ops & NRR
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     A transição do cliente e as oportunidades de crescimento
                 </p>
             </div>
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Passagem de Bastão (Vendas para CS/Onboarding) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como acontece a transferência de informações após o cliente fechar o contrato?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como acontece a transferência de informações após o cliente fechar o contrato?</p>
                 <RadioGroup
                     value={form.watch('revops_onboarding_handoff')}
                     onValueChange={(value) => form.setValue('revops_onboarding_handoff', value)}
@@ -41,7 +41,7 @@ export default function StepCrmOps5Retencao({ form }: Props) {
             <div className="space-y-6">
                 <div className="space-y-3 pt-6 border-t border-zinc-100">
                     <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Saúde do Cliente (Health Score) *</Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">O sistema sinaliza clientes com risco de cancelamento antes de eles pedirem o distrato?</p>
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">O sistema sinaliza clientes com risco de cancelamento antes de eles pedirem o distrato?</p>
                     <RadioGroup
                         value={form.watch('revops_health_score_tracking')}
                         onValueChange={(value) => form.setValue('revops_health_score_tracking', value)}
@@ -70,7 +70,7 @@ export default function StepCrmOps5Retencao({ form }: Props) {
 
                 <div className="space-y-3 pt-6 border-t border-zinc-100">
                     <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Retenção de Receita Líquida (NRR) *</Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">A expansão de clientes atuais cobre a perda financeira dos que cancelam (Churn)?</p>
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">A expansão de clientes atuais cobre a perda financeira dos que cancelam (Churn)?</p>
                     <RadioGroup
                         value={form.watch('revops_nrr_percentage')}
                         onValueChange={(value) => form.setValue('revops_nrr_percentage', value)}
@@ -100,7 +100,7 @@ export default function StepCrmOps5Retencao({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Processo de Expansão e Up-Sell *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Existem rotinas ou gatilhos claros para oferecer novos produtos aos clientes ativos?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Existem rotinas ou gatilhos claros para oferecer novos produtos aos clientes ativos?</p>
                 <RadioGroup
                     value={form.watch('revops_expansion_playbook')}
                     onValueChange={(value) => form.setValue('revops_expansion_playbook', value)}
@@ -124,7 +124,7 @@ export default function StepCrmOps5Retencao({ form }: Props) {
             <div className="space-y-6 pt-6 border-t border-zinc-100">
                 <div className="space-y-3">
                     <Label htmlFor="revops_toxic_compensation" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Modelo de Comissionamento e Incentivos *</Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como o modelo de comissionamento prioriza a atração de clientes aderentes e saudáveis no longo prazo?</p>
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como o modelo de comissionamento prioriza a atração de clientes aderentes e saudáveis no longo prazo?</p>
                     <RadioGroup
                         value={form.watch('revops_toxic_compensation')}
                         onValueChange={(value) => form.setValue('revops_toxic_compensation', value)}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, CheckCircle, Calendar, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
     REIProject,
     getDaysUntilNextREI,
@@ -50,22 +49,22 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
     const getStatusIcon = () => {
         switch (status) {
             case 'overdue':
-                return <AlertTriangle className="h-5 w-5 text-red-600" />;
+                return <AlertTriangle className="h-5 w-5 text-zinc-900" />;
             case 'pending':
-                return <Clock className="h-5 w-5 text-yellow-600" />;
+                return <Clock className="h-5 w-5 text-zinc-500" />;
             default:
-                return <CheckCircle className="h-5 w-5 text-green-600" />;
+                return <CheckCircle className="h-5 w-5 text-zinc-400" />;
         }
     };
 
     const getBorderColor = () => {
         switch (status) {
             case 'overdue':
-                return '#fca5a5'; // red-300
+                return '#18181b'; // zinc-900
             case 'pending':
-                return '#fcd34d'; // yellow-300
+                return '#a1a1aa'; // zinc-400
             default:
-                return '#86efac'; // green-300
+                return '#03FC3B'; // revgreen
         }
     };
 
@@ -78,30 +77,40 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                        <h3 className="text-lg font-bold text-zinc-900 mb-1">{project.clientName}</h3>
+                        <h3 className="text-lg font-bold text-zinc-900 leading-tight">
+                            {project.clientName}
+                        </h3>
+                        {project.clientCompany && project.clientCompany !== project.clientName && (
+                            <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mt-1 mb-1.5">
+                                {project.clientCompany}
+                            </p>
+                        )}
                         <p className="text-sm text-zinc-500">{project.clientEmail}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {getStatusIcon()}
-                        <Badge className={`${getStatusColor(status)} border-0 font-semibold`}>
+                        <span className="text-xxs font-black uppercase tracking-widest bg-zinc-100 text-zinc-700 border border-zinc-200 px-2 py-0.5">
                             {getStatusText(status)}
-                        </Badge>
+                        </span>
                     </div>
                 </div>
 
                 {/* Status Message */}
-                <div className={`rounded-lg p-4 mb-4 border-2 ${status === 'overdue' ? 'bg-red-50 border-red-200' :
-                        status === 'pending' ? 'bg-yellow-50 border-yellow-200' :
-                            'bg-green-50 border-green-200'
+                <div className={`p-4 mb-4 border-2 ${
+                        status === 'overdue' ? 'bg-zinc-900 border-zinc-800' :
+                        status === 'pending' ? 'bg-zinc-100 border-zinc-300' :
+                            'bg-[#03FC3B]/10 border-[#03FC3B]/40'
                     }`}>
                     <div className="flex items-center gap-2">
-                        <TrendingUp className={`h-5 w-5 ${status === 'overdue' ? 'text-red-600' :
-                                status === 'pending' ? 'text-yellow-600' :
-                                    'text-green-600'
+                        <TrendingUp className={`h-5 w-5 ${
+                                status === 'overdue' ? 'text-white' :
+                                status === 'pending' ? 'text-zinc-600' :
+                                    'text-zinc-900'
                             }`} />
-                        <p className={`font-semibold ${status === 'overdue' ? 'text-red-900' :
-                                status === 'pending' ? 'text-yellow-900' :
-                                    'text-green-900'
+                        <p className={`font-semibold ${
+                                status === 'overdue' ? 'text-white' :
+                                status === 'pending' ? 'text-zinc-700' :
+                                    'text-zinc-900'
                             }`}>
                             {getStatusMessage()}
                         </p>
@@ -110,7 +119,7 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
 
                 {/* Dates Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-zinc-50 rounded-lg p-4 border border-zinc-200">
+                    <div className="bg-zinc-50 p-4 border border-zinc-200">
                         <div className="flex items-center gap-2 mb-2">
                             <Calendar className="h-4 w-4 text-zinc-500" />
                             <span className="text-xs text-zinc-600 font-semibold uppercase tracking-wide">Último REI</span>
@@ -120,7 +129,7 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
                         </p>
                     </div>
 
-                    <div className="bg-zinc-50 rounded-lg p-4 border border-zinc-200">
+                    <div className="bg-zinc-50 p-4 border border-zinc-200">
                         <div className="flex items-center gap-2 mb-2">
                             <Clock className="h-4 w-4 text-zinc-500" />
                             <span className="text-xs text-zinc-600 font-semibold uppercase tracking-wide">Próximo REI</span>
@@ -141,7 +150,7 @@ const REIProjectCard = ({ project, onUpdateClick }: REIProjectCardProps) => {
                 {(status === 'pending' || status === 'overdue') && (
                     <button
                         onClick={onUpdateClick}
-                        className="w-full bg-revgreen text-black font-bold py-3 px-4 rounded-lg hover:bg-revgreen/90 transition-all duration-300 text-sm tracking-wide shadow-sm"
+                        className="w-full bg-revgreen text-black font-bold py-3 px-4 hover:bg-revgreen/90 transition-all duration-300 text-sm tracking-widest uppercase"
                     >
                         {status === 'overdue' ? 'Atualizar Agora →' : 'Agendar Atualização →'}
                     </button>

@@ -8,7 +8,7 @@ interface ArticleRedFlagsProps {
 
 export const ArticleRedFlags: React.FC<ArticleRedFlagsProps> = ({ title, flags }) => {
     return (
-        <div className="my-12 p-6 bg-red-50 border border-red-200 rounded-lg">
+        <div className="my-12 p-6 bg-red-50 border border-red-200 ">
             <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 text-white" />

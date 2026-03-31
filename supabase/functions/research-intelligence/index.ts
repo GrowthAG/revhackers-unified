@@ -1,5 +1,20 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore - Supabase Deno environment
 import { createClient } from "npm:@supabase/supabase-js@2"
+
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -100,7 +115,7 @@ function buildClientContext(rei: any, segment: string, objective?: string): stri
 // ============================================================
 
 async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
@@ -116,7 +131,7 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
             tools: [{ type: 'web_search_preview' }],
             web_search_preview: true
         }),
-    });
+    }));
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -203,7 +218,7 @@ Retorne um JSON com EXATAMENTE esta estrutura:
     "ads": ["Canal mais eficiente 1", "Canal 2"]
   },
   "comparativo_mercado": "Analise estrategica de 3-4 frases sobre o cenario competitivo, citando empresas reais e onde o cliente se posiciona.",
-  "fonte": "Deep Research GPT-5.4"
+  "fonte": "Deep Research GPT-4.5"
 }`;
 }
 
@@ -413,7 +428,7 @@ Gere EXATAMENTE o JSON acima. Nada mais.`;
 // MAIN HANDLER
 // ============================================================
 
-serve(async (req) => {
+serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -465,7 +480,12 @@ serve(async (req) => {
         const systemPrompt = `Você é o Head de Pesquisa Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
 Você tem 15+ anos de experiência em consultoria estratégica (McKinsey, Bain, BCG).
 Sua especialidade é transformar diagnósticos brutos em inteligência de mercado acionável e real.
-UTILIZE A FERRAMENTA DE BUSCA NA WEB PARA ANCORAR SEUS DADOS: Pesquise os concorrentes, TAM/SAM/SOM e traga números factuais, citando fontes reais do Brasil.
+
+REGRA CRÍTICA DE ANCORAGEM WEB (STRICT WEB ANCHORING):
+UTILIZE A FERRAMENTA DE BUSCA NA WEB PARA ANCORAR SEUS DADOS: Pesquise os concorrentes, TAM/SAM/SOM e traga números factuais.
+Para TODA métrica (TAM/SAM/SOM, CAC, LTV) ou tendência citada, você DEVE colocar entre parênteses a fonte real validada na web (ex: McKinsey 2024, IBGE, Statista, Relatório XP). 
+Se a busca na web não retornar um número claro para o setor brasileiro, você É OBRIGADO a dizer "Dados indisponíveis em fontes públicas", sendo estritamente proibido chutar ou inventar médias teóricas. Aja como um analista implacável focado em fatos.
+
 Cada análise que você produz é HIPER-PERSONALIZADA ao negócio real do cliente, nunca genérica.
 Responda APENAS com JSON válido. Sem markdown, sem explicações extras.
 NUNCA use o caractere em dash (U+2014) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).

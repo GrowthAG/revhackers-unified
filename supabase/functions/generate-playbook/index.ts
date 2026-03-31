@@ -146,12 +146,13 @@ GERAR O PLAYBOOK EM MARKDOWN:`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o', 
+        model: 'gpt-5.4', 
         messages: [
           { role: 'system', content: 'Você é um arquiteto de receita letal.' },
           { role: 'user', content: systemPrompt }
         ],
-        temperature: 0.6,
+        response_format: { type: 'json_object' },
+        reasoning_effort: 'high',
         max_tokens: 4000
       }),
     });

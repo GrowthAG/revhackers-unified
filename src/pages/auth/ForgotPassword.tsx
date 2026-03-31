@@ -91,7 +91,7 @@ const ForgotPassword = () => {
                         <h1 className="text-2xl font-black tracking-[0.2em] text-black uppercase text-center leading-none mb-4 mt-8">
                             Recuperar
                         </h1>
-                        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
+                        <p className="text-zinc-500 text-xxs uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
                             Insira seu e-mail para receber as instruções.
                         </p>
                     </div>
@@ -102,14 +102,14 @@ const ForgotPassword = () => {
                                 <CheckCircle className="w-5 h-5" />
                             </div>
                             <h3 className="text-black font-black uppercase tracking-widest text-xs mb-4">Email Enviado</h3>
-                            <p className="text-zinc-500 text-[10px] uppercase tracking-widest mb-8 leading-relaxed">
+                            <p className="text-zinc-500 text-xxs uppercase tracking-widest mb-8 leading-relaxed">
                                 Verifique sua caixa de entrada e spam ({email}).
                             </p>
 
                             <div className="space-y-3">
                                 <Button
                                     variant="outline"
-                                    className="w-full bg-white border-zinc-200 text-zinc-600 hover:text-black hover:border-black h-12 font-bold text-[10px] tracking-[0.2em] uppercase rounded-none transition-all"
+                                    className="w-full bg-white border-zinc-200 text-zinc-600 hover:text-black hover:border-black h-12 font-bold text-xxs tracking-[0.2em] uppercase rounded-none transition-all"
                                     onClick={handleResend}
                                     disabled={countdown > 0 || loading}
                                 >
@@ -119,7 +119,7 @@ const ForgotPassword = () => {
 
                                 <Button
                                     variant="ghost"
-                                    className="w-full text-zinc-500 hover:text-black h-10 font-bold text-[9px] tracking-[0.2em] uppercase transition-colors rounded-none"
+                                    className="w-full text-zinc-500 hover:text-black h-10 font-bold text-2xs tracking-[0.2em] uppercase transition-colors rounded-none"
                                     onClick={() => setSuccess(false)}
                                 >
                                     Usar outro e-mail
@@ -129,13 +129,13 @@ const ForgotPassword = () => {
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {error && (
-                                <div className="text-red-500 text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10">
+                                <div className="text-red-500 text-2xs font-light uppercase tracking-[0.3em] text-center mb-10">
                                     {error}
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Email Cadastrado</label>
+                                <label className="text-xxs uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Email Cadastrado</label>
                                 <Input
                                     type="email"
                                     placeholder="SEU@EMAIL.COM"
@@ -160,7 +160,7 @@ const ForgotPassword = () => {
                     <div className="mt-12 text-center border-t border-zinc-100 pt-8">
                         <Link
                             to="/login"
-                            className="text-zinc-400 hover:text-white text-[10px] uppercase tracking-[0.2em] transition-colors font-bold group inline-flex items-center gap-2"
+                            className="text-zinc-400 hover:text-white text-xxs uppercase tracking-[0.2em] transition-colors font-bold group inline-flex items-center gap-2"
                         >
                             <span className="group-hover:-translate-x-1 transition-transform">←</span> Voltar ao Login
                         </Link>

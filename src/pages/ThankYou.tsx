@@ -36,7 +36,7 @@ const ThankYou = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               asChild 
-              className="bg-[#03fc3b] hover:bg-[#03fc3b]/90 text-black font-semibold px-8 py-3 rounded-lg transition-all duration-300 group min-w-48"
+              className="bg-[#03fc3b] hover:bg-[#03fc3b]/90 text-black font-semibold px-8 py-3 transition-all duration-300 group min-w-48"
               size="lg"
             >
               <Link to="/" onClick={() => window.scrollTo(0, 0)}>
@@ -48,7 +48,7 @@ const ThankYou = () => {
             <Button 
               asChild 
               variant="outline"
-              className="border-zinc-300 text-black hover:bg-zinc-50 px-8 py-3 rounded-lg transition-all duration-300 min-w-48"
+              className="border-zinc-300 text-black hover:bg-zinc-50 px-8 py-3 transition-all duration-300 min-w-48"
               size="lg"
             >
               <Link to="/servicos">

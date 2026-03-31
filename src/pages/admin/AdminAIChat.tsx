@@ -639,20 +639,20 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 <div className="h-24 border-b border-zinc-100 flex items-center justify-between px-8 bg-white/80 backdrop-blur-xl sticky top-0 z-10 transition-all">
                     {!embed && (
                         <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 bg-black flex items-center justify-center text-white rounded-xl shadow-sm">
+                            <div className="w-12 h-12 bg-black flex items-center justify-center text-white shadow-sm">
                                 <Feather className="w-5 h-5" strokeWidth={1.5} />
                             </div>
                             <div>
                                 <h2 className="text-xl font-black text-black tracking-tight uppercase leading-none mb-1.5 flex items-center gap-3">
                                     {selectedAgentName || 'RevhackersAI'}
-                                    <span className="flex w-1.5 h-1.5 rounded-full bg-[#00CC6A]" />
+                                    <span className="flex w-1.5 h-1.5 bg-[#00CC6A]" />
                                 </h2>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-100 px-2 py-0.5 rounded-md">
-                                        <div className="w-2.5 h-2.5 rounded-full flex items-center justify-center">
+                                    <div className="flex items-center gap-1.5 bg-zinc-50 border border-zinc-100 px-2 py-0.5 ">
+                                        <div className="w-2.5 h-2.5 flex items-center justify-center">
                                             <ModelIcon provider={MODELS.find(m => m.value === selectedModel)?.provider || ''} className="w-2.5 h-2.5" />
                                         </div>
-                                        <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest leading-none">
+                                        <span className="text-2xs font-black text-zinc-500 uppercase tracking-widest leading-none">
                                             {MODELS.find(m => m.value === selectedModel)?.label} • {MODELS.find(m => m.value === selectedModel)?.provider} ENGINE
                                         </span>
                                     </div>
@@ -660,13 +660,13 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                     {agentKnowledgeCount > 0 ? (
                                         <button
                                             onClick={() => setIsKnowledgeModalOpen(true)}
-                                            className="group flex items-center gap-1.5 bg-[#00CC6A]/10 text-[#00CC6A] px-2 py-0.5 rounded-md border border-[#00CC6A]/20 font-bold hover:bg-[#00CC6A]/20 transition-all text-[9px] uppercase tracking-widest"
+                                            className="group flex items-center gap-1.5 bg-[#00CC6A]/10 text-[#00CC6A] px-2 py-0.5 border border-[#00CC6A]/20 font-bold hover:bg-[#00CC6A]/20 transition-all text-2xs uppercase tracking-widest"
                                         >
                                             <BrainCircuit className="w-2.5 h-2.5" />
                                             {agentKnowledgeCount} DATASET
                                         </button>
                                     ) : (
-                                        <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
+                                        <span className="text-2xs font-bold text-zinc-300 uppercase tracking-widest">
                                             Zero Data Injection
                                         </span>
                                     )}
@@ -681,7 +681,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="ghost"
                                 onClick={() => setIsModelMenuOpen(!isModelMenuOpen)}
-                                className="h-9 px-3 gap-2 rounded-xl bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-all"
+                                className="h-9 px-3 gap-2 bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-all"
                             >
                                 <ModelIcon provider={MODELS.find(m => m.value === selectedModel)?.provider || ''} className="w-4 h-4" />
                                 <span className="text-xs font-bold text-zinc-700">{MODELS.find(m => m.value === selectedModel)?.label}</span>
@@ -691,9 +691,9 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             {isModelMenuOpen && (
                                 <>
                                     <div className="fixed inset-0 z-20" onClick={() => setIsModelMenuOpen(false)} />
-                                    <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-sm border border-zinc-200 p-2 z-30 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                    <div className="absolute right-0 mt-2 w-72 bg-white shadow-sm border border-zinc-200 p-2 z-30 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
                                         <div className="px-3 py-2 border-b border-zinc-50 mb-1">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Modelos Disponíveis</span>
+                                            <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">Modelos Disponíveis</span>
                                         </div>
                                         {MODELS.map((model) => (
                                             <button
@@ -703,16 +703,16 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                                     setIsModelMenuOpen(false);
                                                 }}
                                                 className={cn(
-                                                    "w-full flex items-start gap-3 p-3 rounded-xl transition-all mb-1",
+                                                    "w-full flex items-start gap-3 p-3 transition-all mb-1",
                                                     selectedModel === model.value ? "bg-zinc-50" : "hover:bg-zinc-50/50"
                                                 )}
                                             >
-                                                <div className="mt-0.5 p-1.5 rounded-lg bg-white border border-zinc-100 shadow-sm">
+                                                <div className="mt-0.5 p-1.5 bg-white border border-zinc-100 shadow-sm">
                                                     <ModelIcon provider={model.provider} className="w-4 h-4" color={model.color} />
                                                 </div>
                                                 <div className="flex flex-col items-start min-w-0">
                                                     <span className="text-xs font-bold text-zinc-900 leading-none mb-1">{model.label}</span>
-                                                    <span className="text-[10px] font-medium text-zinc-400 whitespace-nowrap overflow-hidden text-ellipsis w-full text-left">{model.description}</span>
+                                                    <span className="text-xxs font-medium text-zinc-400 whitespace-nowrap overflow-hidden text-ellipsis w-full text-left">{model.description}</span>
                                                 </div>
                                             </button>
                                         ))}
@@ -721,7 +721,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             )}
                         </div>
 
-                        <Button onClick={handleNewChat} variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-zinc-100 text-zinc-500">
+                        <Button onClick={handleNewChat} variant="ghost" size="icon" className="h-9 w-9 hover:bg-zinc-100 text-zinc-500">
                             <Plus className="w-5 h-5" />
                         </Button>
                     </div>
@@ -732,7 +732,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                     {messages.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-0 animate-in fade-in duration-1000">
                             <h2 className="text-4xl font-black text-black mb-2 tracking-ultratight uppercase">Como podemos agir hoje?</h2>
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Selecione um agente ou inicie uma nova inteligência</p>
+                            <p className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em]">Selecione um agente ou inicie uma nova inteligência</p>
                         </div>
                     ) : (
                         messages.map((msg, idx) => (
@@ -744,7 +744,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 )}
                             >
                                 <div className={cn(
-                                    "flex flex-col gap-1 text-[15px] leading-relaxed max-w-[85%]",
+                                    "flex flex-col gap-1 text-body leading-relaxed max-w-[85%]",
                                     msg.role === 'user' ? "items-end" : "items-start"
                                 )}>
                                     <div className={cn(
@@ -754,9 +754,9 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                             : "bg-transparent text-black"
                                     )}>
                                         {msg.fileName && (
-                                            <div className="flex items-center gap-2 mb-2 p-1.5 bg-black/5 rounded-lg border border-black/5 w-fit">
+                                            <div className="flex items-center gap-2 mb-2 p-1.5 bg-black/5 border border-black/5 w-fit">
                                                 <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                                                <span className="text-[11px] font-bold text-zinc-700 truncate max-w-[200px]">{msg.fileName}</span>
+                                                <span className="text-tiny font-bold text-zinc-700 truncate max-w-[200px]">{msg.fileName}</span>
                                             </div>
                                         )}
                                         <div className="whitespace-pre-wrap">
@@ -770,13 +770,13 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                         {/* Anti-Fake Verification Badge */}
                                         {msg.role === 'assistant' && msg.respondingModel && (
                                             <div className="mt-3 flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
-                                                <div className="p-1 bg-zinc-50 border border-zinc-100 rounded-md">
+                                                <div className="p-1 bg-zinc-50 border border-zinc-100 ">
                                                     <ModelIcon
                                                         provider={MODELS.find(m => m.value === msg.respondingModel || m.value.includes(msg.respondingModel!))?.provider || 'Bot'}
                                                         className="w-2.5 h-2.5"
                                                     />
                                                 </div>
-                                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-none">
+                                                <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest leading-none">
                                                     Verified Engine: {msg.respondingModel}
                                                 </span>
                                             </div>
@@ -793,21 +793,21 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 <div className="p-6 bg-white/80 backdrop-blur-md">
                     <div className="max-w-3xl mx-auto mb-4">
                         {attachedFile && (
-                            <div className="flex items-center gap-3 p-2 bg-zinc-50 border border-zinc-200 rounded-xl w-fit animate-in fade-in slide-in-from-bottom-2">
+                            <div className="flex items-center gap-3 p-2 bg-zinc-50 border border-zinc-200 w-fit animate-in fade-in slide-in-from-bottom-2">
                                 {attachedPreview ? (
-                                    <img src={attachedPreview} className="w-10 h-10 rounded-lg object-cover" />
+                                    <img src={attachedPreview} className="w-10 h-10 object-cover" />
                                 ) : (
-                                    <div className="w-10 h-10 bg-zinc-200 rounded-lg flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-zinc-200 flex items-center justify-center">
                                         <FileText className="w-5 h-5 text-zinc-500" />
                                     </div>
                                 )}
                                 <div className="flex flex-col pr-4">
                                     <span className="text-xs font-bold text-zinc-900 truncate max-w-[150px]">{attachedFile.name}</span>
-                                    <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest">Pendente</span>
+                                    <span className="text-xxs text-zinc-400 font-medium uppercase tracking-widest">Pendente</span>
                                 </div>
                                 <button
                                     onClick={() => { setAttachedFile(null); setAttachedPreview(null); }}
-                                    className="p-1 hover:bg-zinc-200 rounded-full transition-colors"
+                                    className="p-1 hover:bg-zinc-200 transition-colors"
                                 >
                                     <X className="w-4 h-4 text-zinc-400" />
                                 </button>
@@ -843,7 +843,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 size="icon"
                                 onClick={() => setIsStyleMenuOpen(!isStyleMenuOpen)}
                                 className={cn(
-                                    "h-10 w-10 transition-all rounded-xl",
+                                    "h-10 w-10 transition-all ",
                                     selectedTone !== 'normal' ? "text-[#00CC6A] bg-[#00CC6A]/10 shadow-sm" : "text-zinc-400 hover:text-black hover:bg-zinc-50"
                                 )}
                             >
@@ -853,16 +853,16 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             {isStyleMenuOpen && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setIsStyleMenuOpen(false)} />
-                                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-2xl shadow-sm border border-zinc-200 p-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-white shadow-sm border border-zinc-200 p-2 z-50 animate-in fade-in slide-in-from-bottom-2">
                                         <div className="px-3 py-2 border-b border-zinc-50 mb-1 flex justify-between items-center">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Estilos de Resposta</span>
+                                            <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">Estilos de Resposta</span>
                                             <button
                                                 onClick={() => {
                                                     setIsToneModalOpen(true);
                                                     setToneModalStep('initial');
                                                     setIsStyleMenuOpen(false);
                                                 }}
-                                                className="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-black transition-colors"
+                                                className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-black transition-colors"
                                             >
                                                 <Plus className="w-3 h-3" />
                                             </button>
@@ -877,7 +877,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                                         toast.success(`Estilo: ${tone.label}`);
                                                     }}
                                                     className={cn(
-                                                        "group w-full flex items-center justify-between p-2.5 rounded-xl transition-all mb-0.5 cursor-pointer",
+                                                        "group w-full flex items-center justify-between p-2.5 transition-all mb-0.5 cursor-pointer",
                                                         selectedTone === tone.id ? "bg-black text-white font-bold" : "hover:bg-zinc-50 text-zinc-600"
                                                     )}
                                                 >
@@ -899,7 +899,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                                                 </button>
                                                             </div>
                                                         )}
-                                                        {selectedTone === tone.id && <div className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] ml-1" />}
+                                                        {selectedTone === tone.id && <div className="w-1.5 h-1.5 bg-[#00CC6A] ml-1" />}
                                                     </div>
                                                 </div>
                                             ))}
@@ -919,7 +919,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 }
                             }}
                             placeholder="Comando ou Pergunta..."
-                            className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-0 shadow-none resize-none max-h-32 min-h-[40px] py-2 text-[15px] placeholder:text-zinc-400 font-medium"
+                            className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-none focus-visible:ring-0 shadow-none resize-none max-h-32 min-h-[40px] py-2 text-body placeholder:text-zinc-400 font-medium"
                             rows={1}
                         />
 
@@ -927,7 +927,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             onClick={() => handleSendMessage()}
                             disabled={(!input.trim() && !attachedFile) || loading}
                             className={cn(
-                                "h-11 px-8 uppercase text-[10px] font-black tracking-widest transition-all rounded-xl",
+                                "h-11 px-8 uppercase text-xxs font-black tracking-widest transition-all ",
                                 (input.trim() || attachedFile)
                                     ? "bg-black text-white hover:bg-zinc-800 shadow-sm"
                                     : "bg-white text-zinc-400 cursor-not-allowed border border-black"
@@ -944,7 +944,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 <div className="hidden lg:flex flex-col w-[50%] bg-zinc-50 border-l border-zinc-100 animate-in slide-in-from-right duration-500 overflow-hidden">
                     <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 bg-white">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-black/5">
+                            <div className="p-2 bg-black/5">
                                 <FileText className="w-5 h-5 text-black" />
                             </div>
                             <h3 className="text-sm font-bold text-zinc-900 truncate max-w-[300px]">
@@ -955,7 +955,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:bg-black hover:text-white rounded-xl transition-all uppercase tracking-widest"
+                                className="h-8 gap-2 text-tiny font-black border-zinc-200 hover:bg-black hover:text-white transition-all uppercase tracking-widest"
                                 onClick={() => {
                                     navigator.clipboard.writeText(activeArtifact.content);
                                     toast.success('Conteúdo copiado!');
@@ -968,7 +968,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:border-black rounded-xl transition-all uppercase tracking-widest"
+                                className="h-8 gap-2 text-tiny font-black border-zinc-200 hover:border-black transition-all uppercase tracking-widest"
                                 onClick={handleExportMarkdown}
                             >
                                 <Download className="w-3.5 h-3.5" />
@@ -978,7 +978,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 gap-2 text-[11px] font-black border-zinc-200 hover:border-black rounded-xl transition-all uppercase tracking-widest"
+                                className="h-8 gap-2 text-tiny font-black border-zinc-200 hover:border-black transition-all uppercase tracking-widest"
                                 onClick={handleExportPDF}
                             >
                                 <FileType className="w-3.5 h-3.5" />
@@ -988,7 +988,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-xl hover:bg-zinc-100"
+                                className="h-8 w-8  hover:bg-zinc-100"
                                 onClick={() => setIsArtifactPanelOpen(false)}
                             >
                                 <X className="w-4 h-4 text-zinc-400" />
@@ -998,16 +998,16 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                     <div className="flex-1 overflow-y-auto p-8">
                         <div className="max-w-4xl mx-auto">
                             {activeArtifact.type === 'code' ? (
-                                <div className="bg-[#1e1e1e] rounded-2xl p-6 shadow-sm relative group">
-                                    <div className="absolute top-4 right-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest bg-zinc-800 px-2 py-1 rounded">
+                                <div className="bg-[#1e1e1e] p-6 shadow-sm relative group">
+                                    <div className="absolute top-4 right-4 text-xxs font-bold text-zinc-500 uppercase tracking-widest bg-zinc-800 px-2 py-1 rounded">
                                         Code
                                     </div>
-                                    <pre className="text-zinc-100 text-[13px] font-mono leading-relaxed overflow-x-auto">
+                                    <pre className="text-zinc-100 text-mini font-mono leading-relaxed overflow-x-auto">
                                         {activeArtifact.content}
                                     </pre>
                                 </div>
                             ) : (
-                                <div className="bg-white rounded-2xl p-8 shadow-sm border border-zinc-200 text-zinc-800 leading-relaxed text-[15px] whitespace-pre-wrap prose prose-zinc max-w-none">
+                                <div className="bg-white p-8 shadow-sm border border-zinc-200 text-zinc-800 leading-relaxed text-body whitespace-pre-wrap prose prose-zinc max-w-none">
                                     {activeArtifact.content}
                                 </div>
                             )}
@@ -1019,18 +1019,18 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
             {/* Knowledge Discovery Modal */}
             {isKnowledgeModalOpen && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white w-full max-w-2xl rounded-2xl shadow-sm border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="bg-white w-full max-w-2xl shadow-sm border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="p-2.5 bg-[#00CC6A]/10 rounded-xl">
+                                <div className="p-2.5 bg-[#00CC6A]/10 ">
                                     <BrainCircuit className="w-5 h-5 text-[#00CC6A]" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-zinc-900">Base de Conhecimento</h3>
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Documentos indexados para este agente</p>
+                                    <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">Documentos indexados para este agente</p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsKnowledgeModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
+                            <button onClick={() => setIsKnowledgeModalOpen(false)} className="p-2 hover:bg-zinc-100 transition-colors">
                                 <X className="w-5 h-5 text-zinc-400" />
                             </button>
                         </div>
@@ -1044,16 +1044,16 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             ) : agentKnowledgeFilenames.length > 0 ? (
                                 <div className="grid grid-cols-1 gap-2">
                                     {agentKnowledgeFilenames.map((name, idx) => (
-                                        <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 border border-zinc-100 hover:border-[#00CC6A]/20 transition-all group">
-                                            <div className="w-10 h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-400 group-hover:text-[#00CC6A] transition-colors">
+                                        <div key={idx} className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-100 hover:border-[#00CC6A]/20 transition-all group">
+                                            <div className="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-400 group-hover:text-[#00CC6A] transition-colors">
                                                 <FileText className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[13px] font-bold text-zinc-700 truncate">{name}</p>
-                                                <p className="text-[10px] text-zinc-400 uppercase tracking-widest mt-0.5">Disponível em Tempo Real</p>
+                                                <p className="text-mini font-bold text-zinc-700 truncate">{name}</p>
+                                                <p className="text-xxs text-zinc-400 uppercase tracking-widest mt-0.5">Disponível em Tempo Real</p>
                                             </div>
                                             <div className="flex items-center gap-2 pr-2">
-                                                <div className="px-2 py-1 rounded-md bg-[#00CC6A]/10 text-[9px] font-black text-[#00CC6A] uppercase border border-[#00CC6A]/20">Indexado</div>
+                                                <div className="px-2 py-1 bg-[#00CC6A]/10 text-2xs font-black text-[#00CC6A] uppercase border border-[#00CC6A]/20">Indexado</div>
                                             </div>
                                         </div>
                                     ))}
@@ -1062,7 +1062,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 <div className="text-center py-12">
                                     <Bot className="w-12 h-12 text-zinc-100 mx-auto mb-4" />
                                     <h4 className="text-sm font-bold text-zinc-400 italic">Este agente ainda não possui documentos configurados.</h4>
-                                    <p className="text-[11px] text-zinc-400 max-w-xs mx-auto mt-2">
+                                    <p className="text-tiny text-zinc-400 max-w-xs mx-auto mt-2">
                                         Adicione arquivos na base de conhecimento ou vincule este agente a uma livraria para habilitar o RAG.
                                     </p>
                                 </div>
@@ -1073,7 +1073,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             <Button
                                 variant="outline"
                                 onClick={() => navigate('/admin/knowledge')}
-                                className="text-[11px] font-black uppercase tracking-widest border-zinc-200 bg-white hover:bg-black hover:text-white transition-all h-10 px-6 rounded-xl"
+                                className="text-tiny font-black uppercase tracking-widest border-zinc-200 bg-white hover:bg-black hover:text-white transition-all h-10 px-6 "
                             >
                                 Gerenciar Conhecimento
                             </Button>
@@ -1087,19 +1087,19 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 <div className="hidden lg:flex flex-col w-[35%] bg-zinc-50 border-l border-zinc-100 animate-in slide-in-from-right duration-500 overflow-hidden shadow-sm">
                     <div className="p-6 bg-white border-b border-zinc-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-xl bg-[#00CC6A]/10 relative">
+                            <div className="p-2 bg-[#00CC6A]/10 relative">
                                 <Search className="w-5 h-5 text-[#00CC6A] animate-pulse" />
-                                <div className="absolute inset-0 rounded-xl border border-[#00CC6A]/30 animate-ping opacity-20" />
+                                <div className="absolute inset-0 border border-[#00CC6A]/30 animate-ping opacity-20" />
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Search Intelligence</h3>
-                                <p className="text-[10px] font-bold text-[#00CC6A]/60 uppercase tracking-widest">Real-time Web Analysis</p>
+                                <p className="text-xxs font-bold text-[#00CC6A]/60 uppercase tracking-widest">Real-time Web Analysis</p>
                             </div>
                         </div>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-lg"
+                            className="h-8 w-8 "
                             onClick={() => setIsResearching(false)}
                         >
                             <X className="w-4 h-4 text-zinc-400" />
@@ -1108,14 +1108,14 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
                     <div className="flex-1 overflow-y-auto p-8 space-y-8">
                         {/* Search Query */}
-                        <div className="p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm transition-all">
-                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block mb-2">Analyzing Query</span>
+                        <div className="p-4 bg-white border border-zinc-200 shadow-sm transition-all">
+                            <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest block mb-2">Analyzing Query</span>
                             <p className="text-sm font-bold text-zinc-800 italic">"{input || 'Explorando novas fronteiras...'}"</p>
                         </div>
 
                         {/* Search Steps / Preview */}
                         <div className="space-y-4">
-                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest block">Research Roadmap</span>
+                            <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest block">Research Roadmap</span>
 
                             <div className="space-y-3">
                                 {[
@@ -1124,36 +1124,36 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                     { label: 'Synthesizing Intelligence', status: 'pending', time: '--' }
                                 ].map((step, i) => (
                                     <div key={i} className={cn(
-                                        "flex items-center justify-between p-3 rounded-xl border transition-all",
+                                        "flex items-center justify-between p-3 border transition-all",
                                         step.status === 'complete' ? "bg-[#00CC6A]/10 border-[#00CC6A]/20" :
                                             step.status === 'processing' ? "bg-white border-zinc-200 shadow-sm animate-pulse" :
                                                 "bg-zinc-50 border-zinc-100 opacity-50"
                                     )}>
                                         <div className="flex items-center gap-3">
-                                            {step.status === 'complete' ? <div className="w-1.5 h-1.5 rounded-full bg-[#00CC6A]" /> : <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />}
-                                            <span className="text-[11px] font-bold text-zinc-700">{step.label}</span>
+                                            {step.status === 'complete' ? <div className="w-1.5 h-1.5 bg-[#00CC6A]" /> : <div className="w-1.5 h-1.5 bg-zinc-300" />}
+                                            <span className="text-tiny font-bold text-zinc-700">{step.label}</span>
                                         </div>
-                                        <span className="text-[9px] font-mono text-zinc-400">{step.time}</span>
+                                        <span className="text-2xs font-mono text-zinc-400">{step.time}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Live Preview Placeholder */}
-                        <div className="p-4 bg-zinc-900 rounded-2xl border border-white/5 relative overflow-hidden group">
+                        <div className="p-4 bg-zinc-900 border border-white/5 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-[#00CC6A]/10 opacity-50 transition-opacity group-hover:opacity-100" />
                             <div className="relative z-10 flex items-center gap-3 mb-4">
                                 <Globe className="w-4 h-4 text-[#00CC6A]" />
-                                <span className="text-[10px] font-black text-[#00CC6A] uppercase tracking-widest">Live Preview</span>
+                                <span className="text-xxs font-black text-[#00CC6A] uppercase tracking-widest">Live Preview</span>
                             </div>
                             <div className="space-y-2 relative z-10">
-                                <div className="h-2 w-full bg-white/10 rounded-full animate-pulse" />
-                                <div className="h-2 w-[80%] bg-white/5 rounded-full animate-pulse" />
-                                <div className="h-2 w-[90%] bg-white/5 rounded-full animate-pulse" />
+                                <div className="h-2 w-full bg-white/10 animate-pulse" />
+                                <div className="h-2 w-[80%] bg-white/5 animate-pulse" />
+                                <div className="h-2 w-[90%] bg-white/5 animate-pulse" />
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-zinc-400 text-center font-medium italic mt-auto pt-8">
+                        <p className="text-xxs text-zinc-400 text-center font-medium italic mt-auto pt-8">
                             *This frame represents a live preview of the research and data synthesis process.
                         </p>
                     </div>
@@ -1163,10 +1163,10 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
             {/* Tone creation Modal */}
             {isToneModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white w-full max-w-lg rounded-2xl shadow-sm border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="bg-white w-full max-w-lg shadow-sm border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className="p-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-                            <h3 className="text-[11px] font-black text-black uppercase tracking-[0.2em]">Calibration Hub</h3>
-                            <button onClick={() => setIsToneModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-xl">
+                            <h3 className="text-tiny font-black text-black uppercase tracking-[0.2em]">Calibration Hub</h3>
+                            <button onClick={() => setIsToneModalOpen(false)} className="p-2 hover:bg-zinc-100 ">
                                 <X className="w-5 h-5 text-zinc-400" />
                             </button>
                         </div>
@@ -1177,26 +1177,26 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                     <p className="text-sm text-zinc-500 mb-6">Selecione o método de calibração do seu tom de voz.</p>
                                     <button
                                         onClick={() => setToneModalStep('paste')}
-                                        className="w-full flex items-center justify-between p-5 rounded-2xl border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
+                                        className="w-full flex items-center justify-between p-5 border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
                                     >
                                         <div className="flex-1">
-                                            <h4 className="text-[13px] font-black text-black uppercase tracking-widest leading-none mb-1">Engenharia de Estilo</h4>
-                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Analise sua escrita original</p>
+                                            <h4 className="text-mini font-black text-black uppercase tracking-widest leading-none mb-1">Engenharia de Estilo</h4>
+                                            <p className="text-xxs text-zinc-400 font-bold uppercase tracking-wider">Analise sua escrita original</p>
                                         </div>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 group-hover:bg-black transition-colors" />
+                                        <div className="w-1.5 h-1.5 bg-zinc-200 group-hover:bg-black transition-colors" />
                                     </button>
                                     <button
                                         onClick={() => {
                                             setToneModalStep('describe');
                                             setGeneratedPrompt('');
                                         }}
-                                        className="w-full flex items-center justify-between p-5 rounded-2xl border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
+                                        className="w-full flex items-center justify-between p-5 border border-zinc-100 hover:border-black hover:bg-zinc-50 transition-all text-left group"
                                     >
                                         <div className="flex-1">
-                                            <h4 className="text-[13px] font-black text-black uppercase tracking-widest leading-none mb-1">Configuração Manual</h4>
-                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Defina diretrizes de comportamento</p>
+                                            <h4 className="text-mini font-black text-black uppercase tracking-widest leading-none mb-1">Configuração Manual</h4>
+                                            <p className="text-xxs text-zinc-400 font-bold uppercase tracking-wider">Defina diretrizes de comportamento</p>
                                         </div>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 group-hover:bg-black transition-colors" />
+                                        <div className="w-1.5 h-1.5 bg-zinc-200 group-hover:bg-black transition-colors" />
                                     </button>
                                 </div>
                             )}
@@ -1205,13 +1205,13 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                 <div className="space-y-4">
                                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Exemplo de Texto</label>
                                     <textarea
-                                        className="w-full h-40 p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-1 focus:ring-black text-sm"
+                                        className="w-full h-40 p-4 bg-zinc-50 border-none outline-none focus:ring-1 focus:ring-black text-sm"
                                         placeholder="Cole aqui um e-mail, artigo ou mensagem que represente o tom desejado..."
                                         value={newToneTranscript}
                                         onChange={(e) => setNewToneTranscript(e.target.value)}
                                     />
                                     <Button
-                                        className="w-full h-12 bg-black text-white rounded-2xl font-bold mt-4 hover:bg-zinc-800 transition-all font-black uppercase tracking-widest text-[11px]"
+                                        className="w-full h-12 bg-black text-white font-bold mt-4 hover:bg-zinc-800 transition-all font-black uppercase tracking-widest text-tiny"
                                         disabled={!newToneTranscript || isAnalyzing}
                                         onClick={handleAnalyzeTone}
                                     >
@@ -1225,20 +1225,20 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Nome do Estilo</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-black text-sm"
+                                        className="w-full p-4 bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-black text-sm"
                                         placeholder="Ex: Consultivo, Amigável, etc."
                                         value={newToneName}
                                         onChange={(e) => setNewToneName(e.target.value)}
                                     />
                                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest block mt-4">Diretrizes</label>
                                     <textarea
-                                        className="w-full h-32 p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-black text-sm"
+                                        className="w-full h-32 p-4 bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-black text-sm"
                                         placeholder="Descreva como a IA deve se comportar..."
                                         value={generatedPrompt}
                                         onChange={(e) => setGeneratedPrompt(e.target.value)}
                                     />
                                     <Button
-                                        className="w-full h-12 bg-black text-white rounded-2xl font-bold mt-4"
+                                        className="w-full h-12 bg-black text-white font-bold mt-4"
                                         disabled={!newToneName || !generatedPrompt}
                                         onClick={handleSaveTone}
                                     >
@@ -1249,23 +1249,23 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
 
                             {toneModalStep === 'preview' && (
                                 <div className="space-y-4 text-center">
-                                    <div className="w-16 h-16 rounded-xl bg-[#00CC6A]/10 flex items-center justify-center text-[#00CC6A] mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center text-[#00CC6A] mx-auto mb-4">
                                         <Sparkles className="w-8 h-8" />
                                     </div>
                                     <h4 className="text-lg font-bold text-zinc-900">Estilo Analisado!</h4>
                                     <p className="text-sm text-zinc-500">Capturamos a essência do seu tom. Dê um nome a ele para salvar:</p>
                                     <input
                                         type="text"
-                                        className="w-full p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-[#00CC6A] text-sm mt-4"
+                                        className="w-full p-4 bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-[#00CC6A] text-sm mt-4"
                                         placeholder="Ex: Meu Tom Profissional"
                                         value={newToneName}
                                         onChange={(e) => setNewToneName(e.target.value)}
                                     />
-                                    <div className="p-4 rounded-2xl bg-zinc-50 text-[11px] text-zinc-400 text-left mt-4 border border-zinc-100 max-h-32 overflow-y-auto italic">
+                                    <div className="p-4 bg-zinc-50 text-tiny text-zinc-400 text-left mt-4 border border-zinc-100 max-h-32 overflow-y-auto italic">
                                         {generatedPrompt}
                                     </div>
                                     <Button
-                                        className="w-full h-12 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[11px] mt-6"
+                                        className="w-full h-12 bg-black text-white font-black uppercase tracking-widest text-tiny mt-6"
                                         disabled={!newToneName}
                                         onClick={handleSaveTone}
                                     >

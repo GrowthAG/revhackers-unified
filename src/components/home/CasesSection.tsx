@@ -42,7 +42,7 @@ const CasesSection = () => {
             className="flex items-center gap-3 mb-6 bg-zinc-100 px-4 py-2 rounded-full"
           >
             <div className="w-2 h-2 bg-zinc-900 rounded-full animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-900">Portfolio de Impacto</span>
+            <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-900">Portfolio de Impacto</span>
           </motion.div>
 
           <motion.h2
@@ -93,14 +93,14 @@ const CasesSection = () => {
 
                       {/* Floating Index Number */}
                       <div className="absolute top-8 left-8">
-                        <span className="text-[10px] font-mono font-bold text-zinc-300 group-hover:text-zinc-900 transition-colors">
+                        <span className="text-xxs font-mono font-bold text-zinc-300 group-hover:text-zinc-900 transition-colors">
                           0{index + 1}
                         </span>
                       </div>
 
                       {/* Floating Category tag */}
                       <div className="absolute bottom-6 left-8">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-3 py-1 bg-white rounded-full">
+                        <span className="text-2xs font-black uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-3 py-1 bg-white ">
                           {anyItem.case_category || 'B2B'}
                         </span>
                       </div>
@@ -110,7 +110,7 @@ const CasesSection = () => {
                     <div className="p-10 flex flex-col flex-1 bg-white">
                       {/* Metric Pill */}
                       <div className="mb-8 flex items-center gap-3">
-                        <div className="p-2 bg-zinc-900 rounded-lg group-hover:scale-110 transition-transform duration-500">
+                        <div className="p-2 bg-zinc-900 group-hover:scale-110 transition-transform duration-500">
                           <TrendingUp className="w-3.5 h-3.5 text-white" />
                         </div>
                         <span className="text-2xl font-black text-zinc-900 tracking-tighter group-hover:tracking-normal transition-all duration-500">
@@ -122,16 +122,16 @@ const CasesSection = () => {
                         {anyItem.title || anyItem.client_name}
                       </h3>
 
-                      <p className="text-[15px] text-zinc-500 font-normal leading-relaxed mb-10 line-clamp-3">
+                      <p className="text-body text-zinc-500 font-normal leading-relaxed mb-10 line-clamp-3">
                         {description}
                       </p>
 
                       <div className="mt-auto flex items-center justify-between pt-8 border-t border-zinc-50">
                         <div className="flex items-center gap-3 group-hover:gap-5 transition-all duration-500">
-                          <span className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.3em]">ESTRATÉGIA</span>
+                          <span className="text-xxs font-black text-zinc-900 uppercase tracking-[0.3em]">ESTRATÉGIA</span>
                           <div className="w-8 h-px bg-zinc-900" />
                         </div>
-                        <div className="p-2 bg-zinc-50 group-hover:bg-zinc-900 transition-colors duration-500 rounded-lg">
+                        <div className="p-2 bg-zinc-50 group-hover:bg-zinc-900 transition-colors duration-500 ">
                           <ArrowUpRight className="w-5 h-5 text-zinc-400 group-hover:text-white group-hover:rotate-45 transition-all mt-[-1px]" />
                         </div>
                       </div>
@@ -153,7 +153,7 @@ const CasesSection = () => {
           <Link
             to="/cases"
             onClick={scrollToTop}
-            className="group relative px-14 py-6 bg-zinc-900 text-white hover:bg-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 shadow-sm shadow-zinc-200"
+            className="group relative px-14 py-6 bg-zinc-900 text-white hover:bg-black font-black uppercase tracking-[0.4em] text-tiny overflow-hidden transition-all duration-500 hover:-translate-y-1 shadow-sm shadow-zinc-200"
           >
             <span className="relative z-10 flex items-center gap-3">
               Explorar Portfolio

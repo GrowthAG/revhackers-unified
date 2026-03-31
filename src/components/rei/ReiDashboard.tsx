@@ -162,7 +162,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
         >
             <div className="flex flex-col md:flex-row justify-between items-start mb-12 border-b border-zinc-200 pb-8">
                 <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-black text-white text-[10px] uppercase tracking-[0.3em] mb-4 font-bold">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-black text-white text-xxs uppercase tracking-[0.3em] mb-4 font-bold">
                         {content.icon} {content.label}
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-2">
@@ -171,7 +171,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                     <p className="text-zinc-500 text-sm">Análise de maturidade e potencial de crescimento.</p>
                 </div>
                 <div className="text-right mt-6 md:mt-0">
-                    <div className="text-[10px] text-zinc-500 uppercase mb-1 tracking-[0.3em] font-bold">{content.scoreLabel}</div>
+                    <div className="text-xxs text-zinc-500 uppercase mb-1 tracking-[0.3em] font-bold">{content.scoreLabel}</div>
                     <div className="text-7xl font-black text-black tracking-tighter">{score}<span className="text-2xl text-zinc-300 font-light">/100</span></div>
                 </div>
             </div>
@@ -180,7 +180,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                 {/* Left: Radar */}
                 <div className="bg-white rounded-none p-8 border border-zinc-100 shadow-sm flex flex-col items-center justify-center relative min-h-[350px]">
                     <div className="absolute top-0 left-0 w-full h-1 bg-zinc-800" />
-                    <h3 className="absolute top-6 left-6 text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">Matriz de Performance</h3>
+                    <h3 className="absolute top-6 left-6 text-xxs text-zinc-400 uppercase tracking-[0.3em] font-bold">Matriz de Performance</h3>
                     <RadarChart data={radarData} />
                 </div>
 
@@ -220,7 +220,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                                 onClick={handleExportPdf}
                                 disabled={isExporting}
                                 variant="outline"
-                                className="border-zinc-200 text-zinc-500 hover:text-black hover:border-black rounded-sm h-14 px-6 uppercase text-[10px] tracking-widest font-bold"
+                                className="border-zinc-200 text-zinc-500 hover:text-black hover:border-black rounded-sm h-14 px-6 uppercase text-xxs tracking-widest font-bold"
                             >
                                 {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4 mr-2" />}
                                 {isExporting ? "Gerando..." : "Exportar PDF"}
@@ -230,19 +230,19 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
                 </div>
             </div>
             <div className="mt-20 pt-20 border-t border-zinc-100">
-                <h3 className="text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold mb-10">Premissas Alinhadas</h3>
+                <h3 className="text-xxs text-zinc-400 uppercase tracking-[0.3em] font-bold mb-10">Premissas Alinhadas</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="p-6 bg-zinc-50 border border-zinc-100">
                         <h4 className="text-xs font-black uppercase tracking-widest mb-3">Maturidade & Escala</h4>
-                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Foco em eficiência operacional e processos que permitem dobrar o volume sem dobrar o custo.</p>
+                        <p className="text-tiny text-zinc-500 leading-relaxed uppercase tracking-tight">Foco em eficiência operacional e processos que permitem dobrar o volume sem dobrar o custo.</p>
                     </div>
                     <div className="p-6 bg-zinc-50 border border-zinc-100">
                         <h4 className="text-xs font-black uppercase tracking-widest mb-3">Tecnologia & Dados</h4>
-                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Decisões baseadas em evidências. Stack integrada para visibilidade total do pipeline.</p>
+                        <p className="text-tiny text-zinc-500 leading-relaxed uppercase tracking-tight">Decisões baseadas em evidências. Stack integrada para visibilidade total do pipeline.</p>
                     </div>
                     <div className="p-6 bg-zinc-50 border border-zinc-100">
                         <h4 className="text-xs font-black uppercase tracking-widest mb-3">Velocidade de Execução</h4>
-                        <p className="text-[11px] text-zinc-500 leading-relaxed uppercase tracking-tight">Framework ágil de testes e iteração. Sprints de 15 dias para validação de hipóteses.</p>
+                        <p className="text-tiny text-zinc-500 leading-relaxed uppercase tracking-tight">Framework ágil de testes e iteração. Sprints de 15 dias para validação de hipóteses.</p>
                     </div>
                 </div>
             </div>
@@ -274,7 +274,7 @@ const ReiDashboard = ({ type, score, radarData, insights, onAction, clientName =
 
                                 return (
                                     <div key={idx} className="break-inside-avoid pb-4 border-b border-zinc-50 last:border-0">
-                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
+                                        <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
                                             {label}
                                         </p>
                                         <p className="text-sm font-medium text-zinc-900 leading-relaxed">

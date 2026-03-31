@@ -56,13 +56,13 @@ const Admin = () => {
               <h1 className="text-sm font-semibold tracking-tight text-zinc-900 leading-none">
                 Central de Operações
               </h1>
-              <p className="text-[11px] text-zinc-400 font-medium uppercase tracking-wider">
+              <p className="text-tiny text-zinc-400 font-medium uppercase tracking-wider">
                 Controle de Receita & Projetos
               </p>
             </div>
             <Button
               onClick={() => navigate('/admin/rei/novo')}
-              className="bg-zinc-900 hover:bg-black text-white h-9 px-4 text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-sm transition-all"
+              className="bg-zinc-900 hover:bg-black text-white h-9 px-4 text-xxs font-bold uppercase tracking-widest shadow-sm transition-all"
             >
               <Plus className="w-3.5 h-3.5 mr-2" />
               Novo Projeto
@@ -97,8 +97,8 @@ const Admin = () => {
           {/* Main Content Area */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-[#00CC6A]/50" />
+              <h2 className="text-tiny font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                <div className="w-1 h-1 bg-[#00CC6A]/50" />
                 Projetos Ativos
               </h2>
             </div>
@@ -123,9 +123,9 @@ const Admin = () => {
 // --- Subcomponents ---
 
 const MetricCard = ({ label, value, icon: Icon, highlight = false }: any) => (
-  <div className="bg-white p-6 border border-zinc-100 rounded-xl flex flex-col justify-between h-32 transition-all hover:border-zinc-300 group shadow-sm">
+  <div className="bg-white p-6 border border-zinc-100 flex flex-col justify-between h-32 transition-all hover:border-zinc-300 group shadow-sm">
     <div className="flex items-center justify-between mb-2">
-      <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{label}</span>
+      <span className="text-xxs font-black text-zinc-300 uppercase tracking-widest">{label}</span>
       <Icon className="w-4 h-4 text-zinc-200 group-hover:text-zinc-900 transition-colors" />
     </div>
     <div className="flex items-baseline gap-2">
@@ -154,15 +154,15 @@ const ProjectRow = ({ project, navigate }: any) => {
   return (
     <div
       onClick={() => navigate(`/admin/jornada/${project.id}`)}
-      className="group flex items-center justify-between p-4 border border-zinc-100 rounded-xl hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm"
+      className="group flex items-center justify-between p-4 border border-zinc-100 hover:border-zinc-300 transition-all cursor-pointer bg-white shadow-sm"
     >
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-300 group-hover:bg-zinc-900 group-hover:text-white transition-all font-bold text-xs">
+        <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-300 group-hover:bg-zinc-900 group-hover:text-white transition-all font-bold text-xs">
           {displayInitial}
         </div>
         <div>
           <h3 className="text-xs font-bold text-zinc-900">{displayName}</h3>
-          <p className="text-[10px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1.5 uppercase tracking-wider">
+          <p className="text-xxs text-zinc-400 font-medium mt-0.5 flex items-center gap-1.5 uppercase tracking-wider">
             {project.status === 'active' ? (
               <span className="inline-flex items-center gap-1 text-[#00CC6A] font-bold">
                 Em Execu\u00e7\u00e3o
@@ -194,7 +194,7 @@ const ProjectRow = ({ project, navigate }: any) => {
         <Button
           variant="outline"
           onClick={(e) => { e.stopPropagation(); navigate(`/admin/rei/${project.id}`); }}
-          className="h-7 text-[9px] font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:text-zinc-900 hover:border-zinc-200 transition-all px-3 rounded-lg"
+          className="h-7 text-2xs font-bold uppercase tracking-widest text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:text-zinc-900 hover:border-zinc-200 transition-all px-3 "
           title="Editar dados cadastrais"
         >
           Editar
@@ -208,18 +208,18 @@ const ProjectRow = ({ project, navigate }: any) => {
 };
 
 const EmptyState = ({ navigate }: any) => (
-  <div className="bg-zinc-50/30 rounded-xl border border-dashed border-zinc-200 p-12 flex flex-col items-center justify-center text-center">
-    <div className="w-10 h-10 bg-white border border-zinc-100 rounded-lg flex items-center justify-center mb-4 shadow-sm">
+  <div className="bg-zinc-50/30 border border-dashed border-zinc-200 p-12 flex flex-col items-center justify-center text-center">
+    <div className="w-10 h-10 bg-white border border-zinc-100 flex items-center justify-center mb-4 shadow-sm">
       <Folder className="w-4 h-4 text-zinc-300" />
     </div>
     <h3 className="text-xs font-bold text-zinc-900 mb-1">Sem projetos ativos</h3>
-    <p className="text-[10px] text-zinc-400 max-w-xs mx-auto mb-6 uppercase tracking-wide">
+    <p className="text-xxs text-zinc-400 max-w-xs mx-auto mb-6 uppercase tracking-wide">
       Inicie um novo projeto para gerenciar o ciclo de vida
     </p>
     <Button
       variant="outline"
       onClick={() => navigate('/admin/rei/novo')}
-      className="bg-white border-zinc-100 text-zinc-900 hover:bg-zinc-900 hover:text-white shadow-sm h-9 px-5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all"
+      className="bg-white border-zinc-100 text-zinc-900 hover:bg-zinc-900 hover:text-white shadow-sm h-9 px-5 text-xxs font-bold uppercase tracking-widest transition-all"
     >
       Iniciar Projeto
     </Button>

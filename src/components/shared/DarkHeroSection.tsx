@@ -45,7 +45,7 @@ const DarkHeroSection = ({
             <Input
               type="search"
               placeholder={searchPlaceholder}
-              className="h-14 pl-14 pr-6 bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-500 rounded-none shadow-sm text-[11px] font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-revgreen focus-visible:border-revgreen transition-all"
+              className="h-14 pl-14 pr-6 bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-500 rounded-none shadow-sm text-tiny font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-revgreen focus-visible:border-revgreen transition-all"
               value={searchQuery}
               onChange={e => onSearchChange(e.target.value)}
             />
@@ -58,7 +58,7 @@ const DarkHeroSection = ({
               <button
                 key={category}
                 onClick={() => onCategoryChange(category)}
-                className={`text-[10px] uppercase tracking-[0.2em] font-black font-sans transition-all duration-300 relative py-2 ${
+                className={`text-xxs uppercase tracking-[0.2em] font-black font-sans transition-all duration-300 relative py-2 ${
                   activeCategory === category
                     ? "text-revgreen"
                     : "text-zinc-500 hover:text-zinc-300"

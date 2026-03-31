@@ -30,14 +30,19 @@ export type GHLEventType =
  * Send an event to GHL via the server-side relay.
  * Never throws - GHL is a non-critical enrichment channel.
  * Returns true if the relay was reached (regardless of GHL response).
+ *
+ * @param organizationId - Optional org ID for multi-tenant routing.
+ *   If provided, the relay will look up org-specific webhook URLs
+ *   before falling back to global RevHackers secrets.
  */
 export async function sendToGHL(
     eventType: GHLEventType,
     payload: Record<string, unknown>,
+    organizationId?: string,
 ): Promise<boolean> {
     try {
         const { error } = await supabase.functions.invoke('ghl-outbound-relay', {
-            body: { eventType, payload },
+            body: { eventType, payload, organizationId },
         });
 
         if (error) {

@@ -131,7 +131,7 @@ const CompleteProfile = () => {
                                     <User className="w-10 h-10 text-zinc-700" />
                                 )}
                             </div>
-                            <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all text-[10px] font-bold uppercase tracking-widest text-white cursor-pointer">
+                            <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all text-xxs font-bold uppercase tracking-widest text-white cursor-pointer">
                                 <Camera className="w-4 h-4 mr-2" /> Upload
                             </label>
                             <input
@@ -147,12 +147,12 @@ const CompleteProfile = () => {
                                 </div>
                             )}
                         </div>
-                        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Foto de Perfil *</span>
+                        <span className="text-xxs text-zinc-500 uppercase tracking-widest font-bold">Foto de Perfil *</span>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                            <Label htmlFor="full_name" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Nome Completo *</Label>
+                            <Label htmlFor="full_name" className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Nome Completo *</Label>
                             <Input
                                 id="full_name"
                                 name="full_name"
@@ -164,7 +164,7 @@ const CompleteProfile = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="cpf" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">CPF *</Label>
+                            <Label htmlFor="cpf" className="text-xxs font-bold uppercase tracking-widest text-zinc-500">CPF *</Label>
                             <Input
                                 id="cpf"
                                 name="cpf"
@@ -177,7 +177,7 @@ const CompleteProfile = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="job_title" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Cargo / Função *</Label>
+                        <Label htmlFor="job_title" className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Cargo / Função *</Label>
                         <Input
                             id="job_title"
                             name="job_title"

@@ -14,14 +14,14 @@ export default function StepCrmProcess({ form }: StepCrmProcessProps) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Processos e Sales Ops
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Eficiência do Funil
                 </p>
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="pipelineStages" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Descreva rapidamente as etapas (Pipeline) do funil atual *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Refletem o processo interno ou a verdadeira jornada de compra do cliente?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Refletem o processo interno ou a verdadeira jornada de compra do cliente?</p>
                 <Textarea
                     {...form.register('pipelineStages')}
                     id="pipelineStages"
@@ -32,7 +32,7 @@ export default function StepCrmProcess({ form }: StepCrmProcessProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Como é o processo de qualificação e passagem de bastão? (Handoff) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como garantem que o MKT/SDR só entregue reuniões qualificadas?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como garantem que o MKT/SDR só entregue reuniões qualificadas?</p>
                 <RadioGroup
                     value={form.watch('handoffProcess')}
                     onValueChange={(value) => form.setValue('handoffProcess', value)}
@@ -61,7 +61,7 @@ export default function StepCrmProcess({ form }: StepCrmProcessProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="lostReasonsMapped" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">O quão disciplinada é a equipe para justificar as Perdas (Lost Reasons)? *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Quando o Lead diz 'não', isso vira inteligência de negócio ou apenas some?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Quando o Lead diz 'não', isso vira inteligência de negócio ou apenas some?</p>
                 <Textarea
                     {...form.register('lostReasonsMapped')}
                     id="lostReasonsMapped"

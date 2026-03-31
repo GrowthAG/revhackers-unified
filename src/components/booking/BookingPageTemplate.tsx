@@ -47,7 +47,7 @@ const BookingPageTemplate = ({
                         )}
 
                         <div className="inline-block mb-6">
-                            <span className="font-mono-tech text-zinc-400 text-[9px] uppercase tracking-[0.25em] px-3 py-1 border border-zinc-100 rounded-full bg-zinc-50/50">
+                            <span className="font-mono-tech text-zinc-400 text-2xs uppercase tracking-[0.25em] px-3 py-1 border border-zinc-100 bg-zinc-50/50">
                                 {label}
                             </span>
                         </div>
@@ -76,7 +76,7 @@ const BookingPageTemplate = ({
                         </p>
                     </div>
 
-                    <div className="bg-white rounded-xl overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-sm shadow-zinc-100/50">
+                    <div className="bg-white overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-sm shadow-zinc-100/50">
                         <iframe
                             src={iframeSrc}
                             style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}

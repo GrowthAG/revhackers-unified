@@ -52,12 +52,12 @@ const Dashboard = () => {
                                     <FileText className="w-5 h-5 text-zinc-400 group-hover:text-black transition-colors" />
                                 </div>
                                 <h3 className="text-lg font-black text-black mb-2 uppercase tracking-[0.2em]">Blog Posts</h3>
-                                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                                     Gerência, categorias e autores do blog.
                                 </p>
                             </div>
                             <div className="flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
                                     Acessar <span className="text-lg leading-none">→</span>
                                 </span>
                             </div>
@@ -70,12 +70,12 @@ const Dashboard = () => {
                                     <Download className="w-5 h-5 text-zinc-400 group-hover:text-black transition-colors" />
                                 </div>
                                 <h3 className="text-lg font-black text-black mb-2 uppercase tracking-[0.2em]">Materiais Ricos</h3>
-                                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                                     Ebooks, planilhas e whitepapers para download.
                                 </p>
                             </div>
                             <div className="flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
                                     Acessar <span className="text-lg leading-none">→</span>
                                 </span>
                             </div>
@@ -88,12 +88,12 @@ const Dashboard = () => {
                                     <Trophy className="w-5 h-5 text-zinc-400 group-hover:text-black transition-colors" />
                                 </div>
                                 <h3 className="text-lg font-black text-black mb-2 uppercase tracking-[0.2em]">Cases de Sucesso</h3>
-                                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                                     Histórias de clientes e resultados alcançados.
                                 </p>
                             </div>
                             <div className="flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
                                     Acessar <span className="text-lg leading-none">→</span>
                                 </span>
                             </div>
@@ -106,12 +106,12 @@ const Dashboard = () => {
                                     <LayoutDashboard className="w-5 h-5 text-zinc-400 group-hover:text-black transition-colors" />
                                 </div>
                                 <h3 className="text-lg font-black text-black mb-2 uppercase tracking-[0.2em]">REI</h3>
-                                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                                     Revenue Intelligence Hub
                                 </p>
                             </div>
                             <div className="flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
                                     Acessar <span className="text-lg leading-none">→</span>
                                 </span>
                             </div>
@@ -124,12 +124,12 @@ const Dashboard = () => {
                                     <Settings className="w-5 h-5 text-zinc-400 group-hover:text-black transition-colors" />
                                 </div>
                                 <h3 className="text-lg font-black text-black mb-2 uppercase tracking-[0.2em]">Configurações</h3>
-                                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                                     Usuários, equipe e ajustes do sistema.
                                 </p>
                             </div>
                             <div className="flex justify-end">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
+                                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 group-hover:text-black transition-colors flex items-center gap-2">
                                     Acessar <span className="text-lg leading-none">→</span>
                                 </span>
                             </div>

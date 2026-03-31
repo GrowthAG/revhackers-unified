@@ -24,10 +24,10 @@ export const ScoreGauge = ({ score, label = "Diagnostic Score", description = "P
 
     return (
         <div className={cn(
-            "border rounded-lg p-8 flex flex-col items-center justify-center relative shadow-sm h-full transition-colors duration-300",
+            "border p-8 flex flex-col items-center justify-center relative shadow-sm h-full transition-colors duration-300",
             variant === 'dark' ? "bg-zinc-950 border-zinc-900" : "bg-white border-zinc-200"
         )}>
-            <div className="absolute top-6 left-6 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+            <div className="absolute top-6 left-6 text-xxs font-mono text-zinc-500 uppercase tracking-widest">
                 Index
             </div>
 
@@ -55,7 +55,7 @@ export const ScoreGauge = ({ score, label = "Diagnostic Score", description = "P
                         "text-7xl font-semibold tracking-tighter leading-none",
                         variant === 'dark' ? "text-white" : "text-black"
                     )}>{score}</div>
-                    <div className="text-[10px] text-zinc-500 font-mono mt-2 tracking-widest uppercase">Pontos</div>
+                    <div className="text-xxs text-zinc-500 font-mono mt-2 tracking-widest uppercase">Pontos</div>
                 </div>
             </div>
             <div className="mt-4 text-center">
@@ -65,7 +65,7 @@ export const ScoreGauge = ({ score, label = "Diagnostic Score", description = "P
                 )}>
                     {label}
                 </div>
-                <p className="text-[10px] text-zinc-500 max-w-[200px] mx-auto leading-tight font-medium uppercase tracking-wide">
+                <p className="text-xxs text-zinc-500 max-w-[200px] mx-auto leading-tight font-medium uppercase tracking-wide">
                     {description}
                 </p>
             </div>

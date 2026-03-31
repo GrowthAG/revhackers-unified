@@ -87,9 +87,9 @@ const Cases = () => {
               <Loader2 className="w-8 h-8 text-black animate-spin" />
             </div>
           ) : filteredCases.length === 0 ? (
-            <div className="text-center py-20 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/30">
+            <div className="text-center py-20 border border-dashed border-zinc-200 bg-zinc-50/30">
               <h3 className="text-xl font-black uppercase tracking-widest text-black">Nenhum case encontrado</h3>
-              <Button variant="link" className="text-black font-bold uppercase tracking-widest text-[10px] mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
+              <Button variant="link" className="text-black font-bold uppercase tracking-widest text-xxs mt-4" onClick={() => { setSearchQuery(''); setActiveCategory('Todos') }}>
                 Limpar filtros
               </Button>
             </div>
@@ -114,18 +114,18 @@ const Cases = () => {
                     </div>
 
                     <div className="p-10 md:p-12 flex-1 flex flex-col bg-white">
-                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-6 font-mono-tech bg-zinc-50 w-fit px-2 py-1 rounded-full border border-zinc-100">
+                      <span className="text-2xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-6 font-mono-tech bg-zinc-50 w-fit px-2 py-1 rounded-full border border-zinc-100">
                         {study.case_category}
                       </span>
                       <h3 className="text-2xl font-bold text-black mb-4 group-hover:text-zinc-500 transition-colors leading-tight">
                         {study.title}
                       </h3>
-                      <p className="text-zinc-600 font-normal text-[13px] mb-8 flex-1 line-clamp-3 leading-relaxed">
+                      <p className="text-zinc-600 font-normal text-mini mb-8 flex-1 line-clamp-3 leading-relaxed">
                         {study.preview_description}
                       </p>
 
                       <div className="pt-8 border-t border-zinc-100 flex items-center justify-between group-hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black">
+                        <span className="text-xxs font-bold uppercase tracking-[0.2em] text-black">
                           Ver Detalhes
                         </span>
                         <ArrowRight className="h-4 w-4 text-black group-hover:translate-x-1 transition-transform" />

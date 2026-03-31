@@ -22,7 +22,7 @@ export default function Step1Identificacao({ form, onEmailBlur }: Step1Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Identificação
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 01/05
                 </p>
             </div>
@@ -57,12 +57,12 @@ export default function Step1Identificacao({ form, onEmailBlur }: Step1Props) {
                     placeholder="https://suaempresa.com.br"
                     className="bg-white border-zinc-200 text-black focus:border-black h-12 text-base font-mono"
                 />
-                <p className="text-[10px] text-zinc-400 uppercase tracking-wide">Usado para enriquecer o diagnóstico com dados públicos do mercado.</p>
+                <p className="text-xxs text-zinc-400 uppercase tracking-wide">Usado para enriquecer o diagnóstico com dados públicos do mercado.</p>
             </div>
 
             <div className="bg-zinc-50 border border-zinc-200 p-4 flex items-start gap-3">
                 <div className="mt-0.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-black text-white text-[10px] font-bold">i</span>
+                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-black text-white text-xxs font-bold">i</span>
                 </div>
                 <p className="text-xs text-zinc-500 font-medium leading-relaxed uppercase tracking-wide">
                     <span className="font-bold text-black">Info:</span> Se você já é membro do hub, seus dados serão sincronizados automaticamente.

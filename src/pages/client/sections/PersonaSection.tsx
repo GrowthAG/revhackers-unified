@@ -87,7 +87,7 @@ function PersonaCard({ persona, index }: { persona: any; index: number }) {
     const personality = p.personality || { analytical_creative: 50, passive_active: 50, reserved_extroverted: 50, reactive_preventive: 50 };
 
     return (
-        <div className="flex flex-col bg-white border border-zinc-200 rounded-2xl overflow-hidden h-full">
+        <div className="flex flex-col bg-white border border-zinc-200 overflow-hidden h-full">
             {/* Dark header with avatar */}
             <div className="bg-zinc-950 p-5">
                 <div className="flex items-start gap-4 mb-3">
@@ -226,7 +226,7 @@ export default function PersonaSection({ plan }: { plan: any }) {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+                <div className={`grid grid-cols-1 ${personas.length === 4 || personas.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-6 flex-1`}>
                     {displayPersonas.slice(0, 3).map((persona: any, i: number) => (
                         <PersonaCard key={i} persona={persona} index={i} />
                     ))}

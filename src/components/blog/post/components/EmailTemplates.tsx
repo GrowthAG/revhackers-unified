@@ -45,7 +45,7 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleCopy(template.body, index)}
-                                className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                             >
                                 {copiedIndex === index ? (
                                     <span className="flex items-center gap-1 text-revgreen">
@@ -60,7 +60,7 @@ const EmailTemplates = ({ title, templates }: EmailTemplatesProps) => {
                         </div>
                         <div className="p-6">
                             <div className="text-xs text-zinc-500 mb-4 border-b border-zinc-100 pb-2 flex gap-2">
-                                <span className="font-bold text-zinc-700 shrink-0 uppercase tracking-wide text-[10px] mt-0.5">Assunto:</span> {template.subject}
+                                <span className="font-bold text-zinc-700 shrink-0 uppercase tracking-wide text-xxs mt-0.5">Assunto:</span> {template.subject}
                             </div>
                             <div className="text-sm leading-relaxed whitespace-pre-wrap text-zinc-700 font-normal">
                                 {template.body}

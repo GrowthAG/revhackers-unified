@@ -13,7 +13,7 @@ interface ArticleStackProps {
 
 export const ArticleStack: React.FC<ArticleStackProps> = ({ title, items }) => {
     return (
-        <div className="my-12 p-6 bg-white border border-zinc-200 rounded-lg">
+        <div className="my-12 p-6 bg-white border border-zinc-200 ">
             <div className="flex items-center gap-3 mb-6">
                 <Wrench className="w-5 h-5 text-revgreen" />
                 <h3 className="text-sm font-bold text-black uppercase tracking-wider">{title}</h3>

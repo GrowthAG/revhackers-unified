@@ -12,6 +12,18 @@ serve(async (req) => {
   }
 
   try {
+    const secretKey = Deno.env.get('WEBHOOK_SECRET_KEY');
+    const providedSecret = req.headers.get('x-webhook-secret');
+
+    // Autenticação Zero-Trust: Ninguém toca nesse endpoint sem o Secret.
+    if (!secretKey || providedSecret !== secretKey) {
+       console.error("Tentativa de acesso não autorizada ao webhook InfinitePay.");
+       return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+         status: 403 
+       });
+    }
+
     const payload = await req.json()
     console.log("Webhook InfinitePay Recebido:", payload)
 
@@ -41,6 +53,78 @@ serve(async (req) => {
             if (error) {
                 console.error("Erro ao atualizar proposta:", error)
                 throw error;
+            }
+
+            // ── OPPORTUNITY PIPELINE ADVANCEMENT ──
+            // Se a proposta tem opportunity_id, avanca para won e converte em projeto
+            const { data: proposalForOpp } = await supabaseAdmin
+                .from('proposals')
+                .select('opportunity_id')
+                .eq('id', order_nsu)
+                .single()
+
+            if (proposalForOpp?.opportunity_id) {
+                const oppId = proposalForOpp.opportunity_id
+                console.log(`[infinitepay-webhook] Opportunity ${oppId} vinculada. Avancando para won...`)
+
+                // Advance opportunity to won
+                const { data: currentOpp } = await supabaseAdmin
+                    .from('opportunities')
+                    .select('id, pipeline_stage')
+                    .eq('id', oppId)
+                    .single()
+
+                if (currentOpp && currentOpp.pipeline_stage !== 'won' && currentOpp.pipeline_stage !== 'lost') {
+                    const previousStage = currentOpp.pipeline_stage
+
+                    await supabaseAdmin
+                        .from('opportunities')
+                        .update({
+                            pipeline_stage: 'won',
+                            won_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', oppId)
+
+                    // Record stage history
+                    await supabaseAdmin
+                        .from('opportunity_stage_history')
+                        .insert({
+                            opportunity_id: oppId,
+                            from_stage: previousStage,
+                            to_stage: 'won',
+                            changed_at: new Date().toISOString(),
+                            changed_by: 'infinitepay_webhook',
+                            notes: `Pagamento confirmado via InfinitePay - proposta ${order_nsu}`,
+                        })
+
+                    console.log(`[infinitepay-webhook] Opportunity ${oppId} avancada para won`)
+
+                    // Convert opportunity to project via RPC
+                    try {
+                        const { data: projectId, error: convErr } = await supabaseAdmin
+                            .rpc('convert_opportunity_to_project', {
+                                p_opportunity_id: oppId,
+                            })
+
+                        if (convErr) {
+                            console.error(`[infinitepay-webhook] Conversao falhou:`, convErr.message)
+                        } else {
+                            console.log(`[infinitepay-webhook] Projeto criado: ${projectId}`)
+
+                            // Auto-trigger: gerar success plan via AI (fire-and-forget)
+                            supabaseAdmin.functions.invoke('generate-success-plan', {
+                                body: { project_id: projectId },
+                            }).then(() => {
+                                console.log(`[infinitepay-webhook] generate-success-plan disparado para ${projectId}`)
+                            }).catch((spErr: any) => {
+                                console.warn(`[infinitepay-webhook] generate-success-plan falhou (nao critico):`, spErr?.message)
+                            })
+                        }
+                    } catch (convErr: any) {
+                        console.error(`[infinitepay-webhook] RPC error:`, convErr?.message)
+                    }
+                }
             }
 
             // GHL WEBHOOK DISPATCH (Fase 22)

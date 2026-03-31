@@ -25,12 +25,12 @@ const OnboardingSuccess = () => {
             <div className="space-y-4 w-full max-w-sm">
                 <Button
                     onClick={() => window.location.href = 'https://revhackers.com.br'}
-                    className="w-full h-14 bg-black text-white hover:bg-zinc-800 rounded-none font-black text-[10px] uppercase tracking-[0.3em] gap-3 shadow-sm"
+                    className="w-full h-14 bg-black text-white hover:bg-zinc-800 rounded-none font-black text-xxs uppercase tracking-[0.3em] gap-3 shadow-sm"
                 >
                     Voltar ao Site <ArrowRight size={14} />
                 </Button>
 
-                <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-300 pt-4">
+                <p className="text-xxs uppercase font-bold tracking-widest text-zinc-300 pt-4">
                     Protocolo: #{Math.floor(Math.random() * 900000) + 100000}
                 </p>
             </div>

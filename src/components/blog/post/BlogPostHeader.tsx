@@ -92,7 +92,7 @@ const BlogPostHeader = ({
 
     {/* Featured Image */}
     <div className="max-w-3xl mx-auto mb-10">
-      <figure className="rounded-lg overflow-hidden shadow-sm">
+      <figure className="overflow-hidden shadow-sm">
         <img
           src={post.image}
           alt={cleanTitle()}

@@ -51,25 +51,28 @@ export default function DiagnosticView() {
     return (
         <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 pb-20">
             {/* HEADER */}
-            <header className="bg-white border-b border-zinc-200 sticky top-0 z-10">
-                <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <header className="bg-white border-b border-zinc-200 sticky top-0 z-10 print:hidden">
+                <div className="max-w-[1600px] mx-auto px-10 md:px-16 lg:px-20 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => navigate(`/admin/jornada/${id}`)}>
+                        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                             <ArrowLeft className="w-4 h-4 text-zinc-400" />
                         </Button>
                         <div>
                             <h1 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
                                 <BrainCircuit className="w-4 h-4 text-black" />
-                                Diagnóstico Estratégico
+                                Diagnóstico Definitivo
                             </h1>
-                            <p className="text-[10px] text-zinc-400 font-medium">Gerado automaticamente via REI Engine v2.0</p>
+                            <p className="text-xxs text-zinc-400 font-medium">REI Engine v2.0 • Data Real</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="rounded-none border-zinc-200 text-zinc-500 font-mono text-[10px]">
+                        <Badge variant="outline" className="rounded-none border-zinc-200 text-zinc-500 font-mono text-xxs">
                             MATURIDADE: {diagnostic.context_mirror.maturity.toUpperCase()}
                         </Badge>
-                        <Button onClick={() => navigate(`/admin/planejamento/${id}`)} className="bg-black text-white hover:bg-zinc-800 h-8 text-[10px] font-bold uppercase tracking-widest rounded-none">
+                        <Button onClick={() => window.print()} variant="outline" className="bg-white text-black font-bold uppercase tracking-widest text-xs h-9 px-4">
+                            Exportar PDF
+                        </Button>
+                        <Button onClick={() => navigate(`/admin/planejamento/${id}`)} className="bg-black text-white hover:bg-revgreen hover:text-black transition-colors h-9 text-xxs font-black uppercase tracking-widest rounded-none">
                             Ver Planejamento Final
                             <ArrowRight className="w-3 h-3 ml-2" />
                         </Button>
@@ -77,13 +80,13 @@ export default function DiagnosticView() {
                 </div>
             </header>
 
-            <main className="max-w-5xl mx-auto px-6 py-12 space-y-16">
+            <main className="max-w-[1600px] mx-auto p-10 md:p-16 lg:p-20 space-y-16">
 
                 {/* 1. CONTEXT MIRROR */}
-                <section className="space-y-6">
+                <section className="space-y-6 print:break-inside-avoid">
                     <div className="flex items-center gap-4 border-b border-zinc-200 pb-4">
-                        <div className="h-8 w-8 bg-zinc-100 flex items-center justify-center text-zinc-400">01</div>
-                        <h2 className="text-lg font-bold">O que entendemos (Espelho)</h2>
+                        <div className="h-8 w-8 bg-zinc-100 flex items-center justify-center text-zinc-400 font-bold">01</div>
+                        <h2 className="text-xl font-black tracking-tight text-black">O que entendemos (Espelho)</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <ContextCard label="Segmento" value={diagnostic.context_mirror.segment} />
@@ -94,10 +97,10 @@ export default function DiagnosticView() {
                 </section>
 
                 {/* 2. SIGNALS & RISKS */}
-                <section className="space-y-6">
+                <section className="space-y-6 mt-16 print:mt-10 print:break-inside-avoid">
                     <div className="flex items-center gap-4 border-b border-zinc-200 pb-4">
-                        <div className="h-8 w-8 bg-zinc-100 flex items-center justify-center text-zinc-400">02</div>
-                        <h2 className="text-lg font-bold">Sinais & Riscos Detectados</h2>
+                        <div className="h-8 w-8 bg-zinc-100 flex items-center justify-center text-zinc-400 font-bold">02</div>
+                        <h2 className="text-xl font-black tracking-tight text-black">Sinais & Riscos Detectados</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -109,7 +112,7 @@ export default function DiagnosticView() {
                                 <div key={i} className="bg-white border border-zinc-200 p-4 border-l-4 border-l-zinc-300">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="font-bold text-sm text-zinc-900">{s.text}</span>
-                                        <Badge variant="secondary" className="text-[9px] uppercase">{s.type}</Badge>
+                                        <Badge variant="secondary" className="text-2xs uppercase">{s.type}</Badge>
                                     </div>
                                     <p className="text-xs text-zinc-500 leading-relaxed">{s.implication}</p>
                                 </div>
@@ -124,7 +127,7 @@ export default function DiagnosticView() {
                                 <div key={i} className="bg-white border border-red-100 p-4 border-l-4 border-l-red-500">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="font-bold text-sm text-red-900">{r.text}</span>
-                                        <Badge className="bg-red-50 text-red-600 hover:bg-red-50 text-[9px] uppercase border-0">{r.level} Risk</Badge>
+                                        <Badge className="bg-red-50 text-red-600 hover:bg-red-50 text-2xs uppercase border-0">{r.level} Risk</Badge>
                                     </div>
                                     <p className="text-xs text-red-800/70 leading-relaxed">Mitigação: {r.mitigation}</p>
                                 </div>
@@ -134,12 +137,12 @@ export default function DiagnosticView() {
                 </section>
 
                 {/* 3. DECISION ENGINE (THE CORE) */}
-                <section className="space-y-8">
+                <section className="space-y-8 mt-16 print:mt-10 print:break-inside-avoid">
                     <div className="flex items-center gap-4 border-b border-zinc-200 pb-4">
                         <div className="h-8 w-8 bg-black text-white flex items-center justify-center font-bold">03</div>
-                        <div>
-                            <h2 className="text-xl font-bold">Decisões Estratégicas</h2>
-                            <p className="text-sm text-zinc-500">Por que definimos este caminho para o projeto.</p>
+                        <div className="flex-1">
+                            <h2 className="text-2xl font-black tracking-tight text-black">Decisões Estratégicas</h2>
+                            <p className="text-sm font-medium text-zinc-500">Justificativas técnicas e implicações do escopo recomendado.</p>
                         </div>
                     </div>
 
@@ -151,13 +154,13 @@ export default function DiagnosticView() {
                 </section>
 
                 {/* 4. NEXT STEPS */}
-                <section className="bg-zinc-900 text-white p-12 text-center rounded-sm">
-                    <h2 className="text-2xl font-bold mb-4">O Diagnóstico está claro?</h2>
+                <section className="bg-zinc-900 text-white p-12 text-center rounded-sm print:hidden mt-16">
+                    <h2 className="text-2xl font-bold mb-4">O Diagnóstico está validado?</h2>
                     <p className="text-zinc-400 max-w-xl mx-auto mb-8 text-sm leading-relaxed">
-                        Este documento serve como base lógica para o Planejamento Estratégico.
-                        Se houver divergência nos sinais, ajuste as premissas antes de avançar.
+                        Este documento serve como base técnica e mercadológica inquestionável.
+                        Ao avançar, o algoritmo formulará o Plano de Ação Estratégica.
                     </p>
-                    <Button onClick={() => navigate(`/admin/planejamento/${id}`)} className="bg-white text-black hover:bg-zinc-200 font-bold uppercase tracking-widest h-12 px-8 rounded-none">
+                    <Button onClick={() => navigate(`/admin/planejamento/${id}`)} className="bg-white text-black hover:bg-revgreen hover:text-black font-black uppercase tracking-widest h-12 px-8 rounded-none transition-colors">
                         Aprovar e Ver Roadmap
                     </Button>
                 </section>
@@ -171,7 +174,7 @@ export default function DiagnosticView() {
 
 const ContextCard = ({ label, value }: { label: string, value: string }) => (
     <div className="bg-white border border-zinc-200 p-4">
-        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest mb-1">{label}</p>
         <p className="text-sm font-bold text-zinc-900">{value}</p>
     </div>
 );
@@ -187,11 +190,11 @@ const DecisionBlock = ({ decision }: { decision: StrategicDecision }) => (
         </div>
 
         <div className="md:w-1/3 border-t md:border-t-0 md:border-l border-zinc-100 md:pl-8 pt-4 md:pt-0">
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-2">Baseado em (Fatos)</p>
+            <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest mb-2">Baseado em (Fatos)</p>
             <ul className="space-y-1">
                 {decision.basedOn.map((fact, i) => (
                     <li key={i} className="text-xs text-zinc-700 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-zinc-300 rounded-full" />
+                        <div className="w-1.5 h-1.5 bg-zinc-300" />
                         {fact}
                     </li>
                 ))}
@@ -199,7 +202,7 @@ const DecisionBlock = ({ decision }: { decision: StrategicDecision }) => (
         </div>
 
         <div className="md:w-1/3 border-t md:border-t-0 md:border-l border-zinc-100 md:pl-8 pt-4 md:pt-0 bg-zinc-50/50 -mr-6 -my-6 p-6 flex flex-col justify-center">
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-2">Implicação Real</p>
+            <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest mb-2">Implicação Real</p>
             <p className="text-xs text-zinc-800 font-medium leading-relaxed">
                 "{decision.implication}"
             </p>

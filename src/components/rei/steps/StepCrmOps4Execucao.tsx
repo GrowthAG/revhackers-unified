@@ -16,20 +16,20 @@ export default function StepCrmOps4Execucao({ form }: Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Eficiência de Vendas (Execution)
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Estruturação de Funil, Motivos de Perda e Capacitação
                 </p>
             </div>
 
             {/* Módulo Dinâmico 1: O Funil Perfeito */}
-            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-200">
+            <div className="bg-zinc-50 p-6 border border-zinc-200">
                 <h3 className="text-base font-bold text-black uppercase tracking-wider mb-2">1. Estrutura do Funil de Vendas (Kanban)</h3>
                 <p className="text-sm text-zinc-500 mb-6">Liste as etapas (colunas) atuais do seu principal funil de vendas.</p>
                 <KanbanMapper form={form} fieldName="revops_custom_pipelines" />
             </div>
 
             {/* Módulo Dinâmico 2: Taxonomia de Loss */}
-            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-200 mt-6 md:mt-8">
+            <div className="bg-zinc-50 p-6 border border-zinc-200 mt-6 md:mt-8">
                 <h3 className="text-base font-bold text-black uppercase tracking-wider mb-2">2. Mapeamento de Motivos de Perda (Lost Reasons)</h3>
                 <p className="text-sm text-zinc-500 mb-6">Quais são os motivos de perda padronizados que a equipe utiliza ao descartar uma oportunidade?</p>
                 <LostReasonMapper form={form} fieldName="revops_custom_lost_reasons" />
@@ -37,7 +37,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
 
             <div className="space-y-3 mt-8">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Cadência de Contatos (Sales Engagement) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como é definida a rotina de follow-ups que o time de vendas executa com os leads?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como é definida a rotina de follow-ups que o time de vendas executa com os leads?</p>
                 <RadioGroup
                     value={form.watch('revops_flow_cadencia')}
                     onValueChange={(value) => form.setValue('revops_flow_cadencia', value)}
@@ -56,7 +56,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
 
             <div className="space-y-2">
                 <Label htmlFor="revops_pipeline_stagnation" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Tempo Limite por Etapa (SLA de Pipeline) *</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">O sistema alerta quando uma oportunidade fica muito tempo parada na mesma etapa do funil?</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">O sistema alerta quando uma oportunidade fica muito tempo parada na mesma etapa do funil?</p>
                 <Input
                     {...form.register('revops_pipeline_stagnation')}
                     id="revops_pipeline_stagnation"
@@ -67,7 +67,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Mapeamento do Decisor Financeiro *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como é garantido que a equipe está negociando com quem realmente decide a compra?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como é garantido que a equipe está negociando com quem realmente decide a compra?</p>
                 <RadioGroup
                     value={form.watch('revops_economic_buyer_mapped')}
                     onValueChange={(value) => form.setValue('revops_economic_buyer_mapped', value)}
@@ -86,7 +86,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Geração de Propostas Comerciais (CPQ) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como a sua equipe cria e envia as propostas para os clientes?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como a sua equipe cria e envia as propostas para os clientes?</p>
                 <RadioGroup
                     value={form.watch('revops_cpq_friction')}
                     onValueChange={(value) => form.setValue('revops_cpq_friction', value)}
@@ -116,7 +116,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
             <div className="space-y-6">
                 <div className="space-y-3 pt-6 border-t border-zinc-100">
                     <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Análise de Ganhos e Perdas (Win/Loss) *</Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Existe o costume de reavaliar oportunidades perdidas para entender os reais motivos?</p>
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Existe o costume de reavaliar oportunidades perdidas para entender os reais motivos?</p>
                     <RadioGroup
                         value={form.watch('revops_win_loss_analysis')}
                         onValueChange={(value) => form.setValue('revops_win_loss_analysis', value)}
@@ -151,7 +151,7 @@ export default function StepCrmOps4Execucao({ form }: Props) {
 
                 <div className="space-y-3 pt-6 border-t border-zinc-100">
                     <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Previsibilidade Comercial (Forecast) *</Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Qual o nível de precisão das previsões de fechamento para o final do mês?</p>
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Qual o nível de precisão das previsões de fechamento para o final do mês?</p>
                     <RadioGroup
                         value={form.watch('revops_forecasting_accuracy')}
                         onValueChange={(value) => form.setValue('revops_forecasting_accuracy', value)}

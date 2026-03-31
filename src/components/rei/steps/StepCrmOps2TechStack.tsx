@@ -14,7 +14,7 @@ export default function StepCrmOps2TechStack({ form }: Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Sua Estrutura Tecnológica (Tech Stack)
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Como as suas ferramentas operam em conjunto
                 </p>
             </div>
@@ -59,7 +59,7 @@ export default function StepCrmOps2TechStack({ form }: Props) {
 
             <div className="space-y-2">
                 <Label htmlFor="revops_tech_debt_cost" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Investimento em Ferramentas (Próximos 12 meses) *</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Qual é a sua estimativa de orçamento mensal ou anual para manter ou evoluir sua base tecnológica de vendas?</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">Qual é a sua estimativa de orçamento mensal ou anual para manter ou evoluir sua base tecnológica de vendas?</p>
                 <Input
                     {...form.register('revops_tech_debt_cost')}
                     id="revops_tech_debt_cost"
@@ -80,7 +80,7 @@ export default function StepCrmOps2TechStack({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Adoção do sistema pela equipe comercial *</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Como está a centralização das informações dos clientes no seu CRM?</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">Como está a centralização das informações dos clientes no seu CRM?</p>
                 <RadioGroup
                     value={form.watch('revops_shadow_it_index')}
                     onValueChange={(value) => form.setValue('revops_shadow_it_index', value)}
@@ -99,7 +99,7 @@ export default function StepCrmOps2TechStack({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Nível de Automação (Marketing e Vendas) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como é a capacidade do sistema atual de engajar seus prospects e gerar alertas para os vendedores?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como é a capacidade do sistema atual de engajar seus prospects e gerar alertas para os vendedores?</p>
                 <RadioGroup
                     value={form.watch('revops_automacoes_core')}
                     onValueChange={(value) => form.setValue('revops_automacoes_core', value)}

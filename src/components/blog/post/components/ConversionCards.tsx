@@ -43,11 +43,11 @@ const ConversionCards = ({ title, items, onCTAClick }: ConversionCardsProps) => 
                         onClick={onCTAClick}
                     >
                         {getIcon(item.type)}
-                        <h3 className="text-[13px] font-bold text-black uppercase tracking-widest mb-4">{item.title}</h3>
+                        <h3 className="text-mini font-bold text-black uppercase tracking-widest mb-4">{item.title}</h3>
                         <p className="text-sm text-zinc-500 leading-relaxed mb-6 font-medium">{item.description}</p>
                         {item.fix && (
                             <div className="pt-4 border-t border-zinc-100">
-                                <span className="text-[10px] font-bold text-revgreen uppercase tracking-widest flex items-center gap-2">
+                                <span className="text-xxs font-bold text-revgreen uppercase tracking-widest flex items-center gap-2">
                                     <CheckCircle2 className="w-3 h-3" />
                                     AÇÃO: {item.fix}
                                 </span>

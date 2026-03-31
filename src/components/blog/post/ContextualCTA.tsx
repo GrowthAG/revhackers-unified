@@ -52,7 +52,7 @@ const ContextualCTA = ({ title, category }: ContextualCTAProps) => {
 
     return (
         <div className="my-16 w-full">
-            <div className="relative bg-[#F5F5F7] border border-zinc-200 rounded-lg p-8 md:p-10 overflow-hidden group hover:border-black/20 transition-all duration-500">
+            <div className="relative bg-[#F5F5F7] border border-zinc-200 p-8 md:p-10 overflow-hidden group hover:border-black/20 transition-all duration-500">
                 {/* Background Decoration */}
                 <div className="absolute right-0 top-0 w-64 h-64 bg-zinc-200/50 rounded-bl-full pointer-events-none -mr-16 -mt-16"></div>
 
@@ -64,7 +64,7 @@ const ContextualCTA = ({ title, category }: ContextualCTAProps) => {
                     <div className="flex-1 text-center md:text-left">
                         <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                             <span className="w-2 h-2 bg-revgreen rounded-full animate-pulse"></span>
-                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-400">Recomendado para você</span>
+                            <span className="text-xxs uppercase font-bold tracking-[0.2em] text-zinc-400">Recomendado para você</span>
                         </div>
                         <h3 className="text-2xl font-black text-black mb-2 uppercase tracking-tight">
                             {data.title}

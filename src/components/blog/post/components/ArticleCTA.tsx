@@ -25,7 +25,7 @@ const ArticleCTA = ({
 
             <div className="relative z-10 pl-6">
                 <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-revgreen font-bold">
+                    <span className="text-xxs font-mono uppercase tracking-[0.2em] text-revgreen font-bold">
                         Next Step
                     </span>
                     <div className="h-px w-8 bg-revgreen/30"></div>

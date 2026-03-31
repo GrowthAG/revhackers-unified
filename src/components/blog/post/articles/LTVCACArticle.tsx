@@ -103,7 +103,7 @@ LTV / CAC = 1.600 / 200 = 8x.
           <LTVCalculator />
         </div>
 
-        <div className="my-16 bg-zinc-50 p-8 rounded-xl not-prose border border-zinc-200">
+        <div className="my-16 bg-zinc-50 p-8 not-prose border border-zinc-200">
           <h3 className="text-xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
             <TrendingDown className="w-6 h-6 text-red-500" />
             Como consertar um LTV:CAC ruim?

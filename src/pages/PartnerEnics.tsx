@@ -30,10 +30,10 @@ const PartnerEnics = () => {
                 especializada em experiências imersivas e interativas.
               </p>
               <div className="flex flex-wrap gap-3 mb-8">
-                <span className="px-3 py-1 bg-opacity-20 bg-white rounded-full text-sm">Eventos</span>
-                <span className="px-3 py-1 bg-opacity-20 bg-white rounded-full text-sm">Marketing</span>
-                <span className="px-3 py-1 bg-opacity-20 bg-white rounded-full text-sm">B2C</span>
-                <span className="px-3 py-1 bg-opacity-20 bg-white rounded-full text-sm">Educação</span>
+                <span className="px-3 py-1 bg-opacity-20 bg-white text-sm">Eventos</span>
+                <span className="px-3 py-1 bg-opacity-20 bg-white text-sm">Marketing</span>
+                <span className="px-3 py-1 bg-opacity-20 bg-white text-sm">B2C</span>
+                <span className="px-3 py-1 bg-opacity-20 bg-white text-sm">Educação</span>
               </div>
               <div className="flex gap-4">
                 <Button asChild className="bg-revgreen text-black hover:bg-revgreen/90">
@@ -48,7 +48,7 @@ const PartnerEnics = () => {
                 </Button>
               </div>
             </div>
-            <div className="md:w-1/3 bg-white p-8 rounded-lg shadow-sm">
+            <div className="md:w-1/3 bg-white p-8 shadow-sm">
               <img
                 src="/uploads/a05718ad-1822-4102-909a-7e86af151e98.png"
                 alt="ENICS"
@@ -66,7 +66,7 @@ const PartnerEnics = () => {
             <h2 className="text-3xl font-bold mb-10 text-center">Nosso trabalho com a ENICS</h2>
 
             <div className="space-y-8">
-              <div className="bg-zinc-50 p-8 rounded-lg">
+              <div className="bg-zinc-50 p-8 ">
                 <h3 className="text-xl font-bold mb-4">O Desafio</h3>
                 <p className="text-zinc-700">
                   A ENICS precisava vender 3.000 ingressos em apenas 30 dias para um grande evento educacional,
@@ -74,7 +74,7 @@ const PartnerEnics = () => {
                 </p>
               </div>
 
-              <div className="bg-zinc-50 p-8 rounded-lg">
+              <div className="bg-zinc-50 p-8 ">
                 <h3 className="text-xl font-bold mb-4">A Solução</h3>
                 <p className="text-zinc-700 mb-4">
                   Desenvolvemos uma estratégia integrada com três pilares principais:
@@ -99,7 +99,7 @@ const PartnerEnics = () => {
                 </ul>
               </div>
 
-              <div className="bg-zinc-50 p-8 rounded-lg">
+              <div className="bg-zinc-50 p-8 ">
                 <h3 className="text-xl font-bold mb-4">Os Resultados</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card className="p-6 border-0 shadow-sm">
@@ -123,7 +123,7 @@ const PartnerEnics = () => {
             </div>
 
             {/* Testimonial */}
-            <div className="mt-16 bg-zinc-900 text-white p-8 rounded-lg relative">
+            <div className="mt-16 bg-zinc-900 text-white p-8 relative">
               <div className="text-6xl text-zinc-700 absolute top-4 left-6 opacity-30">"</div>
               <blockquote className="relative z-10">
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start mb-6">
@@ -200,10 +200,10 @@ const PartnerEnics = () => {
             <p className="text-zinc-600 mb-4">
               Quer resultados como este para sua empresa? Entre em contato agora mesmo.
             </p>
-            <Separator className="mx-auto w-24 bg-revgreen h-1 rounded-full mb-6" />
+            <Separator className="mx-auto w-24 bg-revgreen h-1 mb-6" />
           </div>
 
-          <div className="max-w-2xl mx-auto bg-zinc-50 p-8 rounded-xl shadow-sm border border-zinc-100">
+          <div className="max-w-2xl mx-auto bg-zinc-50 p-8 shadow-sm border border-zinc-100">
             <ContactForm formType="contact" />
           </div>
         </div>

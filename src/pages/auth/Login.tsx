@@ -12,7 +12,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { signInWithPassword, signIn, setDevBypass, user, isRecoveringPassword } = useAuth();
+    const { signInWithPassword, user, isRecoveringPassword } = useAuth();
     const navigate = useNavigate();
 
     // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
@@ -47,7 +47,7 @@ const Login = () => {
                         <h1 className="text-2xl font-black tracking-[0.2em] text-black uppercase text-center leading-none mb-4 mt-8">
                             Acesso Admin
                         </h1>
-                        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
+                        <p className="text-zinc-500 text-xxs uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
                             Entre com suas credenciais corporativas.
                         </p>
                     </div>
@@ -56,13 +56,13 @@ const Login = () => {
                     <div className="bg-white p-2">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {error && (
-                                <div className="text-black text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10 border border-black p-2">
+                                <div className="text-black text-2xs font-light uppercase tracking-[0.3em] text-center mb-10 border border-black p-2">
                                     {error}
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black pl-1 flex items-center gap-2">
+                                <label className="text-xxs uppercase tracking-[0.2em] text-zinc-500 font-black pl-1 flex items-center gap-2">
                                     <Mail className="w-3 h-3" />
                                     Email Corporativo
                                 </label>
@@ -78,13 +78,13 @@ const Login = () => {
 
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center pl-1 pr-1">
-                                    <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black flex items-center gap-2">
+                                    <label className="text-xxs uppercase tracking-[0.2em] text-zinc-500 font-black flex items-center gap-2">
                                         <Lock className="w-3 h-3" />
                                         Senha
                                     </label>
                                     <Link
                                         to="/forgot-password"
-                                        className="text-[9px] uppercase tracking-widest text-zinc-400 hover:text-revgreen transition-colors font-bold"
+                                        className="text-2xs uppercase tracking-widest text-zinc-400 hover:text-revgreen transition-colors font-bold"
                                     >
                                         Recuperar
                                     </Link>

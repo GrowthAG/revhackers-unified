@@ -12,9 +12,35 @@ verify_jwt = true
 enabled = true
 verify_jwt = true
 import_map = "./functions/infinitepay-create-link/deno.json"
+entrypoint = "./functions/infinitepay-create-link/index.ts"
+
+[functions.infinitepay-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/infinitepay-webhook/index.ts"
+
+[functions.ghl-webhook-handoff]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/ghl-webhook-handoff/index.ts"
+
+[functions.autentique-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/autentique-webhook/index.ts"
+
+[functions.generate-success-plan]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/generate-success-plan/index.ts"
+
+[functions.fathom-sync]
+enabled = true
+verify_jwt = true
+import_map = "./functions/fathom-sync/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/infinitepay-create-link/index.ts"
+entrypoint = "./functions/fathom-sync/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/infinitepay-create-link/*.html" ]
+# static_files = [ "./functions/fathom-sync/*.html" ]

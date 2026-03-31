@@ -85,7 +85,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                     animate={{ scale: 1, opacity: 1 }}
                     className="flex flex-col items-center flex-center text-center p-8"
                 >
-                    <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+                    <div className="w-20 h-20 bg-green-500/20 flex items-center justify-center mb-6">
                         <CheckCircle2 className="w-10 h-10 text-green-500" />
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-2">Acesso Liberado!</h2>
@@ -100,11 +100,11 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
             <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-sm overflow-hidden my-8"
+                className="w-full max-w-2xl bg-zinc-950 border border-zinc-800 shadow-sm overflow-hidden my-8"
             >
                 {/* Header Section */}
                 <div className="bg-zinc-950 p-8 text-center border-b border-zinc-800">
-                    <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-6">
+                    <div className="w-16 h-16 bg-zinc-800 flex items-center justify-center mx-auto mb-6 transform -rotate-6">
                         <Star className="w-8 h-8 text-zinc-300" />
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
@@ -127,7 +127,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                                 <button
                                     key={num}
                                     onClick={() => setScore(num)}
-                                    className={`w-10 h-12 sm:w-12 sm:h-14 rounded-lg font-bold text-lg transition-all duration-200 border
+                                    className={`w-10 h-12 sm:w-12 sm:h-14 font-bold text-lg transition-all duration-200 border
                                         ${score === num 
                                             ? 'bg-zinc-900 border-zinc-700 text-white shadow-[0_0_15px_rgba(0,0,0,0.3)] transform scale-110' 
                                             : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white hover:border-zinc-500'
@@ -168,7 +168,7 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
                     <Button 
                         onClick={handleSubmit} 
                         disabled={isSubmitting || score === null}
-                        className="w-full h-14 text-white text-lg font-bold rounded-xl bg-zinc-900 hover:bg-black transition-all shadow-sm hover:-translate-y-0.5"
+                        className="w-full h-14 text-white text-lg font-bold bg-zinc-900 hover:bg-black transition-all shadow-sm hover:-translate-y-0.5"
                     >
                         {isSubmitting ? (
                             <>

@@ -193,14 +193,15 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-5.4-mini',
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é o Diretor de Inteligência Estratégica da RevHackers, a principal consultoria de RevOps e Growth do Brasil. Você analisa mercados, constrói ICPs e gera benchmarks com precisão cirúrgica. Seus dados são SEMPRE baseados no mercado brasileiro real, com empresas e números realistas. Você NUNCA gera conteúdo genérico - cada resposta é hiper-personalizada ao contexto do cliente. USE A BUSCA NA WEB (`web_search_preview`) PARA ACHAR DADOS ATUAIS COMO PREÇOS, CONCORRENTES E TAM/SAM/SOM SEMPRE QUE POSSÍVEL. Cite suas fontes na resposta se apropriado. REGRA ABSOLUTA DE ORTOGRAFIA: todo texto gerado DEVE estar em português brasileiro correto, com TODAS as acentuações obrigatórias (é, á, ã, õ, ç, ê, ô, etc). Palavras como "negociação", "operação", "atualização", "previsão", "caótica", "análise", "decisão" DEVEM ter acentos. A resposta DEVE ser APENAS um JSON válido. Não inclua blocos ```json nem explicações extras. NUNCA use o caractere em dash (travessão longo) - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
+                    content: 'Você é o Diretor de Inteligência Estratégica da RevHackers. Você analisa mercados, constrói ICPs e gera benchmarks. Seus dados são baseados no mercado brasileiro real. NUNCA gere conteúdo genérico. USE A BUSCA NA WEB (`web_search_preview`) APENAS em fontes verdadeiras e portais verificados para achar preços e TAM/SAM. Você possui um FILTRO ANTI-FAKENEWS rígido: Se não achar o dado real na web, declare que o dado é indisponível. Nunca invente. A resposta deve seguir a tipagem JSON solicitada rigorosamente.'
                 },
                 { role: 'user', content: prompt }
             ],
+            response_format: { type: 'json_object' },
             temperature: 0.3,
             tools: [{ type: 'web_search_preview' }],
             web_search_preview: true
@@ -221,23 +222,11 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
 
     let cleanContent = content.trim();
 
-    // Remove markdown code blocks if present
-    if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
-    if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
-    if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
-    cleanContent = cleanContent.trim();
-
-    // Try to extract JSON object
-    const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-        cleanContent = jsonMatch[0];
-    }
-
     try {
         return JSON.parse(cleanContent);
     } catch (parseError) {
         console.error('Failed to parse OpenAI response:', cleanContent.substring(0, 200));
-        throw new Error('Invalid JSON response from OpenAI');
+        throw new Error('GPT Structured Output falhou na validação do JSON');
     }
 }
 

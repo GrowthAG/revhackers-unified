@@ -54,7 +54,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
         return (
             <div className={`${className}`}>
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center">
                         <Video className="w-4 h-4 text-zinc-400" />
                     </div>
                     <div>
@@ -75,7 +75,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
     if (error) {
         return (
             <div className={`${className}`}>
-                <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-lg">
+                <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 ">
                     <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
                     <div>
                         <p className="text-sm font-semibold text-red-800">Erro ao carregar reuniões</p>
@@ -94,7 +94,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-zinc-950 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-zinc-950 flex items-center justify-center">
                         <Video className="w-4 h-4 text-[#00CC6A]" />
                     </div>
                     <div>
@@ -107,7 +107,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                 <button
                     onClick={handleSync}
                     disabled={syncing}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-colors rounded-md disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-colors disabled:opacity-50"
                 >
                     <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
                     Sincronizar
@@ -119,7 +119,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                 <div className="flex items-center gap-1.5 mb-4 overflow-x-auto hide-scrollbar">
                     <button
                         onClick={() => setFilterType('all')}
-                        className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors whitespace-nowrap ${filterType === 'all'
+                        className={`px-3 py-1 text-xs font-semibold transition-colors whitespace-nowrap ${filterType === 'all'
                                 ? 'bg-zinc-950 text-white'
                                 : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
                             }`}
@@ -133,7 +133,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                             <button
                                 key={key}
                                 onClick={() => setFilterType(key)}
-                                className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors whitespace-nowrap ${filterType === key
+                                className={`px-3 py-1 text-xs font-semibold transition-colors whitespace-nowrap ${filterType === key
                                         ? 'bg-zinc-950 text-white'
                                         : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
                                     }`}
@@ -147,7 +147,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
 
             {/* Empty state */}
             {filteredMeetings.length === 0 && (
-                <div className="text-center py-12 bg-zinc-50 border border-zinc-100 rounded-lg">
+                <div className="text-center py-12 bg-zinc-50 border border-zinc-100 ">
                     <Video className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
                     <p className="text-sm text-zinc-500 font-medium">Nenhuma reunião encontrada</p>
                     <p className="text-xs text-zinc-400 mt-1">
@@ -174,7 +174,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ delay: idx * 0.05 }}
-                                className="border border-zinc-200 rounded-lg bg-white hover:border-zinc-300 transition-colors overflow-hidden"
+                                className="border border-zinc-200 bg-white hover:border-zinc-300 transition-colors overflow-hidden"
                             >
                                 {/* Card header - always visible */}
                                 <button
@@ -239,7 +239,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                                             <div className="px-4 pb-4 pt-1 border-t border-zinc-100 space-y-3">
                                                 {/* Video embed */}
                                                 {meeting.video_url && (
-                                                    <div className="bg-zinc-950 rounded-lg overflow-hidden">
+                                                    <div className="bg-zinc-950 overflow-hidden">
                                                         <iframe
                                                             src={`https://drive.google.com/file/d/${meeting.drive_file_id}/preview`}
                                                             className="w-full aspect-video"
@@ -257,7 +257,7 @@ export default function MeetingTimeline({ clientEmail, className = '' }: Meeting
                                                             {meeting.attendees.map((a, i) => (
                                                                 <span
                                                                     key={i}
-                                                                    className="text-xs bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full"
+                                                                    className="text-xs bg-zinc-100 text-zinc-600 px-2 py-0.5 "
                                                                 >
                                                                     {a.name || a.email}
                                                                 </span>

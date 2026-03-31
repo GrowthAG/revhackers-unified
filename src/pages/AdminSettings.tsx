@@ -37,19 +37,19 @@ export default function AdminSettings() {
           <TabsList className="flex w-full bg-transparent border-b border-zinc-200 h-auto p-0 gap-8 mb-12 rounded-none">
             <TabsTrigger
               value="team"
-              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-[11px]"
+              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-tiny"
             >
               <Users className="w-3.5 h-3.5 uppercase" /> Time & Acesso
             </TabsTrigger>
             <TabsTrigger
               value="general"
-              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-[11px]"
+              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-tiny"
             >
               <Settings className="w-3.5 h-3.5" /> Geral
             </TabsTrigger>
             <TabsTrigger
               value="security"
-              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-[11px]"
+              className="flex items-center gap-2 px-0 py-4 data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black text-zinc-400 hover:text-black transition-all rounded-none uppercase tracking-[0.2em] font-bold text-tiny"
             >
               <Shield className="w-3.5 h-3.5" /> Segurança
             </TabsTrigger>
@@ -60,7 +60,7 @@ export default function AdminSettings() {
             <div className="space-y-6">
               <div className="border-b border-black pb-4 mb-8">
                 <h2 className="text-sm font-black uppercase tracking-[0.3em] text-black">Gestão de Usuários</h2>
-                <p className="text-[11px] text-zinc-400 uppercase tracking-widest mt-2">
+                <p className="text-tiny text-zinc-400 uppercase tracking-widest mt-2">
                   Controle de acesso e permissões administrativas.
                 </p>
               </div>
@@ -78,7 +78,7 @@ export default function AdminSettings() {
                   </div>
                   <Button
                     onClick={() => navigate('/admin/users')}
-                    className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-[0.2em] text-[10px] h-11 px-8 rounded-none shadow-none border border-black"
+                    className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-[0.2em] text-xxs h-11 px-8 rounded-none shadow-none border border-black"
                   >
                     Gerenciar Time
                   </Button>
@@ -97,7 +97,7 @@ export default function AdminSettings() {
                   <Button
                     variant="ghost"
                     onClick={() => navigate('/admin/profile')}
-                    className="border border-zinc-200 text-black hover:bg-black hover:text-white hover:border-black font-bold uppercase tracking-[0.2em] text-[10px] h-11 px-8 rounded-none transition-all"
+                    className="border border-zinc-200 text-black hover:bg-black hover:text-white hover:border-black font-bold uppercase tracking-[0.2em] text-xxs h-11 px-8 rounded-none transition-all"
                   >
                     Editar Perfil
                   </Button>
@@ -111,12 +111,12 @@ export default function AdminSettings() {
             <div className="max-w-xl space-y-8">
               <div className="border-b border-black pb-4">
                 <h2 className="text-sm font-black uppercase tracking-[0.3em] text-black">Informações do Site</h2>
-                <p className="text-[11px] text-zinc-400 uppercase tracking-widest mt-2">Configurações globais de SEO e identificação de marca.</p>
+                <p className="text-tiny text-zinc-400 uppercase tracking-widest mt-2">Configurações globais de SEO e identificação de marca.</p>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nome da Plataforma</label>
+                  <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400">Nome da Plataforma</label>
                   <Input
                     value={platformName}
                     onChange={(e) => setPlatformName(e.target.value)}
@@ -124,7 +124,7 @@ export default function AdminSettings() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Email Administrativo</label>
+                  <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400">Email Administrativo</label>
                   <Input
                     value={adminEmail}
                     onChange={(e) => setAdminEmail(e.target.value)}
@@ -135,7 +135,7 @@ export default function AdminSettings() {
                   <Button
                     onClick={handleSave}
                     disabled={saving}
-                    className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-[0.25em] h-12 px-8 text-[11px] rounded-none shadow-none border border-black mt-4 transition-all w-auto"
+                    className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-[0.25em] h-12 px-8 text-tiny rounded-none shadow-none border border-black mt-4 transition-all w-auto"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Salvar Alterações"}
                   </Button>
@@ -149,7 +149,7 @@ export default function AdminSettings() {
             <div className="max-w-xl space-y-8">
               <div className="border-b border-black pb-4">
                 <h2 className="text-sm font-black uppercase tracking-[0.3em] text-black">Segurança da Conta</h2>
-                <p className="text-[11px] text-zinc-400 uppercase tracking-widest mt-2">Protocolos de acesso e proteção de identidade.</p>
+                <p className="text-tiny text-zinc-400 uppercase tracking-widest mt-2">Protocolos de acesso e proteção de identidade.</p>
               </div>
 
               <div className="space-y-6">
@@ -162,7 +162,7 @@ export default function AdminSettings() {
                 <Button
                   variant="outline"
                   onClick={() => navigate('/forgot-password')}
-                  className="w-full border-zinc-200 text-black hover:bg-black hover:text-white hover:border-black font-bold uppercase tracking-[0.2em] text-[11px] h-12 rounded-none transition-all"
+                  className="w-full border-zinc-200 text-black hover:bg-black hover:text-white hover:border-black font-bold uppercase tracking-[0.2em] text-tiny h-12 rounded-none transition-all"
                 >
                   Redefinir Senha de Acesso
                 </Button>

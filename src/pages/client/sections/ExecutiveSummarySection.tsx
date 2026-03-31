@@ -85,14 +85,14 @@ export default function ExecutiveSummarySection({ plan }: { plan: any }) {
                         return (
                             <div
                                 key={i}
-                                className="p-8 md:p-10 bg-zinc-50 border border-zinc-200 rounded-3xl group hover:border-zinc-300 transition-colors"
+                                className="p-8 md:p-10 bg-zinc-50 border border-zinc-200 group hover:border-zinc-300 transition-colors"
                             >
-                                <span className="text-[10px] font-black uppercase tracking-[0.25em] block mb-4 text-zinc-400">
+                                <span className="text-xxs font-black uppercase tracking-[0.25em] block mb-4 text-zinc-400">
                                     {item.label}
                                 </span>
                                 <EditableField
                                     path={item.path}
-                                    className="text-[16px] font-medium leading-relaxed text-zinc-600 group-hover:text-zinc-800 transition-colors"
+                                    className="text-base font-medium leading-relaxed text-zinc-600 group-hover:text-zinc-800 transition-colors"
                                     placeholder={item.value}
                                     multiline
                                 />
@@ -104,7 +104,7 @@ export default function ExecutiveSummarySection({ plan }: { plan: any }) {
                 {/* Bottom accent line */}
                 <div className="flex items-center gap-3 mt-8">
                     <span className="text-[#00CC6A] shrink-0 text-sm">/</span>
-                    <span className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-widest">
+                    <span className="text-tiny font-bold text-[#00CC6A] uppercase tracking-widest">
                         Diagnóstico Completo nas Próximas Seções
                     </span>
                     <div className="h-[2px] flex-1 bg-zinc-100 rounded-full" />

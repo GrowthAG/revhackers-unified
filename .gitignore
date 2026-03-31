@@ -33,3 +33,17 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Scripts one-off (dados de clientes, service role key)
+*.pdf
+tunad_contrato.txt
+analysis_output.txt
+check_tunad_plan.js
+fix_final.js
+fix_tunad_name.js
+fix_tunad_plan.js
+insert_tunad_meetings.js
+query_tunad.js
+query_tunad_calls.js
+test_tldv.js
+ddg_test.js

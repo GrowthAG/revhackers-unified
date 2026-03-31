@@ -40,8 +40,8 @@ const CadastroParceiro = () => {
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-black border border-white/10 rounded-xl shadow-sm p-6 md:p-8">
-              <div className="partner-form-wrapper relative bg-black rounded-lg overflow-hidden p-1">
+            <Card className="bg-black border border-white/10 shadow-sm p-6 md:p-8">
+              <div className="partner-form-wrapper relative bg-black overflow-hidden p-1">
                 <div className="absolute inset-0 bg-revgreen/5 opacity-30"></div>
                 <iframe 
                   src="https://team.growthagency.com.br/widget/survey/GAukcFSWrgtqstfl3h65"

@@ -126,24 +126,24 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
 
                 <div className="space-y-8 mb-16 mt-8">
                     {stackLayers.map((layer, index) => (
-                        <Card key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+                        <Card key={index} className="bg-white border border-zinc-200 p-8 shadow-sm transition-shadow">
                             <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold shadow-sm">{index + 1}</span>
+                                <span className="w-8 h-8 bg-zinc-900 text-white flex items-center justify-center text-sm font-bold shadow-sm">{index + 1}</span>
                                 {layer.title}
                             </h3>
                             <p className="text-zinc-700 mb-6 font-medium text-lg">
                                 {layer.description}
                             </p>
-                            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100 flex gap-4 items-start">
+                            <div className="bg-zinc-50 p-6 border border-zinc-100 flex gap-4 items-start">
                                 <div className="shrink-0 mt-1">
-                                    <div className="w-1 h-full bg-revgreen rounded-full"></div>
+                                    <div className="w-1 h-full bg-revgreen "></div>
                                 </div>
                                 <div>
                                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Exemplo Prático</h4>
                                     <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{layer.example}"</p>
                                 </div>
                             </div>
-                            <div className="mt-6 flex items-center gap-2 text-sm text-emerald-700 font-bold bg-emerald-50 w-fit px-3 py-1 rounded-full border border-emerald-100">
+                            <div className="mt-6 flex items-center gap-2 text-sm text-emerald-700 font-bold bg-emerald-50 w-fit px-3 py-1 border border-emerald-100">
                                 <Layers className="w-4 h-4" />
                                 Impacto: {layer.results}
                             </div>
@@ -161,7 +161,7 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                     ]}
                 />
 
-                <Card className="my-16 bg-zinc-50 border border-zinc-200 p-8 rounded-xl not-prose shadow-inner relative overflow-hidden">
+                <Card className="my-16 bg-zinc-50 border border-zinc-200 p-8 not-prose shadow-inner relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
                         <ShieldCheck className="w-24 h-24 text-zinc-900" />
                     </div>
@@ -189,14 +189,14 @@ RESULTADO: 3-5% de 'Ressurreição' de pipeline sem esforço humano.`
                         <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
                             <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
                                 <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-revgreen"></div>
+                                    <div className="w-2 h-2  bg-revgreen"></div>
                                     {template.name}
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

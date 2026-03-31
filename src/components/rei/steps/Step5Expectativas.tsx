@@ -60,7 +60,7 @@ export default function Step5Expectativas({ form }: Step5Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Expectativas
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 05/05
                 </p>
             </div>
@@ -140,7 +140,7 @@ export default function Step5Expectativas({ form }: Step5Props) {
                     <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide">
                         <span className="font-bold text-black">Status:</span> Pronto para processamento estratégico.
                     </p>
-                    <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wide border-t border-zinc-200 pt-2">
+                    <p className="text-xxs text-zinc-400 font-medium uppercase tracking-wide border-t border-zinc-200 pt-2">
                         O envio deste diagnóstico habilita o agendamento da Sessão Estratégica (Duração: 45min - 1h).
                     </p>
                 </div>

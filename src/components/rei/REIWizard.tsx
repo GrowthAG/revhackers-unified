@@ -169,9 +169,20 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
 
+    const savedDataStr = typeof window !== 'undefined' ? localStorage.getItem(`rei_wizard_data_${projectId}`) : null;
+    let initialData = {};
+    if (savedDataStr) {
+        try {
+            initialData = JSON.parse(savedDataStr);
+        } catch (e) {
+            console.error("Failed to parse saved draft", e);
+        }
+    }
+
     const form = useForm<WizardFormData>({
         resolver: zodResolver(wizardSchema),
-        mode: 'onChange'
+        mode: 'onChange',
+        defaultValues: initialData
     });
 
     // --- LOGIC: DEFINE FLOW BASED ON TYPE ---
@@ -230,17 +241,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
 
     // --- PERSISTENCE LOGIC ---
     useEffect(() => {
-        const savedData = localStorage.getItem(`rei_wizard_data_${projectId}`);
         const savedStep = localStorage.getItem(`rei_wizard_step_${projectId}`);
-
-        if (savedData) {
-            try {
-                const parsed = JSON.parse(savedData);
-                form.reset(parsed);
-            } catch (e) {
-                console.error("Failed to parse saved draft", e);
-            }
-        }
 
         if (savedStep) {
             const step = parseInt(savedStep, 10);
@@ -248,12 +249,15 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 setCurrentStep(step);
             }
         }
-    }, [projectId, form, TOTAL_STEPS]);
+    }, [projectId, TOTAL_STEPS]);
 
     // Save to localStorage on change
     useEffect(() => {
         const subscription = form.watch((value) => {
-            localStorage.setItem(`rei_wizard_data_${projectId}`, JSON.stringify(value));
+            // Check if it's not empty, to avoid wiping out on unmount or initial strange cycles
+            if (Object.keys(value).length > 0 && Object.values(value).some(v => v !== undefined && v !== '')) {
+                localStorage.setItem(`rei_wizard_data_${projectId}`, JSON.stringify(value));
+            }
         });
         localStorage.setItem(`rei_wizard_step_${projectId}`, currentStep.toString());
         return () => subscription.unsubscribe();
@@ -430,7 +434,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         <div className="max-w-4xl mx-auto">
             {/* Back to Hub */}
             <div className="mb-12 text-center">
-                <Link to="/rei-hub" className="inline-flex items-center text-[10px] text-zinc-400 hover:text-black mb-10 transition-colors uppercase tracking-[0.2em] font-bold">
+                <Link to="/rei-hub" className="inline-flex items-center text-xxs text-zinc-400 hover:text-black mb-10 transition-colors uppercase tracking-[0.2em] font-bold">
                     <ArrowLeft className="w-3 h-3 mr-2" /> Voltar ao Hub
                 </Link>
 
@@ -457,7 +461,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                     />
                 </div>
-                <div className="flex justify-between mt-2 text-[10px] text-zinc-400 uppercase tracking-widest max-w-md mx-auto">
+                <div className="flex justify-between mt-2 text-xxs text-zinc-400 uppercase tracking-widest max-w-md mx-auto">
                     <span>Etapa {currentStep} de {TOTAL_STEPS}</span>
                     <span>{currentStepConfig.title}</span>
                 </div>

@@ -14,14 +14,14 @@ export default function StepCrmRetention({ form }: StepCrmRetentionProps) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Retenção e Governança
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     CS Ops & LTV
                 </p>
             </div>
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Saúde da Base (Churn Tracking) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">É possível prever/antecipar o cancelamento de um cliente antes que ele ocorra?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">É possível prever/antecipar o cancelamento de um cliente antes que ele ocorra?</p>
                 <RadioGroup
                     value={form.watch('churnTracking')}
                     onValueChange={(value) => form.setValue('churnTracking', value)}
@@ -50,7 +50,7 @@ export default function StepCrmRetention({ form }: StepCrmRetentionProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Processo Handoff (Vendas ➔ Pós-Venda) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Qualidade do repasse do Closer à equipe de Produção/CS?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Qualidade do repasse do Closer à equipe de Produção/CS?</p>
                 <RadioGroup
                     value={form.watch('ltvExpansion')}
                     onValueChange={(value) => form.setValue('ltvExpansion', value)}
@@ -73,7 +73,7 @@ export default function StepCrmRetention({ form }: StepCrmRetentionProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Onboarding Orquestrado & Expansão (LTV) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Seu processo de onboarding atual planta sementes estratégicas para vender novos módulos (Cross-sell/Up-sell) nos primeiros 90 dias?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Seu processo de onboarding atual planta sementes estratégicas para vender novos módulos (Cross-sell/Up-sell) nos primeiros 90 dias?</p>
                 <RadioGroup
                     value={form.watch('orchestratedOnboarding')}
                     onValueChange={(value) => form.setValue('orchestratedOnboarding', value)}
@@ -96,7 +96,7 @@ export default function StepCrmRetention({ form }: StepCrmRetentionProps) {
 
             <div className="space-y-2">
                 <Label htmlFor="executiveVisibility" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Visibilidade Executiva (Dashboards) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">O quão fácil é extrair um Forecast preciso ou analisar o funil?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">O quão fácil é extrair um Forecast preciso ou analisar o funil?</p>
                 <Textarea
                     {...form.register('executiveVisibility')}
                     id="executiveVisibility"
@@ -107,7 +107,7 @@ export default function StepCrmRetention({ form }: StepCrmRetentionProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Higiene Analítica ("Limpeza de Base") *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como você descreveria seu banco de dados hoje?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como você descreveria seu banco de dados hoje?</p>
                 <RadioGroup
                     value={form.watch('dataHygiene')}
                     onValueChange={(value) => form.setValue('dataHygiene', value)}

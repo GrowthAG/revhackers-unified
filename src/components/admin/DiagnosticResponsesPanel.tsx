@@ -158,12 +158,12 @@ function CollapsibleSection({ title, children, defaultOpen = false }: {
 }) {
     const [open, setOpen] = useState(defaultOpen);
     return (
-        <div className="border border-zinc-200 rounded-xl overflow-hidden">
+        <div className="border border-zinc-200 overflow-hidden">
             <button
                 onClick={() => setOpen(!open)}
                 className="w-full flex items-center justify-between px-4 py-3 bg-zinc-50 hover:bg-zinc-100 transition-colors"
             >
-                <span className="text-[11px] font-black uppercase tracking-widest text-zinc-600">
+                <span className="text-tiny font-black uppercase tracking-widest text-zinc-600">
                     {title}
                 </span>
                 {open
@@ -189,12 +189,12 @@ function RadarSummary({ radarData }: { radarData: { label: string; value: number
             {radarData.map((item, i) => (
                 <div key={i}>
                     <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-bold text-zinc-600">{item.label}</span>
-                        <span className="text-[11px] font-black text-zinc-900">{item.value}</span>
+                        <span className="text-tiny font-bold text-zinc-600">{item.label}</span>
+                        <span className="text-tiny font-black text-zinc-900">{item.value}</span>
                     </div>
-                    <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-zinc-100 overflow-hidden">
                         <div
-                            className="h-full rounded-full transition-all duration-500"
+                            className="h-full transition-all duration-500"
                             style={{
                                 width: `${Math.min(100, (item.value / max) * 100)}%`,
                                 backgroundColor: getMaturityColor(item.value),
@@ -239,14 +239,14 @@ function ResponseCard({ response, projectType, index }: {
         : 'Data desconhecida';
 
     return (
-        <div className="border border-zinc-200 rounded-2xl shadow-sm bg-white overflow-hidden">
+        <div className="border border-zinc-200 shadow-sm bg-white overflow-hidden">
             {/* Header */}
             <button
                 onClick={() => setExpanded(!expanded)}
                 className="w-full flex items-center justify-between px-5 py-4 hover:bg-zinc-50 transition-colors"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 flex items-center justify-center">
                         <ClipboardCheck className="w-5 h-5 text-zinc-900" />
                     </div>
                     <div className="text-left">
@@ -254,13 +254,13 @@ function ResponseCard({ response, projectType, index }: {
                             <span className="text-sm font-black text-zinc-900 tracking-tight">
                                 {getTypeLabel(diagType)}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-md">
+                            <span className="text-xxs font-black uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-0.5">
                                 {getSourceLabel(response.source || 'rei')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
                             <Calendar className="w-3 h-3 text-zinc-400" />
-                            <span className="text-[11px] text-zinc-500 font-medium">{completedAt}</span>
+                            <span className="text-tiny text-zinc-500 font-medium">{completedAt}</span>
                         </div>
                     </div>
                 </div>
@@ -273,10 +273,10 @@ function ResponseCard({ response, projectType, index }: {
                                 <span className="text-2xl font-black tracking-tight leading-none" style={{ color: getMaturityColor(response.maturity_percentage) }}>
                                     {Math.round(response.maturity_percentage)}
                                 </span>
-                                <span className="text-[10px] font-bold text-zinc-400 mb-0.5">/100</span>
+                                <span className="text-xxs font-bold text-zinc-400 mb-0.5">/100</span>
                             </div>
                             {response.maturity_level && (
-                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">
                                     {response.maturity_level}
                                 </span>
                             )}
@@ -297,7 +297,7 @@ function ResponseCard({ response, projectType, index }: {
                         <div className="pt-4">
                             <div className="flex items-center gap-2 mb-3">
                                 <BarChart3 className="w-4 h-4 text-zinc-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400">
                                     Score por Dimensao
                                 </span>
                             </div>
@@ -310,14 +310,14 @@ function ResponseCard({ response, projectType, index }: {
                         <div className="pt-2">
                             <div className="flex items-center gap-2 mb-3">
                                 <Activity className="w-4 h-4 text-zinc-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400">
                                     Insights
                                 </span>
                             </div>
                             <div className="space-y-1.5">
                                 {insights.map((insight, i) => (
                                     <div key={i} className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] shrink-0 mt-1.5" />
+                                        <span className="w-1.5 h-1.5 bg-zinc-400 shrink-0 mt-1.5" />
                                         <span className="text-xs text-zinc-600 font-medium leading-relaxed">{insight}</span>
                                     </div>
                                 ))}
@@ -330,7 +330,7 @@ function ResponseCard({ response, projectType, index }: {
                         <div className="pt-2 space-y-3">
                             <div className="flex items-center gap-2 mb-1">
                                 <FileText className="w-4 h-4 text-zinc-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400">
                                     Respostas do Formulario
                                 </span>
                             </div>
@@ -339,7 +339,7 @@ function ResponseCard({ response, projectType, index }: {
                                     <div className="space-y-3">
                                         {group.fields.map((field) => (
                                             <div key={field.key}>
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">
+                                                <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400 block mb-1">
                                                     {field.label}
                                                 </span>
                                                 <p className="text-xs text-zinc-700 font-medium leading-relaxed whitespace-pre-wrap">
@@ -394,8 +394,8 @@ export default function DiagnosticResponsesPanel({ projectId, projectType }: Dia
 
     if (responses.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-[60vh] text-center border border-dashed border-zinc-200 rounded-2xl bg-white">
-                <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center mb-4">
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center border border-dashed border-zinc-200 bg-white">
+                <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 flex items-center justify-center mb-4">
                     <ClipboardCheck className="w-5 h-5 text-zinc-900" />
                 </div>
                 <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Sem Diagnosticos</h3>
@@ -413,37 +413,37 @@ export default function DiagnosticResponsesPanel({ projectId, projectType }: Dia
     return (
         <div className="space-y-6">
             {/* Summary Header */}
-            <div className="border border-zinc-200 rounded-2xl shadow-sm bg-white p-5">
+            <div className="border border-zinc-200 shadow-sm bg-white p-5">
                 <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 flex items-center justify-center">
                         <ClipboardCheck className="w-4 h-4 text-zinc-900" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">
+                    <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
                         Resumo de Diagnosticos
                     </span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Total</span>
+                        <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400 block mb-1">Total</span>
                         <span className="text-2xl font-black text-zinc-900 tracking-tight">{totalDiagnostics}</span>
                     </div>
                     <div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Tipo</span>
+                        <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400 block mb-1">Tipo</span>
                         <span className="text-sm font-bold text-zinc-700">{getTypeLabel(projectType || 'consulting')}</span>
                     </div>
                     {latestResponse.maturity_percentage != null && (
                         <div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Score Atual</span>
+                            <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400 block mb-1">Score Atual</span>
                             <span className="text-2xl font-black tracking-tight" style={{ color: getMaturityColor(latestResponse.maturity_percentage) }}>
                                 {Math.round(latestResponse.maturity_percentage)}
                             </span>
-                            <span className="text-[10px] font-bold text-zinc-400 ml-1">/100</span>
+                            <span className="text-xxs font-bold text-zinc-400 ml-1">/100</span>
                         </div>
                     )}
                     {latestResponse.maturity_level && (
                         <div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Maturidade</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md inline-block">
+                            <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400 block mb-1">Maturidade</span>
+                            <span className="text-xxs font-black uppercase tracking-widest text-zinc-900 bg-zinc-100 px-3 py-1.5 inline-block">
                                 {latestResponse.maturity_level}
                             </span>
                         </div>

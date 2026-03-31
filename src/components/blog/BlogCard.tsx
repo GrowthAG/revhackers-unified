@@ -77,10 +77,10 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
         <div className="flex-1 flex flex-col pr-4">
           {/* Badge & Meta */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-black bg-zinc-100 px-2 py-1 rounded-none border border-transparent">
+            <span className="text-xxs font-bold uppercase tracking-widest text-black bg-zinc-100 px-2 py-1 rounded-none border border-transparent">
               {post.category}
             </span>
-            <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+            <span className="text-xxs font-bold text-zinc-300 uppercase tracking-widest">
               {post.readTime || '5 MIN'}
             </span>
           </div>
@@ -107,8 +107,8 @@ const BlogCard = ({ post, onClick }: BlogCardProps) => {
                   }}
                 />
               <div className="flex flex-col">
-                <span className="text-[9px] font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest">{post.author?.role}</span>
+                <span className="text-2xs font-bold text-black uppercase tracking-widest">{post.author?.name}</span>
+                <span className="text-3xs font-bold text-zinc-400 uppercase tracking-widest">{post.author?.role}</span>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-transform group-hover:translate-x-1" />

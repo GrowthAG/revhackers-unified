@@ -20,7 +20,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Contexto do Negócio
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 02/05
                 </p>
             </div>
@@ -94,7 +94,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o ticket médio do produto/serviço? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">IMPORTANTE:</span> Informe o valor exato para cálculo de ROI.
                     </p>
                     <Input
@@ -149,7 +149,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual a receita recorrente mensal (MRR)? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">DEF:</span> Receita Mensal Recorrente (Soma de Assinaturas).
                     </p>
                     <Select
@@ -203,7 +203,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual a taxa de churn mensal atual? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">DEF:</span> Percentual de clientes ou receita perdida por cancelamento/mês.
                     </p>
                     <Select
@@ -233,7 +233,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Principais Concorrentes
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         Informe até 3 concorrentes que você enfrenta. Se souber o site, preencha também.
                     </p>
                     <div className="space-y-3">
@@ -265,7 +265,7 @@ export default function Step2Contexto({ form }: Step2Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Descrição do Perfil de Cliente Ideal (ICP)
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         Quem é o cliente dos sonhos? (Cargo, Setor, Tamanho, Momento)
                     </p>
                     <textarea

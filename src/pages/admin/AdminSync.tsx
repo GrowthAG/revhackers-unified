@@ -225,7 +225,7 @@ const AdminSync = () => {
                                     </div>
 
                                     {syncing && (
-                                        <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-xl">
+                                        <div className="p-4 bg-zinc-50 border border-zinc-200 ">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <RefreshCw className="w-4 h-4 animate-spin text-zinc-900" />
                                                 <span className="font-medium text-zinc-900">Sincronizando {progress.type}...</span>
@@ -233,9 +233,9 @@ const AdminSync = () => {
                                             <div className="text-sm text-zinc-600">
                                                 {progress.current} de {progress.total}
                                             </div>
-                                            <div className="w-full bg-zinc-200 rounded-full h-2 mt-2">
+                                            <div className="w-full bg-zinc-200 h-2 mt-2">
                                                 <div
-                                                    className="bg-zinc-900 h-2 rounded-full transition-all"
+                                                    className="bg-zinc-900 h-2 transition-all"
                                                     style={{ width: `${(progress.current / progress.total) * 100}%` }}
                                                 />
                                             </div>
@@ -244,21 +244,21 @@ const AdminSync = () => {
 
                                     {results && (
                                         <div className="space-y-2">
-                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 rounded-xl flex items-center justify-between">
+                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <CheckCircle className="w-4 h-4 text-[#00CC6A]" />
                                                     <span className="font-medium">Artigos</span>
                                                 </div>
                                                 <span className="text-sm">{results.posts.success}/{results.posts.total}</span>
                                             </div>
-                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 rounded-xl flex items-center justify-between">
+                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <CheckCircle className="w-4 h-4 text-[#00CC6A]" />
                                                     <span className="font-medium">Materiais</span>
                                                 </div>
                                                 <span className="text-sm">{results.materials.success}/{results.materials.total}</span>
                                             </div>
-                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 rounded-xl flex items-center justify-between">
+                                            <div className="p-3 bg-[#00CC6A]/5 border border-[#00CC6A]/20 flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <CheckCircle className="w-4 h-4 text-[#00CC6A]" />
                                                     <span className="font-medium">Cases</span>

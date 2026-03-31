@@ -28,9 +28,9 @@ export default function BowtieFunnel({
     bottomRightDesc = 'Garantir Sucesso, Retenção e Expansão. Crescimento via receita recorrente.',
 }: BowtieFunnelProps) {
     return (
-        <div className="w-full bg-white p-8 border border-zinc-200 rounded-3xl overflow-hidden mt-8 mb-12">
+        <div className="w-full bg-white p-8 border border-zinc-200 overflow-hidden mt-8 mb-12">
             <div className="text-center mb-10">
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">{eyebrow}</p>
+                <p className="text-xxs font-black uppercase tracking-widest text-zinc-400 mb-2">{eyebrow}</p>
                 <h3 className="text-2xl font-black text-black">{title}</h3>
             </div>
 

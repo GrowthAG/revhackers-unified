@@ -6,13 +6,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 /**
  * auto-enrich-project
  *
- * Orquestra o enriquecimento automatico de um projeto apos criacao:
+ * Orquestra o enriquecimento automatico de uma oportunidade ou projeto:
  *   1. Busca CNPJ do cliente via BrasilAPI (Receita Federal - gratis)
  *   2. Busca performance do site via Google PageSpeed Insights (gratis)
- *   3. Salva tudo em rei_projects.enrichment_data (JSONB)
+ *   3. Salva em opportunities.enrichment_data OU rei_projects.enrichment_data
  *
- * Projetado para ser chamado em fire-and-forget apos createReiProject.
- * Nao bloqueia o fluxo de criacao do projeto.
+ * Aceita: { opportunity_id } para pre-venda OU { project_id } para execucao.
+ * Se ambos forem passados, opportunity_id tem prioridade.
  */
 
 const corsHeaders = {
@@ -20,7 +20,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// ── BrasilAPI CNPJ ──────────────────────────────────────────────────────────
+// -- BrasilAPI CNPJ --
 
 async function fetchCnpjData(cnpj: string): Promise<any | null> {
     const clean = cnpj.replace(/\D/g, '')
@@ -33,7 +33,6 @@ async function fetchCnpjData(cnpj: string): Promise<any | null> {
         if (!res.ok) return null
         const data = await res.json()
 
-        // Extrai apenas os campos uteis para nao inflar o JSONB
         return {
             cnpj: data.cnpj,
             razao_social: data.razao_social,
@@ -68,13 +67,12 @@ async function fetchCnpjData(cnpj: string): Promise<any | null> {
     }
 }
 
-// ── Google PageSpeed Insights ─────────────────────────────────────────────────
+// -- Google PageSpeed Insights --
 
 async function fetchSitePerf(url: string, apiKey: string): Promise<any | null> {
     if (!url || !apiKey) return null
 
     try {
-        // Garante que a URL tem protocolo
         const siteUrl = url.startsWith('http') ? url : `https://${url}`
 
         const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(siteUrl)}&key=${apiKey}&strategy=mobile&category=performance&category=seo`
@@ -86,9 +84,8 @@ async function fetchSitePerf(url: string, apiKey: string): Promise<any | null> {
         const cats = data.lighthouseResult?.categories ?? {}
         const audits = data.lighthouseResult?.audits ?? {}
 
-        // Se o Lighthouse falhou ou retornou um site nao analisavel (erro falso-positivo), abortar
         if (typeof cats.performance?.score !== 'number') {
-            console.warn(`[auto-enrich] PSI nao retornou um score valido para ${url}. Ignorando.`);
+            console.warn(`[auto-enrich] PSI nao retornou score valido para ${url}. Ignorando.`);
             return null;
         }
 
@@ -96,15 +93,12 @@ async function fetchSitePerf(url: string, apiKey: string): Promise<any | null> {
             url: siteUrl,
             performance_score: Math.round((cats.performance?.score ?? 0) * 100),
             seo_score:         Math.round((cats.seo?.score ?? 0) * 100),
-            // Core Web Vitals
             lcp: audits['largest-contentful-paint']?.displayValue ?? null,
             fid: audits['max-potential-fid']?.displayValue ?? null,
             cls: audits['cumulative-layout-shift']?.displayValue ?? null,
             fcp: audits['first-contentful-paint']?.displayValue ?? null,
             tti: audits['interactive']?.displayValue ?? null,
-            // Speed index
             speed_index: audits['speed-index']?.displayValue ?? null,
-            // Classificacao simplificada
             rating: cats.performance?.score >= 0.9 ? 'Excelente'
                   : cats.performance?.score >= 0.5 ? 'Precisa melhorar'
                   : 'Critico',
@@ -114,18 +108,14 @@ async function fetchSitePerf(url: string, apiKey: string): Promise<any | null> {
     }
 }
 
-// ── Main Handler ──────────────────────────────────────────────────────────────
+// -- Main Handler --
 
 serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
 
-    // ============================================================
-    // AUTH GATE - JWT ou Service Role Key
-    // Aceita chamadas do frontend (JWT de usuario) e de outras
-    // edge functions (service role key via supabase.functions.invoke)
-    // ============================================================
+    // AUTH GATE
     const authHeader = req.headers.get('Authorization');
     // @ts-ignore
     const SUPABASE_URL         = Deno.env.get('SUPABASE_URL') ?? ''
@@ -134,7 +124,6 @@ serve(async (req: Request) => {
 
     if (authHeader?.startsWith('Bearer ')) {
         const token = authHeader.replace('Bearer ', '').trim()
-        // Se o token NAO for o service role key, validar como JWT de usuario
         if (token !== SUPABASE_SERVICE_KEY) {
             const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
             const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token)
@@ -145,7 +134,6 @@ serve(async (req: Request) => {
                 })
             }
         }
-        // Se for service role key, passou - e uma chamada interna confiavel
     } else {
         return new Response(JSON.stringify({ error: 'Autorizacao necessaria.' }), {
             status: 401,
@@ -153,76 +141,93 @@ serve(async (req: Request) => {
         })
     }
     // @ts-ignore
-    const PSI_API_KEY          = Deno.env.get('PSI_API_KEY') ?? Deno.env.get('GOOGLE_API_KEY') ?? ''
+    const PSI_API_KEY = Deno.env.get('PSI_API_KEY') ?? Deno.env.get('GOOGLE_API_KEY') ?? ''
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
     try {
-        const { project_id } = await req.json()
+        const body = await req.json()
+        const opportunityId = body.opportunity_id
+        const projectId = body.project_id
 
-        if (!project_id) {
-            return new Response(JSON.stringify({ error: 'project_id obrigatorio' }), {
+        if (!opportunityId && !projectId) {
+            return new Response(JSON.stringify({ error: 'opportunity_id ou project_id obrigatorio' }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             })
         }
 
-        console.log(`[auto-enrich] Starting enrichment for project ${project_id}`)
+        // Determina a tabela e o ID alvo
+        const isOpportunity = !!opportunityId
+        const targetTable = isOpportunity ? 'opportunities' : 'rei_projects'
+        const targetId = opportunityId || projectId
 
-        // 1. Busca o projeto com o cliente vinculado
-        const { data: project, error: projErr } = await supabase
-            .from('rei_projects')
-            .select('id, client_id, client_site, client_company, client_name')
-            .eq('id', project_id)
+        console.log(`[auto-enrich] Starting enrichment for ${targetTable}/${targetId}`)
+
+        // 1. Busca o registro
+        const { data: record, error: fetchErr } = await supabase
+            .from(targetTable)
+            .select('id, client_id, client_site, client_company, client_name, enrichment_data')
+            .eq('id', targetId)
             .single()
 
-        if (projErr || !project) {
-            throw new Error(`Projeto nao encontrado: ${projErr?.message}`)
+        if (fetchErr || !record) {
+            throw new Error(`Registro nao encontrado em ${targetTable}: ${fetchErr?.message}`)
         }
 
-        // 2. Busca CNPJ do cliente vinculado
+        // 2. Busca CNPJ (via client FK ou via enrichment_data existente)
         let cnpjData = null
-        if (project.client_id) {
+        const existingCnpj = (record as any).enrichment_data?.cnpj?.cnpj
+            || (record as any).enrichment_data?.cnpj
+
+        if (existingCnpj && typeof existingCnpj === 'string') {
+            // Re-enrich com CNPJ ja conhecido
+            console.log(`[auto-enrich] Re-fetching known CNPJ ${existingCnpj}...`)
+            cnpjData = await fetchCnpjData(existingCnpj)
+        } else if ((record as any).client_id) {
             const { data: client } = await supabase
                 .from('clients')
                 .select('cnpj')
-                .eq('id', project.client_id)
+                .eq('id', (record as any).client_id)
                 .single()
 
             if (client?.cnpj) {
                 console.log(`[auto-enrich] Fetching CNPJ ${client.cnpj}...`)
                 cnpjData = await fetchCnpjData(client.cnpj)
-                if (cnpjData) {
-                    console.log(`[auto-enrich] CNPJ OK: ${cnpjData.razao_social}`)
-                }
             }
+        }
+
+        if (cnpjData) {
+            console.log(`[auto-enrich] CNPJ OK: ${cnpjData.razao_social}`)
         }
 
         // 3. Busca performance do site
         let sitePerf = null
-        if (project.client_site && PSI_API_KEY) {
-            console.log(`[auto-enrich] Fetching PSI for ${project.client_site}...`)
-            sitePerf = await fetchSitePerf(project.client_site, PSI_API_KEY)
+        if ((record as any).client_site && PSI_API_KEY) {
+            console.log(`[auto-enrich] Fetching PSI for ${(record as any).client_site}...`)
+            sitePerf = await fetchSitePerf((record as any).client_site, PSI_API_KEY)
             if (sitePerf) {
                 console.log(`[auto-enrich] PSI OK: score ${sitePerf.performance_score}`)
             }
         }
 
-        // 4. Monta e salva enrichment_data
+        // 4. Merge com enrichment_data existente e salva
+        const existingEnrichment = (record as any).enrichment_data || {}
         const enrichmentData = {
+            ...existingEnrichment,
             enriched_at: new Date().toISOString(),
             ...(cnpjData  ? { cnpj:      cnpjData  } : {}),
             ...(sitePerf  ? { site_perf: sitePerf  } : {}),
         }
 
         const { error: updateErr } = await supabase
-            .from('rei_projects')
-            .update({ enrichment_data: enrichmentData } as any)
-            .eq('id', project_id)
+            .from(targetTable)
+            .update({ enrichment_data: enrichmentData })
+            .eq('id', targetId)
 
         if (updateErr) throw new Error(`Falha ao salvar: ${updateErr.message}`)
 
-        console.log(`[auto-enrich] Done for project ${project_id}. cnpj=${!!cnpjData} site_perf=${!!sitePerf}`)
+        console.log(`[auto-enrich] Done for ${targetTable}/${targetId}. cnpj=${!!cnpjData} site_perf=${!!sitePerf}`)
 
         return new Response(JSON.stringify({
             success: true,

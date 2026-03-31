@@ -67,14 +67,14 @@ const MarkmapViewer = ({ markdown, className = '' }: MarkmapViewerProps) => {
 
     if (!markdown) {
         return (
-            <div className={`flex items-center justify-center bg-zinc-50 rounded-xl border border-dashed border-zinc-200 min-h-[400px] ${className}`}>
+            <div className={`flex items-center justify-center bg-zinc-50 border border-dashed border-zinc-200 min-h-[400px] ${className}`}>
                 <p className="text-zinc-400 text-sm">Nenhum mapa mental gerado ainda</p>
             </div>
         );
     }
 
     return (
-        <div className={`bg-white rounded-xl border border-zinc-100 shadow-sm overflow-hidden ${className}`}>
+        <div className={`bg-white border border-zinc-100 shadow-sm overflow-hidden ${className}`}>
             <svg
                 ref={svgRef}
                 className="w-full min-h-[400px]"

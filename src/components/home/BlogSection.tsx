@@ -120,7 +120,7 @@ const BlogSection = () => {
                         className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                       />
                       <div className="absolute top-3 left-3">
-                        <span className="text-[10px] uppercase tracking-widest bg-white/90 backdrop-blur-sm px-3 py-1 text-black font-bold border border-black/10 rounded-sm">
+                        <span className="text-xxs uppercase tracking-widest bg-white/90 backdrop-blur-sm px-3 py-1 text-black font-bold border border-black/10 rounded-sm">
                           {article.category}
                         </span>
                       </div>

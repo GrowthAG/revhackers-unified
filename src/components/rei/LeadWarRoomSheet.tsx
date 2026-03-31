@@ -7,11 +7,15 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
-    Loader2, Building2, Globe, BrainCircuit, Users, Zap,
+    Loader2, Building2, Globe, Users, Zap, BrainCircuit,
     ArrowRight, CheckCircle2, Flame, UserCircle, Target, Briefcase, Activity, Linkedin, ShieldCheck,
-    RefreshCw, Mail, Search, Edit3, Save, PlayCircle
+    RefreshCw, Mail, Search, Edit3, Save, PlayCircle, FileText, UserPlus, Trash2, HeartHandshake, EyeOff
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import ProposalForm from '@/components/admin/ProposalForm';
+import { AIProvider } from '@/context/AIContext';
+import { Stakeholder } from '@/types/pipeline';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +28,8 @@ interface LeadSummary {
     maturityPct: number;
     nextAction: string;
     daysSinceActivity: number;
+    opportunity_data?: any;
+    status?: string;
 }
 
 interface FullLeadData {
@@ -36,6 +42,7 @@ interface FullLeadData {
     enrichment_data: any;
     market_data: any;
     site_analysis: any;
+    opportunity_data?: any;
 }
 
 interface LeadWarRoomSheetProps {
@@ -95,7 +102,17 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
     const [newNote, setNewNote] = useState('');
     const [savingNotes, setSavingNotes] = useState(false);
 
-    // Trade Name State
+    // Stakeholders State
+    const [showStakeholderForm, setShowStakeholderForm] = useState(false);
+    const [stakeholderToEdit, setStakeholderToEdit] = useState<Stakeholder | null>(null);
+    const [localStakeholders, setLocalStakeholders] = useState<Stakeholder[]>([]);
+    const [stType, setStType] = useState<'decision_maker'|'influencer'|'champion'|'blocker'|'other'>('decision_maker');
+    const [stName, setStName] = useState('');
+    const [stEmail, setStEmail] = useState('');
+    const [stRole, setStRole] = useState('');
+    const [savingStakeholder, setSavingStakeholder] = useState(false);
+
+    // Viewer Modal State
     const [manualTradeName, setManualTradeName] = useState('');
     const [savingTradeName, setSavingTradeName] = useState(false);
 
@@ -107,8 +124,15 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
         if (open && lead?.id) {
             loadFullData(lead.id);
             loadMeetings(lead.id);
+
+            if (lead.opportunity_data?.stakeholders) {
+                setLocalStakeholders(lead.opportunity_data.stakeholders);
+            } else {
+                setLocalStakeholders([]);
+            }
         } else {
             setFullData(null);
+            setLocalStakeholders([]);
             setMeetings([]);
             setCnpjInput('');
             setNewNote('');
@@ -241,6 +265,48 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
             toast.error('Erro ao salvar nota.');
         } finally {
             setSavingNotes(false);
+        }
+    };
+
+    // ── Adicionar Stakeholder ──
+    const handleSaveStakeholder = async () => {
+        if (!lead?.id || !stName.trim()) return;
+        const st: Stakeholder = {
+            id: crypto.randomUUID(),
+            name: stName.trim(),
+            email: stEmail.trim() || '',
+            role: stRole.trim() || '',
+            type: stType
+        };
+        const updated = [...localStakeholders, st];
+        setLocalStakeholders(updated);
+        
+        try {
+            const oppData = lead?.opportunity_data || {};
+            await supabase.from('opportunities').update({ opportunity_data: { ...oppData, stakeholders: updated } }).eq('id', lead.id);
+            setStName(''); setStEmail(''); setStRole(''); setStType('decision_maker');
+            setShowStakeholderForm(false);
+            toast.success('Stakeholder adicionado!');
+        } catch(e) {
+            toast.error('Erro ao salvar no banco');
+        }
+    };
+
+    // ── Remover Stakeholder ──
+    const handleRemoveStakeholder = async (id: string) => {
+        if (!lead?.id) return;
+        setSavingStakeholder(true);
+        try {
+            const oppData = fullData?.opportunity_data || {};
+            const existing = (oppData.stakeholders || []) as Stakeholder[];
+            const updated = existing.filter(s => s.id !== id);
+            await supabase.from('opportunities').update({ opportunity_data: { ...oppData, stakeholders: updated } }).eq('id', lead.id);
+            toast.success('Stakeholder removido.');
+            await loadFullData(lead.id);
+        } catch(e) {
+            toast.error('Erro ao remover stakeholder.');
+        } finally {
+            setSavingStakeholder(false);
         }
     };
 
@@ -389,20 +455,133 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
 
                             {/* Dados basicos do lead */}
                             {fullData && (
-                                <div className="space-y-2">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Contato</p>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {[
-                                            { icon: Mail, value: fullData.client_email },
-                                            { icon: Globe, value: fullData.client_site },
-                                            { icon: Building2, value: fullData.client_company },
-                                        ].filter(r => r.value).map(({ icon: Icon, value }) => (
-                                            <div key={value} className="flex items-center gap-2 text-sm font-medium text-zinc-700">
-                                                <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                                                <span className="truncate">{value}</span>
-                                            </div>
-                                        ))}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Contatos e Stakeholders</p>
+                                        <button 
+                                            onClick={() => setShowStakeholderForm(true)}
+                                            className="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 flex items-center gap-1"
+                                        >
+                                            <UserPlus className="w-3 h-3" /> Adicionar
+                                        </button>
                                     </div>
+
+                                    {/* Primary Contact (Legacy fields) */}
+                                    <div className="border border-zinc-200 p-3 bg-zinc-50 flex flex-col gap-1 relative">
+                                        <div className="absolute top-0 right-0 px-2 py-0.5 bg-zinc-900 border-l border-b border-zinc-200">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-white">Contato Principal</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm font-black text-zinc-900 mt-1">
+                                            <UserCircle className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                                            <span className="truncate">{fullData.client_name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
+                                            <Mail className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                                            <span className="truncate">{fullData.client_email}</span>
+                                        </div>
+                                        {fullData.client_company && (
+                                            <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
+                                                <Building2 className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                                                <span className="truncate">{fullData.client_company}</span>
+                                            </div>
+                                        )}
+                                        {fullData.client_site && (
+                                            <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
+                                                <Globe className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                                                <span className="truncate">{fullData.client_site}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Outros Stakeholders */}
+                                    {localStakeholders.map((st: Stakeholder) => (
+                                        <div key={st.id} className="border border-zinc-200 p-3 bg-white flex flex-col gap-1 relative group">
+                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => window.confirm('Remover stakeholder?') && handleRemoveStakeholder(st.id)} className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-red-500 mt-[-4px] mr-[-4px]">
+                                                    <Trash2 className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <div className="flex items-center flex-wrap gap-2 text-sm font-black text-zinc-800">
+                                                <span className="truncate">{st.name}</span>
+                                                <span className={cn(
+                                                    "text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 border flex items-center gap-1",
+                                                    st.type === 'decision_maker' ? 'border-[#03FC3B] bg-[#03FC3B]/10 text-zinc-900' :
+                                                    st.type === 'influencer' ? 'border-yellow-400 bg-yellow-400/10 text-zinc-900' :
+                                                    st.type === 'champion' ? 'border-blue-400 bg-blue-400/10 text-zinc-900' :
+                                                    st.type === 'blocker' ? 'border-red-400 bg-red-400/10 text-zinc-900' :
+                                                    'border-zinc-300 bg-zinc-100 text-zinc-600'
+                                                )}>
+                                                    {st.type === 'decision_maker' && <ShieldCheck className="w-2.5 h-2.5" />}
+                                                    {st.type === 'influencer' && <Users className="w-2.5 h-2.5" />}
+                                                    {st.type === 'champion' && <HeartHandshake className="w-2.5 h-2.5" />}
+                                                    {st.type === 'blocker' && <EyeOff className="w-2.5 h-2.5" />}
+                                                    {st.type === 'decision_maker' ? 'Decisor Econômico' :
+                                                     st.type === 'influencer' ? 'Influenciador' :
+                                                     st.type === 'champion' ? 'Campeão' :
+                                                     st.type === 'blocker' ? 'Detrator' : 'Stakeholder'}
+                                                </span>
+                                            </div>
+                                            {st.role && (
+                                                <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
+                                                    <Briefcase className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                                                    <span className="truncate">{st.role}</span>
+                                                </div>
+                                            )}
+                                            {st.email && (
+                                                <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
+                                                    <Mail className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                                                    <span className="truncate">{st.email}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Stakeholder Ad hoc Form */}
+                                    {showStakeholderForm && (
+                                        <div className="border border-zinc-200 p-3 bg-zinc-50">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-3">Novo Stakeholder</p>
+                                            <div className="space-y-3">
+                                                <input 
+                                                    type="text" value={stName} onChange={e => setStName(e.target.value)}
+                                                    placeholder="Nome Completo *" className="w-full text-xs font-bold bg-white border border-zinc-200 p-2 outline-none focus:border-zinc-900" 
+                                                />
+                                                <input 
+                                                    type="text" value={stRole} onChange={e => setStRole(e.target.value)}
+                                                    placeholder="Cargo (Ex: Diretor MKT)" className="w-full text-xs bg-white border border-zinc-200 p-2 outline-none focus:border-zinc-900" 
+                                                />
+                                                <input 
+                                                    type="email" value={stEmail} onChange={e => setStEmail(e.target.value)}
+                                                    placeholder="E-mail" className="w-full text-xs bg-white border border-zinc-200 p-2 outline-none focus:border-zinc-900" 
+                                                />
+                                                <select 
+                                                    value={stType} onChange={(e: any) => setStType(e.target.value)}
+                                                    className="w-full text-xs font-bold bg-white border border-zinc-200 p-2 outline-none focus:border-zinc-900"
+                                                >
+                                                    <option value="decision_maker">👑 Decisor Econômico</option>
+                                                    <option value="influencer">🗣️ Influenciador</option>
+                                                    <option value="champion">🤝 Campeão (Advogado Interno)</option>
+                                                    <option value="blocker">🛑 Detrator (Obstáculo)</option>
+                                                    <option value="other">👤 Outro Comitê</option>
+                                                </select>
+                                                <div className="flex items-center gap-2 pt-1">
+                                                    <Button 
+                                                        size="sm" onClick={handleSaveStakeholder} disabled={savingStakeholder || !stName.trim()}
+                                                        className="h-8 flex-1 text-[9px] font-black uppercase tracking-widest bg-zinc-900 hover:bg-black text-white"
+                                                    >
+                                                        {savingStakeholder ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Save className="w-3 h-3 mr-1.5" />}
+                                                        Salvar
+                                                    </Button>
+                                                    <Button 
+                                                        size="sm" onClick={() => setShowStakeholderForm(false)}
+                                                        className="h-8 w-12 bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-500"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 </div>
                             )}
 
@@ -724,10 +903,10 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
                 {/* ── Footer fixo - CTA ──────────────────────────────────── */}
                 <div className="shrink-0 border-t border-zinc-100 px-6 py-5 bg-white space-y-3 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] relative z-10">
                     <Button
-                        onClick={() => window.open(`/admin/pitch/${lead?.id}`, '_blank')}
+                        onClick={() => navigate(`/admin/proposals/new?${lead?.status === 'opportunity' ? 'opportunity_id' : 'project_id'}=${lead?.id}`)}
                         className="w-full bg-zinc-900 hover:bg-black text-white font-black uppercase tracking-widest text-[11px] rounded-xl h-12 gap-2 shadow-sm transition-all"
                     >
-                        <PlayCircle className="w-4 h-4 text-[#FF004D]" /> Lançar Pitch Deck (Cinema Mode)
+                        <FileText className="w-4 h-4 text-[#FF004D]" /> Criar Proposta
                     </Button>
                     <Button
                         onClick={handleQualify}

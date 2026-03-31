@@ -148,7 +148,7 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
 
       {/* Blocked by section */}
       <div className="mb-4">
-        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Bloqueado por</p>
+        <p className="text-xxs font-black uppercase tracking-widest text-zinc-400 mb-2">Bloqueado por</p>
         {blockedByDeps.length === 0 ? (
           <p className="text-xs text-zinc-400 italic">Nenhuma dependencia</p>
         ) : (
@@ -159,11 +159,11 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
               return (
                 <div
                   key={dep.id}
-                  className="flex items-center justify-between px-3 py-2 bg-zinc-50 border border-zinc-100 rounded-lg group"
+                  className="flex items-center justify-between px-3 py-2 bg-zinc-50 border border-zinc-100 group"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className={`w-2 h-2 rounded-full shrink-0 ${
+                      className={`w-2 h-2 shrink-0 ${
                         t.status === 'done' ? 'bg-[#00CC6A]' : 'bg-zinc-400'
                       }`}
                     />
@@ -186,7 +186,7 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
       {/* Blocks section */}
       {blockingDeps.length > 0 && (
         <div className="mb-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Bloqueia</p>
+          <p className="text-xxs font-black uppercase tracking-widest text-zinc-400 mb-2">Bloqueia</p>
           <div className="space-y-1">
             {blockingDeps.map(dep => {
               const t = allTasks[dep.task_id];
@@ -194,10 +194,10 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
               return (
                 <div
                   key={dep.id}
-                  className="flex items-center gap-2 px-3 py-2 bg-zinc-50 border border-zinc-100 rounded-lg"
+                  className="flex items-center gap-2 px-3 py-2 bg-zinc-50 border border-zinc-100 "
                 >
                   <div
-                    className={`w-2 h-2 rounded-full shrink-0 ${
+                    className={`w-2 h-2 shrink-0 ${
                       t.status === 'done' ? 'bg-[#00CC6A]' : 'bg-zinc-300'
                     }`}
                   />
@@ -217,10 +217,10 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
           onFocus={() => setShowSearch(true)}
-          className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 outline-none focus:border-zinc-400 placeholder:text-zinc-400 bg-white"
+          className="w-full text-sm border border-zinc-200 px-3 py-2 outline-none focus:border-zinc-400 placeholder:text-zinc-400 bg-white"
         />
         {showSearch && searchText && filteredTasks.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-xl shadow-sm z-40 overflow-hidden max-h-48 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 shadow-sm z-40 overflow-hidden max-h-48 overflow-y-auto">
             {filteredTasks.map(t => (
               <button
                 key={t.id}
@@ -228,7 +228,7 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
                 className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 flex items-center gap-3 text-sm border-b border-zinc-50 last:border-0"
               >
                 <span
-                  className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                  className={`text-xxs font-black uppercase px-1.5 py-0.5 rounded shrink-0 ${
                     t.status === 'done'
                       ? 'bg-zinc-100 text-zinc-500'
                       : 'bg-zinc-900 text-white'
@@ -242,7 +242,7 @@ export const TaskDependencies: React.FC<TaskDependenciesProps> = ({ taskId, proj
           </div>
         )}
         {showSearch && searchText && filteredTasks.length === 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-xl shadow-sm z-40 px-4 py-3">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 shadow-sm z-40 px-4 py-3">
             <p className="text-sm text-zinc-400">Nenhuma tarefa encontrada</p>
           </div>
         )}

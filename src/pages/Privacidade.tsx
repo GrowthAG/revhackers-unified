@@ -6,11 +6,11 @@ const Privacidade = () => {
     <PageLayout>
       <section className="pt-32 pb-20">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-sm">
+          <div className="max-w-4xl mx-auto bg-white p-8 shadow-sm">
             <h1 className="text-4xl font-bold mb-10 text-zinc-800 border-b pb-4">Política de Privacidade</h1>
             
             <div className="prose prose-lg max-w-none space-y-8">
-              <p className="text-lg text-zinc-700 bg-zinc-50 p-4 rounded-md border-l-4 border-revgreen">
+              <p className="text-lg text-zinc-700 bg-zinc-50 p-4 border-l-4 border-revgreen">
                 A RevHackers se compromete a proteger sua privacidade. Esta Política de Privacidade 
                 explica como coletamos, usamos e protegemos suas informações pessoais quando você 
                 utiliza nosso site e serviços.

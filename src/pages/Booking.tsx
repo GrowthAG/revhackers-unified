@@ -68,7 +68,7 @@ const BookingPage = () => {
 
           {/* Header */}
           <div className="text-center mb-12">
-            <span className="text-[10px] font-mono font-black uppercase tracking-[0.4em] text-revgreen mb-4 block">
+            <span className="text-xxs font-mono font-black uppercase tracking-[0.4em] text-revgreen mb-4 block">
               Agendamento
             </span>
             <h1 className="text-3xl md:text-5xl font-bold text-zinc-900 tracking-tighter mb-4 uppercase">

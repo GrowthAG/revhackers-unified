@@ -18,7 +18,8 @@ import {
     Check,
     X,
     Clock,
-    Sparkles
+    Sparkles,
+    Cloud
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -66,6 +67,7 @@ export default function LiveStrategicPlan() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [deploying, setDeploying] = useState(false);
     const [planData, setPlanData] = useState<StrategicPlanData | null>(null);
     const [projectInfo, setProjectInfo] = useState<any>(null);
     const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -144,6 +146,28 @@ export default function LiveStrategicPlan() {
         }
     };
 
+    const handleDeploy = async () => {
+        if (!projectId) return;
+        setDeploying(true);
+        const toastId = toast({ title: 'Iniciando Motor de Deploy', description: 'Acionando Robôs da Funnels na Subconta do Cliente...', duration: 15000 });
+
+        try {
+            const { data, error } = await supabase.functions.invoke('ghl-deploy-strategy', {
+                body: { projectId }
+            });
+
+            if (error) throw new Error(error.message);
+            if (data?.error) throw new Error(data.error);
+
+            toast({ title: 'DEPLOY CONCLUÍDO!', description: data.message, variant: 'default' });
+        } catch (err: any) {
+            console.error(err);
+            toast({ title: 'Falha Crítica no Deploy', description: err.message, variant: 'destructive' });
+        } finally {
+            setDeploying(false);
+        }
+    };
+
     const regenerateEnrichment = async () => {
         try {
             toast({
@@ -204,15 +228,21 @@ export default function LiveStrategicPlan() {
         return (
             <AdminLayout>
                 <div className="p-8 max-w-4xl mx-auto">
-                    <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
+                    <Button variant="ghost" onClick={() => {
+                        if (window.history.length <= 1) {
+                            window.close();
+                        } else {
+                            navigate(-1);
+                        }
+                    }} className="mb-6">
                         <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
                     </Button>
                     <div className="text-center py-20 bg-zinc-50 rounded-sm border border-zinc-200">
                         <Sparkles className="w-12 h-12 mx-auto mb-4 text-zinc-300" />
-                        <h2 className="text-xl font-bold mb-2">Plano Estratégico Pendente</h2>
-                        <p className="text-zinc-500 mb-6">Complete o REI 360 para gerar automaticamente.</p>
-                        <Button onClick={() => navigate(`/admin/rei/${projectId}`)}>
-                            Ir para REI 360
+                        <h2 className="text-xl font-bold mb-2">Análise Estratégica Pendente</h2>
+                        <p className="text-zinc-500 mb-6">Nossa Inteligência Profunda está construindo seu balanço, aguarde a liberação técnica.</p>
+                        <Button onClick={() => window.close()} variant="outline">
+                            Fechar Janela
                         </Button>
                     </div>
                 </div>
@@ -222,52 +252,61 @@ export default function LiveStrategicPlan() {
 
     return (
         <AdminLayout>
-            <div className="p-6 max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" onClick={() => navigate(-1)} className="p-2">
+            <div id="rei-presentation-board" className="p-10 md:p-16 lg:p-20 pt-10 max-w-[1600px] mx-auto w-full bg-white min-h-screen">
+                {/* Header Presentation */}
+                <div className="flex items-start justify-between mb-16 pb-6 border-b border-zinc-100 print:mb-8 print:pb-4">
+                    <div className="flex items-start gap-6">
+                        <Button variant="ghost" onClick={() => navigate(-1)} className="p-2 mt-1 print:hidden">
                             <ArrowLeft className="w-5 h-5" />
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-black uppercase tracking-tight">
-                                Plano Estratégico
-                            </h1>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wide">
-                                {projectInfo?.clients?.name || projectInfo?.client_company || 'Cliente'} • v{planData.version}
+                            <p className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-2">
+                                PLANO ESTRATÉGICO REI • V{planData.version}
                             </p>
+                            <h1 className="text-4xl md:text-[3.25rem] font-black tracking-tight leading-[1.05] text-black">
+                                {projectInfo?.clients?.name || projectInfo?.client_company || 'Cliente'}
+                            </h1>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" size="sm" onClick={regenerateEnrichment}>
-                            <RefreshCw className="w-4 h-4 mr-2" /> Atualizar Dados
+                    <div className="flex items-center gap-3 print:hidden">
+                        <Button variant="outline" size="sm" onClick={() => window.print()} className="bg-white text-black font-bold uppercase tracking-widest text-xs h-10 px-4">
+                            Exportar PDF
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={regenerateEnrichment} className="h-10">
+                            <RefreshCw className="w-4 h-4 mr-2" /> Live Data
                         </Button>
                         <Button
                             onClick={savePlan}
                             disabled={!hasUnsavedChanges || saving}
-                            className="bg-black hover:bg-zinc-800"
+                            className="bg-black text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-widest text-xs h-10 px-6 transition-colors"
                         >
                             <Save className="w-4 h-4 mr-2" />
                             {saving ? 'Salvando...' : 'Salvar'}
                         </Button>
+                        <Button
+                            onClick={handleDeploy}
+                            disabled={deploying || planData.status !== 'approved'}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-xs h-10 px-6 transition-colors shadow-blue-600/20 shadow-lg ml-2 border border-blue-500"
+                        >
+                            {deploying ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Cloud className="w-4 h-4 mr-2" />}
+                            Deploy (Funnels)
+                        </Button>
                     </div>
                 </div>
 
-                {/* Grid Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Grid Layout Widescreen */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
 
                     {/* Left Column: Personas, Market & Benchmark */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-8 space-y-10">
 
-                        {/* Market Analysis Section (Smart Scraper Results) */}
+                        {/* Market Analysis Section */}
                         {planData.market_data && (
-                            <section className="bg-white border border-zinc-200 rounded-sm overflow-hidden">
-                                <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200">
-                                    <div className="flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4" />
-                                        <h2 className="font-bold uppercase text-sm tracking-wide">Inteligência de Mercado</h2>
-                                    </div>
+                            <section className="bg-white border-0 print:break-inside-avoid">
+                                <div className="mb-6">
+                                    <h2 className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-1">Market Scope</h2>
+                                    <h3 className="text-2xl font-black tracking-tight text-black">Inteligência Competitiva</h3>
                                 </div>
                                 <div className="p-6 space-y-8">
 
@@ -275,12 +314,12 @@ export default function LiveStrategicPlan() {
                                     {planData.market_data.concorrentes_benchmark && (
                                         <div>
                                             <h3 className="text-xs font-bold uppercase text-zinc-500 mb-3 tracking-wide">Análise Competitiva</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className={`grid grid-cols-1 gap-4 ${planData.market_data.concorrentes_benchmark.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                                                 {planData.market_data.concorrentes_benchmark.map((comp: any, idx: number) => (
                                                     <div key={idx} className="p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
                                                         <div className="flex items-center justify-between mb-2">
                                                             <h4 className="font-bold text-sm">{comp.nome}</h4>
-                                                            {comp.url && <a href={comp.url} target="_blank" className="text-[10px] text-zinc-500 hover:text-zinc-900 hover:underline">Ver Site</a>}
+                                                            {comp.url && <a href={comp.url} target="_blank" className="text-xxs text-zinc-500 hover:text-zinc-900 hover:underline">Ver Site</a>}
                                                         </div>
                                                         <div className="space-y-2 text-xs">
                                                             <div className="flex gap-2">
@@ -341,7 +380,7 @@ export default function LiveStrategicPlan() {
                                                 {planData.market_data.tendencias_2025.map((trend: any, idx: number) => (
                                                     <div key={idx} className="px-3 py-2 bg-zinc-50 border border-zinc-200 rounded-sm">
                                                         <span className="text-xs font-bold block mb-1">{trend.titulo}</span>
-                                                        <span className="text-[10px] text-zinc-500">{trend.descricao}</span>
+                                                        <span className="text-xxs text-zinc-500">{trend.descricao}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -353,23 +392,24 @@ export default function LiveStrategicPlan() {
                         )}
 
                         {/* Personas Section */}
-                        <section className="bg-white border border-zinc-200 rounded-sm overflow-hidden">
-                            <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4" />
-                                    <h2 className="font-bold uppercase text-sm tracking-wide">Personas</h2>
+                        <section className="bg-white border-0 mt-16 print:break-inside-avoid print:mt-10">
+                            <div className="mb-6 flex items-end justify-between">
+                                <div>
+                                    <h2 className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-1">Human Target</h2>
+                                    <h3 className="text-2xl font-black tracking-tight text-black">Personas de Compra</h3>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setEditingSection(editingSection === 'personas' ? null : 'personas')}
+                                    className="print:hidden"
                                 >
                                     {editingSection === 'personas' ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
                                 </Button>
                             </div>
                             <div className="p-6">
                                 {planData.personas_data?.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className={`grid grid-cols-1 gap-4 ${planData.personas_data.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                                         {planData.personas_data.map((persona, idx) => (
                                             <div key={idx} className="p-4 bg-zinc-50 rounded-sm border border-zinc-100">
                                                 {editingSection === 'personas' ? (
@@ -416,16 +456,17 @@ export default function LiveStrategicPlan() {
                         </section>
 
                         {/* OKRs Section */}
-                        <section className="bg-white border border-zinc-200 rounded-sm overflow-hidden">
-                            <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Target className="w-4 h-4" />
-                                    <h2 className="font-bold uppercase text-sm tracking-wide">OKRs</h2>
+                        <section className="bg-white border-0 mt-16 print:break-inside-avoid print:mt-10">
+                            <div className="mb-6 flex items-end justify-between">
+                                <div>
+                                    <h2 className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-1">Success Metrics</h2>
+                                    <h3 className="text-2xl font-black tracking-tight text-black">Objetivos & Metas (OKRs)</h3>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setEditingSection(editingSection === 'okrs' ? null : 'okrs')}
+                                    className="print:hidden"
                                 >
                                     {editingSection === 'okrs' ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
                                 </Button>
@@ -457,15 +498,13 @@ export default function LiveStrategicPlan() {
                     </div>
 
                     {/* Right Column: Timeline */}
-                    <div className="space-y-6">
+                    <div className="lg:col-span-4 space-y-10">
 
                         {/* Timeline Section */}
-                        <section className="bg-white border border-zinc-200 rounded-sm overflow-hidden">
-                            <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
-                                    <h2 className="font-bold uppercase text-sm tracking-wide">Roadmap (4 Ciclos)</h2>
-                                </div>
+                        <section className="bg-white border-0 print:break-inside-avoid">
+                            <div className="mb-6">
+                                <h2 className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-1">Sprint Path</h2>
+                                <h3 className="text-2xl font-black tracking-tight text-black">Roadmap Executivo</h3>
                             </div>
                             <div className="p-4 space-y-3">
                                 {planData.timeline?.map((cycle, idx) => (
@@ -486,14 +525,14 @@ export default function LiveStrategicPlan() {
                                             <span className="text-xs font-bold uppercase tracking-wide">
                                                 Ciclo {cycle.cycle}: {cycle.name}
                                             </span>
-                                            <span className="text-[10px] text-zinc-400">
+                                            <span className="text-xxs text-zinc-400">
                                                 {cycle.weeks}
                                             </span>
                                         </div>
                                         <p className="text-xs text-zinc-600 mb-2">{cycle.focus}</p>
                                         <div className="flex flex-wrap gap-1">
                                             {cycle.deliverables?.slice(0, 3).map((d, i) => (
-                                                <span key={i} className="text-[9px] px-2 py-0.5 bg-white border border-zinc-200 rounded-full">
+                                                <span key={i} className="text-2xs px-2 py-0.5 bg-white border border-zinc-200 ">
                                                     {d}
                                                 </span>
                                             ))}
@@ -501,7 +540,7 @@ export default function LiveStrategicPlan() {
                                         <div className="mt-3 flex items-center gap-2">
                                             {cycle.status === 'completed' && <Check className="w-3 h-3 text-[#00CC6A]" />}
                                             {cycle.status === 'in_progress' && <Clock className="w-3 h-3 text-zinc-900" />}
-                                            <span className={`text-[10px] uppercase tracking-wide ${cycle.status === 'completed' ? 'text-[#00CC6A]' :
+                                            <span className={`text-xxs uppercase tracking-wide ${cycle.status === 'completed' ? 'text-[#00CC6A]' :
                                                 cycle.status === 'in_progress' ? 'text-zinc-900' :
                                                     'text-zinc-400'
                                                 }`}>
@@ -517,15 +556,13 @@ export default function LiveStrategicPlan() {
 
                         {/* Benchmark Summary */}
                         {planData.benchmark_data && (
-                            <section className="bg-white border border-zinc-200 rounded-sm overflow-hidden">
-                                <div className="px-6 py-4 bg-zinc-50 border-b border-zinc-200">
-                                    <div className="flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4" />
-                                        <h2 className="font-bold uppercase text-sm tracking-wide">Benchmark</h2>
-                                    </div>
+                            <section className="bg-white border-0 print:break-inside-avoid">
+                                <div className="mb-6">
+                                    <h2 className="text-xs uppercase tracking-widest text-zinc-400 font-black mb-1">Data Index</h2>
+                                    <h3 className="text-2xl font-black tracking-tight text-black">Benchmark</h3>
                                 </div>
-                                <div className="p-4">
-                                    <p className="text-xs text-zinc-600 leading-relaxed">
+                                <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-sm">
+                                    <p className="text-xs text-zinc-600 leading-relaxed font-medium">
                                         {typeof planData.benchmark_data === 'string'
                                             ? planData.benchmark_data.substring(0, 300) + '...'
                                             : planData.benchmark_data?.summary || 'Dados de benchmark disponíveis.'

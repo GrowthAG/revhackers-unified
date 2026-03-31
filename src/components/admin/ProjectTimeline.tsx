@@ -35,18 +35,18 @@ export function ProjectTimeline({ currentStage, reiDate, planDate }: ProjectTime
 
                     return (
                         <div key={index} className="relative z-10 flex flex-col items-center gap-3 bg-white px-4">
-                            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${isActive || isCompleted
+                            <div className={`w-10 h-10 border-2 flex items-center justify-center transition-all duration-500 ${isActive || isCompleted
                                 ? 'bg-black border-black text-white'
                                 : 'bg-white border-zinc-200 text-zinc-300'
                                 } ${isActive ? 'scale-110 shadow-sm' : ''}`}>
                                 <Icon size={16} strokeWidth={isActive || isCompleted ? 2 : 2} />
                             </div>
                             <div className="text-center">
-                                <h4 className={`text-[10px] font-black uppercase tracking-widest ${isActive || isCompleted ? 'text-black' : 'text-zinc-300'
+                                <h4 className={`text-xxs font-black uppercase tracking-widest ${isActive || isCompleted ? 'text-black' : 'text-zinc-300'
                                     }`}>
                                     {stage.label}
                                 </h4>
-                                <p className="text-[9px] text-zinc-400 mt-1 font-medium bg-white px-1">
+                                <p className="text-2xs text-zinc-400 mt-1 font-medium bg-white px-1">
                                     {statusText}
                                 </p>
                             </div>

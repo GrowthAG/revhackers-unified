@@ -294,7 +294,7 @@ const ReiConsultingPage = () => {
                                 transition={{ duration: 0.5, ease: "easeInOut" }}
                             />
                         </div>
-                        <div className="flex justify-between mt-3 text-[10px] font-bold font-mono text-zinc-400 uppercase tracking-widest">
+                        <div className="flex justify-between mt-3 text-xxs font-bold font-mono text-zinc-400 uppercase tracking-widest">
                             <span>Seção {currentStep} de {STEPS.length}</span>
                             <span>{STEPS[currentStep - 1].title}</span>
                         </div>
@@ -446,7 +446,7 @@ const ReiConsultingPage = () => {
                                         <h2 className="text-2xl font-bold text-black mb-8 border-l-4 border-black pl-4 tracking-tight">Mercado e Concorrência</h2>
                                         <div className="space-y-3">
                                             <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">Quem são seus principais concorrentes? *</label>
-                                            <p className="text-[10px] text-zinc-400 italic mb-2">Dica: Inclua o site/URL se possível (ex: www.concorrente.com.br)</p>
+                                            <p className="text-xxs text-zinc-400 italic mb-2">Dica: Inclua o site/URL se possível (ex: www.concorrente.com.br)</p>
                                             <textarea {...form.register("competitors")} className="w-full bg-zinc-50 border border-zinc-200 rounded-sm px-4 py-4 text-black focus:border-black focus:ring-0 outline-none transition-all placeholder:text-zinc-400 text-sm font-medium h-32 resize-none" placeholder="Concorrente 1 (www.c1.com.br)&#10;Concorrente 2 (www.c2.com.br)..." />
                                             {form.formState.errors.competitors && <p className="text-red-500 text-xs font-medium mt-1">{form.formState.errors.competitors.message}</p>}
                                         </div>

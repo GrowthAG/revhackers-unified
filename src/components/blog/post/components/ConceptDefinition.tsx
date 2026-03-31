@@ -18,11 +18,11 @@ const ConceptDefinition = ({ concept, definition, amateurView, proView }: Concep
 
             {(amateurView && proView) && (
                 <div className="grid md:grid-cols-2 gap-6 not-prose">
-                    <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-200">
+                    <div className="bg-zinc-50 p-6 border border-zinc-200">
                         <div className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2">Visão Amadora</div>
                         <p className="text-zinc-600 italic">"{amateurView}"</p>
                     </div>
-                    <div className="bg-emerald-50 p-6 rounded-lg border border-emerald-100">
+                    <div className="bg-emerald-50 p-6 border border-emerald-100">
                         <div className="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-2">Visão Profissional</div>
                         <p className="text-emerald-900 font-medium">"{proView}"</p>
                     </div>

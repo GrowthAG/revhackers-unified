@@ -86,7 +86,7 @@ const CanaisAquisicaoStartupArticle = ({ onCTAClick }: { onCTAClick?: () => void
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 {channel.icon}
                             </div>
-                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-sm">
+                            <div className="flex bg-zinc-900 w-10 h-10 items-center justify-center mb-4 text-white shadow-sm">
                                 {channel.icon}
                             </div>
                             <h3 className="font-bold text-zinc-900 mb-2 text-lg">{channel.category}</h3>

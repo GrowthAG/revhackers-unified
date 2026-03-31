@@ -68,7 +68,7 @@ export const DocumentPickerModal: React.FC<DocumentPickerModalProps> = ({ projec
             </div>
           ) : docs.length === 0 ? (
             <div className="flex flex-col items-center justify-center text-center h-40">
-               <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-3">
+               <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-3">
                   <FileText className="w-6 h-6 text-zinc-400" />
                </div>
                <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Nenhum documento encontrado.</p>
@@ -87,10 +87,10 @@ export const DocumentPickerModal: React.FC<DocumentPickerModalProps> = ({ projec
                         onSelect(doc, libId as string);
                         onClose();
                       }}
-                      className="flex items-center justify-between w-full text-left p-3 rounded-xl hover:bg-white dark:hover:bg-zinc-900 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 transition-all group"
+                      className="flex items-center justify-between w-full text-left p-3 hover:bg-white dark:hover:bg-zinc-900 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 transition-all group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                        <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                            {isExternal ? <ExternalLink className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
                         </div>
                         <div className="flex flex-col">
@@ -98,7 +98,7 @@ export const DocumentPickerModal: React.FC<DocumentPickerModalProps> = ({ projec
                            <span className="text-xs text-zinc-400 font-medium">{isExternal ? 'Link Externo' : 'Documento Base'} • {doc.metadata?.category || 'Geral'}</span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-black uppercase text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-xxs font-black uppercase text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
                          Vincular +
                       </span>
                     </button>

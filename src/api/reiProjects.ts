@@ -3,8 +3,16 @@ import { Database } from "@/integrations/supabase/types";
 import { createDocumentFromREI } from "./knowledge";
 import { getTemplateForREI } from "./taskTemplates";
 
-export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & {
+export interface FocalPoint {
+    name: string;
+    email: string;
+    role: string;
+    is_main?: boolean;
+}
+
+export type ReiProject = Omit<Database['public']['Tables']['rei_projects']['Row'], 'focal_points'> & {
     trade_name?: string | null;
+    focal_points?: FocalPoint[] | null;
     site_analysis?: any | null;
     materials_status?: 'delivered' | 'pending';
     materials_delay_accepted?: boolean;
@@ -47,14 +55,18 @@ export type ReiProject = Database['public']['Tables']['rei_projects']['Row'] & {
         } | null;
     } | null;
 };
-export type ReiProjectInsert = Database['public']['Tables']['rei_projects']['Insert'] & { trade_name?: string | null };
-export type ReiProjectUpdate = Database['public']['Tables']['rei_projects']['Update'] & { 
+export type ReiProjectInsert = Omit<Database['public']['Tables']['rei_projects']['Insert'], 'focal_points'> & { 
+    trade_name?: string | null,
+    focal_points?: FocalPoint[] | null
+};
+export type ReiProjectUpdate = Omit<Database['public']['Tables']['rei_projects']['Update'], 'focal_points'> & { 
     trade_name?: string | null, 
     market_data?: any | null, 
     market_data_updated_at?: string | null,
     materials_status?: 'delivered' | 'pending',
     materials_delay_accepted?: boolean,
-    final_expectations?: string | null 
+    final_expectations?: string | null,
+    focal_points?: FocalPoint[] | null
 };
 
 /**
@@ -70,7 +82,7 @@ export type CreateReiProjectResult = {
 export const createReiProject = async (project: ReiProjectInsert): Promise<CreateReiProjectResult> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .insert(project)
+        .insert(project as any)
         .select()
         .single();
 
@@ -119,7 +131,7 @@ export const createReiProject = async (project: ReiProjectInsert): Promise<Creat
         }
     }
 
-    return { project: data, tasksInjected, tasksError };
+    return { project: data as unknown as ReiProject, tasksInjected, tasksError };
 };
 
 /**
@@ -141,7 +153,7 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
         throw error;
     }
 
-    return (data || []).map(p => {
+    return (data || []).map((p: any) => {
         const tradeName = (p.clients as any)?.trade_name;
         const linkedinData = (p.clients as any)?.linkedin_data;
         const linkedinUrl = (p.clients as any)?.linkedin_url;
@@ -153,8 +165,9 @@ export const getAllReiProjects = async (): Promise<ReiProject[]> => {
             linkedin_data: linkedinData,
             linkedin_url: linkedinUrl,
             linkedin_scraped_at: linkedinScrapedAt,
-            enrichment_data: (p as any).enrichment_data ?? null,
-        } as ReiProject;
+            focal_points: (p.focal_points as FocalPoint[]) ?? null,
+            enrichment_data: p.enrichment_data ?? null,
+        } as unknown as ReiProject;
     });
 };
 
@@ -189,8 +202,9 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
             linkedin_data: linkedinData,
             linkedin_url: linkedinUrl,
             linkedin_scraped_at: linkedinScrapedAt,
+            focal_points: (data.focal_points as unknown as FocalPoint[]) ?? null,
             enrichment_data: (data as any).enrichment_data ?? null,
-        } as ReiProject;
+        } as unknown as ReiProject;
     }
 
     return null;
@@ -241,7 +255,7 @@ export const getReiProjectsByClientEmail = async (email: string): Promise<ReiPro
         throw error;
     }
 
-    return data || [];
+    return ((data as any) || []) as ReiProject[];
 };
 
 /**
@@ -260,7 +274,7 @@ export const getReiProjectsByAnalyst = async (analystEmail: string): Promise<Rei
         throw error;
     }
 
-    return data || [];
+    return ((data as any) || []) as ReiProject[];
 };
 
 /**
@@ -280,7 +294,7 @@ export const getReiProjectsByStatus = async (
         throw error;
     }
 
-    return data || [];
+    return ((data as any) || []) as ReiProject[];
 };
 
 /**
@@ -293,7 +307,7 @@ export const updateReiProject = async (
 ): Promise<ReiProject | null> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
@@ -303,7 +317,7 @@ export const updateReiProject = async (
         throw error;
     }
 
-    return data;
+    return (data as any) as ReiProject | null;
 };
 
 /**

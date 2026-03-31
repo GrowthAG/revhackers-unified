@@ -91,7 +91,7 @@ export default function StepFounderLinkedIn({ form }: StepFounderProps) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Founder Intelligence
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 02: Identidade & Histórico
                 </p>
             </div>
@@ -122,7 +122,7 @@ export default function StepFounderLinkedIn({ form }: StepFounderProps) {
                         {loading ? 'Analisando...' : 'Auto-Preencher'}
                     </Button>
                 </div>
-                <p className="text-[10px] text-zinc-500 mt-2">
+                <p className="text-xxs text-zinc-500 mt-2">
                     Nossa IA pode preencher 80% dos campos abaixo automaticamente.
                 </p>
             </div>
@@ -175,7 +175,7 @@ export default function StepFounderLinkedIn({ form }: StepFounderProps) {
                             <p className="text-sm font-bold text-green-800">Skills Detectadas via LinkedIn</p>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {scrapedData.skills.map((skill, i) => (
-                                    <Badge key={i} variant="secondary" className="bg-white border border-green-200 text-green-700 text-[9px] uppercase tracking-wider">
+                                    <Badge key={i} variant="secondary" className="bg-white border border-green-200 text-green-700 text-2xs uppercase tracking-wider">
                                         {skill}
                                     </Badge>
                                 ))}

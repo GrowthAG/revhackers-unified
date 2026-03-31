@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +7,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert, CreditCard } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert, CreditCard, ListTree, CheckCircle2, AlertCircle, Code, ChevronDown, Presentation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
     Tabs,
     TabsContent,
@@ -59,9 +57,11 @@ interface ProposalFormValues {
 interface ProposalFormProps {
     initialData?: any;
     isEditing?: boolean;
+    isModal?: boolean;
+    opportunityContext?: import('@/hooks/useOpportunityIntelligence').OpportunityContext | null;
 }
 
-const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => {
+const ProposalForm = ({ initialData, isEditing = false, isModal = false, opportunityContext }: ProposalFormProps) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
@@ -72,7 +72,7 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
     const [historyOpen, setHistoryOpen] = useState(false);
     const { agents } = useAI();
 
-    const { register, handleSubmit, setValue, getValues, watch, formState: { errors } } = useForm<ProposalFormValues>({
+    const { register, handleSubmit, setValue, getValues, watch, reset, formState: { errors } } = useForm<ProposalFormValues>({
         defaultValues: {
             title: initialData?.title || '',
             slug: initialData?.slug || '',
@@ -119,70 +119,23 @@ const ProposalForm = ({ initialData, isEditing = false }: ProposalFormProps) => 
         }
     });
 
-    // [NEW] LocalStorage Persistence (Draft System)
-    const STORAGE_KEY = 'revhackers_proposal_draft';
-    const allValues = watch();
-
-    // 1. Load Draft on Mount
+    // Sync initialData completely when it populates
     useEffect(() => {
-        if (!isEditing) {
-            const savedDraft = localStorage.getItem(STORAGE_KEY);
-            if (savedDraft) {
-                try {
-                    const parsed = JSON.parse(savedDraft);
-                    // Only prompt if form is mostly empty
-                    const currentTitle = getValues('title');
-                    if (!currentTitle || currentTitle === '') {
-                        if (confirm('Encontramos um rascunho não salvo. Deseja restaurar os dados?')) {
-                            // Reset form with saved data
-                            Object.entries(parsed).forEach(([key, value]: [any, any]) => {
-                                setValue(key, value);
-                            });
-                            toast({ title: 'Rascunho restaurado' });
-                        } else {
-                            localStorage.removeItem(STORAGE_KEY);
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error parsing draft:', e);
+        if (initialData && Object.keys(initialData).length > 0) {
+            // Keep existing form state (like dirty fields), but merge initialData
+            const currentValues = getValues();
+            reset({
+                ...currentValues,
+                ...initialData,
+                crm_data: {
+                    ...currentValues.crm_data,
+                    ...(initialData.crm_data || {})
                 }
-            }
+            });
         }
-    }, [isEditing, setValue, getValues]);
+    }, [initialData, reset, getValues]);
 
-    // 2. Auto-save Draft (Debounced + Unmount)
-    useEffect(() => {
-        if (isEditing) return;
-
-        const saveToStorage = () => {
-            if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
-            }
-        };
-
-        // Debounced save
-        const timer = setTimeout(saveToStorage, 2000);
-
-        // Save on unmount
-        return () => {
-            clearTimeout(timer);
-            saveToStorage();
-        };
-    }, [allValues, isEditing]);
-
-    // 3. Save on Browser/Tab Close
-    useEffect(() => {
-        if (isEditing) return;
-
-        const handleBeforeUnload = () => {
-            if (allValues.client_name || allValues.transcript || allValues.detailed_scope) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(allValues));
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [allValues, isEditing]);
+    // Draft System completely eradicated at user request to prevent popup lock-ins
 
     const watchedTitle = watch('title');
     const watchedSource = watch('proposal_source');
@@ -525,7 +478,10 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                     booking_url: data.booking_url || null,
                     proposal_source: data.proposal_source || 'call',
                     payment_link: data.payment_link || null
-                }
+                },
+
+                // Link to opportunity (pre-sale pipeline)
+                opportunity_id: initialData?.opportunity_id || opportunityContext?.opportunity_id || null,
             };
 
             let proposalId = initialData?.id;
@@ -536,7 +492,7 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                 if (error) throw error;
 
                 // Only clear draft if save successful
-                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem('revhackers_proposal_draft');
                 toast({ title: 'Proposta atualizada!' });
                 navigate('/admin/proposals');
             } else {
@@ -548,7 +504,20 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                 proposalId = newProposal.id;
                 slug = newProposal.slug;
 
-                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem('revhackers_proposal_draft');
+
+                // Auto-advance opportunity to proposal_draft
+                const oppId = initialData?.opportunity_id || opportunityContext?.opportunity_id;
+                if (oppId) {
+                    try {
+                        const { advanceOpportunityStage } = await import('@/api/opportunities');
+                        await advanceOpportunityStage(oppId, 'proposal_draft', 'Proposta criada automaticamente');
+                        console.log(`[ProposalForm] Opportunity ${oppId} avancada para proposal_draft`);
+                    } catch (advErr: any) {
+                        console.warn('[ProposalForm] Auto-advance falhou (nao critico):', advErr?.message);
+                    }
+                }
+
                 toast({ title: 'Proposta criada com sucesso!' });
 
                 // AUTO-OPEN Public Page
@@ -580,26 +549,31 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
         try {
             const { data, error } = await supabase
                 .from('meeting_recordings')
-                .select('id, title, transcript, insights, recording_url, created_at, duration_seconds')
+                .select('id, title, transcript, ai_insights, video_url, drive_file_id, created_at, happened_at')
                 .order('created_at', { ascending: false })
                 .limit(20);
 
             if (!error && data) {
-                setMeetingHistory(data.map((r: any) => ({
-                    id: r.id,
-                    name: r.title || 'Reuniao sem titulo',
-                    title: r.title,
-                    transcript: r.transcript,
-                    insights: r.insights,
-                    url: r.recording_url || '',
-                    createdAt: r.created_at,
-                    duration: r.duration_seconds,
-                    // Extrair dados do cliente dos insights da IA
-                    clientName: r.insights?.client_info?.company || r.insights?.client_info?.name || null,
-                    clientContactName: r.insights?.client_info?.name || null,
-                    clientEmail: r.insights?.client_info?.email || null,
-                    crm_data: r.insights,
-                })));
+                setMeetingHistory(data.map((r: any) => {
+                    // Construir URL do video: video_url direto, ou Google Drive embed via drive_file_id
+                    const videoUrl = r.video_url
+                        || (r.drive_file_id ? `https://drive.google.com/file/d/${r.drive_file_id}/view` : '');
+                    return {
+                        id: r.id,
+                        name: r.title || 'Reuniao sem titulo',
+                        title: r.title,
+                        transcript: r.transcript,
+                        insights: r.ai_insights,
+                        url: videoUrl,
+                        createdAt: r.happened_at || r.created_at,
+                        duration: null,
+                        // Extrair dados do cliente dos insights da IA
+                        clientName: r.ai_insights?.client_info?.company || r.ai_insights?.client_info?.name || null,
+                        clientContactName: r.ai_insights?.client_info?.name || null,
+                        clientEmail: r.ai_insights?.client_info?.email || null,
+                        crm_data: r.ai_insights,
+                    };
+                }));
             }
         } catch (e: any) {
             console.warn("Failed to fetch meeting history:", e);
@@ -671,6 +645,11 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
         // Fallback to form watch if not passed explicitly
         if (!transcript) transcript = watch('transcript');
 
+        // Fallback to opportunity meeting transcript
+        if (!transcript && opportunityContext?.meeting?.transcript) {
+            transcript = opportunityContext.meeting.transcript;
+        }
+
         const crmData = watch('crm_data');
         const hasDiagnosis = crmData?.source === 'rei_diagnosis';
         const sourceDoc = watch('bid_document_url');
@@ -706,9 +685,124 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                 - Faturamento: ${crmData.faturamento || 'N/A'}
                 - Time Comercial: SDRs: ${crmData.sdrCount || 0}, Closers: ${crmData.closerCount || 0}
                 - Ferramentas: ${crmData.crm || 'N/A'}
-                
+
                 USE ESTES DADOS PARA PERSONALIZAR A PROPOSTA (Cite as dores específicas e como resolvemos).
                 `;
+            }
+
+            // ── OPPORTUNITY INTELLIGENCE BLOCK ──
+            // Injeta toda inteligencia disponivel da opportunity para hiper-personalizar a proposta
+            let opportunityIntelBlock = "";
+            const ctx = opportunityContext;
+            if (ctx) {
+                const parts: string[] = [];
+
+                // Meeting AI Insights
+                if (ctx.meeting?.ai_insights) {
+                    const ins = ctx.meeting.ai_insights;
+                    parts.push(`
+INTELIGENCIA DA CALL (AI-Extraida - 100% factual, use como base):
+- Resumo Executivo: ${ins.resumo_executivo || 'N/A'}
+- Sentimento do Lead: ${ins.sentimento || 'N/A'}
+- Score de Engajamento: ${ins.score_engajamento || 'N/A'}/100
+- Objecoes Detectadas: ${(ins.objecoes_cliente || ins.objecoes_detectadas || []).join('; ') || 'Nenhuma'}
+- Acoes Identificadas: ${(ins.acoes_identificadas || []).join('; ') || 'N/A'}
+- Oportunidades: ${(ins.oportunidades_detectadas || []).join('; ') || 'N/A'}
+- Riscos: ${(ins.riscos_identificados || []).join('; ') || 'N/A'}
+- Topicos Principais: ${(ins.topicos_principais || []).join('; ') || 'N/A'}`);
+
+                    // Strategic intelligence
+                    const strat = ins.inteligencia_estrategica;
+                    if (strat) {
+                        parts.push(`
+- Concorrentes Mencionados: ${(strat.concorrentes_mencionados || []).map((c: any) => typeof c === 'string' ? c : c.nome).join(', ') || 'N/A'}
+- Desafios Especificos: ${(strat.desafios_especificos || []).join('; ') || 'N/A'}
+- Objetivos Curto Prazo: ${(strat.objetivos_curto_prazo || []).join('; ') || 'N/A'}
+- Stack Tecnologica: ${(strat.stack_tecnologica || []).join(', ') || 'N/A'}
+- Benchmarks: ${(strat.referencias_benchmarking || []).join(', ') || 'N/A'}`);
+                    }
+                }
+
+                // Enrichment Data (CNPJ + Site Performance)
+                if (ctx.enrichment_data) {
+                    const cnpj = ctx.enrichment_data.cnpj;
+                    const sitePerf = ctx.enrichment_data.site_perf;
+
+                    if (cnpj) {
+                        parts.push(`
+DADOS DA EMPRESA (Receita Federal):
+- Razao Social: ${cnpj.razao_social || 'N/A'}
+- Nome Fantasia: ${cnpj.nome_fantasia || 'N/A'}
+- Porte: ${cnpj.porte || 'N/A'}
+- Capital Social: R$ ${cnpj.capital_social ? Number(cnpj.capital_social).toLocaleString('pt-BR') : 'N/A'}
+- CNAE Principal: ${cnpj.cnae_principal?.descricao || 'N/A'}
+- Municipio/UF: ${cnpj.municipio || 'N/A'}/${cnpj.uf || 'N/A'}
+- Data Abertura: ${cnpj.data_abertura || 'N/A'}
+- Socios: ${(cnpj.qsa || []).map((s: any) => s.nome).join(', ') || 'N/A'}`);
+                    }
+
+                    if (sitePerf) {
+                        parts.push(`
+PERFORMANCE DO SITE (Google PageSpeed):
+- URL: ${sitePerf.url || ctx.client_site || 'N/A'}
+- Performance Score: ${sitePerf.performance_score}/100 (${sitePerf.rating || 'N/A'})
+- SEO Score: ${sitePerf.seo_score}/100
+- LCP: ${sitePerf.lcp || 'N/A'} | FCP: ${sitePerf.fcp || 'N/A'} | CLS: ${sitePerf.cls || 'N/A'}
+- TTI: ${sitePerf.tti || 'N/A'} | Speed Index: ${sitePerf.speed_index || 'N/A'}`);
+                    }
+                }
+
+                // Diagnostico vinculado
+                if (ctx.diagnostico) {
+                    parts.push(`
+DIAGNOSTICO DO LEAD (Score: ${ctx.diagnostico.score || 'N/A'}):
+- Tipo: ${ctx.diagnostico.tipo || 'N/A'}
+- Respostas: ${ctx.diagnostico.respostas ? JSON.stringify(ctx.diagnostico.respostas).substring(0, 2000) : 'N/A'}`);
+                }
+
+                // Opportunity signals
+                if (ctx.opportunity_data) {
+                    const od = ctx.opportunity_data;
+                    if (od.sinais_compra?.length || od.objecoes_detectadas?.length || od.score_fechamento) {
+                        parts.push(`
+SINAIS COMERCIAIS:
+- Score de Fechamento: ${od.score_fechamento || 'N/A'}%
+- Sinais de Compra: ${(od.sinais_compra || []).join('; ') || 'Nenhum'}
+- Objecoes: ${(od.objecoes_detectadas || []).join('; ') || 'Nenhuma'}
+- Investimento Estimado: R$ ${od.investimento_estimado ? `${od.investimento_estimado.range_min}-${od.investimento_estimado.range_max}` : 'N/A'}`);
+                    }
+                }
+
+                // Site analysis
+                if (ctx.site_analysis) {
+                    parts.push(`
+ANALISE DO SITE: ${JSON.stringify(ctx.site_analysis).substring(0, 1500)}`);
+                }
+
+                // Market data
+                if (ctx.market_data) {
+                    parts.push(`
+DADOS DE MERCADO: ${JSON.stringify(ctx.market_data).substring(0, 1500)}`);
+                }
+
+                if (parts.length > 0) {
+                    opportunityIntelBlock = `
+═══════════════════════════════════════════════════
+INTELIGENCIA COMPLETA DA OPORTUNIDADE (dados reais, use para personalizar)
+═══════════════════════════════════════════════════
+${parts.join('\n')}
+
+INSTRUCOES CRITICAS:
+- Use os dados REAIS acima para personalizar cada secao da proposta
+- Cite concorrentes mencionados na analise competitiva
+- Use os desafios especificos como base do diagnostico
+- Alinhe o escopo com os objetivos de curto prazo do lead
+- Se houver dados de site, proponha melhorias concretas com base nos scores
+- Se houver CNPJ, adapte o porte da solucao ao porte da empresa
+- NUNCA use o caractere em dash (traco longo). Use hifen simples (-)
+═══════════════════════════════════════════════════
+`;
+                }
             }
 
             const { data, error } = await supabase.functions.invoke('agent-chat', {
@@ -716,80 +810,58 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
                     raw_mode: true,
                     messages: [{
                         role: 'system',
-                        content: `🧠 ESTRATEGISTA SÊNIOR DE REVENUE OPERATIONS E CUSTOMER SUCCESS.
+                            content: `🧠 ESTRATEGISTA SÊNIOR DE REVENUE OPERATIONS E CUSTOMER SUCCESS.
 
-Sua tarefa é analisar a transcrição/briefing/diagnóstico e criar uma PROPOSTA COMERCIAL ÚNICA E PERSONALIZADA.
+Sua tarefa é atuar como um Arquiteto de Soluções B2B de Altíssimo Nível. Você analisará a transcrição da call de vendas, o diagnóstico ou o briefing e redigirá uma PROPOSTA COMERCIAL ASSUSTADORAMENTE METICULOSA E VOLTADA Á APRESENTAÇÃO DE SLIDES (PITCH DECK).
 
-⚠️ CRÍTICO: NÃO USE MODELOS PADRÃO. O Escopo deve refletir EXATAMENTE o que foi discutido/diagnosticado.
+⚠️ REGRA DE OURO: NÃO SEJA GENÉRICO. O formato agora é visual. Seja direto, cirúrgico e foque em engenharia de receita e ROI.
 
-ESTRUTURA DE RESPOSTA (JSON):
-1. "summary": Documento de Texto (Markdown) seguindo ESTRITAMENTE este formato visual:
+ESTRUTURA DE RESPOSTA (JSON STRICT):
 
-   Sistema de Geração de Demanda & Atendimento Automatizado (ou Título Adequado ao Projeto)
-   
-   01
-   Objetivo do Projeto
-   [Extraia da transcrição: O que o cliente quer resolver? Ex: Garantir resposta rápida, organizar CRM...]
-   
-   02
-   Horizonte do Projeto
-   [Extraia da transcrição: Duração (ex: 90 dias), Modelo (Piloto/Rollout)...]
-   
-   03
-   Fase 1 - [Nome da Fase Extraído]
-   [O que será feito na primeira etapa?]
-   
-   04
-   Fase 2 - [Nome da Fase Extraído]
-   [O que será feito na sequência?]
-   
-   ... (Adicione quantas fases forem necessárias conforme a transcrição)
-   
-   XX
-   Fora do Escopo
-   [O que NÃO será feito?]
-   
-   XX
-   Consideração Final
-   [Resumo de valor]
+1. "crm_data": Objeto contendo o "live_proposal". É AQUI QUE OS CHUNKS DOS SLIDES FICAM:
+   A) "diagnosis_headline": Chamada principal do desafio (ex: Vazamento de Receita no Funil B2B)
+   B) "diagnosis_subheadline": Subtítulo resumindo o contexto.
+   C) "challenges": Array de até 4 objetos com "title" e "description", expondo a ferida.
+   D) "primary_objective": O alvo central (ex: Dobrar a conversão de leads topo de funil).
+   E) "roadmap_headline": Título da seção de Roadmap.
+   F) "roadmap_subheadline": Subtítulo do roadmap.
+   G) "roadmap": Array das fases reais. Ex:
+      {
+        "phase": "Fundação e Setup",
+        "duration": "Semanas 1-2",
+        "description": "Explicação macro do que será montado.",
+        "deliverables": ["Configuração de CRM", "Mapeamento YAML"]
+      }
 
-2. "detailed_scope": Array para o Roadmap Visual. Deve ESPELHAR as fases descritas no texto acima.
-   Exemplo (Não copie, gere o seu):
-   [
-     { "phase": "Fase 1 - [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] },
-     { "phase": "Fase 2 - [Nome]", "duration": "[Tempo]", "description": "...", "deliverables": ["..."] }
-   ]`
-                    }, {
-                        role: 'user',
-                        content: `${contextBlock}
+2. "summary": Documento Markdown de backup.
+3. "detailed_scope": Opcional, pode ser o mesmo roadmap stringificado.
 
-${diagnosisBlock}
-
-FONTE DE DADOS DO CLIENTE:
-${transcript ? `TRANSCRIÇÃO:\n${transcript.substring(0, 15000)}` : 'Utilize os dados do DIAGNÓSTICO acima como base principal.'}
-
----
-Gere o JSON de proposta baseado no PROMPT MESTRE.
-
-Gere o JSON de proposta baseado no PROMPT MESTRE.
-
-Model de JSON de saída:
+Modelo de JSON Exato a ser retornado:
 {
-    "summary": "Sistema de Geração de Demanda...\\n\\n01\\nObjetivo...\\n\\n02\\nHorizonte...\\n\\n03\\nFase 1...",
-    "headline": "Proposta Comercial: [Nome do Cliente]",
-    "detailed_scope": [
-        { "phase": "Fase 1 - [Nome]", "duration": "Semana 1", "description": "...", "deliverables": ["..."], "status": "pending" },
-        { "phase": "Fase 2 - [Nome]", "duration": "Semana 2", "description": "...", "deliverables": ["..."], "status": "pending" }
-    ],
+    "summary": "...",
+    "headline": "Projeto Executivo: [Solução Principal]",
+    "crm_data": {
+        "live_proposal": {
+            "diagnosis_headline": "...",
+            "diagnosis_subheadline": "...",
+            "challenges": [{"title": "O Desafio", "description": "Por que sangra dinheiro"}],
+            "primary_objective": "...",
+            "roadmap_headline": "Cronograma de Operações",
+            "roadmap_subheadline": "...",
+            "roadmap": [
+                { "phase": "Mês 1", "duration": "Semana 1-4", "description": "...", "deliverables": ["..."] }
+            ]
+        }
+    },
     "investment_total": 0,
     "setup_fee": 0,
     "installment_value": 0,
-    "client_name": "[NOME DA EMPRESA - Nunca o nome da pessoa]",
-    "client_contact_name": "[NOME DA PESSOA COM QUEM FALAMOS]",
-    "client_email": "[EMAIL SE MENCIONADO OU VAZIO]"
+    "client_name": "[Nome da Empresa (Extrapolado da call)]",
+    "client_contact_name": "[Pessoa decisora com quem falamos]",
+    "client_email": "[email se encontrado]"
 }`
-                    }],
-                    model: 'gpt-4o'
+                        }],
+                        model: 'gpt-4o'
                 }
             });
 
@@ -827,8 +899,13 @@ Model de JSON de saída:
 
             if (parsed.summary) setValue('summary', toString(parsed.summary));
             if (parsed.call_summary) setValue('call_detail_summary', toString(parsed.call_summary));
-            if (parsed.detailed_scope) setValue('detailed_scope', toString(parsed.detailed_scope));
             if (parsed.headline) setValue('headline', toString(parsed.headline));
+
+            if (parsed.detailed_scope) {
+                setValue('detailed_scope', toString(parsed.detailed_scope));
+            } else if (parsed.crm_data?.live_proposal?.roadmap) {
+                setValue('detailed_scope', toString(parsed.crm_data.live_proposal.roadmap));
+            }
 
             if (parsed.investment_total) setValue('investment_total', String(parsed.investment_total));
             if (parsed.setup_fee) setValue('setup_fee', String(parsed.setup_fee));
@@ -860,27 +937,14 @@ Model de JSON de saída:
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-7xl mx-auto pb-20 px-8">
-            {/* Header Ultra Minimalista */}
-            <div className="flex items-center justify-between pb-6 border-b border-zinc-100">
-                <div className="flex items-center gap-4">
-                    <Button type="button" variant="ghost" size="icon" onClick={() => navigate('/admin/proposals')} className="rounded-full w-8 h-8 hover:bg-zinc-50 transition-all">
-                        <ArrowLeft className="w-4 h-4 text-zinc-400" />
-                    </Button>
-                    <div>
-                        <h1 className="text-sm font-semibold tracking-tight text-zinc-900 leading-none">
-                            {isEditing ? 'Editar Proposta' : 'Nova Proposta'}
-                        </h1>
-                    </div>
-                </div>
-            </div>
 
             <div className="max-w-5xl mx-auto space-y-12 pb-32">
 
                 {/* 1. SINGLE CARD: VIDEO + DATA SOURCE */}
-                <div className="bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm space-y-6">
+                <div className="bg-white p-6 border border-zinc-100 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                        <h2 className="text-tiny font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-2">
+                            <div className="w-1 h-1 bg-zinc-800" />
                             Fonte de Dados & Review
                         </h2>
                         {watch('recording_url') && (
@@ -889,7 +953,7 @@ Model de JSON de saída:
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => window.open(watch('recording_url'), '_blank')}
-                                className="h-6 text-[10px] font-bold uppercase text-zinc-400 hover:text-zinc-900"
+                                className="h-6 text-xxs font-bold uppercase text-zinc-400 hover:text-zinc-900"
                             >
                                 Abrir Externo <ExternalLink className="w-2.5 h-2.5 ml-1" />
                             </Button>
@@ -900,17 +964,16 @@ Model de JSON de saída:
                         {/* MEETING PICKER & CLIENT DATA */}
                         <div className="space-y-6">
                             {/* Meeting Picker Button */}
-                            <div className="space-y-4 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
-                                <Label className="text-[10px] font-bold uppercase text-zinc-400">Selecionar Reuniao Gravada</Label>
+                            <div className="space-y-4 bg-zinc-50 p-4 border border-zinc-100">
+                                <Label className="text-xxs font-bold uppercase text-zinc-400">Selecionar Reuniao Gravada</Label>
 
-                                <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+                                <Dialog open={historyOpen} onOpenChange={(open) => {
+                                    setHistoryOpen(open);
+                                    if (open) fetchMeetingHistory();
+                                }}>
                                     <DialogTrigger asChild>
                                         <Button
                                             type="button"
-                                            onClick={() => {
-                                                setHistoryOpen(true);
-                                                fetchMeetingHistory();
-                                            }}
                                             className="w-full h-12 bg-zinc-900 hover:bg-black text-white font-bold text-xs uppercase tracking-widest"
                                         >
                                             <Video className="w-4 h-4 mr-2" />
@@ -950,10 +1013,10 @@ Model de JSON de saída:
                                                                 setTimeout(() => handleGenerateScope(meeting.transcript), 500);
                                                             }
                                                         }}
-                                                        className="p-4 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"
+                                                        className="p-4 border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer transition-all group"
                                                     >
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
+                                                            <div className="w-10 h-10 bg-zinc-100 flex items-center justify-center shrink-0">
                                                                 <Video className="w-5 h-5 text-zinc-500" />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
@@ -974,7 +1037,7 @@ Model de JSON de saída:
                                 </Dialog>
 
                                 {watch('recording_url') && (
-                                    <div className="p-3 bg-white rounded-lg border border-zinc-100 flex items-center justify-between">
+                                    <div className="p-3 bg-white border border-zinc-100 flex items-center justify-between">
                                         <span className="text-xs text-zinc-600 truncate flex-1">{watch('recording_url')}</span>
                                         <Button
                                             type="button"
@@ -991,41 +1054,134 @@ Model de JSON de saída:
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Empresa</Label>
+                                    <Label className="text-xxs font-bold uppercase text-zinc-400">Empresa</Label>
                                     <Input {...register('client_name')} className="bg-white h-9 text-xs font-bold" placeholder="Ex: Nome da Empresa" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">Contato Principal</Label>
+                                    <Label className="text-xxs font-bold uppercase text-zinc-400">Contato Principal</Label>
                                     <Input {...register('client_contact_name')} className="bg-white h-9 text-xs font-bold" placeholder="Nome do Decisor" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold uppercase text-zinc-400">E-mail</Label>
+                                    <Label className="text-xxs font-bold uppercase text-zinc-400">E-mail</Label>
                                     <Input {...register('client_email')} className="bg-white h-9 text-xs" placeholder="email@empresa.com.br" />
                                 </div>
                             </div>
                         </div>
 
-                        {/* VIDEO PREVIEW - Thumbnail with external link */}
-                        {watch('recording_url') ? (
-                            <a
-                                href={watch('recording_url')}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-xl overflow-hidden relative shadow-sm shadow-zinc-900/5 border border-zinc-100 bg-zinc-900 aspect-video group flex items-center justify-center hover:bg-zinc-800 transition-all cursor-pointer"
-                            >
-                                <div className="text-center">
-                                    <Video className="w-12 h-12 text-white/50 mx-auto mb-3" />
-                                    <span className="text-white/80 text-sm font-medium">Clique para assistir a gravacao</span>
-                                    <div className="mt-2">
-                                        <ExternalLink className="w-4 h-4 text-white/40 mx-auto" />
+                        {/* VIDEO PREVIEW / MEETING STATUS */}
+                        {(() => {
+                            const url = watch('recording_url') || '';
+                            const hasTranscript = !!(watch('transcript') || watch('manual_transcript'));
+                            const hasInsights = !!watch('crm_data');
+
+                            // 1. Video embed if URL available
+                            if (url) {
+                                const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                                if (driveMatch) {
+                                    return (
+                                        <div className="overflow-hidden border border-zinc-200 shadow-sm aspect-video bg-black">
+                                            <iframe
+                                                src={`https://drive.google.com/file/d/${driveMatch[1]}/preview`}
+                                                className="w-full h-full"
+                                                allow="autoplay; encrypted-media"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    );
+                                }
+                                const loomMatch = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
+                                if (loomMatch) {
+                                    return (
+                                        <div className="overflow-hidden border border-zinc-200 shadow-sm aspect-video bg-black">
+                                            <iframe
+                                                src={`https://www.loom.com/embed/${loomMatch[1]}`}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    );
+                                }
+                                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+                                if (ytMatch) {
+                                    return (
+                                        <div className="overflow-hidden border border-zinc-200 shadow-sm aspect-video bg-black">
+                                            <iframe
+                                                src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+                                                className="w-full h-full"
+                                                allow="autoplay; encrypted-media"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    );
+                                }
+                                // Direct video file (webm, mp4 from Supabase Storage)
+                                if (url.match(/\.(webm|mp4|ogg|mov)(\?|$)/i) || url.includes('storage/v1/object')) {
+                                    return (
+                                        <div className="overflow-hidden border border-zinc-200 shadow-sm aspect-video bg-black">
+                                            <video
+                                                src={url}
+                                                className="w-full h-full object-contain"
+                                                controls
+                                                preload="metadata"
+                                            />
+                                        </div>
+                                    );
+                                }
+                                // Fallback: clickable link
+                                return (
+                                    <a
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="overflow-hidden relative shadow-sm border border-zinc-200 bg-zinc-900 aspect-video group flex items-center justify-center hover:bg-zinc-800 transition-all cursor-pointer"
+                                    >
+                                        <div className="text-center">
+                                            <Video className="w-10 h-10 text-white/50 mx-auto mb-2" />
+                                            <span className="text-white/80 text-xs font-medium">Clique para assistir</span>
+                                            <div className="mt-1.5">
+                                                <ExternalLink className="w-3.5 h-3.5 text-white/40 mx-auto" />
+                                            </div>
+                                        </div>
+                                    </a>
+                                );
+                            }
+
+                            // 2. No video but meeting data loaded - show status card
+                            if (hasTranscript || hasInsights) {
+                                return (
+                                    <div className="border border-zinc-200 bg-zinc-950 flex flex-col items-center justify-center aspect-video p-6">
+                                        <div className="w-12 h-12 bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-3">
+                                            <FileText className="w-5 h-5 text-[#00CC6A]" />
+                                        </div>
+                                        <span className="text-white font-black text-sm tracking-tight mb-1">Reuniao Vinculada</span>
+                                        <div className="flex items-center gap-3 mt-2">
+                                            {hasTranscript && (
+                                                <span className="text-xxs font-black uppercase tracking-widest text-[#00CC6A] bg-zinc-800 border border-zinc-700 px-2.5 py-1">
+                                                    Transcript OK
+                                                </span>
+                                            )}
+                                            {hasInsights && (
+                                                <span className="text-xxs font-black uppercase tracking-widest text-[#00CC6A] bg-zinc-800 border border-zinc-700 px-2.5 py-1">
+                                                    AI Insights OK
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xxs text-zinc-500 mt-3 text-center max-w-[200px]">
+                                            Video nao disponivel. Dados da call ja carregados.
+                                        </p>
                                     </div>
+                                );
+                            }
+
+                            // 3. Nothing yet - empty state
+                            return (
+                                <div className="border border-dashed border-zinc-200 bg-zinc-50 flex flex-col items-center justify-center text-zinc-300 aspect-video">
+                                    <Video className="w-8 h-8 mb-2 text-zinc-200" />
+                                    <span className="text-xs font-medium uppercase tracking-widest">Selecione uma Reuniao</span>
+                                    <span className="text-xxs text-zinc-300 mt-1">ou cole a URL do video acima</span>
                                 </div>
-                            </a>
-                        ) : (
-                            <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300 text-xs font-medium uppercase tracking-widest aspect-video">
-                                Preview do Vídeo
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
                 </div>
                 {/* 3. GENERATE ACTION */}
@@ -1033,8 +1189,8 @@ Model de JSON de saída:
                     <Button
                         type="button"
                         onClick={() => handleGenerateScope()}
-                        disabled={generating || !watch('recording_url')}
-                        className="h-12 px-8 bg-zinc-900 hover:bg-black text-white rounded-full font-bold uppercase tracking-widest text-xs shadow-sm shadow-zinc-900/20 active:scale-95 transition-all"
+                        disabled={generating || (!watch('recording_url') && !watch('transcript') && !opportunityContext?.meeting?.transcript && watch('crm_data')?.source !== 'rei_diagnosis')}
+                        className="h-12 px-8 bg-zinc-900 hover:bg-black text-white font-bold uppercase tracking-widest text-xs shadow-sm shadow-zinc-900/20 active:scale-95 transition-all disabled:opacity-40"
                     >
                         {generating ? (
                             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analisando Call...</>
@@ -1042,29 +1198,29 @@ Model de JSON de saída:
                             <><Wand2 className="w-4 h-4 mr-2" /> Extrair Dados com IA</>
                         )}
                     </Button>
-                    <p className="text-[10px] text-zinc-400 text-center max-w-md">
-                        A IA analisa a transcrição e preenche: Resumo Executivo, Escopo do Projeto, Dores do Cliente e valores sugeridos.
+                    <p className="text-xxs text-zinc-400 text-center max-w-md">
+                        A IA analisa a transcricao e preenche: Resumo Executivo, Escopo do Projeto, Dores do Cliente e valores sugeridos.
                     </p>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
+                <div className="bg-white border border-zinc-100 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-zinc-100 bg-zinc-50/30">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white font-bold text-xs">P</div>
+                            <div className="w-8 h-8 bg-zinc-900 flex items-center justify-center text-white font-bold text-xs">P</div>
                             <div>
                                 <h3 className="text-zinc-900 font-bold text-lg leading-none">Estrutura da Proposta</h3>
-                                <p className="text-zinc-400 text-[10px] mt-1 font-bold uppercase tracking-wider">Dados estratégicos e cronograma de implementação</p>
+                                <p className="text-zinc-400 text-xxs mt-1 font-bold uppercase tracking-wider">Dados estratégicos e cronograma de implementação</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Título Público da Proposta</Label>
+                                <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Título Público da Proposta</Label>
                                 <Input {...register('title')} className="text-lg font-bold bg-white border-zinc-200" placeholder="Ex: Proposta de Implementação RevHackers X Nome do Cliente" />
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Resumo Estratégico (Texto)</Label>
+                                <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Resumo Estratégico (Texto)</Label>
                                 <Textarea {...register('summary')} className="min-h-[120px] text-sm bg-white" placeholder="Descreva os objetivos principais e o valor do projeto..." />
                             </div>
                         </div>
@@ -1073,8 +1229,7 @@ Model de JSON de saída:
                     <div className="p-8 space-y-8">
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Transcrição da Call</Label>
-                                <Badge variant="outline" className="text-[9px] bg-zinc-50">Transcricao da Call</Badge>
+                                <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Transcrição da Call</Label>
                             </div>
                             <Textarea
                                 {...register('transcript')}
@@ -1085,12 +1240,12 @@ Model de JSON de saída:
 
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Embed)</Label>
+                                <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Embed)</Label>
                                 <a
                                     href="https://whimsical.com/mind-maps"
                                     target="_blank"
                                     rel="noopener"
-                                    className="text-[10px] text-zinc-700 hover:underline flex items-center gap-1"
+                                    className="text-xxs text-zinc-700 hover:underline flex items-center gap-1"
                                 >
                                     <ExternalLink className="w-3 h-3" />
                                     Criar no Whimsical
@@ -1103,7 +1258,7 @@ Model de JSON de saída:
                                 placeholder="https://whimsical.com/embed/..."
                             />
 
-                            <p className="text-[10px] text-zinc-400 leading-relaxed">
+                            <p className="text-xxs text-zinc-400 leading-relaxed">
                                 1. Crie um mapa mental no <strong>Whimsical</strong> (use a IA deles para gerar)<br />
                                 2. Clique em <strong>Share → Embed</strong><br />
                                 3. Cole a URL de embed aqui
@@ -1111,7 +1266,7 @@ Model de JSON de saída:
 
                             {/* Preview if URL exists */}
                             {watch('mindmap_code') && watch('mindmap_code').includes('http') && (
-                                <div className="w-full aspect-video bg-white rounded-xl border border-zinc-100 overflow-hidden">
+                                <div className="w-full aspect-video bg-white border border-zinc-100 overflow-hidden">
                                     <iframe
                                         src={watch('mindmap_code')}
                                         className="w-full h-full border-none"
@@ -1124,55 +1279,120 @@ Model de JSON de saída:
                             )}
                         </div>
 
-                        <div className="space-y-3 pt-8 border-t border-zinc-100/50">
-                            <div className="flex items-center justify-between">
+                        <div className="space-y-4 pt-8 border-t border-zinc-100/50">
+                            <div className="flex items-start justify-between">
                                 <div>
-                                    <Label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Cronograma Visual (JSON)</Label>
-                                    <p className="text-[10px] text-zinc-400 font-medium">Estrutura de fases que aparece no Roadmap da proposta.</p>
+                                    <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Cronograma Visual (Roadmap)</Label>
+                                    <p className="text-xxs text-zinc-400 font-medium mt-1">Estrutura de fases que será renderizada na proposta comercial do cliente.</p>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleConvertToCards}
-                                        disabled={loading}
-                                        className="h-8 px-4 text-[10px] uppercase font-bold tracking-widest bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 shadow-sm transition-all"
-                                    >
-                                        {loading ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Wand2 className="w-3 h-3 mr-2" />}
-                                        Gerar Roadmap (8 Semanas)
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="button"
+                                    onClick={handleConvertToCards}
+                                    disabled={loading}
+                                    className="h-9 px-5 text-xs uppercase font-bold tracking-widest bg-zinc-900 border-zinc-900 text-white hover:bg-black shadow-sm transition-all"
+                                >
+                                    {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                                    Gerar Roadmap IA
+                                </Button>
                             </div>
-                            <Textarea
-                                {...register('detailed_scope')}
-                                className="min-h-[220px] font-mono text-xs leading-relaxed border-zinc-200 bg-zinc-50/10 focus:bg-white transition-all p-4 shadow-inner"
-                                placeholder="A IA preencherá este campo com a estrutura da jornada..."
-                            />
-                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
-                                <p className="text-[10px] text-amber-600 font-bold flex items-center gap-2">
-                                    <ShieldAlert className="w-3 h-3" />
-                                    Importante: Este campo deve conter o JSON gerado pela IA para habilitar a visualização de cards na página do cliente.
-                                </p>
-                            </div>
+
+                            {/* Renderização Visual do JSON */}
+                            {(() => {
+                                const raw = watch('detailed_scope');
+                                let parsed: any[] = [];
+                                let isValidJson = false;
+                                
+                                if (raw) {
+                                    try {
+                                        parsed = JSON.parse(raw);
+                                        isValidJson = Array.isArray(parsed) && parsed.length > 0;
+                                    } catch (e) {
+                                        // Not valid JSON
+                                    }
+                                }
+
+                                return (
+                                    <div className="space-y-4">
+                                        {!raw && !loading && (
+                                            <div className="border border-dashed border-zinc-200 bg-zinc-50 p-8 flex flex-col items-center justify-center text-center">
+                                                <ListTree className="w-8 h-8 text-zinc-300 mb-3" />
+                                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Roadmap Vazio</p>
+                                                <p className="text-xxs text-zinc-400 mt-1">Clique para gerar o roadmap baseado na inteligência da call.</p>
+                                            </div>
+                                        )}
+
+                                        {isValidJson && (
+                                            <div className="grid grid-cols-1 gap-4">
+                                                {parsed.map((phase, idx) => (
+                                                    <div key={idx} className="bg-white border border-zinc-200 p-5 shadow-sm relative overflow-hidden group">
+                                                        <div className="absolute top-0 left-0 w-1 h-full bg-zinc-900" />
+                                                        <div className="flex flex-col md:flex-row gap-5">
+                                                            <div className="md:w-1/4">
+                                                                <span className="inline-block px-2.5 py-1 bg-zinc-100 text-zinc-600 text-3xs font-black uppercase tracking-widest mb-2 border border-zinc-200">
+                                                                    {phase.duration || `Fase ${idx + 1}`}
+                                                                </span>
+                                                                <h4 className="text-sm font-bold text-zinc-900 leading-tight">
+                                                                    {phase.phase?.replace(/^Fase \d+:\s*/i, '')}
+                                                                </h4>
+                                                            </div>
+                                                            <div className="md:w-3/4 space-y-3">
+                                                                <p className="text-xs text-zinc-500 font-medium leading-relaxed">
+                                                                    {phase.description}
+                                                                </p>
+                                                                {phase.deliverables && phase.deliverables.length > 0 && (
+                                                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                                                        {phase.deliverables.map((d: string, i: number) => (
+                                                                            <li key={i} className="flex items-start gap-2 text-xs text-zinc-700 font-medium">
+                                                                                <CheckCircle2 className="w-3.5 h-3.5 text-[#00CC6A] mt-0.5 shrink-0" />
+                                                                                <span>{d}</span>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {!isValidJson && raw && (
+                                            <div className="p-4 bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-xs font-bold">
+                                                <AlertCircle className="w-5 h-5 shrink-0" />
+                                                <span>A IA retornou um formato inválido. Tente gerar novamente ou edite o texto abaixo.</span>
+                                            </div>
+                                        )}
+
+                                        <details className="group border border-zinc-100 bg-zinc-50 mt-4 rounded-sm">
+                                            <summary className="cursor-pointer p-3 text-2xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-100 transition-colors list-none flex items-center justify-between">
+                                                <span className="flex items-center gap-2"><Code className="w-3.5 h-3.5" /> Modo Desenvolvedor (Editar JSON)</span>
+                                                <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
+                                            </summary>
+                                            <div className="p-4 border-t border-zinc-100">
+                                                <Textarea
+                                                    {...register('detailed_scope')}
+                                                    className="min-h-[300px] font-mono text-xs leading-relaxed border-zinc-200 bg-white focus:bg-white transition-all p-4 shadow-sm"
+                                                    placeholder="Formato JSON bruto..."
+                                                />
+                                            </div>
+                                        </details>
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* FUNNEL SUBSCRIPTION (OPTIONAL) */}
                         <div className="space-y-4 pt-8 border-t border-zinc-100/50">
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ferramenta Funnel (Opcional)</h3>
-                            <div className="p-6 rounded-xl bg-zinc-50 border border-zinc-100 grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <h3 className="text-xxs font-bold uppercase tracking-widest text-zinc-400">Ferramenta Funnel (Opcional)</h3>
+                            <div className="p-6 bg-zinc-50 border border-zinc-100 grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <div className="space-y-2 md:col-span-1">
-                                    <Label className="text-xs font-medium text-zinc-700">Plano Selecionado</Label>
-                                    <select
+                                    <Label className="text-xs font-medium text-zinc-700">Valor Plano Funnel (R$)</Label>
+                                    <Input
                                         {...register('crm_data.funnel_plan')}
-                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
-                                    >
-                                        <option value="none">Não incluir</option>
-                                        <option value="monthly_697">Mensal R$ 697</option>
-                                        <option value="monthly_997">Mensal R$ 997</option>
-                                        <option value="annual_6997">Anual R$ 6.997 (2 meses off)</option>
-                                        <option value="annual_9997">Anual R$ 9.997 (2 meses off)</option>
-                                    </select>
+                                        type="number"
+                                        className="bg-white h-10 w-full"
+                                        placeholder="Ex: 697"
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
@@ -1217,7 +1437,7 @@ Model de JSON de saída:
                                     <Label className="text-xs font-medium text-zinc-700">Tempo de Projeto (Meses)</Label>
                                     <select
                                         {...register('crm_data.project_duration')}
-                                        className="flex h-10 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
+                                        className="flex h-10 w-full border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2"
                                     >
                                         <option value="3">3 Meses</option>
                                         <option value="6">6 Meses</option>
@@ -1230,49 +1450,46 @@ Model de JSON de saída:
 
                         {/* FINANCIALS & CLOSING */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-8 border-t border-zinc-100/50">
-                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Investimento Total (R$)</Label>
+                            <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-xxs uppercase font-bold text-zinc-400">Investimento Total (R$)</Label>
                                 <Input {...register('investment_total')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="60000" />
                             </div>
-                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Setup Fee (R$)</Label>
+                            <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-xxs uppercase font-bold text-zinc-400">Setup Fee (R$)</Label>
                                 <Input {...register('setup_fee')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
                             </div>
 
-                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Valor Mensal (R$)</Label>
+                            <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-xxs uppercase font-bold text-zinc-400">Valor Mensal (R$)</Label>
                                 <Input {...register('installment_value')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="10000" />
                             </div>
-                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Nº de Parcelas</Label>
+                            <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-2">
+                                <Label className="text-xxs uppercase font-bold text-zinc-400">Nº de Parcelas</Label>
                                 <Input {...register('installment_count')} type="number" className="font-bold text-zinc-900 bg-transparent border-none text-lg h-auto p-0" placeholder="6" />
                             </div>
                         </div>
 
-                        {/* INFINITEPAY LINK */}
+                        {/* INFINITEPAY LINK AUTOMÁTICO */}
                         <div className="pt-8 border-t border-zinc-100/50">
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">Motor de Faturamento (InfinitePay)</h3>
-                            <div className="p-6 rounded-xl bg-zinc-50 border border-zinc-100 flex flex-col md:flex-row gap-4 items-end">
-                                <div className="flex-1 space-y-2 w-full">
-                                    <Label className="text-xs font-medium text-zinc-700">Link de Pagamento (Público)</Label>
-                                    <Input {...register('payment_link')} className="bg-white h-10 w-full font-mono text-xs" placeholder="https://pay.infinitepay.io/..." />
+                            <h3 className="text-xxs font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">Motor de Faturamento (InfinitePay)</h3>
+                            <div className="p-6 bg-zinc-50 border border-zinc-100 flex flex-col items-center justify-center text-center">
+                                <div className="w-10 h-10 bg-white border border-zinc-200 shadow-sm flex items-center justify-center mb-3">
+                                    <CreditCard className="w-5 h-5 text-[#00CC6A]" />
                                 </div>
-                                <Button 
-                                    type="button" 
-                                    onClick={handleGenerateInfinitePay} 
-                                    disabled={isGeneratingIP || !initialData?.id}
-                                    className="bg-zinc-900 hover:bg-black text-white h-10 px-6 shrink-0 text-xs uppercase tracking-widest font-bold"
-                                >
-                                   {isGeneratingIP ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
-                                   Gerar Link Agora
-                                </Button>
+                                <h4 className="text-sm font-bold text-zinc-900 mb-1">Faturamento 100% Automatizado</h4>
+                                <p className="text-xs text-zinc-500 max-w-lg mb-4">
+                                    Após a assinatura (aceite) do lead na Live Proposal, nossa API do InfinitePay gerará a cobrança automaticamente (Cartão ou Pix) baseada nos valores de Setup que você informou acima e conectará no ambiente deal room.
+                                </p>
+                                <div className="bg-zinc-100 border border-zinc-200 px-4 py-2 text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
+                                    Link de Pagamento Automático Ativo
+                                </div>
                             </div>
                         </div>
                     </div >
                 </div >
 
                 <div className="flex justify-end pt-8">
-                    <Button type="submit" disabled={loading} className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-sm shadow-green-900/10">
+                    <Button type="submit" disabled={loading} className="h-12 px-8 bg-zinc-900 hover:bg-black text-white font-bold uppercase tracking-widest text-xs shadow-sm shadow-zinc-900/20">
                         <Save className="w-4 h-4 mr-2" />
                         Salvar Proposta
                     </Button>

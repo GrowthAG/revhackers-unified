@@ -43,7 +43,7 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
 
     return (
         <div className="mb-16">
-            <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+            <h2 className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <Database className="w-3.5 h-3.5" /> Meus Diagnósticos
             </h2>
             <div className="space-y-2">
@@ -56,7 +56,7 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
                         <div className="flex items-center gap-4">
                             <div className={`w-2 h-2 rounded-full ${project.status === 'active' ? 'bg-emerald-400' : 'bg-zinc-400'}`} />
                             <div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                     {project.type?.toUpperCase() || 'CONSULTING'}
                                 </span>
                                 <p className="text-sm font-bold text-black">
@@ -65,7 +65,7 @@ function MyProjectsSection({ userEmail }: { userEmail?: string }) {
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                            <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                 {project.status === 'active' ? 'Concluído' : 'Pendente'}
                             </span>
                             <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-black transition-colors" />
@@ -148,7 +148,7 @@ const ReiHubPage = () => {
                                 <div className="w-8 h-8 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:border-black group-hover:bg-black transition-all">
                                     <ArrowLeft className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors" />
                                 </div>
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-zinc-400 group-hover:text-black transition-colors">Voltar ao Hub</span>
+                                <span className="text-xxs uppercase tracking-widest font-bold text-zinc-400 group-hover:text-black transition-colors">Voltar ao Hub</span>
                             </Link>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black text-black tracking-tighter uppercase leading-none mb-2">
@@ -164,14 +164,14 @@ const ReiHubPage = () => {
 
                     {/* New Diagnostic Section */}
                     <div className="border-t border-zinc-100 pt-12">
-                        <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-8">
+                        <h2 className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em] mb-8">
                             Novo Diagnóstico
                         </h2>
 
                         <div className="bg-white border border-zinc-200 p-8 md:p-12">
                             {/* Protocol Dropdown */}
                             <div className="mb-8">
-                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] block mb-3">
+                                <label className="text-xxs font-black text-zinc-400 uppercase tracking-[0.2em] block mb-3">
                                     Protocolo
                                 </label>
                                 <div ref={dropdownRef} className="relative">
@@ -217,7 +217,7 @@ const ReiHubPage = () => {
                                                         <Check className="w-4 h-4 text-black shrink-0" />
                                                     )}
                                                     {type.value === 'consulting' && selectedType !== type.value && (
-                                                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-0.5 shrink-0">Recomendado</span>
+                                                        <span className="text-2xs font-bold uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-0.5 shrink-0">Recomendado</span>
                                                     )}
                                                 </button>
                                             ))}
@@ -241,7 +241,7 @@ const ReiHubPage = () => {
                         </div>
 
                         {/* Helper text */}
-                        <p className="text-[10px] text-zinc-300 uppercase tracking-widest mt-4 text-center">
+                        <p className="text-xxs text-zinc-300 uppercase tracking-widest mt-4 text-center">
                             Selecione o protocolo e clique em Iniciar para começar a análise
                         </p>
                     </div>

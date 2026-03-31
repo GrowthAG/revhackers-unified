@@ -210,7 +210,7 @@ const FounderScore = () => {
                 variant="light"
             >
                 <div className="max-w-4xl mx-auto flex flex-col items-center">
-                    <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors rounded-3xl shadow-sm">
+                    <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors shadow-sm">
                         <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none transition-transform group-hover:scale-105 duration-1000">
                             <Brain className="w-64 h-64 text-black rotate-12" />
                         </div>
@@ -219,7 +219,7 @@ const FounderScore = () => {
 
                             {/* LinkedIn Input Action Area */}
                             <div className="mb-16 w-full">
-                                <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white group-hover:border-zinc-300 transition-colors rounded-xl overflow-hidden shadow-sm mb-4">
+                                <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white group-hover:border-zinc-300 transition-colors overflow-hidden shadow-sm mb-4">
                                     <span className="hidden md:flex items-center px-6 font-mono text-xs text-zinc-400 bg-zinc-50 border-r border-zinc-200 select-none gap-2">
                                         <Linkedin className="w-4 h-4" />
                                         linkedin.com/in/
@@ -239,7 +239,7 @@ const FounderScore = () => {
                                         {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <>ANALISAR <ArrowRight className="w-3 h-3" /></>}
                                     </button>
                                 </div>
-                                <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-mono">
+                                <p className="text-xxs uppercase tracking-widest text-zinc-400 font-mono">
                                     *Usaremos IA para enriquecer seu perfil via Perplexity.
                                     <span className="block mt-1 opacity-60">Perfis com alta privacidade podem sofrer restrições na coleta de dados biográficos.</span>
                                 </p>
@@ -248,31 +248,31 @@ const FounderScore = () => {
                             {/* 3-Column Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full border-t border-zinc-100 pt-12">
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Brain className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">01 // Mindset</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">01 // Mindset</span>
                                         <span className="text-sm font-bold text-zinc-900">Mentalidade de Escala</span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Target className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">02 // Decision</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">02 // Decision</span>
                                         <span className="text-sm font-bold text-zinc-900">Tomada de Decisão</span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Users className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">03 // Leadership</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">03 // Leadership</span>
                                         <span className="text-sm font-bold text-zinc-900">Gestão de Liderança</span>
                                     </div>
                                 </div>
@@ -311,9 +311,9 @@ const FounderScore = () => {
                     <div className="w-full animate-fade-in flex flex-col items-center relative">
                         {/* Background Analysis Indicator - Adjusted Position */}
                         {isAnalyzing && (
-                            <div className="absolute -top-12 right-0 flex items-center gap-2 bg-zinc-50 px-3 py-1 rounded-full border border-zinc-100 animate-pulse">
+                            <div className="absolute -top-12 right-0 flex items-center gap-2 bg-zinc-50 px-3 py-1 border border-zinc-100 animate-pulse">
                                 <Loader2 className="w-3 h-3 text-revgreen animate-spin" />
-                                <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">Enriquecendo Perfil LinkedIn...</span>
+                                <span className="text-xxs font-mono font-bold text-zinc-500 uppercase">Enriquecendo Perfil LinkedIn...</span>
                             </div>
                         )}
 
@@ -335,12 +335,12 @@ const FounderScore = () => {
                                             key={idx}
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
-                                            className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
+                                            className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
                                                 ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                                 : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
-                                            <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                            <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                                 ? "bg-white text-zinc-900 border-white"
                                                 : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                                 }`}>
@@ -363,7 +363,7 @@ const FounderScore = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
                                 >
-                                    <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 rounded-full inline-block border border-zinc-100">
+                                    <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
                                         <span className="text-black font-bold mr-2">Insight:</span>{currentQData.log}
                                     </p>
                                 </motion.div>
@@ -378,12 +378,12 @@ const FounderScore = () => {
                     {/* GATE OVERLAY */}
                     {!hasSubmittedLead && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-500">
-                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
+                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
                                 {/* Coluna Esquerda: Teaser */}
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
-                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-800">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${finalScore >= 70 ? 'bg-zinc-200' : finalScore >= 40 ? 'bg-zinc-400' : 'bg-zinc-600'} animate-pulse`}></div>
-                                        <span className="text-[9px] font-mono font-bold text-zinc-400 tracking-wider uppercase">Análise Finalizada</span>
+                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 border border-zinc-800">
+                                        <div className={`w-1.5 h-1.5 ${finalScore >= 70 ? 'bg-zinc-200' : finalScore >= 40 ? 'bg-zinc-400' : 'bg-zinc-600'} animate-pulse`}></div>
+                                        <span className="text-2xs font-mono font-bold text-zinc-400 tracking-wider uppercase">Análise Finalizada</span>
                                     </div>
 
                                     <div className="relative">
@@ -415,9 +415,9 @@ const FounderScore = () => {
 
                         {/* DASHBOARD HEADLINE - Padronizado */}
                         <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
-                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                                <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
+                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 ">
+                                <span className="w-1.5 h-1.5 bg-white "></span>
+                                <span className="text-xxs font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
                                 Diagnóstico <span className="text-zinc-600">Founder</span>
@@ -438,13 +438,13 @@ const FounderScore = () => {
                                     />
                                 </div>
 
-                                <div className="lg:col-span-8 flex flex-col justify-center bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                                <div className="lg:col-span-8 flex flex-col justify-center bg-zinc-900/50 border border-zinc-800 p-8 md:p-12 relative overflow-hidden">
                                     {/* AI Archetype Card */}
                                     {analysisResult ? (
                                         <div className="relative z-10 space-y-6">
-                                            <div className="inline-flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700">
+                                            <div className="inline-flex items-center gap-2 bg-zinc-800 px-3 py-1 border border-zinc-700">
                                                 <Brain className="w-3 h-3 text-zinc-300" />
-                                                <span className="text-[10px] font-mono font-bold text-zinc-300 uppercase tracking-widest">
+                                                <span className="text-xxs font-mono font-bold text-zinc-300 uppercase tracking-widest">
                                                     Arquétipo Identificado
                                                 </span>
                                             </div>
@@ -458,14 +458,14 @@ const FounderScore = () => {
                                                 </p>
                                             </div>
 
-                                            <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-2xl bg-black/40 p-6 rounded-xl border border-zinc-800">
+                                            <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-2xl bg-black/40 p-6 border border-zinc-800">
                                                 {analysisResult.analysis}
                                             </p>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
                                                 <div>
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                        <span className="w-1.5 h-1.5 bg-zinc-300 rounded-full"></span> Vantagens Competitivas
+                                                        <span className="w-1.5 h-1.5 bg-zinc-300 "></span> Vantagens Competitivas
                                                     </h4>
                                                     <ul className="space-y-2">
                                                         {analysisResult.strengths.map((s, i) => (
@@ -477,7 +477,7 @@ const FounderScore = () => {
                                                 </div>
                                                 <div>
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Pontos Cegos
+                                                        <span className="w-1.5 h-1.5 bg-red-500 "></span> Pontos Cegos
                                                     </h4>
                                                     <ul className="space-y-2">
                                                         {analysisResult.blindSpots.map((s, i) => (
@@ -509,7 +509,7 @@ const FounderScore = () => {
                                 {/* Standardized Personalization Section */}
                                 <section>
                                     <div className="space-y-6 mb-20 text-center md:text-left">
-                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                             DIAGNÓSTICO_DE_AUTORIDADE
                                         </div>
                                         <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
@@ -520,7 +520,7 @@ const FounderScore = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32 text-left">
                                         <div className="space-y-6 border-l border-zinc-200 pl-8">
                                             <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                <div className="w-1.5 h-1.5 bg-black " />
                                                 Perspectiva Técnica
                                             </h4>
                                             <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
@@ -530,7 +530,7 @@ const FounderScore = () => {
 
                                         <div className="space-y-6 border-l border-zinc-200 pl-8">
                                             <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                <div className="w-1.5 h-1.5 bg-black " />
                                                 Plano de Ação
                                             </h4>
                                             <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
@@ -544,7 +544,7 @@ const FounderScore = () => {
                                 {/* PREMISSAS SECTION */}
                                 <section>
                                     <div className="space-y-6 mb-20">
-                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                             PREMISSAS_DE_ALINHAMENTO
                                         </div>
                                         <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
@@ -561,19 +561,19 @@ const FounderScore = () => {
                                             const isCritical = userAnswerScore < 10;
                                             
                                             return (
-                                                <div key={idx} className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 hover:border-black transition-all duration-300 flex flex-col h-full">
+                                                <div key={idx} className="bg-zinc-50 p-8 border border-zinc-200 hover:border-black transition-all duration-300 flex flex-col h-full">
                                                     <div className="flex items-start justify-between mb-4">
-                                                        <h4 className="text-[11px] font-black !text-black uppercase tracking-widest flex items-center gap-3">
-                                                            <div className={`w-1.5 h-1.5 rounded-full ${isCritical ? 'bg-red-500' : 'bg-black'}`} />
+                                                        <h4 className="text-tiny font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                            <div className={`w-1.5 h-1.5 ${isCritical ? 'bg-red-500' : 'bg-black'}`} />
                                                             Pilar 0{idx + 1}
                                                         </h4>
-                                                        {isCritical && <span className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold uppercase tracking-widest">Crítico</span>}
+                                                        {isCritical && <span className="text-2xs bg-red-100 text-red-600 px-2 py-0.5 font-bold uppercase tracking-widest">Crítico</span>}
                                                     </div>
                                                     
                                                     <h3 className="text-sm font-bold text-zinc-900 mb-3">{q.question}</h3>
                                                     
-                                                    <div className="mb-4 bg-white border border-zinc-100 p-3 rounded-lg text-xs font-medium text-zinc-600">
-                                                        <span className="block text-[10px] text-zinc-400 uppercase tracking-widest mb-1">Seu Diagnóstico:</span>
+                                                    <div className="mb-4 bg-white border border-zinc-100 p-3 text-xs font-medium text-zinc-600">
+                                                        <span className="block text-xxs text-zinc-400 uppercase tracking-widest mb-1">Seu Diagnóstico:</span>
                                                         "{userAnswerData?.label || 'Não Respondido'}"
                                                     </div>
                                                     
@@ -604,8 +604,8 @@ const FounderScore = () => {
 
                                     {/* Fallback MoFu CTA */}
                                     <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
-                                        <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
-                                        <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook de Authority (Grátis)</button>
+                                        <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                        <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook de Authority (Grátis)</button>
                                     </div>
                                 </div>
                             </div>

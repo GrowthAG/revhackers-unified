@@ -31,7 +31,7 @@ export const MetricCard = ({ label, value, description, subtext, status = 'neutr
             className
         )}>
             <div className="flex justify-between items-start mb-6">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] group-hover:text-zinc-500 transition-colors">
+                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-[0.2em] group-hover:text-zinc-500 transition-colors">
                     {label}
                 </span>
                 <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(status))} />
@@ -49,14 +49,14 @@ export const MetricCard = ({ label, value, description, subtext, status = 'neutr
             <div className="mt-auto">
                 {description && (
                     <p className={cn(
-                        "text-[9px] font-bold uppercase mb-1 tracking-widest",
+                        "text-2xs font-bold uppercase mb-1 tracking-widest",
                         variant === 'dark' ? "text-zinc-500" : "text-zinc-400"
                     )}>
                         {description}
                     </p>
                 )}
                 {subtext && (
-                    <p className="text-[9px] text-zinc-500 leading-tight font-medium">
+                    <p className="text-2xs text-zinc-500 leading-tight font-medium">
                         {subtext}
                     </p>
                 )}

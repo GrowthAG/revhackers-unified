@@ -139,7 +139,7 @@ NOSSA RESPOSTA (Sistema):
                     </div>
                 </div>
 
-                <div className="bg-zinc-50 p-8 rounded-xl border border-zinc-200 mb-20 italic">
+                <div className="bg-zinc-50 p-8 border border-zinc-200 mb-20 italic">
                     <h3 className="text-xl font-bold text-zinc-900 mb-4 not-italic">Os 3 Ps do Onboarding de Sucesso</h3>
                     <div className="grid md:grid-cols-3 gap-6 not-italic">
                         <div>
@@ -201,7 +201,7 @@ NOSSA RESPOSTA (Sistema):
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

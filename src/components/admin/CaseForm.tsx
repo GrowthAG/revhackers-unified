@@ -160,7 +160,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                         {isEditing ? 'Salvar' : 'Criar'}
                     </Button>
                     {isEditing && (
-                        <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
+                        <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 hover:border-zinc-300">
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     )}
@@ -172,7 +172,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 {/* Client Name & Logo */}
                 <div className="flex gap-6 items-start">
                     <div className="flex-1 space-y-2">
-                        <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Cliente (Nome do Case)</Label>
+                        <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Cliente (Nome do Case)</Label>
                         <Input
                             {...register('client_name', { required: true })}
                             placeholder="Nome do Cliente"
@@ -186,7 +186,7 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                     </div>
 
                     <div className="w-[120px] shrink-0">
-                        <div className="border border-zinc-200 rounded-lg aspect-square flex flex-col items-center justify-center relative bg-zinc-50 overflow-hidden group">
+                        <div className="border border-zinc-200 aspect-square flex flex-col items-center justify-center relative bg-zinc-50 overflow-hidden group">
                             {logoPreview ? (
                                 <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-2" />
                             ) : (
@@ -197,15 +197,15 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                                 {uploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Upload className="w-4 h-4 text-white" />}
                             </label>
                         </div>
-                        <p className="text-[10px] text-center mt-1 text-zinc-400 uppercase tracking-wider">Logo</p>
+                        <p className="text-xxs text-center mt-1 text-zinc-400 uppercase tracking-wider">Logo</p>
                     </div>
                 </div>
 
                 {/* Grid Metadata */}
-                <div className="grid grid-cols-2 gap-6 p-6 bg-zinc-50 rounded-xl border border-zinc-100">
+                <div className="grid grid-cols-2 gap-6 p-6 bg-zinc-50 border border-zinc-100">
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Categoria</Label>
+                            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Categoria</Label>
                             <Select onValueChange={(v) => setValue('case_category', v)} defaultValue={watch('case_category') || 'B2B'}>
                                 <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -216,17 +216,17 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                             </Select>
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Métrica Destaque</Label>
+                            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Métrica Destaque</Label>
                             <Input {...register('primary_metric')} placeholder="+150% ROI" className="bg-white" />
                         </div>
                     </div>
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">URL Slug</Label>
+                            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">URL Slug</Label>
                             <Input {...register('slug')} placeholder="cliente-x" className="bg-white font-mono text-zinc-500" />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Resumo (Preview)</Label>
+                            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Resumo (Preview)</Label>
                             <Input {...register('preview_description')} placeholder="Descrição curta para listagem..." className="bg-white" />
                         </div>
                     </div>
@@ -235,8 +235,8 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                 {/* Narrative Fields - Expanded */}
                 <div className="space-y-8">
                     <div className="space-y-2">
-                        <Label className="text-[12px] font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 bg-red-500 rounded-full" /> O Desafio (Challenge)
+                        <Label className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-2 h-2 bg-zinc-600" /> O Desafio (Challenge)
                         </Label>
                         <Textarea
                             {...register('challenge')}
@@ -246,8 +246,8 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[12px] font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 bg-zinc-800 rounded-full" /> A Solução (Solution)
+                        <Label className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-2 h-2 bg-zinc-800" /> A Solução (Solution)
                         </Label>
                         <Textarea
                             {...register('solution')}
@@ -257,8 +257,8 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-[12px] font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full" /> Resultados (Results)
+                        <Label className="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-2 h-2 bg-zinc-400" /> Resultados (Results)
                         </Label>
                         <Textarea
                             {...register('results')}
@@ -270,8 +270,8 @@ const CaseForm = ({ initialData, isEditing = false }: CaseFormProps) => {
 
                 {/* Testimonial */}
                 <div className="border-t border-zinc-100 pt-8">
-                    <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-4 block">Depoimento</Label>
-                    <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-xl space-y-4">
+                    <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider mb-4 block">Depoimento</Label>
+                    <div className="p-6 bg-zinc-50 border border-zinc-100 space-y-4">
                         <Textarea {...register('testimonial_quote')} placeholder="Citação do cliente..." className="bg-white italic border-zinc-200" />
                         <div className="grid grid-cols-2 gap-4">
                             <Input {...register('testimonial_author')} placeholder="Autor" className="bg-white border-zinc-200" />

@@ -5,6 +5,7 @@ export interface REIProject {
     id: string;
     clientName: string;
     clientEmail: string;
+    clientCompany?: string;
     lastREIDate: Date;
     nextREIDate: Date;
     quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4';
@@ -16,7 +17,7 @@ export interface REIProject {
 /**
  * Calcula o próximo quarter baseado na data atual
  */
-export const getNextQuarter = (currentDate: Date = new Date()): { quarter: string; startDate: Date } => {
+export const getNextQuarter = (currentDate: Date = new Date()): { quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4'; startDate: Date } => {
     const month = currentDate.getMonth(); // 0-11
     const year = currentDate.getFullYear();
 
@@ -118,6 +119,7 @@ export const createREIProject = (
     return {
         id: `rei-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         clientName,
+        clientCompany: clientName, // Fallback for new projects created directly here
         clientEmail,
         lastREIDate: initialREIDate,
         nextREIDate: startDate,

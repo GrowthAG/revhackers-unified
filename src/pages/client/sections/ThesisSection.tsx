@@ -79,19 +79,19 @@ export default function ThesisSection({ plan }: { plan: any }) {
                 <div className="text-center max-w-4xl mx-auto mt-2 mb-16 px-4">
                     <EditableField
                         path="diagnostic_data.thesis_statement.before"
-                        className="text-[20px] md:text-[28px] font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.before}
                     />
                     {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.highlight"
-                        className="text-[20px] md:text-[28px] font-bold text-[#00CC6A] leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-bold text-[#00CC6A] leading-[1.4] tracking-tight inline"
                         placeholder={thesis.highlight}
                     />
                     {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.after"
-                        className="text-[20px] md:text-[28px] font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.after}
                     />
                 </div>
@@ -106,20 +106,20 @@ export default function ThesisSection({ plan }: { plan: any }) {
                             return (
                                 <div key={i} className="flex flex-col relative group">
                                     <div className="flex items-center gap-4 mb-5">
-                                        <span className="text-[10px] font-mono font-bold text-zinc-300 group-hover:text-[#00CC6A]/50 transition-colors shrink-0">
+                                        <span className="text-xxs font-mono font-bold text-zinc-300 group-hover:text-[#00CC6A]/50 transition-colors shrink-0">
                                             {String(i + 1).padStart(2, '0')}
                                         </span>
                                         <div className="h-px w-8 bg-zinc-200 shrink-0" />
                                     </div>
                                     
-                                    <h4 className="text-[17px] font-bold text-zinc-900 mb-3 tracking-tight">
+                                    <h4 className="text-reading font-bold text-zinc-900 mb-3 tracking-tight">
                                         <EditableField
                                             path={`diagnostic_data.thesis_pillars.${i}.title`}
                                             placeholder={pillar.title}
                                         />
                                     </h4>
                                     
-                                    <div className="text-[15px] text-zinc-500 font-medium leading-[1.8] group-hover:text-zinc-800 transition-colors">
+                                    <div className="text-body text-zinc-500 font-medium leading-[1.8] group-hover:text-zinc-800 transition-colors">
                                         <EditableField
                                             path={`diagnostic_data.thesis_pillars.${i}.description`}
                                             placeholder={pillar.description}
@@ -131,10 +131,10 @@ export default function ThesisSection({ plan }: { plan: any }) {
                                         <ul className="mt-6 space-y-2">
                                             {pillar.actions.slice(0, 3).map((action: string, j: number) => (
                                                 <li key={j} className="flex items-start gap-3">
-                                                    <span className="text-zinc-300 mt-[2px] shrink-0 text-[11px] leading-relaxed">/</span>
+                                                    <span className="text-zinc-300 mt-[2px] shrink-0 text-tiny leading-relaxed">/</span>
                                                     <EditableField
                                                         path={`diagnostic_data.thesis_pillars.${i}.actions.${j}`}
-                                                        className="text-[14px] leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
+                                                        className="text-sm leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
                                                         placeholder={action}
                                                     />
                                                 </li>

@@ -92,14 +92,14 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
             </div>
 
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full max-w-[1400px] mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-zinc-200/60 rounded-xl overflow-hidden shadow-sm">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 border border-zinc-200/60 overflow-hidden shadow-sm">
 
                     {/* Current State - Light */}
                     <div className="bg-white p-10 md:p-14 border-b lg:border-b-0 lg:border-r border-zinc-200/60 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-zinc-300" />
                         <div className="flex items-center gap-3 mb-10">
                             <span className="w-2 h-2 rounded-full bg-zinc-400" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+                            <span className="text-tiny font-bold uppercase tracking-[0.2em] text-zinc-500">
                                 O Seu Gargalo Hoje
                             </span>
                         </div>
@@ -107,13 +107,13 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                         <div className="space-y-8">
                             {currentItems.map((item: string, i: number) => (
                                 <div key={i} className="flex gap-5 group">
-                                    <span className="text-[10px] font-mono font-semibold text-zinc-300 mt-1 shrink-0 transition-colors group-hover:text-zinc-400">
+                                    <span className="text-xxs font-mono font-semibold text-zinc-300 mt-1 shrink-0 transition-colors group-hover:text-zinc-400">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="flex-1">
                                         <EditableField
                                             path={`diagnostic_data.current_vs_future.current.${i}`}
-                                            className="text-[14px] md:text-[15px] text-zinc-600 leading-[1.8] font-medium transition-colors group-hover:text-zinc-900"
+                                            className="text-sm md:text-body text-zinc-600 leading-[1.8] font-medium transition-colors group-hover:text-zinc-900"
                                             placeholder={item}
                                             multiline
                                         />
@@ -128,7 +128,7 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                         <div className="absolute top-0 left-0 w-full h-1 bg-[#00CC6A]" />
                         <div className="flex items-center gap-3 mb-10">
                             <span className="w-2 h-2 rounded-full bg-[#00CC6A] shadow-[0_0_12px_rgba(0,204,106,0.5)]" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
+                            <span className="text-tiny font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
                                 O Novo Padrão de Receita
                             </span>
                         </div>
@@ -136,13 +136,13 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
                         <div className="space-y-8">
                             {futureItems.map((item: string, i: number) => (
                                 <div key={i} className="flex gap-5 group">
-                                    <span className="text-[10px] font-mono font-semibold text-zinc-700 mt-1 shrink-0 transition-colors group-hover:text-[#00CC6A]/50">
+                                    <span className="text-xxs font-mono font-semibold text-zinc-700 mt-1 shrink-0 transition-colors group-hover:text-[#00CC6A]/50">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="flex-1">
                                         <EditableField
                                             path={`diagnostic_data.current_vs_future.future.${i}`}
-                                            className="text-[14px] md:text-[15px] text-zinc-300 leading-[1.8] font-medium transition-colors group-hover:text-white"
+                                            className="text-sm md:text-body text-zinc-300 leading-[1.8] font-medium transition-colors group-hover:text-white"
                                             placeholder={item}
                                             multiline
                                         />
@@ -155,14 +155,14 @@ export default function CurrentVsFutureSection({ plan }: { plan: any }) {
 
                 {/* Transition arrow */}
                 <div className="flex items-center justify-center mt-8 gap-4">
-                    <div className="h-[2px] flex-1 bg-zinc-100 rounded-full" />
-                    <div className="flex items-center gap-2 px-5 py-2.5 bg-zinc-950 rounded-lg">
+                    <div className="h-[2px] flex-1 bg-zinc-100" />
+                    <div className="flex items-center gap-2 px-5 py-2.5 bg-zinc-950 ">
                         <ArrowRight className="w-4 h-4 text-[#00CC6A]" />
-                        <span className="text-[11px] font-bold text-white uppercase tracking-widest">
+                        <span className="text-tiny font-bold text-white uppercase tracking-widest">
                             Transformação em {plan?.rei_projects?.project_duration || plan?.roadmap_data?.project_duration || '90 dias'}
                         </span>
                     </div>
-                    <div className="h-[2px] flex-1 bg-zinc-100 rounded-full" />
+                    <div className="h-[2px] flex-1 bg-zinc-100" />
                 </div>
             </div>
         </div>

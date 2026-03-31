@@ -102,7 +102,7 @@ const ChatWidget = () => {
         <div className="p-4 h-80 overflow-y-auto">
           {step === 'greeting' && (
             <div className="space-y-4">
-              <div className="bg-zinc-100 rounded-lg p-3 max-w-xs">
+              <div className="bg-zinc-100 p-3 max-w-xs">
                 <p className="text-sm text-zinc-800">
                   👋 Olá! Sou da RevHackers. Como posso ajudar você hoje?
                 </p>
@@ -113,7 +113,7 @@ const ChatWidget = () => {
                   <button
                     key={index}
                     onClick={() => handleQuickResponse(response)}
-                    className="block w-full text-left p-2 text-sm border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+                    className="block w-full text-left p-2 text-sm border border-zinc-200 hover:bg-zinc-50 transition-colors"
                   >
                     {response}
                   </button>
@@ -129,7 +129,7 @@ const ChatWidget = () => {
 
           {step === 'form' && (
             <div className="space-y-4">
-              <div className="bg-zinc-100 rounded-lg p-3 max-w-xs">
+              <div className="bg-zinc-100 p-3 max-w-xs">
                 <p className="text-sm text-zinc-800">
                   Perfeito! Me conte um pouco sobre você para eu conectar com o especialista certo:
                 </p>
@@ -176,8 +176,8 @@ const ChatWidget = () => {
 
           {step === 'success' && (
             <div className="space-y-4 text-center">
-              <div className="bg-green-100 rounded-lg p-6">
-                <div className="h-12 w-12 bg-green-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <div className="bg-green-100 p-6">
+                <div className="h-12 w-12 bg-green-500 mx-auto mb-4 flex items-center justify-center">
                   <Send className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-green-800 mb-2">Mensagem enviada!</h3>
@@ -186,7 +186,7 @@ const ChatWidget = () => {
                 </p>
               </div>
               
-              <div className="bg-revgreen/10 rounded-lg p-3">
+              <div className="bg-revgreen/10 p-3">
                 <p className="text-xs text-revgreen font-medium flex items-center justify-center">
                   <Users className="h-3 w-3 mr-1" />
                   +150 empresas já cresceram conosco

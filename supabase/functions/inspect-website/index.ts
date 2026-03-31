@@ -1,18 +1,46 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore - Supabase Deno environment
 import * as cheerio from "npm:cheerio"
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'https://www.revhackers.com.br',
+    'https://revhackers.com.br',
+    'https://app.revhackers.com.br',
+    'https://app.revhackers.com'
+];
+
+function getCorsHeaders(req: Request) {
+    const origin = req.headers.get('Origin') || '';
+    const isAllowed = ALLOWED_ORIGINS.includes(origin);
+    return {
+        'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    };
 }
 
 serve(async (req: Request) => {
+    const corsHeaders = getCorsHeaders(req);
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
 
+    const origin = req.headers.get('Origin') || '';
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+        console.warn(`[Shield] Rejected request from invalid origin: ${origin}`);
+        return new Response(JSON.stringify({ error: 'Origin not allowed' }), { status: 403, headers: corsHeaders });
+    }
+
     try {
-        const { url, enriched } = await req.json()
+        const clone = await req.clone();
+        const textPayload = await clone.text();
+        if (textPayload.length > 50000) {
+            console.warn(`[Shield] Payload too large: ${textPayload.length} bytes`);
+            return new Response(JSON.stringify({ error: 'Payload too large' }), { status: 413, headers: corsHeaders });
+        }
+        
+        const { url, enriched } = JSON.parse(textPayload);
 
         if (!url) {
             throw new Error('URL is required')
@@ -147,8 +175,9 @@ ${dataContext}
 ${bodyText || '(Nao foi possivel extrair texto do corpo)'}
 
 REGRA: NUNCA use o caractere em dash (travessao longo). Use apenas hifen simples (-), dois pontos (:), ponto (.) ou virgula (,).
+AVALIAÇÃO DE MATURIDADE: Um site só pode receber status "avançada" se tiver Pixel E Google Tag Manager E Ferramenta de Automação/CRM detectados simultaneamente. Caso não possua ferramentas avançadas, force status "básica" ou "intermediária".
 
-Retorne a analise em um objeto JSON exato com TODOS os campos abaixo. Para as notas de \`technical_scores\` (0 a 100), estime-as validando a presenca de ferramentas, uso de titulos e metatags.
+Retorne a analise em um objeto JSON exato com TODOS os campos abaixo. Para as notas de \`technical_scores\` (0 a 100), estime-as validando rigorosamente a presenca de ferramentas, uso de titulos e metatags.
 {
   "proposta_de_valor_clara": true ou false,
   "resumo_proposta": "Resuma o que a empresa faz/vende em 1-2 frases curtas e diretas.",
@@ -156,7 +185,7 @@ Retorne a analise em um objeto JSON exato com TODOS os campos abaixo. Para as no
   "publico_alvo": "Quem e o cliente ideal da empresa baseado no conteudo do site",
   "produtos_servicos": ["Lista", "dos", "principais", "produtos", "ou", "servicos"],
   "diferenciais": "O que a empresa destaca como diferencial competitivo no site",
-  "maturidade_digital": "basica, intermediaria ou avancada - baseado em: ferramentas detectadas, qualidade do conteudo, CTAs, blog, design",
+  "maturidade_digital": "basica, intermediaria ou avancada - baseado ESTRITAMENTE no checklist de ferramentas acima.",
   "tom_comunicacao": "formal, informal, tecnico ou aspiracional",
   "pontos_fracos_site": ["Lista de problemas observados: falta de CTA, sem blog, design datado, mensagem confusa, etc"],
   "ferramentas_detectadas": "${toolsSummary}",

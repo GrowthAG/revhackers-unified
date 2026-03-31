@@ -13,7 +13,7 @@ const CTASection = () => {
         <div className="bg-black p-12 md:p-24 overflow-hidden relative group rounded-none">
           <div className="relative z-10 max-w-4xl space-y-12">
             <div className="space-y-6">
-              <span className="text-zinc-500 font-mono text-[10px] uppercase tracking-[0.5em] font-black">
+              <span className="text-zinc-500 font-mono text-xxs uppercase tracking-[0.5em] font-black">
                 // PRONTO_PARA_ESCALAR?
               </span>
               <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none italic uppercase">

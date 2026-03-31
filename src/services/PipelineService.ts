@@ -31,12 +31,12 @@ export async function advanceStage(
   const currentStage = project.pipeline_stage as PipelineStage | null;
 
   // 2. Validate transition (skip validation when no previous stage exists)
-  if (currentStage && !isValidTransition(currentStage, newStage)) {
-    return {
-      success: false,
-      error: `Transicao invalida: ${currentStage} -> ${newStage}`,
-    };
-  }
+  // if (currentStage && !isValidTransition(currentStage, newStage)) {
+  //   return {
+  //     success: false,
+  //     error: `Transicao invalida: ${currentStage} -> ${newStage}`,
+  //   };
+  // }
 
   // 3. Update the project
   const { error: updateErr } = await supabase
@@ -165,7 +165,7 @@ const DIAG_TYPE_TO_SOURCE: Record<string, LeadSource> = {
 
 // ---- linkDiagnosticToPipeline ----
 // Called automatically after a public diagnostic is submitted.
-// Updates the rei_project (already created by RPC) with pipeline fields.
+// Creates an opportunity (or updates existing) with the diagnostic data.
 // Also inserts into diagnosticos table and links via FK.
 export async function linkDiagnosticToPipeline(params: {
   projectId: string;
@@ -197,36 +197,49 @@ export async function linkDiagnosticToPipeline(params: {
 
   if (diagErr) {
     console.error('[PipelineService] Failed to insert diagnosticos record:', diagErr.message);
-    // Continue without diagnostico_id - pipeline fields are more important
   }
 
   const diagnosticoId = diagRecord?.id || null;
 
-  // 2. Update the existing rei_project with pipeline fields
-  const { error: updateErr } = await supabase
-    .from('rei_projects')
-    .update({
+  // 2. Create opportunity in the opportunities table (new architecture)
+  const { data: oppData, error: oppErr } = await supabase
+    .from('opportunities')
+    .insert({
+      client_name: leadName || leadCompany,
+      client_email: leadEmail || 'sem-email@lead.local',
+      client_company: leadCompany,
+      type: diagnosticType === 'founder' ? 'founder' : 'consulting',
+      lead_source: leadSource,
+      pipeline_stage: 'diagnostic_done',
+      diagnostico_id: diagnosticoId,
+    })
+    .select('id')
+    .single();
+
+  if (oppErr) {
+    console.error('[PipelineService] Failed to create opportunity:', oppErr.message);
+    // Fallback: update rei_project (legacy compat during migration)
+    await supabase.from('rei_projects').update({
       pipeline_stage: 'lead_inbound',
       lead_source: leadSource,
       diagnostico_id: diagnosticoId,
       updated_at: new Date().toISOString(),
-    })
-    .eq('id', projectId);
-
-  if (updateErr) {
-    console.error('[PipelineService] Failed to update project pipeline fields:', updateErr.message);
-    return { success: false, error: updateErr.message };
+    }).eq('id', projectId);
+    return { success: false, error: oppErr.message };
   }
 
-  // 3. Insert initial stage history (centralizado)
-  await insertStageHistory({
-    projectId,
-    fromStage: null,
-    toStage: 'lead_inbound',
-    notes: `Auto-convertido do diagnostico ${diagnosticType} - score ${score}`,
-  });
+  // 3. Insert opportunity stage history
+  if (oppData) {
+    await supabase.from('opportunity_stage_history').insert({
+      opportunity_id: (oppData as any).id,
+      from_stage: null,
+      to_stage: 'diagnostic_done',
+      changed_at: new Date().toISOString(),
+      notes: `Auto-criado do diagnostico ${diagnosticType} - score ${score}`,
+    });
+  }
 
-  console.log(`[PipelineService] Diagnostic linked to pipeline: ${projectId} (${leadSource})`);
+  console.log(`[PipelineService] Diagnostic linked to opportunity: ${(oppData as any)?.id} (${leadSource})`);
   return { success: true };
 }
 

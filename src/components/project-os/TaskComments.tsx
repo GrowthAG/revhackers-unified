@@ -351,12 +351,12 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({ taskId, workspaceUse
           onKeyDown={handleKeyDown}
           placeholder="Escreva um comentario... use @ para mencionar alguem"
           rows={3}
-          className="w-full resize-none border border-zinc-200 rounded-xl p-3 text-sm text-zinc-700 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 placeholder:text-zinc-400 min-h-[80px] bg-white"
+          className="w-full resize-none border border-zinc-200 p-3 text-sm text-zinc-700 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 placeholder:text-zinc-400 min-h-[80px] bg-white"
         />
 
         {/* @mention dropdown */}
         {showMentionList && filteredUsers.length > 0 && (
-          <div className="absolute bottom-full left-0 mb-1 w-64 bg-white border border-zinc-200 rounded-xl shadow-sm z-50 overflow-hidden">
+          <div className="absolute bottom-full left-0 mb-1 w-64 bg-white border border-zinc-200 shadow-sm z-50 overflow-hidden">
             {filteredUsers.map((user) => (
               <button
                 key={user.id}
@@ -368,7 +368,7 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({ taskId, workspaceUse
                 }}
                 className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 flex items-center gap-3 text-sm transition-colors"
               >
-                <div className="w-6 h-6 shrink-0 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-bold flex items-center justify-center border border-zinc-200">
+                <div className="w-6 h-6 shrink-0 rounded-full bg-zinc-100 text-zinc-700 text-xxs font-bold flex items-center justify-center border border-zinc-200">
                   {getInitials(user)}
                 </div>
                 <span className="font-medium text-zinc-800 truncate">
@@ -380,14 +380,14 @@ export const TaskComments: React.FC<TaskCommentsProps> = ({ taskId, workspaceUse
         )}
 
         <div className="flex items-center justify-between mt-2">
-          <span className="text-[10px] text-zinc-400 select-none">
+          <span className="text-xxs text-zinc-400 select-none">
             Ctrl+Enter para enviar
           </span>
           <button
             type="button"
             onClick={sendComment}
             disabled={sending || !inputText.trim()}
-            className="px-4 py-2 bg-zinc-950 text-white text-xs font-bold rounded-lg hover:bg-zinc-800 disabled:opacity-40 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-zinc-950 text-white text-xs font-bold hover:bg-zinc-800 disabled:opacity-40 transition-colors flex items-center gap-2"
           >
             {sending ? (
               <Loader2 className="w-3 h-3 animate-spin" />

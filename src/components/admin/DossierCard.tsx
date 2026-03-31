@@ -1,10 +1,10 @@
+import { Badge } from '@/components/ui/badge';
 import React, { useState } from 'react';
 import { Bot, Globe, Loader2, AlertTriangle, Search, Hash, Target, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateDossier, DossierResult } from '@/api/dossier';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 
 interface DossierCardProps {
     clientUrl?: string;
@@ -29,10 +29,14 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
     };
 
     const StatusBadge = ({ condition, labelYes, labelNo }: { condition: boolean; labelYes: string; labelNo: string }) => (
-        <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-widest ${condition ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
-            {condition ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <XCircle className="w-3 h-3 mr-1" />}
+        <span className={`inline-flex items-center gap-1 text-xxs uppercase font-bold tracking-widest px-2 py-0.5 border ${
+            condition
+                ? 'bg-[#03FC3B]/10 text-zinc-900 border-[#03FC3B]/40'
+                : 'bg-zinc-900 text-zinc-100 border-zinc-700'
+        }`}>
+            {condition ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
             {condition ? labelYes : labelNo}
-        </Badge>
+        </span>
     );
 
     return (
@@ -48,7 +52,7 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                     </div>
                     <div>
                         <h4 className="text-sm font-black uppercase tracking-widest text-white">Dossiê Pré-Kickoff</h4>
-                        <p className="text-[10px] text-zinc-400 uppercase tracking-widest">Auditoria Expressa de Marketing & Site</p>
+                        <p className="text-xxs text-zinc-400 uppercase tracking-widest">Auditoria Expressa de Marketing & Site</p>
                     </div>
                 </div>
 
@@ -74,7 +78,7 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                         {/* AI Summary */}
                         {result.success && result.ai_analysis && (
                             <div className="bg-zinc-800/50 p-4 border-l-2 border-revgreen">
-                                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-revgreen mb-2 flex items-center gap-2">
+                                <h5 className="text-xxs font-black uppercase tracking-[0.2em] text-revgreen mb-2 flex items-center gap-2">
                                     <Bot size={12} /> Insight da Inteligência Artificial
                                 </h5>
                                 <div className="space-y-3">
@@ -85,8 +89,8 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                                         <span className="text-zinc-400">Problema Identificado (Gap):</span> {result.ai_analysis.problema_identificado}
                                     </p>
                                     <div className="bg-black p-3 mt-2 border border-zinc-800">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1">Dica de Quebra-Gelo (Fale isso na call):</span>
-                                        <p className="text-sm font-medium text-amber-400 italic">"{result.ai_analysis.sugestao_quebra_gelo}"</p>
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-500 block mb-1">Dica de Quebra-Gelo (Fale isso na call):</span>
+                                        <p className="text-sm font-medium text-zinc-300 italic">"{result.ai_analysis.sugestao_quebra_gelo}"</p>
                                     </div>
                                 </div>
                             </div>
@@ -105,11 +109,11 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                         <div className="flex flex-col gap-4">
                             {/* Error Message */}
                             {!result.success && result.error && (
-                                <div className="bg-red-950/30 p-4 border border-red-900/50 rounded-md">
-                                    <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-red-400 mb-2 flex items-center gap-2">
+                                <div className="bg-zinc-900 p-4 border border-zinc-700">
+                                    <h5 className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400 mb-2 flex items-center gap-2">
                                         <AlertTriangle size={12} /> Falha na Análise
                                     </h5>
-                                    <p className="text-sm text-red-200/80">{result.error}</p>
+                                    <p className="text-sm text-zinc-300">{result.error}</p>
                                 </div>
                             )}
 
@@ -117,7 +121,7 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                                 {result.data && (
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button variant="outline" size="sm" className="bg-transparent border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 text-[10px] uppercase font-bold tracking-widest">
+                                            <Button variant="outline" size="sm" className="bg-transparent border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xxs uppercase font-bold tracking-widest">
                                                 <Hash className="w-3 h-3 mr-2" />
                                                 Ver Dados Brutos (HTML)
                                             </Button>
@@ -135,7 +139,7 @@ export function DossierCard({ clientUrl }: DossierCardProps) {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="bg-transparent border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 text-[10px] uppercase font-bold tracking-widest"
+                                    className="bg-transparent border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xxs uppercase font-bold tracking-widest"
                                     onClick={() => setResult(null)}
                                 >
                                     <Search className="w-3 h-3 mr-2" />

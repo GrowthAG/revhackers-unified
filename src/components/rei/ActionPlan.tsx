@@ -72,7 +72,7 @@ export default function ActionPlan({ score }: ActionPlanProps) {
                     >
                         {/* Phase Header */}
                         <div className="mb-6">
-                            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-2">
+                            <div className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-600 mb-2">
                                 {phase.phase}
                             </div>
                             <h3 className="text-xl font-black text-white mb-2">

@@ -6,7 +6,7 @@ const TermosDeUso = () => {
     <PageLayout>
       <section className="pt-32 pb-20">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-sm">
+          <div className="max-w-4xl mx-auto bg-white p-8 shadow-sm">
             <h1 className="text-4xl font-bold mb-10 text-zinc-800 border-b pb-4">Termos de Uso</h1>
             
             <div className="prose prose-lg max-w-none space-y-8">

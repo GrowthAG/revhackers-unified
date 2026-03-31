@@ -9,6 +9,13 @@ import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
 import { StrategicEnrichmentService, StrategicEnrichmentResult } from '@/services/StrategicEnrichmentService';
 import { DiagnosticService } from '@/services/DiagnosticService';
 import { getMaterialsByProject, ReiMaterial } from '@/api/reiMaterials';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
 
 interface REIProject {
     id: string;
@@ -42,6 +49,7 @@ export default function StrategicPlanGenerator() {
     const [isSynthesizing, setIsSynthesizing] = useState(false);
     const [synthesisDone, setSynthesisDone] = useState(false);
     const [pendingJob, setPendingJob] = useState<any>(null);
+    const [selectedMaterial, setSelectedMaterial] = useState<ReiMaterial | null>(null);
 
     // Escuta mudanças na tabela ai_generation_jobs em background
     useEffect(() => {
@@ -244,10 +252,12 @@ export default function StrategicPlanGenerator() {
             if (!clientFinal) {
                 clientFinal = {
                     id: 'legacy-or-missing',
+                    trade_name: project.trade_name || null,
+                    company: project.client_company || null,
                     company_name: project.client_name || 'N/A',
                     contact_name: project.client_name || 'N/A',
                     email: project.client_email || 'N/A',
-                    logo_url: '/revhackers-logo.png' // Default fallback
+                    logo_url: '/revhackers-logo.png'
                 };
             }
 
@@ -923,7 +933,7 @@ export default function StrategicPlanGenerator() {
                             <ArrowLeft className="w-3 h-3 mr-2" /> Voltar para Jornada
                         </Button>
                         <h1 className="text-3xl font-bold text-black tracking-tight">Painel Estratégico</h1>
-                        <p className="text-zinc-500">Cliente: <span className="font-semibold text-black">{client.company_name}</span></p>
+                        <p className="text-zinc-500">Cliente: <span className="font-semibold text-black">{client.trade_name || client.company || client.company_name || client.name || 'N/A'}</span></p>
                     </div>
                     <div className="flex gap-3">
                         {existingPlan && (
@@ -946,14 +956,14 @@ export default function StrategicPlanGenerator() {
                 </div>
 
                 {errorLog && (
-                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 p-4 rounded-md mb-8 shadow-sm">
+                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 p-4 mb-8 shadow-sm">
                         <h3 className="font-bold mb-2">Erro Crítico Reportado Pelo Sistema:</h3>
                         <p className="whitespace-pre-wrap font-mono text-sm">{errorLog}</p>
                     </div>
                 )}
 
                 {/* Materials Section */}
-                <div className="bg-white border border-zinc-200 rounded-xl p-5 mb-8">
+                <div className="bg-white border border-zinc-200 p-5 mb-8">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <FileText className="w-4 h-4 text-zinc-400" />
@@ -961,7 +971,7 @@ export default function StrategicPlanGenerator() {
                                 Materiais do Cliente
                             </h3>
                             {materials.length > 0 && (
-                                <span className="text-[10px] font-bold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">
+                                <span className="text-xxs font-bold bg-zinc-100 text-zinc-600 px-2 py-0.5 ">
                                     {materials.length}
                                 </span>
                             )}
@@ -971,7 +981,7 @@ export default function StrategicPlanGenerator() {
                                 onClick={() => {
                                     window.open(`/upload-materiais/${reiProjectId}`, '_blank');
                                 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-zinc-900 rounded-md text-[10px] font-bold uppercase tracking-widest text-white hover:bg-black transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-zinc-900 text-xxs font-bold uppercase tracking-widest text-white hover:bg-black transition-colors"
                             >
                                 <ExternalLink className="w-3 h-3" />
                                 Fazer Upload Agora
@@ -983,7 +993,7 @@ export default function StrategicPlanGenerator() {
                                     setCopiedLink(true);
                                     setTimeout(() => setCopiedLink(false), 2000);
                                 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-zinc-200 rounded-md text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-zinc-200 text-xxs font-bold uppercase tracking-widest text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
                             >
                                 {copiedLink ? <Check className="w-3 h-3 text-[#00CC6A]" /> : <Copy className="w-3 h-3" />}
                                 {copiedLink ? 'Link Copiado!' : 'Copiar Link'}
@@ -992,36 +1002,46 @@ export default function StrategicPlanGenerator() {
                     </div>
 
                     {materials.length === 0 ? (
-                        <div className="text-center py-6 text-sm text-zinc-400 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50">
+                        <div className="text-center py-6 text-sm text-zinc-400 border border-dashed border-zinc-200 bg-zinc-50/50">
                             Nenhum material adicionado. Clique em &quot;Fazer Upload Agora&quot; ou envie o link para o cliente.
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {materials.map(mat => (
-                                <div key={mat.id} className="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 rounded-lg">
+                            {materials.map(mat => {
+                                const isReadableText = !!mat.extracted_text || !!mat.description;
+                                return (
+                                <div 
+                                    key={mat.id} 
+                                    onClick={() => {
+                                        if (isReadableText) setSelectedMaterial(mat);
+                                    }}
+                                    className={`flex items-center gap-3 px-3 py-2.5 bg-zinc-50 border border-transparent ${isReadableText ? 'cursor-pointer hover:bg-white hover:border-zinc-200 hover:shadow-sm transition-all' : ''}`}
+                                >
                                     {mat.source_type === 'link' ? (
-                                        <ExternalLink className="w-4 h-4 text-zinc-400 shrink-0" />
+                                        <ExternalLink className={`w-4 h-4 shrink-0 ${isReadableText ? 'text-zinc-600' : 'text-zinc-400'}`} />
                                     ) : (
-                                        <FileText className="w-4 h-4 text-zinc-400 shrink-0" />
+                                        <FileText className={`w-4 h-4 shrink-0 ${isReadableText ? 'text-zinc-600' : 'text-zinc-400'}`} />
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-zinc-900 truncate">{mat.original_name || 'Material'}</p>
-                                        {mat.description && <p className="text-[11px] text-zinc-400 truncate">{mat.description}</p>}
+                                        <p className={`text-sm font-medium truncate ${isReadableText ? 'text-zinc-900' : 'text-zinc-500'}`}>{mat.original_name || 'Material'}</p>
+                                        {mat.description && <p className="text-tiny text-zinc-400 truncate">{mat.description}</p>}
                                     </div>
-                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider shrink-0">{mat.material_type}</span>
+                                    <span className="text-xxs font-bold text-zinc-400 uppercase tracking-wider shrink-0 bg-zinc-100 px-2 py-0.5 ">{mat.material_type}</span>
+                                    {isReadableText && <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-[#00CC6A] transition-colors shrink-0 ml-1" />}
                                     {mat.file_url && mat.source_type === 'link' && (
-                                        <a href={mat.file_url} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-600">
-                                            <LinkIcon className="w-3.5 h-3.5" />
+                                        <a href={mat.file_url} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-zinc-600 ml-2" onClick={(e) => e.stopPropagation()}>
+                                            <LinkIcon className="w-4 h-4" />
                                         </a>
                                     )}
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
                 {editMode && (
-                    <div className="bg-zinc-50 border border-zinc-200 p-4 rounded-lg mb-8 flex items-center justify-between">
+                    <div className="bg-zinc-50 border border-zinc-200 p-4 mb-8 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <ShieldAlert className="text-zinc-500" />
                             <div>
@@ -1043,9 +1063,9 @@ export default function StrategicPlanGenerator() {
                 )}
 
                 {existingPlan && (
-                    <div className="bg-white border border-zinc-200 rounded-xl p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div className="bg-white border border-zinc-200 p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className={`w-2.5 h-2.5 rounded-full ${existingPlan.status === 'sent' ? 'bg-[#00CC6A]' : 'bg-zinc-400'}`} />
+                            <div className={`w-2.5 h-2.5 ${existingPlan.status === 'sent' ? 'bg-[#00CC6A]' : 'bg-zinc-400'}`} />
                             <span className="text-sm font-semibold text-black">{existingPlan.status === 'sent' ? 'Enviado ao Cliente' : 'Rascunho Interno'}</span>
                             <span className="text-xs text-zinc-400">|</span>
                             <span className="text-xs text-zinc-400 font-mono">{new Date(existingPlan.updated_at || existingPlan.created_at).toLocaleDateString('pt-BR')}</span>
@@ -1102,17 +1122,17 @@ export default function StrategicPlanGenerator() {
                         <div className="flex items-center gap-2 mb-1">
                             <BrainCircuit className="w-4 h-4 text-zinc-400" />
                             <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">Inteligência Profunda: Resumo</h3>
-                            <span className="text-[10px] text-zinc-300 ml-auto">Detalhes completos nos slides do plano</span>
+                            <span className="text-xxs text-zinc-300 ml-auto">Detalhes completos nos slides do plano</span>
                         </div>
 
                         {/* Compact Market Strip */}
                         {enrichedData?.market && (
-                            <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                            <div className="bg-white border border-zinc-200 p-5">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center"><TrendingUp size={16} className="text-zinc-600" /></div>
+                                    <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center"><TrendingUp size={16} className="text-zinc-600" /></div>
                                     <h4 className="text-sm font-semibold text-zinc-900">Mercado</h4>
                                     {enrichedData.market.tendencias_2025?.length > 0 && (
-                                        <span className="text-[10px] font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full ml-auto">
+                                        <span className="text-xxs font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 ml-auto">
                                             {enrichedData.market.tendencias_2025.length} tendências
                                         </span>
                                     )}
@@ -1122,7 +1142,7 @@ export default function StrategicPlanGenerator() {
                                         <div className="space-y-3">
                                             {['tam', 'sam', 'som'].map(k => (
                                                 <div key={k} className="flex flex-col">
-                                                    <label className="text-[10px] font-semibold text-zinc-400 uppercase">{k.toUpperCase()}</label>
+                                                    <label className="text-xxs font-semibold text-zinc-400 uppercase">{k.toUpperCase()}</label>
                                                     <input
                                                         type="text"
                                                         value={editedData.market.tam_sam_som?.[k] || ''}
@@ -1134,7 +1154,7 @@ export default function StrategicPlanGenerator() {
                                         </div>
                                         <div className="space-y-3">
                                             <div>
-                                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Oportunidades</label>
+                                                <label className="text-xxs font-semibold text-zinc-400 uppercase">Oportunidades</label>
                                                 <textarea
                                                     value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, oportunidades: e.target.value.split(',').map((s: string) => s.trim()) } } })}
@@ -1142,7 +1162,7 @@ export default function StrategicPlanGenerator() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-semibold text-zinc-400 uppercase">Ameaças</label>
+                                                <label className="text-xxs font-semibold text-zinc-400 uppercase">Ameaças</label>
                                                 <textarea
                                                     value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, ameacas: e.target.value.split(',').map((s: string) => s.trim()) } } })}
@@ -1158,8 +1178,8 @@ export default function StrategicPlanGenerator() {
                                             { label: 'SAM', meaning: '(Serviceable Available Market)', value: enrichedData.market.tam_sam_som?.sam },
                                             { label: 'SOM', meaning: '(Serviceable Obtainable Market)', value: enrichedData.market.tam_sam_som?.som },
                                         ].map(({ label, meaning, value }) => (
-                                            <div key={label} className="bg-zinc-50 rounded-lg p-3 border border-zinc-100">
-                                                <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+                                            <div key={label} className="bg-zinc-50 p-3 border border-zinc-100">
+                                                <p className="text-xxs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
                                                     <span className="text-zinc-500 font-bold">{label}</span> <span className="font-medium text-zinc-300 ml-0.5">{meaning}</span>
                                                 </p>
                                                 <p className="text-xs text-zinc-700 font-medium leading-snug line-clamp-2">{value || 'N/A'}</p>
@@ -1170,34 +1190,34 @@ export default function StrategicPlanGenerator() {
                             </div>
                         )}
 
-                        {/* Compact Personas Strip */}
-                        {enrichedData?.personas?.personas && (
-                            <div className="bg-white border border-zinc-200 rounded-xl p-5">
+                        {/* Compact Personas Strip - lê de persona_data (mesma fonte do plano do cliente) */}
+                        {(existingPlan?.persona_data?.personas || enrichedData?.personas?.personas) && (
+                            <div className="bg-white border border-zinc-200 p-5">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center"><Users size={16} className="text-zinc-600" /></div>
+                                    <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center"><Users size={16} className="text-zinc-600" /></div>
                                     <h4 className="text-sm font-semibold text-zinc-900">Personas (ICP)</h4>
-                                    <span className="text-[10px] font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full ml-auto">
-                                        {(enrichedData.personas?.personas || []).length} perfis
+                                    <span className="text-xxs font-medium bg-zinc-100 text-zinc-500 px-2 py-0.5 ml-auto">
+                                        {(existingPlan?.persona_data?.personas || enrichedData?.personas?.personas || []).length} perfis
                                     </span>
                                 </div>
-                                {editMode ? (
+                                {editMode && editedData?.personas?.personas ? (
                                     <div className="space-y-3">
                                         {editedData.personas.personas.map((persona: any, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-100">
-                                                <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&size=32`} alt="" className="w-8 h-8 rounded-full object-cover" />
-                                                <input type="text" value={persona.nome} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].nome = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs font-semibold flex-1" />
-                                                <input type="text" value={persona.cargo} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].cargo = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs flex-1" />
+                                            <div key={idx} className="flex items-center gap-3 p-3 bg-zinc-50 border border-zinc-100">
+                                                <img src={`https://ui-avatars.com/api/?name=${persona.name || persona.nome}&size=32`} alt="" className="w-8 h-8 object-cover" />
+                                                <input type="text" value={persona.name || persona.nome || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].name = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs font-semibold flex-1" />
+                                                <input type="text" value={persona.role || persona.cargo || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].role = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs flex-1" />
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
                                     <div className="flex flex-wrap gap-3">
-                                        {enrichedData.personas.personas.map((persona: any, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-3 px-4 py-2.5 bg-zinc-50 rounded-lg border border-zinc-100 min-w-[200px]">
-                                                <img src={persona.foto_url || `https://ui-avatars.com/api/?name=${persona.nome}&size=32`} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                        {(existingPlan?.persona_data?.personas || enrichedData?.personas?.personas || []).map((persona: any, idx: number) => (
+                                            <div key={idx} className="flex items-center gap-3 px-4 py-2.5 bg-zinc-50 border border-zinc-100 min-w-[200px]">
+                                                <img src={`https://ui-avatars.com/api/?name=${persona.name || persona.nome}&size=32`} alt="" className="w-8 h-8 object-cover" />
                                                 <div>
-                                                    <p className="text-xs font-semibold text-zinc-900">{persona.nome}</p>
-                                                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{persona.cargo}</p>
+                                                    <p className="text-xs font-semibold text-zinc-900">{persona.name || persona.nome}</p>
+                                                    <p className="text-xxs text-zinc-400 uppercase tracking-wider">{persona.role || persona.cargo}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -1208,11 +1228,11 @@ export default function StrategicPlanGenerator() {
 
                         {/* Compact Benchmark Strip */}
                         {enrichedData?.benchmark && (
-                            <div className="bg-zinc-950 text-white rounded-xl p-5">
+                            <div className="bg-zinc-950 text-white p-5">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700"><BadgeCheck size={16} className="text-[#00CC6A]" /></div>
+                                    <div className="w-8 h-8 bg-zinc-800 flex items-center justify-center border border-zinc-700"><BadgeCheck size={16} className="text-[#00CC6A]" /></div>
                                     <h4 className="text-sm font-semibold text-white">Benchmarks</h4>
-                                    <span className="text-[10px] font-medium bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full border border-zinc-700 ml-auto">Métricas de Referência</span>
+                                    <span className="text-xxs font-medium bg-zinc-800 text-zinc-400 px-2 py-0.5 border border-zinc-700 ml-auto">Métricas de Referência</span>
                                 </div>
                                 {editMode ? (
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1223,7 +1243,7 @@ export default function StrategicPlanGenerator() {
                                             { label: 'LTV:CAC', key: 'ltv_cac_ratio' },
                                         ].map(({ label, key }) => (
                                             <div key={key} className="flex flex-col">
-                                                <label className="text-[10px] font-semibold text-zinc-500 uppercase mb-1">{label}</label>
+                                                <label className="text-xxs font-semibold text-zinc-500 uppercase mb-1">{label}</label>
                                                 <textarea
                                                     value={(editedData.benchmark as any)[key] || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, [key]: e.target.value } })}
@@ -1241,8 +1261,8 @@ export default function StrategicPlanGenerator() {
                                                 { label: 'Ciclo', value: enrichedData.benchmark.ciclo_vendas, accent: false },
                                                 { label: 'LTV:CAC', value: enrichedData.benchmark.ltv_cac_ratio, accent: false },
                                             ].map(({ label, value, accent }) => (
-                                                <div key={label} className="bg-zinc-800/50 rounded-lg p-3 border border-zinc-800">
-                                                    <p className={`text-[10px] uppercase tracking-widest font-semibold mb-1.5 ${accent ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>{label}</p>
+                                                <div key={label} className="bg-zinc-800/50 p-3 border border-zinc-800">
+                                                    <p className={`text-xxs uppercase tracking-widest font-semibold mb-1.5 ${accent ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>{label}</p>
                                                     <p className={`text-xs font-medium leading-snug line-clamp-3 ${accent ? 'text-[#00CC6A]' : 'text-white/80'}`}>{value || 'N/A'}</p>
                                                 </div>
                                             ))}
@@ -1259,6 +1279,27 @@ export default function StrategicPlanGenerator() {
                         )}
                     </div>
                 )}
+
+                <Dialog open={!!selectedMaterial} onOpenChange={(open) => !open && setSelectedMaterial(null)}>
+                    <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col bg-white">
+                        <DialogHeader className="shrink-0 border-b border-zinc-200 pb-4">
+                            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-zinc-400" />
+                                {selectedMaterial?.original_name || 'Conteúdo do Material'}
+                            </DialogTitle>
+                            <DialogDescription className="text-sm text-zinc-500 mt-1 flex items-center gap-1.5">
+                                <BadgeCheck className="w-4 h-4 text-[#00CC6A]" />
+                                Análise Deep Intelligence Estruturada
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex-1 overflow-y-auto pr-2 pb-4">
+                            <div className="text-sm text-zinc-700 leading-relaxed font-mono bg-zinc-50 border border-zinc-100 p-5 whitespace-pre-wrap">
+                                {selectedMaterial?.extracted_text || selectedMaterial?.description || 'Nenhum texto extraído localizado.'}
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
             </div>
         </div>
     );

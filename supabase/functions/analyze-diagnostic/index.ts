@@ -1,8 +1,34 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
+
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'https://www.revhackers.com.br',
+    'https://revhackers.com.br',
+    'https://app.revhackers.com.br',
+    'https://app.revhackers.com'
+];
+
+function getCorsHeaders(req: Request) {
+    const origin = req.headers.get('Origin') || '';
+    const isAllowed = ALLOWED_ORIGINS.includes(origin);
+    return {
+        'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    };
 }
 
 // ============================================================
@@ -69,7 +95,6 @@ REGRAS:
 - Seja direto, técnico e baseado nos dados. Nada genérico.
 - Se uma dimensão tem score 0, isso é um GAP CRÍTICO - destaque com urgência.
 - Se uma dimensão tem score 20/20, é um SUPERPODER - reconheça.
-- Responda APENAS O JSON, sem markdown, sem explicações extras.
     `.trim();
 }
 
@@ -96,8 +121,6 @@ Gere um JSON com:
 - analysis: Um parágrafo de 3 linhas analisando brutalmente a presença digital dele.
 - strengths: 2 pontos fortes curtos.
 - blindSpots: 2 pontos cegos críticos que estão custando dinheiro.
-
-Responda APENAS O JSON.
     `.trim();
 }
 
@@ -106,7 +129,7 @@ Responda APENAS O JSON.
 // ============================================================
 
 async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
@@ -117,13 +140,14 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
             messages: [
                 {
                     role: 'system',
-                    content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Não adicione explicações. NUNCA use o caractere em dash (travessão longo) em nenhum campo - use apenas hífen simples (-), dois pontos (:) ou ponto (.).'
+                    content: 'Você é um Analista Sênior da RevHackers. Suas análises são brutais, diretas e baseadas puramente nos dados fornecidos. Aja como um cirurgião de negócios. Siga o Schema JSON estritamente.'
                 },
                 { role: 'user', content: prompt }
             ],
-            temperature: 0.3,
+            response_format: { type: 'json_object' },
+            reasoning_effort: 'high'
         }),
-    });
+    }));
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -139,23 +163,11 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
 
     let cleanContent = content.trim();
 
-    // Remove markdown code blocks if present
-    if (cleanContent.startsWith('```json')) cleanContent = cleanContent.slice(7);
-    if (cleanContent.startsWith('```')) cleanContent = cleanContent.slice(3);
-    if (cleanContent.endsWith('```')) cleanContent = cleanContent.slice(0, -3);
-    cleanContent = cleanContent.trim();
-
-    // Try to extract JSON object
-    const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-        cleanContent = jsonMatch[0];
-    }
-
     try {
         return JSON.parse(cleanContent);
     } catch {
         console.error('Failed to parse OpenAI response:', cleanContent.substring(0, 200));
-        throw new Error('Failed to parse AI response as JSON');
+        throw new Error('GPT Structured Output falhou na validação de JSON');
     }
 }
 
@@ -163,13 +175,27 @@ async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
 // MAIN HANDLER
 // ============================================================
 
-serve(async (req) => {
+serve(async (req: Request) => {
+    const corsHeaders = getCorsHeaders(req);
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
+    const origin = req.headers.get('Origin') || '';
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+        console.warn(`[Shield] Rejected request from invalid origin: ${origin}`);
+        return new Response(JSON.stringify({ error: 'Origin not allowed' }), { status: 403, headers: corsHeaders });
+    }
+
     try {
-        const { type, answers, totalScore, linkedinUrl } = await req.json();
+        const clone = await req.clone();
+        const textPayload = await clone.text();
+        if (textPayload.length > 50000) {
+            console.warn(`[Shield] Payload too large: ${textPayload.length} bytes`);
+            return new Response(JSON.stringify({ error: 'Payload too large' }), { status: 413, headers: corsHeaders });
+        }
+
+        const { type, answers, totalScore, linkedinUrl } = JSON.parse(textPayload);
 
         if (!type || !answers || totalScore === undefined) {
             throw new Error('Missing required fields: type, answers, totalScore');

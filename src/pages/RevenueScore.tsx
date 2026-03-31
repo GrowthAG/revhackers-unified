@@ -181,7 +181,7 @@ const RevenueScore = () => {
                 <div className="max-w-4xl animate-fade-in w-full mx-auto">
                     <QuestionProgressBar current={currentQ} total={QUESTIONS.length} variant="light" />
                     <div className="space-y-6 mt-6">
-                        <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
+                        <div className="flex justify-between items-center text-xxs font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
                             <span>Questão {currentQ + 1} de {QUESTIONS.length}</span>
                             <span>ID: 0{currentQ + 1}</span>
                         </div>
@@ -197,12 +197,12 @@ const RevenueScore = () => {
                                         key={idx}
                                         disabled={selectedOption !== null}
                                         onClick={() => handleAnswer(opt.score, idx)}
-                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
+                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
                                             ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                             : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                             } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
-                                        <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                        <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                             ? "bg-white text-zinc-900 border-white"
                                             : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                             }`}>
@@ -223,7 +223,7 @@ const RevenueScore = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
                                     >
-                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 rounded-full inline-block border border-zinc-100">
+                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
                                             <span className="text-black font-bold mr-2">Análise:</span>{currentQData.log}
                                         </p>
                                     </motion.div>
@@ -239,12 +239,12 @@ const RevenueScore = () => {
                     {/* GATE OVERLAY - Padronizado Side-by-Side */}
                     {!hasSubmittedLead && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-500">
-                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
+                            <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 shadow-sm relative overflow-hidden my-auto max-h-[90vh]">
                                 {/* Coluna Esquerda: Teaser */}
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
-                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
-                                        <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
+                                    <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 border border-zinc-900">
+                                        <div className={`w-1.5 h-1.5 ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-zinc-900'}`}></div>
+                                        <span className="text-2xs font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
                                     </div>
 
                                     <div className="relative">
@@ -275,9 +275,9 @@ const RevenueScore = () => {
 
                         {/* DASHBOARD HEADLINE */}
                         <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pt-8">
-                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#00CC6A]"></span>
-                                <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
+                            <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1">
+                                <span className="w-1.5 h-1.5 bg-revgreen"></span>
+                                <span className="text-xxs font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
                                 Diagnóstico <span className="text-zinc-600">CRM</span>
@@ -298,16 +298,16 @@ const RevenueScore = () => {
                             </div>
 
                             <div className="lg:col-span-8 flex flex-col">
-                                <div className="border border-zinc-900 rounded-2xl p-8 bg-zinc-950 h-full flex flex-col justify-center">
+                                <div className="border border-zinc-900 p-8 bg-zinc-950 h-full flex flex-col justify-center">
                                     {isAnalyzing || !analysisResult ? (
                                         <div className="flex flex-col items-center justify-center gap-4 py-8">
-                                            <div className="w-6 h-6 border-2 border-revgreen border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Processando Inteligência...</span>
+                                            <div className="w-6 h-6 border-2 border-revgreen border-t-transparent animate-spin" />
+                                            <span className="text-xxs font-mono text-zinc-500 uppercase tracking-widest">Processando Inteligência...</span>
                                         </div>
                                     ) : (
                                         <>
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
+                                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5">
                                                     {analysisResult.archetype}
                                                 </span>
                                             </div>
@@ -323,8 +323,8 @@ const RevenueScore = () => {
                         {/* SCORE BREAKDOWN: 1 card per question */}
                         <div className="mt-8">
                             <div className="flex items-center gap-2 mb-4">
-                                <div className="w-1 h-1 rounded-full bg-zinc-600" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Score por Dimensão</span>
+                                <div className="w-1 h-1 bg-zinc-600" />
+                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">Score por Dimensão</span>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                 {QUESTIONS.map((q, i) => {
@@ -332,12 +332,12 @@ const RevenueScore = () => {
                                     const maxScore = Math.max(...q.options.map(o => o.score));
                                     const pct = maxScore > 0 ? (qScore / maxScore) * 100 : 0;
                                     return (
-                                        <div key={q.id} className="border border-zinc-900 rounded-xl p-4 bg-zinc-950">
+                                        <div key={q.id} className="border border-zinc-900 p-4 bg-zinc-950">
                                             <div className="flex justify-between items-start mb-3">
-                                                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest leading-tight max-w-[80%]">
+                                                <span className="text-2xs font-bold text-zinc-500 uppercase tracking-widest leading-tight max-w-[80%]">
                                                     {q.question.length > 30 ? q.question.slice(0, 30) + '...' : q.question}
                                                 </span>
-                                                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${pct >= 80 ? 'bg-revgreen' : pct >= 50 ? 'bg-zinc-400' : 'bg-zinc-700'}`} />
+                                                <div className={`w-1.5 h-1.5 flex-shrink-0 ${pct >= 80 ? 'bg-revgreen' : pct >= 50 ? 'bg-zinc-400' : 'bg-zinc-700'}`} />
                                             </div>
                                             <div className="text-2xl font-black text-white tracking-tight">
                                                 {qScore}<span className="text-zinc-600 text-sm font-bold">/{maxScore}</span>
@@ -356,7 +356,7 @@ const RevenueScore = () => {
                                 {analysisResult && (
                                     <section>
                                         <div className="space-y-6 mb-12 text-center md:text-left">
-                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                                 DIAGNÓSTICO_DE_RECEITA
                                             </div>
                                             <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none">
@@ -365,9 +365,9 @@ const RevenueScore = () => {
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-                                            <div className="border border-zinc-200 rounded-2xl p-8 bg-zinc-50">
-                                                <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-revgreen" />
+                                            <div className="border border-zinc-200 p-8 bg-zinc-50">
+                                                <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-revgreen" />
                                                     Superpoderes
                                                 </h4>
                                                 <div className="space-y-4">
@@ -380,9 +380,9 @@ const RevenueScore = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="border border-zinc-200 rounded-2xl p-8 bg-white">
-                                                <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-zinc-900" />
+                                            <div className="border border-zinc-200 p-8 bg-white">
+                                                <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-zinc-900" />
                                                     Gaps Críticos
                                                 </h4>
                                                 <div className="space-y-4">
@@ -396,8 +396,8 @@ const RevenueScore = () => {
                                             </div>
                                         </div>
 
-                                        <div className="border-l-4 border-[#00CC6A] bg-zinc-50 rounded-r-2xl p-8 mb-16">
-                                            <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 mb-3">
+                                        <div className="border-l-4 border-[#00CC6A] bg-zinc-50 p-8 mb-16">
+                                            <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500 mb-3">
                                                 Ação Imediata Recomendada
                                             </h4>
                                             <p className="text-zinc-900 text-base font-semibold leading-relaxed">
@@ -411,7 +411,7 @@ const RevenueScore = () => {
                                 {!analysisResult && (
                                     <section>
                                         <div className="space-y-6 mb-12 text-center md:text-left">
-                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                                 DIAGNÓSTICO_DE_RECEITA
                                             </div>
                                             <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
@@ -421,13 +421,13 @@ const RevenueScore = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
                                             <div className="space-y-6 border-l border-zinc-200 pl-8">
                                                 <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 bg-black rounded-full" /> Perspectiva Técnica
+                                                    <div className="w-1.5 h-1.5 bg-black " /> Perspectiva Técnica
                                                 </h4>
                                                 <p className="text-zinc-900 text-base leading-relaxed font-semibold">{insights.description}</p>
                                             </div>
                                             <div className="space-y-6 border-l border-zinc-200 pl-8">
                                                 <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 bg-black rounded-full" /> Plano de Ação
+                                                    <div className="w-1.5 h-1.5 bg-black " /> Plano de Ação
                                                 </h4>
                                                 <p className="text-zinc-900 text-base leading-relaxed font-semibold">
                                                     Sua prioridade estratégica agora é: <strong className="bg-[#00CC6A]/20 px-1 text-black">{insights.action}</strong>.
@@ -454,8 +454,8 @@ const RevenueScore = () => {
 
                                 {/* Fallback MoFu CTA */}
                                 <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
-                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
-                                    <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook REI CRM (Grátis)</button>
+                                    <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                    <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Playbook REI CRM (Grátis)</button>
                                 </div>
 
                                 {/* Share + PDF */}
@@ -464,7 +464,7 @@ const RevenueScore = () => {
                                 </div>
 
                                 <div className="pt-8 text-center">
-                                    <span className="text-[10px] font-mono font-bold text-zinc-300 uppercase tracking-[0.3em]">
+                                    <span className="text-xxs font-mono font-bold text-zinc-300 uppercase tracking-[0.3em]">
                                         RevHackers // Intelligence Unit
                                     </span>
                                 </div>

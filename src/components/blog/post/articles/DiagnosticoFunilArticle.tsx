@@ -84,7 +84,7 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
                     </h3>
                     <div className="grid md:grid-cols-3 gap-6">
                         {bowTieStages.map((stage, i) => (
-                            <div key={i} className={`p-6 rounded-lg border relative overflow-hidden ${i === 1 ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
+                            <div key={i} className={`p-6 border relative overflow-hidden ${i === 1 ? 'bg-zinc-900 text-white border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
                                 <div className="absolute top-0 right-0 p-4 opacity-10">
                                     <h4 className="text-6xl font-bold">{i + 1}</h4>
                                 </div>
@@ -123,7 +123,7 @@ const DiagnosticoFunilArticle = ({ onCTAClick }: { onCTAClick?: () => void }) =>
                     ]}
                 />
 
-                <div className="my-16 bg-zinc-900 text-white p-8 rounded-xl not-prose">
+                <div className="my-16 bg-zinc-900 text-white p-8 not-prose">
                     <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                         <Microscope className="w-6 h-6 text-revgreen" />
                         O Diagnóstico de Receita

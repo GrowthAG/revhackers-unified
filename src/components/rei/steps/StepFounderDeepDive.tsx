@@ -40,7 +40,7 @@ export default function StepFounderDeepDive({ form }: StepFounderDeepDiveProps) 
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Estratégia & Conteúdo
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 03: Posicionamento
                 </p>
             </div>

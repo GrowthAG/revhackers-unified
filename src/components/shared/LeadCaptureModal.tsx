@@ -80,7 +80,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                 <div className="p-6 pt-4">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Nome Completo</label>
+                            <label className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Nome Completo</label>
                             <Input
                                 placeholder="Seu nome"
                                 value={name}
@@ -90,7 +90,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Email Corporativo</label>
+                            <label className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Email Corporativo</label>
                             <Input
                                 type="email"
                                 placeholder="voce@empresa.com"
@@ -101,7 +101,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Telefone / WhatsApp</label>
+                            <label className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Telefone / WhatsApp</label>
                             <Input
                                 placeholder="(11) 99999-9999"
                                 value={phone}
@@ -112,7 +112,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Empresa</label>
+                                <label className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Empresa</label>
                                 <Input
                                     placeholder="Nome da empresa"
                                     value={company}
@@ -122,7 +122,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Cargo</label>
+                                <label className="text-xxs font-bold uppercase tracking-widest text-zinc-500">Cargo</label>
                                 <Input
                                     placeholder="Ex: CEO, CMO"
                                     value={role}
@@ -141,7 +141,7 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continuar para Agenda"}
                         </Button>
 
-                        <p className="text-[10px] text-center text-zinc-400 mt-4 leading-relaxed px-4">
+                        <p className="text-xxs text-center text-zinc-400 mt-4 leading-relaxed px-4">
                             Ao continuar, você concorda em receber comunicações sobre sua solicitação. Seus dados estão seguros.
                         </p>
                     </form>

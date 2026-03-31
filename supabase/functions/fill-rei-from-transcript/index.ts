@@ -175,16 +175,9 @@ serve(async (req: Request) => {
             }
         }
 
-        const systemPrompt = `Voce e um especialista em extrair dados estruturados de transcricoes de reunioes comerciais B2B.
-Sua tarefa e analisar a transcricao e extrair APENAS os campos solicitados com alta precisao.
-
-REGRAS CRITICAS:
-- Responda APENAS com JSON valido. Nenhum texto adicional.
-- Use null para campos nao encontrados na transcricao. NAO invente dados.
-- Use aspas duplas para strings.
-- Preserve nomes proprios exatamente como mencionados.
-- Para campos de selecao (hasPlans, annualRevenue, etc.), use apenas os valores validos listados.
-- NUNCA use o caractere em dash (traco longo) - use apenas hifen simples (-) ou ponto (.).`;
+        const systemPrompt = `Você é um especialista em análise de dados comerciais B2B. Aja como um extrator de alta precisão de transcrições de reuniões.
+Nunca invente informações (evite alucinações). Se a informação não foi dita pelo cliente, assinalar como valor vazio.
+Mantenha nomes próprios exatamente como mencionados. Siga estritamente as tipagens dos campos.`
 
         const userPrompt = `Reuniao: ${recording.title || 'Sem titulo'}
 ${insightContext}
@@ -210,11 +203,12 @@ Valores validos para campos especificos:
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-5.4',
+                model: 'gpt-5.4-mini',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt },
                 ],
+                response_format: { type: 'json_object' },
                 temperature: 0.1,
                 max_tokens: 1000,
             }),
@@ -230,16 +224,10 @@ Valores validos para campos especificos:
 
         let extracted: Record<string, any> = {};
         try {
-            let clean = rawContent.trim();
-            if (clean.startsWith('```json')) clean = clean.slice(7);
-            if (clean.startsWith('```')) clean = clean.slice(3);
-            if (clean.endsWith('```')) clean = clean.slice(0, -3);
-            const jsonMatch = clean.match(/\{[\s\S]*\}/);
-            if (jsonMatch) clean = jsonMatch[0];
-            extracted = JSON.parse(clean);
+            extracted = JSON.parse(rawContent);
         } catch (parseErr) {
             console.error('[fill-rei-from-transcript] Failed to parse GPT response:', rawContent.substring(0, 300));
-            throw new Error('GPT retornou formato invalido');
+            throw new Error('GPT Structured Output falhou na validação do JSON.');
         }
 
         // ============================================================

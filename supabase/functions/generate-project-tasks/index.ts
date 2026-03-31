@@ -1,5 +1,20 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore - Supabase Deno environment
 import { createClient } from "npm:@supabase/supabase-js@2"
+
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -298,9 +313,9 @@ ${risksBlock}
 ` : ''}${transcriptText ? `TRANSCRICAO / INTELIGENCIA DA REUNIAO:
 ${transcriptText.substring(0, 3000)}
 
-` : ''}INSTRUCAO PRINCIPAL:
+` : ''}INSTRUCAO PRINCIPAL (MÉTODO TASK-TO-PROBLEM):
 Gere exatamente ${taskCount} tarefas operacionais e altamente especificas para este cliente.
-Cada tarefa deve ter um briefing completo e personalizado - cite o cliente, suas ferramentas reais, seus gargalos reais.
+A regra suprema deste projeto é a "Ancoragem no Diagnóstico" (Task-to-Problem Mapping). Nós não prescrevemos tarefas teóricas. Cada tarefa DEVE existir exclusivamente para matar um "Gargalo" ou "Risco" que o cliente relatou nos dados acima.
 Distribua as tarefas pelas fases do roadmap.
 Tarefas da Fase 1 (primeiros 30 dias): status "todo", prioridade "urgent" ou "high".
 Tarefas das Fases 2 e 3: status "backlog", prioridade "high" ou "medium".
@@ -313,10 +328,10 @@ SCHEMA OBRIGATORIO para cada tarefa no array:
   "priority": "urgent" | "high" | "medium" | "low",
   "estimated_hours": numero inteiro entre 1 e 40,
   "briefing": {
-    "context": "Contexto especifico do cliente relevante para esta tarefa (1-2 frases com detalhes reais)",
+    "context": "Contexto especifico do cliente (Ex: 'O cliente usa RD Station mas não tem CRM integrado, conforme diagnóstico')",
     "deliverable": "O que exatamente deve ser entregue - especifico e mensuravel",
-    "why": "Por que esta tarefa importa - impacto direto no projeto deste cliente",
-    "how": "Como executar: passos, ferramentas, referencias (minimo 3 passos)"
+    "why": "QUAL GARGALO/DOR do diagnóstico esta tarefa resolve? Cite o problema narrado pelo cliente explicitamente.",
+    "how": "Como executar: passos, ferramentas, referencias (minimo 3 passos práticos)"
   }
 }
 
@@ -324,7 +339,7 @@ Retorne: { "tasks": [ ...${taskCount} tarefas... ] }`;
 
     // --- Chamada OpenAI ---
     console.log(`[generate-project-tasks] Chamando GPT-5.4 para gerar ${taskCount} tarefas...`);
-    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openaiRes = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -339,7 +354,7 @@ Retorne: { "tasks": [ ...${taskCount} tarefas... ] }`;
           { role: 'user', content: userPrompt }
         ]
       })
-    });
+    }));
 
     if (!openaiRes.ok) {
       const errText = await openaiRes.text();

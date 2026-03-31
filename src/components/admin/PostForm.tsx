@@ -169,7 +169,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-zinc-100">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto bg-white p-8 shadow-sm border border-zinc-100">
             <div className="flex items-center justify-between mb-6">
                 <Button type="button" variant="ghost" onClick={() => navigate('/admin/posts')} className="text-zinc-500 hover:text-black hover:bg-zinc-100 h-9 px-3">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -182,7 +182,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                     <div>
                         <Label>Título</Label>
                         <Input {...register('title', { required: true })} placeholder="Título do artigo" />
-                        {errors.title && <span className="text-red-500 text-xs">Obrigatório</span>}
+                        {errors.title && <span className="text-zinc-900 font-bold text-xs">Obrigatório</span>}
                     </div>
 
                     <div>
@@ -217,7 +217,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
 
                 <div className="space-y-4">
                     <Label>Capa do Artigo</Label>
-                    <div className="border-2 border-dashed border-zinc-200 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px] hover:bg-zinc-50 transition-colors relative overflow-hidden">
+                    <div className="border-2 border-dashed border-zinc-200 p-6 flex flex-col items-center justify-center min-h-[200px] hover:bg-zinc-50 transition-colors relative overflow-hidden">
                         {imagePreview ? (
                             <>
                                 <img src={imagePreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-50" />
@@ -267,7 +267,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
 
             <div className="flex items-center justify-between pt-6 border-t border-zinc-100">
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center space-x-2 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
+                    <div className="flex items-center space-x-2 bg-zinc-50 px-3 py-1.5 border border-zinc-100">
                         <Switch
                             id="published"
                             checked={!!watch('published')}
@@ -284,7 +284,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
                             variant="ghost"
                             onClick={handleDelete}
                             disabled={loading || uploading}
-                            className="text-zinc-400 hover:text-red-600 hover:bg-red-50 h-10 px-4 transition-colors"
+                            className="text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 h-10 px-4 transition-colors"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Excluir Artigo
@@ -294,7 +294,7 @@ const PostForm = ({ initialData, isEditing = false }: PostFormProps) => {
 
                 <Button
                     type="submit"
-                    className="bg-black text-white hover:bg-zinc-900 min-w-[180px] h-11 text-[11px] font-bold uppercase tracking-[0.25em] transition-all rounded-none shadow-none border border-black"
+                    className="bg-black text-white hover:bg-zinc-900 min-w-[180px] h-11 text-tiny font-bold uppercase tracking-[0.25em] transition-all rounded-none shadow-none border border-black"
                     disabled={loading || uploading}
                 >
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}

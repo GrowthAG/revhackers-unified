@@ -110,15 +110,72 @@ export const funnelsTemplate: OnboardingTemplate = {
     ]
 };
 
+// Founder / Autoridade LinkedIn Template
+export const founderTemplate: OnboardingTemplate = {
+    bowtie: {
+        eyebrow: "Jornada de Autoridade",
+        title: "Protocolo Founder de 90 Dias",
+        leftLabel: "Posicionamento",
+        leftTitle: "Identidade & Perfil",
+        centerTitle: "Conteúdo",
+        rightLabel: "Conversão",
+        rightTitle: "Audiência & Pipeline",
+        bottomLeftTitle: "Foco em Clareza e Nicho",
+        bottomLeftDesc: "Definimos quem você é para o mercado, o ponto de vista único e o ICP do perfil pessoal antes de publicar qualquer conteúdo.",
+        bottomRightTitle: "Foco em Consistência e Conversão",
+        bottomRightDesc: "Cadência de 3x/semana consolidada, loop de DM estratégico e inbound qualificado gerado exclusivamente pelo conteúdo."
+    },
+    milestones: [
+        { dia: 'Dia 01', nome: 'Kickoff de Posicionamento', tipo: 'marco', descricao: 'Sessão de definição: nicho de autoridade, POV único, ICP do seguidor ideal e bio + headline do LinkedIn otimizados.', entrega: 'Documento de Posicionamento', valor: 'Você sabe exatamente quem é, para quem fala e o que diz antes do primeiro post.', dark: true, green: false },
+        { dia: 'Dia 07', nome: 'Perfil Otimizado', tipo: 'entrega', descricao: 'Bio, banner, headline e URL personalizados. Conteúdo fixado que posiciona antes do primeiro post orgânico.', entrega: 'Perfil LinkedIn revisado + fixado', valor: 'Qualquer visita ao perfil já entende em 5 segundos o que você faz e para quem.', dark: false, green: false },
+        { dia: 'Dia 15', nome: 'Primeiros Posts no Ar', tipo: 'verdade', descricao: 'Momento de Verdade 1: 3 formatos testados (carrossel de autoridade, text post de opinião e video curto). Primeiros dados reais de alcance por formato.', entrega: '3 posts publicados + métricas iniciais', valor: 'Você descobre qual formato performa com o seu ICP antes de escalar volume.', dark: false, green: true },
+        { dia: 'Dia 21', nome: 'Estratégia de Comentários', tipo: 'entrega', descricao: 'Listas de contas-âncora do nicho definidas. Rotina diária de 5–10 comentários estratégicos implementada.', entrega: 'Banco de contas-âncora + roteiro de engajamento', valor: 'Você aparece para as pessoas certas sem depender de ads.', dark: false, green: false },
+        { dia: 'Dia 30', nome: 'Review de Formato', tipo: 'review', descricao: 'Análise de alcance por formato. Dobrar no que funciona, iterar no que não converte. Ajuste da pauta do mês 2.', entrega: 'Relatório de alcance + pauta do mês 2', valor: 'Nenhum post do mês 2 será "achismo" — tudo baseado em dados do mês 1.', dark: true, green: false },
+        { dia: 'Dia 45', nome: 'Cadência Consolidada', tipo: 'entrega', descricao: 'Máquina rodando: 3 publicações semanais, banco de conteúdo com 2 semanas de buffer e rotina de comentários diários.', entrega: 'Banco de conteúdo com 6 posts prontos', valor: 'Consistência supera perfeição. Quem publica sem parar vence.', dark: false, green: false },
+        { dia: 'Dia 60', nome: 'Review de Engajamento', tipo: 'review', descricao: 'Análise de engajamento qualitativo: quem está comentando? São ICPs? Há inbounds orgânicos? Ajuste de tom e formato.', entrega: 'Dashboard de métricas Founder + ajustes de pauta', valor: 'Você tem dados para saber se está construindo audiência ou apenas alcance.', dark: true, green: false },
+        { dia: 'Dia 75', nome: 'Ativação do Loop', tipo: 'entrega', descricao: 'DM estratégico ativado com abordagem baseada em engajamento real. Convites para podcast, evento ou parceria (inbound de autoridade).', entrega: 'Script de DM + lista de contas para abordagem', valor: 'A audiência vira oportunidade sem cold outreach.', dark: false, green: false },
+        { dia: 'Dia 90', nome: 'Playbook do Criador', tipo: 'verdade', descricao: 'Momento de Verdade 2: 1 inbound qualificado = payback do protocolo. Entrega do playbook completo de conteúdo e posicionamento.', entrega: 'Playbook do Criador + relatório 90 dias', valor: 'Você sai com a máquina de autoridade operando e documentada.', dark: false, green: true },
+    ]
+};
+
+// Advisory (Estratégico — sem execução, calls + frameworks)
+export const advisoryTemplate: OnboardingTemplate = {
+    bowtie: {
+        eyebrow: "Protocolo Advisory",
+        title: "Jornada de Orientação Estratégica",
+        leftLabel: "Diagnóstico",
+        leftTitle: "Imersão & Roadmap",
+        centerTitle: "Orientação",
+        rightLabel: "Autonomia",
+        rightTitle: "Execução do Cliente",
+        bottomLeftTitle: "Foco em Clareza e Direção",
+        bottomLeftDesc: "Diagnosticamos o estado atual, entregamos o blueprint estratégico e o roadmap de ação — o cliente recebe o mapa completo antes de executar qualquer coisa.",
+        bottomRightTitle: "Foco em Autonomia e Resultado",
+        bottomRightDesc: "O cliente executa com nossa orientação contínua via calls estruturadas. Saímos quando a operação está documentada, medida e funcionando de forma autônoma."
+    },
+    milestones: [
+        { dia: 'Dia 01', nome: 'Kickoff Advisory', tipo: 'marco', descricao: 'Alinhamento de metas, contexto do negócio, OKRs do engajamento e definição do ritmo de calls. Acordamos critérios de sucesso antes de qualquer entrega.', entrega: 'Termo de Escopo + OKRs documentados', valor: 'Você sabe exatamente o que vai receber, quando e como vamos trabalhar juntos.', dark: true, green: false },
+        { dia: 'Dia 07', nome: 'Call de Imersão', tipo: 'entrega', descricao: 'Sessão de diagnóstico profundo: Revenue Stack, funil atual, time comercial, métricas e principais gargalos. Mapeamos o estado atual vs. estado ideal.', entrega: 'Diagnóstico executivo documentado', valor: 'Você sai com clareza cirúrgica de onde a receita está vazando e o que priorizar.', dark: false, green: false },
+        { dia: 'Dia 15', nome: 'Entrega do Blueprint', tipo: 'verdade', descricao: 'Momento de Verdade 1: entrega do Roadmap de Ação personalizado com playbooks, frameworks e prioridades. Tudo que o cliente vai implementar está documentado.', entrega: 'Blueprint Estratégico + Playbook de Ação', valor: 'O mapa da máquina de receita ideal para o seu negócio — personalizado, não genérico.', dark: false, green: true },
+        { dia: 'Dia 30', nome: 'Review de Rota', tipo: 'review', descricao: 'Call de acompanhamento: o que foi implementado pelo cliente no primeiro ciclo? Revisamos resultados vs. OKRs, ajustamos prioridades e documentamos as lições.', entrega: 'ATA da sessão + encaminhamentos do ciclo 2', valor: 'Nenhum desvio de rota fica sem correção. A orientação é contínua, não pontual.', dark: true, green: false },
+        { dia: 'Dia 45', nome: 'Call de Orientação', tipo: 'entrega', descricao: 'Revisão de métricas do cliente vs. OKRs acordados. Dúvidas, bloqueios e ajuste de execução. Cada sessão gera ATA com responsáveis e prazos definidos.', entrega: 'ATA + métricas do ciclo + ajustes de rota', valor: 'A orientação não para entre sessões — você tem dono e prazo para cada encaminhamento.', dark: false, green: false },
+        { dia: 'Dia 60', nome: 'Review de Performance', tipo: 'review', descricao: 'Análise de metade do ciclo: métricas reais vs. OKRs. O que está funcionando? O que o cliente precisa ajustar? Redirecionamos esforço baseados em dados, não em achismo.', entrega: 'Dashboard de métricas + decisões do mid-point', valor: 'Você tem dados reais para validar se a estratégia está funcionando antes do sprint final.', dark: true, green: false },
+        { dia: 'Dia 75', nome: 'Ajuste & Refinamento', tipo: 'entrega', descricao: 'Call de ajuste fino: refinamos os processos que estão funcionando e aceleramos os que ainda não performaram. Preparamos o cliente para o sprint final autônomo.', entrega: 'Prioridades finais + checklist de autonomia', valor: 'Cada esforço do último ciclo vai para onde o ROI já foi comprovado.', dark: false, green: false },
+        { dia: 'Dia 90', nome: 'Entrega Final & Autonomia', tipo: 'verdade', descricao: 'Momento de Verdade 2: review final de OKRs, entrega do Playbook Final documentado e plano de sustentação para o cliente operar de forma 100% autônoma a partir de agora.', entrega: 'Playbook Final + Relatório do Ciclo + Plano de Sustentação', valor: 'O conhecimento é seu. A operação continua crescendo sem depender da RevHackers.', dark: false, green: true },
+    ]
+};
+
 // Mapeamento Dinâmico (Fallback)
 export const OnboardingCatalog: Record<string, OnboardingTemplate> = {
-    'consulting': fullConsultingTemplate,
-    'full': fullConsultingTemplate,
-    'crm_ops': crmOpsTemplate,
-    'funnels_impl': funnelsTemplate,
-    'funnel': funnelsTemplate,
-    'site': funnelsTemplate, // site e founder se beneficiam da jornada funnels (LP)
-    'founder': funnelsTemplate,
+    'advisory':    advisoryTemplate,
+    'consulting':  fullConsultingTemplate,
+    'full':        fullConsultingTemplate,
+    'crm_ops':     crmOpsTemplate,
+    'funnels_impl':funnelsTemplate,
+    'funnel':      funnelsTemplate,
+    'site':        funnelsTemplate,
+    'founder':     founderTemplate,
+    'dev':         funnelsTemplate,
 };
 
 export const getTemplateForProjectType = (projectType?: string): OnboardingTemplate => {

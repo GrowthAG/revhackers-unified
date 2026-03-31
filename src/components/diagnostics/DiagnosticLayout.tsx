@@ -28,6 +28,15 @@ export const DiagnosticLayout = ({
 
     return (
         <PageLayout headerVariant={headerVariant}>
+            <style>{`
+                #chat-widget, 
+                #leadconnector-chat-widget, 
+                .hl-chat-widget, 
+                #hl-chat-widget-container,
+                iframe[name="chat-widget"] { 
+                    display: none !important; 
+                }
+            `}</style>
             <div className={cn(
                 "min-h-screen transition-colors duration-500",
                 isDark ? "bg-black text-white" : "bg-white text-black"
@@ -53,7 +62,7 @@ export const DiagnosticLayout = ({
                                             "w-1 h-1 rounded-full",
                                             isDark ? "bg-revgreen shadow-[0_0_15px_rgba(0,204,106,0.8)]" : "bg-zinc-900"
                                         )} />
-                                        <span className="text-[10px] font-mono font-black uppercase tracking-[0.5em] text-zinc-400">
+                                        <span className="text-xxs font-mono font-black uppercase tracking-[0.5em] text-zinc-400">
                                             RevHackers // Intelligence Unit
                                         </span>
                                     </div>
@@ -92,7 +101,7 @@ export const DiagnosticLayout = ({
                                 isDark ? "border-zinc-900" : "border-zinc-100"
                             )}>
                                 <div className={cn("w-8 h-px", isDark ? "bg-zinc-800" : "bg-zinc-100")} />
-                                <p className="text-[9px] text-zinc-500 font-mono uppercase tracking-[0.2em] leading-relaxed max-w-2xl mx-auto font-bold">
+                                <p className="text-2xs text-zinc-500 font-mono uppercase tracking-[0.2em] leading-relaxed max-w-2xl mx-auto font-bold">
                                     ESTA ANÁLISE UTILIZA EXCLUSIVAMENTE DADOS PÚBLICOS OU FORNECIDOS PELO USUÁRIO NO MOMENTO DA COLETA.
                                     <br />OS DADOS PODEM VARIAR AO LONGO DO TEMPO E NÃO REPRESENTAM AVALIAÇÃO DE AUTORIDADE, REPUTAÇÃO OU PERFORMANCE PROFISSIONAL.
                                 </p>

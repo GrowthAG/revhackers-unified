@@ -68,7 +68,7 @@ const ROASCalculator = () => {
             <div className="flex justify-between items-center p-6 border-b-2 border-dashed border-zinc-200">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-revgreen rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">System: ROAS_Audit_v2.1</span>
+                    <span className="text-xxs font-mono uppercase tracking-widest text-zinc-400">System: ROAS_Audit_v2.1</span>
                 </div>
                 {['spend', 'revenue'].includes(step) && (
                     <span className="text-xl font-black font-mono text-zinc-200">{getStepNumber()}/02</span>
@@ -188,7 +188,7 @@ const ROASCalculator = () => {
                 {step === 'calculating' && (
                     <div className="text-center space-y-8 animate-in zoom-in-95 duration-500 h-full flex flex-col justify-center items-center">
                         <div className="relative">
-                            <div className="w-24 h-24 border-8 border-zinc-100 rounded-full"></div>
+                            <div className="w-24 h-24 border-8 border-zinc-100 "></div>
                             <div className="w-24 h-24 border-8 border-black border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
                         </div>
                         <h3 className="text-2xl font-black uppercase tracking-widest animate-pulse">Auditando...</h3>
@@ -211,7 +211,7 @@ const ROASCalculator = () => {
 
                         <form onSubmit={handleUnlock} className="space-y-6 w-full max-w-sm">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nome Completo</label>
+                                <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400">Nome Completo</label>
                                 <Input
                                     className="border-0 border-b-2 border-zinc-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-zinc-200 bg-transparent transition-colors"
                                     required
@@ -221,7 +221,7 @@ const ROASCalculator = () => {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">E-mail Corporativo</label>
+                                <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400">E-mail Corporativo</label>
                                 <Input
                                     className="border-0 border-b-2 border-zinc-200 rounded-none px-0 py-2 h-auto text-xl font-bold focus:border-black focus:ring-0 placeholder:text-zinc-200 bg-transparent transition-colors"
                                     required
@@ -253,7 +253,7 @@ const ROASCalculator = () => {
                                 </h3>
                             </div>
                             <div className="hidden md:block">
-                                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${roas >= 3 ? 'bg-revgreen' : 'bg-red-500'}`}>
+                                <div className={`w-16 h-16 flex items-center justify-center ${roas >= 3 ? 'bg-revgreen' : 'bg-red-500'}`}>
                                     <CheckCircle2 className="w-8 h-8 text-black" />
                                 </div>
                             </div>
@@ -261,24 +261,24 @@ const ROASCalculator = () => {
 
                         <div className="grid grid-cols-2 gap-x-8 gap-y-8 flex-1 content-center border-t border-b border-zinc-100 py-8 my-4">
                             <div>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Status</span>
+                                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-2">Status</span>
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-3 h-3 rounded-full ${roas >= 3 ? 'bg-revgreen' : 'bg-red-500'}`}></div>
+                                    <div className={`w-3 h-3 ${roas >= 3 ? 'bg-revgreen' : 'bg-red-500'}`}></div>
                                     <span className="font-bold text-xl">{roas >= 3 ? 'Escalável' : 'Critico'}</span>
                                 </div>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Lucro Líquido</span>
+                                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-2">Lucro Líquido</span>
                                 <span className={`font-black font-mono text-2xl ${profit > 0 ? 'text-black' : 'text-red-500'}`}>
                                     R$ {profit.toLocaleString('pt-BR', { notation: 'compact' })}
                                 </span>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Investimento</span>
+                                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-2">Investimento</span>
                                 <span className="font-black font-mono text-2xl">R$ {spend.toLocaleString('pt-BR', { notation: 'compact' })}</span>
                             </div>
                             <div>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">Margem</span>
+                                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-2">Margem</span>
                                 <span className="font-black font-mono text-2xl">
                                     {revenue > 0 ? ((profit / revenue) * 100).toFixed(1) : 0}%
                                 </span>

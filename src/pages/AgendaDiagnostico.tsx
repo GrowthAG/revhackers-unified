@@ -78,7 +78,7 @@ const AgendaDiagnosticoPage = () => {
           </div>
 
           {/* Calendar Container */}
-          <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm shadow-sm relative">
+          <div className="bg-white/5 border border-white/10 overflow-hidden backdrop-blur-sm shadow-sm relative">
             {/* Loader / Placeholder */}
             <div className="absolute inset-0 flex items-center justify-center -z-10">
               <div className="w-8 h-8 border-2 border-revgreen border-t-transparent rounded-full animate-spin"></div>

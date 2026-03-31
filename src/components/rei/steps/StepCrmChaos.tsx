@@ -14,14 +14,14 @@ export default function StepCrmChaos({ form }: StepCrmChaosProps) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     O Caos Atual (Mapeamento)
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Diagnóstico Operacional
                 </p>
             </div>
 
             <div className="space-y-2">
                 <Label htmlFor="currentCrm" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual CRM/Ferramenta de Vendas você utiliza atualmente? *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Ex: HubSpot, Pipedrive, Salesforce, Kommo, RD Station CRM, Planilhas Excel.</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Ex: HubSpot, Pipedrive, Salesforce, Kommo, RD Station CRM, Planilhas Excel.</p>
                 <Input
                     {...form.register('currentCrm')}
                     id="currentCrm"
@@ -32,7 +32,7 @@ export default function StepCrmChaos({ form }: StepCrmChaosProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Como você avalia a satisfação e a adoção do seu time em relação ao CRM? *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">A ferramenta ajuda a vender ou é vista como um fardo burocrático?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">A ferramenta ajuda a vender ou é vista como um fardo burocrático?</p>
                 <RadioGroup
                     value={form.watch('crmSatisfaction')}
                     onValueChange={(value) => form.setValue('crmSatisfaction', value)}
@@ -61,7 +61,7 @@ export default function StepCrmChaos({ form }: StepCrmChaosProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual o tempo médio de primeira resposta (Speed to Lead) da sua equipe? *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Quanto tempo demora para o lead ser contatado após levantar a mão?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Quanto tempo demora para o lead ser contatado após levantar a mão?</p>
                 <RadioGroup
                     value={form.watch('speedToLead')}
                     onValueChange={(value) => form.setValue('speedToLead', value)}
@@ -98,7 +98,7 @@ export default function StepCrmChaos({ form }: StepCrmChaosProps) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Dívida Tecnológica Oculta (Shadow IT) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Equipe usa bloqueios, cadernos ou WhatsApp pessoal para vendas?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Equipe usa bloqueios, cadernos ou WhatsApp pessoal para vendas?</p>
                 <RadioGroup
                     value={form.watch('shadowIt')}
                     onValueChange={(value) => form.setValue('shadowIt', value)}

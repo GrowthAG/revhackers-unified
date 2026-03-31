@@ -43,7 +43,7 @@ const PartnerDetail = () => {
           </Link>
 
           <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl w-full md:w-1/3 flex items-center justify-center">
+            <div className="bg-white/10 backdrop-blur-sm p-8 w-full md:w-1/3 flex items-center justify-center">
               <img
                 src={partner.logo}
                 alt={`${partner.name} logo`}
@@ -51,7 +51,7 @@ const PartnerDetail = () => {
               />
             </div>
             <div className="w-full md:w-2/3">
-              <div className="inline-block px-3 py-1 mb-4 bg-green-500/20 text-green-300 rounded-full text-sm font-medium">
+              <div className="inline-block px-3 py-1 mb-4 bg-green-500/20 text-green-300 text-sm font-medium">
                 {partner.category}
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{partner.name}</h1>
@@ -60,7 +60,7 @@ const PartnerDetail = () => {
               </p>
               <div className="flex flex-wrap gap-3">
                 {partner.tags.map((tag, index) => (
-                  <span key={index} className="px-3 py-1 bg-white/10 text-zinc-100 rounded-full text-sm">
+                  <span key={index} className="px-3 py-1 bg-white/10 text-zinc-100 text-sm">
                     {tag}
                   </span>
                 ))}
@@ -82,12 +82,12 @@ const PartnerDetail = () => {
             </div>
 
             {/* Results */}
-            <div className="bg-zinc-50 rounded-xl p-8 mb-12">
+            <div className="bg-zinc-50 p-8 mb-12">
               <h3 className="text-2xl font-bold mb-6">Resultados alcançados</h3>
               <ul className="space-y-4">
                 {partner.results.map((result, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="inline-flex items-center justify-center bg-green-100 text-green-800 rounded-full w-6 h-6 text-sm mr-3 mt-1 flex-shrink-0">
+                    <span className="inline-flex items-center justify-center bg-green-100 text-green-800 w-6 h-6 text-sm mr-3 mt-1 flex-shrink-0">
                       {index + 1}
                     </span>
                     <span>{result}</span>

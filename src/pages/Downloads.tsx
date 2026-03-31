@@ -194,7 +194,7 @@ const Downloads = () => {
                 <Card key={index} className="overflow-hidden shadow-sm transition-shadow h-full flex flex-col">
                   <CardHeader className="bg-zinc-50 border-b">
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-revgreen/10 text-revgreen">
+                      <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-revgreen/10 text-revgreen">
                         {material.type}
                       </span>
                       <material.icon className="h-6 w-6 text-revgreen" />
@@ -222,7 +222,7 @@ const Downloads = () => {
           </div>
 
           {showForm && selectedMaterial && (
-            <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-6 md:p-8 border">
+            <div id="download-form" className="mt-16 max-w-2xl mx-auto bg-white shadow-sm p-6 md:p-8 border">
               <h2 className="text-2xl font-bold mb-6">
                 Preencha seus dados para baixar "{selectedMaterial.title}"
               </h2>
@@ -238,7 +238,7 @@ const Downloads = () => {
 
       <section className="py-16 bg-white">
         <div className="container-custom">
-          <div className="bg-black text-white rounded-xl p-8 md:p-12">
+          <div className="bg-black text-white p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">
@@ -256,7 +256,7 @@ const Downloads = () => {
                 <img
                   src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
                   alt="Análise personalizada"
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto "
                 />
               </div>
             </div>

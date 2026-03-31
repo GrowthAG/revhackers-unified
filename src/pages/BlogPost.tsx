@@ -12,7 +12,7 @@ import { getAllPosts, BlogPostWithAuthor } from '@/api/posts'; // Updated import
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import SEO from '@/components/shared/SEO';
-import { Badge } from '@/components/ui/badge';
+
 import { blogPosts as staticBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogData';
 import ContextualCTA from '@/components/blog/post/ContextualCTA';
 import MaterialModal from '@/components/shared/MaterialModal';
@@ -189,7 +189,7 @@ const BlogPostPage = () => {
       <PageLayout>
         <div className="container-custom py-20">
           <div className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-full border-4 border-zinc-200 border-t-revgreen animate-spin mb-4"></div>
+            <div className="mx-auto w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 animate-spin mb-4"></div>
             <h3 className="text-2xl font-bold mb-4">Carregando artigo...</h3>
           </div>
         </div>
@@ -231,7 +231,7 @@ const BlogPostPage = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/blog')}
-              className="mt-6 border-2 border-revgreen text-revgreen hover:bg-revgreen hover:text-white"
+              className="mt-6 border border-zinc-300 text-zinc-700 hover:bg-zinc-100 hover:text-black"
             >
               Voltar para o blog
             </Button>
@@ -292,9 +292,9 @@ const BlogPostPage = () => {
           <header className="max-w-7xl pt-8 w-full">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-                <Badge variant="outline" className="bg-revgreen/10 text-revgreen border-revgreen/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest h-fit">
+                <span className="bg-revgreen/10 text-revgreen border border-revgreen/20 px-4 py-1.5 text-xs font-bold uppercase tracking-widest">
                   {post.category}
-                </Badge>
+                </span>
                 <div className="hidden md:block h-px w-8 bg-white/20"></div>
                 <div className="flex items-center gap-4 text-zinc-400 text-xs font-medium uppercase tracking-[0.2em]">
                   <span>{post.readTime} reading</span>
@@ -327,7 +327,7 @@ const BlogPostPage = () => {
 
           {/* Metadata - Logic from HeroSection pillars */}
           <div className="w-full border-t border-white/10 pt-8 mt-4 animate-fade-in-up delay-300">
-            <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] md:text-xs font-mono text-zinc-500 uppercase tracking-[0.3em]">
+            <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-xxs md:text-xs font-mono text-zinc-500 uppercase tracking-[0.3em]">
               <div className="flex items-center gap-2 hover:text-revgreen transition-colors cursor-default group">
                 <span className="text-revgreen group-hover:animate-pulse">•</span> {formatDate(updatedPost.date)}
               </div>
@@ -348,7 +348,7 @@ const BlogPostPage = () => {
             onClick={() => contentRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 text-white hover:text-revgreen transition-colors cursor-pointer group z-50 pt-16"
           >
-            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-revgreen bg-black/80 px-4 py-2 rounded-sm border border-revgreen/20 backdrop-blur-md shadow-sm hover:bg-revgreen hover:text-black transition-all duration-300">
+            <span className="text-xxs uppercase tracking-[0.3em] font-bold text-revgreen bg-black/80 px-4 py-2 rounded-sm border border-revgreen/20 backdrop-blur-md shadow-sm hover:bg-revgreen hover:text-black transition-all duration-300">
               Ler Artigo
             </span>
             <div className="w-px h-12 bg-revgreen/50 group-hover:h-20 transition-all duration-500"></div>

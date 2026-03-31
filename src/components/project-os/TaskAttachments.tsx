@@ -173,7 +173,7 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId }) => {
           <h3 className="text-sm font-bold text-zinc-700 uppercase tracking-widest">Anexos</h3>
           <span className="text-xs text-zinc-400">({attachments.length})</span>
         </div>
-        <label className="cursor-pointer px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 border border-zinc-200">
+        <label className="cursor-pointer px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold transition-colors flex items-center gap-1.5 border border-zinc-200">
           {uploading ? (
             <Loader2 className="w-3 h-3 animate-spin" />
           ) : (
@@ -195,9 +195,9 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId }) => {
         {attachments.map(att => (
           <div
             key={att.id}
-            className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 bg-zinc-50 hover:bg-zinc-100 group transition-colors"
+            className="flex items-center gap-3 p-3 border border-zinc-100 bg-zinc-50 hover:bg-zinc-100 group transition-colors"
           >
-            <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center shrink-0">
               {getFileIcon(att.file_type)}
             </div>
 
@@ -209,14 +209,14 @@ export const TaskAttachments: React.FC<TaskAttachmentsProps> = ({ taskId }) => {
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => handleDownload(att)}
-                className="p-1.5 hover:bg-zinc-200 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-zinc-200 transition-colors"
                 title="Baixar"
               >
                 <Download className="w-3.5 h-3.5 text-zinc-600" />
               </button>
               <button
                 onClick={() => handleDelete(att)}
-                className="p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-red-50 transition-colors"
                 title="Remover"
               >
                 <Trash2 className="w-3.5 h-3.5 text-red-400" />

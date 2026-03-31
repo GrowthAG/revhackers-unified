@@ -58,15 +58,15 @@ export const SlashCommandList = forwardRef((props: SlashCommandListProps, ref) =
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden w-64 animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1">
-      <div className="px-2 py-1.5 text-[10px] font-bold tracking-widest uppercase text-zinc-400">
+    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden w-64 animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1">
+      <div className="px-2 py-1.5 text-xxs font-bold tracking-widest uppercase text-zinc-400">
         Blocos Básicos
       </div>
       {props.items.map((item, index) => {
         const isSelected = index === selectedIndex
         return (
           <button
-            className={`flex items-center gap-3 px-2 py-2 w-full text-left rounded-lg transition-colors ${
+            className={`flex items-center gap-3 px-2 py-2 w-full text-left transition-colors ${
               isSelected ? 'bg-zinc-100 dark:bg-zinc-800' : 'bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
             }`}
             key={index}
@@ -80,12 +80,12 @@ export const SlashCommandList = forwardRef((props: SlashCommandListProps, ref) =
               selectItem(index);
             }}
           >
-            <div className={`p-1.5 rounded-md border ${isSelected ? 'bg-white border-zinc-200 text-black dark:bg-zinc-700 dark:border-zinc-600 dark:text-white' : 'bg-zinc-50 border-zinc-100 text-zinc-500 dark:bg-zinc-800/50 dark:border-zinc-800'}`}>
+            <div className={`p-1.5 border ${isSelected ? 'bg-white border-zinc-200 text-black dark:bg-zinc-700 dark:border-zinc-600 dark:text-white' : 'bg-zinc-50 border-zinc-100 text-zinc-500 dark:bg-zinc-800/50 dark:border-zinc-800'}`}>
               <item.icon size={16} />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{item.title}</span>
-              <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{item.description}</span>
+              <span className="text-xxs text-zinc-500 dark:text-zinc-400">{item.description}</span>
             </div>
           </button>
         )

@@ -29,18 +29,18 @@ export default function PremisesSection({ plan }: { plan: any }) {
             </div>
 
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full max-w-[1400px] mx-auto">
-                <div className="flex flex-col lg:flex-row shadow-sm border border-zinc-200/60 rounded-xl overflow-hidden min-h-[500px]">
+                <div className="flex flex-col lg:flex-row shadow-sm border border-zinc-200/60 overflow-hidden min-h-[500px]">
                     
                     {/* Left Side - 3 Light Pillars */}
                     <div className="w-full lg:w-2/3 bg-white p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-zinc-200/60 flex flex-col justify-between">
                         <div className="space-y-10">
                             {lightPillars.map((pillar: any, i: number) => (
                                 <div key={i} className="flex gap-6 group">
-                                    <span className="text-[10px] font-mono font-bold text-zinc-300 mt-1 shrink-0 group-hover:text-zinc-400 transition-colors">
+                                    <span className="text-xxs font-mono font-bold text-zinc-300 mt-1 shrink-0 group-hover:text-zinc-400 transition-colors">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="flex-1">
-                                        <h3 className="text-[16px] font-bold text-zinc-900 mb-4 tracking-tight">
+                                        <h3 className="text-base font-bold text-zinc-900 mb-4 tracking-tight">
                                             <EditableField
                                                 path={`premises_data.pillars.${i}.name`}
                                                 placeholder={pillar.name}
@@ -49,10 +49,10 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                         <ul className="space-y-3">
                                             {(pillar.items || []).map((item: string, j: number) => (
                                                 <li key={j} className="flex items-start gap-3">
-                                                    <span className="text-zinc-300 mt-[2px] shrink-0 text-[11px] leading-relaxed">/</span>
+                                                    <span className="text-zinc-300 mt-[2px] shrink-0 text-tiny leading-relaxed">/</span>
                                                     <EditableField
                                                         path={`premises_data.pillars.${i}.items.${j}`}
-                                                        className="text-[15px] leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
+                                                        className="text-body leading-relaxed text-zinc-500 font-medium group-hover:text-zinc-700 transition-colors"
                                                         placeholder={item}
                                                         multiline
                                                     />
@@ -71,7 +71,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                             <div>
                                 <div className="flex items-center gap-3 mb-10">
                                     <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
-                                    <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
+                                    <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#00CC6A]">
                                         <EditableField
                                             path="premises_data.pillars.3.name"
                                             placeholder={darkPillar.name}
@@ -82,12 +82,12 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                 <div className="space-y-8">
                                     {(darkPillar.items || []).map((item: string, j: number) => (
                                         <div key={j} className="flex gap-4 group">
-                                            <span className="text-[10px] font-mono font-bold text-zinc-700 mt-1 shrink-0 group-hover:text-[#00CC6A]/50 transition-colors">
+                                            <span className="text-xxs font-mono font-bold text-zinc-700 mt-1 shrink-0 group-hover:text-[#00CC6A]/50 transition-colors">
                                                 {String(j + 1).padStart(2, '0')}
                                             </span>
                                             <EditableField
                                                 path={`premises_data.pillars.3.items.${j}`}
-                                                className="text-[15px] leading-[1.8] text-zinc-400 font-medium group-hover:text-white transition-colors"
+                                                className="text-body leading-[1.8] text-zinc-400 font-medium group-hover:text-white transition-colors"
                                                 placeholder={item}
                                                 multiline
                                             />

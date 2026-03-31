@@ -19,7 +19,7 @@ export default function KanbanMapper({ form, fieldName }: Props) {
     return (
         <div className="space-y-4">
             {fields.map((field, index) => (
-                <div key={field.id} className="p-4 border border-zinc-200 rounded-md bg-white relative group">
+                <div key={field.id} className="p-4 border border-zinc-200 bg-white relative group">
                     <Button
                         type="button"
                         variant="ghost"
@@ -50,7 +50,7 @@ export default function KanbanMapper({ form, fieldName }: Props) {
                                 }}
                                 defaultValue={form.getValues(`${fieldName}.${index}.stages` as any)?.join('\n') || ''}
                             />
-                            <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-wide">Apenas quebre a linha para criar uma nova etapa no Kanban.</p>
+                            <p className="text-xxs text-zinc-500 mt-1 uppercase tracking-wide">Apenas quebre a linha para criar uma nova etapa no Kanban.</p>
                         </div>
                     </div>
                 </div>

@@ -80,7 +80,7 @@ export const OrqflowEditor: React.FC<OrqflowEditorProps> = ({ initialContent, on
 
   return (
     <>
-      <div className="w-full relative group flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-950">
+      <div className="w-full relative group flex flex-col border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-950">
         {/* Static Fixed Toolbar */}
       {editor && (
         <div className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-3 py-2 flex items-center gap-1 overflow-x-auto custom-scrollbar">

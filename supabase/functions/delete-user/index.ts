@@ -69,10 +69,13 @@ serve(async (req) => {
     } catch (error: any) {
         console.error('[DELETE-USER] Fatal Error:', error);
         return new Response(
-            JSON.stringify({ error: error.message || 'Falha catastrófica ao remover usuário.' }),
+            JSON.stringify({ 
+                success: false, 
+                error: error.message || 'Falha interna ao remover usuário no backend.' 
+            }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 400,
+                status: 200, // Force 200 so the client receives the JSON payload instead of a generic network exception.
             }
         );
     }

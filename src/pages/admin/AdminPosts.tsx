@@ -73,19 +73,19 @@ const AdminPosts = () => {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Buscar artigos..."
-                                className="h-10 pl-9 pr-3 w-64 text-[13px] bg-white border border-zinc-200 rounded-sm outline-none focus:border-black focus:ring-1 focus:ring-black/5 transition-all placeholder:text-zinc-400 shadow-sm"
+                                className="h-10 pl-9 pr-3 w-64 text-mini bg-white border border-zinc-200 rounded-sm outline-none focus:border-black focus:ring-1 focus:ring-black/5 transition-all placeholder:text-zinc-400 shadow-sm"
                             />
                         </div>
                         <button
                             onClick={handleMigrate}
-                            className="h-10 px-4 flex items-center gap-2 bg-white border border-zinc-200 hover:border-zinc-300 text-zinc-700 text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
+                            className="h-10 px-4 flex items-center gap-2 bg-white border border-zinc-200 hover:border-zinc-300 text-zinc-700 text-tiny font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
                             title="Importar do arquivo estático"
                         >
                             <Download className="w-4 h-4" /> Importar
                         </button>
                         <button
                             onClick={() => navigate('/admin/posts/new')}
-                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
+                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-tiny font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
                         >
                             <Plus className="w-4 h-4" /> Novo Artigo
                         </button>
@@ -115,7 +115,7 @@ const AdminPosts = () => {
                                 )}
                                 <div className="absolute top-3 left-3 flex gap-2">
                                     <span className={`
-                                        text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-sm shadow-sm backdrop-blur-md
+                                        text-2xs font-black uppercase tracking-wider px-2 py-1 rounded-sm shadow-sm backdrop-blur-md
                                         ${post.published
                                             ? 'bg-[#00CC6A]/90 text-white'
                                             : 'bg-zinc-200 text-zinc-700'
@@ -128,7 +128,7 @@ const AdminPosts = () => {
 
                             {/* Content */}
                             <div className="p-5 flex-1 flex flex-col">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2 block">
+                                <span className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-2 block">
                                     {post.category || 'Geral'}
                                 </span>
                                 <h3 className="text-lg font-bold text-zinc-900 leading-snug mb-2 line-clamp-2 group-hover:text-black transition-colors">
@@ -141,14 +141,14 @@ const AdminPosts = () => {
                                 {/* Footer / Meta */}
                                 <div className="pt-4 border-t border-zinc-100 flex items-center justify-between mt-auto">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-5 h-5 rounded-full bg-zinc-200 flex items-center justify-center text-[9px] font-bold text-zinc-500">
+                                        <div className="w-5 h-5 bg-zinc-200 flex items-center justify-center text-2xs font-bold text-zinc-500">
                                             {(post.author?.full_name || 'R').charAt(0)}
                                         </div>
-                                        <span className="text-[10px] text-zinc-400 font-medium truncate max-w-[80px]">
+                                        <span className="text-xxs text-zinc-400 font-medium truncate max-w-[80px]">
                                             {post.author?.full_name || 'RevHackers'}
                                         </span>
                                     </div>
-                                    <span className="text-[10px] text-zinc-300 font-mono">
+                                    <span className="text-xxs text-zinc-300 font-mono">
                                         {new Date(post.created_at).toLocaleDateString()}
                                     </span>
                                 </div>
@@ -168,7 +168,7 @@ const AdminPosts = () => {
                                         e.stopPropagation();
                                         navigate(`/admin/posts/edit/${post.id}`);
                                     }}
-                                    className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-sm"
+                                    className="px-4 py-2 bg-white text-black text-xxs font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-sm"
                                 >
                                     Editar
                                 </button>

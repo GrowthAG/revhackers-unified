@@ -261,7 +261,7 @@ export default function REIResult() {
                         {/* Floating Back Button */}
                         <button
                             onClick={() => navigate('/rei-hub')}
-                            className="absolute top-0 left-0 text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest font-bold flex items-center gap-2 transition-colors no-print"
+                            className="absolute top-0 left-0 text-xxs text-zinc-500 hover:text-white uppercase tracking-widest font-bold flex items-center gap-2 transition-colors no-print"
                         >
                             <ArrowLeft className="w-3 h-3" /> Voltar
                         </button>
@@ -278,7 +278,7 @@ export default function REIResult() {
                         </div>
 
                         <div className="flex flex-col items-center justify-center text-center mt-12 mb-16">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-[10px] uppercase tracking-[0.2em] mb-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 text-zinc-400 text-xxs uppercase tracking-[0.2em] mb-6">
                                 <Zap className="w-3 h-3" /> {content.title}
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4">
@@ -300,7 +300,7 @@ export default function REIResult() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
                             {result.radarData.map((item: any, i: number) => (
                                 <div key={i} className="bg-white/5 border border-white/5 p-4 rounded-sm text-center">
-                                    <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">{item.label}</p>
+                                    <p className="text-xxs text-zinc-500 uppercase tracking-widest mb-1">{item.label}</p>
                                     <p className="text-xl font-bold text-white">{item.value}/100</p>
                                 </div>
                             ))}
@@ -322,9 +322,9 @@ export default function REIResult() {
 
                                     <div className="space-y-4">
                                         {result.insights.map((insight: string, idx: number) => (
-                                            <div key={idx} className="group p-6 bg-zinc-50 border border-zinc-100 hover:border-black transition-colors duration-300 rounded-lg">
+                                            <div key={idx} className="group p-6 bg-zinc-50 border border-zinc-100 hover:border-black transition-colors duration-300 ">
                                                 <div className="flex gap-4">
-                                                    <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0 mt-0.5">
+                                                    <div className="w-6 h-6 bg-black flex items-center justify-center shrink-0 mt-0.5">
                                                         <span className="text-white text-xs font-bold">{idx + 1}</span>
                                                     </div>
                                                     <p className="text-zinc-700 text-sm leading-relaxed font-medium">
@@ -337,7 +337,7 @@ export default function REIResult() {
                                 </div>
 
                                 {/* Additional Context */}
-                                <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-lg mt-8">
+                                <div className="bg-zinc-50 border border-zinc-200 p-6 mt-8">
                                     <h4 className="text-sm font-bold text-zinc-900 mb-2 flex items-center gap-2">
                                         <Globe className="w-4 h-4" /> Benchmark de Mercado
                                     </h4>
@@ -349,7 +349,7 @@ export default function REIResult() {
 
                             {/* Right: Action Plan (Sticky) */}
                             <div className="lg:col-span-5 no-print">
-                                <div className="sticky top-24 bg-zinc-950 text-white p-8 rounded-xl shadow-sm">
+                                <div className="sticky top-24 bg-zinc-950 text-white p-8 shadow-sm">
                                     <div className="mb-8">
                                         <h3 className="text-lg font-bold mb-2">Próximos Passos</h3>
                                         <p className="text-zinc-400 text-sm leading-relaxed">
@@ -359,27 +359,27 @@ export default function REIResult() {
 
                                     <div className="space-y-6 mb-8">
                                         <div className="flex items-center gap-3 text-sm">
-                                            <div className="w-5 h-5 rounded-full bg-revgreen flex items-center justify-center">
+                                            <div className="w-5 h-5 bg-revgreen flex items-center justify-center">
                                                 <Check className="w-3 h-3 text-black" />
                                             </div>
                                             <span className="text-zinc-300">Diagnóstico Completo</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-sm">
-                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${project?.scheduling_completed ? 'bg-revgreen' : 'bg-white/10'}`}>
-                                                {project?.scheduling_completed ? <Check className="w-3 h-3 text-black" /> : <div className="w-2 h-2 rounded-full bg-white" />}
+                                            <div className={`w-5 h-5 flex items-center justify-center ${project?.scheduling_completed ? 'bg-revgreen' : 'bg-white/10'}`}>
+                                                {project?.scheduling_completed ? <Check className="w-3 h-3 text-black" /> : <div className="w-2 h-2 bg-white" />}
                                             </div>
                                             <span className={project?.scheduling_completed ? "text-zinc-300" : "text-white font-bold"}>Agendamento Técnico</span>
                                         </div>
                                         {plan ? (
                                             <div className="flex items-center gap-3 text-sm">
-                                                <div className="w-5 h-5 rounded-full bg-revgreen flex items-center justify-center">
+                                                <div className="w-5 h-5 bg-revgreen flex items-center justify-center">
                                                     <Check className="w-3 h-3 text-black" />
                                                 </div>
                                                 <span className="text-zinc-300">Planejamento Gerado</span>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-3 text-sm opacity-50">
-                                                <div className="w-5 h-5 rounded-full border border-white/20" />
+                                                <div className="w-5 h-5 border border-white/20" />
                                                 <span className="text-zinc-500">Planejamento Gerado</span>
                                             </div>
                                         )}
@@ -421,7 +421,7 @@ export default function REIResult() {
                                         )}
                                     </div>
 
-                                    <p className="text-[10px] text-zinc-500 text-center mt-4">
+                                    <p className="text-xxs text-zinc-500 text-center mt-4">
                                         Receba seu plano de 90 dias com roadmap e orçamento detalhado.
                                     </p>
                                 </div>
@@ -441,7 +441,7 @@ export default function REIResult() {
 
                                         return (
                                             <div key={key} className="break-inside-avoid">
-                                                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
+                                                <p className="text-xxs font-bold text-zinc-500 uppercase tracking-widest mb-1">{label}</p>
                                                 <p className="text-sm font-medium text-black">{displayValue}</p>
                                             </div>
                                         )

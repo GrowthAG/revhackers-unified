@@ -135,7 +135,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
             <div className="min-h-[60vh] flex items-center justify-center py-12">
                 <Card className="bg-white border border-zinc-200 p-8 md:p-12 max-w-2xl w-full mx-auto shadow-sm">
                     <div className="text-center mb-8">
-                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
+                        <div className="w-20 h-20 bg-white flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
                             <img
                                 src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/68eec7ea4ae0e04e5deea3de.jpeg"
                                 alt="RevHackers"
@@ -173,7 +173,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                                 value={formData.segment}
                                 onChange={(e) => handleFieldChange('segment', e.target.value)}
                                 required
-                                className="mt-2 flex h-12 w-full items-center justify-between rounded-md border border-zinc-300 bg-white text-zinc-900 px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-revgreen focus:border-revgreen disabled:cursor-not-allowed disabled:opacity-50"
+                                className="mt-2 flex h-12 w-full items-center justify-between border border-zinc-300 bg-white text-zinc-900 px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-revgreen focus:border-revgreen disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <option value="">Selecione seu segmento</option>
                                 <option value="SaaS">SaaS (Software as a Service)</option>
@@ -240,7 +240,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
         return (
             <Card className="bg-white border border-zinc-200 p-8 md:p-12 max-w-4xl mx-auto shadow-sm">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-sm font-semibold mb-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 border border-zinc-200 text-zinc-700 text-sm font-semibold mb-6">
                         <Target className="w-4 h-4" />
                         Onboarding REVHACKERS
                     </div>
@@ -260,9 +260,9 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                     {reiSections.map((section, index) => (
-                        <div key={section.id} className="bg-white border border-zinc-200 rounded-xl p-5 hover:border-zinc-300 transition-colors">
+                        <div key={section.id} className="bg-white border border-zinc-200 p-5 hover:border-zinc-300 transition-colors">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-2xl">
+                                <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center text-2xl">
                                     {section.icon}
                                 </div>
                                 <span className="text-xs font-semibold text-zinc-500">Seção {index + 1}</span>
@@ -273,7 +273,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                     ))}
                 </div>
 
-                <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-8">
+                <div className="bg-zinc-50 border border-zinc-200 p-6 mb-8">
                     <p className="text-center text-zinc-700">
                         <strong className="text-zinc-900">Ao final,</strong> você receberá um plano de ação completo com insights acionáveis e próximos passos para <span className="font-bold text-zinc-900">{formData.company}</span>.
                     </p>
@@ -297,7 +297,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
             <div className="max-w-4xl mx-auto space-y-6">
                 {/* Score Card */}
                 <Card className="bg-white border-2 border-zinc-200 p-8 md:p-12 text-center">
-                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
+                    <div className="w-20 h-20 bg-white flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
                         <Award className="h-10 w-10 text-revgreen" />
                     </div>
 
@@ -309,7 +309,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                     </p>
 
                     {/* Score Display */}
-                    <div className="bg-white border-2 border-zinc-200 rounded-2xl p-8 mb-8">
+                    <div className="bg-white border-2 border-zinc-200 p-8 mb-8">
                         <div className="flex items-center justify-center gap-4 mb-6">
                             <TrendingUp className={`w-8 h-8 ${score.color}`} />
                             <div>
@@ -328,9 +328,9 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                                 <span className="text-sm font-medium text-zinc-600">Score REI</span>
                                 <span className="text-sm font-bold text-zinc-900">{score.percentage}%</span>
                             </div>
-                            <div className="w-full bg-zinc-200 rounded-full h-3">
+                            <div className="w-full bg-zinc-200 h-3">
                                 <div
-                                    className="bg-revgreen h-3 rounded-full transition-all duration-500"
+                                    className="bg-revgreen h-3 transition-all duration-500"
                                     style={{ width: `${score.percentage}%` }}
                                 />
                             </div>
@@ -345,7 +345,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                     </div>
 
                     {/* Recommendations */}
-                    <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-8 text-left">
+                    <div className="bg-zinc-50 border border-zinc-200 p-6 mb-8 text-left">
                         <h3 className="text-lg font-bold text-zinc-900 mb-4 flex items-center gap-2">
                             <CheckCircle2 className="w-5 h-5 text-revgreen" />
                             Recomendações Prioritárias
@@ -353,7 +353,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         <div className="space-y-3">
                             {score.recommendations.map((rec, index) => (
                                 <div key={index} className="flex items-start gap-3">
-                                    <div className="w-6 h-6 bg-revgreen/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className="w-6 h-6 bg-revgreen/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                                         <span className="text-xs font-bold text-revgreen">{index + 1}</span>
                                     </div>
                                     <p className="text-zinc-700">{rec}</p>
@@ -363,7 +363,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                     </div>
 
                     {/* Next Steps */}
-                    <div className="bg-white border border-zinc-200 rounded-xl p-6 mb-8 text-left">
+                    <div className="bg-white border border-zinc-200 p-6 mb-8 text-left">
                         <h3 className="text-lg font-bold text-zinc-900 mb-4">Próximos Passos:</h3>
                         <div className="space-y-3">
                             <div className="flex items-start gap-3">
@@ -421,9 +421,9 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                         {Math.round(progress)}% completo
                     </span>
                 </div>
-                <div className="w-full bg-zinc-200 rounded-full h-2">
+                <div className="w-full bg-zinc-200 h-2">
                     <div
-                        className="bg-revgreen h-2 rounded-full transition-all duration-300"
+                        className="bg-revgreen h-2 transition-all duration-300"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -434,7 +434,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                 {/* Section Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center text-3xl">
+                        <div className="w-12 h-12 bg-zinc-50 flex items-center justify-center text-3xl">
                             {currentSection.icon}
                         </div>
                         <div>

@@ -15,10 +15,39 @@ export default {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'2xl': '1400px'
+				'2xl': '87.5rem'
 			}
 		},
 		extend: {
+			fontSize: {
+				// Custom rem scale replacing px brackets
+				'4xs': ['0.4375rem', { lineHeight: '0.625rem' }],   // 7px
+				'3xs': ['0.5rem', { lineHeight: '0.75rem' }],       // 8px
+				'2xs': ['0.5625rem', { lineHeight: '0.875rem' }],   // 9px
+				'xxs': ['0.625rem', { lineHeight: '1rem' }],        // 10px
+				'tiny': ['0.6875rem', { lineHeight: '1rem' }],      // 11px
+				'mini': ['0.8125rem', { lineHeight: '1.25rem' }],   // 13px
+				'body': ['0.9375rem', { lineHeight: '1.5rem' }],    // 15px
+				'reading': ['1.0625rem', { lineHeight: '1.75rem' }],// 17px
+			},
+			spacing: {
+				// Pixel-precise spacing in rem for layout elements
+				'0.25': '0.0625rem',  // 1px
+				'0.375': '0.09375rem', // 1.5px
+				'0.5': '0.125rem',    // 2px
+				'0.75': '0.1875rem',  // 3px
+				'1.25': '0.3125rem',  // 5px
+				'4.5': '1.125rem',    // 18px
+				'13': '3.25rem',      // 52px
+				'15': '3.75rem',      // 60px
+				'18': '4.5rem',       // 72px
+				'25': '6.25rem',      // 100px
+				'30': '7.5rem',       // 120px
+			},
+			maxWidth: {
+				'page': '87.5rem',    // 1400px
+				'content': '100rem',  // 1600px
+			},
 			fontFamily: {
 				'sans': ['DM Sans', 'Inter', 'sans-serif'],
 				'display': ['DM Sans', 'Inter', 'sans-serif'],

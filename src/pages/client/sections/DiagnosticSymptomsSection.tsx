@@ -26,7 +26,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full flex flex-col justify-start gap-8">
                 {/* ── Context Mirror - Dark Block ── */}
                 {context && (
-                    <div className="bg-zinc-950 rounded-xl overflow-hidden">
+                    <div className="bg-zinc-950 overflow-hidden">
                         <div className="grid grid-cols-1 md:grid-cols-2">
                             {[
                                 { label: 'Segmento', value: context.segment },
@@ -35,10 +35,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 { label: 'Restrições', value: context.restrictions },
                             ].map((item, i) => (
                                 <div key={i} className={`p-7 md:p-8 ${i < 2 ? 'border-b border-zinc-800' : ''} ${i % 2 === 0 ? 'md:border-r border-zinc-800' : ''}`}>
-                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.25em] block mb-3">{item.label}</span>
+                                    <span className="text-xxs font-black text-zinc-500 uppercase tracking-[0.25em] block mb-3">{item.label}</span>
                                     <EditableField
                                         path={`diagnostic_data.context_mirror.${['segment', 'objective', 'maturity', 'restrictions'][i]}`}
-                                        className="text-[15px] font-medium text-zinc-100 leading-relaxed"
+                                        className="text-body font-medium text-zinc-100 leading-relaxed"
                                         placeholder={item.value || '-'}
                                     />
                                 </div>
@@ -51,8 +51,8 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {signals.length > 0 && (
                     <div className="space-y-5">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-[13px] font-bold text-zinc-900 uppercase tracking-[0.2em]">Sinais Estratégicos</h4>
-                            <span className="text-[11px] font-bold text-zinc-400">
+                            <h4 className="text-mini font-bold text-zinc-900 uppercase tracking-[0.2em]">Sinais Estratégicos</h4>
+                            <span className="text-tiny font-bold text-zinc-400">
                                 {signals.length} {signals.length === 1 ? 'sinal mapeado' : 'sinais mapeados'}
                             </span>
                         </div>
@@ -60,10 +60,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                         <div className={`grid grid-cols-1 ${signals.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4`}>
                             {signals.map((signal: any, i: number) => {
                                 return (
-                                    <div key={i} className="bg-white border border-zinc-200 rounded-xl p-6 flex flex-col">
+                                    <div key={i} className="bg-white border border-zinc-200 p-6 flex flex-col">
                                         {/* Header */}
                                         <div className="flex items-center gap-3 mb-5">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                            <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                                 Sinal {String(i + 1).padStart(2, '0')}
                                             </span>
                                         </div>
@@ -72,7 +72,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         <div className="mb-auto pb-5">
                                             <EditableField
                                                 path={`diagnostic_data.signals.${i}.text`}
-                                                className="text-[15px] font-medium text-zinc-800 leading-relaxed tracking-tight"
+                                                className="text-body font-medium text-zinc-800 leading-relaxed tracking-tight"
                                                 placeholder={signal.text}
                                                 multiline
                                             />
@@ -80,7 +80,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
                                         {/* Impact */}
                                         <div className="pt-4 border-t border-zinc-100">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 block mb-1.5">Impacto Real</span>
+                                            <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400 block mb-1.5">Impacto Real</span>
                                             <EditableField
                                                 path={`diagnostic_data.signals.${i}.impact`}
                                                 className="text-sm font-medium text-zinc-500 leading-relaxed"

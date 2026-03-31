@@ -65,7 +65,7 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
                         <Icon className="w-5 h-5 text-zinc-400" />
                     </div>
                     <div>
-                        <div className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">
+                        <div className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-500">
                             REVENUE SCAN
                         </div>
                         <h1 className="text-2xl font-black uppercase tracking-wider text-white">
@@ -130,7 +130,7 @@ export default function ResultHero({ score, type }: ResultHeroProps) {
 
                 {/* Type Badge */}
                 <div className="absolute top-6 right-6">
-                    <div className="px-3 py-1 bg-revgreen/10 border border-revgreen/30 text-revgreen text-[10px] font-black uppercase tracking-wider">
+                    <div className="px-3 py-1 bg-revgreen/10 border border-revgreen/30 text-revgreen text-xxs font-black uppercase tracking-wider">
                         {type}
                     </div>
                 </div>

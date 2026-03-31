@@ -13,7 +13,7 @@ export default function StepCrmOps1Context({ form }: Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Go-to-Market & Unit Economics
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Como está a eficiência da sua operação comercial hoje?
                 </p>
             </div>
@@ -44,7 +44,7 @@ export default function StepCrmOps1Context({ form }: Props) {
             {/* Objetivo Principal */}
             <div className="space-y-2">
                 <Label htmlFor="revops_objetivo_principal" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Qual o principal objetivo desta implementação? *</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">O que você precisa construir, migrar ou organizar? Seja direto.</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">O que você precisa construir, migrar ou organizar? Seja direto.</p>
                 <textarea
                     {...form.register('revops_objetivo_principal')}
                     id="revops_objetivo_principal"
@@ -126,7 +126,7 @@ export default function StepCrmOps1Context({ form }: Props) {
             {/* Concorrentes */}
             <div className="space-y-3 pt-6 border-t border-zinc-100">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Principais Concorrentes</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Informe até 3 concorrentes da sua operação de vendas. Se souber o site, preencha também (Obrigatório para Benchmark de IA).</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">Informe até 3 concorrentes da sua operação de vendas. Se souber o site, preencha também (Obrigatório para Benchmark de IA).</p>
                 <div className="space-y-3">
                     {[1, 2, 3].map((n) => (
                         <div key={n} className="grid grid-cols-2 gap-3">

@@ -64,7 +64,7 @@ function OwnerBadge({ owner }: { owner?: string }) {
 
     const Icon = config.icon;
     return (
-        <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${config.color}`}>
+        <span className={`inline-flex items-center gap-1 text-2xs font-bold uppercase tracking-widest px-2 py-0.5 rounded ${config.color}`}>
             <Icon className="w-2.5 h-2.5" />
             {config.label}
         </span>
@@ -124,13 +124,13 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
                 {/* Progress indicator */}
                 {completedCount > 0 && (
                     <div className="flex flex-col md:flex-row md:items-center gap-3 mb-8 pb-6 border-b border-zinc-100">
-                        <div className="flex-1 max-w-md h-[3px] bg-zinc-100 rounded-full overflow-hidden">
+                        <div className="flex-1 max-w-md h-[3px] bg-zinc-100 overflow-hidden">
                             <div
                                 className="h-full bg-[#00CC6A] transition-all duration-500 ease-out rounded-full"
                                 style={{ width: `${(completedCount / quickWins.length) * 100}%` }}
                             />
                         </div>
-                        <span className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-widest shrink-0">
+                        <span className="text-tiny font-bold text-[#00CC6A] uppercase tracking-widest shrink-0">
                             {completedCount} DE {quickWins.length} CONCLUÍDAS
                         </span>
                     </div>
@@ -156,7 +156,7 @@ export default function QuickWinsSection({ plan }: { plan: any }) {
                 {/* Footer */}
                 <div className="flex items-center gap-4 mt-16 max-w-2xl">
                     <span className="text-[#00CC6A] shrink-0 text-sm">/</span>
-                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+                    <span className="text-tiny font-bold text-zinc-400 uppercase tracking-widest">
                         {completedCount === quickWins.length && quickWins.length > 0
                             ? 'Sprint 1 Concluída'
                             : 'Fundação Sólida > Próxima Fase'
@@ -187,7 +187,7 @@ function TimelineCard({
         <div className={`group flex gap-5 transition-all duration-300 ${isComplete ? 'opacity-50' : ''}`}>
             {/* Left side: Day Marker */}
             <div className="shrink-0 pt-1">
-                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full border ${isComplete ? 'border-[#00CC6A] bg-[#00CC6A]/5 text-[#00CC6A]' : 'border-zinc-200 bg-zinc-50 text-zinc-400'} text-[10px] font-black uppercase tracking-widest`}>
+                <span className={`inline-flex items-center justify-center w-12 h-12 rounded-full border ${isComplete ? 'border-[#00CC6A] bg-[#00CC6A]/5 text-[#00CC6A]' : 'border-zinc-200 bg-zinc-50 text-zinc-400'} text-xxs font-black uppercase tracking-widest`}>
                     {win.day?.replace('Dia ', 'D')}
                 </span>
             </div>
@@ -197,7 +197,7 @@ function TimelineCard({
                 <div className="flex items-start justify-between mb-2">
                     <EditableField
                         path={`diagnostic_data.quick_wins.${index}.action`}
-                        className={`text-[16px] font-bold text-zinc-900 leading-snug pr-4 ${
+                        className={`text-base font-bold text-zinc-900 leading-snug pr-4 ${
                             isComplete ? 'line-through decoration-zinc-300' : ''
                         }`}
                         placeholder={win.action}
@@ -215,7 +215,7 @@ function TimelineCard({
                     )}
                 </div>
 
-                <p className="text-[14px] font-medium text-zinc-500 leading-relaxed mb-4 max-w-sm">
+                <p className="text-sm font-medium text-zinc-500 leading-relaxed mb-4 max-w-sm">
                     <EditableField
                         path={`diagnostic_data.quick_wins.${index}.outcome`}
                         className="bg-transparent"

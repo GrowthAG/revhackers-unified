@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useOrqflowStore, TaskStatus } from '@/store/useOrqflow';
 import { toast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface TaskModalProps {
@@ -129,7 +128,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
             {/* Header: Breadcrumbs & Actions */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800/60 sticky top-0 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md z-10">
               <div className="flex items-center gap-2 text-sm text-zinc-500 font-medium">
-                <span className="uppercase text-[10px] tracking-wider bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-600 dark:text-zinc-300">
+                <span className="uppercase text-xxs tracking-wider bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-zinc-600 dark:text-zinc-300">
                   {task.status}
                 </span>
                 <span className="text-zinc-400 dark:text-zinc-600">/</span>
@@ -139,15 +138,15 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                 <button 
                   onClick={handleGenerateMagicLink}
                   disabled={generatingLink}
-                  className="px-3 py-1.5 flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-black dark:hover:text-white rounded-md transition-colors border border-zinc-200 dark:border-zinc-700 disabled:opacity-50"
+                  className="px-3 py-1.5 flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-black dark:hover:text-white transition-colors border border-zinc-200 dark:border-zinc-700 disabled:opacity-50"
                   title="Gerar Link Mágico de Aprovação (Zero-Login)"
                 >
-                  {generatingLink ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4 text-emerald-400" />}
+                  {generatingLink ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4 text-zinc-400" />}
                   CLIENT HANDOFF
                 </button>
                   <button 
                     onClick={() => setIsDeletingTask(true)}
-                    className="p-1.5 rounded-md text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                    className="p-1.5 text-zinc-500/70 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-200 dark:hover:bg-zinc-800 transition-colors rounded-sm"
                     title="Destruir Tarefa"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -155,7 +154,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                 <div className="w-[1px] h-4 bg-zinc-200 dark:bg-zinc-800 mx-1" />
                 <button 
                   onClick={onClose}
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -185,7 +184,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                       <User className="w-4 h-4" /> Responsável
                     </div>
                     <div className="flex items-center gap-2 w-full max-w-[200px]">
-                      <div className="w-6 h-6 shrink-0 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] flex items-center justify-center font-bold text-zinc-600 dark:text-zinc-300">
+                      <div className="w-6 h-6 shrink-0 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xxs flex items-center justify-center font-bold text-zinc-600 dark:text-zinc-300">
                         {task.assignee_id ? (workspaceUsers.find((u) => u.id === task.assignee_id)?.full_name?.substring(0,2).toUpperCase() || 'AT') : '--'}
                       </div>
                       <select 
@@ -210,7 +209,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                     <div className="flex flex-col gap-2 w-full max-w-[200px]">
                        {/* INÍCIO */}
                        <div className="flex items-center justify-between w-full group">
-                         <span className="text-[10px] uppercase font-bold text-zinc-400 truncate pr-2">Início</span>
+                         <span className="text-xxs uppercase font-bold text-zinc-400 truncate pr-2">Início</span>
                          <input 
                            type="date"
                            value={task.start_date ? task.start_date.split('T')[0] : ''}
@@ -221,7 +220,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
 
                        {/* PRAZO/FIM */}
                        <div className="flex items-center justify-between w-full group">
-                         <span className="text-[10px] uppercase font-bold text-zinc-400 truncate pr-2">Prazo</span>
+                         <span className="text-xxs uppercase font-bold text-zinc-400 truncate pr-2">Prazo</span>
                          <input 
                            type="date"
                            value={task.due_date ? task.due_date.split('T')[0] : ''}
@@ -256,7 +255,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                        {isThisTaskTracking ? (
                          <button 
                            onClick={stopTimer}
-                           className="flex items-center gap-1.5 px-3 py-1 bg-red-900/40 text-red-500 hover:bg-red-900/60 hover:text-red-400 rounded-md transition-colors text-xs font-bold border border-red-900/60"
+                           className="flex items-center gap-1.5 px-3 py-1 bg-zinc-900/80 text-zinc-200 hover:bg-zinc-900 hover:text-white rounded-none transition-colors text-xs font-bold border border-zinc-700"
                            title="Parar Auditoria"
                          >
                            <Square className="w-3 h-3 fill-current" /> GRAVANDO
@@ -265,7 +264,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                          <button 
                            onClick={() => taskId && startTimer(taskId)}
                            disabled={activeTimer !== null}
-                           className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-black dark:hover:text-white rounded-md transition-colors text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-200 dark:border-transparent"
+                           className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-black dark:hover:text-white transition-colors text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-200 dark:border-transparent"
                            title={activeTimer ? 'Você tem outra tarefa rodando no timer.' : 'Iniciar rastreamento contábil'}
                          >
                            <Play className="w-3 h-3 fill-current" /> PLAY
@@ -358,7 +357,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
                   onClose();
                 }
               }} 
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-zinc-900 hover:bg-black text-white"
             >
               Destruir Tarefa
             </AlertDialogAction>

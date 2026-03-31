@@ -110,7 +110,7 @@ Abs,
         <h2 className="text-2xl font-bold text-zinc-900 mt-12 mb-6">Como Medir (Templates)</h2>
         <div className="space-y-8 mb-16">
           {templates.map((template, index) => (
-            <div key={index} className="bg-zinc-950 text-zinc-300 p-8 rounded-xl border border-zinc-800 shadow-sm not-prose">
+            <div key={index} className="bg-zinc-950 text-zinc-300 p-8 border border-zinc-800 shadow-sm not-prose">
               <div className="flex justify-between items-start mb-6 border-b border-zinc-800 pb-4">
                 <div>
                   <h3 className="text-white font-bold text-lg">{template.name}</h3>

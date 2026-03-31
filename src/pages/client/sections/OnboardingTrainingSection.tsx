@@ -38,7 +38,7 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                                         multiline
                                     />
                                 </h3>
-                                <p className="text-[13px] text-zinc-500 leading-[1.6] font-medium mb-8">
+                                <p className="text-mini text-zinc-500 leading-[1.6] font-medium mb-8">
                                     Com as fundações prontas, entramos no treinamento imersivo. 
                                     O objetivo não é ensinar a clicar em botões, mas sim mudar 
                                     o comportamento e a cultura da operação comercial da {getFirstName(clientName)}.
@@ -46,10 +46,10 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                             </div>
 
                             {/* O Ponto Sem Retorno - Sleek Milestone */}
-                            <div className="bg-zinc-950 rounded-2xl p-8 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00CC6A]/10 blur-3xl rounded-full transform translate-x-10 -translate-y-10" />
+                            <div className="bg-zinc-950 p-8 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00CC6A]/10 blur-3xl transform translate-x-10 -translate-y-10" />
                                 
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] block mb-4">
+                                <span className="text-xxs font-black uppercase tracking-[0.2em] text-[#00CC6A] block mb-4">
                                     Marco Zero • O Ponto Sem Retorno
                                 </span>
                                 
@@ -61,7 +61,7 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                                     />
                                 </h4>
                                 
-                                <p className="text-[13px] text-zinc-400 leading-[1.6] font-medium">
+                                <p className="text-mini text-zinc-400 leading-[1.6] font-medium">
                                     <EditableField
                                         placeholder="A data oficial onde o sistema antigo (planilhas ou processos soltos) morre, e o novo começa a governar a sua empresa 100%."
                                         path="onboarding_data.training.p3_desc"
@@ -79,19 +79,19 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                             <div className="flex gap-6 relative">
                                 <div className="absolute left-3.5 top-10 bottom-[-40px] w-[1px] bg-zinc-100" />
                                 <div className="shrink-0 relative z-10 bg-white pt-1">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full border border-zinc-200 text-[10px] font-bold text-zinc-400 font-mono">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-full border border-zinc-200 text-xxs font-bold text-zinc-400 font-mono">
                                         01
                                     </span>
                                 </div>
                                 <div className="flex-1 pb-2">
-                                    <h4 className="text-[17px] font-bold text-zinc-900 mb-2 tracking-tight">
+                                    <h4 className="text-reading font-bold text-zinc-900 mb-2 tracking-tight">
                                         <EditableField
                                             placeholder="Aulas Técnicas Gravadas"
                                             path="onboarding_data.training.p1_title"
                                             className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                         />
                                     </h4>
-                                    <p className="text-[14px] text-zinc-500 leading-relaxed font-medium">
+                                    <p className="text-sm text-zinc-500 leading-relaxed font-medium">
                                         <EditableField
                                             placeholder="Sessões técnicas passando por cada fase do funil e processo criado. Gravado em plataforma sob demanda para que novos membros do time também tenham acesso."
                                             path="onboarding_data.training.p1_desc"
@@ -105,19 +105,19 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                             {/* Track 2 */}
                             <div className="flex gap-6 relative">
                                 <div className="shrink-0 relative z-10 bg-white pt-1">
-                                    <span className="flex items-center justify-center w-8 h-8 rounded-full border border-[#00CC6A] bg-[#00CC6A]/5 text-[#00CC6A] text-[10px] font-bold font-mono">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-full border border-[#00CC6A] bg-[#00CC6A]/5 text-[#00CC6A] text-xxs font-bold font-mono">
                                         02
                                     </span>
                                 </div>
                                 <div className="flex-1 pb-2">
-                                    <h4 className="text-[17px] font-bold text-zinc-900 mb-2 tracking-tight">
+                                    <h4 className="text-reading font-bold text-zinc-900 mb-2 tracking-tight">
                                         <EditableField
                                             placeholder="Avaliação e Simulação Prática"
                                             path="onboarding_data.training.p2_title"
                                             className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                         />
                                     </h4>
-                                    <p className="text-[14px] text-zinc-500 leading-relaxed font-medium">
+                                    <p className="text-sm text-zinc-500 leading-relaxed font-medium">
                                         <EditableField
                                             placeholder="Não mostramos só onde clicar. Criamos cenários de simulação das dificuldades do dia a dia da equipe para validarmos que absorveram a nova cultura."
                                             path="onboarding_data.training.p2_desc"

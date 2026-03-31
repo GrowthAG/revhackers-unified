@@ -43,6 +43,9 @@ import {
     AlertCircle,
     Cpu,
     Swords,
+    FileSignature,
+    Globe,
+    Share2,
 } from 'lucide-react';
 import { updateReiProject } from '@/api/reiProjects';
 import { toast as sonnerToast } from 'sonner';
@@ -80,6 +83,8 @@ import DiagnosticResponsesPanel from '@/components/admin/DiagnosticResponsesPane
 import { MarketIntelligenceTab } from '@/components/project-os/views/MarketIntelligenceTab';
 import { SalesRoomTab } from '@/components/project-os/views/SalesRoomTab';
 import { MeetingVaultTab } from '@/components/project-os/views/MeetingVaultTab';
+import { KickoffSignaturePanel } from '@/components/rei/KickoffSignaturePanel';
+import { SuccessPlanTab } from '@/components/admin/SuccessPlanTab';
 
 import {
     PipelineStage,
@@ -121,20 +126,15 @@ const JOURNEY_STAGES: PipelineStage[] = PIPELINE_STAGES.filter(
     (s) => s !== 'lost' && s !== 'churned'
 );
 
+import { getDisplayName as utilGetDisplayName } from '@/lib/projectUtils';
+
 function getDisplayName(project: ReiProject | null): string {
     if (!project) return 'Projeto';
-    if (project.trade_name) return project.trade_name;
-    const raw = project.client_name || 'Projeto';
-
-    if (raw.toUpperCase().includes('SARAH PENIDO')) return 'Arquiter';
-    if (raw.toUpperCase().includes('TUNAD')) return 'Tunad';
-
-    const cleaned = raw
-        .replace(/\s+(LTDA|EIRELI|S\.?A\.?|ME|EPP|S\/S|SERVICOS|SERVIÇOS|MARKETING|CONSULTORIA|TECNOLOGIA|PLATAFORM|PLATFORM|DIGITAL|SOLUCOES|SOLUÇÕES|MOMENT|GROUP|BRASIL)\b/gi, '')
-        .trim();
-    const words = cleaned.split(/\s+/);
-    const brandName = words.length > 2 ? words.slice(0, 2).join(' ') : cleaned;
-    return brandName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) || raw;
+    return utilGetDisplayName({
+        trade_name: project.trade_name,
+        client_company: project.client_company,
+        client_name: project.client_name
+    });
 }
 
 function getDaysInStage(history: StageChangeEvent[], currentStage: PipelineStage | null): number {
@@ -150,16 +150,16 @@ function getDaysInStage(history: StageChangeEvent[], currentStage: PipelineStage
 function getVisibleTabs(category: StageCategory | null): string[] {
     switch (category) {
         case 'diagnostico':
-            return ['osint', 'diagnostico', 'reunioes'];
+            return ['jornada', 'osint', 'diagnostico', 'reunioes', 'kickoff'];
         case 'vendas':
-            return ['osint', 'jornada', 'sales-room', 'reunioes'];
+            return ['jornada', 'osint', 'sales-room', 'reunioes', 'kickoff'];
         case 'execucao':
-            return ['orqflow', 'jornada', 'reunioes', 'biblioteca'];
+            return ['jornada', 'orqflow', 'success', 'reunioes', 'biblioteca', 'kickoff'];
         case 'encerrado':
-            return ['osint', 'jornada', 'reunioes', 'biblioteca'];
+            return ['jornada', 'osint', 'success', 'reunioes', 'biblioteca'];
         default:
             // Fallback: show all core tabs
-            return ['osint', 'jornada', 'reunioes'];
+            return ['jornada', 'osint', 'reunioes', 'kickoff'];
     }
 }
 
@@ -172,29 +172,58 @@ interface PipelineJourneyBarProps {
 }
 
 function PipelineJourneyBar({ currentStage, history, daysInStage, onAdvance }: PipelineJourneyBarProps) {
-    const currentIndex = JOURNEY_STAGES.indexOf(currentStage);
-    const visitedStages = new Set(history.map(h => h.to_stage));
-    visitedStages.add(currentStage);
+    const category = STAGE_CONFIGS[currentStage]?.category;
+
+    // Dynamically calculate which macro-stages to show based on the phase of the project
+    const visibleStages = useMemo(() => {
+        const isExecutionPhase = category === 'execucao' || category === 'encerrado' || currentStage === 'won';
+        let stages: PipelineStage[];
+
+        if (isExecutionPhase) {
+            // Se já fechou, suprime as granulações chatas de proposta (rascunho, enviada, etc)
+            // e mostra a jornada macro do delivery.
+            stages = ['lead_inbound', 'diagnostic_done', 'won', 'onboarding', 'active', 'completed'];
+            if (currentStage === 'churned') {
+                stages.push('churned');
+            }
+        } else {
+            // Em pré-vendas, mostra o funil de oportunidade. Removemos 'lost' por padrão, só mostra se for current.
+            stages = ['lead_inbound', 'lead_qualified', 'diagnostic_done', 'proposal_draft', 'proposal_sent', 'proposal_viewed', 'negotiation', 'won'];
+            if (currentStage === 'lost') {
+                stages.push('lost');
+            }
+        }
+
+        // Garante que o estágio atual sempre existe na barra, mesmo em edições forçadas de base de dados
+        if (!stages.includes(currentStage)) {
+            stages.push(currentStage);
+        }
+
+        // Ordenar pela cronologia oficial para não ficar pulando
+        return stages.sort((a, b) => getStageIndex(a) - getStageIndex(b));
+    }, [category, currentStage]);
+
+    const currentIndex = visibleStages.indexOf(currentStage);
 
     return (
         <div className="bg-white border-b border-zinc-200 px-8 py-4">
             <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400">
                     Pipeline
                 </span>
                 <div className="flex items-center gap-2">
                     <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                    <span className="text-[11px] font-bold text-zinc-500">
+                    <span className="text-tiny font-bold text-zinc-500">
                         {daysInStage} {daysInStage === 1 ? 'dia' : 'dias'} em {STAGE_CONFIGS[currentStage].label}
                     </span>
                 </div>
             </div>
-            <div className="flex items-center gap-1">
-                {JOURNEY_STAGES.map((stage, idx) => {
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-1">
+                {visibleStages.map((stage, idx) => {
                     const config = STAGE_CONFIGS[stage];
                     const isCurrent = stage === currentStage;
-                    const isPast = visitedStages.has(stage) && !isCurrent && getStageIndex(stage) < getStageIndex(currentStage);
-                    const isFuture = !isPast && !isCurrent;
+                    const isPast = !isCurrent && getStageIndex(stage) < getStageIndex(currentStage);
+                    const isFuture = !isCurrent && !isPast;
                     const Icon = getStageIcon(config.icon);
 
                     return (
@@ -207,28 +236,28 @@ function PipelineJourneyBar({ currentStage, history, daysInStage, onAdvance }: P
                                     }
                                 }}
                                 title={`${config.label}${STAGE_CONFIGS[currentStage].allowedTransitions.includes(stage) ? ' - clique para avancar' : ''}`}
-                                className={`group relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
+                                className={`group relative flex items-center gap-1.5 px-3 py-1.5 text-3xs font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap border ${
                                     isCurrent
-                                        ? 'bg-zinc-950 text-white'
+                                        ? 'border-zinc-900 bg-zinc-900 text-white shadow-[0_3px_0_0_#00CC6A]'
                                         : isPast
-                                        ? 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
-                                        : 'bg-zinc-50 text-zinc-300'
-                                } ${STAGE_CONFIGS[currentStage].allowedTransitions.includes(stage) ? 'cursor-pointer ring-1 ring-transparent hover:ring-zinc-300' : 'cursor-default'}`}
+                                        ? 'border-zinc-200 bg-white text-zinc-500'
+                                        : 'border-dashed border-zinc-200 bg-zinc-50/50 text-zinc-400'
+                                } ${STAGE_CONFIGS[currentStage].allowedTransitions.includes(stage) ? 'cursor-pointer hover:border-zinc-900 hover:text-zinc-900' : 'cursor-default'}`}
                             >
                                 {isCurrent && (
-                                    <span className="w-2 h-2 rounded-full bg-[#00CC6A] shrink-0 animate-pulse" />
+                                    <span className="w-1.5 h-1.5 bg-white shrink-0" />
                                 )}
                                 {isPast && (
-                                    <span className="w-2 h-2 rounded-full bg-zinc-400 shrink-0" />
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-zinc-900 shrink-0" />
                                 )}
                                 {isFuture && (
-                                    <span className="w-2 h-2 rounded-full bg-zinc-200 shrink-0" />
+                                    <span className="w-1.5 h-1.5 bg-zinc-300 shrink-0" />
                                 )}
                                 <span className="hidden lg:inline">{config.labelShort}</span>
                             </button>
-                            {idx < JOURNEY_STAGES.length - 1 && (
+                            {idx < visibleStages.length - 1 && (
                                 <div className={`w-3 h-px shrink-0 ${
-                                    isPast || isCurrent ? 'bg-zinc-400' : 'bg-zinc-200'
+                                    isPast ? 'bg-zinc-900' : isCurrent ? 'bg-zinc-300' : 'bg-zinc-200'
                                 }`} />
                             )}
                         </React.Fragment>
@@ -264,7 +293,7 @@ function StageTransitionButtons({ currentStage, onAdvance, advancing }: StageTra
                         size="sm"
                         disabled={advancing}
                         onClick={() => onAdvance(stage)}
-                        className="text-[10px] font-black uppercase tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-sm gap-1.5"
+                        className="text-xxs font-black uppercase tracking-widest border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 gap-1.5 transition-all rounded-none"
                     >
                         {advancing ? (
                             <Loader2 size={12} className="animate-spin" />
@@ -285,7 +314,7 @@ function StageTransitionButtons({ currentStage, onAdvance, advancing }: StageTra
                                 size="sm"
                                 variant="outline"
                                 disabled={advancing}
-                                className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-zinc-200 hover:text-zinc-600 hover:border-zinc-300 shadow-sm gap-1.5"
+                                className="text-xxs font-black uppercase tracking-widest text-zinc-400 border-zinc-200 hover:text-zinc-600 hover:border-zinc-300 gap-1.5"
                             >
                                 <XCircle size={12} />
                                 {targetConfig.labelShort}
@@ -305,12 +334,12 @@ function StageTransitionButtons({ currentStage, onAdvance, advancing }: StageTra
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel className="text-[10px] font-bold uppercase tracking-widest">
+                                <AlertDialogCancel className="text-xxs font-bold uppercase tracking-widest">
                                     Cancelar
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={() => onAdvance(stage)}
-                                    className="text-[10px] font-bold uppercase tracking-widest bg-zinc-900 hover:bg-zinc-800"
+                                    className="text-xxs font-bold uppercase tracking-widest bg-zinc-900 hover:bg-zinc-800"
                                 >
                                     Confirmar
                                 </AlertDialogAction>
@@ -319,6 +348,42 @@ function StageTransitionButtons({ currentStage, onAdvance, advancing }: StageTra
                     </AlertDialog>
                 );
             })}
+        </div>
+    );
+}
+
+// ---- Focal Points Panel ----
+interface FocalPointsPanelProps {
+    project: ReiProject;
+}
+
+function FocalPointsPanel({ project }: FocalPointsPanelProps) {
+    if (!project.focal_points || project.focal_points.length === 0) return null;
+
+    return (
+        <div className="border border-zinc-200 bg-white overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-zinc-100 bg-zinc-50/50">
+                <Users className="w-4 h-4 text-zinc-500" />
+                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
+                    Pontos Focais (Contatos)
+                </span>
+            </div>
+            <div className="px-5 py-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {project.focal_points.map((fp, i) => (
+                    <div key={i} className="flex flex-col space-y-1 p-3 border border-zinc-100 bg-zinc-50 relative group">
+                        {fp.is_main && (
+                            <span className="absolute top-3 right-3 flex items-center justify-center w-4 h-4 bg-zinc-100" title="Contato Principal">
+                                <Sparkles className="w-2.5 h-2.5 text-zinc-500" />
+                            </span>
+                        )}
+                        <span className="text-xs font-black uppercase tracking-wider text-zinc-900 pr-5">{fp.name}</span>
+                        <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">{fp.role || 'Sem Cargo'}</span>
+                        <a href={`mailto:${fp.email}`} className="text-tiny font-medium text-zinc-600 hover:text-zinc-900 hover:underline pt-1">
+                            {fp.email}
+                        </a>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -338,7 +403,7 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
         sentimento?: string;
     } | null;
 
-    const diagnosticData = project.diagnostic_data as {
+    const marketData = project.market_data as {
         strategic_intelligence?: {
             competitors?: string[];
             challenges?: string[];
@@ -346,23 +411,23 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
         };
     } | null;
 
-    const strategicIntel = diagnosticData?.strategic_intelligence;
+    const strategicIntel = marketData?.strategic_intelligence;
     const hasOpportunity = opportunityData && (opportunityData.score_fechamento || opportunityData.sinais_compra?.length);
     const hasIntel = strategicIntel && (strategicIntel.competitors?.length || strategicIntel.challenges?.length || strategicIntel.tech_stack?.length);
 
     if (!hasOpportunity && !hasIntel) return null;
 
     return (
-        <div className="border border-zinc-200 rounded-2xl shadow-sm bg-white overflow-hidden">
+        <div className="border border-zinc-200 bg-white overflow-hidden">
             <button
                 onClick={() => setCollapsed(!collapsed)}
                 className="w-full flex items-center justify-between px-5 py-3 hover:bg-zinc-50 transition-colors"
             >
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 flex items-center justify-center">
                         <BrainCircuit className="w-4 h-4 text-zinc-900" />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">
+                    <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
                         Intelligence
                     </span>
                 </div>
@@ -378,7 +443,7 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Gauge className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Score de Fechamento
                                         </span>
                                     </div>
@@ -388,9 +453,9 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                         </span>
                                         <span className="text-xs font-bold text-zinc-400 mb-1">/100</span>
                                     </div>
-                                    <div className="w-full h-1.5 bg-zinc-100 rounded-full mt-2 overflow-hidden">
+                                    <div className="w-full h-1.5 bg-zinc-100 mt-2 overflow-hidden">
                                         <div
-                                            className="h-full rounded-full"
+                                            className="h-full"
                                             style={{
                                                 width: `${Math.min(100, opportunityData.score_fechamento)}%`,
                                                 backgroundColor: opportunityData.score_fechamento >= 70 ? '#00CC6A' : opportunityData.score_fechamento >= 40 ? '#a1a1aa' : '#d4d4d8',
@@ -405,14 +470,14 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Lightbulb className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Sinais de Compra
                                         </span>
                                     </div>
                                     <div className="space-y-1.5">
                                         {opportunityData.sinais_compra.map((sinal, i) => (
                                             <div key={i} className="flex items-start gap-2">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] shrink-0 mt-1.5" />
+                                                <span className="w-1.5 h-1.5 bg-[#00CC6A] shrink-0 mt-1.5" />
                                                 <span className="text-xs text-zinc-600 font-medium leading-relaxed">{sinal}</span>
                                             </div>
                                         ))}
@@ -425,14 +490,14 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <AlertCircle className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Objecoes Detectadas
                                         </span>
                                     </div>
                                     <div className="space-y-1.5">
                                         {opportunityData.objecoes_detectadas.map((obj, i) => (
                                             <div key={i} className="flex items-start gap-2">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0 mt-1.5" />
+                                                <span className="w-1.5 h-1.5 bg-zinc-400 shrink-0 mt-1.5" />
                                                 <span className="text-xs text-zinc-600 font-medium leading-relaxed">{obj}</span>
                                             </div>
                                         ))}
@@ -449,13 +514,13 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Swords className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Concorrentes
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-1.5">
                                         {strategicIntel.competitors.map((c, i) => (
-                                            <span key={i} className="text-[10px] font-bold text-zinc-600 bg-zinc-100 px-2 py-1 rounded-md">
+                                            <span className="text-xxs font-bold text-zinc-600 bg-zinc-100 px-2 py-1">
                                                 {c}
                                             </span>
                                         ))}
@@ -467,14 +532,14 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Target className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Desafios
                                         </span>
                                     </div>
                                     <div className="space-y-1.5">
                                         {strategicIntel.challenges.map((ch, i) => (
                                             <div key={i} className="flex items-start gap-2">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0 mt-1.5" />
+                                                <span className="w-1.5 h-1.5 bg-zinc-400 shrink-0 mt-1.5" />
                                                 <span className="text-xs text-zinc-600 font-medium leading-relaxed">{ch}</span>
                                             </div>
                                         ))}
@@ -486,13 +551,13 @@ function IntelligencePanel({ project }: IntelligencePanelProps) {
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Cpu className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                                             Tech Stack
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-1.5">
                                         {strategicIntel.tech_stack.map((t, i) => (
-                                            <span key={i} className="text-[10px] font-bold text-zinc-600 bg-zinc-100 px-2 py-1 rounded-md">
+                                            <span key={i} className="text-xxs font-bold text-zinc-600 bg-zinc-100 px-2 py-1">
                                                 {t}
                                             </span>
                                         ))}
@@ -521,6 +586,8 @@ const ProjectDetails = () => {
     const [advancing, setAdvancing] = useState(false);
     const [stageHistory, setStageHistory] = useState<StageChangeEvent[]>([]);
     const [confirmStage, setConfirmStage] = useState<PipelineStage | null>(null);
+    const [editingName, setEditingName] = useState(false);
+    const [editNameValue, setEditNameValue] = useState('');
 
     // Pipeline stage (cast via any since not in typed schema)
     const currentStage = (project?.pipeline_stage as PipelineStage) || null;
@@ -532,7 +599,7 @@ const ProjectDetails = () => {
             // Fallback for projects without pipeline_stage
             const status = project?.status;
             if (status === 'lead') return ['osint', 'diagnostico', 'reunioes'];
-            return ['orqflow', 'jornada', 'reunioes', 'biblioteca'];
+            return ['orqflow', 'jornada', 'reunioes', 'biblioteca', 'kickoff'];
         }
         return getVisibleTabs(stageCategory);
     }, [currentStage, stageCategory, project?.status]);
@@ -645,14 +712,16 @@ const ProjectDetails = () => {
         reunioes: { label: 'Reunioes', icon: Video },
         biblioteca: { label: 'Documentos', icon: BookOpen },
         playbook: { label: 'Playbook AI', icon: Sparkles },
+        kickoff: { label: 'Kick-off Validação', icon: FileSignature },
+        success: { label: 'Success Plan', icon: Target },
     };
 
     return (
         <AdminLayout>
             <div className="h-full flex flex-col">
                 {/* Project Header */}
-                <div className="bg-white border-b border-zinc-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                    <div className="flex items-center gap-4">
+                <div className="bg-white border-b border-zinc-200 px-4 sm:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-10 w-full overflow-hidden">
+                    <div className="flex items-center gap-4 shrink-0">
                         <Button variant="ghost" size="icon" onClick={() => navigate('/admin/rei')} className="text-zinc-400 hover:text-zinc-900 h-8 w-8">
                             <ChevronLeft size={16} />
                         </Button>
@@ -666,7 +735,7 @@ const ProjectDetails = () => {
                                     getDisplayName(project)
                                 )}
                                 {currentStage && (
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${
+                                    <span className={`text-xxs font-black uppercase tracking-widest px-3 py-1 ${
                                         stageCategory === 'execucao'
                                             ? 'text-[#00CC6A] bg-[#00CC6A]/10'
                                             : stageCategory === 'encerrado'
@@ -677,7 +746,7 @@ const ProjectDetails = () => {
                                     </span>
                                 )}
                                 {!currentStage && (
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${
+                                    <span className={`text-xxs font-black uppercase tracking-widest px-3 py-1 ${
                                         project.status === 'lead'
                                             ? 'text-zinc-500 bg-zinc-100'
                                             : 'text-[#00CC6A] bg-[#00CC6A]/10'
@@ -686,7 +755,7 @@ const ProjectDetails = () => {
                                     </span>
                                 )}
                             </h1>
-                            <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
+                            <p className="text-tiny text-zinc-400 font-medium mt-0.5">
                                 {project.type === 'crm_ops' ? 'CRM & RevOps' :
                                     project.type === 'founder' ? 'Founder Led Sales' :
                                     project.type === 'dev' ? 'Dev Web & Design' :
@@ -696,7 +765,7 @@ const ProjectDetails = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0 w-full sm:w-auto shrink-0 justify-start sm:justify-end">
                         {/* Stage transition buttons */}
                         {currentStage && (
                             <StageTransitionButtons
@@ -712,7 +781,7 @@ const ProjectDetails = () => {
                                 size="sm"
                                 disabled={advancing}
                                 onClick={() => handleAdvanceStage('lead_qualified')}
-                                className="text-[10px] font-black uppercase tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-sm gap-1.5"
+                                className="text-xxs font-black uppercase tracking-widest border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 gap-1.5 transition-all rounded-none"
                             >
                                 <CheckCircle2 size={12} /> Qualificar
                             </Button>
@@ -721,68 +790,101 @@ const ProjectDetails = () => {
                         <div className="w-px h-6 bg-zinc-200 mx-1" />
 
                         {stageCategory === 'execucao' && (
-                            <>
-                                <Button
-                                    variant="default"
-                                    size="sm"
-                                    disabled={project.materials_status === 'pending'}
-                                    onClick={() => navigate(`/admin/planejamento/${project.id}`)}
-                                    className={`text-[10px] font-bold uppercase tracking-widest shadow-sm ${project.materials_status === 'pending' ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed' : 'bg-zinc-900 hover:bg-zinc-800 text-white'}`}
-                                >
-                                    <Sparkles size={12} className="mr-2" /> Gerador REI
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => window.open(`/admin/strategic-plan/${project.id}`, '_blank')}
-                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 border-zinc-200 hover:bg-zinc-50 shadow-sm"
-                                >
-                                    <Presentation size={12} className="mr-2" /> The Vault
-                                </Button>
-                            </>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                disabled={project.materials_status === 'pending'}
+                                onClick={() => navigate(`/admin/planejamento/${project.id}`)}
+                                className={`text-xxs font-bold uppercase tracking-widest rounded-none transition-all ${project.materials_status === 'pending' ? 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed' : 'border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950'}`}
+                            >
+                                <Sparkles size={12} className="mr-2" /> Planejamento IA
+                            </Button>
                         )}
 
                         <Dialog>
                             <DialogTrigger asChild>
                                 <Button
-                                    variant="outline"
                                     size="sm"
-                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 border-zinc-200 bg-white hover:bg-zinc-50 shadow-sm"
+                                    className="border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 text-xxs font-bold uppercase tracking-widest rounded-none transition-all"
                                 >
-                                    <QrCode size={12} className="mr-2" /> QR
+                                    <Share2 size={12} className="mr-2" /> Acessos do Cliente
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle className="text-center font-black text-xl tracking-tight">QR Code de Acesso</DialogTitle>
-                                    <DialogDescription className="text-center">
-                                        Peca para o cliente apontar a camera na reuniao para acessar o Hub.
+                            <DialogContent className="sm:max-w-md p-0 overflow-hidden border-zinc-200">
+                                <div className="p-6 bg-zinc-950 text-white">
+                                    <DialogTitle className="font-black text-xl tracking-tight mb-1 text-white">Acessos do Cliente</DialogTitle>
+                                    <DialogDescription className="text-zinc-400 text-xs">
+                                        Compartilhe os links mágicos e Hub de controle com a conta {getDisplayName(project)}.
                                     </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex items-center justify-center py-8">
-                                    <div className="p-4 bg-white rounded-2xl shadow-sm border border-zinc-100">
-                                        <QRCodeSVG
-                                            value={`${window.location.origin}/hub/${project.id}`}
-                                            size={200}
-                                            level={"Q"}
-                                            includeMargin={true}
-                                        />
+                                </div>
+                                
+                                <div className="p-6 space-y-6">
+                                    {/* Link do Hub */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Globe className="w-4 h-4 text-zinc-500" />
+                                            <span className="text-xxs font-black uppercase tracking-widest text-zinc-900">Hub do Cliente (Portal Principal)</span>
+                                        </div>
+                                        <div className="flex">
+                                            <div className="flex-1 bg-zinc-50 border border-zinc-200 border-r-0 px-3 flex items-center overflow-hidden h-9">
+                                                <span className="text-xs font-mono text-zinc-500 truncate">{`${window.location.origin}/hub/${project.id}`}</span>
+                                            </div>
+                                            <Button 
+                                                size="sm" 
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`${window.location.origin}/hub/${project.id}`);
+                                                    toast({ title: 'Hub Copiado', description: 'Link enviado para a área de transferência.' });
+                                                }} 
+                                                className="border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 rounded-none px-4 h-9 uppercase text-2xs font-bold tracking-wider transition-all"
+                                            >
+                                                Copiar
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    {/* Link de Uploads */}
+                                    {stageCategory === 'execucao' && (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Upload className="w-4 h-4 text-zinc-500" />
+                                                <span className="text-xxs font-black uppercase tracking-widest text-zinc-900">Recebimento de Materiais (Acervo)</span>
+                                            </div>
+                                            <div className="flex">
+                                                <div className="flex-1 bg-zinc-50 border border-zinc-200 border-r-0 px-3 flex items-center overflow-hidden h-9">
+                                                    <span className="text-xs font-mono text-zinc-500 truncate">{`${window.location.origin}/upload-materiais/${project.id}`}</span>
+                                                </div>
+                                                <Button 
+                                                    size="sm" 
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(`${window.location.origin}/upload-materiais/${project.id}`);
+                                                        toast({ title: 'Upload Copiado', description: 'Formulário de acervo enviado para área de transferência.' });
+                                                    }} 
+                                                    className="border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 rounded-none px-4 h-9 uppercase text-2xs font-bold tracking-wider transition-all"
+                                                >
+                                                    Copiar
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* QR Code */}
+                                    <div className="pt-6 border-t border-zinc-100 flex flex-col items-center justify-center">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <QrCode className="w-4 h-4 text-zinc-500" />
+                                            <span className="text-xxs font-black uppercase tracking-widest text-zinc-900">QR Code: Hub Presencial</span>
+                                        </div>
+                                        <div className="p-3 bg-white border border-zinc-200 shadow-sm">
+                                            <QRCodeSVG
+                                                value={`${window.location.origin}/hub/${project.id}`}
+                                                size={140}
+                                                level={"Q"}
+                                                includeMargin={true}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </DialogContent>
                         </Dialog>
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                                navigator.clipboard.writeText(`${window.location.origin}/hub/${project.id}`);
-                                toast({ title: 'Link copiado!', description: 'Link magico do cliente copiado.' });
-                            }}
-                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 border-zinc-200 hover:bg-zinc-50"
-                        >
-                            <LinkIcon size={12} className="mr-2" /> Link
-                        </Button>
                     </div>
                 </div>
 
@@ -807,12 +909,12 @@ const ProjectDetails = () => {
                 {project.materials_status === 'pending' && stageCategory === 'execucao' && (
                     <div className="bg-zinc-50 border-b border-zinc-200 p-4 flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center shrink-0">
+                            <div className="w-10 h-10 bg-zinc-100 flex items-center justify-center shrink-0">
                                 <AlertTriangle className="w-5 h-5 text-zinc-600" />
                             </div>
                             <div>
                                 <h3 className="text-xs font-black text-zinc-900 uppercase tracking-widest leading-none mb-1">Trava Estrategica Ativada</h3>
-                                <p className="text-[11px] text-zinc-500 font-medium leading-relaxed max-w-2xl">
+                                <p className="text-tiny text-zinc-500 font-medium leading-relaxed max-w-2xl">
                                     O cronograma e o Planejamento Estrategico estao suspensos. O cliente {getDisplayName(project)} deve enviar os arquivos pendentes para que a operacao prossiga.
                                 </p>
                             </div>
@@ -821,14 +923,14 @@ const ProjectDetails = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => window.open('/admin/materials/new', '_blank')}
-                                className="flex-1 sm:flex-none bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700 text-[10px] font-bold uppercase tracking-widest h-9"
+                                className="flex-1 sm:flex-none bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700 text-xxs font-bold uppercase tracking-widest h-9"
                             >
                                 <Upload className="w-3.5 h-3.5 mr-2" />
                                 Subir Arquivo
                             </Button>
                             <Button
                                 onClick={handleUnlockMaterials}
-                                className="flex-1 sm:flex-none bg-zinc-900 hover:bg-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest h-9"
+                                className="flex-1 sm:flex-none border border-zinc-200 bg-transparent text-zinc-900 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 text-xxs font-bold uppercase tracking-widest h-9 transition-all rounded-none"
                             >
                                 <Unlock className="w-3.5 h-3.5 mr-2" />
                                 Sinal Verde
@@ -840,9 +942,9 @@ const ProjectDetails = () => {
                 {/* Main content area */}
                 <div className="flex-1 flex overflow-hidden">
                     {/* Tabs content */}
-                    <div className={`flex-1 ${activeTab === 'orqflow' ? 'p-0 overflow-hidden' : 'p-8 overflow-y-auto'} bg-white flex flex-col`}>
-                        <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-                            <TabsList className={`bg-white border border-zinc-200 p-1 h-auto rounded-xl flex-wrap gap-2 shrink-0 ${(activeTab === 'orqflow') ? 'mx-8 mt-6' : ''}`}>
+                    <div className={`flex-1 ${activeTab === 'orqflow' ? 'p-0 overflow-hidden' : 'p-8 overflow-y-auto w-full max-w-7xl mx-auto'} bg-white flex flex-col`}>
+                        <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col w-full">
+                            <TabsList className={`bg-transparent border-b border-zinc-100 p-0 flex-nowrap overflow-x-auto no-scrollbar justify-start md:justify-center mx-auto w-fit max-w-[90vw] gap-6 shrink-0 h-auto ${(activeTab === 'orqflow') ? 'mt-6' : ''}`}>
                                 {visibleTabs.map((tabKey) => {
                                     const def = TAB_DEFS[tabKey];
                                     if (!def) return null;
@@ -851,20 +953,23 @@ const ProjectDetails = () => {
                                         <TabsTrigger
                                             key={tabKey}
                                             value={tabKey}
-                                            className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-900 data-[state=active]:text-white rounded-lg transition-all flex gap-2 items-center shrink-0"
+                                            className="px-2 py-3 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 data-[state=active]:bg-transparent data-[state=active]:text-zinc-900 data-[state=active]:shadow-[0_2px_0_0_#18181b] transition-all flex gap-2 items-center shrink-0 rounded-none border-b-2 border-transparent"
                                         >
-                                            <Icon size={14} /> {def.label}
+                                            <Icon size={15} className="mb-0.5" strokeWidth={2} /> {def.label}
                                         </TabsTrigger>
                                     );
                                 })}
                             </TabsList>
 
-                            {/* Intelligence Panel - show below tabs on diagnostico/vendas stages */}
-                            {(stageCategory === 'diagnostico' || stageCategory === 'vendas') && (
-                                <div className="mt-4">
+                            {/* Panels Group - Always visible above tab contents */}
+                            <div className="mt-4 flex flex-col gap-4">
+                                <FocalPointsPanel project={project} />
+                                
+                                {/* Intelligence Panel - show below tabs on diagnostico/vendas stages */}
+                                {(stageCategory === 'diagnostico' || stageCategory === 'vendas') && (
                                     <IntelligencePanel project={project} />
-                                </div>
-                            )}
+                                )}
+                            </div>
 
                             {/* Tab Contents */}
                             <TabsContent value="orqflow" className="m-0 flex-1 flex flex-col pt-4">
@@ -895,8 +1000,16 @@ const ProjectDetails = () => {
                                 <ProjectWiki projectId={project.id} projectName={project.client_name} />
                             </TabsContent>
 
+                            <TabsContent value="kickoff" className="m-0 pt-6">
+                                <KickoffSignaturePanel project={project} onUpdate={loadProject} />
+                            </TabsContent>
+
                             <TabsContent value="playbook" className="m-0">
                                 <AIPlaybookGenerator projectId={project.id} projectName={project.client_name} />
+                            </TabsContent>
+
+                            <TabsContent value="success" className="m-0 pt-6">
+                                <SuccessPlanTab projectId={project.id} />
                             </TabsContent>
                         </Tabs>
                     </div>

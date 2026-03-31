@@ -101,9 +101,9 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                 </div>
 
                 <div className="flex gap-1 mt-6">
-                    <div className="h-[3px] flex-1 bg-zinc-800 rounded-full" />
-                    <div className="h-[3px] flex-1 bg-zinc-900 rounded-full" />
-                    <div className="h-[3px] w-24 bg-white/20 rounded-full" />
+                    <div className="h-[3px] flex-1 bg-zinc-800" />
+                    <div className="h-[3px] flex-1 bg-zinc-900" />
+                    <div className="h-[3px] w-24 bg-white/20" />
                 </div>
             </div>
         </div>

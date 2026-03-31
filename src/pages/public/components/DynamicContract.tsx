@@ -12,7 +12,7 @@ export const DynamicContract: React.FC<DynamicContractProps> = ({ proposal, date
   const chargeAmount = setupFee > 0 ? setupFee : investmentTotal;
 
   return (
-    <div className="w-full h-64 overflow-y-auto bg-zinc-50 border border-zinc-200 rounded-lg p-6 text-[11px] leading-relaxed text-zinc-600 font-mono shadow-inner custom-scrollbar relative">
+    <div className="w-full h-64 overflow-y-auto bg-zinc-50 border border-zinc-200 p-6 text-tiny leading-relaxed text-zinc-600 font-mono shadow-inner custom-scrollbar relative">
       <div className="text-center mb-6">
         <h2 className="text-sm font-bold text-zinc-900 mb-1">CONTRATO DE PRESTAÇÃO DE SERVIÇOS Revtech Systems LTDA</h2>
         <p className="text-zinc-500 font-sans">Nº {proposal.id?.split('-')[0].toUpperCase()} / {new Date().getFullYear()}</p>

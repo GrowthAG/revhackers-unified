@@ -113,7 +113,7 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                             { label: "09. FRAMEWORK", title: "Execução Contínua", desc: "O ciclo de teste, aprendizado e escala que nunca para." }
                         ].map((item, i) => (
                             <div key={i} className="flex flex-col md:flex-row gap-4 md:items-baseline border-b border-zinc-100 pb-6 last:border-0 last:pb-0">
-                                <span className="bg-zinc-100 px-3 py-1 text-[10px] font-bold text-black w-24 shrink-0 uppercase tracking-widest text-center rounded">{item.label}</span>
+                                <span className="bg-zinc-100 px-3 py-1 text-xxs font-bold text-black w-24 shrink-0 uppercase tracking-widest text-center rounded">{item.label}</span>
                                 <div>
                                     <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
                                     <p className="text-zinc-600 leading-relaxed m-0 text-base">{item.desc}</p>
@@ -177,7 +177,7 @@ const EstrategiaGTMArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleCopy(template.body, index)}
-                                        className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                        className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                     >
                                         {copiedIndex === index ? (
                                             <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

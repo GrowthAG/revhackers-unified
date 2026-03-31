@@ -16,12 +16,12 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
     return (
         <div className="border-t border-zinc-100/60">
             <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-zinc-50 transition-colors text-left">
-                <span className="text-[10px] text-zinc-300 font-mono font-bold w-6 shrink-0">{String(index + 1).padStart(2, '0')}</span>
+                <span className="text-xxs text-zinc-300 font-mono font-bold w-6 shrink-0">{String(index + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold text-zinc-900 truncate">{bench.company_name}</p>
+                    <p className="text-mini font-bold text-zinc-900 truncate">{bench.company_name}</p>
                     {bench.domain && (
                         <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[11px] text-zinc-400 truncate">{bench.domain}</span>
+                            <span className="text-tiny text-zinc-400 truncate">{bench.domain}</span>
                             <a 
                                 href={bench.domain.startsWith('http') ? bench.domain : `https://${bench.domain}`} 
                                 target="_blank" 
@@ -35,7 +35,7 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                         </div>
                     )}
                 </div>
-                <div className="hidden md:flex items-center gap-5 shrink-0 text-[11px]">
+                <div className="hidden md:flex items-center gap-5 shrink-0 text-tiny">
                     <span className="w-20 text-center font-mono text-zinc-500">{bench.monthly_traffic || '-'}</span>
                     <span className="w-8 text-center font-bold text-zinc-600">{bench.domain_authority || '-'}</span>
                     <span className="w-16 text-center font-mono text-zinc-500">{bench.avg_cpc || '-'}</span>
@@ -46,10 +46,10 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                 <div className="px-10 pb-4 pt-1 bg-zinc-50/50">
                     <div className="grid md:grid-cols-2 gap-6 mt-2">
                         {bench.strengths && (
-                            <div><p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fortes</p><p className="text-[12px] text-zinc-600 leading-[1.6]">{bench.strengths}</p></div>
+                            <div><p className="text-2xs text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fortes</p><p className="text-xs text-zinc-600 leading-[1.6]">{bench.strengths}</p></div>
                         )}
                         {bench.weaknesses && (
-                            <div><p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fracos</p><p className="text-[12px] text-zinc-600 leading-[1.6]">{bench.weaknesses}</p></div>
+                            <div><p className="text-2xs text-zinc-400 uppercase tracking-widest font-bold mb-1.5">Pontos Fracos</p><p className="text-xs text-zinc-600 leading-[1.6]">{bench.weaknesses}</p></div>
                         )}
                     </div>
                 </div>
@@ -148,12 +148,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                     {/* Headers Info */}
                     <div className="space-y-1">
                         {!hasRealData && (
-                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                            <p className="text-xxs text-zinc-400 uppercase tracking-widest font-bold">
                                 / Dados de referência (Mock) - Atualize via "Gerar Inteligência de Mercado"
                             </p>
                         )}
                         {hasRealData && isREIFallback && (
-                            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                            <p className="text-xxs text-zinc-400 uppercase tracking-widest font-bold">
                                 / Concorrentes do cliente - Enriquecimento profundo disponível na IA
                             </p>
                         )}
@@ -185,12 +185,12 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         return (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                                 {metrics.map((m, i) => (
-                                    <div key={i} className={`rounded-xl p-5 border ${m.dark ? 'bg-[#0A0A0A] border-zinc-900 text-white' : 'border-zinc-200/60 bg-white'}`}>
+                                    <div key={i} className={`p-5 border ${m.dark ? 'bg-[#0A0A0A] border-zinc-900 text-white' : 'border-zinc-200/60 bg-white'}`}>
                                         <div className="flex items-center gap-2 mb-3">
                                             <div style={{ color: m.accent }}>{m.icon}</div>
-                                            <p className={`text-[10px] uppercase tracking-[0.2em] font-bold ${m.dark ? 'text-white/60' : 'text-zinc-500'}`}>{m.label}</p>
+                                            <p className={`text-xxs uppercase tracking-[0.2em] font-bold ${m.dark ? 'text-white/60' : 'text-zinc-500'}`}>{m.label}</p>
                                         </div>
-                                        <div className={`text-[13px] leading-[1.6] font-medium ${m.dark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                        <div className={`text-mini leading-[1.6] font-medium ${m.dark ? 'text-zinc-300' : 'text-zinc-600'}`}>
                                             {m.value}
                                         </div>
                                     </div>
@@ -206,14 +206,14 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                                 <BarChart3 className="w-4 h-4" />
                                 Concorrentes Analisados
                             </h3>
-                            <span className="text-[10px] text-zinc-400 font-mono font-bold">{competitors.length} EMPRESAS</span>
+                            <span className="text-xxs text-zinc-400 font-mono font-bold">{competitors.length} EMPRESAS</span>
                         </div>
                         
-                        <div className="border border-zinc-200/60 overflow-hidden rounded-xl shadow-sm">
+                        <div className="border border-zinc-200/60 overflow-hidden shadow-sm">
                             <div className="flex items-center gap-4 bg-[#0A0A0A] px-4 py-2.5">
                                 <div className="w-6 shrink-0" />
-                                <div className="flex-1 text-[10px] text-zinc-300 uppercase tracking-widest font-bold">Empresa / Concorrente</div>
-                                <div className="hidden md:flex items-center gap-5 shrink-0 text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
+                                <div className="flex-1 text-xxs text-zinc-300 uppercase tracking-widest font-bold">Empresa / Concorrente</div>
+                                <div className="hidden md:flex items-center gap-5 shrink-0 text-xxs text-zinc-400 uppercase tracking-widest font-bold">
                                     <span className="w-20 text-center">Visitas/mês</span>
                                     <span className="w-8 text-center">DA</span>
                                     <span className="w-16 text-center">CPC</span>
@@ -235,11 +235,11 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                             </div>
                             <div className={`grid gap-3 ${trends.length % 3 === 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                                 {trends.map((trend: string, i: number) => (
-                                    <div key={i} className="border border-zinc-200/60 p-4 rounded-xl bg-zinc-50/50">
-                                        <div className="text-[10px] text-zinc-400 font-mono font-bold mb-2">{String(i + 1).padStart(2, '0')}</div>
+                                    <div key={i} className="border border-zinc-200/60 p-4 bg-zinc-50/50">
+                                        <div className="text-xxs text-zinc-400 font-mono font-bold mb-2">{String(i + 1).padStart(2, '0')}</div>
                                         <EditableField
                                             path={`persona_data.industry_trends.${i}`}
-                                            className="text-[13px] text-zinc-700 leading-relaxed font-medium"
+                                            className="text-mini text-zinc-700 leading-relaxed font-medium"
                                             placeholder={trend}
                                             multiline
                                         />
@@ -251,14 +251,14 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
 
                     {/* Strategic Advice */}
                     {advice && (
-                        <div className="bg-[#00CC6A]/10 border border-[#00CC6A]/20 p-5 rounded-xl">
+                        <div className="bg-[#00CC6A]/10 border border-[#00CC6A]/20 p-5 ">
                             <div className="flex items-center gap-2 mb-2">
                                 <Lightbulb className="w-4 h-4 text-[#00CC6A]" />
-                                <p className="text-[10px] text-[#00CC6A] uppercase tracking-[0.2em] font-bold">Conselho Estratégico</p>
+                                <p className="text-xxs text-[#00CC6A] uppercase tracking-[0.2em] font-bold">Conselho Estratégico</p>
                             </div>
                             <EditableField
                                 path="persona_data.strategic_advice"
-                                className="text-[14px] text-zinc-800 leading-[1.6] font-medium"
+                                className="text-sm text-zinc-800 leading-[1.6] font-medium"
                                 placeholder={advice}
                                 multiline
                             />

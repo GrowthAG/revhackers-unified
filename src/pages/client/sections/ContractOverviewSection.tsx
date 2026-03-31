@@ -114,7 +114,7 @@ export default function ContractOverviewSection({
             </h3>
             <ul className="space-y-2">
               {scopeItems.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 bg-zinc-50/50 p-3.5 rounded-xl border border-zinc-200/60">
+                <li key={i} className="flex items-start gap-3 bg-zinc-50/50 p-3.5 border border-zinc-200/60">
                   <CheckCircle2 className="w-4 h-4 text-[#00CC6A] mt-0.5 shrink-0" />
                   <span className="text-sm font-medium text-zinc-700 leading-relaxed">{item}</span>
                 </li>
@@ -128,7 +128,7 @@ export default function ContractOverviewSection({
             </h3>
             <ul className="space-y-2">
               {outOfScopeItems.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 bg-red-50/30 p-3.5 rounded-xl border border-red-100/30">
+                <li key={i} className="flex items-start gap-3 bg-red-50/30 p-3.5 border border-red-100/30">
                   <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
                   <span className="text-sm font-medium text-zinc-500 leading-relaxed line-through">{item}</span>
                 </li>
@@ -141,18 +141,18 @@ export default function ContractOverviewSection({
         </div>
 
         {/* FINANCIALS & TERMS */}
-        <div className="bg-zinc-50 rounded-3xl p-8 lg:p-10 shadow-sm border border-zinc-200/80 h-fit">
+        <div className="bg-zinc-50 p-8 lg:p-10 shadow-sm border border-zinc-200/80 h-fit">
           <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 mb-8 tracking-tight">
             Condições Comerciais Acordadas
           </h3>
           
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-white rounded-2xl p-5 border border-zinc-200/60 shadow-sm">
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mb-1">Setup / Implantação</p>
+            <div className="bg-white p-5 border border-zinc-200/60 shadow-sm">
+              <p className="text-xxs uppercase tracking-widest text-zinc-400 font-semibold mb-1">Setup / Implantação</p>
               <p className="text-xl font-semibold text-zinc-900">{formatCurrency(contractData?.setup_fee || 0)}</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-zinc-200/60 shadow-sm">
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold mb-1">Retainer (Mensal)</p>
+            <div className="bg-white p-5 border border-zinc-200/60 shadow-sm">
+              <p className="text-xxs uppercase tracking-widest text-zinc-400 font-semibold mb-1">Retainer (Mensal)</p>
               <p className="text-xl font-semibold text-zinc-900">{formatCurrency(contractData?.retainer_fee || 0)}</p>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function ContractOverviewSection({
           <div className="space-y-4">
             <p className="text-xs font-semibold text-zinc-900 mb-4">Protocolo de Aceite</p>
             
-            <label className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer ${chk1 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
+            <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${chk1 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
               <div className="mt-0.5">
                 <input type="checkbox" className="w-4 h-4 accent-[#00CC6A] shrink-0" checked={chk1} onChange={(e) => setChk1(e.target.checked)} />
               </div>
@@ -179,7 +179,7 @@ export default function ContractOverviewSection({
               </span>
             </label>
 
-            <label className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer ${chk2 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
+            <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${chk2 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
               <div className="mt-0.5">
                 <input type="checkbox" className="w-4 h-4 accent-[#00CC6A] shrink-0" checked={chk2} onChange={(e) => setChk2(e.target.checked)} />
               </div>
@@ -188,7 +188,7 @@ export default function ContractOverviewSection({
               </span>
             </label>
 
-            <label className={`flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer ${chk3 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
+            <label className={`flex items-start gap-4 p-4 border transition-all cursor-pointer ${chk3 ? 'bg-[#00CC6A]/5 border-[#00CC6A]/30' : 'bg-white border-zinc-200 hover:border-zinc-300'}`}>
               <div className="mt-0.5">
                 <input type="checkbox" className="w-4 h-4 accent-[#00CC6A] shrink-0" checked={chk3} onChange={(e) => setChk3(e.target.checked)} />
               </div>

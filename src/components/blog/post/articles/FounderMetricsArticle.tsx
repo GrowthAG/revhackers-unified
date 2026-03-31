@@ -70,7 +70,7 @@ const FounderMetricsArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                 {metric.icon}
                             </div>
-                            <div className="flex bg-zinc-900 w-10 h-10 rounded-lg items-center justify-center mb-4 text-white shadow-sm">
+                            <div className="flex bg-zinc-900 w-10 h-10 items-center justify-center mb-4 text-white shadow-sm">
                                 {metric.icon}
                             </div>
                             <h3 className="font-bold text-zinc-900 mb-2 text-lg">{metric.title}</h3>
@@ -82,7 +82,7 @@ const FounderMetricsArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                     ))}
                 </div>
 
-                <Card className="bg-zinc-50 border border-zinc-200 shadow-inner p-8 rounded-xl not-prose mb-16 relative overflow-hidden">
+                <Card className="bg-zinc-50 border border-zinc-200 shadow-inner p-8 not-prose mb-16 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
                         <AlertOctagon className="w-24 h-24 text-zinc-900" />
                     </div>
@@ -93,7 +93,7 @@ const FounderMetricsArticle = ({ onCTAClick }: { onCTAClick?: () => void }) => {
                     <p className="text-zinc-600 mb-6 relative z-10">
                         Se um investidor te perguntar "Como está a tração?", não responda "Está boa". Responda com precisão:
                     </p>
-                    <div className="bg-white p-5 rounded-lg border-l-4 border-revgreen shadow-sm font-mono text-sm text-zinc-700 italic relative z-10">
+                    <div className="bg-white p-5 border-l-4 border-revgreen shadow-sm font-mono text-sm text-zinc-700 italic relative z-10">
                         "Estamos crescendo 15% MoM (Month-over-Month), com um CAC de R$ 500 e Payback de 4 meses. Nosso NRR é 120% devido à expansão de contas Enterprise."
                     </div>
                 </Card>

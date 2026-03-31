@@ -11,10 +11,10 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-500/10';
-      case 'high': return 'text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-700/10';
-      case 'medium': return 'text-amber-700 bg-amber-100 dark:text-yellow-500 dark:bg-yellow-500/10';
-      default: return 'text-zinc-600 bg-zinc-100 dark:text-zinc-400 dark:bg-zinc-800';
+      case 'urgent': return 'text-zinc-100 bg-zinc-900 dark:text-zinc-100 dark:bg-zinc-800';
+      case 'high': return 'text-zinc-900 bg-zinc-200 dark:text-zinc-200 dark:bg-zinc-700';
+      case 'medium': return 'text-zinc-600 bg-zinc-100 dark:text-zinc-400 dark:bg-zinc-800';
+      default: return 'text-zinc-400 bg-zinc-50 dark:text-zinc-500 dark:bg-zinc-900';
     }
   };
 
@@ -70,8 +70,8 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
     backlog: 'bg-zinc-100/50 dark:bg-zinc-800',
     todo: 'bg-zinc-200/50 dark:bg-zinc-700',
     doing: 'bg-zinc-100/50 border-zinc-300 dark:bg-zinc-800/40 dark:border-zinc-600/50',
-    review: 'bg-amber-50/50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-500/50',
-    done: 'bg-green-50/80 border-green-200 dark:bg-green-900/20 dark:border-green-500/50',
+    review: 'bg-zinc-50 border-zinc-200 dark:bg-zinc-800/30 dark:border-zinc-700/50',
+    done: 'bg-zinc-50 border-zinc-200 dark:bg-zinc-900/30 dark:border-zinc-800/50',
     archived: 'bg-zinc-100 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-950',
   };
 
@@ -89,13 +89,13 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
             const taskIdsInColumn = kanbanColumns[column.id] || [];
             
             return (
-              <div key={column.id} className="min-w-[320px] w-[320px] flex flex-col h-full max-h-[calc(100vh-220px)] bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800/60 overflow-hidden hide-scrollbar">
+              <div key={column.id} className="min-w-[320px] w-[320px] flex flex-col h-full max-h-[calc(100vh-220px)] bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/60 overflow-hidden hide-scrollbar">
                 
                 {/* Column Header */}
                 <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 backdrop-blur-sm sticky top-0 z-10">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">{column.title}</h3>
-                    <span className="text-xs font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">{taskIdsInColumn.length}</span>
+                    <span className="text-xs font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5">{taskIdsInColumn.length}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -117,17 +117,17 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
                       className={`flex-1 overflow-y-auto hide-scrollbar min-h-24 pb-8 space-y-3 p-3 transition-colors ${snapshot.isDraggingOver ? 'bg-zinc-100 dark:bg-zinc-800/30' : ''}`}
                     >
                       {isCreatingInColumn === column.id && (
-                        <form onSubmit={(e) => handleCreateTask(column.id, e)} className="p-3 bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
+                        <form onSubmit={(e) => handleCreateTask(column.id, e)} className="p-3 bg-white dark:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700">
                           <input
                             type="text"
                             value={newTaskTitle}
                             onChange={(e) => setNewTaskTitle(e.target.value)}
                             placeholder="Título da nova tarefa..."
-                            className="w-full p-2 text-sm bg-zinc-50 dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 rounded-md focus:outline-none focus:ring-1 focus:ring-revhackers text-zinc-900 dark:text-white placeholder-zinc-400"
+                            className="w-full p-2 text-sm bg-zinc-50 dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-revhackers text-zinc-900 dark:text-white placeholder-zinc-400"
                             autoFocus
                           />
                           <div className="flex justify-end mt-2">
-                            <button type="submit" className="px-3 py-1 text-sm font-medium text-white bg-zinc-900 dark:bg-revhackers rounded-md hover:bg-black dark:hover:bg-revhackers/90">
+                            <button type="submit" className="px-3 py-1 text-sm font-medium text-white bg-zinc-900 dark:bg-revhackers hover:bg-black dark:hover:bg-revhackers/90">
                               Adicionar
                             </button>
                           </div>
@@ -145,12 +145,12 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 onClick={() => onTaskClick(task.id)}
-                                className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-grab active:cursor-grabbing ${
+                                className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-grab active:cursor-grabbing ${
                                   snapshot.isDragging ? 'shadow-sm ring-2 ring-zinc-900/10 dark:ring-revhackers/50 rotate-2 z-50' : ''
                                 }`}
                               >
                                 <div className="flex justify-between items-start mb-2">
-                                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${getPriorityColor(task.priority)}`}>
+                                  <span className={`text-xxs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${getPriorityColor(task.priority)}`}>
                                     {task.priority || 'NORMAL'}
                                   </span>
                                   <button className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition-opacity">
@@ -164,12 +164,12 @@ export const KanbanView = ({ projectId, sprintId, onTaskClick }: { projectId: st
                                 
                                 <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-3 mt-2">
                                   <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-500">
-                                    {column.id === 'done' ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Clock className="w-3.5 h-3.5" />}
+                                    {column.id === 'done' ? <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" /> : <Clock className="w-3.5 h-3.5" />}
                                     <span>{task.due_date ? format(new Date(task.due_date), 'dd MMM') : 'Sem prazo'}</span>
                                   </div>
                                   
                                   {/* Avatar placeholder */}
-                                  <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[9px] font-bold text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                  <div className="w-6 h-6 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-2xs font-bold text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
                                     RH
                                   </div>
                                 </div>

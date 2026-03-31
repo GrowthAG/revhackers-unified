@@ -70,9 +70,9 @@ const StrategyPlanning = () => {
 
     const PlanCard = ({ label, value, desc }: { label: string, value: string, desc?: string }) => (
         <div className="bg-white border border-zinc-100 p-8 hover:border-black transition-all group">
-            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">{label}</p>
+            <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-2">{label}</p>
             <p className="text-lg font-black text-black uppercase tracking-tight mb-2 group-hover:text-[#00CC6A] transition-colors">{value}</p>
-            {desc && <p className="text-[10px] text-zinc-500 font-medium leading-relaxed uppercase">{desc}</p>}
+            {desc && <p className="text-xxs text-zinc-500 font-medium leading-relaxed uppercase">{desc}</p>}
         </div>
     );
 
@@ -131,7 +131,7 @@ const StrategyPlanning = () => {
                                 <h2 className="text-4xl font-black uppercase tracking-tighter text-[#00CC6A]">ALOCAÇÃO DE BUDGET</h2>
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
+                                <p className="text-xxs font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
                                 <p className="text-5xl font-black tracking-tighter">R$ {(getBudgetAmount() * 3).toLocaleString()}</p>
                             </div>
                         </div>
@@ -166,7 +166,7 @@ const StrategyPlanning = () => {
                                     className="group border border-zinc-800 hover:border-zinc-600 p-6 transition-all cursor-pointer hover:bg-zinc-900/50"
                                 >
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-2">
+                                        <div className="w-12 h-12 bg-white flex items-center justify-center p-2">
                                             <img
                                                 src={platform.logo}
                                                 alt={platform.name}
@@ -175,7 +175,7 @@ const StrategyPlanning = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-white">{platform.name}</p>
-                                            <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Performance</p>
+                                            <p className="text-xxs text-zinc-500 uppercase tracking-wider">Performance</p>
                                         </div>
                                         <div className="ml-auto">
                                             <div className={`w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-[#00CC6A] border-[#00CC6A]' : ''}`}>
@@ -190,18 +190,18 @@ const StrategyPlanning = () => {
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Investimento Mensal</span>
+                                            <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">Investimento Mensal</span>
                                             <span className="text-lg font-black text-white">
                                                 R$ {Math.round(getBudgetAmount() * (platform.defaultValue / 100)).toLocaleString()}
                                             </span>
                                         </div>
-                                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-zinc-800 overflow-hidden">
                                             <div
                                                 className={`h-full ${platform.color} transition-all duration-500`}
                                                 style={{ width: `${platform.defaultValue}%` }}
                                             />
                                         </div>
-                                        <p className="text-[10px] text-zinc-500 text-right">{platform.defaultValue}% do budget</p>
+                                        <p className="text-xxs text-zinc-500 text-right">{platform.defaultValue}% do budget</p>
                                     </div>
                                 </div>
                             ))}
@@ -209,7 +209,7 @@ const StrategyPlanning = () => {
 
                         {/* Summary */}
                         <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
-                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
+                            <p className="text-xxs text-zinc-500 uppercase tracking-widest">
                                 Plataformas selecionadas: <span className="text-[#00CC6A] font-bold">3</span>
                             </p>
                             <p className="text-sm text-zinc-400">
@@ -221,11 +221,11 @@ const StrategyPlanning = () => {
                     {/* Próximos Passos */}
                     <div className="flex flex-col md:flex-row items-center justify-between p-12 border border-zinc-200 gap-8 group">
                         <div className="space-y-2">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">PRÓXIMA ETAPA</p>
+                            <p className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em]">PRÓXIMA ETAPA</p>
                             <h3 className="text-2xl font-black uppercase tracking-tight">Cronograma de Execução 90 Dias</h3>
                             <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Transformação do plano em tarefas operacionais de growth.</p>
                         </div>
-                        <Button asChild className="bg-black text-white hover:bg-[#00CC6A] hover:text-black rounded-none h-14 px-8 font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-none shrink-0">
+                        <Button asChild className="bg-black text-white hover:bg-[#00CC6A] hover:text-black rounded-none h-14 px-8 font-black text-tiny uppercase tracking-[0.2em] transition-all shadow-none shrink-0">
                             <Link to={`/admin/cronograma/${id}`}>Visualizar Roadmap →</Link>
                         </Button>
                     </div>

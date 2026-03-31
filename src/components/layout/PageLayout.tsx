@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import ChatbotManager from '../shared/ChatbotManager';
-import ChatWidget from '../shared/ChatWidget';
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -12,7 +10,6 @@ interface PageLayoutProps {
 const PageLayout = ({ children, headerVariant = 'default' }: PageLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
-      <ChatbotManager />
       <Header variant={headerVariant} />
       <main className="flex-grow w-full">
         {children}

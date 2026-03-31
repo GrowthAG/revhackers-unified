@@ -1,7 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { ReiResponseInsert } from "./reiResponses";
 import { sendToGHL, GHLEventType } from "@/lib/ghlRelay";
-import { linkDiagnosticToPipeline } from "@/services/PipelineService";
 
 export interface DiagnosticLead {
     name: string;
@@ -9,6 +7,17 @@ export interface DiagnosticLead {
     company: string;
 }
 
+/**
+ * submitPublicDiagnostic
+ *
+ * Fluxo correto (v2 - sem poluir rei_projects):
+ *   1. Cria registro em `diagnosticos` (tabela de assessments)
+ *   2. Cria `opportunity` vinculada ao diagnostico (pipeline pre-venda)
+ *   3. Registra historico de stage
+ *   4. Dispara relay para GHL
+ *
+ * A pagina de resultado le de `diagnosticos` via ID retornado.
+ */
 export const submitPublicDiagnostic = async (
     lead: DiagnosticLead & { phone?: string, role?: string, linkedin?: string },
     answers: Record<string, any>,
@@ -16,50 +25,126 @@ export const submitPublicDiagnostic = async (
     maturity: { level: string; description: string; action: string; color: string; title?: string },
     ghlEventType?: GHLEventType
 ) => {
-    // USE RPC to bypass RLS issues securely (SECURITY DEFINER)
+    const diagnosticType = answers.diagnostic_type || 'growth';
+
+    // Build full response payload
     const fullResponses = {
         ...answers,
         lead_details: {
             phone: lead.phone,
             role: lead.role,
-            linkedin: lead.linkedin
+            linkedin: lead.linkedin,
         },
         result_details: maturity,
-        diagnostic_type: answers.diagnostic_type || 'Diagnostic'
+        diagnostic_type: diagnosticType,
     };
 
-    const { data, error } = await supabase.rpc('create_diagnostic_entry', {
-        p_lead_name: lead.name,
-        p_lead_email: lead.email,
-        p_lead_company: lead.company,
-        p_responses: fullResponses,
-        p_score: score,
-        p_maturity_level: maturity.title || maturity.level
-    });
+    // 1. Criar registro em `diagnosticos` (entidade correta para assessments)
+    const { data: diagData, error: diagError } = await supabase
+        .from('diagnosticos')
+        .insert({
+            email: lead.email || 'sem-email@lead.local',
+            tipo: diagnosticType,
+            score,
+            respostas: {
+                ...fullResponses,
+                lead_name: lead.name,
+                lead_company: lead.company,
+                maturity_level: maturity.title || maturity.level,
+            },
+        })
+        .select('id')
+        .single();
 
-    if (error) {
-        console.error('Error submitting diagnostic via RPC:', error);
-        throw error;
+    if (diagError) {
+        console.error('[publicDiagnostic] Erro ao criar diagnostico:', diagError);
+        throw diagError;
     }
 
-    // Cast data to expected type
-    const { project_id, response_id } = data as { project_id: string, response_id: string };
+    const diagnosticoId = (diagData as any).id;
 
-    // 2. Link the diagnostic project to the pipeline (non-blocking)
-    const diagnosticType = answers.diagnostic_type || 'growth';
-    linkDiagnosticToPipeline({
-        projectId: project_id,
-        diagnosticType,
-        score,
-        leadName: lead.name,
-        leadEmail: lead.email,
-        leadCompany: lead.company,
-    }).catch((err) => {
-        console.error('[publicDiagnostic] Pipeline link failed (non-blocking):', err);
-    });
+    // 2. Criar opportunity vinculada (pipeline pre-venda)
+    const DIAG_TYPE_TO_SOURCE: Record<string, string> = {
+        growth: 'diagnostico_growth',
+        revenue: 'diagnostico_revenue',
+        founder: 'diagnostico_founder',
+        site: 'diagnostico_site',
+    };
+    const leadSource = DIAG_TYPE_TO_SOURCE[diagnosticType] || 'diagnostico_growth';
 
-    // 3. Trigger GHL relay
-    const resultUrl = `${window.location.origin}/diagnostico/resultado/${response_id}`;
+    // Check se ja existe opportunity para este email
+    let opportunityId: string | null = null;
+
+    if (lead.email && lead.email !== 'sem-email@lead.local') {
+        const { data: existing } = await supabase
+            .from('opportunities')
+            .select('id')
+            .eq('client_email', lead.email.toLowerCase())
+            .not('pipeline_stage', 'eq', 'lost')
+            .limit(1)
+            .maybeSingle();
+
+        if (existing) {
+            // Atualizar opportunity existente com o novo diagnostico
+            opportunityId = (existing as any).id;
+            await supabase
+                .from('opportunities')
+                .update({
+                    diagnostico_id: diagnosticoId,
+                    pipeline_stage: 'diagnostic_done',
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', opportunityId);
+
+            // Historico
+            await supabase.from('opportunity_stage_history').insert({
+                opportunity_id: opportunityId,
+                from_stage: null,
+                to_stage: 'diagnostic_done',
+                changed_at: new Date().toISOString(),
+                changed_by: 'public_diagnostic',
+                notes: `Diagnostico ${diagnosticType} vinculado - score ${score}`,
+            });
+        }
+    }
+
+    if (!opportunityId) {
+        // Criar nova opportunity
+        const { data: oppData, error: oppError } = await supabase
+            .from('opportunities')
+            .insert({
+                client_name: lead.name || lead.company,
+                client_email: lead.email?.toLowerCase() || null,
+                client_company: lead.company || null,
+                type: diagnosticType === 'founder' ? 'founder' : 'consulting',
+                lead_source: leadSource,
+                pipeline_stage: 'diagnostic_done',
+                diagnostico_id: diagnosticoId,
+                analyst_email: 'giulliano@revhackers.com.br',
+            })
+            .select('id')
+            .single();
+
+        if (oppError) {
+            console.error('[publicDiagnostic] Erro ao criar opportunity:', oppError);
+            // Nao throw - diagnostico ja foi salvo, opportunity e secundaria
+        } else {
+            opportunityId = (oppData as any).id;
+
+            // Historico inicial
+            await supabase.from('opportunity_stage_history').insert({
+                opportunity_id: opportunityId,
+                from_stage: null,
+                to_stage: 'diagnostic_done',
+                changed_at: new Date().toISOString(),
+                changed_by: 'public_diagnostic',
+                notes: `Opportunity criada via diagnostico publico ${diagnosticType} - score ${score}`,
+            });
+        }
+    }
+
+    // 3. GHL relay
+    const resultUrl = `${window.location.origin}/diagnostico/resultado/${diagnosticoId}`;
 
     if (ghlEventType) {
         await sendToGHL(ghlEventType, {
@@ -67,12 +152,12 @@ export const submitPublicDiagnostic = async (
             score,
             maturity: maturity.level,
             maturity_title: maturity.title,
-            diagnostic_type: fullResponses.diagnostic_type,
+            diagnostic_type: diagnosticType,
             result_url: resultUrl,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         });
     }
 
-    // Return structure matching what UI expects (UI doesn't strictly check project object, just success)
-    return { response: { id: response_id }, resultUrl };
+    // Retorna diagnostico_id como ID do resultado (a pagina de resultado le de diagnosticos)
+    return { response: { id: diagnosticoId }, resultUrl };
 };

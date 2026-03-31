@@ -361,7 +361,7 @@ const SiteScore = () => {
                 headerVariant="default"
             >
                 <div className="max-w-4xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center animate-fade-in">
-                    <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors rounded-3xl shadow-sm">
+                    <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors shadow-sm">
                         <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none transition-transform group-hover:scale-105 duration-1000">
                             <Zap className="w-64 h-64 text-black rotate-12" />
                         </div>
@@ -370,7 +370,7 @@ const SiteScore = () => {
 
                             {/* URL Input Action Area */}
                             <div className="mb-16 w-full">
-                                <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white group-hover:border-zinc-300 transition-colors rounded-xl overflow-hidden shadow-sm mb-4">
+                                <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white group-hover:border-zinc-300 transition-colors overflow-hidden shadow-sm mb-4">
                                     <span className="hidden md:flex items-center px-6 font-mono text-xs text-zinc-400 bg-zinc-50 border-r border-zinc-200 select-none gap-2">
                                         <Globe className="w-4 h-4" />
                                         https://
@@ -390,7 +390,7 @@ const SiteScore = () => {
                                         INICIAR <ArrowRight className="w-3 h-3" />
                                     </button>
                                 </div>
-                                <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-mono">
+                                <p className="text-xxs uppercase tracking-widest text-zinc-400 font-mono">
                                     *Iniciaremos a análise técnica de infraestrutura
                                 </p>
 
@@ -400,11 +400,11 @@ const SiteScore = () => {
                                         <Trophy className="w-4 h-4 text-zinc-400" />
                                         <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Benchmark Competitivo (Opcional)</span>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 mb-4">Compare sua performance contra até 2 concorrentes usando dados reais do Chrome.</p>
+                                    <p className="text-xxs text-zinc-400 mb-4">Compare sua performance contra até 2 concorrentes usando dados reais do Chrome.</p>
                                     <div className="space-y-3">
                                         {competitorUrls.map((url, idx) => (
                                             <div key={idx} className="flex items-center gap-2">
-                                                <span className="text-[10px] font-mono text-zinc-400 w-24">Concorrente {idx + 1}</span>
+                                                <span className="text-xxs font-mono text-zinc-400 w-24">Concorrente {idx + 1}</span>
                                                 <input
                                                     type="text"
                                                     value={url}
@@ -414,7 +414,7 @@ const SiteScore = () => {
                                                         setCompetitorUrls(newUrls);
                                                     }}
                                                     placeholder="concorrente.com"
-                                                    className="flex-1 bg-zinc-50 border border-zinc-100 text-black h-10 px-4 text-sm focus:ring-0 outline-none focus:border-zinc-300 rounded-lg"
+                                                    className="flex-1 bg-zinc-50 border border-zinc-100 text-black h-10 px-4 text-sm focus:ring-0 outline-none focus:border-zinc-300 "
                                                 />
                                             </div>
                                         ))}
@@ -425,31 +425,31 @@ const SiteScore = () => {
                             {/* 3-Column Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full border-t border-zinc-100 pt-12">
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Zap className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">01 // Speed</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">01 // Speed</span>
                                         <span className="text-sm font-bold text-zinc-900">Performance</span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Search className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">02 // SEO</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">02 // SEO</span>
                                         <span className="text-sm font-bold text-zinc-900">Visibilidade</span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 rounded-2xl group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
                                         <Terminal className="w-5 h-5" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-widest">03 // Tech</span>
+                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">03 // Tech</span>
                                         <span className="text-sm font-bold text-zinc-900">Conformidade</span>
                                     </div>
                                 </div>
@@ -495,12 +495,12 @@ const SiteScore = () => {
                                             key={idx}
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
-                                            className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 rounded-xl border ${selectedOption === idx
+                                            className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
                                                 ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                                 : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
-                                            <div className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                            <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                                 ? "bg-white text-zinc-900 border-white"
                                                 : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                                 }`}>
@@ -521,7 +521,7 @@ const SiteScore = () => {
                                             animate={{ opacity: 1, y: 0 }}
                                             className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
                                         >
-                                            <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 rounded-full inline-block border border-zinc-100">
+                                            <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
                                                 <span className="text-black font-bold mr-2">Info:</span>{question.log}
                                             </p>
                                         </motion.div>
@@ -548,7 +548,7 @@ const SiteScore = () => {
                         </div>
                         <div className="space-y-4">
                             <span className="text-xs font-mono text-zinc-400 tracking-widest font-medium block">{loadingStatus}</span>
-                            <div className="w-full max-w-xs mx-auto bg-zinc-100 h-[2px] relative overflow-hidden rounded-full">
+                            <div className="w-full max-w-xs mx-auto bg-zinc-100 h-[2px] relative overflow-hidden ">
                                 <motion.div
                                     className="absolute top-0 left-0 bg-black h-full"
                                     initial={{ width: 0 }}
@@ -582,14 +582,14 @@ const SiteScore = () => {
                 {/* GATE OVERLAY */}
                 {!hasSubmittedLead && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-in fade-in duration-300 overflow-y-auto">
-                        <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 rounded-3xl shadow-sm relative my-auto max-h-[90vh]">
+                        <div className="bg-black border border-zinc-900 p-8 w-full max-w-4xl flex flex-col md:flex-row items-center md:items-stretch gap-8 md:gap-12 shadow-sm relative my-auto max-h-[90vh]">
 
                             {/* Coluna Esquerda: Resultado (Visual) */}
                             <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
                                 {/* Teaser Pill */}
-                                <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 rounded-full border border-zinc-900">
+                                <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 border border-zinc-900">
                                     <div className={`w-1.5 h-1.5 rounded-full ${psiResults?.mobile?.vitals?.score >= 70 ? 'bg-revgreen' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
-                                    <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
+                                    <span className="text-2xs font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
                                 </div>
 
                                 <div className="relative">
@@ -627,9 +627,9 @@ const SiteScore = () => {
 
                     {/* DASHBOARD HEADLINE - Adicionado por solicitação */}
                     <div className="mb-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto">
-                        <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                            <span className="w-1.5 h-1.5 bg-revgreen rounded-full shadow-[0_0_10px_#00CC6A]"></span>
-                            <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
+                        <div className="inline-flex items-center gap-2 mb-4 bg-zinc-900 border border-zinc-800 px-3 py-1 ">
+                            <span className="w-1.5 h-1.5 bg-revgreen shadow-[0_0_10px_#00CC6A]"></span>
+                            <span className="text-xxs font-mono font-bold text-zinc-400 uppercase tracking-widest">Status: Finalizado</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">
                             Diagnóstico <span className="text-zinc-600">Site</span>
@@ -650,27 +650,27 @@ const SiteScore = () => {
                         </div>
 
                         {/* Right Column: Detailed Grid */}
-                        <div className="lg:col-span-8 flex flex-col gap-px bg-zinc-800 border border-zinc-900 rounded-lg overflow-hidden">
+                        <div className="lg:col-span-8 flex flex-col gap-px bg-zinc-800 border border-zinc-900 overflow-hidden">
                             {/* Header Row with Toggle */}
                             <div className="bg-zinc-950 p-6 border-b border-zinc-900 flex justify-between items-center bg-white/5">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewMode === 'mobile' ? 'bg-revgreen' : 'bg-zinc-400'}`} />
-                                    <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest">
+                                    <span className="text-xxs font-mono font-bold text-zinc-400 uppercase tracking-widest">
                                         INFRAESTRUTURA // WEB VITALS
                                     </span>
                                 </div>
 
                                 {/* TOGGLE BUTTONS */}
-                                <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800">
+                                <div className="flex bg-zinc-900 p-1 border border-zinc-800">
                                     <button
                                         onClick={() => setViewMode('mobile')}
-                                        className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${viewMode === 'mobile' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                        className={`px-3 py-1 text-xxs font-bold uppercase tracking-wider transition-all ${viewMode === 'mobile' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Mobile
                                     </button>
                                     <button
                                         onClick={() => setViewMode('desktop')}
-                                        className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${viewMode === 'desktop' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                        className={`px-3 py-1 text-xxs font-bold uppercase tracking-wider transition-all ${viewMode === 'desktop' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                     >
                                         Desktop
                                     </button>
@@ -728,23 +728,23 @@ const SiteScore = () => {
                             {/* Tech Stack & SEO Meta Row */}
                             <div className="bg-zinc-950 p-6 border-t border-zinc-900 grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block mb-4">Clareza Estratégica (SEO)</span>
+                                    <span className="text-xxs font-mono text-zinc-500 uppercase tracking-widest block mb-4">Clareza Estratégica (SEO)</span>
                                     <div className="space-y-3">
                                         <div>
-                                            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-tighter block">Title Tag</span>
+                                            <span className="text-2xs font-black text-zinc-600 uppercase tracking-tighter block">Title Tag</span>
                                             <p className="text-sm font-bold text-white line-clamp-1">{psiResults?.seoMetadata?.title}</p>
                                         </div>
                                         <div>
-                                            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-tighter block">Meta Description</span>
+                                            <span className="text-2xs font-black text-zinc-600 uppercase tracking-tighter block">Meta Description</span>
                                             <p className="text-xs text-zinc-400 line-clamp-2 italic">"{psiResults?.seoMetadata?.description}"</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block mb-4">Tecnologias Identificadas</span>
+                                    <span className="text-xxs font-mono text-zinc-500 uppercase tracking-widest block mb-4">Tecnologias Identificadas</span>
                                     <div className="flex flex-wrap gap-2">
                                         {[...(psiResults?.techStack || []), ...(psiResults?.pixels || [])].map((tech, i) => (
-                                            <span key={i} className="text-[10px] font-bold bg-zinc-900 text-zinc-300 border border-zinc-800 px-3 py-1 rounded-full">
+                                            <span key={i} className="text-xxs font-bold bg-zinc-900 text-zinc-300 border border-zinc-800 px-3 py-1 ">
                                                 {tech}
                                             </span>
                                         ))}
@@ -761,7 +761,7 @@ const SiteScore = () => {
                             {/* PSI AUDIT DETAILS */}
                             <section>
                                 <div className="space-y-6 mb-20">
-                                    <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                    <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                         AUDITORIA_ESTRATÉGICA
                                     </div>
                                     <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic">
@@ -772,7 +772,7 @@ const SiteScore = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                                     <div className="space-y-6 border-l border-zinc-200 pl-8">
                                         <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
-                                            <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                            <div className="w-1.5 h-1.5 bg-black " />
                                             Perspectiva Técnica
                                         </h4>
                                         <p className="text-black text-base leading-relaxed font-semibold">
@@ -789,7 +789,7 @@ const SiteScore = () => {
 
                                     <div className="space-y-6 border-l border-zinc-200 pl-8">
                                         <h4 className="text-sm font-black text-black uppercase tracking-widest flex items-center gap-3">
-                                            <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                            <div className="w-1.5 h-1.5 bg-black " />
                                             Plano de Ação
                                         </h4>
                                         <p className="text-black text-base leading-relaxed font-semibold">
@@ -806,7 +806,7 @@ const SiteScore = () => {
                             {(benchmarkResult || isBenchmarking) && (
                                 <section className="mt-32">
                                     <div className="space-y-6 mb-12">
-                                        <div className="inline-block bg-revgreen text-black px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                        <div className="inline-block bg-revgreen text-black px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                             BENCHMARK_COMPETITIVO
                                         </div>
                                         <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic">
@@ -818,7 +818,7 @@ const SiteScore = () => {
                                     </div>
 
                                     {isBenchmarking ? (
-                                        <div className="flex items-center justify-center py-16 gap-4 bg-zinc-50 rounded-2xl border border-zinc-100">
+                                        <div className="flex items-center justify-center py-16 gap-4 bg-zinc-50 border border-zinc-100">
                                             <div className="w-6 h-6 border-2 border-revgreen border-t-transparent rounded-full animate-spin" />
                                             <span className="text-sm font-medium text-zinc-500">Consultando dados reais de performance...</span>
                                         </div>
@@ -842,7 +842,7 @@ const SiteScore = () => {
                                                                 <Trophy className="w-4 h-4 text-revgreen" />
                                                                 <div>
                                                                     <span className="font-bold text-black text-sm block">{new URL(benchmarkResult.clientSite.url).hostname}</span>
-                                                                    <span className="text-[10px] text-zinc-400 font-mono">SEU SITE</span>
+                                                                    <span className="text-xxs text-zinc-400 font-mono">SEU SITE</span>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -862,7 +862,7 @@ const SiteScore = () => {
                                                             </span>
                                                         </td>
                                                         <td className="text-center py-4 px-4">
-                                                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-black text-white">
+                                                            <span className="inline-flex items-center gap-1 px-3 py-1 text-xxs font-bold uppercase bg-black text-white">
                                                                 #{benchmarkResult.ranking.overall} de {benchmarkResult.competitors.length + 1}
                                                             </span>
                                                         </td>
@@ -876,7 +876,7 @@ const SiteScore = () => {
                                                                     <Users className="w-4 h-4 text-zinc-300" />
                                                                     <div>
                                                                         <span className="font-medium text-zinc-700 text-sm block">{new URL(competitor.url).hostname}</span>
-                                                                        <span className="text-[10px] text-zinc-400 font-mono">CONCORRENTE {idx + 1}</span>
+                                                                        <span className="text-xxs text-zinc-400 font-mono">CONCORRENTE {idx + 1}</span>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -909,7 +909,7 @@ const SiteScore = () => {
                                                             </td>
                                                             <td className="text-center py-4 px-4">
                                                                 {competitor.error ? (
-                                                                    <span className="text-[10px] text-zinc-400">{competitor.error}</span>
+                                                                    <span className="text-xxs text-zinc-400">{competitor.error}</span>
                                                                 ) : (
                                                                     <span className="text-xs text-zinc-500">Analisado</span>
                                                                 )}
@@ -920,7 +920,7 @@ const SiteScore = () => {
                                             </table>
 
                                             {/* Legenda */}
-                                            <div className="flex items-center justify-center gap-6 mt-6 text-[10px] font-mono text-zinc-400">
+                                            <div className="flex items-center justify-center gap-6 mt-6 text-xxs font-mono text-zinc-400">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#00C853' }} />
                                                     <span>Bom</span>
@@ -941,7 +941,7 @@ const SiteScore = () => {
 
                             <section>
                                 <div className="space-y-6 mb-20 text-right">
-                                    <div className="inline-block bg-black text-white px-4 py-1.5 text-[9px] font-mono uppercase tracking-[0.5em] font-black">
+                                    <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
                                         MARKET_INTELLIGENCE
                                     </div>
                                     <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic">
@@ -950,41 +950,41 @@ const SiteScore = () => {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="p-8 bg-zinc-50 border border-zinc-100 rounded-2xl flex flex-col justify-between">
+                                    <div className="p-8 bg-zinc-50 border border-zinc-100 flex flex-col justify-between">
                                         <div>
-                                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block mb-4">Escalabilidade</span>
+                                            <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest block mb-4">Escalabilidade</span>
                                             <h4 className="text-xl font-bold text-black mb-4 tracking-tight">Performance Proativa</h4>
                                             <p className="text-sm text-zinc-600 leading-relaxed mb-6">
                                                 Com um score de {currentScore}%, sua infraestrutura {currentScore > 80 ? "está pronta para suportar escalas agressivas de mídia paga." : "apresenta gargalos que aumentarão drasticamente o seu CAC se tentar escalar agora."}
                                             </p>
                                         </div>
-                                        <div className="text-[10px] font-black text-black flex items-center gap-2 uppercase tracking-widest">
+                                        <div className="text-xxs font-black text-black flex items-center gap-2 uppercase tracking-widest">
                                             Status: {currentScore > 80 ? "Verde (Go Scale)" : "Amarelo (Fix First)"}
                                         </div>
                                     </div>
 
-                                    <div className="p-8 bg-zinc-50 border border-zinc-100 rounded-2xl flex flex-col justify-between">
+                                    <div className="p-8 bg-zinc-50 border border-zinc-100 flex flex-col justify-between">
                                         <div>
-                                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block mb-4">Autoridade</span>
+                                            <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest block mb-4">Autoridade</span>
                                             <h4 className="text-xl font-bold text-black mb-4 tracking-tight">Clareza Semântica</h4>
                                             <p className="text-sm text-zinc-600 leading-relaxed mb-6">
                                                 O uso de {(psiResults?.techStack || []).length} tecnologias e {psiResults?.seoMetadata?.title ? "metadados presentes" : "metadados ausentes"} indica uma operação {(psiResults?.techStack || []).length > 5 ? "robusta" : "em estágio inicial"} de marketing digital.
                                             </p>
                                         </div>
-                                        <div className="text-[10px] font-black text-black flex items-center gap-2 uppercase tracking-widest">
+                                        <div className="text-xxs font-black text-black flex items-center gap-2 uppercase tracking-widest">
                                             Nível: {(psiResults?.techStack || []).length > 5 ? "Avançado" : "Semente"}
                                         </div>
                                     </div>
 
-                                    <div className="p-8 bg-zinc-50 border border-zinc-100 rounded-2xl flex flex-col justify-between">
+                                    <div className="p-8 bg-zinc-50 border border-zinc-100 flex flex-col justify-between">
                                         <div>
-                                            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block mb-4">Conversão</span>
+                                            <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest block mb-4">Conversão</span>
                                             <h4 className="text-xl font-bold text-black mb-4 tracking-tight">Mobile First Index</h4>
                                             <p className="text-sm text-zinc-600 leading-relaxed mb-6">
                                                 Sua pontuação mobile de {psiResults?.mobile?.vitals?.score || 0}% é o principal fator de retenção. {(psiResults?.mobile?.vitals?.score || 0) > 90 ? "Parabéns pela otimização extrema." : "Cada 1% de melhoria aqui reflete em aproximadamente 2% de redução no bounce rate."}
                                             </p>
                                         </div>
-                                        <div className="text-[10px] font-black text-black flex items-center gap-2 uppercase tracking-widest">
+                                        <div className="text-xxs font-black text-black flex items-center gap-2 uppercase tracking-widest">
                                             Prioridade: {(psiResults?.mobile?.vitals?.score || 0) < 50 ? "Crítica" : "Otimização"}
                                         </div>
                                     </div>
@@ -1005,8 +1005,8 @@ const SiteScore = () => {
 
                             {/* Fallback MoFu CTA */}
                             <div className="mt-8 mb-16 flex flex-col items-center justify-center text-center px-4">
-                                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
-                                <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 rounded-lg hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Checklist de Conversão (Grátis)</button>
+                                <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest mb-4">MUITO CEDO PARA UMA DEEP-DIVE CALL?</span>
+                                <button onClick={() => window.open('https://revhackers.com.br/')} className="text-xs font-semibold text-white bg-zinc-900 border border-zinc-700 px-6 py-3 hover:bg-zinc-800 transition-colors uppercase tracking-widest">Baixe o Checklist de Conversão (Grátis)</button>
                             </div>
                         </div>
                     </div>

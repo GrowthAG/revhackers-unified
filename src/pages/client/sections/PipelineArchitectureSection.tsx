@@ -46,10 +46,10 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                             <div key={pIdx}>
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-2.5 h-2.5 bg-black rounded-full" />
-                                    <h3 className="text-[15px] font-bold text-zinc-900 tracking-wider uppercase">
+                                    <h3 className="text-body font-bold text-zinc-900 tracking-wider uppercase">
                                         {pipeline.name}
                                     </h3>
-                                    <span className="text-[13px] text-zinc-400 font-medium ml-3">
+                                    <span className="text-mini text-zinc-400 font-medium ml-3">
                                         {pipeline.stages?.length || 0} etapas
                                     </span>
                                 </div>
@@ -59,11 +59,11 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                                         const isLast = sIdx === (pipeline.stages?.length || 0) - 1;
                                         return (
                                             <React.Fragment key={sIdx}>
-                                                <div className="flex items-center gap-3 px-5 py-3 rounded-lg border border-zinc-200/80 bg-zinc-50/50 shadow-sm">
-                                                    <span className="text-[12px] font-bold text-zinc-400 font-mono">
+                                                <div className="flex items-center gap-3 px-5 py-3 border border-zinc-200/80 bg-zinc-50/50 shadow-sm">
+                                                    <span className="text-xs font-bold text-zinc-400 font-mono">
                                                         {sIdx + 1}.
                                                     </span>
-                                                    <span className="text-[14px] font-semibold text-zinc-800">
+                                                    <span className="text-sm font-semibold text-zinc-800">
                                                         {stage}
                                                     </span>
                                                 </div>
@@ -83,26 +83,26 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                     <div className="mt-16 pt-12 border-t border-zinc-100">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-2.5 h-2.5 bg-zinc-900 rounded-full" />
-                            <h3 className="text-[15px] font-bold text-zinc-900 tracking-wider uppercase">
+                            <h3 className="text-body font-bold text-zinc-900 tracking-wider uppercase">
                                 Motivos de Perda (Lost Reasons)
                             </h3>
                         </div>
 
-                        <div className="flex flex-wrap gap-4">
+                        <div className={`grid gap-4 ${lostReasons.length === 4 || lostReasons.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-3'}`}>
                             {lostReasons.map((lr: any, i: number) => {
                                 const cat = lr.category || 'other';
                                 const dotColor = categoryColors[cat] || categoryColors.other;
                                 return (
                                     <div
                                         key={i}
-                                        className="flex items-center gap-3 px-5 py-3.5 rounded-lg border border-zinc-200/80 bg-white shadow-sm"
+                                        className="flex items-center gap-3 px-5 py-3.5 border border-zinc-200/80 bg-white shadow-sm"
                                     >
-                                        <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[14px] font-semibold text-zinc-800">
+                                        <div className={`w-2.5 h-2.5 rounded-full ${dotColor} shrink-0`} />
+                                        <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                                            <span className="text-sm font-semibold text-zinc-800 truncate">
                                                 {lr.reason}
                                             </span>
-                                            <span className="text-[11px] uppercase font-bold text-zinc-400 px-2 py-0.5 bg-zinc-100 rounded-full">
+                                            <span className="text-tiny uppercase font-bold text-zinc-400 px-2 py-0.5 bg-zinc-100 shrink-0 ml-auto">
                                                 {categoryLabels[cat] || cat}
                                             </span>
                                         </div>
@@ -116,7 +116,7 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                 {/* Bottom accent */}
                 <div className="flex items-center gap-3 mt-14">
                     <span className="w-2 h-2 rounded-full border-[1.5px] border-[#00CC6A] shrink-0" />
-                    <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-widest">
+                    <span className="text-xxs font-bold text-zinc-900 uppercase tracking-widest">
                         Base para CRM
                     </span>
                     <div className="h-[1px] flex-1 bg-zinc-100" />

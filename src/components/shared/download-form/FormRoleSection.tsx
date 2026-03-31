@@ -24,8 +24,8 @@ const FormRoleSection = ({ formData, handleRadioChange }: FormRoleSectionProps) 
         >
           <RadioGroupItem value="decision-maker" id="decision-maker" className="mt-1 border-zinc-300 text-black data-[state=checked]:border-black data-[state=checked]:bg-black" />
           <div className="space-y-0.5">
-            <span className="font-bold text-zinc-900 text-[11px] uppercase tracking-wider block">Decisor</span>
-            <p className="text-[10px] text-zinc-400 leading-tight">Tenho autonomia de aprovação.</p>
+            <span className="font-bold text-zinc-900 text-tiny uppercase tracking-wider block">Decisor</span>
+            <p className="text-xxs text-zinc-400 leading-tight">Tenho autonomia de aprovação.</p>
           </div>
         </label>
 
@@ -35,8 +35,8 @@ const FormRoleSection = ({ formData, handleRadioChange }: FormRoleSectionProps) 
         >
           <RadioGroupItem value="influencer" id="influencer" className="mt-1 border-zinc-300 text-black data-[state=checked]:border-black data-[state=checked]:bg-black" />
           <div className="space-y-0.5">
-            <span className="font-bold text-zinc-900 text-[11px] uppercase tracking-wider block">Influenciador</span>
-            <p className="text-[10px] text-zinc-400 leading-tight">Influencio e recomendo soluções.</p>
+            <span className="font-bold text-zinc-900 text-tiny uppercase tracking-wider block">Influenciador</span>
+            <p className="text-xxs text-zinc-400 leading-tight">Influencio e recomendo soluções.</p>
           </div>
         </label>
       </RadioGroup>

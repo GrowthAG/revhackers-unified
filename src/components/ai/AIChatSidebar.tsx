@@ -252,7 +252,7 @@ export const AIChatSidebar = () => {
                 {/* Sessions List */}
                 <div className="border-b border-zinc-800 p-3">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] text-zinc-400 uppercase font-medium">Conversas</span>
+                        <span className="text-xxs text-zinc-400 uppercase font-medium">Conversas</span>
                         <button onClick={handleNewChat} className="text-xs text-zinc-500 hover:text-white flex items-center gap-1">
                             <Plus className="w-3 h-3" /> Nova
                         </button>
@@ -297,7 +297,7 @@ export const AIChatSidebar = () => {
                         <div className="space-y-4">
                             {messages.map((msg, idx) => (
                                 <div key={idx}>
-                                    <p className="text-[10px] text-zinc-400 mb-1">
+                                    <p className="text-xxs text-zinc-400 mb-1">
                                         {msg.role === 'assistant' ? selectedAgent.name : 'Você'}
                                     </p>
                                     <div className={`text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'assistant' ? 'text-zinc-300' : 'text-white'

@@ -240,7 +240,7 @@ const Blog = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-20 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/30">
+            <div className="text-center py-20 border border-dashed border-zinc-200 bg-zinc-50/30">
               <div className="mx-auto w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4 border border-black/5">
                 <BookOpen className="h-8 w-8 text-zinc-300" />
               </div>

@@ -215,7 +215,7 @@ const ServicosDetalhe = () => {
       <Section variant="dark" className="relative pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10 overflow-hidden">
 
         {/* Dynamic Glow Background */}
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl opacity-40 pointer-events-none bg-gradient-radial ${service.color} blur-[100px] rounded-full`}></div>
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl opacity-40 pointer-events-none bg-gradient-radial ${service.color} blur-[100px] `}></div>
 
         <div className="container-custom text-center relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -361,12 +361,12 @@ const ServicosDetalhe = () => {
             {/* Header - Same as CallDiagnosticModal */}
             <div className="p-8 md:p-12 border-b border-zinc-100 flex justify-between items-start">
               <div className="space-y-2">
-                <span className="text-[10px] font-mono font-black text-revgreen uppercase tracking-[0.4em]">{service?.number} // {service?.title}</span>
+                <span className="text-xxs font-mono font-black text-revgreen uppercase tracking-[0.4em]">{service?.number} // {service?.title}</span>
                 <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic uppercase">
                   {selectedService.title}
                 </h2>
               </div>
-              <button onClick={() => setSelectedService(null)} className="p-2 hover:bg-zinc-100 transition-colors rounded-full">
+              <button onClick={() => setSelectedService(null)} className="p-2 hover:bg-zinc-100 transition-colors ">
                 <X className="w-6 h-6 text-black" />
               </button>
             </div>
@@ -380,7 +380,7 @@ const ServicosDetalhe = () => {
 
               {/* Context Badge */}
               <div className="border-l-2 border-revgreen pl-6 py-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block mb-1">Parte do Projeto</span>
+                <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-400 block mb-1">Parte do Projeto</span>
                 <span className="text-lg font-bold text-black tracking-tight">{service?.title}</span>
               </div>
 

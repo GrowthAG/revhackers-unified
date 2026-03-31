@@ -109,14 +109,14 @@ const FixMaterialsPage = () => {
                     <div className="flex flex-col gap-4 mb-8">
                         <Button
                             onClick={runResetAndFix}
-                            className="w-full h-24 text-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-sm border-4 border-red-800 rounded-xl uppercase tracking-widest"
+                            className="w-full h-24 text-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-sm border-4 border-red-800 uppercase tracking-widest"
                         >
                             👉 CLIQUE AQUI PARA CORRIGIR AGORA
                         </Button>
                         <p className="text-sm text-zinc-500 text-center">Isso vai apagar os dados incorretos e inserir os materiais oficiais automaticamente.</p>
                     </div>
 
-                    <div className="bg-zinc-950 text-green-400 p-6 rounded-lg shadow-inner min-h-[400px] font-mono text-sm leading-relaxed whitespace-pre-wrap border border-zinc-800">
+                    <div className="bg-zinc-950 text-green-400 p-6 shadow-inner min-h-[400px] font-mono text-sm leading-relaxed whitespace-pre-wrap border border-zinc-800">
                         {status}
                     </div>
                 </div>

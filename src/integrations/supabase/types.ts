@@ -1239,6 +1239,174 @@ export type Database = {
           },
         ]
       }
+      opportunities: {
+        Row: {
+          analyst_email: string | null
+          client_company: string | null
+          client_email: string | null
+          client_id: string | null
+          client_logo: string | null
+          client_name: string
+          client_site: string | null
+          created_at: string
+          diagnostico_id: string | null
+          enrichment_data: Json | null
+          id: string
+          lead_source: string | null
+          lost_at: string | null
+          lost_reason: string | null
+          market_data: Json | null
+          meeting_recording_id: string | null
+          opportunity_data: Json | null
+          organization_id: string | null
+          pipeline_stage: string
+          rei_project_id: string | null
+          site_analysis: Json | null
+          source: string | null
+          trade_name: string | null
+          type: string
+          updated_at: string
+          won_at: string | null
+        }
+        Insert: {
+          analyst_email?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_id?: string | null
+          client_logo?: string | null
+          client_name: string
+          client_site?: string | null
+          created_at?: string
+          diagnostico_id?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          lead_source?: string | null
+          lost_at?: string | null
+          lost_reason?: string | null
+          market_data?: Json | null
+          meeting_recording_id?: string | null
+          opportunity_data?: Json | null
+          organization_id?: string | null
+          pipeline_stage?: string
+          rei_project_id?: string | null
+          site_analysis?: Json | null
+          source?: string | null
+          trade_name?: string | null
+          type?: string
+          updated_at?: string
+          won_at?: string | null
+        }
+        Update: {
+          analyst_email?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_id?: string | null
+          client_logo?: string | null
+          client_name?: string
+          client_site?: string | null
+          created_at?: string
+          diagnostico_id?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          lead_source?: string | null
+          lost_at?: string | null
+          lost_reason?: string | null
+          market_data?: Json | null
+          meeting_recording_id?: string | null
+          opportunity_data?: Json | null
+          organization_id?: string | null
+          pipeline_stage?: string
+          rei_project_id?: string | null
+          site_analysis?: Json | null
+          source?: string | null
+          trade_name?: string | null
+          type?: string
+          updated_at?: string
+          won_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_diagnostico_id_fkey"
+            columns: ["diagnostico_id"]
+            isOneToOne: false
+            referencedRelation: "diagnosticos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_diagnostico_id_fkey"
+            columns: ["diagnostico_id"]
+            isOneToOne: false
+            referencedRelation: "diagnosticos_resumo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_meeting_recording_id_fkey"
+            columns: ["meeting_recording_id"]
+            isOneToOne: false
+            referencedRelation: "meeting_recordings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunity_stage_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          from_stage: string | null
+          id: string
+          notes: string | null
+          opportunity_id: string
+          to_stage: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          from_stage?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id: string
+          to_stage: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          from_stage?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id?: string
+          to_stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunity_stage_history_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_agendas: {
         Row: {
           calendar_provider: string
@@ -2137,6 +2305,7 @@ export type Database = {
           mindmap_code: string | null
           mindmap_embed: string | null
           mindmap_url: string | null
+          opportunity_id: string | null
           organization_id: string | null
           origin_template_id: string | null
           payment_terms: string | null
@@ -2178,6 +2347,7 @@ export type Database = {
           mindmap_code?: string | null
           mindmap_embed?: string | null
           mindmap_url?: string | null
+          opportunity_id?: string | null
           organization_id?: string | null
           origin_template_id?: string | null
           payment_terms?: string | null
@@ -2219,6 +2389,7 @@ export type Database = {
           mindmap_code?: string | null
           mindmap_embed?: string | null
           mindmap_url?: string | null
+          opportunity_id?: string | null
           organization_id?: string | null
           origin_template_id?: string | null
           payment_terms?: string | null
@@ -2236,6 +2407,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "proposals_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "proposals_organization_id_fkey"
             columns: ["organization_id"]
@@ -2317,6 +2495,7 @@ export type Database = {
           created_at: string | null
           diagnostico_id: string | null
           enrichment_data: Json | null
+          focal_points: Json | null
           id: string
           last_rei_date: string | null
           lead_source: string | null
@@ -2349,6 +2528,7 @@ export type Database = {
           created_at?: string | null
           diagnostico_id?: string | null
           enrichment_data?: Json | null
+          focal_points?: Json | null
           id?: string
           last_rei_date?: string | null
           lead_source?: string | null
@@ -2381,6 +2561,7 @@ export type Database = {
           created_at?: string | null
           diagnostico_id?: string | null
           enrichment_data?: Json | null
+          focal_points?: Json | null
           id?: string
           last_rei_date?: string | null
           lead_source?: string | null
@@ -2577,6 +2758,7 @@ export type Database = {
           approved_at: string | null
           budget_data: Json | null
           client_id: string | null
+          collaboration_metadata: Json | null
           cover_data: Json | null
           created_at: string | null
           created_by: string | null
@@ -2586,15 +2768,20 @@ export type Database = {
           id: string
           methodology_data: Json | null
           next_steps_data: Json | null
+          okr_data: Json | null
           onboarding_data: Json | null
+          opportunity_id: string | null
           persona_data: Json | null
+          plan_type: string
           premises_data: Json | null
           rei_project_id: string | null
           rejected_at: string | null
+          risk_mitigation_data: Json | null
           roadmap_data: Json | null
           sent_at: string | null
           sla_data: Json | null
           status: string | null
+          success_criteria_data: Json | null
           updated_at: string | null
           viewed_at: string | null
         }
@@ -2603,6 +2790,7 @@ export type Database = {
           approved_at?: string | null
           budget_data?: Json | null
           client_id?: string | null
+          collaboration_metadata?: Json | null
           cover_data?: Json | null
           created_at?: string | null
           created_by?: string | null
@@ -2612,15 +2800,20 @@ export type Database = {
           id?: string
           methodology_data?: Json | null
           next_steps_data?: Json | null
+          okr_data?: Json | null
           onboarding_data?: Json | null
+          opportunity_id?: string | null
           persona_data?: Json | null
+          plan_type?: string
           premises_data?: Json | null
           rei_project_id?: string | null
           rejected_at?: string | null
+          risk_mitigation_data?: Json | null
           roadmap_data?: Json | null
           sent_at?: string | null
           sla_data?: Json | null
           status?: string | null
+          success_criteria_data?: Json | null
           updated_at?: string | null
           viewed_at?: string | null
         }
@@ -2629,6 +2822,7 @@ export type Database = {
           approved_at?: string | null
           budget_data?: Json | null
           client_id?: string | null
+          collaboration_metadata?: Json | null
           cover_data?: Json | null
           created_at?: string | null
           created_by?: string | null
@@ -2638,15 +2832,20 @@ export type Database = {
           id?: string
           methodology_data?: Json | null
           next_steps_data?: Json | null
+          okr_data?: Json | null
           onboarding_data?: Json | null
+          opportunity_id?: string | null
           persona_data?: Json | null
+          plan_type?: string
           premises_data?: Json | null
           rei_project_id?: string | null
           rejected_at?: string | null
+          risk_mitigation_data?: Json | null
           roadmap_data?: Json | null
           sent_at?: string | null
           sla_data?: Json | null
           status?: string | null
+          success_criteria_data?: Json | null
           updated_at?: string | null
           viewed_at?: string | null
         }
@@ -2656,6 +2855,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "strategic_plans_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
           {
@@ -2770,6 +2976,10 @@ export type Database = {
           p_target_org_id: string
           p_template_id: string
         }
+        Returns: string
+      }
+      convert_opportunity_to_project: {
+        Args: { p_analyst_email?: string; p_opportunity_id: string }
         Returns: string
       }
       create_diagnostic_entry: {

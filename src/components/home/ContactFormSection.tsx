@@ -22,7 +22,7 @@ const ContactFormSection = () => {
 
             <div className="space-y-12">
               <div className="group">
-                <span className="font-mono text-[10px] font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">01 DO 03</span>
+                <span className="font-mono text-xxs font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">01 DO 03</span>
                 <div>
                   <h4 className="text-black font-bold text-lg tracking-tight mb-2">Diagnóstico de Infraestrutura</h4>
                   <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">Auditoria completa de Tracking, CRM e Atribuição para identificar gargalos.</p>
@@ -30,7 +30,7 @@ const ContactFormSection = () => {
               </div>
 
               <div className="group">
-                <span className="font-mono text-[10px] font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">02 DO 03</span>
+                <span className="font-mono text-xxs font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">02 DO 03</span>
                 <div>
                   <h4 className="text-black font-bold text-lg tracking-tight mb-2">Roadmap de Otimização</h4>
                   <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">Plano de ação de 90 dias focado em eficiência e escala previsível.</p>
@@ -38,7 +38,7 @@ const ContactFormSection = () => {
               </div>
 
               <div className="group">
-                <span className="font-mono text-[10px] font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">03 DO 03</span>
+                <span className="font-mono text-xxs font-bold text-zinc-300 mb-4 block group-hover:text-black transition-colors">03 DO 03</span>
                 <div>
                   <h4 className="text-black font-bold text-lg tracking-tight mb-2">Validação Científica</h4>
                   <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">Metodologia baseada em dados reais, eliminando "achismos" e hacks.</p>
@@ -48,7 +48,7 @@ const ContactFormSection = () => {
 
             {/* Trust/Live Signal - Minimalist Typography */}
             <div className="pt-8 border-t border-zinc-100">
-              <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest">
+              <p className="text-xxs text-zinc-400 font-mono uppercase tracking-widest">
                 Agenda Q1 2026: <span className="text-black font-bold ml-2">Vagas Limitadas</span>
               </p>
             </div>
@@ -59,13 +59,13 @@ const ContactFormSection = () => {
             <div className="bg-zinc-50 border border-zinc-100 p-10 md:p-14 rounded-[2.5rem] shadow-sm hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 hover:-translate-y-1">
               <div className="mb-12">
                 <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-3">Formulário de Aplicação</h3>
-                <p className="text-[15px] text-zinc-500 font-normal leading-relaxed">Preencha seus dados para análise técnica de perfil.</p>
+                <p className="text-body text-zinc-500 font-normal leading-relaxed">Preencha seus dados para análise técnica de perfil.</p>
               </div>
 
               <ContactForm formType="contact" variant="light" />
 
               <div className="mt-12 pt-8 border-t border-zinc-200/50 text-center">
-                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.3em] font-bold">
+                <p className="text-xxs text-zinc-400 uppercase tracking-[0.3em] font-bold">
                   Segurança de Dados · Resposta Técnica em 24h
                 </p>
               </div>

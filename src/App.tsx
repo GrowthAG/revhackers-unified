@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
+import ChatbotManager from "./components/shared/ChatbotManager";
 
 // ─── Loading Fallback ────────────────────────────────────────────────
 const PageLoader = () => (
@@ -27,6 +28,7 @@ const PageLoader = () => (
 // ─── Lazy Imports (Code-Split Routes) ────────────────────────────────
 // Public Pages
 const PublicDealRoom = lazy(() => import("./pages/public/PublicDealRoom"));
+const ProposalPresentation = lazy(() => import("./pages/public/ProposalPresentation"));
 const Diagnostico = lazy(() => import("./pages/Diagnostico"));
 const SupabaseDiagnostic = lazy(() => import("./pages/SupabaseDiagnostic"));
 const QuemSomos = lazy(() => import("./pages/QuemSomos"));
@@ -58,6 +60,7 @@ const PublicDiagnosticResult = lazy(() => import("./pages/PublicDiagnosticResult
 const SchedulingSuccess = lazy(() => import("./pages/SchedulingSuccess"));
 const CertificateOfAuthenticity = lazy(() => import("./pages/public/CertificateOfAuthenticity"));
 const MagicApproval = lazy(() => import("./pages/public/MagicApproval"));
+const PublicKickoffValidation = lazy(() => import("./pages/public/PublicKickoffValidation"));
 
 // Specialized Agenda Pages
 const AgendaLuna = lazy(() => import("./pages/AgendaLuna"));
@@ -99,6 +102,7 @@ const AdminMaterials = lazy(() => import("./pages/admin/AdminMaterials"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
 const ClientForm = lazy(() => import("./pages/admin/ClientForm"));
 const AdminIntegrations = lazy(() => import("./pages/admin/AdminIntegrations"));
+const AdminGHLIntegrations = lazy(() => import("./pages/admin/AdminGHLIntegrations"));
 const AdminMaterialNew = lazy(() => import("./pages/admin/AdminMaterialNew"));
 const AdminMaterialEdit = lazy(() => import("./pages/admin/AdminMaterialEdit"));
 const AdminSync = lazy(() => import("./pages/admin/AdminSync"));
@@ -107,7 +111,7 @@ const AdminCases = lazy(() => import("./pages/admin/AdminCases"));
 const AdminCaseNew = lazy(() => import("./pages/admin/AdminCaseNew"));
 const AdminCaseEdit = lazy(() => import("./pages/admin/AdminCaseEdit"));
 const DiagnosticView = lazy(() => import("./pages/admin/DiagnosticView"));
-const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
+// Deprecated: const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
 const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
@@ -125,6 +129,7 @@ const MeetingRecordingDoc = lazy(() => import("./pages/admin/MeetingRecordingDoc
 
 // Client Pages
 const StrategicPlanPresentation = lazy(() => import("./pages/client/StrategicPlanPresentation"));
+const SuccessPlanPresentation = lazy(() => import("./pages/client/SuccessPlanPresentation"));
 const ClientProjectHub = lazy(() => import("./pages/client/ClientProjectHub"));
 
 // Pitch Deck (Cinema Mode para Vendas)
@@ -149,12 +154,14 @@ const App = () => (
             <Toaster />
             <Sonner />
             <ScrollToTop />
+            <ChatbotManager />
             <Suspense fallback={<PageLoader />}>
               <ErrorBoundary>
                 <Routes>
                   {/* Public Routes */}
               <Route path="/" element={<Index />} />
-              <Route path="/p/:slug" element={<PublicDealRoom />} /> {/* Public Deal Room Route */}
+              <Route path="/p/:slug" element={<ProposalPresentation />} /> {/* Proposal Slide Presentation */}
+              <Route path="/p/:slug/legacy" element={<PublicDealRoom />} /> {/* Legacy Deal Room Route */}
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/diagnostico" element={<Diagnostico />} />
@@ -179,6 +186,7 @@ const App = () => (
               <Route path="/cadastro-cliente" element={<ClientOnboarding />} />
               <Route path="/onboarding/success" element={<OnboardingSuccess />} />
               <Route path="/upload-materiais/:projectId" element={<MaterialUpload />} />
+              <Route path="/public/kickoff/:id" element={<PublicKickoffValidation />} />
 
               {/* Legal & Feedback */}
               <Route path="/termos-de-uso" element={<TermosDeUso />} />
@@ -264,8 +272,8 @@ const App = () => (
               <Route path="/admin/cases/new" element={<ProtectedRoute><AdminCaseNew /></ProtectedRoute>} />
               <Route path="/admin/cases/edit/:id" element={<ProtectedRoute><AdminCaseEdit /></ProtectedRoute>} />
 
-              {/* Admin - REI Projects */}
-              <Route path="/admin/rei" element={<ProtectedRoute><AdminREIProjects /></ProtectedRoute>} />
+              {/* Admin - REI Projects (Redirected to Cockpit) */}
+              <Route path="/admin/rei" element={<Navigate to="/admin/proposals" replace />} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/rei/:id" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
 
@@ -285,7 +293,7 @@ const App = () => (
               <Route path="/admin/recording/:id" element={<ProtectedRoute><MeetingRecordingDoc /></ProtectedRoute>} />
               
               {/* Legacy Redirects */}
-              <Route path="/admin/jornada" element={<Navigate to="/admin/rei" replace />} />
+              <Route path="/admin/jornada" element={<Navigate to="/admin/proposals" replace />} />
               <Route path="/admin/jornada/:id" element={<Navigate to="/admin/projects/:id" replace />} />
 
               {/* Admin - Diagnostic View (The Voice) */}
@@ -305,6 +313,7 @@ const App = () => (
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />
+              <Route path="/success/:token" element={<SuccessPlanPresentation />} />
               {/* Rota PlanSignPage removida */}
               <Route path="/hub/:id" element={<ClientProjectHub />} />
 

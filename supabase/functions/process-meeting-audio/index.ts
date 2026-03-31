@@ -1,6 +1,21 @@
 // @ts-nocheck
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore - Supabase Deno environment
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,7 +29,7 @@ const corsHeaders = {
  * classifies the meeting type (proposal/onboarding/other),
  * and updates the appropriate client record.
  */
-serve(async (req) => {
+serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
@@ -100,14 +115,15 @@ serve(async (req) => {
         // ========================================
         // STEP 2: Classify and Generate Smart Artifacts with GPT
         // ========================================
-        const analysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const analysisResponse = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${OPENAI_API_KEY}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'gpt-5.4-mini',
+                response_format: { type: 'json_object' },
                 messages: [
                     {
                         role: 'system',
@@ -120,65 +136,63 @@ Retorne APENAS um JSON válido (sem markdown) com a seguinte estrutura:
   "cliente": {
     "nome_contato": "Nome do cliente",
     "empresa": "Nome da empresa",
-    "email": "email se mencionado",
-    "cargo": "cargo se mencionado",
-    "segmento_mercado": "ex: SaaS B2B, Varejo, Fintech"
+    "email": "email se mencionado, senão null",
+    "cargo": "cargo se mencionado, senão null",
+    "segmento_mercado": "segmento explicitamente mencionado ou null"
   },
-  "resumo_executivo": "3-5 frases resumindo a reunião",
+  "resumo_executivo": "3-5 frases resumindo Fielmente a reunião",
 
   // EXTRAÇÃO DE INTELIGÊNCIA (CRÍTICO PARA STRATEGIC PLAN)
   "inteligencia_estrategica": {
     "concorrentes_mencionados": [
-        {"nome": "Nome Concorrente", "url": "url se mencionada ou inferida", "contexto": "pq foi citado"}
+        {"nome": "Nome Concorrente", "url": "url se mencionada", "contexto": "pq foi citado"}
     ],
     "referencias_benchmarking": ["Empresa Ref 1", "Empresa Ref 2"],
-    "desafios_especificos": ["Desafio 1", "Desafio 2"],
-    "ojectivos_curto_prazo": ["Obj 1", "Obj 2"],
+    "desafios_especificos": ["Desafio real 1 narrado pelo cliente"],
+    "ojectivos_curto_prazo": ["Obj real 1", "Obj real 2"],
     "stack_tecnologica": ["CRM X", "Ads Y"]
   },
   
   // SE FOR PROPOSTA
   "proposta": {
-    "visao_projeto": "Visão...",
-    "escopo_sugerido": ["Item 1", "Item 2"],
+    "visao_projeto": "Visão literal baseada na transcrição...",
+    "escopo_sugerido": ["Item discutido 1"],
     "timeline_sugerida": [
       {"fase": "Nome", "duracao": "tempo", "entregas": ["a", "b"]}
     ],
-    "investimento_estimado": { "range_min": 0, "range_max": 0, "justificativa": "" },
+    "investimento_estimado": { "range_min": 0, "range_max": 0, "justificativa": "Apenas se falado" },
     "proximos_passos": [],
-    "objecoes_detectadas": [],
-    "sinais_compra": [],
-    "score_fechamento": 0-100
+    "objecoes_detectadas": ["Ex: 'Achou o preço alto', 'Precisa falar com o sócio'"],
+    "sinais_compra": ["Ex: 'Pediu o contrato', 'Gostou do escopo'"],
+    "score_fechamento": 0 // de 0 a 100
   },
   
   // SE FOR KICKOFF OU ONBOARDING - Foco em Planejamento Estratégico
   "kickoff_data": {
-    "contexto_cliente": "Resumo profundo do contexto",
-    "pontos_fortes": ["Ponto 1", "Ponto 2"],
-    "gargalos_atuais": ["Gargalo 1", "Gargalo 2"],
-    "definicao_sucesso": "O que é sucesso para eles?",
+    "contexto_cliente": "Resumo profundo do contexto narrado",
+    "pontos_fortes": ["Ponto 1 narrado"],
+    "gargalos_atuais": ["Gargalo 1 narrado"],
+    "definicao_sucesso": "O que o cliente disse expressamente que é sucesso para ele?",
     "personas_alvo": [
-        {"nome": "Persona 1", "papel": "Decisor", "dor_principal": "X"}
+        {"nome": "Persona 1 citada", "papel": "Decisor", "dor_principal": "X"}
     ],
     "cronograma_macrometras": [
-        {"mes": 1, "foco": "X"},
-        {"mes": 2, "foco": "Y"},
-        {"mes": 3, "foco": "Z"}
+        {"mes": 1, "foco": "X discutido"}
     ],
     "stakeholders": [{"nome": "X", "papel": "Y"}],
-    "riscos_mapeados": []
+    "riscos_mapeados": ["Risco expresso na call"]
   },
   
-  "acoes_proximas": ["Ação 1", "Ação 2"],
+  "acoes_proximas": ["Ação concreta 1", "Ação concreta 2"],
   "sentimento": "positivo" | "neutro" | "negativo",
-  "score_engajamento": 0-100
+  "score_engajamento": 0 // 0 a 100
 }
 
-REGRAS:
-- Se for Kickoff/Onboarding/Start, classifique como "kickoff" e preencha "kickoff_data" e "inteligencia_estrategica".
-- Extraia o MÁXIMO de URLs ou nomes de concorrentes para nosso scraper.
-- Seja tecnico e estrategico.
-- NUNCA use o caractere em dash (traco longo). Use hifen simples (-) como separador.`
+REGRAS (ESCUDO ANTI-ALUCINAÇÃO E STRICT FIDELITY):
+- PRINCÍPIO DA EXTRAÇÃO FIEL (ZERO INFERENCE): VOCÊ É ESTRITAMENTE PROIBIDO de deduzir, supor ou inventar dores, budgets, métricas financeiras, ferramentas da stack ou concorrentes se o cliente não os verbalizou textualmente na call. Responda com um array vazio ou 'null' caso o dado nunca tenha sido citado. Isso é crítico.
+- Se for Kickoff/Onboarding/Start, classifique como "kickoff" e preencha "kickoff_data" e "inteligencia_estrategica" SOMENTE com o que foi confessado no áudio.
+- Seja técnico e avalie QUEM demonstrou as objeções.
+- NUNCA use o caractere em dash (traco longo). Use hifen simples (-).`
                     },
                     {
                         role: 'user',
@@ -188,7 +202,7 @@ REGRAS:
                 temperature: 0.4,
                 max_tokens: 3000,
             }),
-        });
+        }));
 
         const analysisResult = await analysisResponse.json();
         let analysis;

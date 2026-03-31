@@ -40,7 +40,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Desafios & Objetivos
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 03/05
                 </p>
             </div>
@@ -145,7 +145,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                     </Select>
                     {(form.watch('prazo') === 'imediato' || form.watch('prazo') === 'curto') && (
                         <div className="bg-zinc-50 border-l-2 border-black p-3 my-2 animate-in fade-in slide-in-from-top-2">
-                            <p className="text-[10px] uppercase tracking-widest font-black text-black mb-1">
+                            <p className="text-xxs uppercase tracking-widest font-black text-black mb-1">
                                 ALINHAMENTO DE EXPECTATIVAS:
                             </p>
                             <p className="text-xs text-zinc-600 leading-relaxed font-medium">
@@ -163,7 +163,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o principal gargalo no funil? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">DEF:</span> Onde a maioria dos leads/clientes trava ou desiste.
                     </p>
                     <Select
@@ -226,7 +226,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
                                 Gatilho de Compra
                             </Label>
-                            <p className="text-[10px] text-zinc-500 mb-1">
+                            <p className="text-xxs text-zinc-500 mb-1">
                                 O que acontece na vida dele que o faz buscar solução AGORA?
                             </p>
                             <textarea
@@ -241,7 +241,7 @@ export default function Step3Desafios({ form }: Step3Props) {
                             <Label className="text-xs font-bold text-zinc-700 uppercase tracking-wider">
                                 Ganho Pessoal (Benefício Direto)
                             </Label>
-                            <p className="text-[10px] text-zinc-500 mb-1">
+                            <p className="text-xxs text-zinc-500 mb-1">
                                 O que ele ganha pessoalmente com o sucesso do projeto?
                             </p>
                             <textarea

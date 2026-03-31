@@ -18,7 +18,7 @@ export const TechStackCard = ({ category, items, status = 'detected', variant = 
                 : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
         )}>
             <div className="flex justify-between items-start mb-6">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-[0.2em]">
                     {category}
                 </span>
                 {status === 'missing' && <AlertCircle className="w-4 h-4 text-red-500" />}
@@ -32,7 +32,7 @@ export const TechStackCard = ({ category, items, status = 'detected', variant = 
                             <span
                                 key={idx}
                                 className={cn(
-                                    "px-3 py-1.5 border text-[10px] font-bold uppercase tracking-widest rounded-sm transition-colors",
+                                    "px-3 py-1.5 border text-xxs font-bold uppercase tracking-widest rounded-sm transition-colors",
                                     variant === 'dark'
                                         ? "bg-zinc-900 border-zinc-800 text-white"
                                         : "bg-white border-zinc-200 text-zinc-900"

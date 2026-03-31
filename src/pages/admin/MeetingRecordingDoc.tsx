@@ -124,19 +124,19 @@ const MeetingRecordingDoc = () => {
 
                     {/* Metadata Properties Row (Notion Property Style) */}
                     <div className="w-full max-w-lg mb-8 space-y-2">
-                        <div className="flex items-center gap-4 text-[13px] border-b border-zinc-50 pb-2">
+                        <div className="flex items-center gap-4 text-mini border-b border-zinc-50 pb-2">
                             <span className="text-zinc-400 w-32 flex items-center gap-2"><Calendar className="w-4 h-4"/> Data</span>
                             <span className="font-medium text-zinc-800">
                                 {new Date(recording.happened_at).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}
                             </span>
                         </div>
-                        <div className="flex items-center gap-4 text-[13px] border-b border-zinc-50 pb-2">
+                        <div className="flex items-center gap-4 text-mini border-b border-zinc-50 pb-2">
                             <span className="text-zinc-400 w-32 flex items-center gap-2"><Clock className="w-4 h-4"/> Horário</span>
                             <span className="font-medium text-zinc-800">
                                 {new Date(recording.happened_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
-                        <div className="flex items-center gap-4 text-[13px] border-b border-zinc-50 pb-2">
+                        <div className="flex items-center gap-4 text-mini border-b border-zinc-50 pb-2">
                             <span className="text-zinc-400 w-32 flex items-center gap-2"><Video className="w-4 h-4"/> Tópico Capturado</span>
                             <span className="font-medium text-zinc-800">{recording.title || "Gravação Automática RevNotes"}</span>
                         </div>
@@ -144,7 +144,7 @@ const MeetingRecordingDoc = () => {
 
                     {/* Subheadline Context (Quote / Summary block) */}
                     {recording.ai_summary && (
-                        <div className="mb-10 p-5 rounded-lg border-l-4 border-zinc-900 bg-zinc-50/50">
+                        <div className="mb-10 p-5 border-l-4 border-zinc-900 bg-zinc-50/50">
                             <p className="text-lg leading-relaxed text-zinc-600 font-serif">
                                 <strong className="text-sm uppercase tracking-widest font-sans font-black text-zinc-900 block mb-2 opacity-60">Contexto Geral</strong>
                                 "{recording.ai_summary}"
@@ -154,7 +154,7 @@ const MeetingRecordingDoc = () => {
 
                     {/* Video Player (Full Width, Edge-to-Edge of container) */}
                     <div className="mb-12">
-                        <div className="w-full bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-sm aspect-video relative group ring-1 ring-zinc-200/50">
+                        <div className="w-full bg-[#1A1A1A] overflow-hidden shadow-sm aspect-video relative group ring-1 ring-zinc-200/50">
                             {recording.video_url ? (
                                 <video 
                                     src={recording.video_url} 
@@ -191,14 +191,14 @@ const MeetingRecordingDoc = () => {
                                 
                                 {/* Buy Signals */}
                                 {insights?.proposta?.sinais_compra && insights.proposta.sinais_compra.length > 0 && (
-                                    <div className="bg-[#f0fdf4] border border-[#bbf7d0] p-6 rounded-2xl">
+                                    <div className="bg-[#f0fdf4] border border-[#bbf7d0] p-6 ">
                                         <div className="flex items-center gap-2 mb-4">
                                             <Target className="w-5 h-5 text-emerald-600" />
-                                            <h4 className="text-[11px] font-black uppercase tracking-widest text-emerald-800 m-0">Sinais de Compra</h4>
+                                            <h4 className="text-tiny font-black uppercase tracking-widest text-emerald-800 m-0">Sinais de Compra</h4>
                                         </div>
                                         <ul className="space-y-3 m-0 p-0 list-none">
                                             {insights.proposta.sinais_compra.map((s: string, i: number) => (
-                                                <li key={i} className="text-[15px] font-medium text-emerald-950 flex items-start gap-3 leading-snug">
+                                                <li key={i} className="text-body font-medium text-emerald-950 flex items-start gap-3 leading-snug">
                                                     <span className="text-emerald-500 mt-1 shrink-0">•</span> {s}
                                                 </li>
                                             ))}
@@ -208,14 +208,14 @@ const MeetingRecordingDoc = () => {
 
                                 {/* Objections */}
                                 {insights?.proposta?.objecoes_detectadas && insights.proposta.objecoes_detectadas.length > 0 && (
-                                    <div className="bg-[#fef2f2] border border-[#fecaca] p-6 rounded-2xl">
+                                    <div className="bg-[#fef2f2] border border-[#fecaca] p-6 ">
                                         <div className="flex items-center gap-2 mb-4">
                                             <BrainCircuit className="w-5 h-5 text-red-600" />
-                                            <h4 className="text-[11px] font-black uppercase tracking-widest text-red-800 m-0">Preocupações/Objeções</h4>
+                                            <h4 className="text-tiny font-black uppercase tracking-widest text-red-800 m-0">Preocupações/Objeções</h4>
                                         </div>
                                         <ul className="space-y-3 m-0 p-0 list-none">
                                             {insights.proposta.objecoes_detectadas.map((o: string, i: number) => (
-                                                <li key={i} className="text-[15px] font-medium text-red-950 flex items-start gap-3 leading-snug">
+                                                <li key={i} className="text-body font-medium text-red-950 flex items-start gap-3 leading-snug">
                                                     <span className="text-red-500 mt-1 shrink-0">•</span> {o}
                                                 </li>
                                             ))}
@@ -225,16 +225,16 @@ const MeetingRecordingDoc = () => {
 
                                 {/* Next Actions */}
                                 {insights?.acoes_proximas && insights.acoes_proximas.length > 0 && (
-                                    <div className="bg-zinc-50 border border-zinc-200 p-6 rounded-2xl md:col-span-2">
+                                    <div className="bg-zinc-50 border border-zinc-200 p-6 md:col-span-2">
                                         <div className="flex items-center gap-2 mb-4">
                                             <Users className="w-5 h-5 text-zinc-600" />
-                                            <h4 className="text-[11px] font-black uppercase tracking-widest text-zinc-800 m-0">Combinados / Próximos Passos</h4>
+                                            <h4 className="text-tiny font-black uppercase tracking-widest text-zinc-800 m-0">Combinados / Próximos Passos</h4>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {insights.acoes_proximas.map((a: string, i: number) => (
-                                                <div key={i} className="flex items-center gap-3 bg-white border border-zinc-200 p-3 rounded-lg shadow-sm">
+                                                <div key={i} className="flex items-center gap-3 bg-white border border-zinc-200 p-3 shadow-sm">
                                                     <div className="w-6 h-6 rounded border border-zinc-200 bg-zinc-50 flex items-center justify-center shrink-0" />
-                                                    <span className="text-[14px] text-zinc-800 font-semibold leading-tight">{a}</span>
+                                                    <span className="text-sm text-zinc-800 font-semibold leading-tight">{a}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -255,7 +255,7 @@ const MeetingRecordingDoc = () => {
                             {recording.transcript ? (
                                 // Notion text style parsing
                                 recording.transcript.split(/(?<=[.!?])\s+(?=[A-Z])/).map((paragraph, idx) => (
-                                    <p key={idx} className="mb-6 hover:bg-zinc-50 transition-colors rounded-lg px-2 -mx-2">
+                                    <p key={idx} className="mb-6 hover:bg-zinc-50 transition-colors px-2 -mx-2">
                                         {paragraph}
                                     </p>
                                 ))

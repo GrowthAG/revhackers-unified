@@ -29,7 +29,7 @@ const DiagnosticBookingEmbed: React.FC<DiagnosticBookingEmbedProps> = ({ diagnos
   }, []);
 
   return (
-    <div className="w-full flex-col items-center justify-center p-4 bg-zinc-950/30 border border-zinc-800 rounded-2xl shadow-sm mt-12 overflow-hidden">
+    <div className="w-full flex-col items-center justify-center p-4 bg-zinc-950/30 border border-zinc-800 shadow-sm mt-12 overflow-hidden">
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold text-white mb-2">Agende Lendo Seu Relatório</h3>
         <p className="text-zinc-400">

@@ -20,7 +20,7 @@ const Metodologia = () => {
                 <div className="container-custom text-center">
                     <div className="max-w-4xl mx-auto">
                         {/* Tag */}
-                        <span className="font-bold text-zinc-400 text-[10px] uppercase tracking-[0.2em] mb-6 block">
+                        <span className="font-bold text-zinc-400 text-xxs uppercase tracking-[0.2em] mb-6 block">
                             RevHackers Framework
                         </span>
 
@@ -165,7 +165,7 @@ const Metodologia = () => {
                         <Link to="/booking">Agendar Diagnóstico</Link>
                     </Button>
 
-                    <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                    <div className="mt-8 flex items-center justify-center gap-2 text-xxs font-bold uppercase tracking-widest text-zinc-400">
                         <CheckCircle2 className="w-4 h-4 text-black" />
                         <span>Diagnóstico confidencial e sem compromisso.</span>
                     </div>

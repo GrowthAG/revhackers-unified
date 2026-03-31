@@ -98,7 +98,7 @@ export default function PlanSignPage() {
                         className="h-6 w-auto mx-auto mb-6"
                     />
                     {company && (
-                        <p className="text-[10px] text-zinc-400 uppercase tracking-[0.2em] font-bold">
+                        <p className="text-xxs text-zinc-400 uppercase tracking-[0.2em] font-bold">
                             Planejamento Estratégico - {company}
                         </p>
                     )}
@@ -106,7 +106,7 @@ export default function PlanSignPage() {
 
                 {done ? (
                     /* ── SUCESSO ─── */
-                    <div className="bg-white border border-zinc-100 rounded-2xl p-8 text-center shadow-sm">
+                    <div className="bg-white border border-zinc-100 p-8 text-center shadow-sm">
                         <div className="w-14 h-14 bg-[#00CC6A]/10 rounded-full flex items-center justify-center mx-auto mb-5">
                             <Check className="w-7 h-7 text-[#00CC6A]" />
                         </div>

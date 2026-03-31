@@ -31,7 +31,7 @@ const TestimonialsSection = () => {
       <div className="container-custom">
         {/* Header - Subtle & Clean */}
         <div className="text-center mb-20 max-w-2xl mx-auto">
-          <h2 className="text-[13px] font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+          <h2 className="text-mini font-semibold text-zinc-400 uppercase tracking-widest mb-4">
             Resultados Comprovados
           </h2>
           <p className="text-3xl md:text-4xl font-semibold text-zinc-900 tracking-tight leading-tight">
@@ -52,13 +52,13 @@ const TestimonialsSection = () => {
                 <CarouselItem key={index} className="pl-6 md:basis-1/2 lg:basis-1/3">
                   <div
                     onClick={() => navigate(`/cases/${testimonial.id}`)}
-                    className="bg-white p-8 rounded-2xl h-full flex flex-col justify-between border border-zinc-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer hover:-translate-y-1 block select-none"
+                    className="bg-white p-8 h-full flex flex-col justify-between border border-zinc-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer hover:-translate-y-1 block select-none"
                   >
 
                     <div className="mb-8 pointer-events-none">
                       {/* Subtle Quote Mark */}
                       <span className="text-4xl text-zinc-200 font-serif leading-none group-hover:text-zinc-300 transition-colors">“</span>
-                      <blockquote className="text-[15px] leading-relaxed text-zinc-700 font-medium mt-[-10px]">
+                      <blockquote className="text-body leading-relaxed text-zinc-700 font-medium mt-[-10px]">
                         {testimonial.quote.replace(/RevHackers/gi, 'REVHACKERS')}
                       </blockquote>
                     </div>
@@ -66,15 +66,15 @@ const TestimonialsSection = () => {
                     <div className="flex items-center gap-3 pt-6 border-t border-zinc-50 pointer-events-none">
                       <Avatar className="h-10 w-10 border border-zinc-100 bg-zinc-50">
                         <AvatarImage src={testimonial.avatar} alt={testimonial.author} className="object-cover" />
-                        <AvatarFallback className="text-[10px] text-zinc-400 font-bold bg-zinc-50">
+                        <AvatarFallback className="text-xxs text-zinc-400 font-bold bg-zinc-50">
                           {testimonial.author?.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="text-[13px] font-bold text-zinc-900 leading-tight">
+                        <div className="text-mini font-bold text-zinc-900 leading-tight">
                           {testimonial.author}
                         </div>
-                        <div className="text-[11px] text-zinc-400 leading-tight mt-0.5">
+                        <div className="text-tiny text-zinc-400 leading-tight mt-0.5">
                           {testimonial.role}
                         </div>
                       </div>

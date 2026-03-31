@@ -40,7 +40,7 @@ export default function StepDevTechnical({ form }: StepDevTechnicalProps) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Briefing Técnico
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 02: Escopo & Tech
                 </p>
             </div>
@@ -72,7 +72,7 @@ export default function StepDevTechnical({ form }: StepDevTechnicalProps) {
                     <input
                         {...form.register('current_platform')}
                         placeholder="Ex: WordPress, Wix, Hostgator, ou 'Não tenho'..."
-                        className="w-full h-10 px-3 py-2 text-sm bg-white border border-zinc-200 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+                        className="w-full h-10 px-3 py-2 text-sm bg-white border border-zinc-200 focus:outline-none focus:ring-1 focus:ring-black"
                     />
                 </div>
 

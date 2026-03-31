@@ -29,7 +29,7 @@ const Footer = () => {
               />
             </Link>
 
-            <p className="text-[13px] font-medium text-zinc-400 leading-relaxed max-w-xs">
+            <p className="text-mini font-medium text-zinc-400 leading-relaxed max-w-xs">
               Ajudamos empresas a escalarem através de automação, estratégia, crescimento e inovação.
             </p>
 
@@ -51,8 +51,8 @@ const Footer = () => {
 
           {/* Navigation Links */}
           <div className="lg:col-span-2 space-y-8">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Navegação</h3>
-            <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
+            <h3 className="text-tiny font-black uppercase tracking-[0.2em] text-white">Navegação</h3>
+            <ul className="space-y-4 text-mini font-medium text-zinc-500">
               <li><Link to={APP_ROUTES.PUBLIC.HOME} className="hover:text-white transition-colors">Home</Link></li>
               <li><Link to={APP_ROUTES.PUBLIC.QUEM_SOMOS} className="hover:text-white transition-colors">Sobre Nós</Link></li>
               <li><Link to={APP_ROUTES.PUBLIC.CASES} className="hover:text-white transition-colors">Cases</Link></li>
@@ -61,8 +61,8 @@ const Footer = () => {
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Conteúdo</h3>
-            <ul className="space-y-4 text-[13px] font-medium text-zinc-500">
+            <h3 className="text-tiny font-black uppercase tracking-[0.2em] text-white">Conteúdo</h3>
+            <ul className="space-y-4 text-mini font-medium text-zinc-500">
               <li><Link to={APP_ROUTES.PUBLIC.BLOG} className="hover:text-white transition-colors">Blog</Link></li>
               <li><Link to={APP_ROUTES.PUBLIC.SERVICOS} className="hover:text-white transition-colors">Serviços</Link></li>
               <li><Link to={APP_ROUTES.PUBLIC.MATERIAIS} className="hover:text-white transition-colors">Materiais</Link></li>
@@ -72,17 +72,17 @@ const Footer = () => {
 
           {/* Newsletter Section */}
           <div className="lg:col-span-4 space-y-8">
-            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Newsletter</h3>
+            <h3 className="text-tiny font-black uppercase tracking-[0.2em] text-white">Newsletter</h3>
             <NewsletterForm variant="footer" />
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-24 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-[0.3em]">
+          <p className="text-zinc-600 text-xxs uppercase font-bold tracking-[0.3em]">
             © {currentYear} RevHackers. Engineering Revenue for Scale.
           </p>
-          <div className="flex gap-8 text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-600">
+          <div className="flex gap-8 text-xxs uppercase font-bold tracking-[0.3em] text-zinc-600">
             <Link to={APP_ROUTES.LEGAL_AND_FEEDBACK.PRIVACIDADE} className="hover:text-white transition-colors">Privacidade</Link>
             <Link to={APP_ROUTES.LEGAL_AND_FEEDBACK.TERMOS_DE_USO} className="hover:text-white transition-colors">Termos</Link>
             <a href="https://usefunnels.io" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Powered by Funnels</a>

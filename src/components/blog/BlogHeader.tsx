@@ -47,7 +47,7 @@ const BlogHeader = ({
           {categories.map(category => (
             <button
               key={category}
-              className={`text-[10px] uppercase tracking-[0.2em] font-bold font-sans transition-all duration-300 relative py-2 ${activeCategory === category
+              className={`text-xxs uppercase tracking-[0.2em] font-bold font-sans transition-all duration-300 relative py-2 ${activeCategory === category
                 ? "text-revgreen"
                 : "text-zinc-500 hover:text-white"
                 }`}

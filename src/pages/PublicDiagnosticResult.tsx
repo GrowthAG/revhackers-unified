@@ -17,6 +17,31 @@ export default function PublicDiagnosticResult() {
             if (!id) return;
 
             try {
+                // Try new architecture first: diagnosticos table
+                const { data: diagData, error: diagError } = await supabase
+                    .from('diagnosticos')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!diagError && diagData) {
+                    const respostas = (diagData as any).respostas || {};
+                    const details = respostas.result_details || {};
+
+                    setResult({
+                        id: (diagData as any).id,
+                        created_at: (diagData as any).created_at,
+                        empresa: respostas.lead_company || respostas.lead_name || 'Empresa',
+                        tipo_diagnostico: respostas.diagnostic_type || (diagData as any).tipo || 'Diagnostico',
+                        score: (diagData as any).score,
+                        nivel_maturidade: respostas.maturity_level || details.title || details.level || 'N/A',
+                        detalhes_resultado: details,
+                        respostas,
+                    });
+                    return;
+                }
+
+                // Fallback: legacy flow (rei_responses) for old diagnostics
                 const { data, error } = await supabase
                     .from('rei_responses')
                     .select('*, project:rei_projects(*)')
@@ -25,19 +50,19 @@ export default function PublicDiagnosticResult() {
 
                 if (error) throw error;
 
-                const project = data.project as any;
-                const responses = data.responses as any;
+                const project = (data as any).project as any;
+                const responses = (data as any).responses as any;
                 const details = responses?.result_details || {};
 
                 setResult({
-                    id: data.id,
-                    created_at: data.created_at,
+                    id: (data as any).id,
+                    created_at: (data as any).created_at,
                     empresa: project?.client_name || 'Empresa',
-                    tipo_diagnostico: responses?.diagnostic_type || data.source || 'Diagnóstico',
-                    score: data.total_score,
-                    nivel_maturidade: data.maturity_level,
+                    tipo_diagnostico: responses?.diagnostic_type || (data as any).source || 'Diagnostico',
+                    score: (data as any).total_score,
+                    nivel_maturidade: (data as any).maturity_level,
                     detalhes_resultado: details,
-                    respostas: responses
+                    respostas: responses,
                 });
             } catch (error) {
                 console.error('Erro ao carregar resultado:', error);
@@ -109,7 +134,7 @@ export default function PublicDiagnosticResult() {
                         <Link to="/" className="inline-flex items-center text-xs font-bold text-zinc-400 hover:text-black transition-colors uppercase tracking-widest">
                             <ArrowLeft className="w-3 h-3 mr-2" /> Voltar
                         </Link>
-                        <div className="text-[10px] font-mono font-bold text-zinc-300 uppercase tracking-[0.3em]">
+                        <div className="text-xxs font-mono font-bold text-zinc-300 uppercase tracking-[0.3em]">
                             Resultado da Análise
                         </div>
                         <div className="flex gap-4">
@@ -121,7 +146,7 @@ export default function PublicDiagnosticResult() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* SCORE CARD (Left) */}
-                        <Card className="lg:col-span-5 bg-zinc-950 text-white border border-zinc-900 rounded-2xl p-10 flex flex-col items-center justify-center relative shadow-sm overflow-hidden min-h-[400px]">
+                        <Card className="lg:col-span-5 bg-zinc-950 text-white border border-zinc-900 p-10 flex flex-col items-center justify-center relative shadow-sm overflow-hidden min-h-[400px]">
                             {/* Top accent line */}
                             <div className="absolute top-0 left-0 w-full h-[2px] bg-[#00CC6A]" />
 
@@ -138,7 +163,7 @@ export default function PublicDiagnosticResult() {
                                     </div>
                                 </div>
 
-                                <div className="inline-block px-4 py-1.5 bg-zinc-900 rounded text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 border border-zinc-800">
+                                <div className="inline-block px-4 py-1.5 bg-zinc-900 rounded text-xxs font-bold uppercase tracking-[0.2em] text-zinc-400 border border-zinc-800">
                                     Nível de Maturidade
                                 </div>
                                 <h3 className="text-2xl font-black text-revgreen uppercase tracking-tight mt-4 max-w-xs mx-auto">
@@ -148,15 +173,15 @@ export default function PublicDiagnosticResult() {
                         </Card>
 
                         {/* CONTEXT CARD (Right) */}
-                        <Card className="lg:col-span-7 bg-zinc-950 text-white border border-zinc-900 rounded-2xl p-10 flex flex-col justify-between shadow-sm relative overflow-hidden min-h-[400px]">
+                        <Card className="lg:col-span-7 bg-zinc-950 text-white border border-zinc-900 p-10 flex flex-col justify-between shadow-sm relative overflow-hidden min-h-[400px]">
 
                             <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <span className="text-[10px] font-bold text-revgreen uppercase tracking-[0.25em]">
+                                    <span className="text-xxs font-bold text-revgreen uppercase tracking-[0.25em]">
                                         Relatório Executivo
                                     </span>
                                     <div className="h-px bg-zinc-800 flex-1" />
-                                    <span className="text-[10px] font-mono text-zinc-600">
+                                    <span className="text-xxs font-mono text-zinc-600">
                                         {new Date(result.created_at).toLocaleDateString('pt-BR')}
                                     </span>
                                 </div>
@@ -169,7 +194,7 @@ export default function PublicDiagnosticResult() {
                                     {description}
                                 </p>
 
-                                <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+                                <div className="bg-zinc-900/50 p-6 border border-zinc-800">
                                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                                         <CheckCircle2 className="w-3 h-3 text-revgreen" /> Ação Recomendada
                                     </h4>
@@ -181,12 +206,12 @@ export default function PublicDiagnosticResult() {
 
                             <div className="mt-8 relative z-10">
                                 <Button
-                                    className="w-full h-16 bg-zinc-900 hover:bg-zinc-800 text-white text-sm md:text-base font-black uppercase tracking-widest rounded-xl border border-zinc-800 transition-all"
+                                    className="w-full h-16 bg-zinc-900 hover:bg-zinc-800 text-white text-sm md:text-base font-black uppercase tracking-widest border border-zinc-800 transition-all"
                                     onClick={() => window.open(`https://api.whatsapp.com/send?phone=5511999999999&text=Olá, fiz o diagnóstico da ${result.empresa} e meu score foi ${score}. Gostaria de entender o plano de ação: ${ctaText}`, '_blank')}
                                 >
                                     {ctaText} {ctaIcon}
                                 </Button>
-                                <p className="text-center text-[10px] text-zinc-500 uppercase tracking-widest mt-4">
+                                <p className="text-center text-xxs text-zinc-500 uppercase tracking-widest mt-4">
                                     Falar diretamente com Consultor Sênior
                                 </p>
                             </div>
@@ -195,22 +220,22 @@ export default function PublicDiagnosticResult() {
 
                     {/* Footer Metrics (Mockup for Visual Balance) */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                        <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Processo</span>
+                        <Card className="bg-black border border-zinc-800 p-4 flex items-center justify-between">
+                            <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">Processo</span>
                             <span className="text-xs font-bold text-revgreen">ANÁLISE OK</span>
                         </Card>
-                        <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Dados</span>
+                        <Card className="bg-black border border-zinc-800 p-4 flex items-center justify-between">
+                            <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">Dados</span>
                             <span className={score > 50 ? "text-xs font-bold text-revgreen" : "text-xs font-bold text-zinc-400"}>
                                 {score > 50 ? 'CONFIÁVEL' : 'ATENÇÃO'}
                             </span>
                         </Card>
-                        <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Tech</span>
+                        <Card className="bg-black border border-zinc-800 p-4 flex items-center justify-between">
+                            <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">Tech</span>
                             <span className="text-xs font-bold text-zinc-300">-----</span>
                         </Card>
-                        <Card className="bg-black border border-zinc-800 p-4 rounded-lg flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Pessoas</span>
+                        <Card className="bg-black border border-zinc-800 p-4 flex items-center justify-between">
+                            <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">Pessoas</span>
                             <span className="text-xs font-bold text-revgreen">ATIVO</span>
                         </Card>
                     </div>

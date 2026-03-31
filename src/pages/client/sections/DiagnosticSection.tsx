@@ -40,7 +40,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             <div className="flex-1 px-6 md:px-10 lg:px-14 pb-14 pt-2 w-full flex flex-col justify-start gap-8">
                 {/* Context Mirror Modules */}
                 {context && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-zinc-200 overflow-hidden bg-white rounded-2xl shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border border-zinc-200 overflow-hidden bg-white shadow-sm">
                     {[
                         { label: 'Segmento', value: context.segment },
                         { label: 'Objetivo Principal', value: context.objective },
@@ -59,10 +59,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 
                 {/* Sinais Estratégicos - Master Card */}
-                <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+                <div className="bg-white border border-zinc-200 overflow-hidden shadow-sm flex flex-col">
                     <div className="flex items-center gap-3 px-6 py-5 border-b border-zinc-100 bg-zinc-50/50">
                         <TrendingUp size={20} className="text-[#00CC6A]" />
-                        <h4 className="text-[13px] font-black text-zinc-900 uppercase tracking-[0.2em]">Sinais Estratégicos</h4>
+                        <h4 className="text-mini font-black text-zinc-900 uppercase tracking-[0.2em]">Sinais Estratégicos</h4>
                     </div>
                     
                     <div className="flex flex-col divide-y divide-zinc-100 flex-1">
@@ -81,7 +81,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                                 "{signal.text}"
                                             </p>
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 w-fit shrink-0">Impacto Real</span>
+                                                <span className="text-xxs font-black uppercase tracking-widest text-zinc-400 w-fit shrink-0">Impacto Real</span>
                                                 <p className="text-sm font-medium text-zinc-500 leading-snug">{signal.impact}</p>
                                             </div>
                                         </div>
@@ -93,10 +93,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 </div>
 
                 {/* Causas Raiz & Riscos - Master Card */}
-                <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+                <div className="bg-white border border-zinc-200 overflow-hidden shadow-sm flex flex-col">
                     <div className="flex items-center gap-3 px-6 py-5 border-b border-zinc-100 bg-zinc-50/50">
                         <AlertTriangle size={20} className="text-zinc-500" />
-                        <h4 className="text-[13px] font-black text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
+                        <h4 className="text-mini font-black text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
                     </div>
 
                     <div className="flex flex-col divide-y divide-zinc-100 flex-1">
@@ -114,11 +114,11 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                         </div>
                                     </div>
                                     
-                                    <div className="flex flex-col gap-2 mt-4 bg-zinc-50 p-5 rounded-xl border border-zinc-100 ml-0 sm:ml-10">
-                                        <span className={`text-[10px] w-fit font-black uppercase tracking-widest block mb-1 ${isHigh ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>
+                                    <div className="flex flex-col gap-2 mt-4 bg-zinc-50 p-5 border border-zinc-100 ml-0 sm:ml-10">
+                                        <span className={`text-xxs w-fit font-black uppercase tracking-widest block mb-1 ${isHigh ? 'text-[#00CC6A]' : 'text-zinc-500'}`}>
                                             Estratégia de Mitigação
                                         </span>
-                                        <p className="text-[15px] font-semibold text-zinc-600 leading-relaxed">
+                                        <p className="text-body font-semibold text-zinc-600 leading-relaxed">
                                             {risk.mitigation}
                                         </p>
                                     </div>
@@ -136,19 +136,19 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                         <span className="w-10 h-[2px] bg-black" />
                         DECISÕES MANDATÓRIAS
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border border-zinc-200 bg-white overflow-hidden rounded-2xl shadow-sm">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border border-zinc-200 bg-white overflow-hidden shadow-sm">
                         {decisions.map((decision: any, i: number) => (
                             <div key={i} className={`p-8 flex flex-col justify-start hover:bg-zinc-50/50 transition-colors ${i !== decisions.length - 1 ? 'border-b lg:border-b-0 lg:border-r border-zinc-200' : ''}`}>
                                 <div>
-                                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest block mb-4">
+                                    <span className="text-xxs font-black text-zinc-400 uppercase tracking-widest block mb-4">
                                         {decision.basedOn?.join(' + ')}
                                     </span>
                                     <h4 className="text-lg font-bold text-zinc-900 mb-2.5 leading-tight">{decision.title}</h4>
-                                    <p className="text-[15px] font-medium text-zinc-500 leading-relaxed mb-6">{decision.recommendation}</p>
+                                    <p className="text-body font-medium text-zinc-500 leading-relaxed mb-6">{decision.recommendation}</p>
                                 </div>
                                 {decision.ruleApplied && (
                                     <div className="pt-4 border-t border-zinc-100 mt-auto">
-                                        <span className="text-[10px] font-bold text-[#00CC6A] uppercase tracking-widest block w-fit">
+                                        <span className="text-xxs font-bold text-[#00CC6A] uppercase tracking-widest block w-fit">
                                             {decision.ruleApplied}
                                         </span>
                                     </div>
@@ -161,10 +161,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
             {/* Technical Hub */}
             {scores && scores.performance > 0 && (
-                <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-8">
+                <div className="bg-zinc-50 border border-zinc-100 p-8">
                     <div className="space-y-6">
                         <div>
-                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] block mb-1">Auditoria Técnica</span>
+                            <span className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em] block mb-1">Auditoria Técnica</span>
                             <h3 className="text-xl font-bold text-zinc-900">Infraestrutura & SEO</h3>
                         </div>
 
@@ -177,10 +177,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                     bestPractices: 'Boas Práticas',
                                 };
                                 return (
-                                    <div key={key} className="bg-white border border-zinc-100 rounded-xl p-4">
-                                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">{labelMap[key] || key}</span>
+                                    <div key={key} className="bg-white border border-zinc-100 p-4">
+                                        <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-2">{labelMap[key] || key}</span>
                                         <span className={`text-3xl font-black ${value >= 90 ? 'text-[#00CC6A]' : 'text-zinc-900'}`}>{value}</span>
-                                        <div className="h-1 bg-zinc-100 rounded-full mt-2 overflow-hidden">
+                                        <div className="h-1 bg-zinc-100 mt-2 overflow-hidden">
                                             <div className="h-full bg-zinc-900" style={{ width: `${value}%` }} />
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                         {stack.length > 0 && (
                             <div className="flex flex-wrap gap-2 pt-2">
                                 {stack.map((tech: string, i: number) => (
-                                    <span key={i} className="px-3 py-1.5 bg-white border border-zinc-100 text-[10px] font-bold text-zinc-600 rounded-lg uppercase tracking-widest">
+                                    <span key={i} className="px-3 py-1.5 bg-white border border-zinc-100 text-xxs font-bold text-zinc-600 uppercase tracking-widest">
                                         {tech}
                                     </span>
                                 ))}

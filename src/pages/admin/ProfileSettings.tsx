@@ -200,7 +200,7 @@ const ProfileSettings = () => {
                                     )}
                                     <label
                                         htmlFor="avatar-upload"
-                                        className="absolute inset-0 bg-black/90 flex items-center justify-center text-white text-[10px] font-black uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                        className="absolute inset-0 bg-black/90 flex items-center justify-center text-white text-xxs font-black uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                     >
                                         Alterar Foto
                                     </label>
@@ -220,7 +220,7 @@ const ProfileSettings = () => {
 
                                 <div className="space-y-2">
                                     <h3 className="text-sm font-black uppercase tracking-[0.2em] text-black">Fotografia</h3>
-                                    <p className="text-[10px] text-zinc-400 uppercase tracking-widest leading-relaxed">
+                                    <p className="text-xxs text-zinc-400 uppercase tracking-widest leading-relaxed">
                                         Usada em artigos e identificação interna. Use uma foto profissional.
                                     </p>
                                 </div>
@@ -229,7 +229,7 @@ const ProfileSettings = () => {
                                     <Button
                                         type="submit"
                                         disabled={saving || uploading}
-                                        className="w-full bg-black text-white hover:bg-zinc-900 font-black uppercase tracking-[0.2em] h-12 text-[10px] rounded-none shadow-none border border-black transition-all"
+                                        className="w-full bg-black text-white hover:bg-zinc-900 font-black uppercase tracking-[0.2em] h-12 text-xxs rounded-none shadow-none border border-black transition-all"
                                     >
                                         {saving ? <Loader2 className="animate-spin h-4 w-4" /> : "Salvar Dados"}
                                     </Button>
@@ -243,7 +243,7 @@ const ProfileSettings = () => {
                                     {/* ROW 1 */}
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <Label htmlFor="full_name" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Nome Completo</Label>
+                                            <Label htmlFor="full_name" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">Nome Completo</Label>
                                             <Input
                                                 id="full_name"
                                                 name="full_name"
@@ -254,7 +254,7 @@ const ProfileSettings = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="username" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Username</Label>
+                                            <Label htmlFor="username" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">Username</Label>
                                             <Input
                                                 id="username"
                                                 name="username"
@@ -269,7 +269,7 @@ const ProfileSettings = () => {
                                     {/* ROW 2 */}
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <Label htmlFor="job_title" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Cargo / Função</Label>
+                                            <Label htmlFor="job_title" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">Cargo / Função</Label>
                                             <Input
                                                 id="job_title"
                                                 name="job_title"
@@ -280,7 +280,7 @@ const ProfileSettings = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="cpf" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">CPF / Registro</Label>
+                                            <Label htmlFor="cpf" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">CPF / Registro</Label>
                                             <Input
                                                 id="cpf"
                                                 name="cpf"
@@ -294,7 +294,7 @@ const ProfileSettings = () => {
 
                                     {/* ROW 3 */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="personal_email" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">E-mail de Contato</Label>
+                                        <Label htmlFor="personal_email" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">E-mail de Contato</Label>
                                         <Input
                                             id="personal_email"
                                             name="personal_email"
@@ -307,7 +307,7 @@ const ProfileSettings = () => {
 
                                     {/* ROW 4 */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Endereço</Label>
+                                        <Label htmlFor="address" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">Endereço</Label>
                                         <Textarea
                                             id="address"
                                             name="address"
@@ -320,7 +320,7 @@ const ProfileSettings = () => {
 
                                     {/* ROW 5 */}
                                     <div className="space-y-2">
-                                        <Label htmlFor="bio" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Bio</Label>
+                                        <Label htmlFor="bio" className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400">Bio</Label>
                                         <Textarea
                                             id="bio"
                                             name="bio"

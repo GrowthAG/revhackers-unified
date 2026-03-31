@@ -158,7 +158,7 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                         {isEditing ? 'Salvar' : 'Criar'}
                     </Button>
                     {isEditing && (
-                        <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
+                        <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 hover:border-zinc-300">
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     )}
@@ -189,12 +189,12 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
 
                 {/* Sidebar - Link is the most important field */}
                 <div className="space-y-6">
-                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100 space-y-4">
+                    <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-bold text-zinc-700">🔗 Link do Material (URL)</Label>
                             <Input {...register('material_url', { required: true })} placeholder="https://clickup.com/..." className="bg-white font-mono text-xs" />
-                            <p className="text-[10px] text-zinc-500">Este é o link que o lead receberá após preencher o formulário.</p>
-                            {errors.material_url && <span className="text-red-500 text-[10px]">O link é obrigatório!</span>}
+                            <p className="text-xxs text-zinc-500">Este é o link que o lead receberá após preencher o formulário.</p>
+                            {errors.material_url && <span className="text-zinc-900 font-bold text-xxs">O link é obrigatório!</span>}
                         </div>
 
                         <div className="h-px bg-zinc-200" />

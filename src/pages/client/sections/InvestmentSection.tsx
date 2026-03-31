@@ -135,27 +135,27 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                     {/* Investment Items */}
                     <div className="grid md:grid-cols-2 gap-4">
                         {serviceConfig.items.map((item, i) => (
-                            <div key={i} className="border border-zinc-200 p-7 rounded-2xl">
-                                <p className="text-[10px] text-zinc-400 uppercase tracking-[0.25em] font-black mb-3">{item.name}</p>
+                            <div key={i} className="border border-zinc-200 p-7 ">
+                                <p className="text-xxs text-zinc-400 uppercase tracking-[0.25em] font-black mb-3">{item.name}</p>
                                 <p className="text-3xl font-black text-black tracking-tight mb-1">
                                     {P(item.range[0])}
                                     {item.range[1] > item.range[0] && <span className="text-zinc-400"> – {P(item.range[1])}</span>}
                                     <span className="text-sm text-zinc-400 font-normal ml-1">{item.per}</span>
                                 </p>
-                                <p className="text-[13px] text-zinc-500 leading-relaxed mt-2">{item.desc}</p>
+                                <p className="text-mini text-zinc-500 leading-relaxed mt-2">{item.desc}</p>
                             </div>
                         ))}
                     </div>
 
                     {/* ROI Grid */}
-                    <div className="bg-white border border-zinc-200 rounded-xl p-8">
+                    <div className="bg-white border border-zinc-200 p-8">
                         <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-6">Resultados Esperados</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                             {serviceConfig.roi.map((r, i) => (
                                 <div key={i} className={i === serviceConfig.roi.length - 1 ? 'md:border-l md:border-zinc-100 md:pl-6' : ''}>
                                     <p className="text-2xl font-bold text-black tracking-tight mb-1" style={i === 0 ? { color: '#00CC6A' } : {}}>{r.value}</p>
                                     <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-1">{r.label}</p>
-                                    <p className="text-[12px] text-zinc-400 leading-snug">{r.note}</p>
+                                    <p className="text-xs text-zinc-400 leading-snug">{r.note}</p>
                                 </div>
                             ))}
                         </div>
@@ -163,7 +163,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
 
                     {/* Next Steps + Total */}
                     <div className="grid md:grid-cols-2 gap-4">
-                        <div className="border border-zinc-200 p-7 rounded-xl">
+                        <div className="border border-zinc-200 p-7 ">
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-6">Próximos Passos</p>
                             <div className="space-y-5">
                                 {serviceConfig.nextSteps.map((step, i) => (
@@ -180,9 +180,9 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                                 ))}
                             </div>
                         </div>
-                        <div className="bg-zinc-950 p-7 rounded-2xl flex flex-col justify-between">
+                        <div className="bg-zinc-950 p-7 flex flex-col justify-between">
                             <div>
-                                <p className="text-[10px] text-zinc-500 uppercase tracking-[0.25em] font-black mb-6">Investimento Total Estimado</p>
+                                <p className="text-xxs text-zinc-500 uppercase tracking-[0.25em] font-black mb-6">Investimento Total Estimado</p>
                                 <p className="text-4xl font-black text-white tracking-tight">
                                     {P(totalMin)}
                                     {totalMax > totalMin && <span className="text-zinc-500"> – {P(totalMax)}</span>}
@@ -249,7 +249,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
             <div className="flex-1 p-6 md:p-10 lg:p-12 pt-0 max-w-[1600px] mx-auto w-full bg-white space-y-12">
 
                 {/* Grand Total + KPIs */}
-                <div className="bg-white border border-zinc-200 rounded-xl p-8 md:p-10 overflow-hidden">
+                <div className="bg-white border border-zinc-200 p-8 md:p-10 overflow-hidden">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
                             <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold mb-2">Investimento Mensal Estimado</p>
@@ -280,7 +280,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                         <BarChart3 className="w-5 h-5 text-black" />
                         <h3 className="text-xl font-bold text-black">Distribuição por Canal</h3>
                     </div>
-                    <div className="h-3 flex rounded-full overflow-hidden mb-8 bg-zinc-100">
+                    <div className="h-3 flex overflow-hidden mb-8 bg-zinc-100">
                         {channelsDisplay.map((ch, i) => {
                             const val = hasCustom ? ch.value : ch.midpoint;
                             const pct = mediaTotal > 0 ? (val / mediaTotal) * 100 : 33;
@@ -292,15 +292,15 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             const val = hasCustom ? ch.value : ch.midpoint;
                             const pct = mediaTotal > 0 ? Math.round((val / mediaTotal) * 100) : 33;
                             return (
-                                <div key={i} className="border border-zinc-200 rounded-xl overflow-hidden">
+                                <div key={i} className="border border-zinc-200 overflow-hidden">
                                     <div className="flex flex-col md:flex-row md:items-center gap-4 p-5">
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-1.5">
-                                                <div className={`w-2.5 h-2.5 rounded-full ${barColors[i]}`} />
+                                                <div className={`w-2.5 h-2.5 ${barColors[i]}`} />
                                                 <span className="text-lg font-semibold text-black">{ch.name}</span>
                                                 <span className="text-xs text-zinc-400 font-mono">{pct}%</span>
                                             </div>
-                                            <p className="text-[12px] text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
+                                            <p className="text-xs text-zinc-500 leading-relaxed ml-[22px]">{ch.desc}</p>
                                         </div>
                                         <div className="flex items-center gap-4 shrink-0">
                                             <div className="text-right hidden md:block">
@@ -329,7 +329,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
 
                 {/* Fee + Tools */}
                 <div className="grid md:grid-cols-2 gap-4">
-                    <div className="border border-zinc-200 p-6 rounded-xl">
+                    <div className="border border-zinc-200 p-6 ">
                         <div className="flex items-center gap-2 mb-3">
                             <Zap className="w-4 h-4 text-zinc-400" />
                             <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-bold">{config.fee.label}</p>
@@ -337,7 +337,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                         <p className="text-2xl font-bold text-black mb-1">{P(config.fee.range[0])} – {P(config.fee.range[1])}</p>
                         <p className="text-xs text-zinc-400">Setup, gestão de campanhas, otimização e relatórios</p>
                     </div>
-                    <div className="border border-zinc-200 p-6 rounded-xl">
+                    <div className="border border-zinc-200 p-6 ">
                         <div className="flex items-center gap-2 mb-3">
                             <Settings className="w-4 h-4 text-zinc-400" />
                             <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-bold">{config.tools.label}</p>
@@ -348,7 +348,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                 </div>
 
                 {/* ROI Projection */}
-                <div className="bg-white border border-zinc-200 rounded-xl p-8 pt-10 overflow-hidden">
+                <div className="bg-white border border-zinc-200 p-8 pt-10 overflow-hidden">
                     <div className="flex items-center gap-3 mb-8">
                         <h3 className="text-xl font-bold text-black">Projeção de Retorno</h3>
                     </div>
@@ -378,7 +378,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
 
                 {/* Próximos Passos + Retorno potential */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white border border-zinc-200 p-8 rounded-xl">
+                    <div className="bg-white border border-zinc-200 p-8 ">
                         <p className="text-xs text-black uppercase tracking-[0.2em] font-semibold mb-6">Próximos Passos</p>
                         <div className="space-y-5">
                             {[
@@ -399,7 +399,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                             ))}
                         </div>
                     </div>
-                    <div className="bg-zinc-50 border border-zinc-200 p-8 rounded-xl flex flex-col justify-between">
+                    <div className="bg-zinc-50 border border-zinc-200 p-8 flex flex-col justify-between">
                         <div>
                             <p className="text-xs text-zinc-400 uppercase tracking-[0.2em] font-semibold mb-6">Potencial de Retorno</p>
                             <div className="space-y-4">

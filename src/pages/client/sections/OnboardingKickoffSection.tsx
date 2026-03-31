@@ -60,7 +60,7 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                                     multiline
                                 />
                             </h3>
-                            <p className="text-[15px] text-zinc-500 font-medium leading-[1.6]">
+                            <p className="text-body text-zinc-500 font-medium leading-[1.6]">
                                 O Kickoff não é uma formalidade. É o momento de alinhar os 
                                 executivos, travar o escopo e garantir que todos têm a mesma
                                 visão de sucesso para a operação de RevOps.
@@ -68,10 +68,10 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                         </div>
                         
                         <div className="mt-12 inline-flex items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 rounded-md">
+                            <span className="text-xxs font-black uppercase tracking-[0.2em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5 ">
                                 Dia 01
                             </span>
-                            <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-widest px-2">
+                            <span className="text-xxs uppercase font-bold text-zinc-400 tracking-widest px-2">
                                 Início do Projeto
                             </span>
                         </div>
@@ -83,17 +83,17 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                             <div key={i} className="group relative border-b border-zinc-100 pb-8 last:border-0">
                                 <div className="flex gap-6 md:gap-8">
                                     <div className="pt-1">
-                                        <span className="text-[10px] text-zinc-300 font-mono font-bold">{String(i + 1).padStart(2, '0')}</span>
+                                        <span className="text-xxs text-zinc-300 font-mono font-bold">{String(i + 1).padStart(2, '0')}</span>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="text-[19px] font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                                        <h4 className="text-lg font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
                                             <EditableField
                                                 placeholder={pillar.titlePlaceholder}
                                                 path={pillar.titlePath}
                                                 className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                             />
                                         </h4>
-                                        <p className="text-[15px] text-zinc-500 leading-[1.6] font-medium mb-4 max-w-xl">
+                                        <p className="text-body text-zinc-500 leading-[1.6] font-medium mb-4 max-w-xl">
                                             <EditableField
                                                 placeholder={pillar.descPlaceholder}
                                                 path={pillar.descPath}
@@ -102,10 +102,10 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                                             />
                                         </p>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-2 py-0.5 rounded">
+                                            <span className="text-2xs font-bold uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-2 py-0.5 rounded">
                                                 Saída Oficial
                                             </span>
-                                            <p className="text-[11px] font-bold text-zinc-700">
+                                            <p className="text-tiny font-bold text-zinc-700">
                                                 <EditableField
                                                     placeholder={pillar.outputPlaceholder}
                                                     path={pillar.outputPath}

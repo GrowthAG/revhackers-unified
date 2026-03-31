@@ -36,7 +36,7 @@ export default function LostReasonMapper({ form, fieldName }: Props) {
     return (
         <div className="space-y-4">
             {fields.map((field, index) => (
-                <div key={field.id} className="flex flex-col md:flex-row gap-3 items-end p-4 border border-zinc-200 rounded-md bg-white relative group">
+                <div key={field.id} className="flex flex-col md:flex-row gap-3 items-end p-4 border border-zinc-200 bg-white relative group">
                     <Button
                         type="button"
                         variant="ghost"

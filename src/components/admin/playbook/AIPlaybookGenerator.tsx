@@ -140,9 +140,9 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-12rem)]">
             
             {/* Left Sidebar: Controls & Frameworks */}
-            <div className="lg:col-span-1 border border-zinc-200 bg-zinc-50/50 rounded-2xl p-6 overflow-y-auto hidden-scrollbar flex flex-col">
+            <div className="lg:col-span-1 border border-zinc-200 bg-zinc-50/50 p-6 overflow-y-auto hidden-scrollbar flex flex-col">
                 <div className="mb-6">
-                    <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl flex items-center justify-center mb-4">
+                    <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 flex items-center justify-center mb-4">
                         <Sparkles className="w-5 h-5" />
                     </div>
                     <h2 className="text-xl font-black text-zinc-900 mb-2">Fábrica de Playbooks</h2>
@@ -152,12 +152,12 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                 </div>
 
                 <div className="space-y-3 mb-8">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">1. Escolha o Output (Framework)</label>
+                    <label className="text-xxs font-bold uppercase tracking-widest text-zinc-400">1. Escolha o Output (Framework)</label>
                     {FRAMEWORKS.map((fw) => (
                         <div 
                             key={fw.id}
                             onClick={() => setFramework(fw.id)}
-                            className={`p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                            className={`p-3 border cursor-pointer transition-all duration-200 ${
                                 framework === fw.id 
                                 ? 'border-zinc-900 bg-zinc-50 shadow-sm ring-1 ring-zinc-900/10 dark:border-zinc-400 dark:bg-zinc-900' 
                                 : 'border-zinc-200 bg-white hover:border-zinc-400 hover:bg-zinc-50'
@@ -167,13 +167,13 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                                 <FileText className={`w-4 h-4 ${framework === fw.id ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400'}`} />
                                 <span className={`text-sm font-bold ${framework === fw.id ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-700'}`}>{fw.name}</span>
                             </div>
-                            <p className="text-[11px] text-zinc-500 line-clamp-2">{fw.desc}</p>
+                            <p className="text-tiny text-zinc-500 line-clamp-2">{fw.desc}</p>
                         </div>
                     ))}
                 </div>
 
                 <div className="mt-auto space-y-4">
-                    <div className="text-[10px] text-zinc-400 flex items-start gap-2 bg-white border border-zinc-100 p-3 rounded-xl">
+                    <div className="text-xxs text-zinc-400 flex items-start gap-2 bg-white border border-zinc-100 p-3">
                         <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                         <span className="leading-snug">
                             Lembre-se: O Rascunho corresponde a 80% do trabalho braçal. Você como consultor de Growth é o responsável pelos 20% do refinamento técnico.
@@ -183,7 +183,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                     <Button 
                         onClick={handleGenerate} 
                         disabled={isGenerating}
-                        className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold tracking-wide rounded-xl shadow-sm"
+                        className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold tracking-wide shadow-sm"
                     >
                         {isGenerating ? (
                             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando Contexto...</>
@@ -195,16 +195,16 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
             </div>
 
             {/* Right Panel: Editor */}
-            <div className="lg:col-span-2 border border-zinc-200 bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm">
+            <div className="lg:col-span-2 border border-zinc-200 bg-white overflow-hidden flex flex-col shadow-sm">
                 
                 <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center shadow-sm">
+                        <div className="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center shadow-sm">
                             <FileText className="w-4 h-4 text-zinc-600" />
                         </div>
                         <div>
                             <h3 className="text-sm font-bold text-zinc-900 leading-tight">Editor Especialista (Markdown)</h3>
-                            <p className="text-[10px] font-medium text-zinc-500 tracking-wider uppercase">Refino Tático • Nível C-Level</p>
+                            <p className="text-xxs font-medium text-zinc-500 tracking-wider uppercase">Refino Tático • Nível C-Level</p>
                         </div>
                     </div>
 
@@ -212,7 +212,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                         size="sm"
                         onClick={handlePublish}
                         disabled={isPublishing || !content.trim() || isPublished}
-                        className={`h-9 px-4 text-xs font-bold rounded-lg transition-all ${
+                        className={`h-9 px-4 text-xs font-bold transition-all ${
                             isPublished 
                             ? 'bg-zinc-100 text-[#00E577] border border-zinc-200 hover:bg-zinc-100' 
                             : 'bg-zinc-900 hover:bg-zinc-800 text-white'
@@ -231,7 +231,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                 <div className="flex-1 p-0 relative">
                     {!content && !isGenerating && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-50/80 backdrop-blur-sm z-10 text-center px-12">
-                            <div className="w-16 h-16 bg-white border border-zinc-200 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                            <div className="w-16 h-16 bg-white border border-zinc-200 flex items-center justify-center mb-4 shadow-sm">
                                 <Zap className="w-6 h-6 text-zinc-300" />
                             </div>
                             <h4 className="text-lg font-bold text-zinc-900 mb-2">Tela de Refinamento</h4>
@@ -248,7 +248,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
                             setIsPublished(false);
                         }}
                         placeholder="# Seu Playbook Tático..."
-                        className="w-full h-full min-h-[500px] p-8 border-0 focus-visible:ring-0 resize-none font-mono text-[13px] leading-relaxed text-zinc-800 bg-white"
+                        className="w-full h-full min-h-[500px] p-8 border-0 focus-visible:ring-0 resize-none font-mono text-mini leading-relaxed text-zinc-800 bg-white"
                         style={{ outline: 'none', boxShadow: 'none' }}
                     />
                 </div>

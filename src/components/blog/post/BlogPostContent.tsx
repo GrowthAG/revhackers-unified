@@ -1,47 +1,15 @@
-
+import React, { Suspense } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import ArticleCTA from './components/ArticleCTA';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import PolemicLedGrowthArticle from './articles/PolemicLedGrowthArticle';
-import ChatGPTGrowthArticle from './articles/ChatGPTGrowthArticle';
-import ColdEmailArticle from './articles/ColdEmailArticle';
-import LTVCACArticle from './articles/LTVCACArticle';
-import ProductMarketFitArticle from './articles/ProductMarketFitArticle';
-import LinkedInNavigatorArticle from './articles/LinkedInNavigatorArticle';
-
-import DiagnosticoFunilArticle from './articles/DiagnosticoFunilArticle';
-import PLGStartupsArticle from './articles/PLGStartupsArticle';
-import CROPraticaArticle from './articles/CROPraticaArticle';
-import AutomacaoMarketingArticle from './articles/AutomacaoMarketingArticle';
-import FunilAquisicaoProdutoArticle from './articles/FunilAquisicaoProdutoArticle';
-import IAPreVendasArticle from './articles/IAPreVendasArticle';
-import DiagnosticoMarketingDataArticle from './articles/DiagnosticoMarketingDataArticle';
-import PlaybooksVendasMarketingArticle from './articles/PlaybooksVendasMarketingArticle';
-import TrinityGrowthArticle from './articles/TrinityGrowthArticle';
-import CanaisAquisicaoStartupArticle from './articles/CanaisAquisicaoStartupArticle';
-import GrowthTeamLeanArticle from './articles/GrowthTeamLeanArticle';
-import FounderMetricsArticle from './articles/FounderMetricsArticle';
-import BestCRMsAutomationArticle from './articles/BestCRMsAutomationArticle';
-import SaaSTrialPipelineArticle from './articles/SaaSTrialPipelineArticle';
-import UserJourneyMapArticle from './articles/UserJourneyMapArticle';
-import IntegracaoMktVendasArticle from './articles/IntegracaoMktVendasArticle';
-import EstrategiaGTMArticle from './articles/EstrategiaGTMArticle';
-import AnatomiaDaDemoArticle from './articles/AnatomiaDaDemoArticle';
-import RevOpsFrameworkArticle from './articles/RevOpsFrameworkArticle';
-import PricingStrategyArticle from './articles/PricingStrategyArticle';
-import SalesCommissionArticle from './articles/SalesCommissionArticle';
-import AntiChurnPlaybookArticle from './articles/AntiChurnPlaybookArticle';
-import SaaSPLGArticle from './articles/SaaSPLGArticle';
-
-// New Articles
-import IAGenerativaMarketingArticle from './articles/IAGenerativaMarketingArticle';
-import Diagnostico360Article from './articles/Diagnostico360Article';
-import ABMPracticeArticle from './articles/ABMPracticeArticle';
-import DiagnosticoFunilComercialArticle from './articles/DiagnosticoFunilComercialArticle';
 
 import DynamicV2Renderer from './DynamicV2Renderer';
 import { ArticleRenderer } from '../ArticleRenderer';
+
+// Lazy-loaded article components - only loaded when slug matches
+const lazyArticle = (loader: () => Promise<{ default: React.ComponentType<any> }>) =>
+  React.lazy(loader);
 
 interface BlogPostContentProps {
   content: string;
@@ -101,41 +69,41 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
     } catch (e) { }
   }
 
-  // Map of custom article components (Keep for specific deep-coded articles)
-  const articleComponents: Record<string, React.ComponentType<ArticleComponentProps>> = {
-    'polemic-led-growth-metodo-linkedin-maquina-oportunidades': PolemicLedGrowthArticle,
-    'chatgpt-para-growth-15-prompts-produtividade-marketing': ChatGPTGrowthArticle,
-    'cold-email-2025-7-estrategias-que-funcionam': ColdEmailArticle,
-    'ltv-vs-cac-calcular-otimizar-crescimento-sustentavel': LTVCACArticle,
-    'product-market-fit-5-sinais-encontrou-3-que-nao': ProductMarketFitArticle,
-    'linkedin-sales-navigator-guia-completo-prospeccao-b2b': LinkedInNavigatorArticle,
-    'o-funil-que-realmente-funciona-para-empresas-b2b': DiagnosticoFunilArticle,
-    'o-que-e-plg-e-como-aplicar-em-startups-brasileiras': PLGStartupsArticle,
-    'cro-na-pratica-como-dobrar-sua-taxa-de-conversao': CROPraticaArticle,
-    '7-automacoes-de-marketing-que-escalam-sua-operacao': AutomacaoMarketingArticle,
-    'como-construir-um-funil-de-aquisicao-usando-seu-proprio-produto': FunilAquisicaoProdutoArticle,
-    'estrategias-de-inteligencia-artificial-aplicadas-a-pre-vendas': IAPreVendasArticle,
-    'diagnostico-de-marketing-orientado-por-dados': DiagnosticoMarketingDataArticle,
-    'playbooks-de-vendas-e-marketing-que-escalam-resultados': PlaybooksVendasMarketingArticle,
-    'como-combinar-inbound-outbound-e-plg': TrinityGrowthArticle,
-    'canais-de-aquisicao-com-roi-imediato-para-startups': CanaisAquisicaoStartupArticle,
-    'como-estruturar-um-time-de-growth-com-poucos-recursos': GrowthTeamLeanArticle,
-    'analise-de-dados-para-fundadores-quais-metricas-importam': FounderMetricsArticle,
-    'os-melhores-crms-e-automacoes-para-crescimento-b2b': BestCRMsAutomationArticle,
-    'saas-trial-pipeline-optimization': SaaSTrialPipelineArticle,
-    'como-desenhar-uma-jornada-do-usuario-que-ativa-e-converte': UserJourneyMapArticle,
-    'integracao-marketing-vendas-sucesso-cliente': IntegracaoMktVendasArticle,
-    'estrategia-gtm-go-to-market-para-novos-produtos': EstrategiaGTMArticle,
-    'anatomia-da-demo-perfeita-vendas-b2b': AnatomiaDaDemoArticle,
-    'revops-framework-definitivo-revenue-operations': RevOpsFrameworkArticle,
-    'psicologia-pricing-b2b-estrategia-precos': PricingStrategyArticle,
-    'comissionamento-vendas-sdr-closer-modelos': SalesCommissionArticle,
-    'manual-anti-churn-retencao-clientes-cs': AntiChurnPlaybookArticle,
-    'saas-plg-como-usar-seu-trial-gratuito-para-gerar-pipeline': SaaSPLGArticle,
-    'ia-generativa-marketing-alem-do-hype': IAGenerativaMarketingArticle,
-    'diagnostico-360-descobrir-gargalos-funil': Diagnostico360Article,
-    'abm-na-pratica-escolher-contas-alvo': ABMPracticeArticle,
-    'diagnostico-funil-comercial-identificar-gargalos': DiagnosticoFunilComercialArticle
+  // Lazy-loaded article components - each loaded only when its slug matches
+  const articleComponents: Record<string, React.LazyExoticComponent<React.ComponentType<ArticleComponentProps>>> = {
+    'polemic-led-growth-metodo-linkedin-maquina-oportunidades': lazyArticle(() => import('./articles/PolemicLedGrowthArticle')),
+    'chatgpt-para-growth-15-prompts-produtividade-marketing': lazyArticle(() => import('./articles/ChatGPTGrowthArticle')),
+    'cold-email-2025-7-estrategias-que-funcionam': lazyArticle(() => import('./articles/ColdEmailArticle')),
+    'ltv-vs-cac-calcular-otimizar-crescimento-sustentavel': lazyArticle(() => import('./articles/LTVCACArticle')),
+    'product-market-fit-5-sinais-encontrou-3-que-nao': lazyArticle(() => import('./articles/ProductMarketFitArticle')),
+    'linkedin-sales-navigator-guia-completo-prospeccao-b2b': lazyArticle(() => import('./articles/LinkedInNavigatorArticle')),
+    'o-funil-que-realmente-funciona-para-empresas-b2b': lazyArticle(() => import('./articles/DiagnosticoFunilArticle')),
+    'o-que-e-plg-e-como-aplicar-em-startups-brasileiras': lazyArticle(() => import('./articles/PLGStartupsArticle')),
+    'cro-na-pratica-como-dobrar-sua-taxa-de-conversao': lazyArticle(() => import('./articles/CROPraticaArticle')),
+    '7-automacoes-de-marketing-que-escalam-sua-operacao': lazyArticle(() => import('./articles/AutomacaoMarketingArticle')),
+    'como-construir-um-funil-de-aquisicao-usando-seu-proprio-produto': lazyArticle(() => import('./articles/FunilAquisicaoProdutoArticle')),
+    'estrategias-de-inteligencia-artificial-aplicadas-a-pre-vendas': lazyArticle(() => import('./articles/IAPreVendasArticle')),
+    'diagnostico-de-marketing-orientado-por-dados': lazyArticle(() => import('./articles/DiagnosticoMarketingDataArticle')),
+    'playbooks-de-vendas-e-marketing-que-escalam-resultados': lazyArticle(() => import('./articles/PlaybooksVendasMarketingArticle')),
+    'como-combinar-inbound-outbound-e-plg': lazyArticle(() => import('./articles/TrinityGrowthArticle')),
+    'canais-de-aquisicao-com-roi-imediato-para-startups': lazyArticle(() => import('./articles/CanaisAquisicaoStartupArticle')),
+    'como-estruturar-um-time-de-growth-com-poucos-recursos': lazyArticle(() => import('./articles/GrowthTeamLeanArticle')),
+    'analise-de-dados-para-fundadores-quais-metricas-importam': lazyArticle(() => import('./articles/FounderMetricsArticle')),
+    'os-melhores-crms-e-automacoes-para-crescimento-b2b': lazyArticle(() => import('./articles/BestCRMsAutomationArticle')),
+    'saas-trial-pipeline-optimization': lazyArticle(() => import('./articles/SaaSTrialPipelineArticle')),
+    'como-desenhar-uma-jornada-do-usuario-que-ativa-e-converte': lazyArticle(() => import('./articles/UserJourneyMapArticle')),
+    'integracao-marketing-vendas-sucesso-cliente': lazyArticle(() => import('./articles/IntegracaoMktVendasArticle')),
+    'estrategia-gtm-go-to-market-para-novos-produtos': lazyArticle(() => import('./articles/EstrategiaGTMArticle')),
+    'anatomia-da-demo-perfeita-vendas-b2b': lazyArticle(() => import('./articles/AnatomiaDaDemoArticle')),
+    'revops-framework-definitivo-revenue-operations': lazyArticle(() => import('./articles/RevOpsFrameworkArticle')),
+    'psicologia-pricing-b2b-estrategia-precos': lazyArticle(() => import('./articles/PricingStrategyArticle')),
+    'comissionamento-vendas-sdr-closer-modelos': lazyArticle(() => import('./articles/SalesCommissionArticle')),
+    'manual-anti-churn-retencao-clientes-cs': lazyArticle(() => import('./articles/AntiChurnPlaybookArticle')),
+    'saas-plg-como-usar-seu-trial-gratuito-para-gerar-pipeline': lazyArticle(() => import('./articles/SaaSPLGArticle')),
+    'ia-generativa-marketing-alem-do-hype': lazyArticle(() => import('./articles/IAGenerativaMarketingArticle')),
+    'diagnostico-360-descobrir-gargalos-funil': lazyArticle(() => import('./articles/Diagnostico360Article')),
+    'abm-na-pratica-escolher-contas-alvo': lazyArticle(() => import('./articles/ABMPracticeArticle')),
+    'diagnostico-funil-comercial-identificar-gargalos': lazyArticle(() => import('./articles/DiagnosticoFunilComercialArticle')),
   };
 
   const CustomArticleComponent = articleSlug ? articleComponents[articleSlug] : null;
@@ -154,7 +122,9 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
         {dynamicV2Config ? (
           <DynamicV2Renderer config={dynamicV2Config} onCTAClick={onCTAClick} />
         ) : CustomArticleComponent ? (
-          <CustomArticleComponent onCTAClick={onCTAClick} />
+          <Suspense fallback={<div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" /></div>}>
+            <CustomArticleComponent onCTAClick={onCTAClick} />
+          </Suspense>
         ) : (
           <div className="space-y-6">
             {/* Use ArticleRenderer for clean, standardized article formatting */}
@@ -171,7 +141,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
         )}
 
         {/* Author Footer - Fixed Visuals */}
-        <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-8 bg-zinc-50/50 p-8 rounded-2xl">
+        <div className="mt-32 pt-16 border-t border-zinc-100 flex flex-col md:flex-row items-center md:items-start gap-8 bg-zinc-50/50 p-8 ">
           <img
               src={fixedAvatar}
               alt={authorName}
@@ -184,7 +154,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
 
           <div className="flex-1 text-center md:text-left">
             <h4 className="text-2xl font-black text-black tracking-tighter mb-1 uppercase italic">{authorName}</h4>
-            <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-[10px] mb-4">{authorRole}</p>
+            <p className="text-revgreen font-bold uppercase tracking-[0.3em] text-xxs mb-4">{authorRole}</p>
             <p className="text-zinc-500 text-sm leading-relaxed font-medium uppercase tracking-wider opacity-80">
               Especialista Sênior em Growth e Estratégia de Receita. Focado em transformar operações complexas em máquinas de crescimento previsíveis e escaláveis.
             </p>

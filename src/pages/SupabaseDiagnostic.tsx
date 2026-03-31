@@ -165,17 +165,17 @@ const SupabaseDiagnostic = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {['posts', 'cases', 'materials'].map((key) => (
                                         <div key={key} className="border border-zinc-900 bg-zinc-950/50 p-4">
-                                            <h4 className="font-mono text-[10px] text-revgreen uppercase tracking-widest mb-4 border-b border-zinc-900 pb-2">
+                                            <h4 className="font-mono text-xxs text-revgreen uppercase tracking-widest mb-4 border-b border-zinc-900 pb-2">
                                                 {key}
                                             </h4>
                                             <div className="space-y-2">
                                                 {results[key].data.slice(0, 3).map((item: any) => (
-                                                    <div key={item.id} className="font-mono text-[10px] text-zinc-400 truncate hover:text-white transition-colors cursor-default">
+                                                    <div key={item.id} className="font-mono text-xxs text-zinc-400 truncate hover:text-white transition-colors cursor-default">
                                                         {'>'} {item.title || item.client_name}
                                                     </div>
                                                 ))}
                                                 {results[key].data.length === 0 && (
-                                                    <div className="font-mono text-[10px] text-zinc-700 italic">
+                                                    <div className="font-mono text-xxs text-zinc-700 italic">
                                                         No data found
                                                     </div>
                                                 )}

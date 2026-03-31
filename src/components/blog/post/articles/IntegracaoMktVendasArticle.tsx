@@ -137,7 +137,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                     A maioria das empresas opera como uma corrida de revezamento onde os corredores (times) derrubam o bastão (cliente) a cada troca. A integração elimina esses gaps.
                 </p>
 
-                <div className="flex flex-col md:flex-row gap-8 my-10 bg-zinc-50 p-8 rounded-xl border border-zinc-100 not-prose">
+                <div className="flex flex-col md:flex-row gap-8 my-10 bg-zinc-50 p-8 border border-zinc-100 not-prose">
                     <div className="flex-1 text-center md:text-left">
                         <div className="text-4xl font-black text-zinc-900 mb-1">19%</div>
                         <div className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Crescimento Mais Rápido</div>
@@ -154,7 +154,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                 </h2>
                 <div className="not-prose grid gap-4 mb-16">
                     {anatomy.map((item, i) => (
-                        <div key={i} className="group bg-white hover:bg-zinc-50 border border-zinc-200 p-6 rounded-lg transition-all duration-300 relative overflow-hidden">
+                        <div key={i} className="group bg-white hover:bg-zinc-50 border border-zinc-200 p-6 transition-all duration-300 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-1 h-full bg-zinc-200 group-hover:bg-revgreen transition-colors"></div>
                             <div className="flex flex-col md:flex-row gap-6 md:items-center ml-2">
                                 <span className="text-xs font-bold text-zinc-400 w-24 shrink-0 uppercase tracking-wider group-hover:text-revgreen transition-colors">
@@ -165,7 +165,7 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                                     <p className="text-zinc-600 text-sm leading-relaxed m-0">{item.desc}</p>
                                 </div>
                                 <div className="md:w-48 shrink-0 md:text-right mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-zinc-100">
-                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block mb-1">KPI Principal</span>
+                                    <span className="text-xxs font-mono text-zinc-400 uppercase tracking-widest block mb-1">KPI Principal</span>
                                     <span className="text-xs font-bold text-zinc-900 font-mono">{item.metrics}</span>
                                 </div>
                             </div>
@@ -215,14 +215,14 @@ const IntegracaoMktVendasArticle = ({ onCTAClick }: { onCTAClick?: () => void })
                         <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
                             <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
                                 <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-revgreen"></div>
+                                    <div className="w-2 h-2  bg-revgreen"></div>
                                     {template.name}
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

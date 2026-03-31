@@ -7,7 +7,7 @@ import {
 import {
   FolderKanban, AlertTriangle, CheckCircle2, Plus, ChevronRight,
   Clock, Zap, Users, TrendingUp, Circle, FileText, ArrowUpRight,
-  Calendar, Target, Activity
+  Calendar, Target, Activity, Radar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -98,7 +98,7 @@ function greeting(): string {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const TypeBadge = ({ type }: { type: string }) => (
-  <span className="text-[9px] font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded">
+  <span className="text-2xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded">
     {TYPE_LABELS[type] ?? type}
   </span>
 );
@@ -106,7 +106,7 @@ const TypeBadge = ({ type }: { type: string }) => (
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-zinc-950 text-white text-xs font-bold px-3 py-2 rounded-xl">
+    <div className="bg-zinc-950 text-white text-xs font-bold px-3 py-2 ">
       <p className="text-zinc-400 mb-0.5">{label}</p>
       <p className="text-[#00CC6A]">{payload[0].value} concluidas</p>
     </div>
@@ -119,15 +119,12 @@ export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const [userName, setUserName] = useState('');
-  const [kpi, setKpi] = useState<KpiData>({
-    activeProjects: 0, totalTasks: 0, overdueTasks: 0,
-    approvedPlans: 0, doneTasks: 0, reviewTasks: 0,
-  });
+  const [approvedPlansCount, setApprovedPlansCount] = useState(0);
   const [projects, setProjects] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
-  const [upcoming, setUpcoming] = useState<UpcomingTask[]>([]);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const [velocity, setVelocity] = useState<VelocityPoint[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -144,6 +141,7 @@ export const AdminDashboard: React.FC = () => {
         loadActivity(),
         loadVelocity(),
         loadPlans(),
+        loadDeals(),
       ]);
     } finally {
       setLoading(false);
@@ -184,7 +182,16 @@ export const AdminDashboard: React.FC = () => {
       .from('strategic_plans')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'approved');
-    setKpi(prev => ({ ...prev, approvedPlans: count || 0 }));
+    setApprovedPlansCount(count || 0);
+  };
+
+  const loadDeals = async () => {
+    const { data } = await supabase
+      .from('opportunities')
+      .select('id, status')
+      .neq('status', 'won')
+      .neq('status', 'lost');
+    setDeals(data || []);
   };
 
   const loadActivity = async () => {
@@ -237,6 +244,13 @@ export const AdminDashboard: React.FC = () => {
       t.due_date && t.due_date < todayStart && t.status !== 'done'
     ).length;
 
+    // Copilot engine: Determine if there is a global alert
+    // If overdue tasks > 20% of total tasks, or if there is any critical delay
+    const isCritical = overdue > 0;
+    const copilotMessage = isCritical 
+      ? `${overdue} tarefa${overdue > 1 ? 's atrasadas exigem' : ' atrasada exige'} intervenção imediata da operação.` 
+      : 'Todos os sistemas operacionais e pipeline dentro da normalidade.';
+
     // Project health matrix
     const health: ProjectHealth[] = projects.map(p => {
       const ptasks = tasks.filter(t => t.project_id === p.id);
@@ -288,17 +302,21 @@ export const AdminDashboard: React.FC = () => {
       });
 
     return {
-      kpi: { activeProjects: active, totalTasks: tasks.length, overdueTasks: overdue, doneTasks: done, reviewTasks: review, approvedPlans: 0 },
+      kpi: { 
+        activeProjects: active, 
+        activeDeals: deals.length,
+        totalTasks: tasks.length, 
+        overdueTasks: overdue, 
+        doneTasks: done, 
+        reviewTasks: review, 
+        approvedPlans: approvedPlansCount 
+      },
       health: health.slice(0, 6),
       upcoming: upcomingRaw,
+      copilotMessage,
+      isCritical
     };
-  }, [projects, tasks]);
-
-  // Sync derived KPI back
-  useEffect(() => {
-    setKpi(prev => ({ ...prev, ...derived.kpi }));
-    setUpcoming(derived.upcoming);
-  }, [derived]);
+  }, [projects, tasks, approvedPlansCount, deals]);
 
   if (loading) {
     return (
@@ -323,41 +341,41 @@ export const AdminDashboard: React.FC = () => {
           {/* Greeting */}
           <div className="flex items-start justify-between gap-6 mb-8">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">
+              <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">
                 {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
               </p>
               <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight leading-[1.05]">
                 {greeting()}{userName ? `, ${userName}` : ''}.
               </h1>
-              <p className="text-[14px] font-medium text-zinc-400 mt-2">
-                {kpi.overdueTasks > 0
-                  ? `${kpi.overdueTasks} tarefa${kpi.overdueTasks > 1 ? 's atrasadas' : ' atrasada'} requerem atencao.`
-                  : 'Tudo em dia. Nenhuma acao critica.'}
+              <p className="text-sm font-medium text-zinc-400 mt-2">
+                {derived.isCritical 
+                  ? <span className="text-red-500 font-bold">{derived.copilotMessage}</span>
+                  : 'Tudo em dia. Nenhuma ação crítica.'}
               </p>
             </div>
             <button
               onClick={() => navigate('/admin/rei/novo')}
-              className="shrink-0 inline-flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] rounded-xl h-10 px-5 transition-colors"
+              className="shrink-0 inline-flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-xxs  h-10 px-5 transition-colors"
             >
               <Plus className="w-4 h-4" /> Novo Projeto
             </button>
           </div>
 
-          {/* KPI Strip */}
+          {/* KPI Strip - Vendas + Execução */}
           <div className="grid grid-cols-2 md:grid-cols-4 border-t border-zinc-100">
             {[
-              { n: kpi.activeProjects, label: 'Projetos Ativos',    sub: `${projects.length} total`,          color: 'text-zinc-900' },
-              { n: kpi.doneTasks,      label: 'Tarefas Concluidas', sub: `de ${kpi.totalTasks}`,              color: 'text-[#00CC6A]' },
-              { n: kpi.reviewTasks,    label: 'Em Revisao',         sub: 'aguardando aprovacao',              color: 'text-zinc-900' },
-              { n: kpi.overdueTasks,   label: 'Atrasadas',          sub: 'requerem atencao',                  color: kpi.overdueTasks > 0 ? 'text-red-500' : 'text-zinc-900' },
+              { n: derived.kpi.activeProjects, label: 'Projetos Ativos',    sub: 'operações em andamento',            color: 'text-zinc-900' },
+              { n: derived.kpi.activeDeals,    label: 'Pipeline Ativo',     sub: 'oportunidades abertas',          color: 'text-zinc-900' },
+              { n: derived.kpi.overdueTasks,   label: 'Atrasadas',          sub: 'requerem atenção',                  color: derived.kpi.overdueTasks > 0 ? 'text-red-500' : 'text-zinc-900' },
+              { n: velocityTotal,              label: 'Velocidade',         sub: 'entregas nos últimos 7d',              color: 'text-[#00CC6A]' },
             ].map(({ n, label, sub, color }, i) => (
               <div key={label} className={cn(
                 'py-6 flex flex-col gap-1',
                 i > 0 && 'pl-6 border-l border-zinc-100',
               )}>
                 <span className={cn('text-5xl font-black tracking-tight leading-none tabular-nums', color)}>{n}</span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mt-1">{label}</span>
-                <span className="text-[11px] font-medium text-zinc-400">{sub}</span>
+                <span className="text-xxs font-black uppercase tracking-widest text-zinc-400 mt-1">{label}</span>
+                <span className="text-tiny font-medium text-zinc-400">{sub}</span>
               </div>
             ))}
           </div>
@@ -372,18 +390,31 @@ export const AdminDashboard: React.FC = () => {
           <OrphanedRecordingsAlert />
         </div>
 
+        {/* Global Copilot Alert (If Critical) */}
+        {derived.isCritical && (
+          <div className="mb-8 bg-red-50 border border-red-100 flex items-start p-4 gap-4">
+            <div className="bg-red-500 text-white p-2 shrink-0">
+              <Radar className="w-4 h-4" />
+            </div>
+            <div className="pt-0.5">
+              <h3 className="text-xs font-black uppercase text-red-900 tracking-widest mb-1">REVOPS COPILOT OVERSIGHT</h3>
+              <p className="text-tiny font-bold text-red-700">{derived.copilotMessage}</p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
           {/* LEFT - Projetos + Velocidade (2/3) */}
           <div className="xl:col-span-2 space-y-8">
 
             {/* Saude dos Projetos */}
-            <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+            <div className="border border-zinc-200  overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900">Saude dos Projetos</h2>
+                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Saude dos Projetos</h2>
                 <button
                   onClick={() => navigate('/admin/rei')}
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 flex items-center gap-1 transition-colors"
+                  className="text-xxs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 flex items-center gap-1 transition-colors"
                 >
                   Ver todos <ArrowUpRight className="w-3 h-3" />
                 </button>
@@ -404,7 +435,7 @@ export const AdminDashboard: React.FC = () => {
                         className="flex items-center gap-4 px-6 py-4 hover:bg-zinc-50 cursor-pointer transition-colors group"
                       >
                         <div className={cn(
-                          'w-2 h-2 rounded-full shrink-0',
+                          'w-2 h-2 shrink-0',
                           proj.status === 'active' ? 'bg-[#00CC6A]' : 'bg-zinc-200',
                         )} />
 
@@ -413,22 +444,28 @@ export const AdminDashboard: React.FC = () => {
                             <span className="text-sm font-black text-zinc-900 truncate">{proj.name}</span>
                             <TypeBadge type={proj.type} />
                             {proj.overdueTasks > 0 && (
-                              <span className="text-[9px] font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded">
+                              <span className="text-2xs font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5">
                                 {proj.overdueTasks} atrasada{proj.overdueTasks > 1 ? 's' : ''}
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                              <div
-                                className="h-full rounded-full transition-all duration-700"
-                                style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#00CC6A' : '#18181b' }}
-                              />
+                          {proj.totalTasks === 0 ? (
+                            <div className="mt-1">
+                               <span className="text-2xs font-black uppercase tracking-wider bg-zinc-900 text-white px-2 py-0.5">Setup Pendente</span>
                             </div>
-                            <span className="text-[10px] font-black text-zinc-400 shrink-0 tabular-nums w-16 text-right">
-                              {proj.doneTasks}/{proj.totalTasks}
-                            </span>
-                          </div>
+                          ) : (
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 h-1.5 bg-zinc-100 overflow-hidden">
+                                <div
+                                  className="h-full transition-all duration-700"
+                                  style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#00CC6A' : '#18181b' }}
+                                />
+                              </div>
+                              <span className="text-xxs font-black text-zinc-400 shrink-0 tabular-nums w-16 text-right">
+                                {proj.doneTasks}/{proj.totalTasks}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         <ArrowUpRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-600 transition-colors shrink-0" />
@@ -440,12 +477,12 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Velocidade */}
-            <div className="border border-zinc-200 rounded-2xl p-6">
+            <div className="border border-zinc-200  p-6">
               <div className="flex items-baseline justify-between mb-6">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900">Velocidade - 7 Dias</h2>
+                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Velocidade - 7 Dias</h2>
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-black text-zinc-900 tabular-nums">{velocityTotal}</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">concluidas</span>
+                  <span className="text-xxs font-black uppercase tracking-widest text-zinc-400 ml-1">concluidas</span>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={120}>
@@ -471,19 +508,19 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
 
             {/* Proximos 7 dias */}
-            <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+            <div className="border border-zinc-200  overflow-hidden">
               <div className="flex items-center gap-2 px-5 py-4 border-b border-zinc-100">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900">Proximos 7 Dias</h2>
+                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Proximos 7 Dias</h2>
               </div>
 
-              {upcoming.length === 0 ? (
+              {derived.upcoming.length === 0 ? (
                 <div className="px-5 py-8 text-center">
                   <p className="text-xs font-black text-zinc-900 mb-0.5">Nenhuma entrega</p>
-                  <p className="text-[11px] font-medium text-zinc-400">nos proximos 7 dias.</p>
+                  <p className="text-tiny font-medium text-zinc-400">nos proximos 7 dias.</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-50">
-                  {upcoming.map(task => (
+                  {derived.upcoming.map(task => (
                     <div
                       key={task.id}
                       onClick={() => navigate(`/admin/projects/${task.projectId}`)}
@@ -491,12 +528,12 @@ export const AdminDashboard: React.FC = () => {
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-zinc-900 truncate leading-snug">{task.title}</p>
-                        <p className="text-[10px] font-medium text-zinc-400 mt-0.5 truncate">{task.projectName}</p>
+                        <p className="text-xxs font-medium text-zinc-400 mt-0.5 truncate">{task.projectName}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[10px] font-black text-zinc-500 tabular-nums">{formatDate(task.dueDate)}</p>
+                        <p className="text-xxs font-black text-zinc-500 tabular-nums">{formatDate(task.dueDate)}</p>
                         {task.priority === 'urgent' && (
-                          <span className="text-[8px] font-black uppercase tracking-widest text-red-500">urgente</span>
+                          <span className="text-3xs font-black uppercase tracking-widest text-red-500">urgente</span>
                         )}
                       </div>
                     </div>
@@ -506,9 +543,9 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Atividade Recente */}
-            <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+            <div className="border border-zinc-200  overflow-hidden">
               <div className="px-5 py-4 border-b border-zinc-100">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-900">Atividade Recente</h2>
+                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Atividade Recente</h2>
               </div>
               {activity.length === 0 ? (
                 <div className="px-5 py-8 text-center text-xs font-medium text-zinc-400">
@@ -518,36 +555,16 @@ export const AdminDashboard: React.FC = () => {
                 <div className="divide-y divide-zinc-50">
                   {activity.slice(0, 5).map(item => (
                     <div key={item.id} className="px-5 py-3 flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 shrink-0" />
+                      <div className="w-1.5 h-1.5 bg-zinc-300 shrink-0" />
                       <p className="flex-1 text-xs font-medium text-zinc-600 truncate">{item.text}</p>
-                      <span className="text-[10px] font-bold text-zinc-400 shrink-0">{item.time}</span>
+                      <span className="text-xxs font-bold text-zinc-400 shrink-0">{item.time}</span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Atalhos - sobre fundo escuro */}
-            <div className="bg-zinc-950 rounded-2xl p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-600 mb-4">Atalhos</p>
-              <div className="space-y-1">
-                {[
-                  { label: 'Todos os projetos', path: '/admin/rei' },
-                  { label: 'Deal Rooms',         path: '/admin/proposals' },
-                  { label: 'Clientes',           path: '/admin/clients' },
-                  { label: 'Plano estrategico',  path: '/admin/strategic-plan' },
-                ].map(({ label, path }) => (
-                  <button
-                    key={path}
-                    onClick={() => navigate(path)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-zinc-800 transition-colors group"
-                  >
-                    <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">{label}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
           </div>
         </div>

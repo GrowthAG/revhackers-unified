@@ -30,12 +30,12 @@ function ScoreBar({ score, label }: { score: number; label: string }) {
                         strokeLinecap="round"
                     />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-zinc-900">
+                <span className="absolute inset-0 flex items-center justify-center text-xxs font-black text-zinc-900">
                     {score}
                 </span>
             </div>
             <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{label}</p>
+                <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">{label}</p>
                 <p className="text-xs font-bold text-zinc-700">
                     {score >= 90 ? 'Excelente' : score >= 50 ? 'Melhorar' : 'Crítico'}
                 </p>
@@ -161,7 +161,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         onClick={handleReEnrich}
                         disabled={isEnriching}
                         variant="outline"
-                        className="border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-bold uppercase tracking-widest text-[10px] rounded-xl h-9 px-4"
+                        className="border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-bold uppercase tracking-widest text-xxs h-9 px-4"
                     >
                         {isEnriching
                             ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Enriquecendo...</>
@@ -171,7 +171,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                     <Button
                         onClick={handleGenerateMarketIntelligence}
                         disabled={isGenerating}
-                        className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-[10px] rounded-xl h-9 px-5"
+                        className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold uppercase tracking-widest text-xxs h-9 px-5"
                     >
                         {isGenerating
                             ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> GPT-4.5...</>
@@ -183,13 +183,13 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
             {/* ── BLOCO 0.5: LINKEDIN OSINT & AUTORIDADE DIGITAL ── */}
             {marketData?.linkedin_osint ? (
-                <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="border border-zinc-200 overflow-hidden shadow-sm">
                     <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-[#0A66C2]/5">
                         <Linkedin className="w-4 h-4 text-[#0A66C2]" />
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-700">
+                        <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-700">
                             OSINT: Perfil & Autoridade Digital
                         </h3>
-                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#0A66C2] border border-[#0A66C2]/30 px-2 py-0.5 rounded bg-white">
+                        <span className="ml-auto text-2xs font-black uppercase tracking-widest text-[#0A66C2] border border-[#0A66C2]/30 px-2 py-0.5 rounded bg-white">
                             Scraping IA
                         </span>
                     </div>
@@ -199,24 +199,24 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             <div>
                                 <h4 className="text-xl font-black text-zinc-900 tracking-tight">{marketData.linkedin_osint.fullName}</h4>
                                 <p className="text-xs text-zinc-500 font-medium leading-snug mt-1">{marketData.linkedin_osint.headline}</p>
-                                <a href={marketData.linkedin_osint.profileUrl} target="_blank" rel="noreferrer" className="text-[10px] uppercase font-bold text-[#0A66C2] hover:underline mt-2 inline-block tracking-widest">
+                                <a href={marketData.linkedin_osint.profileUrl} target="_blank" rel="noreferrer" className="text-xxs uppercase font-bold text-[#0A66C2] hover:underline mt-2 inline-block tracking-widest">
                                     Ver Perfil
                                 </a>
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                <div className="border border-zinc-100 rounded-xl p-4 bg-zinc-50/50">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1">Arquétipo Dominante</p>
+                                <div className="border border-zinc-100 p-4 bg-zinc-50/50">
+                                    <p className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-1">Arquétipo Dominante</p>
                                     <p className="text-sm font-black text-zinc-900 mb-2">{marketData.linkedin_osint.archetype} ({marketData.linkedin_osint.managementStyle})</p>
-                                    <p className="text-[11px] text-zinc-500 leading-snug italic">"{marketData.linkedin_osint.archetypeReason}"</p>
+                                    <p className="text-tiny text-zinc-500 leading-snug italic">"{marketData.linkedin_osint.archetypeReason}"</p>
                                 </div>
                                 <div className="flex gap-4">
-                                    <div className="flex-1 border border-zinc-100 rounded-xl p-4 bg-zinc-50/50 text-center">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Score de Autoridade</p>
+                                    <div className="flex-1 border border-zinc-100 p-4 bg-zinc-50/50 text-center">
+                                        <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Score de Autoridade</p>
                                         <p className="text-2xl font-black text-zinc-900 mt-1">{marketData.linkedin_osint.authorityScore}<span className="text-sm text-zinc-400 font-bold">/100</span></p>
                                     </div>
-                                    <div className="flex-1 border border-zinc-100 rounded-xl p-4 bg-zinc-50/50 text-center">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Seguidores</p>
+                                    <div className="flex-1 border border-zinc-100 p-4 bg-zinc-50/50 text-center">
+                                        <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Seguidores</p>
                                         <p className="text-2xl font-black text-zinc-900 mt-1">{marketData.linkedin_osint.followerCount?.toLocaleString('pt-BR') || '-'}</p>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         {/* Análise de Gaps Direita */}
                         <div className="md:col-span-8 flex flex-col justify-between">
                             <div className="mb-6">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 flex items-center gap-2">
+                                <p className="text-xxs font-black uppercase tracking-widest text-zinc-400 mb-2 flex items-center gap-2">
                                     <Focus size={14} className="text-zinc-500" /> Resumo do Posicionamento
                                 </p>
                                 <p className="text-sm text-zinc-700 leading-relaxed font-medium">
@@ -236,20 +236,20 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-3 border-b border-red-100 pb-2">Blind Spots (Pontos Cegos)</p>
+                                    <p className="text-xxs font-black uppercase tracking-widest text-red-500 mb-3 border-b border-red-100 pb-2">Blind Spots (Pontos Cegos)</p>
                                     <ul className="space-y-2">
                                         {(marketData.linkedin_osint.blindSpots || []).map((spot: string, i: number) => (
-                                            <li key={i} className="text-[11px] font-medium text-zinc-600 flex items-start gap-2">
+                                            <li key={i} className="text-tiny font-medium text-zinc-600 flex items-start gap-2">
                                                 <span className="text-red-400 mt-0.5">•</span> {spot}
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-3 border-b border-amber-100 pb-2">Branding Gaps</p>
+                                    <p className="text-xxs font-black uppercase tracking-widest text-amber-500 mb-3 border-b border-amber-100 pb-2">Branding Gaps</p>
                                     <ul className="space-y-2">
                                         {(marketData.linkedin_osint.brandingGaps || []).map((gap: string, i: number) => (
-                                            <li key={i} className="text-[11px] font-medium text-zinc-600 flex items-start gap-2">
+                                            <li key={i} className="text-tiny font-medium text-zinc-600 flex items-start gap-2">
                                                 <span className="text-amber-400 mt-0.5">•</span> {gap}
                                             </li>
                                         ))}
@@ -257,8 +257,8 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                                 </div>
                             </div>
 
-                            <div className="mt-8 border border-[#00CC6A]/20 bg-[#00CC6A]/5 rounded-xl p-4">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] mb-1">Ação Prática Imediata (Insight)</p>
+                            <div className="mt-8 border border-[#00CC6A]/20 bg-[#00CC6A]/5 p-4">
+                                <p className="text-xxs font-black uppercase tracking-widest text-[#00CC6A] mb-1">Ação Prática Imediata (Insight)</p>
                                 <p className="text-sm font-bold text-zinc-800 leading-snug">{marketData.linkedin_osint.actionableInsight}</p>
                             </div>
                         </div>
@@ -268,26 +268,26 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
             {/* ── BLOCO 1: DOSSIÊ EXECUTIVO (SITE UX & GAPS) - BRUTALIST ── */}
             {aiAnalysis ? (
-                 <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                 <div className="border border-zinc-200 overflow-hidden shadow-sm">
                     <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-800 bg-zinc-950 text-white">
                         <Target className="w-4 h-4 text-[#00CC6A]" />
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                        <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-400">
                             Dossiê de Fricção Comercial (Site Analysis)
                         </h3>
-                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-[#00CC6A]/60 border border-[#00CC6A]/30 px-2 py-0.5 rounded">
+                        <span className="ml-auto text-2xs font-black uppercase tracking-widest text-[#00CC6A]/60 border border-[#00CC6A]/30 px-2 py-0.5 rounded">
                             {aiAnalysis.segmento}
                         </span>
                     </div>
                     <div className="bg-white">
                         {/* Hipótese Central */}
                         <div className="p-8 border-b border-zinc-100 bg-zinc-50/50">
-                            <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                            <p className="text-xxs font-black text-red-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
                                 <AlertCircle size={12} /> Problema Identificado (O Gargalo)
                             </p>
                             <p className="text-lg font-medium text-zinc-900 leading-snug tracking-tight">
                                 "{aiAnalysis.problema_identificado}"
                             </p>
-                            <div className="mt-4 flex gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                            <div className="mt-4 flex gap-4 text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                 <span>Maturidade: <span className="text-zinc-800">{aiAnalysis.maturidade_digital}</span></span>
                                 <span>|</span>
                                 <span>Tom: <span className="text-zinc-800">{aiAnalysis.tom_comunicacao}</span></span>
@@ -300,7 +300,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
                             {/* Pontos Fracos */}
                             <div className="p-8 space-y-4">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
                                     <Crosshair size={14} className="text-red-400" /> Vazamentos (Gaps)
                                 </p>
                                 <ul className="space-y-4">
@@ -315,13 +315,13 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             
                             {/* Plano de Ação (Oportunidades) */}
                             <div className="p-8 space-y-4 bg-zinc-50/30">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
                                     <Zap size={14} className="text-[#00CC6A]" /> Plano de Ação Estratégico
                                 </p>
                                 <ul className="space-y-4">
                                     {(aiAnalysis.oportunidades_estrategicas || []).map((opt: string, i: number) => (
                                         <li key={i} className="flex items-start gap-3 text-sm text-zinc-700 leading-tight">
-                                            <span className="text-[#00CC6A] font-black mt-0.5 text-[10px]">0{i+1}</span>
+                                            <span className="text-[#00CC6A] font-black mt-0.5 text-xxs">0{i+1}</span>
                                             {opt}
                                         </li>
                                     ))}
@@ -332,10 +332,10 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         {/* Tecnologias Mapeadas */}
                         {aiAnalysis.ferramentas_detectadas && (
                             <div className="p-6 border-t border-zinc-100 bg-zinc-50 flex flex-wrap gap-4 items-center">
-                                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest w-full md:w-auto">Tech Stack Identificada:</p>
+                                <p className="text-2xs font-black text-zinc-400 uppercase tracking-widest w-full md:w-auto">Tech Stack Identificada:</p>
                                 <div className="flex flex-wrap gap-2">
                                     {aiAnalysis.ferramentas_detectadas.split(',').map((tech: string, i: number) => (
-                                        <span key={i} className="px-3 py-1 bg-white border border-zinc-200 text-zinc-600 text-[10px] font-bold uppercase tracking-wider rounded-lg">
+                                        <span key={i} className="px-3 py-1 bg-white border border-zinc-200 text-zinc-600 text-xxs font-bold uppercase tracking-wider ">
                                             {tech.trim()}
                                         </span>
                                     ))}
@@ -345,7 +345,7 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                     </div>
                  </div>
             ) : project.client_site ? (
-                <div className="border border-dashed border-zinc-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 bg-zinc-50/50 text-center">
+                <div className="border border-dashed border-zinc-200 p-6 flex flex-col items-center justify-center gap-4 bg-zinc-50/50 text-center">
                      <Wrench className="w-8 h-8 text-zinc-300" />
                      <div>
                          <p className="text-sm font-black text-zinc-500 uppercase tracking-widest">Dossiê de Conversão Pendente</p>
@@ -359,13 +359,13 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
             {/* ── BLOCO 1: Dados da Empresa (CNPJ / Receita Federal) ── */}
             {cnpjData ? (
-                <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+                <div className="border border-zinc-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                         <Building2 className="w-4 h-4 text-zinc-400" />
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                             Dados Oficiais - Receita Federal
                         </h3>
-                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-zinc-300">
+                        <span className="ml-auto text-2xs font-black uppercase tracking-widest text-zinc-300">
                             BrasilAPI
                         </span>
                     </div>
@@ -382,14 +382,14 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             { label: 'Contato',              value: cnpjData.telefone || cnpjData.email || '-' },
                         ].map(({ label, value }) => (
                             <div key={label}>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">{label}</p>
+                                <p className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-0.5">{label}</p>
                                 <p className="text-sm font-bold text-zinc-900 leading-snug">{value || '-'}</p>
                             </div>
                         ))}
                     </div>
                     {cnpjData.cnae_principal && (
                         <div className="px-6 pb-5">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1">CNAE Principal</p>
+                            <p className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-1">CNAE Principal</p>
                             <p className="text-sm font-bold text-zinc-900">
                                 {cnpjData.cnae_principal.codigo} - {cnpjData.cnae_principal.descricao}
                             </p>
@@ -400,13 +400,13 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
             {/* ── BLOCO 2: Performance do Site (Google PSI) ── */}
             {sitePerf ? (
-                <div className="border border-zinc-200 rounded-2xl overflow-hidden">
+                <div className="border border-zinc-200 overflow-hidden">
                     <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                         <Globe className="w-4 h-4 text-zinc-400" />
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                             Performance Bruta do Site
                         </h3>
-                        <span className="ml-auto text-[9px] font-black uppercase tracking-widest text-zinc-300">
+                        <span className="ml-auto text-2xs font-black uppercase tracking-widest text-zinc-300">
                             Google PageSpeed
                         </span>
                     </div>
@@ -423,10 +423,10 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                                 { label: 'FCP', value: sitePerf.fcp, tip: 'First Contentful Paint' },
                                 { label: 'TTI', value: sitePerf.tti, tip: 'Time to Interactive' },
                             ].map(({ label, value, tip }) => (
-                                <div key={label} className="bg-zinc-50 border border-zinc-100 rounded-xl p-3 text-center">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{label}</p>
+                                <div key={label} className="bg-zinc-50 border border-zinc-100 p-3 text-center">
+                                    <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">{label}</p>
                                     <p className="text-lg font-black text-zinc-900 mt-1">{value || '-'}</p>
-                                    <p className="text-[9px] font-medium text-zinc-400 mt-0.5 leading-tight">{tip}</p>
+                                    <p className="text-2xs font-medium text-zinc-400 mt-0.5 leading-tight">{tip}</p>
                                 </div>
                             ))}
                         </div>
@@ -443,8 +443,8 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                             { label: 'SAM - Serviceable Market',       value: marketData.market_sizing?.sam, accent: 'border-[#00CC6A]/30' },
                             { label: 'SOM - Obtainable Market',        value: marketData.market_sizing?.som, accent: 'border-zinc-200' },
                         ].map(({ label, value, accent }) => (
-                            <div key={label} className={cn('border rounded-2xl p-6 bg-white shadow-sm', accent)}>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">{label}</p>
+                            <div key={label} className={cn('border p-6 bg-white shadow-sm', accent)}>
+                                <p className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-3">{label}</p>
                                 <p className="font-bold text-zinc-900 leading-snug text-sm">{value || 'Dados indisponíveis'}</p>
                             </div>
                         ))}
@@ -452,18 +452,18 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
 
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         {/* Buyer Personas */}
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="border border-zinc-200 overflow-hidden shadow-sm">
                             <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                                 <Users className="w-4 h-4 text-zinc-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                                     Buyer Personas Mapeadas
                                 </h3>
                             </div>
                             <div className="p-5 space-y-3">
                                 {(marketData.personas || []).map((persona: any, idx: number) => (
-                                    <div key={idx} className="bg-zinc-50 border border-zinc-100 p-4 rounded-xl">
+                                    <div key={idx} className="bg-zinc-50 border border-zinc-100 p-4 ">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="px-2 py-0.5 bg-zinc-900 text-white text-[9px] font-black uppercase rounded tracking-wider">
+                                            <span className="px-2 py-0.5 bg-zinc-900 text-white text-2xs font-black uppercase rounded tracking-wider">
                                                 ICP {idx + 1}
                                             </span>
                                             <span className="font-bold text-zinc-900 text-sm truncate">
@@ -482,18 +482,18 @@ export const MarketIntelligenceTab: React.FC<MarketIntelligenceTabProps> = ({ pr
                         </div>
 
                         {/* Radar de Concorrentes */}
-                        <div className="border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="border border-zinc-200 overflow-hidden shadow-sm">
                             <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-100 bg-zinc-50">
                                 <Search className="w-4 h-4 text-zinc-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-500">
                                     Radar de Concorrentes
                                 </h3>
                             </div>
                             <div className="p-5 space-y-3">
                                 {(marketData.competitor_benchmarks || []).map((comp: any, idx: number) => (
-                                    <div key={idx} className="bg-zinc-50 border border-zinc-100 p-4 rounded-xl">
+                                    <div key={idx} className="bg-zinc-50 border border-zinc-100 p-4 ">
                                         <h4 className="font-black text-zinc-900 text-sm mb-1">{comp.company_name}</h4>
-                                        <p className="text-[9px] uppercase font-black text-[#00CC6A] mb-1.5 tracking-widest">{comp.key_metric}</p>
+                                        <p className="text-2xs uppercase font-black text-[#00CC6A] mb-1.5 tracking-widest">{comp.key_metric}</p>
                                         <p className="text-xs font-medium text-zinc-500 leading-snug">{comp.strategy_insight}</p>
                                     </div>
                                 ))}

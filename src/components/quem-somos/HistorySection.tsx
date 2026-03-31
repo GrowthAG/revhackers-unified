@@ -11,7 +11,7 @@ const HistorySection = () => {
             <div className="space-y-6 lg:col-span-8">
               <div className="flex items-center gap-3">
                 <span className="text-revgreen text-xs">•</span>
-                <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-[0.4em] font-black">
+                <span className="font-mono text-xxs text-zinc-400 uppercase tracking-[0.4em] font-black">
                   REVHACKERS // INTELLIGENCE UNIT
                 </span>
               </div>
@@ -34,12 +34,12 @@ const HistorySection = () => {
             {/* Era 01 */}
             <div className="bg-white p-12 space-y-8 animate-fade-in [animation-delay:400ms] group hover:bg-zinc-50 transition-colors duration-500">
               <div className="flex justify-between items-start">
-                <span className="text-[9px] font-mono text-zinc-300 font-black uppercase tracking-widest">
+                <span className="text-2xs font-mono text-zinc-300 font-black uppercase tracking-widest">
                   [ RH_LOG.01 // ORIGEM ]
                 </span>
                 <div className="w-1 h-1 bg-zinc-200 group-hover:bg-black transition-colors" />
               </div>
-              <p className="text-zinc-500 text-[16px] leading-relaxed font-medium">
+              <p className="text-zinc-500 text-base leading-relaxed font-medium">
                 Nascemos como <span className="text-black font-bold">GrowthAG</span>. Percebemos cedo que "vibe code" e vaidade não sustentam operações sérias. Onde o mercado via criatividade, instalamos processos.
               </p>
             </div>
@@ -47,12 +47,12 @@ const HistorySection = () => {
             {/* Era 02 */}
             <div className="bg-white p-12 space-y-8 animate-fade-in [animation-delay:600ms] group hover:bg-zinc-50 transition-colors duration-500">
               <div className="flex justify-between items-start">
-                <span className="text-[9px] font-mono text-zinc-300 font-black uppercase tracking-widest">
+                <span className="text-2xs font-mono text-zinc-300 font-black uppercase tracking-widest">
                   [ RH_LOG.02 // LAB ]
                 </span>
                 <div className="w-1 h-1 bg-zinc-200 group-hover:bg-revgreen transition-colors" />
               </div>
-              <p className="text-zinc-500 text-[16px] leading-relaxed font-medium">
+              <p className="text-zinc-500 text-base leading-relaxed font-medium">
                 Evoluímos para a <span className="text-black font-bold">RevHackers</span>. Deixamos de ser agência para ser laboratório. Hoje, instalamos a arquitetura de receita que suporta o próximo nível de escala B2B.
               </p>
             </div>
@@ -61,12 +61,12 @@ const HistorySection = () => {
 
         {/* Minimal Metadata Footer */}
         <div className="max-w-6xl mx-auto mt-20 pt-8 border-t border-zinc-50 flex justify-between items-center opacity-30">
-          <span className="text-[8px] font-mono text-black font-black uppercase tracking-[0.5em]">
+          <span className="text-3xs font-mono text-black font-black uppercase tracking-[0.5em]">
             SYST_SECURE // ARCH_STABLE
           </span>
           <div className="flex gap-8">
-            <span className="text-[8px] font-mono font-bold uppercase tracking-widest">LATENCY: NULL</span>
-            <span className="text-[8px] font-mono font-bold uppercase tracking-widest">SYNC: 2026.RH</span>
+            <span className="text-3xs font-mono font-bold uppercase tracking-widest">LATENCY: NULL</span>
+            <span className="text-3xs font-mono font-bold uppercase tracking-widest">SYNC: 2026.RH</span>
           </div>
         </div>
       </div>

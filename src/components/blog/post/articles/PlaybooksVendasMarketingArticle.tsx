@@ -133,15 +133,15 @@ RITUAL DE GESTÃO:
 
                 {/* Stats Section */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12 not-prose">
-                    <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
+                    <div className="bg-zinc-900 p-6 text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">-40%</div>
                         <div className="text-sm text-zinc-400 uppercase tracking-wider">Tempo de Ramp-up de Novos Contratados</div>
                     </div>
-                    <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
+                    <div className="bg-zinc-900 p-6 text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">+28%</div>
                         <div className="text-sm text-zinc-400 uppercase tracking-wider">Aumento na Conversão do Funil</div>
                     </div>
-                    <div className="bg-zinc-900 p-6 rounded-lg text-white border border-zinc-800">
+                    <div className="bg-zinc-900 p-6 text-white border border-zinc-800">
                         <div className="text-4xl font-mono font-bold text-revgreen mb-2">100%</div>
                         <div className="text-sm text-zinc-400 uppercase tracking-wider">Propriedade Intelectual da Empresa (Não do Vendedor)</div>
                     </div>
@@ -157,7 +157,7 @@ RITUAL DE GESTÃO:
 
                 <div className="not-prose grid gap-4 mb-16">
                     {anatomy.map((item, i) => (
-                        <div key={i} className="flex flex-col md:flex-row gap-6 p-6 bg-white border border-zinc-200 rounded-lg shadow-sm transition-shadow relative overflow-hidden group">
+                        <div key={i} className="flex flex-col md:flex-row gap-6 p-6 bg-white border border-zinc-200 shadow-sm transition-shadow relative overflow-hidden group">
                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-zinc-200 group-hover:bg-revgreen transition-colors"></div>
                             <div className="md:w-32 shrink-0 flex flex-col justify-center">
                                 <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">{item.label}</span>
@@ -177,15 +177,15 @@ RITUAL DE GESTÃO:
 
                 <div className="space-y-12 mb-16">
                     {strategies.map((strategy, index) => (
-                        <div key={index} className="bg-zinc-50 p-8 rounded-xl border border-zinc-100">
+                        <div key={index} className="bg-zinc-50 p-8 border border-zinc-100">
                             <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-2">
-                                <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
+                                <span className="w-8 h-8 bg-black text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                                 {strategy.title}
                             </h3>
                             <p className="text-zinc-700 mb-6 font-medium">
                                 {strategy.description}
                             </p>
-                            <div className="bg-white p-6 rounded-lg border border-zinc-200 shadow-sm mb-4">
+                            <div className="bg-white p-6 border border-zinc-200 shadow-sm mb-4">
                                 <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Exemplo Prático</h4>
                                 <p className="text-zinc-600 text-sm font-mono leading-relaxed">{strategy.example}</p>
                             </div>
@@ -210,14 +210,14 @@ RITUAL DE GESTÃO:
                         <Card key={index} className="bg-white border border-zinc-200 shadow-sm transition-shadow overflow-hidden">
                             <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
                                 <div className="text-xs font-bold text-zinc-900 uppercase tracking-wider truncate pr-4 flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-revgreen"></div>
+                                    <div className="w-2 h-2  bg-revgreen"></div>
                                     {template.name}
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

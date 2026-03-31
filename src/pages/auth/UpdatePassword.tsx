@@ -71,7 +71,7 @@ const UpdatePassword = () => {
                         <h1 className="text-2xl font-black tracking-[0.2em] text-black uppercase text-center leading-none mb-4 mt-8">
                             Nova Senha
                         </h1>
-                        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
+                        <p className="text-zinc-500 text-xxs uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
                             Defina uma nova senha para sua conta.
                         </p>
                     </div>
@@ -82,20 +82,20 @@ const UpdatePassword = () => {
                                 <CheckCircle className="w-5 h-5" />
                             </div>
                             <h3 className="text-black font-black uppercase tracking-widest text-xs mb-4">Senha Atualizada</h3>
-                            <p className="text-zinc-500 text-[10px] uppercase tracking-widest mb-4 leading-relaxed">
+                            <p className="text-zinc-500 text-xxs uppercase tracking-widest mb-4 leading-relaxed">
                                 Redirecionando para o login...
                             </p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {error && (
-                                <div className="text-red-500 text-[9px] font-light uppercase tracking-[0.3em] text-center mb-10">
+                                <div className="text-red-500 text-2xs font-light uppercase tracking-[0.3em] text-center mb-10">
                                     {error}
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Nova Senha</label>
+                                <label className="text-xxs uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Nova Senha</label>
                                 <Input
                                     type="password"
                                     placeholder="••••••••"
@@ -108,7 +108,7 @@ const UpdatePassword = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Confirmar Senha</label>
+                                <label className="text-xxs uppercase tracking-[0.2em] text-zinc-500 font-black pl-1">Confirmar Senha</label>
                                 <Input
                                     type="password"
                                     placeholder="••••••••"

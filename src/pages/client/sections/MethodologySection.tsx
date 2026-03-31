@@ -35,6 +35,52 @@ const defaultSteps = [
     },
 ];
 
+const consultingSteps = [
+    {
+        phase: '01', name: 'Raio-X 360º', tagline: 'Semana 1–2',
+        description: 'Antes de construir qualquer coisa, precisamos enxergar tudo. Auditamos toda a operação de receita da empresa: canais, funil, CRM, time, métricas e posicionamento. O resultado é um mapa preciso de onde a receita está vazando e onde estão as maiores alavancas de crescimento.',
+        principles: ['Auditoria completa de Revenue Stack (CRM, ferramentas, analytics)', 'Mapeamento do funil atual: da attração ao fechamento', 'Diagnóstico de time: capacidade, maturidade e gargalos', 'Entrega: Raio-X executivo com oportunidades priorizadas'],
+    },
+    {
+        phase: '02', name: 'Engenharia de Receita', tagline: 'Semana 2–4',
+        description: 'Com o mapa em mãos, projetamos a máquina de receita ideal para o estágio atual da empresa. Reestruturamos o pipeline, definimos SLAs entre Marketing e Vendas, configuramos o CRM com os estágios corretos e desenhamos a arquitetura de automação que vai suportar o crescimento.',
+        principles: ['Redesenho do pipeline com estágios, pesos e SLAs definidos', 'Configuração do CRM com campos, automações e relatórios', 'Arquitetura de integrações: CRM, marketing, analytics e BI', 'Entrega: Blueprint operacional da máquina de receita'],
+    },
+    {
+        phase: '03', name: 'Ativação de Demanda', tagline: 'Semana 3–8',
+        description: 'Ativamos os três fluxos de entrada de leads simultaneamente: Seeds (rede e indicação), Nets (marketing de demanda) e Spears (prospecção ativa). Cada canal é calibrado para o ICP da empresa e medido desde o primeiro dia.',
+        principles: ['Seeds: programa de indicação e network estratégico ativado', 'Nets: campanha de demanda segmentada por ICP e canal', 'Spears: sequência de outreach personalizado para contas-alvo', 'Primeiro ROAS e CAC real aferidos em até 30 dias'],
+    },
+    {
+        phase: '04', name: 'Escala & Governança', tagline: 'Mês 2 em diante',
+        description: 'Com dados reais de CAC, LTV, ROAS e churn, entramos no ciclo de otimização e escala. Revisamos mensalmente os OKRs, ajustamos a alocação de recursos e garantimos que a operação mantenha ritmo de crescimento previsível sem depender de herismos individuais.',
+        principles: ['RAPT mensal: Revisão, Alinhamento, Prioridade, Tática', 'LTV:CAC acima de 3:1 como critério de escala de canal', 'Dashboard 360º: todas as métricas vitais em uma tela', 'Expansão de conta: upsell e cross-sell integrados ao pipeline'],
+    },
+];
+
+const funnelsImplSteps = [
+    {
+        phase: '01', name: 'Briefing & Oferta', tagline: 'Semana 1',
+        description: 'Nenhuma página antes de definir o que vai ser vendido e para quem. Mapeamos os ângulos da oferta, escolhemos o formato do funil (VSL, quiz, webinar, direto) e entregamos o documento-matriz de copy que serve de base para tudo que vem a seguir.',
+        principles: ['Pesquisa de Avatar: dores, objeções e linguagem do ICP', 'Definição do formato do funil e da promessa principal', 'Documento-Matriz: headline, CTA, proposta de valor e caminhos', 'Wireframe conceitual aprovado antes de qualquer código'],
+    },
+    {
+        phase: '02', name: 'Landing & Conversão', tagline: 'Semana 2–3',
+        description: 'A página entra no ar com estrutura de conversão testada. Configuramos o rastreamento ponta-a-ponta (Pixel, API de Conversões, eventos) para que cada visita seja mensurável antes de receber qualquer tráfego pago.',
+        principles: ['Landing page de alta conversão no ar com copy e design finais', 'Pixel, API de Conversões e eventos configurados no servidor', 'Formulários e integrações com CRM e e-mail funcionando', 'Checkout ou agendamento testados end-to-end antes do tráfego'],
+    },
+    {
+        phase: '03', name: 'Tráfego & Automação', tagline: 'Semana 4–6',
+        description: 'As campanhas entram no ar com configuração certa: estrutura de campanha, segmentação por ICP e criativos de teste. Em paralelo, ativamos as sequências automáticas de nutrição para os leads que entram mas não convertem de imediato.',
+        principles: ['Estrutura de campanha: campanha única, adsets por segmento', 'Criativos de teste A/B por ângulo da oferta', 'Flows de follow-up: SMS, e-mail e WhatsApp configurados', 'Primeiro ROAS real aferido e documentado'],
+    },
+    {
+        phase: '04', name: 'Otimização & Escala', tagline: 'Mês 2 em diante',
+        description: 'Com dados reais de CPL, CPA e Taxa de Conversão, cortamos o que não funciona e dobramos no que funciona. A fase final entrega um blueprint completo de tráfego que o cliente pode operar ou escalar com qualquer agência de mídia futuramente.',
+        principles: ['Testes A/B em dobras de objeção e variantes de CTA', 'Corte de adsets perdedores e escala dos vencedores', 'Dashboard de métricas: CPL, CPA, ROAS e LTV por canal', 'Entrega: Blueprint completo de tráfego + playbook de operação'],
+    },
+];
+
 const crmSteps = [
     {
         phase: '01', name: 'Diagnóstico & Arquitetura', tagline: 'Semana 1–2',
@@ -106,8 +152,41 @@ const devSteps = [
     },
 ];
 
-// ── Differentials por tipo ────────────────────────────────────────────────
+// ── Advisory steps (No-Hands-On: calls, frameworks, orientação) ─────────────────
+const advisorySteps = [
+    {
+        phase: '01', name: 'Diagnóstico & Imersão', tagline: 'Semana 1–2',
+        description: 'Antes de qualquer orientação, precisamos entender exatamente onde você está. Realizamos um diagnóstico profundo da operação via calls estruturadas, identificamos os principais gargalos de receita e mapeamos o estado atual vs. o estado ideal.',
+        principles: ['Call de imersão: Revenue Stack, funil, time e métricas', 'Mapeamento de gargalos críticos priorizados por impacto', 'Definição de OKRs e critérios de sucesso do engajamento', 'Entrega: Diagnóstico executivo + Roadmap de Ação'],
+    },
+    {
+        phase: '02', name: 'Arquitetura Estratégica', tagline: 'Semana 2–4',
+        description: 'Com o diagnóstico em mãos, entregamos o blueprint completo. Desenhamos os processos ideais, os playbooks de operação e os frameworks que o cliente vai implementar. O resultado é um manual de instruções personalizado para o seu negócio.',
+        principles: ['Playbooks de processo desenhados para o seu contexto', 'Frameworks de priorização e tomada de decisão', 'Definição de SLAs internos e ritmo de operação', 'Entrega: Blueprint Operacional aprovado pelo cliente'],
+    },
+    {
+        phase: '03', name: 'Orientação & Prática', tagline: 'Semana 3–8',
+        description: 'O cliente executa, nós orientamos. Calls de acompanhamento por ciclo para revisar o que foi implementado, corrigir desvios e validar os próximos passos. Cada sessão gera atas e encaminhamentos documentados.',
+        principles: ['Calls quinzenais de orientação e revisão de execução', 'ATA de cada sessão com encaminhamentos e responsáveis', 'Análise das métricas do cliente vs. OKRs acordados', 'Ajustes de rota quando os dados indicam mudança de estratégia'],
+    },
+    {
+        phase: '04', name: 'Revisão & Sustentação', tagline: 'Mês final',
+        description: 'Encerramos o ciclo com uma revisão abrangente dos OKRs alcançados, lições aprendidas e um plano de sustentação para o cliente continuar crescendo de forma autônoma. O cliente sai com claridade e autonomia.',
+        principles: ['Review final de OKRs: o que foi alcançado e o que ajustar', 'Documentação das lições e decisões do ciclo', 'Plano de sustentação para operação autônoma', 'Entrega: Playbook Final + Relatório do Ciclo Advisory'],
+    },
+];
+
 const differentialsByType: Record<string, { title: string; desc: string }[]> = {
+    advisory: [
+        { title: 'Orientação sem Dependência', desc: 'Você aprende a operar. Não criamos dependência: cada entrega vira conhecimento interno que permanece na empresa.' },
+        { title: 'Playbook Personalizado', desc: 'Nada genérico. Cada framework e processo é desenhado para o seu segmento, estratégia e momento de crescimento.' },
+        { title: 'Ritmo de Decisão Acelerado', desc: 'Calls estruturadas com ATA, encaminhamentos e responsáveis. A orientação não para entre sessões.' },
+    ],
+    consulting: [
+        { title: 'Visão 360º Completa', desc: 'Auditamos toda a operação de receita antes de executar qualquer ação. Nada é construído em cima de suposições.' },
+        { title: 'Três Fontes de Demanda', desc: 'Seeds, Nets e Spears ativados em paralelo. O crescimento não depende de um único canal que pode falhar.' },
+        { title: 'Governança Contínua', desc: 'RAPT mensal com dados reais. A operação continua otimizando mesmo depois que o sprint inicial é entregue.' },
+    ],
     crm_ops: [
         { title: 'Processo Documentado', desc: 'Tudo que construímos vira Manual Operacional interno do cliente. A operação continua sem depender da RevHackers.' },
         { title: 'Adoção Garantida', desc: 'O melhor sistema do mundo falha se o time não preenche. Treinamos até a adoção ser visceral.' },
@@ -123,6 +202,11 @@ const differentialsByType: Record<string, { title: string; desc: string }[]> = {
         { title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão - não por ordem alfabética. Resultado visível toda semana.' },
         { title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto - não bônus. Entregamos o que prometemos.' },
     ],
+    funnels_impl: [
+        { title: 'Oferta Antes de Página', desc: 'Nenhum pixel de código antes da promessa de venda estar aprovada. A estrutura da oferta detérmina tudo.' },
+        { title: 'Rastreamento Cirurgico', desc: 'API de Conversões + eventos no servidor instalados antes do primeiro real investido em tráfego.' },
+        { title: 'Dados como Balizador', desc: 'CPL, CPA e ROAS reais determinam onde escalar. Sem achismo, sem gasto às cegas.' },
+    ],
     default: [
         { title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
         { title: 'Ciclo Completo de Receita', desc: 'Da atração ao fechamento ao sucesso do cliente - cada etapa conectada e medida.' },
@@ -136,10 +220,13 @@ export default function MethodologySection({ plan }: { plan: any }) {
 
     // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda por cliente.
     const stepsMap: Record<string, typeof defaultSteps> = {
-        crm_ops: crmSteps,
-        founder: founderSteps,
-        dev:     devSteps,
-        site:    devSteps,
+        advisory:     advisorySteps,
+        consulting:   consultingSteps,
+        crm_ops:      crmSteps,
+        founder:      founderSteps,
+        dev:          devSteps,
+        site:         devSteps,
+        funnels_impl: funnelsImplSteps,
     };
     
     let baseSteps = stepsMap[projectType] || defaultSteps;
@@ -174,16 +261,22 @@ export default function MethodologySection({ plan }: { plan: any }) {
     const differentials = differentialsByType[projectType] || differentialsByType['default'];
 
     const eyebrowByType: Record<string, string> = {
-        crm_ops: 'Protocolo CRM',
-        founder: 'Protocolo Founder',
-        dev:     'Protocolo de Entrega',
-        site:    'Protocolo de Entrega',
+        advisory:     'Protocolo Advisory',
+        consulting:   'Protocolo 360 Growth',
+        crm_ops:      'Protocolo CRM',
+        founder:      'Protocolo Founder',
+        dev:          'Protocolo de Entrega',
+        site:         'Protocolo de Entrega',
+        funnels_impl: 'Protocolo de Funis',
     };
     const titleLine2ByType: Record<string, string> = {
-        crm_ops: 'RevHackers™',
-        founder: 'Founder™',
-        dev:     'Dev™',
-        site:    'Dev™',
+        advisory:     'Advisory™',
+        consulting:   '360º™',
+        crm_ops:      'RevHackers™',
+        founder:      'Founder™',
+        dev:          'Dev™',
+        site:         'Dev™',
+        funnels_impl: 'Funis™',
     };
 
     return (
@@ -202,13 +295,13 @@ export default function MethodologySection({ plan }: { plan: any }) {
                     {displaySteps.map((step: any, i: number) => {
                         const items = step.principles || step.tags || [];
                         return (
-                            <div key={i} className="p-8 bg-white border border-zinc-200 rounded-xl">
+                            <div key={i} className="p-8 bg-white border border-zinc-200 ">
                                 <div className="flex items-center gap-5 mb-5">
                                     <span className="font-mono text-[2.75rem] leading-none font-bold text-zinc-100">
                                         {step.phase || String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div>
-                                        <p className="text-[13px] uppercase tracking-widest font-bold text-zinc-400">
+                                        <p className="text-mini uppercase tracking-widest font-bold text-zinc-400">
                                             {step.tagline || ''}
                                         </p>
                                         <h3 className="text-xl md:text-2xl font-bold text-black mt-1 leading-tight">
@@ -218,7 +311,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                 </div>
                                 <EditableField
                                     path={`methodology_data.steps.${i}.description`}
-                                    className="text-[16px] leading-relaxed mb-6 text-zinc-500 font-medium"
+                                    className="text-base leading-relaxed mb-6 text-zinc-500 font-medium"
                                     placeholder={step.description}
                                     multiline
                                 />
@@ -227,7 +320,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                         {items.map((item: string, j: number) => (
                                             <div key={j} className="flex items-start gap-3">
                                                 <span className="text-zinc-300 shrink-0 text-sm mt-0.5">/</span>
-                                                <span className="text-[15px] text-zinc-600 leading-snug">{item}</span>
+                                                <span className="text-body text-zinc-600 leading-snug">{item}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -240,16 +333,16 @@ export default function MethodologySection({ plan }: { plan: any }) {
                 {/* Differentials */}
                 <div className="grid md:grid-cols-3 gap-6 mt-8">
                     {differentials.map((d, i) => (
-                        <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 rounded-xl">
+                        <div key={i} className="p-6 bg-zinc-50 border border-zinc-200 flex flex-col gap-4 ">
                             <div className="pt-2">
                                 <EditableField
                                     path={`methodology_data.differentials.${i}.title`}
-                                    className="font-bold text-black text-[18px] mb-2 block"
+                                    className="font-bold text-black text-lg mb-2 block"
                                     placeholder={d.title}
                                 />
                                 <EditableField
                                     path={`methodology_data.differentials.${i}.desc`}
-                                    className="text-[15px] text-zinc-500 leading-relaxed font-medium"
+                                    className="text-body text-zinc-500 leading-relaxed font-medium"
                                     placeholder={d.desc}
                                     multiline
                                 />

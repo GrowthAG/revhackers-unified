@@ -106,7 +106,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
       };
 
       if (isEditing && post) {
-        const { error } = await supabase.from('blog_posts').update(postData).eq('id', post.id);
+        const { error } = await supabase.from('blog_posts').update(postData).eq('id', String(post.id));
         if (error) throw error;
         toast.success('Artigo atualizado!');
       } else {
@@ -124,7 +124,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
 
   const handleDelete = async () => {
     if (!post || !confirm('Tem certeza que deseja excluir?')) return;
-    const { error } = await supabase.from('blog_posts').delete().eq('id', post.id);
+    const { error } = await supabase.from('blog_posts').delete().eq('id', String(post.id));
     if (error) toast.error('Erro ao excluir');
     else {
       toast.success('Artigo excluído');
@@ -185,12 +185,12 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
     return (
       <div className="mt-8 border-t border-zinc-100 pt-8 animate-in fade-in slide-in-from-bottom-4">
         <div className="flex items-center gap-2 mb-6">
-          <div className="p-2 bg-emerald-50 rounded-lg">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+          <div className="p-2 bg-zinc-100 border border-zinc-200">
+            <div className="w-2 h-2 bg-zinc-900" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-widest">Oportunidades Visuais Detectadas</h3>
-            <p className="text-[11px] text-zinc-400">A IA identificou {matches.length} pontos para enriquecimento visual.</p>
+            <p className="text-tiny text-zinc-400">A IA identificou {matches.length} pontos para enriquecimento visual.</p>
           </div>
         </div>
 
@@ -202,17 +202,17 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
             const isGenerating = generatingImageId === idx;
 
             return (
-              <div key={idx} className="bg-zinc-50 border border-zinc-200 rounded-xl p-5 flex flex-col gap-4 hover:border-zinc-300 transition-all group relative overflow-hidden">
+              <div key={idx} className="bg-zinc-50 border border-zinc-200 p-5 flex flex-col gap-4 hover:border-zinc-300 transition-all group relative overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-zinc-200 text-zinc-600 px-2 py-1 rounded-md">
+                  <span className="text-xxs font-black uppercase tracking-widest bg-zinc-200 text-zinc-600 px-2 py-1">
                     {style}
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-300">#{idx + 1}</span>
+                  <span className="text-xxs font-mono text-zinc-300">#{idx + 1}</span>
                 </div>
 
                 {/* Prompt Preview */}
-                <p className="text-xs text-zinc-600 font-medium leading-relaxed bg-white p-3 rounded-lg border border-zinc-100 italic">
+                <p className="text-xs text-zinc-600 font-medium leading-relaxed bg-white p-3 border border-zinc-100 italic">
                   "{prompt}"
                 </p>
 
@@ -229,14 +229,14 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
                     </>
                   ) : (
                     <>
-                      <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                      <div className="w-2 h-2 bg-zinc-400 mr-2" />
                       Gerar & Inserir Imagem
                     </>
                   )}
                 </Button>
 
                 {/* Background Decoration */}
-                <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-zinc-200/20 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
+                <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-zinc-200/20 blur-2xl" />
               </div>
             );
           })}
@@ -305,7 +305,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
           </Button>
 
           {isEditing && (
-            <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200">
+            <Button variant="outline" onClick={handleDelete} className="h-9 w-9 p-0 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 hover:border-zinc-300">
               <Trash2 className="w-4 h-4" />
             </Button>
           )}
@@ -316,7 +316,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
             onClick={handleAnalyzeVisuals}
             disabled={isAnalyzing || isSaving}
             variant="outline"
-            className="h-9 text-xs font-medium text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-300 transition-all"
+            className="h-9 text-xs font-medium text-zinc-600 border-zinc-300 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-900 transition-all"
           >
             {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Sparkles className="w-3 h-3 mr-2" />}
             IA: Sugerir Imagens
@@ -326,7 +326,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
     >
       <div className="max-w-4xl mx-auto pb-20">
         {/* Cover Image */}
-        <div className="group relative rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 aspect-[21/9] flex items-center justify-center transition-all hover:border-zinc-300 mb-8">
+        <div className="group relative overflow-hidden bg-zinc-50 border border-zinc-100 aspect-[21/9] flex items-center justify-center transition-all hover:border-zinc-300 mb-8">
           {coverImage ? (
             <>
               <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
@@ -341,7 +341,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
 
           <label className="absolute inset-0 cursor-pointer flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploadingImage} />
-            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm text-xs font-medium text-zinc-700 flex items-center gap-2">
+            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 shadow-sm text-xs font-medium text-zinc-700 flex items-center gap-2">
               {isUploadingImage ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
               {coverImage ? 'Alterar Imagem' : 'Upload Imagem'}
             </div>
@@ -351,9 +351,9 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
         {/* Meta Fields Grid */}
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="space-y-1.5">
-            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Categoria</Label>
+            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Categoria</Label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="bg-white border-zinc-200 text-[13px] h-10">
+              <SelectTrigger className="bg-white border-zinc-200 text-mini h-10">
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>
@@ -363,11 +363,11 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">URL Slug</Label>
+            <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">URL Slug</Label>
             <Input
               value={slug}
               onChange={e => setSlug(e.target.value)}
-              className="bg-white border-zinc-200 text-[13px] h-10 font-mono text-zinc-600"
+              className="bg-white border-zinc-200 text-mini h-10 font-mono text-zinc-600"
               placeholder="url-do-artigo"
             />
           </div>
@@ -391,29 +391,29 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
         </div>
 
         {/* Excerpt */}
-        <div className="space-y-1.5 p-4 bg-zinc-50 rounded-lg border border-zinc-100 mb-8">
-          <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+        <div className="space-y-1.5 p-4 bg-zinc-50 border border-zinc-100 mb-8">
+          <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
             Resumo de Impacto (Excerpt)
-            <span className={`text-[10px] ml-auto ${excerpt.length > 160 ? 'text-red-500' : 'text-green-500'}`}>{excerpt.length}/160</span>
+            <span className={`text-xxs ml-auto ${excerpt.length > 160 ? 'text-zinc-900 font-black' : 'text-zinc-400'}`}>{excerpt.length}/160</span>
           </Label>
           <Textarea
             value={excerpt}
             onChange={e => setExcerpt(e.target.value)}
             placeholder="Uma ou duas frases que vendem o clique..."
-            className="border-none bg-transparent px-0 text-[14px] text-zinc-600 focus-visible:ring-0 min-h-[40px] resize-none italic"
+            className="border-none bg-transparent px-0 text-sm text-zinc-600 focus-visible:ring-0 min-h-[40px] resize-none italic"
           />
         </div>
 
         {/* Content Editor */}
         <div className="space-y-2 pt-4">
-          <Label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Conteúdo</Label>
+          <Label className="text-tiny font-semibold text-zinc-400 uppercase tracking-wider">Conteúdo</Label>
           <Textarea
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Comece a escrever ou cole o HTML gerado pela IA..."
-            className="min-h-[500px] border-zinc-200 text-[16px] leading-relaxed p-6 font-serif resize-y focus-visible:ring-zinc-200 focus-visible:border-zinc-300"
+            className="min-h-[500px] border-zinc-200 text-base leading-relaxed p-6 font-serif resize-y focus-visible:ring-zinc-200 focus-visible:border-zinc-300"
           />
-          <p className="text-[11px] text-zinc-400 text-right">
+          <p className="text-tiny text-zinc-400 text-right">
             Dica: Use HTML para formatação avançada ou Markdown simples.
           </p>
         </div>

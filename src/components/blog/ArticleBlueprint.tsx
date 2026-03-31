@@ -24,7 +24,7 @@ export const ArticleBlueprint: React.FC<ArticleBlueprintProps> = ({ title, items
                 {items.map((item, index) => (
                     <div
                         key={index}
-                        className={`flex gap-4 p-5 border rounded-lg transition-all ${item.isHighlight
+                        className={`flex gap-4 p-5 border transition-all ${item.isHighlight
                                 ? 'bg-black border-black text-white'
                                 : 'bg-white border-zinc-200 hover:border-zinc-300'
                             }`}

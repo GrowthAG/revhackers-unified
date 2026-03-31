@@ -16,6 +16,7 @@ interface SignatureEngineProps {
   documentContentToHash: string; // The raw text to hash to ensure integrity
   onSuccess?: (signerData: { name: string; role: string; cpf: string; email: string; hash: string }) => void;
   isOpen?: boolean;
+  checkboxText?: string;
 }
 
 export const SignatureEngine: React.FC<SignatureEngineProps> = ({
@@ -24,11 +25,10 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
   referenceId,
   documentContentToHash,
   onSuccess,
+  checkboxText = 'Declaro o aceite para darmos início ao faturamento e processo de onboarding descrito nesta página.'
 }) => {
   const [name, setName] = useState('');
-  const [cpf, setCpf] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   
   const [isSigning, setIsSigning] = useState(false);
@@ -52,8 +52,8 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
   };
 
   const handleSign = async () => {
-    if (!name || !cpf || !email || !role) {
-      toast.error('Preencha todos os campos fiduciários obrigatórios.');
+    if (!name || !email) {
+      toast.error('Preencha seu nome e e-mail para prosseguir.');
       return;
     }
     if (!termsAccepted) {
@@ -65,18 +65,18 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
     try {
       // 1. Generate the SHA-256 Document Hash based on content + timestamp
       const timestamp = new Date().toISOString();
-      const stringToHash = `${documentContentToHash}|${timestamp}|${email}|${cpf}`;
+      const stringToHash = `${documentContentToHash}|${timestamp}|${email}`;
       const documentHash = await generateHash(stringToHash);
 
-      // 2. Persist to Legal Vault (document_signatures)
+      // 2. Persist to Legal Vault (document_signatures) - using defaults for unused fields
       const { error } = await supabase.from('document_signatures').insert({
         project_id: projectId,
         reference_type: referenceType,
         reference_id: referenceId,
         signer_name: name,
-        signer_cpf_cnpj: cpf,
+        signer_cpf_cnpj: '000.000.000-00', // Default placeholder passed to DB
         signer_email: email,
-        signer_role: role,
+        signer_role: 'Contratante', // Default placeholder
         signer_ip: ipAddress,
         user_agent: navigator.userAgent,
         document_hash: documentHash
@@ -86,7 +86,7 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
 
       setIsSigned(true);
       toast.success('Assinatura Eletrônica Registrada com Sucesso!');
-      if (onSuccess) onSuccess({ name, role, cpf, email, hash: documentHash });
+      if (onSuccess) onSuccess({ name, role: 'Contratante', cpf: '000.000.000-00', email, hash: documentHash });
 
     } catch (err: any) {
       toast.error('Erro ao firmar assinatura: ' + err.message);
@@ -97,16 +97,16 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
 
   if (isSigned) {
     return (
-      <div className="bg-green-50/50 border border-green-200 rounded-xl p-8 text-center flex flex-col items-center justify-center space-y-4">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+      <div className="bg-green-50/50 border border-green-200 p-8 text-center flex flex-col items-center justify-center space-y-4">
+        <div className="w-16 h-16 bg-green-100 flex items-center justify-center">
           <ShieldCheck className="w-8 h-8 text-green-600" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-green-900">Documento Assinado e Blindado</h3>
+          <h3 className="text-xl font-bold text-green-900">Acordo Registrado</h3>
           <p className="text-green-700/80 text-sm mt-2">
-            O certificado de auditoria (Registro SHA-256) foi gravado em nossos cofres digitais.
+            O certificado de auditoria (Registro SHA-256) foi gravado.
             <br />
-            Este aceite tem validade jurídica nos moldes da Medida Provisória nº 2.200-2/2001.
+            Prossiga para a etapa de liberação financeira.
           </p>
         </div>
       </div>
@@ -114,58 +114,49 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
   }
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-xl p-6 md:p-8 space-y-6">
+    <div className="bg-white border border-zinc-200 p-6 md:p-8 space-y-6">
       <div className="flex items-center space-x-4 border-b pb-4">
-        <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center flex-shrink-0">
-          <FileCheck2 className="w-6 h-6 text-zinc-600" />
+        <div className="w-12 h-12 bg-emerald-50 flex items-center justify-center flex-shrink-0">
+          <FileCheck2 className="w-5 h-5 text-emerald-600" />
         </div>
         <div>
-          <h3 className="text-xl font-bold font-heading">Painel de Assinatura Eletrônica</h3>
-          <p className="text-zinc-500 text-sm">Por favor, confirme seus dados fiduciários para a validade do documento.</p>
+          <h3 className="text-xl font-bold font-heading text-zinc-900 tracking-tight">Aceite Prévio do Acordo</h3>
+          <p className="text-zinc-500 text-xs mt-1 leading-relaxed">Confirme seu nome e e-mail para validar a proposta antes de prosseguirmos para o sistema de pagamento.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Nome Completo (Signatário)</Label>
-          <Input placeholder="Ex: João da Silva" value={name} onChange={e => setName(e.target.value)} />
+          <Label className="text-xs font-bold text-zinc-700 uppercase tracking-widest">Nome Completo</Label>
+          <Input placeholder="Ex: João da Silva" value={name} onChange={e => setName(e.target.value)} className="h-12 bg-zinc-50 border-zinc-200" />
         </div>
         <div className="space-y-2">
-          <Label>CPF / CNPJ</Label>
-          <Input placeholder="Ex: 000.000.000-00" value={cpf} onChange={e => setCpf(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>E-mail Corporativo</Label>
-          <Input type="email" placeholder="joao@empresa.com" value={email} onChange={e => setEmail(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Cargo / Posição</Label>
-          <Input placeholder="Ex: CEO, Diretor de Vendas" value={role} onChange={e => setRole(e.target.value)} />
+          <Label className="text-xs font-bold text-zinc-700 uppercase tracking-widest">E-mail Corporativo</Label>
+          <Input type="email" placeholder="joao@empresa.com" value={email} onChange={e => setEmail(e.target.value)} className="h-12 bg-zinc-50 border-zinc-200" />
         </div>
       </div>
 
-      <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4 space-y-3">
+      <div className="bg-zinc-50 border border-zinc-100 p-4 space-y-3">
         <div className="flex items-start space-x-3">
           <Checkbox 
             id="legal-terms" 
             checked={termsAccepted} 
             onCheckedChange={(c) => setTermsAccepted(c as boolean)} 
-            className="mt-1"
+            className="mt-1 border-zinc-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
           />
-          <Label htmlFor="legal-terms" className="text-xs text-zinc-600 leading-relaxed font-normal cursor-pointer">
-            Declaro ter lido e compreendido os termos embutidos neste documento eletrônico, manifestando meu aceite.
-            Reconheço que esta assinatura digital coleta dados identificáveis, incluindo endereço de IP (<span className="font-mono text-zinc-900 bg-zinc-200 px-1 rounded">{ipAddress}</span>), timestamp oficial de Brasília e metadados criptografados a nível de integridade judicial.
+          <Label htmlFor="legal-terms" className="text-xs text-zinc-500 leading-relaxed font-normal cursor-pointer select-none">
+            {checkboxText}
           </Label>
         </div>
       </div>
 
       <Button 
         onClick={handleSign} 
-        disabled={isSigning || !termsAccepted || !name || !cpf || !email || !role}
-        className="w-full bg-black hover:bg-zinc-800 text-white font-bold h-12 rounded-xl text-lg uppercase tracking-widest transition-all"
+        disabled={isSigning || !termsAccepted || !name || !email}
+        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-14 text-sm uppercase tracking-widest transition-all shadow-sm shadow-emerald-200"
       >
-        {isSigning ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <ShieldCheck className="w-5 h-5 mr-2" />}
-        {isSigning ? 'Processando Criptografia...' : 'Assinar e Vincular'}
+        {isSigning ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
+        {isSigning ? 'Registrando...' : 'Aceitar Acordo e Avançar'}
       </Button>
     </div>
   );

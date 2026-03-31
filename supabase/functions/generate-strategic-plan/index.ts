@@ -1,5 +1,20 @@
+// @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+// @ts-ignore - Supabase Deno environment
 import { createClient } from "npm:@supabase/supabase-js@2"
+
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -526,6 +541,11 @@ Use esses conceitos ao estruturar geração de demanda, pipeline e OKRs do plano
 Acabamos de realizar o Onboarding/Diagnóstico (Kickoff) com um cliente.
 As respostas do diagnóstico (REI) fornecidas revelam os gargalos, o caos interno e as restrições da empresa.
 
+REGRA ABSOLUTA DE IDIOMA E ORTOGRAFIA:
+1. TODO o texto gerado DEVE estar em Português do Brasil IMPECÁVEL.
+2. É ESTRITAMENTE OBRIGATÓRIO o uso correto de todos os acentos e pontuações (ex: Reunião, Identificado, Ação, Avaliação, Afiliados).
+3. Nunca cometa erros de digitação grosseiros como "Afilaidos", "Indetificado" ou "Finalacao". Revise as palavras mentalmente antes de gerá-las no JSON.
+
 ${frameworkContext}
 
 CONCEXTO DO CLIENTE:
@@ -742,8 +762,7 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
 - Use tom executivo direto, cortando gordura e fluff.
 - SEJA EXATO SOBRE SISTEMAS (ex: Onde diz "Integracao de entrada", escreva "Integracao RD Station -> Funnels").
 `;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -752,13 +771,13 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       body: JSON.stringify({
         model: 'gpt-5.4',
         messages: [
-          { role: 'system', content: 'Você é um Parser Estrito. Responda APENAS com um objeto JSON válido. Não inclua blocos ```json no início ou no fim. Respeite todas as tipagens documentadas.' },
+          { role: 'system', content: 'Você é o Diretor Estratégico da RevHackers. Gere análises baseadas puramente nos dados reais do cliente. Não alucine e siga rigidamente a estrutura do Schema JSON solicitado.' },
           { role: 'user', content: prompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.1 // Ultra low temp for strict JSON adherence and factual regurgitation from Transcript
+        reasoning_effort: 'high'
       })
-    });
+    }));
 
     if (!response.ok) {
         const err = await response.text();

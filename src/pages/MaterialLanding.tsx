@@ -126,7 +126,7 @@ export default function MaterialLanding() {
                         </div>
                     ) : (
                         /* Download Form */
-                        <div className="max-w-md mx-auto bg-zinc-50 border border-zinc-200 rounded-2xl p-8 text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="max-w-md mx-auto bg-zinc-50 border border-zinc-200 p-8 text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="mb-6 text-center">
                                 <h3 className="text-lg font-semibold text-zinc-900 mb-1">Acesse o material</h3>
                                 <p className="text-sm text-zinc-500">Preencha seus dados para liberar o download</p>

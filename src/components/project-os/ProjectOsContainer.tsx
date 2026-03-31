@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { KanbanSquare, List, Calendar, ChevronRight, Trash2, Sparkles, Loader2 } from 'lucide-react';
+import { KanbanSquare, List, Calendar, ChevronRight, ChevronDown, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { KanbanView } from './views/KanbanView';
 import { ListView } from './views/ListView';
 import { GanttView } from './views/GanttView';
@@ -151,118 +151,131 @@ export const ProjectOsContainer: React.FC<ProjectOsContainerProps> = ({ projectI
       {/* OS Header - Minimalist */}
       <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex-none z-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold flex items-center gap-2">
-            Workspace 
-            <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
-            <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-md bg-white dark:bg-zinc-900 shadow-sm ml-2">
-              <select 
-                value={selectedSprint || 'all'}
-                onChange={(e) => setSelectedSprint(e.target.value)}
-                className="bg-transparent text-sm font-medium focus:outline-none appearance-none outline-none py-1.5 pl-3 pr-8 w-64 text-zinc-900 dark:text-zinc-200 cursor-pointer"
-              >
-                <option value="all">Visão Global (Todas Sprints)</option>
-                {sprints.map(s => (
-                  <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '🟢' : ''}</option>
-                ))}
-              </select>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+              Workspace 
+              <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+            </h2>
+            
+            <div className="flex items-center gap-1.5 bg-zinc-50 dark:bg-zinc-900/50 p-1 rounded-md border border-zinc-200 dark:border-zinc-800 transition-all">
+              <div className="relative flex items-center">
+                <select 
+                  value={selectedSprint || 'all'}
+                  onChange={(e) => setSelectedSprint(e.target.value)}
+                  className="bg-transparent text-sm font-medium focus:outline-none appearance-none py-1 pl-3 pr-8 min-w-[240px] w-auto text-zinc-700 dark:text-zinc-300 cursor-pointer rounded-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  <option value="all">Visão Global (Todas Sprints)</option>
+                  {sprints.map(s => (
+                    <option key={s.id} value={s.id} className="text-zinc-900 dark:text-white">{s.name} {s.status === 'active' ? '🟢' : ''}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-2 pointer-events-none" />
+              </div>
+
+              <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
+
               {isCreatingSprint ? (
-                <form onSubmit={handleCreateSprint} className="flex items-center border-l border-r border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800">
+                <form onSubmit={handleCreateSprint} className="flex items-center group">
                   <input
                     type="text"
                     value={newSprintName}
                     onChange={(e) => setNewSprintName(e.target.value)}
-                    placeholder="Nome da Sprint..."
-                    className="w-32 bg-transparent text-xs px-2 py-1 outline-none text-zinc-900 dark:text-white"
+                    placeholder="Nome do Ciclo..."
+                    className="w-32 bg-transparent text-sm font-medium px-2 py-1 outline-none text-zinc-900 dark:text-white placeholder:text-zinc-400"
                     autoFocus
                     onBlur={() => {
                       if(!newSprintName) setIsCreatingSprint(false);
                     }}
                   />
-                  <button type="submit" className="text-xs font-bold px-2 py-1.5 text-revhackers hover:bg-zinc-200 dark:hover:bg-zinc-700">OK</button>
+                  <button type="submit" className="text-xs font-semibold px-2 py-1 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-sm transition-colors">OK</button>
                 </form>
               ) : (
                 <button 
                   onClick={() => setIsCreatingSprint(true)}
-                  className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors border-l border-r border-zinc-200 dark:border-zinc-700"
-                  title="Nova Sprint"
+                  className="px-2 py-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-sm transition-colors flex items-center gap-1 text-sm font-medium"
+                  title="Novo Ciclo (Sprint)"
                 >
-                  <span className="font-bold">+</span>
+                  <span className="text-zinc-400">+</span> Sprint
                 </button>
               )}
               {selectedSprint && selectedSprint !== 'all' && (
-                <button 
-                  onClick={() => setIsDeletingSprint(selectedSprint)}
-                  className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-red-100 dark:hover:bg-red-900/50 text-zinc-500 hover:text-red-500 dark:hover:text-red-400 rounded-r transition-colors"
-                  title="Destruir Sprint e Tarefas"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-              {(!selectedSprint || selectedSprint === 'all') && (
-                <div className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-r"></div>
+                <>
+                  <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
+                  <button 
+                    onClick={() => setIsDeletingSprint(selectedSprint)}
+                    className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-sm transition-colors"
+                    title="Destruir Sprint e Tarefas"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
               )}
             </div>
-          </h2>
-          
-          {/* Gerar Tarefas com IA */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleGenerateTasks(false)}
-              disabled={isGeneratingTasks}
-              title="Gerar tarefas com briefing personalizado baseado no REI e plano estrategico"
-              className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 dark:bg-white hover:bg-zinc-700 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 text-[11px] font-black uppercase tracking-widest rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGeneratingTasks
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Sparkles className="w-3.5 h-3.5" />
-              }
-              {isGeneratingTasks ? 'Gerando...' : 'Gerar com IA'}
-            </button>
-            <button
-              onClick={() => handleGenerateTasks(true)}
-              disabled={isGeneratingTasks}
-              title="Gerar tarefas E criar ciclos automaticamente por fase do roadmap"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00CC6A]/10 hover:bg-[#00CC6A]/20 text-[#00CC6A] border border-[#00CC6A]/30 text-[11px] font-black uppercase tracking-widest rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGeneratingTasks
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Sparkles className="w-3.5 h-3.5" />
-              }
-              + Ciclos
-            </button>
           </div>
+          
+          <div className="flex items-center gap-4">
+            {/* Gerar Tarefas com IA */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleGenerateTasks(false)}
+                disabled={isGeneratingTasks}
+                title="Gerar tarefas com briefing personalizado baseado no REI e plano estrategico"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              >
+                {isGeneratingTasks
+                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  : <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                }
+                {isGeneratingTasks ? 'Gerando...' : 'Gerar com IA'}
+              </button>
+              <button
+                onClick={() => handleGenerateTasks(true)}
+                disabled={isGeneratingTasks}
+                title="Gerar tarefas E criar ciclos automaticamente por fase do roadmap"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              >
+                {isGeneratingTasks
+                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  : <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                }
+                + Ciclos
+              </button>
+            </div>
 
-          <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg p-1 bg-zinc-100 dark:bg-zinc-900/80 shadow-inner">
-            <button
-              onClick={() => setActiveView('kanban')}
-              className={`p-1.5 rounded-md flex items-center justify-center transition-all ${
-                activeView === 'kanban' 
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300'
-              }`}
-            >
-              <KanbanSquare className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setActiveView('list')}
-              className={`p-1.5 rounded-md flex items-center justify-center transition-all ${
-                activeView === 'list' 
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300'
-              }`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setActiveView('gantt')}
-              className={`p-1.5 rounded-md flex items-center justify-center transition-all ${
-                activeView === 'gantt' 
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300'
-              }`}
-            >
-            <Calendar className="w-4 h-4" /> Timeline
-            </button>
+            <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 hidden md:block"></div>
+
+            <div className="flex items-center border border-zinc-200 dark:border-zinc-800 p-0.5 bg-zinc-50 dark:bg-zinc-900 rounded-md">
+              <button
+                onClick={() => setActiveView('kanban')}
+                className={`px-2.5 py-1 flex items-center gap-1.5 text-sm font-medium transition-all rounded-[4px] ${
+                  activeView === 'kanban' 
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <KanbanSquare className="w-4 h-4" /> <span className="hidden sm:inline">Kanban</span>
+              </button>
+              <button 
+                onClick={() => setActiveView('list')}
+                className={`px-2.5 py-1 flex items-center gap-1.5 text-sm font-medium transition-all rounded-[4px] ${
+                  activeView === 'list' 
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <List className="w-4 h-4" /> <span className="hidden sm:inline">Lista</span>
+              </button>
+              <button 
+                onClick={() => setActiveView('gantt')}
+                className={`px-2.5 py-1 flex items-center gap-1.5 text-sm font-medium transition-all rounded-[4px] ${
+                  activeView === 'gantt' 
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700' 
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <Calendar className="w-4 h-4" /> <span className="hidden sm:inline">Timeline</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

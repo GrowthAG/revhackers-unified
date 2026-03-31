@@ -48,7 +48,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                 {/* Header Context */}
                 <div className="p-8 md:p-12 border-b border-zinc-100 flex justify-between items-start">
                     <div className="space-y-2">
-                        <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-[0.4em]">DEBRIEFING // QUALIFICAÇÃO</span>
+                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-[0.4em]">DEBRIEFING // QUALIFICAÇÃO</span>
                         <h2 className="text-3xl md:text-5xl font-black text-black tracking-tighter leading-none italic uppercase">
                             {step === 'form' ? 'Contexto de Negócio' : step === 'calendar' ? 'Seleção de Agenda' : 'Confirmado'}
                         </h2>
@@ -71,15 +71,15 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                             >
                                 <div className="space-y-6">
                                     <div className="space-y-4">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Qual o faturamento mensal aproximado da operação?</Label>
+                                        <Label className="text-xxs font-black uppercase tracking-widest text-zinc-400">Qual o faturamento mensal aproximado da operação?</Label>
                                         <Input required placeholder="Ex: R$ 100k - 500k" className="rounded-none border-0 border-b border-zinc-100 px-0 h-14 bg-transparent focus:border-black text-lg font-bold placeholder:text-zinc-200" />
                                     </div>
                                     <div className="space-y-4">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Qual o maior gargalo técnico identificado hoje?</Label>
+                                        <Label className="text-xxs font-black uppercase tracking-widest text-zinc-400">Qual o maior gargalo técnico identificado hoje?</Label>
                                         <Input required placeholder="Ex: Baixa conversão no tráfego pago" className="rounded-none border-0 border-b border-zinc-100 px-0 h-14 bg-transparent focus:border-black text-lg font-bold placeholder:text-zinc-200" />
                                     </div>
                                     <div className="space-y-4">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Quem é o tomador de decisão que participará da call?</Label>
+                                        <Label className="text-xxs font-black uppercase tracking-widest text-zinc-400">Quem é o tomador de decisão que participará da call?</Label>
                                         <Input required placeholder="Nome e Cargo" className="rounded-none border-0 border-b border-zinc-100 px-0 h-14 bg-transparent focus:border-black text-lg font-bold placeholder:text-zinc-200" />
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                                         <Calendar className="w-5 h-5" /> ABRIR CALENDÁRIO OFICIAL
                                     </a>
                                 </div>
-                                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">
+                                <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest">
                                     * VOCÊ SERÁ REDIRECIONADO PARA O CAL.COM
                                 </p>
                             </motion.div>
@@ -143,7 +143,7 @@ export const CallDiagnosticModal = ({ isOpen, onClose, source = 'diagnostic' }: 
                                 </div>
                                 <Button
                                     onClick={onClose}
-                                    className="px-12 h-16 border-2 border-black bg-transparent text-black hover:bg-black hover:text-white font-black uppercase tracking-widest text-[10px] transition-all"
+                                    className="px-12 h-16 border-2 border-black bg-transparent text-black hover:bg-black hover:text-white font-black uppercase tracking-widest text-xxs transition-all"
                                 >
                                     FECHAR DIAGNÓSTICO
                                 </Button>

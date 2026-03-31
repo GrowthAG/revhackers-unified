@@ -11,7 +11,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import AdminPageLayout from "@/components/layout/AdminPageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 import {
     Collapsible,
     CollapsibleContent,
@@ -147,7 +147,7 @@ const AdminProposals = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
                         <div>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Total de Propostas</p>
+                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Total de Propostas</p>
                             <h3 className="text-4xl font-black text-black tracking-tight">{stats.total}</h3>
                         </div>
                         <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
@@ -156,16 +156,16 @@ const AdminProposals = () => {
                     </div>
                     <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
                         <div>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Propostas Aprovadas</p>
+                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Propostas Aprovadas</p>
                             <h3 className="text-4xl font-black text-black tracking-tight">{stats.approved}</h3>
                         </div>
-                        <div className="w-10 h-10 bg-[#00CC6A]/10 flex items-center justify-center border border-[#00CC6A]/20 rounded-xl group-hover:bg-[#00CC6A] group-hover:border-[#00CC6A] transition-colors">
+                        <div className="w-10 h-10 bg-[#00CC6A]/10 flex items-center justify-center border border-[#00CC6A]/20 group-hover:bg-[#00CC6A] group-hover:border-[#00CC6A] transition-colors">
                             <CheckCircle2 className="w-5 h-5 text-[#00CC6A] group-hover:text-white" />
                         </div>
                     </div>
                     <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
                         <div>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Em Negociação</p>
+                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Em Negociação</p>
                             <h3 className="text-4xl font-black text-black tracking-tight">{stats.active}</h3>
                         </div>
                         <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
@@ -192,7 +192,7 @@ const AdminProposals = () => {
                 <div className="space-y-6 min-h-[500px]">
                     {isLoading ? (
                         <div className="text-center py-20">
-                            <div className="w-10 h-10 border-4 border-zinc-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+                            <div className="w-10 h-10 border-4 border-zinc-200 border-t-black animate-spin mx-auto mb-4"></div>
                             <p className="text-zinc-400 text-xs uppercase tracking-widest">Carregando Hub...</p>
                         </div>
                     ) : Object.keys(groupedProposals).length === 0 ? (
@@ -215,9 +215,9 @@ const AdminProposals = () => {
                                         <div>
                                             <h3 className="text-lg font-bold text-black uppercase tracking-tight">{clientName}</h3>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 rounded-none px-2 text-[10px] uppercase tracking-wide border border-zinc-200 h-5">
+                                                <span className="inline-flex items-center border border-zinc-200 px-2 py-0.5 text-xxs font-bold uppercase tracking-wide text-zinc-500 h-5">
                                                     {clientProposals.length} PROPOSTAS
-                                                </Badge>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -260,10 +260,10 @@ const AdminProposals = () => {
                                                     <div>
                                                         <p className="font-semibold text-sm text-zinc-900">{item.title || "Sem Título"}</p>
                                                         <div className="flex items-center gap-3 mt-1">
-                                                            <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                                                            <span className="text-xxs text-zinc-500 uppercase tracking-wide">
                                                                 Criado em {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                                             </span>
-                                                            <span className={`text-[10px] font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-[#00CC6A]' :
+                                                            <span className={`text-xxs font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-[#00CC6A]' :
                                                                 item.status === 'sent' ? 'text-zinc-900' : 'text-zinc-400'
                                                                 }`}>
                                                                 {item.status === 'approved' ? '● Aprovado' :
@@ -291,14 +291,14 @@ const AdminProposals = () => {
                                                                     }
                                                                 });
                                                             }}
-                                                            className="h-8 text-[10px] uppercase font-bold tracking-wider rounded-sm bg-black hover:bg-zinc-800 text-white mr-2"
+                                                            className="h-8 text-xxs uppercase font-bold tracking-wider rounded-sm bg-black hover:bg-zinc-800 text-white mr-2"
                                                             title="Passar Bastão para CS"
                                                         >
                                                             <Rocket className="w-3 h-3 mr-2 text-[#00CC6A]" />
                                                             Passar Bastão
                                                         </Button>
                                                     )}
-                                                    <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/admin/proposals/edit/${item.id}`); }} className="h-8 text-[10px] uppercase font-bold tracking-wider rounded-none bg-white hover:bg-black hover:text-white border-zinc-200">
+                                                    <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/admin/proposals/edit/${item.id}`); }} className="h-8 text-xxs uppercase font-bold tracking-wider rounded-none bg-white hover:bg-black hover:text-white border-zinc-200">
                                                         Editar
                                                     </Button>
                                                     <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleCopyLink(item.slug); }} className="h-8 w-8 hover:bg-zinc-200 rounded-none" title="Copiar Link">

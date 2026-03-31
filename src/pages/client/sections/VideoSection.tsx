@@ -50,7 +50,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
 
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 flex items-center justify-center rounded-xl shadow-sm">
+                    <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 flex items-center justify-center shadow-sm">
                         <Video className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -62,7 +62,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                 {/* Video Area */}
                 <div className="flex-1 flex flex-col justify-center">
                     {loading ? (
-                        <div className="w-full aspect-video bg-zinc-50 rounded-2xl border border-zinc-200 flex items-center justify-center">
+                        <div className="w-full aspect-video bg-zinc-50 border border-zinc-200 flex items-center justify-center">
                             <div className="flex items-center gap-3 text-zinc-500">
                                 <div className="w-4 h-4 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
                                 <span className="text-xs font-bold uppercase tracking-widest">Carregando gravação...</span>
@@ -70,7 +70,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                         </div>
                     ) : embedUrl ? (
                         <div className="space-y-5">
-                            <div className="w-full aspect-video bg-zinc-100 rounded-2xl border border-zinc-200 overflow-hidden shadow-sm transition-all duration-500">
+                            <div className="w-full aspect-video bg-zinc-100 border border-zinc-200 overflow-hidden shadow-sm transition-all duration-500">
                                 <iframe
                                     src={embedUrl}
                                     className="w-full h-full"
@@ -83,7 +83,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
 
                             {/* Meeting info */}
                             <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-200">
+                                <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 border border-zinc-200">
                                     <Play className="w-3.5 h-3.5 text-black" />
                                     <span className="text-xs font-black uppercase tracking-widest text-zinc-700">
                                         {meetingTitle || `${label.title} - ${company}`}
@@ -95,7 +95,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
                             </div>
                         </div>
                     ) : (
-                        <div className="w-full aspect-video bg-zinc-50 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center gap-5">
+                        <div className="w-full aspect-video bg-zinc-50 border border-dashed border-zinc-200 flex flex-col items-center justify-center gap-5">
                             <div className="w-16 h-16 bg-white shadow-sm border border-zinc-200 flex items-center justify-center rounded-full">
                                 <Video className="w-7 h-7 text-zinc-400" />
                             </div>
@@ -111,7 +111,7 @@ export default function VideoSection({ plan, client, meetingType }: VideoSection
 
                 {/* Footer */}
                 <div className="flex items-center gap-2 mt-8 pt-6 border-t border-zinc-200">
-                    <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
+                    <div className="w-2 h-2 bg-[#00CC6A]" />
                     <span className="text-xs text-zinc-500 font-black uppercase tracking-widest">
                         Gravação Oficial / {company}
                     </span>

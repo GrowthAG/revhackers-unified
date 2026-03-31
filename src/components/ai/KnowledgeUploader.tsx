@@ -73,7 +73,7 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
         <div className="space-y-4">
             <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-revgreen bg-revgreen/5' : 'border-zinc-200 hover:border-zinc-300'
+                className={`border-2 border-dashed p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-revgreen bg-revgreen/5' : 'border-zinc-200 hover:border-zinc-300'
                     }`}
             >
                 <input {...getInputProps()} />
@@ -93,12 +93,12 @@ export const KnowledgeUploader = ({ files, onFilesChange }: KnowledgeUploaderPro
                     <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Arquivos Selecionados</p>
                     <div className="grid gap-2">
                         {files.map((file, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 rounded-md">
+                            <div key={idx} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 ">
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-4 h-4 text-zinc-400" />
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium text-zinc-700 truncate max-w-[200px]">{file.name}</span>
-                                        <span className="text-[10px] text-zinc-400">{(file.size / 1024).toFixed(0)} KB</span>
+                                        <span className="text-xxs text-zinc-400">{(file.size / 1024).toFixed(0)} KB</span>
                                     </div>
                                 </div>
                                 <Button

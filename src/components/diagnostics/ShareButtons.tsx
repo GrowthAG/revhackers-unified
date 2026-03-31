@@ -24,14 +24,14 @@ export const ShareButtons = ({ score, type, className = '' }: ShareButtonsProps)
         <div className={`flex items-center gap-3 ${className}`}>
             <button
                 onClick={handleLinkedInShare}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800 text-xxs font-black uppercase tracking-widest transition-colors"
             >
                 <Share2 className="w-3.5 h-3.5" />
                 Compartilhar
             </button>
             <button
                 onClick={handlePrint}
-                className="inline-flex items-center gap-2 px-4 py-2.5 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 text-xxs font-black uppercase tracking-widest transition-colors"
             >
                 <Printer className="w-3.5 h-3.5" />
                 PDF

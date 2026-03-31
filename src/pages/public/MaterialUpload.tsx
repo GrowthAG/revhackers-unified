@@ -261,7 +261,7 @@ export default function MaterialUpload() {
       {/* Header */}
       <div className="bg-white border-b border-zinc-200">
         <div className="max-w-2xl mx-auto px-6 py-8">
-          <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-400 block mb-3">
+          <span className="text-xxs uppercase tracking-[0.3em] font-bold text-zinc-400 block mb-3">
             Materiais de Referência
           </span>
           <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight mb-2">
@@ -272,8 +272,8 @@ export default function MaterialUpload() {
             para gerar um planejamento estratégico mais preciso e personalizado.
           </p>
           {projectInfo?.client_company && (
-            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-100 rounded-lg">
-              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-100 ">
+              <span className="text-tiny font-bold text-zinc-500 uppercase tracking-wider">
                 {projectInfo.client_company}
               </span>
             </div>
@@ -283,14 +283,14 @@ export default function MaterialUpload() {
 
       <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
         {/* Upload Form */}
-        <div className="bg-white border border-zinc-200 rounded-2xl p-6 space-y-5">
+        <div className="bg-white border border-zinc-200 p-6 space-y-5">
           <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wider">
             Novo Material
           </h2>
 
           {/* Material Type */}
           <div>
-            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+            <label className="text-tiny font-bold text-zinc-500 uppercase tracking-wider block mb-2">
               Tipo de Material
             </label>
             <Select value={materialType} onValueChange={setMaterialType}>
@@ -309,14 +309,14 @@ export default function MaterialUpload() {
 
           {/* Source Type Toggle */}
           <div>
-            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+            <label className="text-tiny font-bold text-zinc-500 uppercase tracking-wider block mb-2">
               Como enviar?
             </label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setSourceType('upload')}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border ${
                   sourceType === 'upload'
                     ? 'bg-zinc-950 text-white border-zinc-950'
                     : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'
@@ -328,7 +328,7 @@ export default function MaterialUpload() {
               <button
                 type="button"
                 onClick={() => setSourceType('link')}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors border ${
                   sourceType === 'link'
                     ? 'bg-zinc-950 text-white border-zinc-950'
                     : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'
@@ -343,7 +343,7 @@ export default function MaterialUpload() {
           {/* File Input */}
           {sourceType === 'upload' && (
             <div>
-              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+              <label className="text-tiny font-bold text-zinc-500 uppercase tracking-wider block mb-2">
                 Arquivo
               </label>
               <div
@@ -351,7 +351,7 @@ export default function MaterialUpload() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+                className={`border-2 border-dashed p-8 text-center cursor-pointer transition-colors ${
                   isDragging
                     ? 'border-zinc-900 bg-zinc-100'
                     : 'border-zinc-200 hover:border-zinc-300'
@@ -362,7 +362,7 @@ export default function MaterialUpload() {
                     <FileText className="w-5 h-5 text-zinc-400" />
                     <div className="text-left">
                       <p className="text-sm font-medium text-zinc-900">{selectedFile.name}</p>
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="text-tiny text-zinc-400">
                         {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
                       </p>
                     </div>
@@ -383,7 +383,7 @@ export default function MaterialUpload() {
                     <p className="text-sm text-zinc-500 mb-1">
                       Clique para selecionar ou arraste o arquivo
                     </p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-tiny text-zinc-400">
                       PDF, DOCX, PPTX, XLSX, TXT, CSV - até 10MB
                     </p>
                   </>
@@ -402,7 +402,7 @@ export default function MaterialUpload() {
           {/* Link Input */}
           {sourceType === 'link' && (
             <div>
-              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+              <label className="text-tiny font-bold text-zinc-500 uppercase tracking-wider block mb-2">
                 URL do Material
               </label>
               <Input
@@ -412,12 +412,12 @@ export default function MaterialUpload() {
                 onChange={e => setLinkUrl(e.target.value)}
                 className="border-zinc-200"
               />
-              <p className="text-[11px] text-zinc-400 mt-1.5">
+              <p className="text-tiny text-zinc-400 mt-1.5">
                 Links de artigos, blogs, sites institucionais ou PDFs públicos (Ex: AWS S3).
               </p>
-              <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+              <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 px-3 py-2.5">
                 <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
-                <p className="text-[11px] text-amber-700 leading-relaxed">
+                <p className="text-tiny text-amber-700 leading-relaxed">
                   <strong>Arquivos Fechados:</strong> Ferramentas como Miro, Notion, Figma ou Google Drive <strong>não permitem</strong> que nossa IA leia os dados. Para esses casos, exporte como PDF e faça o Upload manual.
                 </p>
               </div>
@@ -426,7 +426,7 @@ export default function MaterialUpload() {
 
           {/* Description */}
           <div>
-            <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+            <label className="text-tiny font-bold text-zinc-500 uppercase tracking-wider block mb-2">
               Descrição <span className="text-zinc-300 normal-case">(opcional)</span>
             </label>
             <Textarea
@@ -451,10 +451,10 @@ export default function MaterialUpload() {
         {materials.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+              <h3 className="text-tiny font-bold text-zinc-400 uppercase tracking-[0.2em]">
                 Materiais Enviados
               </h3>
-              <span className="text-[11px] font-bold text-zinc-400">
+              <span className="text-tiny font-bold text-zinc-400">
                 {materials.length} {materials.length === 1 ? 'material' : 'materiais'}
               </span>
             </div>
@@ -463,9 +463,9 @@ export default function MaterialUpload() {
               {materials.map(mat => (
                 <div
                   key={mat.id}
-                  className="bg-white border border-zinc-200 rounded-xl px-5 py-4 flex items-center gap-4"
+                  className="bg-white border border-zinc-200 px-5 py-4 flex items-center gap-4"
                 >
-                  <div className="w-9 h-9 bg-zinc-100 rounded-lg flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 bg-zinc-100 flex items-center justify-center shrink-0">
                     {mat.source_type === 'link' ? (
                       <ExternalLink className="w-4 h-4 text-zinc-400" />
                     ) : (
@@ -478,12 +478,12 @@ export default function MaterialUpload() {
                       {mat.original_name || 'Material'}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      <span className="text-xxs font-bold text-zinc-400 uppercase tracking-wider">
                         {getMaterialTypeLabel(mat.material_type)}
                       </span>
                       <span className="text-zinc-200">·</span>
                       <CheckCircle className="w-3 h-3 text-[#00CC6A]" />
-                      <span className="text-[10px] text-zinc-400">Recebido</span>
+                      <span className="text-xxs text-zinc-400">Recebido</span>
                     </div>
                   </div>
 
@@ -500,7 +500,7 @@ export default function MaterialUpload() {
         )}
 
         {/* Footer note */}
-        <p className="text-[11px] text-zinc-400 text-center leading-relaxed">
+        <p className="text-tiny text-zinc-400 text-center leading-relaxed">
           Seus materiais são privados e usados exclusivamente para melhorar
           a qualidade do seu planejamento estratégico.
         </p>

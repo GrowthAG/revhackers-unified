@@ -20,7 +20,7 @@ import {
     SelectValue
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Building2, User, Mail, Globe, Search, Upload, ArrowRight, Lock, Activity } from 'lucide-react';
+import { Loader2, Save, Building2, User, Mail, Globe, Search, Upload, ArrowRight, Lock, Activity, Cloud } from 'lucide-react';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 
 interface FormData {
@@ -74,6 +74,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
     const [loadingClient, setLoadingClient] = useState(!!clientId && !initialData);
     const [isSearchingCnpj, setIsSearchingCnpj] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [isProvisioning, setIsProvisioning] = useState(false);
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(formSchema),
@@ -97,6 +98,28 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
             toast({ title: 'Erro no upload', variant: 'destructive' });
         } finally {
             setUploadingLogo(false);
+        }
+    };
+
+    const handleProvisionSubaccount = async () => {
+        if (!clientId) return;
+        setIsProvisioning(true);
+        toast({ title: 'Iniciando conectividade...', description: 'Acionando API de Provisionamento Funnels.' });
+
+        try {
+            const { data, error } = await supabase.functions.invoke('ghl-create-location', {
+                body: { clientId }
+            });
+
+            if (error) throw new Error(error.message);
+            if (data?.error) throw new Error(data.error);
+
+            toast({ title: 'SUCESSO!', description: 'Subconta provisionada e conectada ao Motor de Oauth V2.', variant: 'default' });
+        } catch (err: any) {
+            console.error(err);
+            toast({ title: 'Falha no Provisionamento', description: err.message, variant: 'destructive' });
+        } finally {
+            setIsProvisioning(false);
         }
     };
 
@@ -311,11 +334,11 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                     {/* Section: NOSSA TECNOLOGIA (Control) */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
-                            <h3 className="text-[10px] font-black tracking-[0.4em] text-black flex items-center gap-3 uppercase">
+                            <h3 className="text-xxs font-black tracking-[0.4em] text-black flex items-center gap-3 uppercase">
                                 NOSSA TECNOLOGIA
                             </h3>
                             {isSearchingCnpj && (
-                                <div className="text-[8px] font-bold text-black tracking-widest flex items-center gap-2">
+                                <div className="text-3xs font-bold text-black tracking-widest flex items-center gap-2">
                                     <Loader2 className="h-3 w-3 animate-spin" /> BUSCANDO_DADOS
                                 </div>
                             )}
@@ -323,7 +346,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Consultar CNPJ</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Consultar CNPJ</Label>
                                 <div className="relative">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
                                     <Input
@@ -341,7 +364,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Identidade Visual (Asset)</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Identidade Visual (Asset)</Label>
                                 <div
                                     className="h-32 border-2 border-dashed border-zinc-200 bg-zinc-50/50 flex flex-col items-center justify-center relative cursor-pointer hover:bg-zinc-50 transition-all group"
                                     onClick={() => document.getElementById('logo-upload')?.click()}
@@ -350,12 +373,12 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                         <div className="absolute inset-0 p-4 flex items-center justify-center">
                                             <img src={watch('logo_url')} className="h-full w-full object-contain" alt="Preview" />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                <Button type="button" variant="secondary" size="sm" className="h-7 text-[8px] font-bold tracking-widest uppercase rounded-none">Substituir</Button>
+                                                <Button type="button" variant="secondary" size="sm" className="h-7 text-3xs font-bold tracking-widest uppercase rounded-none">Substituir</Button>
                                                 <Button
                                                     type="button"
                                                     variant="destructive"
                                                     size="sm"
-                                                    className="h-7 text-[8px] font-bold tracking-widest uppercase rounded-none bg-zinc-900"
+                                                    className="h-7 text-3xs font-bold tracking-widest uppercase rounded-none bg-zinc-900"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setValue('logo_url', '');
@@ -368,13 +391,13 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                     ) : (
                                         <div className="text-center space-y-2">
                                             <Upload size={16} className="text-zinc-300 mx-auto" />
-                                            <span className="text-[8px] font-black tracking-widest text-zinc-400 uppercase">Anexar Logo do Cliente</span>
+                                            <span className="text-3xs font-black tracking-widest text-zinc-400 uppercase">Anexar Logo do Cliente</span>
                                         </div>
                                     )}
                                     {uploadingLogo && (
                                         <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center z-10">
                                             <Loader2 className="h-5 w-5 animate-spin text-black" />
-                                            <span className="text-[8px] font-black tracking-widest text-black mt-2">ENVIANDO_ASSET...</span>
+                                            <span className="text-3xs font-black tracking-widest text-black mt-2">ENVIANDO_ASSET...</span>
                                         </div>
                                     )}
                                 </div>
@@ -391,19 +414,19 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
 
                     {/* Section: IDENTIDADE DO CLIENTE */}
                     <div className="space-y-6 pt-6 border-t border-zinc-50">
-                        <h3 className="text-[10px] font-black tracking-[0.4em] text-black border-l-4 border-black pl-5 flex items-center gap-3 uppercase">
+                        <h3 className="text-xxs font-black tracking-[0.4em] text-black border-l-4 border-black pl-5 flex items-center gap-3 uppercase">
                             <User size={12} className="text-black fill-black/10" /> Identidade do Cliente
                         </h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Nome Principal / Sócio</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Nome Principal / Sócio</Label>
                                 <Input {...register('name')} placeholder="Nome completo do responsável" className="!bg-white border-zinc-200 rounded-none h-12 text-sm font-bold text-black focus:ring-0 focus:border-black transition-colors" />
-                                {errors.name && <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest">{errors.name.message}</span>}
+                                {errors.name && <span className="text-2xs text-red-500 font-bold uppercase tracking-widest">{errors.name.message}</span>}
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">E-mail Corporativo</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">E-mail Corporativo</Label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
                                     <Input
@@ -426,30 +449,30 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                         }}
                                     />
                                 </div>
-                                {errors.email && <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest">{errors.email.message}</span>}
+                                {errors.email && <span className="text-2xs text-red-500 font-bold uppercase tracking-widest">{errors.email.message}</span>}
                             </div>
                         </div>
                     </div>
 
                     {/* Section: DADOS CORPORATIVOS */}
                     <div className="space-y-6 pt-6 border-t border-zinc-50">
-                        <h3 className="text-[10px] font-black tracking-[0.4em] text-black border-l-4 border-zinc-400 pl-5 flex items-center gap-3 uppercase">
+                        <h3 className="text-xxs font-black tracking-[0.4em] text-black border-l-4 border-zinc-400 pl-5 flex items-center gap-3 uppercase">
                             <Building2 size={12} className="text-zinc-600 fill-zinc-600/10" /> Dados Corporativos
                         </h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="space-y-2 md:col-span-1">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Razão Social</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Razão Social</Label>
                                 <Input {...register('company')} placeholder="NOME DA EMPRESA LTDA" className="!bg-white border-zinc-200 rounded-none h-12 text-sm font-bold text-black focus:ring-0 focus:border-black transition-colors uppercase" />
                             </div>
 
                             <div className="space-y-2 md:col-span-1">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Nome Fantasia (Visuals)</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Nome Fantasia (Visuals)</Label>
                                 <Input {...register('trade_name')} placeholder="Sua Marca" className="!bg-white border-zinc-200 rounded-none h-12 text-sm font-bold text-black focus:ring-0 focus:border-black transition-colors" />
                             </div>
 
                             <div className="space-y-2 md:col-span-1">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Digital Hub / Website</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Digital Hub / Website</Label>
                                 <div className="relative">
                                     <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
                                     <Input
@@ -465,50 +488,50 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
 
                     {/* Section: LOCALIZAÇÃO CORPORATIVA (Automatic Mapping) */}
                     <div className="space-y-6 pt-6 border-t border-zinc-50">
-                        <h3 className="text-[10px] font-black tracking-[0.4em] text-black border-l-4 border-zinc-200 pl-5 flex items-center gap-3 uppercase">
-                            <div className="h-2 w-2 bg-zinc-300 rounded-full"></div> Localização Corporativa
+                        <h3 className="text-xxs font-black tracking-[0.4em] text-black border-l-4 border-zinc-200 pl-5 flex items-center gap-3 uppercase">
+                            <div className="h-2 w-2 bg-zinc-300 "></div> Localização Corporativa
                         </h3>
 
                         <div className="grid grid-cols-6 gap-4">
                             {/* CEP */}
                             <div className="col-span-2 md:col-span-1 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">CEP</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">CEP</Label>
                                 <Input {...register('cep')} readOnly className="!bg-zinc-50 border-zinc-100 rounded-none h-10 text-xs font-medium text-zinc-500" />
                             </div>
 
                             {/* Endereço */}
                             <div className="col-span-4 md:col-span-4 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Logradouro</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Logradouro</Label>
                                 <Input {...register('address')} readOnly className="!bg-zinc-50 border-zinc-100 rounded-none h-10 text-xs font-medium text-zinc-500" />
                             </div>
 
                             {/* Número */}
                             <div className="col-span-2 md:col-span-1 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Número</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Número</Label>
                                 <Input {...register('number')} className="!bg-white border-zinc-200 rounded-none h-10 text-xs font-bold text-black focus:border-black" />
                             </div>
 
                             {/* Complemento */}
                             <div className="col-span-4 md:col-span-2 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Complemento</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Complemento</Label>
                                 <Input {...register('complement')} className="!bg-white border-zinc-200 rounded-none h-10 text-xs font-bold text-black focus:border-black" />
                             </div>
 
                             {/* Bairro */}
                             <div className="col-span-3 md:col-span-2 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Bairro</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Bairro</Label>
                                 <Input {...register('neighborhood')} readOnly className="!bg-zinc-50 border-zinc-100 rounded-none h-10 text-xs font-medium text-zinc-500" />
                             </div>
 
                             {/* Cidade */}
                             <div className="col-span-3 md:col-span-2 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Cidade</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">Cidade</Label>
                                 <Input {...register('city')} readOnly className="!bg-zinc-50 border-zinc-100 rounded-none h-10 text-xs font-medium text-zinc-500" />
                             </div>
 
                             {/* UF */}
                             <div className="col-span-2 md:col-span-1 space-y-2">
-                                <Label className="text-[8px] font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">UF</Label>
+                                <Label className="text-3xs font-mono-tech font-bold tracking-[0.2em] text-zinc-400 uppercase">UF</Label>
                                 <Input {...register('state')} readOnly className="!bg-zinc-50 border-zinc-100 rounded-none h-10 text-xs font-medium text-zinc-500" />
                             </div>
                         </div>
@@ -518,9 +541,9 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                 {/* Status (Admin Only) */}
                 {mode === 'admin' && (
                     <div className="bg-white border border-zinc-200 p-8 space-y-6">
-                        <h3 className="text-[10px] font-black tracking-[0.2em] text-black uppercase border-b border-zinc-100 pb-3">Status do Cliente</h3>
+                        <h3 className="text-xxs font-black tracking-[0.2em] text-black uppercase border-b border-zinc-100 pb-3">Status do Cliente</h3>
                         <div className="space-y-2">
-                            <Label className="text-[10px] uppercase font-bold tracking-wider">Estágio Atual</Label>
+                            <Label className="text-xxs uppercase font-bold tracking-wider">Estágio Atual</Label>
                             <div className="relative">
                                 <Activity className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-300" />
                                 <Select
@@ -530,7 +553,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                     <SelectTrigger className="pl-12 h-12 bg-white border border-zinc-200 rounded-none focus:ring-0 focus:border-black text-sm font-bold text-black tracking-widest transition-colors hover:border-zinc-400">
                                         <SelectValue placeholder="SELECIONE O STATUS..." />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white border border-zinc-100 shadow-sm rounded-xl">
+                                    <SelectContent className="bg-white border border-zinc-100 shadow-sm ">
                                         <SelectItem value="onboarding" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Onboarding (Em andamento)</SelectItem>
                                         <SelectItem value="active" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Ativo (Em operação)</SelectItem>
                                         <SelectItem value="churned" className="text-xs uppercase tracking-wider py-3 focus:bg-zinc-50 cursor-pointer text-zinc-600 focus:text-black font-bold">Churned (Cancelado)</SelectItem>
@@ -541,13 +564,38 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                     </div>
                 )}
 
+                {/* Cloud Auth (Admin Only) */}
+                {mode === 'admin' && isEditing && clientId && (
+                    <div className="bg-white border border-zinc-200 p-8 space-y-6">
+                        <h3 className="text-xxs font-black tracking-[0.2em] text-black uppercase border-b border-zinc-100 pb-3 flex items-center gap-2">
+                            <Cloud size={14} className="text-blue-600"/>
+                            Cérebro Operacional (Funnels)
+                        </h3>
+                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-zinc-50 p-6 border border-zinc-100">
+                            <div>
+                                <h4 className="text-sm font-black text-black tracking-tight uppercase">Provisionar Ambiente</h4>
+                                <p className="text-xs text-zinc-500 mt-1 max-w-sm">Crie a infraestrutura exclusiva do cliente na matriz Funnels com apenas um clique. O Hub sincronizará o cliente à Tabela Oauth V2 mestra na mesma hora.</p>
+                            </div>
+                            <Button 
+                                type="button"
+                                onClick={handleProvisionSubaccount}
+                                disabled={isProvisioning}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 px-6 shadow-md shadow-blue-600/20 whitespace-nowrap !rounded-sm uppercase tracking-widest text-xxs"
+                            >
+                                {isProvisioning ? <Loader2 className="animate-spin mr-2" size={16}/> : <Cloud className="mr-2" size={16}/>}
+                                Provisionar Subconta
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex flex-col md:flex-row gap-4 pt-4">
                     {onCancel && (
                         <Button
                             type="button"
                             variant="outline"
                             onClick={onCancel}
-                            className="h-14 rounded-none border-zinc-200 text-[9px] font-black uppercase tracking-[0.4em] hover:bg-zinc-50 transition-all shadow-none flex-1"
+                            className="h-14 rounded-none border-zinc-200 text-2xs font-black uppercase tracking-[0.4em] hover:bg-zinc-50 transition-all shadow-none flex-1"
                             disabled={loading}
                         >
                             CANCELAR
@@ -555,7 +603,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                     )}
                     <Button
                         type="submit"
-                        className={`h-14 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-black text-[9px] uppercase tracking-[0.4em] shadow-none gap-4 group ${mode === 'admin' || onCancel ? 'flex-[2]' : 'w-full'}`}
+                        className={`h-14 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-black text-2xs uppercase tracking-[0.4em] shadow-none gap-4 group ${mode === 'admin' || onCancel ? 'flex-[2]' : 'w-full'}`}
                         disabled={loading}
                     >
                         {loading ? (
@@ -577,7 +625,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                 {mode === 'public' && (
                     <div className="flex items-center justify-center gap-2 opacity-60 pt-4">
                         <div className="h-px w-6 bg-zinc-300"></div>
-                        <div className="flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest text-zinc-400">
+                        <div className="flex items-center gap-1.5 text-3xs font-bold uppercase tracking-widest text-zinc-400">
                             <Lock size={10} className="text-zinc-400" />
                             Ambiente Seguro End-to-End
                         </div>

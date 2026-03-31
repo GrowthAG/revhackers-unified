@@ -19,7 +19,7 @@ export default function SectionHeader({
 
     return (
         <div className="shrink-0 flex flex-col items-center justify-center text-center">
-            <span className={`text-[10px] md:text-[11px] uppercase tracking-[0.25em] font-black mb-3 ${light ? 'text-zinc-500' : 'text-zinc-400'}`}>
+            <span className={`text-xxs md:text-tiny uppercase tracking-[0.25em] font-black mb-3 ${light ? 'text-zinc-500' : 'text-zinc-400'}`}>
                 {eyebrow}
             </span>
 

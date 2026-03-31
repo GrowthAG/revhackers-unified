@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { createReiProject, updateReiProject, getReiProjectById } from '@/api/reiProjects';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { createReiProject, updateReiProject, getReiProjectById, type FocalPoint } from '@/api/reiProjects';
 import { supabase } from '@/integrations/supabase/client';
 import { getAllClients, type Client } from '@/api/clients';
 import type { ReiProjectInsert } from '@/api/reiProjects';
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Users, Calendar, Zap, Target, Search, FileText, ExternalLink, Edit2, Copy, Globe, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import { Loader2, Save, Users, Calendar, Zap, Target, Search, FileText, ExternalLink, Edit2, Copy, Globe, ChevronDown, ChevronUp, AlertCircle, Plus, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ClientFormContent from './ClientFormContent';
 import AdminLayout from '@/components/layout/AdminLayout'; // Replaces PageLayout
@@ -31,6 +31,7 @@ type FormData = {
     materials_status: 'delivered' | 'pending';
     materials_delay_accepted: boolean;
     final_expectations?: string;
+    focal_points: FocalPoint[];
 };
 
 const DURATION_OPTIONS = [
@@ -42,10 +43,13 @@ const DURATION_OPTIONS = [
 ];
 
 const DEFAULT_DURATION_BY_TYPE: Record<string, string> = {
-    crm_ops: '90 dias',
-    funnels_impl: '60 dias',
-    consulting: '90 dias',
-    founder: '90 dias',
+    advisory:    '90 dias',
+    crm_ops:     '90 dias',
+    funnels_impl:'60 dias',
+    consulting:  '90 dias',
+    founder:     '90 dias',
+    dev:         '60 dias',
+    site:        '60 dias',
 };
 
 const REIProjectForm = () => {
@@ -59,15 +63,21 @@ const REIProjectForm = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [loadingClients, setLoadingClients] = useState(true);
 
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
+    const { register, control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
         defaultValues: {
             year: new Date().getFullYear(),
             quarter: 'Q1',
             type: 'crm_ops',
             project_duration: '90 dias',
             materials_status: 'delivered',
-            materials_delay_accepted: false
+            materials_delay_accepted: false,
+            focal_points: [{ name: '', email: '', role: '', is_main: true }]
         }
+    });
+
+    const { fields: focalPoints, append: appendFocal, remove: removeFocal } = useFieldArray({
+        control,
+        name: "focal_points"
     });
 
     const isEditing = !!id;
@@ -136,7 +146,7 @@ const REIProjectForm = () => {
 
     // Styling Constants (Diagnostic Standard)
     const inputClasses = "bg-transparent border-0 border-b h-14 rounded-none transition-all font-medium text-base px-4 focus:ring-0 w-full border-zinc-200 text-black focus:border-black placeholder:text-zinc-300 hover:bg-zinc-50/50";
-    const labelClasses = "text-[10px] font-black uppercase tracking-widest pl-0.5 text-zinc-400";
+    const labelClasses = "text-xxs font-black uppercase tracking-widest pl-0.5 text-zinc-400";
     const sectionTitleClasses = "text-xs font-semibold text-zinc-900 border-b border-zinc-200 pb-2 flex items-center gap-2 mb-6";
 
     // ... CNPJ Logic (Keep same) ...
@@ -151,11 +161,12 @@ const REIProjectForm = () => {
             const data = await response.json();
 
             if (data.razao_social) setValue('client_company', data.razao_social);
+            if (data.nome_fantasia) setValue('trade_name', data.nome_fantasia);
             if (data.email) setValue('client_email', data.email.toLowerCase());
 
             toast({
                 title: 'Dados Corporativos Localizados',
-                description: `Empresa: ${data.razao_social}`,
+                description: `Empresa: ${data.nome_fantasia || data.razao_social}`,
             });
         } catch (error) {
             console.error('Erro ao buscar CNPJ:', error);
@@ -233,6 +244,7 @@ const REIProjectForm = () => {
                     setValue('type', project.type || 'crm_ops');
                     setValue('project_duration', (project as any).project_duration || DEFAULT_DURATION_BY_TYPE[project.type || 'consulting'] || '90 dias');
                     setValue('next_rei_date', project.next_rei_date.split('T')[0]);
+                    setValue('focal_points', (project.focal_points && project.focal_points.length > 0) ? project.focal_points : [{ name: '', email: '', role: '', is_main: true }]);
                     // Load site analysis data
                     if ((project as any).client_site) setClientSite((project as any).client_site);
                     if ((project as any).site_analysis) setSiteAnalysis((project as any).site_analysis);
@@ -311,6 +323,11 @@ const REIProjectForm = () => {
             return;
         }
 
+        if (!data.focal_points || data.focal_points.length === 0 || !data.focal_points[0].name || !data.focal_points[0].email) {
+            toast({ title: 'Contato Obrigatório', description: 'Você deve preencher ao menos o Ponto Focal Principal (Nome e E-mail) do cliente.', variant: 'destructive' });
+            return;
+        }
+
         if (data.materials_status === 'pending' && !data.materials_delay_accepted) {
             toast({ title: 'Atenção ao Cronograma', description: 'Se o material está pendente, é obrigatório dar o "De Acordo" na reter do cronograma.', variant: 'destructive' });
             return;
@@ -336,6 +353,7 @@ const REIProjectForm = () => {
                 materials_status: data.materials_status,
                 materials_delay_accepted: data.materials_delay_accepted,
                 final_expectations: data.final_expectations || null,
+                focal_points: data.focal_points || [],
                 // Lead mode: nao injeta tarefas, nao cria sprint, status diferente
                 ...(isLeadMode ? { status: 'lead' } : {}),
             };
@@ -412,7 +430,7 @@ const REIProjectForm = () => {
 
                         {/* 1. SELEÇÃO DE CLIENTE */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
+                            <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
                                 01. Vincular Cliente
                             </h3>
 
@@ -424,16 +442,16 @@ const REIProjectForm = () => {
                                                 <Label className={labelClasses}>Selecione do Portfólio</Label>
                                                 <Dialog open={mode === 'new'} onOpenChange={(open) => setMode(open ? 'new' : 'existing')}>
                                                     <DialogTrigger asChild>
-                                                        <button type="button" className="text-[10px] uppercase font-bold text-indigo-600 hover:underline">
+                                                        <button type="button" className="text-xxs uppercase font-bold text-indigo-600 hover:underline">
                                                             + Novo Cliente
                                                         </button>
                                                     </DialogTrigger>
                                                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none">
-                                                        <div className="bg-zinc-50 rounded-lg overflow-hidden">
+                                                        <div className="bg-zinc-50 overflow-hidden">
                                                             <div className="bg-white border-b border-zinc-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                                                                 <div>
                                                                     <h2 className="text-sm font-bold text-black">Cadastrar Novo Cliente</h2>
-                                                                    <p className="text-[10px] text-zinc-400 font-medium tracking-wide">Preencha os dados completos para iniciar o protocolo.</p>
+                                                                    <p className="text-xxs text-zinc-400 font-medium tracking-wide">Preencha os dados completos para iniciar o protocolo.</p>
                                                                 </div>
                                                             </div>
                                                             <div className="p-4 bg-zinc-50">
@@ -461,7 +479,7 @@ const REIProjectForm = () => {
                                                 <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                                     <SelectValue placeholder="Selecione..." />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-xl border-zinc-100 max-h-[250px] shadow-sm">
+                                                <SelectContent className="border-zinc-100 max-h-[250px] shadow-sm">
                                                     {filterClients(clients).map(client => (
                                                         <SelectItem key={client.id} value={client.id} className="text-sm py-2 cursor-pointer">
                                                             {client.name} {client.company ? `| ${client.company}` : ''}
@@ -474,7 +492,7 @@ const REIProjectForm = () => {
                                         {watch('client_name') && (
                                             <div className="pl-4 border-l-2 border-black py-2">
                                                 <p className="text-xs font-bold uppercase tracking-wider text-black">{watch('client_name')}</p>
-                                                <p className="text-[10px] text-zinc-500 mt-0.5">{watch('client_company') || 'Empresa não informada'}</p>
+                                                <p className="text-xxs text-zinc-500 mt-0.5">{watch('trade_name') || watch('client_company') || 'Empresa não informada'}</p>
                                             </div>
                                         )}
                                     </div>
@@ -483,15 +501,113 @@ const REIProjectForm = () => {
                                 {isEditing && (
                                     <div className="pl-4 border-l-2 border-black py-2">
                                         <p className="text-xs font-bold uppercase tracking-wider text-black">{watch('client_name')}</p>
-                                        <p className="text-[10px] text-zinc-500 mt-0.5">{watch('client_company') || 'Empresa não informada'}</p>
+                                        <p className="text-xxs text-zinc-500 mt-0.5">{watch('trade_name') || watch('client_company') || 'Empresa não informada'}</p>
+                                    </div>
+                                )}
+
+                                {/* ── Nome de Exibição (editável) ── */}
+                                {watch('client_name') && (
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center justify-between px-1">
+                                            <Label className={labelClasses}>Nome de Exibição do Projeto</Label>
+                                            <span className="text-2xs text-zinc-400 font-medium tracking-wide">Substitui a Razão Social em toda a plataforma</span>
+                                        </div>
+                                        <Input
+                                            {...register('trade_name')}
+                                            className={inputClasses}
+                                            placeholder={watch('client_name') || 'Ex: Acme, Grupo XYZ, Startup ABC...'}
+                                        />
+                                        {!watch('trade_name') && watch('client_name') && (
+                                            <p className="text-xxs text-amber-600 font-medium pl-1">
+                                                ⚠ Sem nome fantasia — será exibida a Razão Social da Receita Federal.
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                             </div>
                         </div>
 
+                        {/* PONTOS FOCAIS */}
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
+                                <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-400">
+                                    Pontos Focais (Contatos)
+                                </h3>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => appendFocal({ name: '', email: '', role: '', is_main: focalPoints.length === 0 })}
+                                    className="h-8 text-xxs font-bold uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                    Adicionar Contato
+                                </Button>
+                            </div>
+                            
+                            <div className="space-y-4 pt-2">
+                                {focalPoints.map((field, index) => {
+                                    const isMain = index === 0;
+                                    return (
+                                    <div key={field.id} className={`p-5 relative group border transition-all ${isMain ? 'border-indigo-200 bg-indigo-50/10 shadow-sm' : 'border-zinc-200 bg-white'}`}>
+                                        <div className="mb-4 flex items-center gap-2">
+                                            {isMain ? (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                                                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Ponto Focal Principal (Decisor)</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
+                                                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Membro da Equipe do Cliente</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        {!isMain && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeFocal(index)}
+                                                className="absolute top-4 right-4 text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="space-y-1.5">
+                                                <Label className="text-2xs font-bold uppercase tracking-wider text-zinc-400">Nome {isMain && '*'}</Label>
+                                                <Input
+                                                    {...register(`focal_points.${index}.name` as const, { required: isMain })}
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    placeholder={isMain ? "Nome do Contato Principal" : "Nome do Integrante"}
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label className="text-2xs font-bold uppercase tracking-wider text-zinc-400">Cargo {isMain && '*'}</Label>
+                                                <Input
+                                                    {...register(`focal_points.${index}.role` as const, { required: isMain })}
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    placeholder={isMain ? "Sócio / Diretor" : "Cargo..."}
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label className="text-2xs font-bold uppercase tracking-wider text-zinc-400">E-mail {isMain && '*'}</Label>
+                                                <Input
+                                                    {...register(`focal_points.${index}.email` as const, { required: isMain })}
+                                                    type="email"
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    placeholder={isMain ? "decisor@empresa.com.br" : "email@empresa.com.br"}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )})}
+                            </div>
+                        </div>
+
                         {/* 2. PARAMETROS DO PROJETO */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
+                            <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2">
                                 02. Parâmetros de Execução
                             </h3>
 
@@ -516,11 +632,12 @@ const REIProjectForm = () => {
                                         <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
+                                        <SelectContent className="border-zinc-100 shadow-sm">
+                                            <SelectItem value="advisory">Advisory (Estratégico s/ Execução)</SelectItem>
+                                            <SelectItem value="consulting">Consulting (Mão na Massa)</SelectItem>
+                                            <SelectItem value="crm_ops">CRM Ops</SelectItem>
                                             <SelectItem value="founder">Founder</SelectItem>
-                                            <SelectItem value="crm_ops">CRM</SelectItem>
-                                            <SelectItem value="consulting">360º</SelectItem>
-                                            <SelectItem value="funnels_impl">Site</SelectItem>
+                                            <SelectItem value="funnels_impl">Site / Funis</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -534,7 +651,7 @@ const REIProjectForm = () => {
                                         <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
+                                        <SelectContent className="border-zinc-100 shadow-sm">
                                             {DURATION_OPTIONS.map(opt => (
                                                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                                             ))}
@@ -557,7 +674,7 @@ const REIProjectForm = () => {
                                             variant="outline"
                                             onClick={handleAnalyzeSite}
                                             disabled={!clientSite || analyzingSite}
-                                            className="h-14 px-4 shrink-0 rounded-none border-0 border-b border-zinc-200 hover:border-black transition-all text-[10px] uppercase font-bold tracking-widest"
+                                            className="h-14 px-4 shrink-0 rounded-none border-0 border-b border-zinc-200 hover:border-black transition-all text-xxs uppercase font-bold tracking-widest"
                                         >
                                             {analyzingSite ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -570,23 +687,23 @@ const REIProjectForm = () => {
 
                                     {/* Site Analysis Error */}
                                     {siteAnalysisError && (
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 rounded-lg">
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-100 ">
                                             <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                                            <span className="text-[11px] text-red-600 font-medium">{siteAnalysisError}</span>
+                                            <span className="text-tiny text-red-600 font-medium">{siteAnalysisError}</span>
                                         </div>
                                     )}
 
                                     {/* Site Analysis Result */}
                                     {siteAnalysis && (
-                                        <div className="border border-zinc-200 rounded-lg overflow-hidden">
+                                        <div className="border border-zinc-200 overflow-hidden">
                                             <button
                                                 type="button"
                                                 className="w-full flex items-center justify-between px-4 py-3 bg-zinc-50 hover:bg-zinc-100 transition-colors"
                                                 onClick={() => setSiteAnalysisExpanded(!siteAnalysisExpanded)}
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Analise do Site</span>
+                                                    <div className="w-2 h-2 bg-[#00CC6A]" />
+                                                    <span className="text-xxs font-black uppercase tracking-widest text-zinc-500">Analise do Site</span>
                                                 </div>
                                                 {siteAnalysisExpanded ? (
                                                     <ChevronUp className="w-3.5 h-3.5 text-zinc-400" />
@@ -597,50 +714,50 @@ const REIProjectForm = () => {
                                             {siteAnalysisExpanded && (
                                                 <div className="px-4 py-3 space-y-2 bg-white">
                                                     {siteAnalysis.resumo_proposta && (
-                                                        <p className="text-[13px] font-medium text-zinc-700 leading-relaxed">{siteAnalysis.resumo_proposta}</p>
+                                                        <p className="text-mini font-medium text-zinc-700 leading-relaxed">{siteAnalysis.resumo_proposta}</p>
                                                     )}
                                                     <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-1">
                                                         {siteAnalysis.segmento && (
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Segmento</span>
-                                                                <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.segmento}</p>
+                                                                <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Segmento</span>
+                                                                <p className="text-xs text-zinc-600 font-medium">{siteAnalysis.segmento}</p>
                                                             </div>
                                                         )}
                                                         {siteAnalysis.publico_alvo && (
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Publico-alvo</span>
-                                                                <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.publico_alvo}</p>
+                                                                <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Publico-alvo</span>
+                                                                <p className="text-xs text-zinc-600 font-medium">{siteAnalysis.publico_alvo}</p>
                                                             </div>
                                                         )}
                                                         {siteAnalysis.maturidade_digital && (
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Maturidade Digital</span>
-                                                                <p className="text-[12px] text-zinc-600 font-medium capitalize">{siteAnalysis.maturidade_digital}</p>
+                                                                <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Maturidade Digital</span>
+                                                                <p className="text-xs text-zinc-600 font-medium capitalize">{siteAnalysis.maturidade_digital}</p>
                                                             </div>
                                                         )}
                                                         {siteAnalysis.tom_comunicacao && (
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tom</span>
-                                                                <p className="text-[12px] text-zinc-600 font-medium capitalize">{siteAnalysis.tom_comunicacao}</p>
+                                                                <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Tom</span>
+                                                                <p className="text-xs text-zinc-600 font-medium capitalize">{siteAnalysis.tom_comunicacao}</p>
                                                             </div>
                                                         )}
                                                     </div>
                                                     {siteAnalysis.produtos_servicos && Array.isArray(siteAnalysis.produtos_servicos) && siteAnalysis.produtos_servicos.length > 0 && (
                                                         <div className="pt-1">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Produtos/Servicos</span>
-                                                            <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.produtos_servicos.join(', ')}</p>
+                                                            <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Produtos/Servicos</span>
+                                                            <p className="text-xs text-zinc-600 font-medium">{siteAnalysis.produtos_servicos.join(', ')}</p>
                                                         </div>
                                                     )}
                                                     {siteAnalysis.diferenciais && (
                                                         <div className="pt-1">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Diferenciais</span>
-                                                            <p className="text-[12px] text-zinc-600 font-medium">{siteAnalysis.diferenciais}</p>
+                                                            <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Diferenciais</span>
+                                                            <p className="text-xs text-zinc-600 font-medium">{siteAnalysis.diferenciais}</p>
                                                         </div>
                                                     )}
                                                     {siteAnalysis.pontos_fracos_site && (
                                                         <div className="pt-1">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Pontos Fracos do Site</span>
-                                                            <p className="text-[12px] text-zinc-600 font-medium">
+                                                            <span className="text-2xs font-bold text-zinc-400 uppercase tracking-widest">Pontos Fracos do Site</span>
+                                                            <p className="text-xs text-zinc-600 font-medium">
                                                                 {Array.isArray(siteAnalysis.pontos_fracos_site) ? siteAnalysis.pontos_fracos_site.join(', ') : siteAnalysis.pontos_fracos_site}
                                                             </p>
                                                         </div>
@@ -661,7 +778,7 @@ const REIProjectForm = () => {
                                             <SelectTrigger className={`${inputClasses} shadow-none ring-0 focus:ring-offset-0`}>
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-xl border-zinc-100 shadow-sm">
+                                            <SelectContent className="border-zinc-100 shadow-sm">
                                                 <SelectItem value="Q1">Q1 (Ciclo 1 - 0-90 dias)</SelectItem>
                                                 <SelectItem value="Q2">Q2 (Ciclo 2 - 91-180 dias)</SelectItem>
                                                 <SelectItem value="Q3">Q3 (Ciclo 3 - 181-270 dias)</SelectItem>
@@ -690,23 +807,38 @@ const REIProjectForm = () => {
                                         className={`${inputClasses} [color-scheme:light] w-full`}
                                     />
                                 </div>
+
+                                {/* Previsão de Encerramento — calculada, sem coluna nova no banco */}
+                                {watch('next_rei_date') && watch('project_duration') && (() => {
+                                    const start = new Date(watch('next_rei_date'));
+                                    const days = parseInt((watch('project_duration') || '').replace(/\s*dias?/i, '').trim(), 10);
+                                    if (isNaN(days) || isNaN(start.getTime())) return null;
+                                    const end = new Date(start.getTime() + days * 86_400_000);
+                                    const fmt = end.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+                                    return (
+                                        <div className="flex items-center justify-between px-3 py-2.5 bg-zinc-50 border border-zinc-200">
+                                            <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">Previsão de Encerramento</span>
+                                            <span className="text-xs font-bold text-zinc-800 font-mono">{fmt}</span>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
 
                         {/* 3. COLETA DE ATIVOS */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2 flex items-center gap-2">
+                            <h3 className="text-xxs font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-200 pb-2 flex items-center gap-2">
                                 <FileText className="w-3.5 h-3.5" /> 03. Coleta de Ativos
                             </h3>
-                            <div className="p-6 bg-zinc-50 border border-zinc-200 rounded-xl space-y-6">
+                            <div className="p-6 bg-zinc-50 border border-zinc-200 space-y-6">
                                 <div className="space-y-3">
                                     <Label className={labelClasses}>Status dos Materiais (Brandbook, Acessos, Arquivos)</Label>
                                     <div className="flex gap-4">
-                                        <label className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-all uppercase text-[10px] font-bold tracking-widest ${watch('materials_status') === 'delivered' ? 'bg-black text-white border-black ring-2 ring-black/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
+                                        <label className={`flex-1 flex items-center justify-center p-4 border cursor-pointer transition-all uppercase text-xxs font-bold tracking-widest ${watch('materials_status') === 'delivered' ? 'bg-black text-white border-black ring-2 ring-black/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
                                             <input type="radio" value="delivered" {...register('materials_status')} className="hidden" />
                                             Materiais na Mão (Liberar Planejamento)
                                         </label>
-                                        <label className={`flex-1 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-all uppercase text-[10px] font-bold tracking-widest ${watch('materials_status') === 'pending' ? 'bg-red-50 text-red-600 border-red-200 ring-2 ring-red-500/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
+                                        <label className={`flex-1 flex items-center justify-center p-4 border cursor-pointer transition-all uppercase text-xxs font-bold tracking-widest ${watch('materials_status') === 'pending' ? 'bg-red-50 text-red-600 border-red-200 ring-2 ring-red-500/20' : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300'}`}>
                                             <input type="radio" value="pending" {...register('materials_status')} className="hidden" />
                                             Pendente (Travar Cronograma)
                                         </label>
@@ -714,11 +846,11 @@ const REIProjectForm = () => {
                                 </div>
 
                                 {watch('materials_status') === 'pending' && (
-                                    <div className="p-4 bg-red-50/50 border border-red-100 rounded-lg">
+                                    <div className="p-4 bg-red-50/50 border border-red-100 ">
                                         <label className="flex items-start gap-3 cursor-pointer">
-                                            <input type="checkbox" {...register('materials_delay_accepted')} className="mt-1 w-4 h-4 rounded-sm border-red-300 text-red-600 focus:ring-red-600" />
+                                            <input type="checkbox" {...register('materials_delay_accepted')} className="mt-1 w-4 h-4 border-red-300 text-red-600 focus:ring-red-600" />
                                             <div>
-                                                <p className="text-[11px] font-black text-red-800 uppercase tracking-widest leading-none">Termo de Retenção de Cronograma (Assinatura)</p>
+                                                <p className="text-tiny font-black text-red-800 uppercase tracking-widest leading-none">Termo de Retenção de Cronograma (Assinatura)</p>
                                                 <p className="text-xs text-red-600/80 mt-1 font-medium leading-relaxed">Declaro estar totalmente ciente de que o Hub do projeto ficará bloqueado e o Planejamento Estratégico suspenso até que a totalidade dos ativos e materiais sensíveis seja inserida oficialmente na plataforma.</p>
                                             </div>
                                         </label>
@@ -729,7 +861,7 @@ const REIProjectForm = () => {
 
                         {/* 4. CHAVE DE OURO */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] border-b border-[#00CC6A]/30 pb-2 flex items-center gap-2">
+                            <h3 className="text-xxs font-black uppercase tracking-widest text-[#00CC6A] border-b border-[#00CC6A]/30 pb-2 flex items-center gap-2">
                                 <Target className="w-3.5 h-3.5" /> 04. Pergunta de Ouro
                             </h3>
                             <div className="space-y-2">
@@ -737,7 +869,7 @@ const REIProjectForm = () => {
                                 <textarea
                                     {...register('final_expectations')}
                                     placeholder="Insights finais, medos do decisor, omissões importantes da call..."
-                                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#00CC6A]/20 focus:border-[#00CC6A] focus:outline-none min-h-[120px] transition-all resize-none mt-2"
+                                    className="w-full bg-zinc-50 border border-zinc-200 p-4 text-sm font-medium focus:ring-2 focus:ring-[#00CC6A]/20 focus:border-[#00CC6A] focus:outline-none min-h-[120px] transition-all resize-none mt-2"
                                 />
                             </div>
                         </div>
@@ -747,14 +879,14 @@ const REIProjectForm = () => {
                                 type="button"
                                 variant="ghost"
                                 onClick={() => navigate('/admin/rei')}
-                                className="h-14 px-8 rounded-none text-[10px] uppercase font-bold tracking-widest text-zinc-400 hover:text-black hover:bg-transparent hover:underline transition-all -ml-4"
+                                className="h-14 px-8 rounded-none text-xxs uppercase font-bold tracking-widest text-zinc-400 hover:text-black hover:bg-transparent hover:underline transition-all -ml-4"
                                 disabled={loading}
                             >
                                 Cancelar
                             </Button>
                             <Button
                                 type="submit"
-                                className="h-14 px-10 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-black text-[10px] uppercase tracking-[0.2em] ml-auto"
+                                className="h-14 px-10 rounded-none bg-black text-white hover:bg-zinc-800 transition-all font-black text-xxs uppercase tracking-[0.2em] ml-auto"
                                 disabled={loading}
                             >
                                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (isEditing ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PROJETO')}
@@ -794,14 +926,14 @@ const ProposalListByClient = ({ clientName }: { clientName: string }) => {
     return (
         <div className="space-y-2">
             {proposals.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 rounded-lg hover:border-zinc-300 transition-all group">
+                <div key={doc.id} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 hover:border-zinc-300 transition-all group">
                     <div className="flex items-center gap-3">
                         <div className="h-8 w-8 bg-white border border-zinc-200 flex items-center justify-center rounded text-indigo-600">
                             <FileText size={16} />
                         </div>
                         <div>
                             <div className="text-xs font-bold text-black">{doc.title}</div>
-                            <div className="text-[10px] text-zinc-400 capitalize">{doc.category || 'Proposta'} • {new Date(doc.created_at).toLocaleDateString()}</div>
+                            <div className="text-xxs text-zinc-400 capitalize">{doc.category || 'Proposta'} • {new Date(doc.created_at).toLocaleDateString()}</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">

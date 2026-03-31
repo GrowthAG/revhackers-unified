@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
     const renderMenuSection = (title: string, items: MenuItem[]) => (
         <div className="mb-6">
             {isOpen && (
-                <h3 className="px-5 text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4">
+                <h3 className="px-5 text-3xs font-black text-zinc-500 uppercase tracking-[0.25em] mb-4">
                     {title}
                 </h3>
             )}
@@ -67,14 +67,14 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                                     )}
                                 >
                                     <IconComponent
-                                        size={16}
+                                        size={14}
                                         strokeWidth={1.5}
                                         className={cn(
                                             "shrink-0 transition-transform duration-150",
                                             active ? "scale-110" : "group-hover:scale-110"
                                         )}
                                     />
-                                    <span className={cn("text-[13px] font-bold tracking-tight transition-all duration-200", !isOpen && "hidden w-0 opacity-0")}>
+                                    <span className={cn("text-xs font-black uppercase tracking-widest transition-all duration-200 mt-0.5", !isOpen && "hidden w-0 opacity-0")}>
                                         {item.label}
                                     </span>
                                 </Link>
@@ -88,11 +88,11 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                                     )}
                                 >
                                     <IconComponent
-                                        size={16}
+                                        size={14}
                                         strokeWidth={1.5}
                                         className="shrink-0 group-hover:scale-110 transition-transform duration-150"
                                     />
-                                    <span className={cn("text-[13px] font-bold tracking-tight transition-all duration-200", !isOpen && "hidden w-0 opacity-0")}>
+                                    <span className={cn("text-xs font-black uppercase tracking-widest transition-all duration-200 mt-0.5", !isOpen && "hidden w-0 opacity-0")}>
                                         {item.label}
                                     </span>
                                 </button>
@@ -113,7 +113,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
         >
             <button
                 onClick={toggle}
-                className="absolute -right-3 top-24 h-6 w-6 bg-revgreen text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-sm cursor-pointer z-50 border border-black"
+                className="absolute -right-3 top-24 h-6 w-6 bg-zinc-950 text-zinc-400 flex items-center justify-center hover:bg-zinc-900 hover:text-white transition-all cursor-pointer z-50 border border-zinc-800"
             >
                 <ChevronLeft size={14} className={cn("transition-transform duration-300", !isOpen && "rotate-180")} />
             </button>
@@ -134,8 +134,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
             <nav className="flex-1 py-8 overflow-y-auto">
                 {renderMenuSection("Operacional", [
                     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-                    { icon: Handshake, label: 'Deal Rooms', path: '/admin/proposals' },
-                    { icon: Zap, label: 'Projetos', path: '/admin/rei' },
+                    { icon: Handshake, label: 'Cockpit', path: '/admin/proposals' },
                     { icon: Users, label: 'Equipe', path: '/admin/users' }
                 ])}
 
@@ -152,15 +151,15 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
                     to="/admin/settings"
                     className="flex items-center gap-3 px-3 py-2 text-zinc-400 hover:text-white transition-all"
                 >
-                    <Settings size={16} strokeWidth={1.5} />
-                    {isOpen && <span className="text-[13px] font-bold">Ajustes</span>}
+                    <Settings size={14} strokeWidth={1.5} />
+                    {isOpen && <span className="text-xs font-black uppercase tracking-widest mt-0.5">Ajustes</span>}
                 </Link>
                 <button
                     onClick={() => signOut()}
                     className="flex items-center gap-3 px-3 py-2 text-zinc-400 hover:text-red-400 transition-all w-full text-left"
                 >
-                    <LogOut size={16} strokeWidth={1.5} />
-                    {isOpen && <span className="text-[13px] font-bold">Sair</span>}
+                    <LogOut size={14} strokeWidth={1.5} />
+                    {isOpen && <span className="text-xs font-black uppercase tracking-widest mt-0.5">Sair</span>}
                 </button>
             </div>
         </aside>

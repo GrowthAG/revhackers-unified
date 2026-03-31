@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import {
     Video,
     Loader2,
-    PlayCircle,
     ChevronDown,
     ChevronUp,
     Clock,
@@ -18,10 +17,12 @@ import {
     ShieldAlert,
     Lightbulb,
     MessageSquare,
+    Users,
+    Tag,
+    Shield,
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,6 +39,15 @@ interface AiInsights {
     riscos_identificados?: string[];
 }
 
+interface Participant {
+    name: string;
+    email?: string;
+    role?: string;
+    company?: string;
+}
+
+type MeetingPhase = 'discovery' | 'qualification' | 'proposal' | 'negotiation' | 'kickoff' | 'onboarding' | 'review' | 'ongoing' | 'escalation';
+
 interface MeetingRecording {
     id: string;
     title: string | null;
@@ -47,38 +57,70 @@ interface MeetingRecording {
     ai_insights: AiInsights | null;
     video_url: string | null;
     transcript_status: string | null;
+    meeting_phase: MeetingPhase | null;
+    meeting_type: string | null;
+    duration_seconds: number | null;
+    participants: Participant[] | null;
+    tags: string[] | null;
+    client_acknowledged: boolean | null;
+    video_hash: string | null;
 }
 
-type MeetingType = 'proposta' | 'kickoff' | 'followup' | 'review' | 'outro';
-
 // ---------------------------------------------------------------------------
-// Helpers
+// Phase Configuration
 // ---------------------------------------------------------------------------
 
-function inferMeetingType(title: string | null): MeetingType {
-    if (!title) return 'outro';
-    const lower = title.toLowerCase();
-    if (lower.includes('proposta') || lower.includes('comercial') || lower.includes('sales') || lower.includes('pitch')) return 'proposta';
-    if (lower.includes('kickoff') || lower.includes('kick-off') || lower.includes('onboarding') || lower.includes('kick off')) return 'kickoff';
-    if (lower.includes('review') || lower.includes('revisao') || lower.includes('resultado') || lower.includes('sprint')) return 'review';
-    if (lower.includes('follow') || lower.includes('acompanhamento') || lower.includes('check')) return 'followup';
-    return 'outro';
-}
+const PHASE_ORDER: MeetingPhase[] = [
+    'discovery', 'qualification', 'proposal', 'negotiation',
+    'kickoff', 'onboarding', 'review', 'ongoing', 'escalation',
+];
 
-const MEETING_TYPE_LABELS: Record<MeetingType, string> = {
-    proposta: 'Proposta',
+const PHASE_LABELS: Record<MeetingPhase, string> = {
+    discovery: 'Discovery',
+    qualification: 'Qualificacao',
+    proposal: 'Proposta',
+    negotiation: 'Negociacao',
     kickoff: 'Kickoff',
-    followup: 'Follow-up',
+    onboarding: 'Onboarding',
     review: 'Review',
-    outro: 'Reuniao',
+    ongoing: 'Ongoing',
+    escalation: 'Escalacao',
 };
 
-const MEETING_TYPE_STYLES: Record<MeetingType, string> = {
-    proposta: 'text-zinc-900 bg-zinc-100 border border-zinc-300',
+const PHASE_DESCRIPTIONS: Record<MeetingPhase, string> = {
+    discovery: 'Primeiro contato, entendimento do cenario',
+    qualification: 'Aprofundamento, validacao de fit',
+    proposal: 'Apresentacao de proposta comercial',
+    negotiation: 'Alinhamento de escopo e valores',
+    kickoff: 'Inicio oficial do projeto',
+    onboarding: 'Configuracoes, treinamentos, setup',
+    review: 'Revisoes de resultado e sprint',
+    ongoing: 'Acompanhamento continuo',
+    escalation: 'Tratamento de riscos e crises',
+};
+
+// ---------------------------------------------------------------------------
+// Meeting Type Config
+// ---------------------------------------------------------------------------
+
+const MEETING_TYPE_LABELS: Record<string, string> = {
+    call: 'Call',
+    screen_share: 'Screen Share',
+    presentation: 'Apresentacao',
+    kickoff: 'Kickoff',
+    review: 'Review',
+    internal: 'Interna',
+    async_loom: 'Loom',
+};
+
+const MEETING_TYPE_STYLES: Record<string, string> = {
+    call: 'text-zinc-600 bg-zinc-50 border border-zinc-200',
+    screen_share: 'text-zinc-600 bg-zinc-50 border border-zinc-200',
+    presentation: 'text-zinc-900 bg-zinc-100 border border-zinc-300',
     kickoff: 'text-[#00CC6A] bg-[#00CC6A]/10 border border-[#00CC6A]/20',
-    followup: 'text-zinc-600 bg-zinc-50 border border-zinc-200',
     review: 'text-zinc-700 bg-zinc-100 border border-zinc-200',
-    outro: 'text-zinc-500 bg-zinc-50 border border-zinc-200',
+    internal: 'text-zinc-500 bg-zinc-50 border border-zinc-200',
+    async_loom: 'text-zinc-500 bg-zinc-50 border border-zinc-200',
 };
 
 const SENTIMENT_LABELS: Record<string, { label: string; style: string }> = {
@@ -87,11 +129,15 @@ const SENTIMENT_LABELS: Record<string, { label: string; style: string }> = {
     negativo: { label: 'Negativo', style: 'text-zinc-900' },
 };
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 function formatDateTimeBR(dateStr: string | null): { date: string; time: string } {
     if (!dateStr) return { date: '-', time: '-' };
     try {
         const d = new Date(dateStr);
-        const formatted = new Intl.DateTimeFormat('pt-BR', {
+        const date = new Intl.DateTimeFormat('pt-BR', {
             timeZone: 'America/Sao_Paulo',
             day: '2-digit',
             month: 'short',
@@ -102,30 +148,78 @@ function formatDateTimeBR(dateStr: string | null): { date: string; time: string 
             hour: '2-digit',
             minute: '2-digit',
         }).format(d);
-        return { date: formatted, time };
+        return { date, time };
     } catch {
         return { date: '-', time: '-' };
     }
 }
 
-function estimateHoursFromTranscript(transcript: string | null): number {
-    if (!transcript) return 0;
-    // Average speaking rate ~150 words/min, average word length ~5 chars
-    const words = transcript.length / 5;
-    const minutes = words / 150;
-    return Math.round((minutes / 60) * 10) / 10;
+function formatDuration(seconds: number | null): string {
+    if (!seconds) return '-';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (h > 0) return `${h}h${m > 0 ? `${m}min` : ''}`;
+    return `${m}min`;
+}
+
+function groupByPhase(meetings: MeetingRecording[]): Map<MeetingPhase | 'sem_fase', MeetingRecording[]> {
+    const groups = new Map<MeetingPhase | 'sem_fase', MeetingRecording[]>();
+    for (const m of meetings) {
+        const phase = m.meeting_phase || 'sem_fase';
+        if (!groups.has(phase)) groups.set(phase, []);
+        groups.get(phase)!.push(m);
+    }
+    return groups;
 }
 
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
+function PhaseProgressBar({ phases }: { phases: MeetingPhase[] }) {
+    const uniquePhases = [...new Set(phases)];
+    const maxIdx = Math.max(...uniquePhases.map(p => PHASE_ORDER.indexOf(p)));
+
+    return (
+        <div className="flex items-center gap-1 mb-8">
+            {PHASE_ORDER.slice(0, Math.max(maxIdx + 2, 5)).map((phase, idx) => {
+                const isActive = uniquePhases.includes(phase);
+                const isCurrent = idx === maxIdx;
+                return (
+                    <React.Fragment key={phase}>
+                        <div className="flex flex-col items-center gap-1.5 min-w-0">
+                            <div
+                                className={`w-full h-1.5 min-w-[40px] md:min-w-[60px] ${
+                                    isCurrent
+                                        ? 'bg-[#00CC6A]'
+                                        : isActive
+                                            ? 'bg-zinc-900'
+                                            : 'bg-zinc-200'
+                                }`}
+                            />
+                            <span className={`text-2xs font-black uppercase tracking-[0.2em] truncate ${
+                                isCurrent
+                                    ? 'text-[#00CC6A]'
+                                    : isActive
+                                        ? 'text-zinc-900'
+                                        : 'text-zinc-300'
+                            }`}>
+                                {PHASE_LABELS[phase]}
+                            </span>
+                        </div>
+                    </React.Fragment>
+                );
+            })}
+        </div>
+    );
+}
+
 function AggregateHeader({ meetings }: { meetings: MeetingRecording[] }) {
     const totalMeetings = meetings.length;
 
     const totalHours = useMemo(() => {
-        const sum = meetings.reduce((acc, m) => acc + estimateHoursFromTranscript(m.transcript), 0);
-        return Math.round(sum * 10) / 10;
+        const totalSec = meetings.reduce((acc, m) => acc + (m.duration_seconds || 0), 0);
+        return Math.round((totalSec / 3600) * 10) / 10;
     }, [meetings]);
 
     const avgSentiment = useMemo(() => {
@@ -140,35 +234,36 @@ function AggregateHeader({ meetings }: { meetings: MeetingRecording[] }) {
         return 'neutro';
     }, [meetings]);
 
-    const avgEngagement = useMemo(() => {
-        const scores = meetings
-            .map(m => (m.ai_insights as AiInsights)?.score_engajamento)
-            .filter((s): s is number => typeof s === 'number');
-        if (scores.length === 0) return 0;
-        return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    const totalParticipants = useMemo(() => {
+        const names = new Set<string>();
+        for (const m of meetings) {
+            const parts = (m.participants || []) as Participant[];
+            parts.forEach(p => { if (p.name) names.add(p.name); });
+        }
+        return names.size;
     }, [meetings]);
 
     const metrics = [
         { label: 'Reunioes', value: String(totalMeetings), icon: Video },
-        { label: 'Horas Gravadas', value: `${totalHours}h`, icon: Clock },
+        { label: 'Horas Gravadas', value: totalHours > 0 ? `${totalHours}h` : '-', icon: Clock },
+        { label: 'Participantes', value: String(totalParticipants), icon: Users },
         {
-            label: 'Sentimento Medio',
+            label: 'Sentimento',
             value: avgSentiment === 'N/A' ? 'N/A' : SENTIMENT_LABELS[avgSentiment]?.label || avgSentiment,
             icon: BarChart3,
             className: avgSentiment !== 'N/A' ? SENTIMENT_LABELS[avgSentiment]?.style : undefined,
         },
-        { label: 'Engajamento Medio', value: `${avgEngagement}/100`, icon: TrendingUp },
     ];
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {metrics.map((m) => (
-                <div key={m.label} className="border border-zinc-200 rounded-2xl shadow-sm bg-white px-5 py-4">
+                <div key={m.label} className="border border-zinc-200 shadow-sm bg-white px-5 py-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-zinc-50 border border-zinc-200 flex items-center justify-center">
                             <m.icon className="w-4 h-4 text-zinc-900" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">{m.label}</span>
+                        <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">{m.label}</span>
                     </div>
                     <p className={`text-xl font-black tracking-tight ${m.className || 'text-zinc-900'}`}>{m.value}</p>
                 </div>
@@ -177,22 +272,49 @@ function AggregateHeader({ meetings }: { meetings: MeetingRecording[] }) {
     );
 }
 
-function InsightsSection({ insights, meetingType }: { insights: AiInsights; meetingType: MeetingType }) {
-    const isProposta = meetingType === 'proposta';
+function ParticipantsList({ participants }: { participants: Participant[] }) {
+    if (!participants || participants.length === 0) return null;
+    return (
+        <div className="flex items-center gap-2 flex-wrap mt-2">
+            <Users className="w-3 h-3 text-zinc-400 shrink-0" />
+            {participants.map((p, i) => (
+                <span key={i} className="text-tiny font-medium text-zinc-500">
+                    {p.name}{p.role === 'revhackers' ? ' (RH)' : p.role === 'client' ? '' : ''}
+                    {i < participants.length - 1 ? ',' : ''}
+                </span>
+            ))}
+        </div>
+    );
+}
 
+function TagsList({ tags }: { tags: string[] }) {
+    if (!tags || tags.length === 0) return null;
+    return (
+        <div className="flex items-center gap-1.5 flex-wrap mt-2">
+            <Tag className="w-3 h-3 text-zinc-300 shrink-0" />
+            {tags.map((tag, i) => (
+                <span key={i} className="text-xxs font-bold text-zinc-400 bg-zinc-50 border border-zinc-200 px-2 py-0.5">
+                    {tag}
+                </span>
+            ))}
+        </div>
+    );
+}
+
+function InsightsSection({ insights }: { insights: AiInsights }) {
     const sections: { label: string; items: string[]; icon: React.ElementType }[] = [];
 
     if ((insights.topicos_principais || []).length > 0) {
         sections.push({ label: 'Topicos Principais', items: insights.topicos_principais || [], icon: Target });
     }
     if ((insights.objecoes_cliente || []).length > 0) {
-        sections.push({ label: isProposta ? 'Objecoes Detectadas' : 'Preocupacoes do Cliente', items: insights.objecoes_cliente || [], icon: ShieldAlert });
+        sections.push({ label: 'Objecoes / Preocupacoes', items: insights.objecoes_cliente || [], icon: ShieldAlert });
     }
     if ((insights.oportunidades_detectadas || []).length > 0) {
-        sections.push({ label: isProposta ? 'Sinais de Compra' : 'Oportunidades', items: insights.oportunidades_detectadas || [], icon: Lightbulb });
+        sections.push({ label: 'Oportunidades', items: insights.oportunidades_detectadas || [], icon: Lightbulb });
     }
     if ((insights.riscos_identificados || []).length > 0) {
-        sections.push({ label: 'Riscos Identificados', items: insights.riscos_identificados || [], icon: AlertTriangle });
+        sections.push({ label: 'Riscos', items: insights.riscos_identificados || [], icon: AlertTriangle });
     }
     if ((insights.acoes_identificadas || []).length > 0) {
         sections.push({ label: 'Proximas Acoes', items: insights.acoes_identificadas || [], icon: CheckCircle2 });
@@ -202,31 +324,29 @@ function InsightsSection({ insights, meetingType }: { insights: AiInsights; meet
 
     return (
         <div className="space-y-4 mt-4">
-            {/* Engagement score gauge for proposta */}
-            {isProposta && typeof insights.score_engajamento === 'number' && (
+            {typeof insights.score_engajamento === 'number' && (
                 <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Score de Fechamento</span>
-                    <div className="flex-1 h-2 bg-zinc-100 rounded-full overflow-hidden max-w-[200px]">
+                    <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">Engajamento</span>
+                    <div className="flex-1 h-2 bg-zinc-100 overflow-hidden max-w-[200px]">
                         <div
-                            className="h-full rounded-full bg-[#00CC6A]"
+                            className="h-full bg-[#00CC6A]"
                             style={{ width: `${Math.min(insights.score_engajamento, 100)}%` }}
                         />
                     </div>
                     <span className="text-xs font-black text-zinc-900">{insights.score_engajamento}/100</span>
                 </div>
             )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sections.map((section) => (
                     <div key={section.label} className="space-y-2">
                         <div className="flex items-center gap-1.5">
                             <section.icon className="w-3.5 h-3.5 text-zinc-400" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">{section.label}</span>
+                            <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">{section.label}</span>
                         </div>
                         <ul className="space-y-1">
                             {section.items.map((item, idx) => (
-                                <li key={idx} className="text-[13px] font-medium text-zinc-600 leading-relaxed flex items-start gap-2">
-                                    <span className="w-1 h-1 rounded-full bg-zinc-300 mt-2 shrink-0" />
+                                <li key={idx} className="text-mini font-medium text-zinc-600 leading-relaxed flex items-start gap-2">
+                                    <span className="w-1 h-1 bg-zinc-300 mt-2 shrink-0" />
                                     {item}
                                 </li>
                             ))}
@@ -246,14 +366,14 @@ function TranscriptViewer({ transcript }: { transcript: string }) {
 
     return (
         <div className="mt-3 space-y-2">
-            <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 overflow-y-auto max-h-[240px] text-xs text-zinc-500 leading-relaxed font-mono whitespace-pre-wrap">
+            <div className="bg-zinc-50 p-4 border border-zinc-200 overflow-y-auto max-h-[240px] text-xs text-zinc-500 leading-relaxed font-mono whitespace-pre-wrap">
                 {displayText}
                 {!expanded && isTruncated && '...'}
             </div>
             {isTruncated && (
                 <button
                     onClick={() => setExpanded(!expanded)}
-                    className="text-[11px] font-bold text-zinc-500 hover:text-zinc-900 flex items-center gap-1 transition-colors"
+                    className="text-tiny font-bold text-zinc-500 hover:text-zinc-900 flex items-center gap-1 transition-colors"
                 >
                     {expanded ? <><ChevronUp className="w-3 h-3" /> Mostrar menos</> : <><ChevronDown className="w-3 h-3" /> Mostrar mais</>}
                 </button>
@@ -262,12 +382,11 @@ function TranscriptViewer({ transcript }: { transcript: string }) {
     );
 }
 
-function MeetingCard({ meeting, isLatest }: { meeting: MeetingRecording; isLatest: boolean }) {
+function MeetingCard({ meeting }: { meeting: MeetingRecording }) {
     const navigate = useNavigate();
     const [showInsights, setShowInsights] = useState(false);
     const [showTranscript, setShowTranscript] = useState(false);
 
-    const meetingType = inferMeetingType(meeting.title);
     const insights = (meeting.ai_insights || {}) as AiInsights;
     const hasInsights = insights.acoes_identificadas?.length ||
         insights.objecoes_cliente?.length ||
@@ -276,78 +395,101 @@ function MeetingCard({ meeting, isLatest }: { meeting: MeetingRecording; isLates
         insights.topicos_principais?.length;
 
     const sentimentInfo = insights.sentimento ? SENTIMENT_LABELS[insights.sentimento] : null;
+    const mType = meeting.meeting_type || 'call';
+    const typeLabel = MEETING_TYPE_LABELS[mType] || mType;
+    const typeStyle = MEETING_TYPE_STYLES[mType] || MEETING_TYPE_STYLES.call;
 
     return (
-        <div className="border border-zinc-200 rounded-2xl shadow-sm bg-white overflow-hidden">
+        <div className="border border-zinc-200 shadow-sm bg-white overflow-hidden">
             <div className="px-5 py-4">
                 {/* Title row */}
-                <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                            <h3 className="text-[15px] font-bold text-zinc-900 tracking-tight leading-tight truncate">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h3 className="text-body font-bold text-zinc-900 tracking-tight leading-tight truncate">
                                 {meeting.title || 'Reuniao'}
                             </h3>
-                            <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md inline-block ${MEETING_TYPE_STYLES[meetingType]}`}>
-                                {MEETING_TYPE_LABELS[meetingType]}
+                            <span className={`text-xxs font-black uppercase tracking-widest px-2.5 py-1 inline-block ${typeStyle}`}>
+                                {typeLabel}
                             </span>
-                            {sentimentInfo && (
-                                <span className={`text-[10px] font-black uppercase tracking-widest ${sentimentInfo.style}`}>
-                                    {sentimentInfo.label}
+                            {meeting.duration_seconds && (
+                                <span className="text-xxs font-bold text-zinc-400 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> {formatDuration(meeting.duration_seconds)}
                                 </span>
                             )}
-                            {typeof insights.score_engajamento === 'number' && (
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                                    Engajamento {insights.score_engajamento}/100
+                            {sentimentInfo && (
+                                <span className={`text-xxs font-black uppercase tracking-widest ${sentimentInfo.style}`}>
+                                    {sentimentInfo.label}
                                 </span>
                             )}
                         </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
+                        {meeting.video_hash && (
+                            <div className="flex items-center gap-1 text-xxs font-bold text-zinc-300" title="Integridade verificada (SHA-256)">
+                                <Shield className="w-3 h-3" />
+                            </div>
+                        )}
                         {meeting.video_url && (
                             <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => window.open(meeting.video_url!, '_blank')}
-                                className="text-zinc-600 border-zinc-200 hover:bg-zinc-50 text-[10px] font-bold uppercase tracking-widest h-8 px-2"
-                                title="Baixar Video (Raw)"
+                                className="rounded-none text-zinc-500 border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 text-xxs font-black uppercase tracking-widest h-8 px-3 transition-colors"
+                                title="Abrir Video"
                             >
                                 <Video size={14} />
                             </Button>
                         )}
                         <Button
                             size="sm"
+                            variant="outline"
                             onClick={() => navigate(`/admin/recording/${meeting.id}`)}
-                            className="bg-black hover:bg-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest h-8 gap-1.5"
+                            className="rounded-none text-zinc-900 border-zinc-200 hover:bg-zinc-950 hover:text-white hover:border-zinc-950 text-xxs font-black uppercase tracking-widest h-8 px-4 gap-2 transition-all"
                         >
-                            <FileText size={12} /> Abrir Documento
+                            <FileText size={13} strokeWidth={2.5} /> DOCUMENTO
                         </Button>
                     </div>
                 </div>
 
+                {/* Participants */}
+                <ParticipantsList participants={meeting.participants || []} />
+
                 {/* AI Summary */}
-                {meeting.ai_summary && (
-                    <p className="text-[15px] font-medium leading-relaxed text-zinc-500 mb-3">
+                {meeting.ai_summary && meeting.ai_summary !== 'Sincronizado do tl;dv' && (
+                    <p className="text-body font-medium leading-relaxed text-zinc-500 mt-3">
                         {meeting.ai_summary}
                     </p>
                 )}
                 {!meeting.ai_summary && meeting.transcript_status === 'processing' && (
-                    <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium mb-3">
+                    <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium mt-3">
                         <Loader2 className="w-3 h-3 animate-spin" /> Analise em processamento...
+                    </div>
+                )}
+
+                {/* Tags */}
+                <TagsList tags={meeting.tags || []} />
+
+                {/* Client acknowledged badge */}
+                {meeting.client_acknowledged && (
+                    <div className="flex items-center gap-1.5 mt-2">
+                        <CheckCircle2 className="w-3 h-3 text-[#00CC6A]" />
+                        <span className="text-xxs font-black uppercase tracking-widest text-[#00CC6A]">Cliente Confirmou</span>
                     </div>
                 )}
 
                 {/* Expandable intelligence */}
                 {hasInsights ? (
-                    <div>
+                    <div className="mt-3">
                         <button
                             onClick={() => setShowInsights(!showInsights)}
-                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 hover:text-zinc-900 transition-colors py-1"
+                            className="flex items-center gap-2 text-xxs font-black uppercase tracking-[0.25em] text-zinc-500 hover:text-zinc-900 transition-colors py-1"
                         >
-                            <BrainCircuit className="w-3.5 h-3.5" />
-                            Inteligencia Extraida
-                            {showInsights ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                            <BrainCircuit className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            INTELIGÊNCIA EXTRAÍDA
+                            {showInsights ? <ChevronUp className="w-3 h-3" strokeWidth={2.5} /> : <ChevronDown className="w-3 h-3" strokeWidth={2.5} />}
                         </button>
-                        {showInsights && <InsightsSection insights={insights} meetingType={meetingType} />}
+                        {showInsights && <InsightsSection insights={insights} />}
                     </div>
                 ) : null}
 
@@ -356,15 +498,77 @@ function MeetingCard({ meeting, isLatest }: { meeting: MeetingRecording; isLates
                     <div className="mt-2">
                         <button
                             onClick={() => setShowTranscript(!showTranscript)}
-                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 hover:text-zinc-900 transition-colors py-1"
+                            className="flex items-center gap-2 text-xxs font-black uppercase tracking-[0.25em] text-zinc-500 hover:text-zinc-900 transition-colors py-1"
                         >
-                            <FileText className="w-3.5 h-3.5" />
-                            Ver Transcricao
-                            {showTranscript ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                            <FileText className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            VER TRANSCRIÇÃO ({Math.round(meeting.transcript.length / 1000)}K CHARS)
+                            {showTranscript ? <ChevronUp className="w-3 h-3" strokeWidth={2.5} /> : <ChevronDown className="w-3 h-3" strokeWidth={2.5} />}
                         </button>
                         {showTranscript && <TranscriptViewer transcript={meeting.transcript} />}
                     </div>
                 )}
+            </div>
+        </div>
+    );
+}
+
+function PhaseGroup({ phase, meetings }: { phase: MeetingPhase | 'sem_fase'; meetings: MeetingRecording[] }) {
+    const label = phase === 'sem_fase' ? 'Sem Fase Definida' : PHASE_LABELS[phase];
+    const description = phase !== 'sem_fase' ? PHASE_DESCRIPTIONS[phase] : '';
+    const phaseIdx = phase !== 'sem_fase' ? PHASE_ORDER.indexOf(phase) : -1;
+
+    return (
+        <div className="mb-10 last:mb-0">
+            {/* Phase header */}
+            <div className="flex items-center gap-3 mb-5">
+                <div className={`w-8 h-8 flex items-center justify-center text-xs font-black ${
+                    phase === 'sem_fase'
+                        ? 'bg-zinc-100 text-zinc-400 border border-zinc-200'
+                        : 'bg-zinc-950 text-white'
+                }`}>
+                    {phaseIdx >= 0 ? phaseIdx + 1 : '?'}
+                </div>
+                <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900">{label}</h3>
+                    {description && (
+                        <p className="text-tiny font-medium text-zinc-400 mt-0.5">{description}</p>
+                    )}
+                </div>
+                <div className="flex-1 h-[2px] bg-zinc-200" />
+                <span className="text-xxs font-black uppercase tracking-widest text-zinc-400">
+                    {meetings.length} {meetings.length === 1 ? 'reuniao' : 'reunioes'}
+                </span>
+            </div>
+
+            {/* Meetings in this phase */}
+            <div className="relative">
+                {meetings.map((meeting, idx) => {
+                    const { date, time } = formatDateTimeBR(meeting.happened_at);
+                    const isLast = idx === meetings.length - 1;
+
+                    return (
+                        <div key={meeting.id} className="flex gap-4 md:gap-6 pb-6 last:pb-0">
+                            {/* Left: date + time */}
+                            <div className="w-20 md:w-28 shrink-0 text-right pt-1">
+                                <p className="text-xs font-bold text-zinc-900 leading-tight">{date}</p>
+                                <p className="text-xxs font-medium text-zinc-400 mt-0.5">{time}</p>
+                            </div>
+
+                            {/* Center: line + dot */}
+                            <div className="flex flex-col items-center shrink-0">
+                                <div className="w-3 h-3 shrink-0 mt-1.5 bg-zinc-900" />
+                                {!isLast && (
+                                    <div className="w-[2px] flex-1 bg-zinc-200 mt-1" />
+                                )}
+                            </div>
+
+                            {/* Right: card */}
+                            <div className="flex-1 min-w-0 pb-2">
+                                <MeetingCard meeting={meeting} />
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
@@ -381,27 +585,68 @@ interface MeetingIntelligenceTimelineProps {
 export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelineProps> = ({ projectId }) => {
     const [meetings, setMeetings] = useState<MeetingRecording[]>([]);
     const [loading, setLoading] = useState(true);
+    const [syncingFathom, setSyncingFathom] = useState(false);
+    // tl;dv integration removed (plan expired 2026-03-29). Recordings from tl;dv are kept in DB.
+
+    const fetchMeetings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('meeting_recordings')
+                .select('id, title, happened_at, transcript, ai_summary, ai_insights, video_url, transcript_status, meeting_phase, meeting_type, duration_seconds, participants, tags, client_acknowledged, video_hash')
+                .eq('rei_project_id', projectId)
+                .order('happened_at', { ascending: true });
+
+            if (error) throw error;
+            setMeetings((data as unknown as MeetingRecording[]) || []);
+        } catch (error) {
+            console.error('Error fetching meetings for timeline:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSyncFathom = async () => {
+        try {
+            setSyncingFathom(true);
+            const { data, error } = await supabase.functions.invoke('fathom-sync', {
+                body: { projectId: projectId }
+            });
+            if (error) throw error;
+            if (data?.error) throw new Error(data.error);
+
+            toast.success('Sucesso', { description: data.message || 'Sincronizado com Fathom' });
+            fetchMeetings(); // recarregar lista
+        } catch (e: any) {
+            toast.error('Erro na sincronizacao do Fathom', { description: e.message });
+        } finally {
+            setSyncingFathom(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchMeetings = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('meeting_recordings')
-                    .select('id, title, happened_at, transcript, ai_summary, ai_insights, video_url, transcript_status')
-                    .eq('rei_project_id', projectId)
-                    .order('happened_at', { ascending: true });
-
-                if (error) throw error;
-                setMeetings((data as unknown as MeetingRecording[]) || []);
-            } catch (error) {
-                console.error('Error fetching meetings for timeline:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (projectId) fetchMeetings();
     }, [projectId]);
+
+    // Group meetings by phase
+    const phaseGroups = useMemo(() => {
+        const groups = groupByPhase(meetings);
+        // Sort by phase order
+        const sorted: { phase: MeetingPhase | 'sem_fase'; items: MeetingRecording[] }[] = [];
+        for (const phase of PHASE_ORDER) {
+            if (groups.has(phase)) {
+                sorted.push({ phase, items: groups.get(phase)! });
+            }
+        }
+        if (groups.has('sem_fase')) {
+            sorted.push({ phase: 'sem_fase', items: groups.get('sem_fase')! });
+        }
+        return sorted;
+    }, [meetings]);
+
+    const activePhasesArr = useMemo(
+        () => meetings.map(m => m.meeting_phase).filter((p): p is MeetingPhase => !!p),
+        [meetings],
+    );
 
     // Loading state
     if (loading) {
@@ -415,65 +660,62 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
     // Empty state
     if (meetings.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-[50vh] text-center border border-dashed border-zinc-200 rounded-2xl bg-white">
-                <div className="w-14 h-14 bg-zinc-50 border border-zinc-200 rounded-2xl flex items-center justify-center mb-5">
+            <div className="flex flex-col items-center justify-center h-[50vh] text-center border border-dashed border-zinc-200 bg-white">
+                <div className="w-14 h-14 bg-zinc-50 border border-zinc-200 flex items-center justify-center mb-5">
                     <MessageSquare className="w-6 h-6 text-zinc-300" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Nenhuma Reuniao Gravada</h3>
-                <p className="text-[13px] text-zinc-500 font-medium max-w-md leading-relaxed px-6">
-                    Use a extensao RevHackers Clipper para gravar calls automaticamente.
-                    As reunioes aparecerao aqui em ordem cronologica com inteligencia de IA.
+                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Cofre Documental Vazio</h3>
+                <p className="text-mini text-zinc-500 font-medium max-w-md leading-relaxed px-6 mb-6">
+                    Aperte no botão "Buscar Chamadas" para importar as gravações deste cliente.
                 </p>
+                <Button 
+                    onClick={handleSyncFathom} 
+                    disabled={syncingFathom}
+                    variant="outline"
+                    className="bg-white border-zinc-300 text-zinc-900 hover:bg-zinc-100 hover:text-zinc-900 text-xxs font-black uppercase tracking-widest rounded-none h-10 px-6 gap-2 shadow-sm transition-colors"
+                >
+                    {syncingFathom ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4 text-[#00CC6A]" />}
+                    BUSCAR CHAMADAS
+                </Button>
             </div>
         );
     }
 
-    // Find latest meeting index (most recent by happened_at)
-    const latestIdx = meetings.length - 1;
-
     return (
         <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="mb-6">
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">Timeline de Inteligencia</span>
-                <h2 className="text-xl font-bold text-zinc-900 tracking-tight mt-1">
-                    Historico Completo de Reunioes
-                </h2>
+            <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                    <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">Cofre Documental</span>
+                    <h2 className="text-xl font-bold text-zinc-900 tracking-tight mt-1">
+                        Histórico Completo de Reuniões
+                    </h2>
+                    <p className="text-mini font-medium text-zinc-400 mt-1">
+                        Documentação jurídica e inteligência extraída de todas as interações
+                    </p>
+                </div>
+                
+                <Button 
+                    variant="outline"
+                    onClick={handleSyncFathom} 
+                    disabled={syncingFathom}
+                    className="bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-100 hover:text-zinc-900 text-xxs font-black uppercase tracking-widest rounded-none h-10 px-4 gap-2 shadow-sm transition-colors"
+                >
+                    {syncingFathom ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4 text-[#00CC6A]" />}
+                    BUSCAR CHAMADAS
+                </Button>
             </div>
+
+            {/* Phase progress bar */}
+            {activePhasesArr.length > 0 && <PhaseProgressBar phases={activePhasesArr} />}
 
             {/* Aggregate metrics */}
             <AggregateHeader meetings={meetings} />
 
-            {/* Timeline */}
-            <div className="relative">
-                {meetings.map((meeting, idx) => {
-                    const isLatest = idx === latestIdx;
-                    const { date, time } = formatDateTimeBR(meeting.happened_at);
-
-                    return (
-                        <div key={meeting.id} className="flex gap-4 md:gap-6 pb-8 last:pb-0">
-                            {/* Left: date + time */}
-                            <div className="w-20 md:w-28 shrink-0 text-right pt-1">
-                                <p className="text-xs font-bold text-zinc-900 leading-tight">{date}</p>
-                                <p className="text-[10px] font-medium text-zinc-400 mt-0.5">{time}</p>
-                            </div>
-
-                            {/* Center: line + dot */}
-                            <div className="flex flex-col items-center shrink-0">
-                                <div className={`w-3 h-3 rounded-full shrink-0 mt-1.5 ${isLatest ? 'bg-[#00CC6A] shadow-[0_0_8px_rgba(0,204,106,0.3)]' : 'bg-zinc-300'}`} />
-                                {idx < meetings.length - 1 && (
-                                    <div className="w-[2px] flex-1 bg-zinc-200 mt-1" />
-                                )}
-                            </div>
-
-                            {/* Right: card */}
-                            <div className="flex-1 min-w-0 pb-2">
-                                <MeetingCard meeting={meeting} isLatest={isLatest} />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+            {/* Phase-grouped timeline */}
+            {phaseGroups.map(({ phase, items }) => (
+                <PhaseGroup key={phase} phase={phase} meetings={items} />
+            ))}
         </div>
     );
 };

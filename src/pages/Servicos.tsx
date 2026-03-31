@@ -120,7 +120,7 @@ const Servicos = () => {
                   <h3 className="text-2xl font-bold text-zinc-900 mb-6 tracking-tight group-hover:translate-x-1 transition-transform duration-500">
                     {item.title}
                   </h3>
-                  <p className="text-[15px] text-zinc-500 leading-relaxed mb-10 font-normal">
+                  <p className="text-body text-zinc-500 leading-relaxed mb-10 font-normal">
                     {item.description}
                   </p>
                 </div>
@@ -129,7 +129,7 @@ const Servicos = () => {
                 <div className="pt-8 border-t border-zinc-50">
                   <div className="flex flex-wrap gap-2 mb-10">
                     {item.tech.map((tech) => (
-                      <span key={tech} className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-50 border border-zinc-100 px-2.5 py-1 rounded-full">
+                      <span key={tech} className="text-2xs font-bold text-zinc-400 uppercase tracking-widest bg-zinc-50 border border-zinc-100 px-2.5 py-1 rounded-full">
                         {tech}
                       </span>
                     ))}
@@ -137,7 +137,7 @@ const Servicos = () => {
 
                   <Link
                     to={`/servicos/${item.slug}`}
-                    className="inline-flex items-center text-[10px] font-black text-zinc-900 uppercase tracking-[0.2em] group-hover:text-black transition-all gap-3 group-hover:gap-5"
+                    className="inline-flex items-center text-xxs font-black text-zinc-900 uppercase tracking-[0.2em] group-hover:text-black transition-all gap-3 group-hover:gap-5"
                   >
                     EXPLORAR <ArrowUpRight className="w-4 h-4" />
                   </Link>

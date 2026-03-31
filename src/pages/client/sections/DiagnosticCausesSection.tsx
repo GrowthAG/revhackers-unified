@@ -34,8 +34,8 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {risks.length > 0 && (
                     <div className="space-y-5">
                         <div className="flex items-center gap-3">
-                            <h4 className="text-[13px] font-bold text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
-                            <span className="text-[11px] font-bold text-zinc-400 ml-auto">
+                            <h4 className="text-mini font-bold text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
+                            <span className="text-tiny font-bold text-zinc-400 ml-auto">
                                 {risks.length} {risks.length === 1 ? 'causa identificada' : 'causas identificadas'}
                             </span>
                         </div>
@@ -44,7 +44,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                             {risks.map((risk: any, i: number) => {
                                 const isHigh = risk.severity === 'high';
                                 return (
-                                    <div key={i} className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
+                                    <div key={i} className="bg-white border border-zinc-200 overflow-hidden">
                                         <div className="flex items-stretch">
                                             {/* Number block */}
                                             <div className="flex-none w-20 md:w-24 bg-zinc-950 flex items-center justify-center">
@@ -58,7 +58,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                                 <div className="mb-4">
                                                     <EditableField
                                                         path={`diagnostic_data.risks.${i}.text`}
-                                                        className="text-[16px] font-medium text-zinc-800 leading-snug tracking-tight"
+                                                        className="text-base font-medium text-zinc-800 leading-snug tracking-tight"
                                                         placeholder={risk.text}
                                                         multiline
                                                     />
@@ -66,12 +66,12 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                                 <div className="flex items-start gap-3">
                                                     <div className="w-[3px] h-full min-h-[2rem] bg-zinc-200 shrink-0 mt-0.5" />
                                                     <div>
-                                                        <span className={`text-[10px] font-black uppercase tracking-[0.25em] block mb-1 ${isHigh ? 'text-zinc-900' : 'text-zinc-500'}`}>
+                                                        <span className={`text-xxs font-black uppercase tracking-[0.25em] block mb-1 ${isHigh ? 'text-zinc-900' : 'text-zinc-500'}`}>
                                                             Estratégia de Mitigação
                                                         </span>
                                                         <EditableField
                                                             path={`diagnostic_data.risks.${i}.mitigation`}
-                                                            className="text-[15px] font-medium text-zinc-500 leading-relaxed"
+                                                            className="text-body font-medium text-zinc-500 leading-relaxed"
                                                             placeholder={risk.mitigation}
                                                             multiline
                                                         />
@@ -88,27 +88,27 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
                 {/* ── Decisões Mandatórias - Dark Banner ── */}
                 {decisions.length > 0 && (
-                    <div className="bg-zinc-950 rounded-xl overflow-hidden">
+                    <div className="bg-zinc-950 overflow-hidden">
                         <div className="px-8 py-5 border-b border-zinc-800">
-                            <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.25em]">
+                            <span className="text-tiny font-bold text-zinc-500 uppercase tracking-[0.25em]">
                                 Decisões Mandatórias
                             </span>
                         </div>
-                        <div className={`grid grid-cols-1 ${decisions.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
+                        <div className={`grid grid-cols-1 gap-px bg-zinc-800 ${decisions.length === 4 || decisions.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
                             {decisions.map((decision: any, i: number) => (
-                                <div key={i} className={`p-8 flex flex-col justify-between ${i !== decisions.length - 1 ? 'border-b md:border-b-0 md:border-r border-zinc-800' : ''}`}>
+                                <div key={i} className="bg-zinc-950 p-8 flex flex-col justify-between">
                                     <div>
-                                        <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-3">
+                                        <span className="text-xxs font-bold text-zinc-600 uppercase tracking-widest block mb-3">
                                             {(decision.basedOn || []).join(' + ')}
                                         </span>
                                         <EditableField
                                             path={`diagnostic_data.decisions.${i}.title`}
-                                            className="text-[16px] font-medium text-white mb-2.5 leading-tight block"
+                                            className="text-base font-medium text-white mb-2.5 leading-tight block"
                                             placeholder={decision.title}
                                         />
                                         <EditableField
                                             path={`diagnostic_data.decisions.${i}.recommendation`}
-                                            className="text-[15px] font-medium text-zinc-400 leading-relaxed"
+                                            className="text-body font-medium text-zinc-400 leading-relaxed"
                                             placeholder={decision.recommendation}
                                             multiline
                                         />
@@ -116,7 +116,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                     {decision.ruleApplied && (
                                         <div className="pt-5 mt-6 border-t border-zinc-800 flex items-center gap-2">
                                             <ArrowRight className="w-3.5 h-3.5 text-[#00CC6A]" />
-                                            <span className="text-[10px] font-bold text-[#00CC6A] uppercase tracking-widest">
+                                            <span className="text-xxs font-bold text-[#00CC6A] uppercase tracking-widest">
                                                 {decision.ruleApplied}
                                             </span>
                                         </div>
@@ -129,9 +129,9 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
                 {/* ── Technical Hub (only if site analysis data exists) ── */}
                 {scores && scores.performance > 0 && (
-                    <div className="border border-zinc-200 rounded-xl overflow-hidden">
+                    <div className="border border-zinc-200 overflow-hidden">
                         <div className="px-8 py-5 border-b border-zinc-100 bg-zinc-50/50">
-                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.3em]">Auditoria Técnica (0-100)</span>
+                            <span className="text-xxs font-bold text-zinc-400 uppercase tracking-[0.3em]">Auditoria Técnica (0-100)</span>
                             <h3 className="text-lg font-bold text-zinc-900 mt-1 mb-2">Infraestrutura & SEO</h3>
                             <p className="text-sm text-zinc-500 max-w-2xl leading-relaxed">
                                 Avaliação baseada no algoritmo oficial do <strong>Google Lighthouse</strong>. Uma infraestrutura lenta ou inacessível penaliza seu rankeamento orgânico e destrói sua taxa de conversão antes mesmo do lead consumir sua oferta.
@@ -148,10 +148,10 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 };
                                 return (
                                     <div key={key} className={`p-6 ${i !== arr.length - 1 ? 'border-r border-zinc-100' : ''}`}>
-                                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-3">{labelMap[key] || key}</span>
+                                        <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest block mb-3">{labelMap[key] || key}</span>
                                         <span className={`text-3xl font-black block mb-2 ${value >= 90 ? 'text-[#00CC6A]' : 'text-zinc-900'}`}>{value}</span>
-                                        <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
-                                            <div className={`h-full rounded-full ${value >= 90 ? 'bg-[#00CC6A]' : 'bg-zinc-900'}`} style={{ width: `${value}%` }} />
+                                        <div className="h-1 bg-zinc-100 overflow-hidden">
+                                            <div className={`h-full ${value >= 90 ? 'bg-[#00CC6A]' : 'bg-zinc-900'}`} style={{ width: `${value}%` }} />
                                         </div>
                                     </div>
                                 );
@@ -161,7 +161,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                         {stack.length > 0 && (
                             <div className="px-8 py-5 border-t border-zinc-100 flex flex-wrap gap-2">
                                 {stack.map((tech: string, i: number) => (
-                                    <span key={i} className="px-3 py-1.5 bg-zinc-50 border border-zinc-100 text-[10px] font-bold text-zinc-600 rounded-lg uppercase tracking-widest">
+                                    <span key={i} className="px-3 py-1.5 bg-zinc-50 border border-zinc-100 text-xxs font-bold text-zinc-600 uppercase tracking-widest">
                                         {tech}
                                     </span>
                                 ))}

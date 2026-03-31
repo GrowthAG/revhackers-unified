@@ -53,7 +53,7 @@ export const DiagnosticForm = ({
         : "border-zinc-200 text-black focus:border-black placeholder:text-zinc-300 hover:bg-zinc-50/50"
         }`;
 
-    const labelClasses = `text-[10px] font-black uppercase tracking-widest pl-0.5 ${isDark ? "text-zinc-500" : "text-zinc-400"}`;
+    const labelClasses = `text-xxs font-black uppercase tracking-widest pl-0.5 ${isDark ? "text-zinc-300" : "text-zinc-500"}`;
 
     return (
         <motion.div
@@ -101,7 +101,7 @@ export const DiagnosticForm = ({
                                 <div className={`flex items-stretch border-b transition-all overflow-hidden ${isDark ? "border-zinc-800 focus-within:border-revgreen" : "border-zinc-200 focus-within:border-black"}`}>
                                     <div className={`px-4 flex items-center gap-2.5 border-r select-none ${isDark ? "bg-zinc-950/50 border-zinc-800 text-zinc-500" : "bg-zinc-50 border-zinc-200 text-zinc-400"}`}>
                                         <Linkedin className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-mono font-bold tracking-tight">linkedin.com/in/</span>
+                                        <span className="text-xxs font-mono font-bold tracking-tight">linkedin.com/in/</span>
                                     </div>
                                     <Input
                                         required
@@ -119,14 +119,14 @@ export const DiagnosticForm = ({
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full px-16 h-14 font-black tracking-[0.3em] uppercase text-[11px] rounded-sm transition-all duration-500 border ${isDark
+                            className={`w-full px-16 h-14 font-black tracking-[0.3em] uppercase text-tiny rounded-sm transition-all duration-500 border ${isDark
                                 ? "bg-revgreen text-black hover:bg-white hover:text-black border-transparent"
                                 : "bg-black text-white hover:bg-revgreen hover:text-black shadow-sm shadow-zinc-200 border-black"
                                 }`}
                         >
                             {isSubmitting ? 'PROCESSANDO_DADOS...' : 'LIBERAR RELATÓRIO OFICIAL'}
                         </Button>
-                        <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-medium">
+                        <div className="flex items-center gap-2 text-xxs text-zinc-400 font-medium">
                             <div className="w-1.5 h-1.5 bg-revgreen rounded-full" />
                             Ambiente Seguro & Criptografado
                         </div>

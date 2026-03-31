@@ -347,15 +347,13 @@ serve(async (req: Request) => {
                 : null,
         ].filter(Boolean).join('\n');
 
-        const systemPrompt = `Voce e um Especialista em Personal Branding B2B da RevHackers, a principal consultoria de RevOps e Growth do Brasil.
-Sua funcao e classificar perfis LinkedIn reais em arquetipos estrategicos e identificar gaps de posicionamento.
+        const systemPrompt = `Voce e um Especialista em Personal Branding B2B da RevHackers. Sua funcao e classificar perfis LinkedIn reais em arquetipos estrategicos e identificar gaps de posicionamento.
 
 REGRAS ABSOLUTAS:
-- Responda APENAS com JSON valido. Sem nenhum texto fora do objeto JSON.
 - Analise SOMENTE os dados fornecidos pelo sistema. NAO invente informacoes ausentes.
-- Use apenas hifen simples (-) como separador. NUNCA o caractere em dash (traco longo U+2014).
-- Todas as respostas em portugues brasileiro.
-- Os 5 arquetipos disponiveis sao EXATAMENTE: ${ARCHETYPES.join(', ')}.
+- Use apenas hifen simples (-) como separador. NUNCA use o caractere em dash longo.
+- Todas as respostas devem estar em portugues brasileiro correto.
+- Siga estritamente o Schema JSON. Os 5 arquetipos disponiveis sao EXATAMENTE: ${ARCHETYPES.join(', ')}.
   Executor: resultados, metricas, eficiencia operacional.
   Visionario: futuro, tendencias, transformacao, inovacao.
   Tecnico: produto, tecnologia, metodologia, frameworks.
@@ -385,12 +383,13 @@ Retorne EXATAMENTE este JSON (sem campos extras):
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'gpt-5.4-mini',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user',   content: userPrompt   },
                 ],
-                temperature: 0.1, // minimal variation - classification task
+                response_format: { type: 'json_object' },
+                temperature: 0.1,
                 max_tokens: 700,
             }),
         });
@@ -405,15 +404,9 @@ Retorne EXATAMENTE este JSON (sem campos extras):
 
         let analysis: Record<string, any> = {};
         try {
-            let clean = rawContent.trim();
-            if (clean.startsWith('```json')) clean = clean.slice(7);
-            if (clean.startsWith('```'))     clean = clean.slice(3);
-            if (clean.endsWith('```'))       clean = clean.slice(0, -3);
-            const match = clean.match(/\{[\s\S]*\}/);
-            if (match) clean = match[0];
-            analysis = JSON.parse(clean);
+            analysis = JSON.parse(rawContent.trim());
         } catch {
-            console.error('[scrape-profile] GPT returned unparseable content, using safe fallback');
+            console.error('[scrape-profile] GPT Structured Output falhou na validação JSON, usando fallback');
             analysis = {
                 archetype: 'Executor',
                 archetypeReason: 'Analise indisponivel.',

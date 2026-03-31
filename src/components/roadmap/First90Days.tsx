@@ -58,7 +58,7 @@ export function First90Days() {
             <div className="text-center space-y-4">
                 <div className="flex items-center justify-center gap-2">
                     <span className="h-[1px] w-8 bg-zinc-200" />
-                    <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] flex items-center gap-2 font-mono">
+                    <h3 className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em] flex items-center gap-2 font-mono">
                          // JOURNEY_TIMELINE
                     </h3>
                     <span className="h-[1px] w-8 bg-zinc-200" />
@@ -73,7 +73,7 @@ export function First90Days() {
                         <div key={index} className={`relative p-8 transition-all bg-white border-r-2 last:border-r-0 border-zinc-900 group hover:bg-zinc-50`}>
                             {/* Header */}
                             <div className="flex flex-col gap-5 mb-8">
-                                <div className={`w-fit px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 ${item.color}`}>
+                                <div className={`w-fit px-3 py-1 text-xxs font-black uppercase tracking-widest border-2 ${item.color}`}>
                                     {item.period}
                                 </div>
                                 <div className="space-y-1">
@@ -87,7 +87,7 @@ export function First90Days() {
                             {/* List */}
                             <ul className="space-y-4">
                                 {item.items.map((subItem, idx) => (
-                                    <li key={idx} className="flex items-start gap-3 text-[11px] text-zinc-600 font-medium leading-relaxed group-hover:text-black transition-colors">
+                                    <li key={idx} className="flex items-start gap-3 text-tiny text-zinc-600 font-medium leading-relaxed group-hover:text-black transition-colors">
                                         <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 mt-1 shrink-0 group-hover:bg-revgreen transition-colors" />
                                         <span>{subItem}</span>
                                     </li>
@@ -99,7 +99,7 @@ export function First90Days() {
             </div>
 
             <div className="text-center">
-                <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest font-mono">
+                <p className="text-2xs text-zinc-400 font-bold uppercase tracking-widest font-mono">
                     // SLA_ESTIMATED_DELIVERY_PROTOCOL
                 </p>
             </div>

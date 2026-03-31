@@ -125,15 +125,15 @@ Obrigado pela ajuda,
 
         <div className="space-y-12 mb-16">
           {strategies.map((strategy, index) => (
-            <div key={index} className="bg-white border border-zinc-200 p-8 rounded-xl shadow-sm transition-shadow">
+            <div key={index} className="bg-white border border-zinc-200 p-8 shadow-sm transition-shadow">
               <h3 className="text-xl font-bold text-zinc-900 mb-4 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
+                <span className="w-8 h-8 bg-zinc-900 text-white flex items-center justify-center text-sm font-bold">{index + 1}</span>
                 {strategy.title}
               </h3>
               <p className="text-zinc-700 mb-6 font-medium">
                 {strategy.description}
               </p>
-              <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-100">
+              <div className="bg-zinc-50 p-6 border border-zinc-100">
                 <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Exemplo Real</h4>
                 <p className="text-zinc-600 text-sm font-mono leading-relaxed italic">"{strategy.example}"</p>
               </div>
@@ -155,7 +155,7 @@ Obrigado pela ajuda,
           ]}
         />
 
-        <div className="my-16 bg-neutral-900 text-white p-8 rounded-xl not-prose">
+        <div className="my-16 bg-neutral-900 text-white p-8 not-prose">
           <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-revgreen" />
             Checklist de Entregabilidade Blindada
@@ -186,7 +186,7 @@ Obrigado pela ajuda,
                   variant="ghost"
                   size="sm"
                   onClick={() => handleCopy(template.body, index)}
-                  className="h-7 text-[10px] uppercase font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="h-7 text-xxs uppercase font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   {copiedIndex === index ? (
                     <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

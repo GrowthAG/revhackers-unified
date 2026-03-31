@@ -3,6 +3,19 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 // @ts-ignore - Supabase Deno environment
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
+async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries) throw error;
+      console.warn(`[Auto-Retry] Falha na rede/OpenAI. Tentativa ${i + 1} de ${retries}. Aguardando ${delayMs}ms...`);
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error("Unreachable");
+}
+
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -13,14 +26,14 @@ const corsHeaders = {
 // ============================================================
 
 async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: string): Promise<any> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'gpt-4.5-preview',
+            model: 'gpt-5.4',
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
@@ -28,7 +41,7 @@ async function callOpenAI(apiKey: string, systemPrompt: string, userPrompt: stri
             tools: [{ type: 'web_search_preview' }],
             web_search_preview: true
         }),
-    });
+    }));
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -72,12 +85,13 @@ const SYSTEM_PROMPT = `Voce e o Head de Inteligencia de Mercado da RevHackers, a
 Voce tem 15+ anos de experiencia em consultoria estrategica e analise competitiva.
 Sua especialidade e transformar dados brutos de diagnostico em inteligencia acionavel.
 
-REGRAS ABSOLUTAS:
+REGRAS ABSOLUTAS (STRICT WEB ANCHORING):
 - Todas as respostas em portugues brasileiro.
 - Responda APENAS com JSON valido, sem texto adicional.
 - NUNCA use o caractere em dash (travessao longo) - use apenas hifen simples (-), dois pontos (:) ou ponto (.).
 - ACIONE A BUSCA NA WEB nativa para buscar concorrentes, precos e pesquisas da industria.
-- OBRIGATORIO INDICAR FONTES (ex: "segundo IDC / Statista Brasil...").
+- OBRIGATORIO INDICAR FONTES: Para toda métrica de mercado (TAM/SAM/SOM) ou benchmark citado, você DEVE indicar a fonte (ex: "segundo IDC / Statista Brasil...").
+- Se a busca na web não retornar um número validável, retorne "Dados não consolidados publicamente". Nunca tente deduzir um mercado baseando-se em médias globais fictícias.
 - Baseie-se em dados reais de mercado e de concorrentes ativos. Nao invente.
 - Seja especifico nos numeros e metricas. Nao use placeholders genericos.
 - PERSONALIZE tudo ao contexto do cliente. Se recebeu dados do site, diagnostico ou concorrentes, USE-OS.`;

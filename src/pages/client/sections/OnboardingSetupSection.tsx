@@ -45,8 +45,8 @@ export default function OnboardingSetupSection({ plan }: OnboardingSectionProps)
                     {/* Status banner - Sleek & Modern */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-zinc-100">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00CC6A] block mb-1">Status de Implementação</span>
-                            <span className="text-[15px] font-bold text-zinc-900 tracking-tight">100% Finalizado antes da Equipe Logar</span>
+                            <span className="text-xxs font-black uppercase tracking-[0.2em] text-[#00CC6A] block mb-1">Status de Implementação</span>
+                            <span className="text-body font-bold text-zinc-900 tracking-tight">100% Finalizado antes da Equipe Logar</span>
                         </div>
                         <div className="flex-1 max-w-sm hidden md:block">
                             <div className="h-[3px] w-full bg-zinc-100 rounded-full overflow-hidden">
@@ -61,17 +61,17 @@ export default function OnboardingSetupSection({ plan }: OnboardingSectionProps)
                             return (
                                 <div key={i} className="flex flex-col group">
                                     <div className="mb-5 flex items-center justify-between">
-                                        <span className="text-[11px] font-black text-zinc-300 font-mono tracking-widest">{String(i + 1).padStart(2, '0')}</span>
+                                        <span className="text-tiny font-black text-zinc-300 font-mono tracking-widest">{String(i + 1).padStart(2, '0')}</span>
                                         <div className="w-12 h-[1px] bg-zinc-200 group-hover:w-24 group-hover:bg-[#00CC6A] transition-all duration-300" />
                                     </div>
-                                    <h3 className="text-[17px] font-bold text-zinc-900 mb-3 tracking-tight">
+                                    <h3 className="text-reading font-bold text-zinc-900 mb-3 tracking-tight">
                                         <EditableField
                                             placeholder={step.titlePlaceholder}
                                             path={step.titlePath}
                                             className="bg-transparent focus:bg-zinc-50 outline-none w-full"
                                         />
                                     </h3>
-                                    <p className="text-[13px] text-zinc-500 leading-[1.6] font-medium">
+                                    <p className="text-mini text-zinc-500 leading-[1.6] font-medium">
                                         <EditableField
                                             placeholder={step.descPlaceholder}
                                             path={step.descPath}
@@ -86,8 +86,8 @@ export default function OnboardingSetupSection({ plan }: OnboardingSectionProps)
 
                     {/* Editable accent callout - Minimalist Quote Footer */}
                     <div className="mt-16 pt-8 border-t border-zinc-100 flex items-start gap-4 max-w-3xl">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mt-1 shrink-0">Insight</span>
-                        <p className="text-[15px] text-zinc-600 font-medium leading-relaxed">
+                        <span className="text-xxs font-black uppercase tracking-[0.2em] text-zinc-400 mt-1 shrink-0">Insight</span>
+                        <p className="text-body text-zinc-600 font-medium leading-relaxed">
                             "
                             <EditableField
                                 placeholder="Sem arquitetura correta, dados entram sujos e vendas são perdidas no limbo."

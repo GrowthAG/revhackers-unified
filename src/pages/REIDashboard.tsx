@@ -30,7 +30,8 @@ const REIDashboard = () => {
                  // Mapeia do banco (snake_case) para a UI (camelCase)
                  const mapped: REIProject[] = data.map(p => ({
                      id: p.id,
-                     clientName: p.trade_name || p.client_company || p.client_name,
+                     clientName: p.trade_name || p.client_name,
+                     clientCompany: p.client_company || p.client_name,
                      clientEmail: p.client_email,
                      lastREIDate: new Date(p.created_at || new Date().toISOString()),
                      nextREIDate: new Date(p.next_rei_date),
@@ -58,7 +59,7 @@ const REIDashboard = () => {
         );
     }, [projects, searchQuery]);
 
-    const activeClients = useMemo(() => filteredProjects.filter(p => p.status !== 'lead' && p.status !== 'diagnostic'), [filteredProjects]);
+    const activeClients = useMemo(() => filteredProjects.filter(p => p.status !== 'lead' && p.status !== ('diagnostic' as any)), [filteredProjects]);
     const leadProjects = useMemo(() => filteredProjects.filter(p => p.status === 'lead'), [filteredProjects]);
 
     const projectsNeedingAttention = useMemo(() =>
@@ -144,19 +145,19 @@ const REIDashboard = () => {
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white border-2 border-zinc-200 rounded-xl p-6">
+                        <div className="bg-white border-2 border-zinc-200 p-6">
                             <p className="text-zinc-600 text-sm font-medium mb-2">Clientes Ativos</p>
                             <p className="text-3xl font-bold text-zinc-900">{stats.total}</p>
                         </div>
-                        <div className="bg-white border-2 border-red-200 rounded-xl p-6">
+                        <div className="bg-white border-2 border-red-200 p-6">
                             <p className="text-red-700 text-sm font-medium mb-2">Atrasados</p>
                             <p className="text-3xl font-bold text-red-700">{stats.overdue}</p>
                         </div>
-                        <div className="bg-white border-2 border-yellow-200 rounded-xl p-6">
+                        <div className="bg-white border-2 border-yellow-200 p-6">
                             <p className="text-yellow-700 text-sm font-medium mb-2">Atenção Necessária</p>
                             <p className="text-3xl font-bold text-yellow-700">{stats.pending}</p>
                         </div>
-                        <div className="bg-white border-2 border-zinc-200 rounded-xl p-6">
+                        <div className="bg-white border-2 border-zinc-200 p-6">
                             <p className="text-zinc-700 text-sm font-medium mb-2">Leads (Site)</p>
                             <p className="text-3xl font-bold text-zinc-700">{leadProjects.length}</p>
                         </div>
@@ -175,11 +176,11 @@ const REIDashboard = () => {
                     </div>
 
                     <Tabs defaultValue="clients" className="w-full">
-                        <TabsList className="mb-8 bg-zinc-200/50 p-1 w-full max-w-sm rounded-xl">
-                            <TabsTrigger value="clients" className="w-full rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm">
+                        <TabsList className="mb-8 bg-zinc-200/50 p-1 w-full max-w-sm ">
+                            <TabsTrigger value="clients" className="w-full data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm">
                                 <Users className="w-4 h-4 mr-2" /> Clientes
                             </TabsTrigger>
-                            <TabsTrigger value="leads" className="w-full rounded-lg data-[state=active]:bg-zinc-900 data-[state=active]:text-white data-[state=active]:shadow-sm">
+                            <TabsTrigger value="leads" className="w-full data-[state=active]:bg-zinc-900 data-[state=active]:text-white data-[state=active]:shadow-sm">
                                 <Target className="w-4 h-4 mr-2" /> Leads
                             </TabsTrigger>
                         </TabsList>
@@ -187,7 +188,7 @@ const REIDashboard = () => {
                         <TabsContent value="clients" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Alerts Section (Only for active clients) */}
                             {projectsNeedingAttention.length > 0 && (
-                                <div className="mb-8 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                                <div className="mb-8 bg-yellow-50 border-2 border-yellow-200 p-6">
                                     <div className="flex items-start gap-3 mb-4">
                                         <AlertCircle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" />
                                         <div>
@@ -215,7 +216,7 @@ const REIDashboard = () => {
                                     .map(([quarter, quarterProjects]) => (
                                         <div key={quarter} className="mb-8">
                                             <h3 className="text-lg font-semibold text-zinc-700 mb-4 flex items-center gap-2">
-                                                <span className="bg-zinc-200 px-3 py-1 rounded-lg">{quarter}</span>
+                                                <span className="bg-zinc-200 px-3 py-1 ">{quarter}</span>
                                             </h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 {quarterProjects.map(project => (
@@ -234,7 +235,7 @@ const REIDashboard = () => {
                             </div>
                             
                             {leadProjects.length === 0 ? (
-                                <div className="bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-xl p-12 text-center text-zinc-500">
+                                <div className="bg-zinc-50 border-2 border-dashed border-zinc-200 p-12 text-center text-zinc-500">
                                     Nenhum lead encontrado com seu filtro atual.
                                 </div>
                             ) : (
@@ -246,7 +247,7 @@ const REIDashboard = () => {
                                             onClick={() => setSelectedLead({
                                                 id: project.id,
                                                 name: project.clientName,
-                                                company: project.clientName,
+                                                company: project.clientCompany || project.clientName,
                                                 type: 'funnels_impl', // Fallback
                                                 urgencyScore: 50,
                                                 maturityPct: 30, // Fallback

@@ -176,7 +176,7 @@ export default function NextStepsSection({ plan, onApprove, onReject, approving,
                             value={adjustmentNotes}
                             onChange={(e) => setAdjustmentNotes(e.target.value)}
                             placeholder="Descreva os ajustes necessários..."
-                            className="min-h-[160px] bg-black border-zinc-900 rounded-2xl p-6 text-sm text-white placeholder:text-zinc-800 focus:border-revgreen transition-all resize-none shadow-none focus-visible:ring-0"
+                            className="min-h-[160px] bg-black border-zinc-900 p-6 text-sm text-white placeholder:text-zinc-800 focus:border-revgreen transition-all resize-none shadow-none focus-visible:ring-0"
                         />
                     </div>
 

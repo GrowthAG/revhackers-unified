@@ -39,8 +39,8 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
         <div className="flex flex-col h-full bg-white overflow-hidden items-center justify-center">
             <div className="max-w-5xl w-full px-6 md:px-12 py-12 mx-auto">
                 {isApproved ? (
-                    <div className="bg-white border border-[#00CC6A]/20 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
-                        <div className="w-12 h-12 bg-[#00CC6A]/10 border border-[#00CC6A]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="bg-white border border-[#00CC6A]/20 p-10 md:p-14 text-center max-w-2xl mx-auto">
+                        <div className="w-12 h-12 bg-[#00CC6A]/10 border border-[#00CC6A]/20 flex items-center justify-center mx-auto mb-6">
                             <Check className="w-6 h-6 text-[#00CC6A]" />
                         </div>
                         <h3 className="text-2xl font-black text-black mb-3">Planejamento Aprovado</h3>
@@ -50,8 +50,8 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         </div>
                     </div>
                 ) : isRejected ? (
-                    <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center rounded-2xl max-w-2xl mx-auto">
-                        <div className="w-12 h-12 bg-zinc-100 border border-zinc-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="bg-white border border-zinc-200 p-10 md:p-14 text-center max-w-2xl mx-auto">
+                        <div className="w-12 h-12 bg-zinc-100 border border-zinc-200 flex items-center justify-center mx-auto mb-6">
                             <Loader2 className="w-6 h-6 text-zinc-900 animate-spin" />
                         </div>
                         <h3 className="text-2xl font-black text-black mb-3">Reconstrução em Andamento</h3>
@@ -70,7 +70,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                             <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-zinc-900 mb-4 leading-tight">
                                 Autorização e Assinatura
                             </h2>
-                            <p className="text-[17px] text-zinc-500 font-medium leading-[1.6] mb-8 pr-4">
+                            <p className="text-reading text-zinc-500 font-medium leading-[1.6] mb-8 pr-4">
                                 Revisamos juntos o cenário, as metas e o plano de ação prático. Se estiver tudo alinhado, assine digitalmente para dar o OK e nossa equipe iniciar a execução.
                             </p>
                             
@@ -78,7 +78,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                                 <button 
                                     onClick={onApprove} 
                                     disabled={approving} 
-                                    className="flex-1 bg-zinc-950 text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                                    className="flex-1 bg-zinc-950 text-white font-bold py-3.5 px-6 flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors disabled:opacity-50"
                                 >
                                     {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                                     Assinar Agora
@@ -86,7 +86,7 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                                 <button 
                                     onClick={() => setShowReject(true)} 
                                     disabled={approving} 
-                                    className="flex-1 bg-white border border-zinc-200 text-zinc-600 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                                    className="flex-1 bg-white border border-zinc-200 text-zinc-600 font-bold py-3.5 px-6 flex items-center justify-center hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
                                 >
                                     Solicitar Ajuste
                                 </button>
@@ -95,22 +95,22 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
 
                         {/* Right Side: QR Code Card */}
                         <div className="flex justify-center md:justify-end">
-                            <div className="border border-zinc-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 lg:p-10 w-full max-w-sm flex flex-col items-center text-center bg-white relative">
-                                <div className="w-10 h-10 border border-zinc-200 rounded-xl flex items-center justify-center mb-5 shrink-0">
+                            <div className="border border-zinc-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 lg:p-10 w-full max-w-sm flex flex-col items-center text-center bg-white relative">
+                                <div className="w-10 h-10 border border-zinc-200 flex items-center justify-center mb-5 shrink-0">
                                     <Smartphone className="w-4 h-4 text-zinc-400" />
                                 </div>
                                 <h3 className="text-lg font-bold text-zinc-900 mb-2">Assinatura Rápida no Celular</h3>
                                 <p className="text-sm text-zinc-500 leading-relaxed mb-6 px-2">
                                     Aponte a câmera para assinar na própria tela do celular e envie a autorização direto para nossa equipe, sem burocracia.
                                 </p>
-                                <div className="border border-zinc-100 p-2 rounded-2xl mb-8">
+                                <div className="border border-zinc-100 p-2 mb-8">
                                     <img
                                         src={qrUrl}
                                         alt="QR Code"
                                         className="w-[180px] h-[180px]"
                                     />
                                 </div>
-                                <div className="bg-[#00CC6A]/10 px-4 py-1.5 rounded uppercase tracking-[0.2em] font-black text-[10px] text-[#00CC6A]">
+                                <div className="bg-[#00CC6A]/10 px-4 py-1.5 rounded uppercase tracking-[0.2em] font-black text-xxs text-[#00CC6A]">
                                     Válido Assinatura Digital
                                 </div>
                             </div>
@@ -122,9 +122,9 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
             {/* Reject/AI Adjustment Dialog */}
             {showReject && (
                 <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" onClick={() => setShowReject(false)}>
-                    <div className="bg-white max-w-xl w-full border border-zinc-200 rounded-2xl p-8 shadow-sm" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white max-w-xl w-full border border-zinc-200 p-8 shadow-sm" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center shrink-0">
+                            <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 flex items-center justify-center shrink-0">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-900"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </div>
                             <div>
@@ -136,14 +136,14 @@ export default function ApprovalSection({ plan, onApprove, onReject, approving, 
                         <textarea
                             value={rejectText} onChange={e => setRejectText(e.target.value)}
                             placeholder="Descreva o que sentiu falta, o que precisa ser ajustado ou alguma regra de negócio que deve ser adicionada..."
-                            className="w-full min-h-[160px] resize-none border border-zinc-200 rounded-xl focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 p-4 text-[15px] font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
+                            className="w-full min-h-[160px] resize-none border border-zinc-200 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300 p-4 text-body font-medium text-zinc-700 outline-none leading-relaxed placeholder:text-zinc-400"
                         />
                         
                         <div className="flex items-center justify-end gap-3 mt-8">
-                            <button onClick={() => setShowReject(false)} className="px-5 py-3 hover:bg-zinc-50 text-[14px] font-bold text-zinc-600 transition-colors rounded-xl border border-transparent hover:border-zinc-200">
+                            <button onClick={() => setShowReject(false)} className="px-5 py-3 hover:bg-zinc-50 text-sm font-bold text-zinc-600 transition-colors border border-transparent hover:border-zinc-200">
                                 Cancelar
                             </button>
-                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-8 py-3 bg-zinc-950 text-white text-[14px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 rounded-xl flex items-center gap-2">
+                            <button onClick={handleReject} disabled={!rejectText.trim() || sending} className="px-8 py-3 bg-zinc-950 text-white text-sm font-bold hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-2">
                                 {sending ? <><Loader2 className="w-4 h-4 animate-spin" /> Analisando...</> : 'Enviar para Inteligência'}
                             </button>
                         </div>

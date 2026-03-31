@@ -34,7 +34,7 @@ export const DiagnosticBookingModal = ({ isOpen, onClose, source = 'diagnostic',
                         {/* Header Context */}
                         <div className="p-6 md:p-8 border-b border-zinc-100 flex justify-between items-center bg-zinc-50 shrink-0">
                             <div className="space-y-1">
-                                <span className="text-[10px] font-mono font-black text-zinc-400 uppercase tracking-[0.4em]">DEBRIEFING ESTRATÉGICO</span>
+                                <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-[0.4em]">DEBRIEFING ESTRATÉGICO</span>
                                 <h2 className="text-2xl md:text-3xl font-black text-black tracking-tighter leading-none italic uppercase">
                                     Agende com um Especialista
                                 </h2>

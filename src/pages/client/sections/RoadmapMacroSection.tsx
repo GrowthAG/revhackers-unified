@@ -132,19 +132,19 @@ export default function RoadmapSection({ plan }: { plan: any }) {
 
                 {/* ── Duration + Global Progress ── */}
                 <div className="flex items-center gap-4 mt-4 mb-10 pb-6 border-b border-zinc-100 flex-wrap">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0A0A0A] rounded-md">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0A0A0A] ">
                         <Clock className="w-3.5 h-3.5 text-[#00CC6A]" />
-                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                        <span className="text-xxs font-bold text-white uppercase tracking-widest">
                             Projeto de {duration}
                         </span>
                     </div>
-                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+                    <span className="text-tiny font-bold text-zinc-400 uppercase tracking-widest">
                         {phases.length} {phases.length === 1 ? 'fase' : 'fases'} de execução
                     </span>
                     {hasAnyStatus && (
                         <>
                             <div className="w-[1px] h-3 bg-zinc-200" />
-                            <span className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-widest">
+                            <span className="text-tiny font-bold text-[#00CC6A] uppercase tracking-widest">
                                 {totalDone} de {totalItems} entregas
                             </span>
                         </>
@@ -154,22 +154,22 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                 {/* ── Status Legend (edit mode only) ── */}
                 {isEditing && (
                     <div className="flex items-center gap-5 mb-8">
-                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Status Editável:</span>
+                        <span className="text-2xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Status Editável:</span>
                         <div className="flex items-center gap-1.5 cursor-help" title="Pendente">
                             <div className="w-3.5 h-3.5 rounded-full border-[1.5px] border-zinc-200" />
-                            <span className="text-[10px] uppercase font-bold text-zinc-400">Pendente</span>
+                            <span className="text-xxs uppercase font-bold text-zinc-400">Pendente</span>
                         </div>
                         <div className="flex items-center gap-1.5 cursor-help" title="Em andamento">
                             <div className="w-3.5 h-3.5 rounded-full border-[1.5px] border-zinc-400 flex items-center justify-center">
                                 <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                             </div>
-                            <span className="text-[10px] uppercase font-bold text-zinc-400">Em andabento</span>
+                            <span className="text-xxs uppercase font-bold text-zinc-400">Em andabento</span>
                         </div>
                         <div className="flex items-center gap-1.5 cursor-help" title="Concluído">
                             <div className="w-3.5 h-3.5 rounded-full bg-[#00CC6A] flex items-center justify-center">
                                 <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
                             </div>
-                            <span className="text-[10px] uppercase font-bold text-zinc-400">Concluído</span>
+                            <span className="text-xxs uppercase font-bold text-zinc-400">Concluído</span>
                         </div>
                     </div>
                 )}
@@ -200,14 +200,14 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                                 <div className="flex-1 max-w-4xl">
                                     <div className="mb-6 flex flex-col lg:flex-row lg:items-end gap-2 lg:gap-8 border-b border-zinc-100 pb-4">
                                         <div className="flex-1">
-                                            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00CC6A] mb-2 block">
+                                            <span className="text-xxs font-mono font-bold uppercase tracking-widest text-[#00CC6A] mb-2 block">
                                                 <EditableField
                                                     placeholder="Período"
                                                     path={`roadmap_data.phases.${index}.name`}
                                                     className="bg-transparent focus:bg-zinc-50 outline-none"
                                                 />
                                             </span>
-                                            <h3 className={`text-[17px] md:text-xl font-bold tracking-tight leading-tight ${isFullyDone ? 'text-zinc-500' : 'text-zinc-900'}`}>
+                                            <h3 className={`text-reading md:text-xl font-bold tracking-tight leading-tight ${isFullyDone ? 'text-zinc-500' : 'text-zinc-900'}`}>
                                                 <EditableField
                                                     placeholder="Nome da Fase"
                                                     path={`roadmap_data.phases.${index}.title`}
@@ -218,13 +218,13 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                                         
                                         {total > 0 && (
                                             <div className="shrink-0 flex items-center gap-3">
-                                                <div className="w-24 h-1 bg-zinc-100 rounded-full overflow-hidden">
+                                                <div className="w-24 h-1 bg-zinc-100 overflow-hidden">
                                                     <div 
                                                         className="h-full bg-[#00CC6A] transition-all duration-500" 
                                                         style={{ width: `${progressPct}%` }}
                                                     />
                                                 </div>
-                                                <span className={`text-[10px] font-mono font-bold ${isFullyDone ? 'text-[#00CC6A]' : 'text-zinc-400'}`}>
+                                                <span className={`text-xxs font-mono font-bold ${isFullyDone ? 'text-[#00CC6A]' : 'text-zinc-400'}`}>
                                                     {done}/{total}
                                                 </span>
                                             </div>
@@ -246,7 +246,7 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                                                             onClick={() => toggleStatus(index, itemIndex)}
                                                         />
                                                     </div>
-                                                    <p className={`text-[13px] font-medium leading-[1.6] w-full transition-colors duration-200 ${isDone
+                                                    <p className={`text-mini font-medium leading-[1.6] w-full transition-colors duration-200 ${isDone
                                                         ? 'text-zinc-400 line-through decoration-zinc-300'
                                                         : 'text-zinc-700'
                                                     }`}>
@@ -270,7 +270,7 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                 {/* ── Footer / End of Roadmap ── */}
                 <div className="mt-16 flex items-center gap-4 max-w-4xl ml-0 lg:ml-16">
                     <span className="text-zinc-300 shrink-0 text-sm">/</span>
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                    <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">
                         {totalDone === totalItems && totalItems > 0
                             ? 'PROJETO CONCLUÍDO'
                             : 'ENTREGA E PASSAGEM DE BASTÃO'

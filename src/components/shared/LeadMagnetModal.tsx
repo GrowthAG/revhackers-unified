@@ -125,10 +125,10 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
             </div>
 
             <div className="mb-6">
-              <h3 className="text-[10px] font-bold mb-4 text-white uppercase tracking-widest">CONTEÚDO DO MATERIAL:</h3>
+              <h3 className="text-xxs font-bold mb-4 text-white uppercase tracking-widest">CONTEÚDO DO MATERIAL:</h3>
               <ul className="space-y-3">
                 {currentMagnet.benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-center text-[11px] text-zinc-400 uppercase tracking-widest font-medium">
+                  <li key={index} className="flex items-center text-tiny text-zinc-400 uppercase tracking-widest font-medium">
                     <div className="h-1 w-1 bg-revgreen mr-4 flex-shrink-0"></div>
                     {benefit}
                   </li>
@@ -201,10 +201,10 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
 
             {/* Trust elements */}
             <div className="mt-8 pt-6 border-t border-white/5 text-center space-y-2">
-              <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.2em]">
+              <p className="text-2xs text-zinc-500 font-bold uppercase tracking-[0.2em]">
                 TRANSFERÊNCIA SEGURA • INFRAESTRUTURA ANTI-SPAM
               </p>
-              <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-[0.2em]">
+              <p className="text-2xs text-zinc-700 font-bold uppercase tracking-[0.2em]">
                 UTILIZADO POR OPERAÇÕES DE ALTA PERFORMANCE
               </p>
             </div>
@@ -219,17 +219,17 @@ const LeadMagnetModal = ({ isOpen, onClose, magnet }: LeadMagnetModalProps) => {
               MATERIAL ENVIADO
             </h2>
 
-            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-8">
+            <p className="text-zinc-500 text-xxs font-bold uppercase tracking-widest mb-8">
               Verifique sua caixa de entrada para acessar os dados solicitados.
             </p>
 
             <div className="bg-white/5 border border-white/10 rounded-none p-4 mb-8">
-              <p className="text-[10px] text-revgreen font-bold uppercase tracking-widest">
+              <p className="text-xxs text-revgreen font-bold uppercase tracking-widest">
                 DESTINATÁRIO: {formData.email}
               </p>
             </div>
 
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-[0.3em]">
+            <p className="text-2xs text-zinc-600 font-bold uppercase tracking-[0.3em]">
               SISTEMA DE ENTREGA AUTOMATIZADO
             </p>
           </div>

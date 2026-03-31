@@ -6,7 +6,7 @@ import { getCaseBySlug } from '@/api/cases';
 import { CaseStudy, casesData } from '@/data/casesData';
 import { Loader2, ArrowLeft, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
+
 import { Button } from '@/components/ui/button';
 import ContactForm from '@/components/shared/ContactForm';
 import SEO from '@/components/shared/SEO';
@@ -95,7 +95,7 @@ const CasesDetalhe = () => {
         </div>
 
         <div className="container-custom flex flex-col items-center text-center max-w-6xl relative z-10">
-          <Link to="/cases" className="absolute top-0 left-0 text-zinc-400 hover:text-black flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-colors mb-8 md:mb-0 md:static self-start md:self-center bg-zinc-50 px-4 py-2 rounded-full border border-zinc-100">
+          <Link to="/cases" className="absolute top-0 left-0 text-zinc-400 hover:text-black flex items-center gap-2 text-xxs font-bold uppercase tracking-widest transition-colors mb-8 md:mb-0 md:static self-start md:self-center bg-zinc-50 px-4 py-2 border border-zinc-100">
             <ArrowLeft className="w-3 h-3" /> Voltar para Cases
           </Link>
 
@@ -115,7 +115,7 @@ const CasesDetalhe = () => {
               </div>
 
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400">
+                <span className="text-xxs font-mono font-bold uppercase tracking-widest text-zinc-400">
                   {caseData.category}
                 </span>
               </div>
@@ -140,7 +140,7 @@ const CasesDetalhe = () => {
                     {metric.value}
                     <span className="absolute -top-2 -right-4 text-zinc-300 text-2xl font-light">+</span>
                   </div>
-                  <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400">{metric.label}</div>
+                  <div className="text-2xs font-bold uppercase tracking-[0.2em] text-zinc-400">{metric.label}</div>
                 </div>
               ))}
             </div>

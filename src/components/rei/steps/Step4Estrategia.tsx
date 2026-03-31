@@ -59,7 +59,7 @@ export default function Step4Estrategia({ form }: Step4Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Estratégia Atual
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Etapa 04/05
                 </p>
             </div>
@@ -196,7 +196,7 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o CAC (Custo de Aquisição) atual? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">DEF:</span> Custo total de Mkt e Vendas dividido pelo nº de novos clientes.
                     </p>
                     <Select
@@ -224,7 +224,7 @@ export default function Step4Estrategia({ form }: Step4Props) {
                     <Label className="text-sm font-bold text-zinc-700 uppercase tracking-wider">
                         Qual o LTV (Lifetime Value) atual? *
                     </Label>
-                    <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">
+                    <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">
                         <span className="font-bold text-black">DEF:</span> Receita média total que um cliente gera enquanto ativo.
                     </p>
                     <Select

@@ -24,7 +24,7 @@ export const ArticleSteps: React.FC<ArticleStepsProps> = ({ title, steps }) => {
                 {steps.map((step, index) => (
                     <div
                         key={index}
-                        className={`p-5 border rounded-lg ${step.isHighlight
+                        className={`p-5 border ${step.isHighlight
                                 ? 'bg-revgreen border-revgreen'
                                 : 'bg-white border-zinc-200 hover:border-zinc-300'
                             } transition-all`}

@@ -19,7 +19,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import AdminPageLayout from '@/components/layout/AdminPageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+
 import { useToast } from '@/hooks/use-toast';
 import { getAllClients, deleteClient, type Client } from '@/api/clients';
 
@@ -90,17 +90,17 @@ const AdminClients = () => {
                                 placeholder="BUSCAR CLIENTE OU EMPRESA..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 h-12 bg-zinc-50 border-transparent rounded-sm text-[10px] font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-black focus-visible:bg-white transition-all shadow-none"
+                                className="pl-12 h-12 bg-zinc-50 border-transparent rounded-sm text-xxs font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-black focus-visible:bg-white transition-all shadow-none"
                             />
                         </div>
                         <div className="flex gap-8">
                             <div className="text-right">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Total</p>
+                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-1">Total</p>
                                 <p className="text-2xl font-black">{clients.length}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Ativos</p>
-                                <p className="text-2xl font-black text-[#00CC6A]">{clients.filter(c => c.status === 'active').length}</p>
+                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-1">Ativos</p>
+                                <p className="text-2xl font-black text-[#03FC3B]">{clients.filter(c => c.status === 'active').length}</p>
                             </div>
                         </div>
                     </div>
@@ -117,10 +117,10 @@ const AdminClients = () => {
                                     <table className="w-full text-left border-collapse">
                                         <thead>
                                             <tr className="border-b border-zinc-100 bg-zinc-50/50">
-                                                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-400">Cliente / Empresa</th>
-                                                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-400">Contato</th>
-                                                <th className="p-6 text-[10px] font-black uppercase tracking-widest text-zinc-400">Status</th>
-                                                <th className="p-6 text-right text-[10px] font-black uppercase tracking-widest text-zinc-400">Ações</th>
+                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Cliente / Empresa</th>
+                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Contato</th>
+                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Status</th>
+                                                <th className="p-6 text-right text-xxs font-black uppercase tracking-widest text-zinc-400">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-zinc-50">
@@ -129,11 +129,11 @@ const AdminClients = () => {
                                                     <td className="p-6">
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-12 h-12 bg-black flex items-center justify-center shrink-0">
-                                                                <Building2 className="text-[#00CC6A] h-6 w-6" strokeWidth={1.5} />
+                                                                <Building2 className="text-[#03FC3B] h-6 w-6" strokeWidth={1.5} />
                                                             </div>
                                                             <div>
                                                                 <p className="text-sm font-black uppercase tracking-tight">{client.name}</p>
-                                                                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{client.company || 'Empresa não informada'}</p>
+                                                                <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest">{client.company || 'Empresa não informada'}</p>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -141,22 +141,23 @@ const AdminClients = () => {
                                                         <div className="space-y-1">
                                                             <div className="flex items-center gap-2 text-zinc-500 hover:text-black transition-colors">
                                                                 <Mail size={12} />
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">{client.email}</span>
+                                                                <span className="text-xxs font-bold uppercase tracking-widest">{client.email}</span>
                                                             </div>
                                                             {client.website && (
                                                                 <div className="flex items-center gap-2 text-zinc-500 hover:text-black transition-colors">
                                                                     <Globe size={12} />
-                                                                    <span className="text-[10px] font-bold uppercase tracking-widest">{client.website}</span>
+                                                                    <span className="text-xxs font-bold uppercase tracking-widest">{client.website}</span>
                                                                 </div>
                                                             )}
                                                         </div>
                                                     </td>
                                                     <td className="p-6">
-                                                        <Badge className={`rounded-md text-[8px] font-black uppercase tracking-widest shadow-none border-0 ${client.status === 'active' ? 'bg-[#00CC6A]/10 text-[#00CC6A]' :
-                                                            client.status === 'onboarding' ? 'bg-zinc-100 text-zinc-500' : 'bg-zinc-50 text-zinc-400'
-                                                            }`}>
-                                                            {client.status}
-                                                        </Badge>
+                                                        <span className="inline-flex items-center gap-1.5 text-xxs font-bold uppercase tracking-widest">
+                                                            <span className={`w-1.5 h-1.5 ${client.status === 'active' ? 'bg-[#03FC3B]' : client.status === 'onboarding' ? 'bg-zinc-400' : 'bg-zinc-200'}`} />
+                                                            <span className={client.status === 'active' ? 'text-zinc-900' : 'text-zinc-400'}>
+                                                                {client.status === 'active' ? 'Ativo' : client.status === 'onboarding' ? 'Onboarding' : 'Inativo'}
+                                                            </span>
+                                                        </span>
                                                     </td>
                                                     <td className="p-6">
                                                         <div className="flex justify-end items-center gap-2">
@@ -165,7 +166,7 @@ const AdminClients = () => {
                                                                 size="icon"
                                                                 onClick={() => navigate(`/admin/rei?search=${client.email}`)}
                                                                 title="Ver Projetos REI"
-                                                                className="h-10 w-10 text-zinc-300 hover:text-[#00CC6A] hover:bg-black transition-all rounded-sm"
+                                                                className="h-10 w-10 text-zinc-300 hover:text-[#03FC3B] hover:bg-black transition-all rounded-sm"
                                                             >
                                                                 <Zap size={16} />
                                                             </Button>
@@ -195,7 +196,7 @@ const AdminClients = () => {
                             ) : (
                                 <div className="py-32 text-center">
                                     <Users className="h-12 w-12 text-zinc-100 mx-auto mb-6" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Nenhum cliente encontrado</p>
+                                    <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Nenhum cliente encontrado</p>
                                 </div>
                             )}
                         </div>

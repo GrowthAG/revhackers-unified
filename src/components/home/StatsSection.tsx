@@ -52,7 +52,7 @@ const StatsSection = () => {
             const IconComponent = stat.icon;
             return (
               <Card key={index} className="interactive-card p-8 text-center group glow-effect animate-slide-in-stagger" style={{ '--stagger-delay': `${index * 0.1}s` } as React.CSSProperties}>
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00CC6A]/10 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
+                <div className="inline-flex h-16 w-16 items-center justify-center bg-[#00CC6A]/10 text-revgreen mb-6 group-hover:scale-110 transition-transform duration-300 shimmer-effect">
                   <IconComponent className="h-8 w-8" />
                 </div>
                 <p className="text-5xl md:text-6xl font-black text-[#00CC6A] mb-3">

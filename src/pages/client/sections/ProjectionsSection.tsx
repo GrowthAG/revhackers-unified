@@ -92,7 +92,7 @@ export default function ProjectionsSection({ plan }: { plan: any }) {
                             { label: 'Ponto de Equilíbrio', value: months <= 6 ? 'Mês 2 a 3' : 'Mês 3 a 4' },
                             { label: `Receita no Mês ${Math.floor(months / 2)}`, value: mid?.display || formatBRL(32000) },
                         ].map((kpi, i) => (
-                            <div key={i} className={`p-4 text-center min-w-32 ${i === 0 ? 'bg-black text-white rounded-lg shadow-sm' : 'bg-white border border-zinc-200 rounded-lg shadow-sm'}`}>
+                            <div key={i} className={`p-4 text-center min-w-32 ${i === 0 ? 'bg-black text-white shadow-sm' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                                 <p className={`text-xl font-black mb-0.5 ${i === 0 ? 'text-[#00CC6A]' : 'text-black'}`}>{kpi.value}</p>
                                 <p className={`text-xs font-black uppercase tracking-widest leading-tight ${i === 0 ? 'text-white/60' : 'text-zinc-400'}`}>{kpi.label}</p>
                             </div>

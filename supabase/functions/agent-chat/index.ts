@@ -93,15 +93,10 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
                 return { role, content: m.content };
             });
 
-            if (!isReasoning && !isGPT5) {
-                apiMessages.unshift({ role: 'system', content: sys });
-            } else {
-                if (apiMessages.length > 0) {
-                    apiMessages[0].content = `[INSTRUÇÃO DO SISTEMA]: ${sys}\n\n${apiMessages[0].content}`;
-                } else {
-                    apiMessages.unshift({ role: 'user', content: `[INSTRUÇÃO DO SISTEMA]: ${sys}` });
-                }
-            }
+            // Prompt Caching Optimization: Always place the system/rag context at the very top
+            // in a dedicated role, avoiding pollution of the user's message history.
+            const systemRole = (isReasoning || isGPT5) ? 'developer' : 'system';
+            apiMessages.unshift({ role: systemRole, content: sys });
 
             const createPayload = (mode: 'modern' | 'legacy') => {
                 const p: any = {
@@ -372,8 +367,8 @@ serve(async (req) => {
             if (rawModelRequest.includes('4o-mini')) targetModelId = 'gpt-4o-mini';
             else if (rawModelRequest.includes('4o')) targetModelId = 'gpt-4o';
             else {
-                // GPT-5.2 mapping
-                targetModelId = 'gpt-4o'; // Internal mapping to 4o but with XHIGH reasoning identity
+                // GPT-5.x mapping
+                targetModelId = 'gpt-5.4'; 
             }
         }
 

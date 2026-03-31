@@ -42,7 +42,7 @@ export function OnboardingRoadmap() {
             <div className="text-center space-y-4">
                 <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A]"></span>
-                    <h3 className="text-[11px] font-bold text-[#00CC6A] uppercase tracking-[0.2em]">Metodologia Exclusiva</h3>
+                    <h3 className="text-tiny font-bold text-[#00CC6A] uppercase tracking-[0.2em]">Metodologia Exclusiva</h3>
                 </div>
                 <h2 className="text-2xl lg:text-3xl font-semibold text-zinc-900 tracking-tight">Onboarding Orquestrado</h2>
                 <p className="text-zinc-500 max-w-2xl mx-auto text-sm leading-relaxed">
@@ -65,20 +65,20 @@ export function OnboardingRoadmap() {
                                     <Icon className="w-6 h-6 text-zinc-400 group-hover:text-[#00CC6A] transition-colors" strokeWidth={1.5} />
 
                                     {/* Number Badge */}
-                                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-zinc-100 border border-white flex items-center justify-center text-[10px] font-bold text-zinc-500 group-hover:bg-[#00CC6A] group-hover:text-white transition-colors">
+                                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-zinc-100 border border-white flex items-center justify-center text-xxs font-bold text-zinc-500 group-hover:bg-[#00CC6A] group-hover:text-white transition-colors">
                                         {stage.id}
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="space-y-1.5 px-2">
-                                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#00CC6A]/80 bg-[#00CC6A]/10 px-2 py-0.5 rounded-full">
+                                    <span className="text-xxs font-mono uppercase tracking-wider text-[#00CC6A]/80 bg-[#00CC6A]/10 px-2 py-0.5 ">
                                         {stage.duration}
                                     </span>
                                     <h4 className="text-sm font-bold text-zinc-900 leading-tight">
                                         {stage.name}
                                     </h4>
-                                    <p className="text-[11px] text-zinc-500 leading-snug">
+                                    <p className="text-tiny text-zinc-500 leading-snug">
                                         {stage.description}
                                     </p>
                                 </div>

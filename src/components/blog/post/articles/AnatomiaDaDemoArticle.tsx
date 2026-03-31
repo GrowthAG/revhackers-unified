@@ -119,13 +119,13 @@ Abs,
 
                 <div className="space-y-12 mb-16">
                     {scriptSteps.map((step, index) => (
-                        <div key={index} className="bg-zinc-50 p-8 rounded-xl border border-zinc-100">
+                        <div key={index} className="bg-zinc-50 p-8 border border-zinc-100">
                             <h3 className="text-xl font-bold text-zinc-900 mb-4">{step.title}</h3>
                             <div className="mb-4">
                                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Objetivo:</span>
                                 <p className="text-zinc-700 m-0">{step.goal}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg border border-zinc-200 shadow-sm mb-4">
+                            <div className="bg-white p-6 border border-zinc-200 shadow-sm mb-4">
                                 <span className="text-xs font-bold text-revgreen uppercase tracking-wider block mb-2">Script / Fala Sugerida</span>
                                 <p className="text-zinc-900 font-medium italic m-0">"{step.script}"</p>
                             </div>
@@ -164,7 +164,7 @@ Abs,
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopy(template.body, index)}
-                                    className="h-7 text-[10px] uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
+                                    className="h-7 text-xxs uppercase font-bold text-zinc-500 hover:text-revgreen hover:bg-revgreen/10 transition-colors"
                                 >
                                     {copiedIndex === index ? (
                                         <span className="flex items-center gap-1 text-revgreen"><CheckCircle2 className="w-3 h-3" /> Copiado</span>

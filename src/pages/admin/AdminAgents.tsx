@@ -129,7 +129,7 @@ const AdminAgents = () => {
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-50">
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-[#00CC6A] rounded-sm animate-pulse" />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Ativos</span>
+                            <span className="text-xxs font-bold uppercase tracking-[0.2em] text-zinc-400">Ativos</span>
                         </div>
 
                         <div className="relative group w-64">
@@ -176,7 +176,7 @@ const AdminAgents = () => {
                                     <div className="flex-1">
                                         <div className="flex flex-col gap-1.5 mb-3">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${modelInfo.color} border bg-opacity-50`}>
+                                                <span className={`text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${modelInfo.color} border bg-opacity-50`}>
                                                     {modelInfo.label}
                                                 </span>
                                             </div>
@@ -188,7 +188,7 @@ const AdminAgents = () => {
                                     </div>
 
                                     <div className="mt-auto pt-4 border-t border-zinc-50 flex items-center justify-between">
-                                        <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">{agent.role || 'AGENT'}</span>
+                                        <span className="text-2xs font-bold text-zinc-300 uppercase tracking-widest">{agent.role || 'AGENT'}</span>
                                         <div className="w-6 h-6 rounded-sm bg-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 text-white">
                                             <ChevronRight size={12} />
                                         </div>

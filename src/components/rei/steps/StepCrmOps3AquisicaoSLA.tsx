@@ -14,7 +14,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
                 <h2 className="text-3xl font-black text-black mb-1 uppercase tracking-tighter">
                     Aquisição e Alinhamento de Vendas (SLA)
                 </h2>
-                <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
+                <p className="text-zinc-500 text-xxs uppercase tracking-widest font-bold">
                     Como acontece a passagem de oportunidades do Marketing para Vendas
                 </p>
             </div>
@@ -31,7 +31,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Sistema de pontuação de leads (Lead Scoring) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Os contatos recebem alguma pontuação automática de prioridade antes da abordagem de vendas?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Os contatos recebem alguma pontuação automática de prioridade antes da abordagem de vendas?</p>
                 <RadioGroup
                     value={form.watch('revops_lead_scoring')}
                     onValueChange={(value) => form.setValue('revops_lead_scoring', value)}
@@ -54,7 +54,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
 
             <div className="space-y-2">
                 <Label htmlFor="revops_sla_marketing_vendas" className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Alinhamento entre Marketing e Vendas (SLA) *</Label>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wide">Existe um acordo claro sobre a quantidade e qualidade das oportunidades geradas vs. o tempo de resposta?</p>
+                <p className="text-xxs text-zinc-500 uppercase tracking-wide">Existe um acordo claro sobre a quantidade e qualidade das oportunidades geradas vs. o tempo de resposta?</p>
                 <Input
                     {...form.register('revops_sla_marketing_vendas')}
                     id="revops_sla_marketing_vendas"
@@ -65,7 +65,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Distribuição de oportunidades (Routing) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Como o sistema decide qual vendedor vai atender um cliente com alto potencial x baixo potencial?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Como o sistema decide qual vendedor vai atender um cliente com alto potencial x baixo potencial?</p>
                 <RadioGroup
                     value={form.watch('revops_routing_vip')}
                     onValueChange={(value) => form.setValue('revops_routing_vip', value)}
@@ -88,7 +88,7 @@ export default function StepCrmOps3AquisicaoSLA({ form }: Props) {
 
             <div className="space-y-3">
                 <Label className="text-zinc-700 text-sm font-bold uppercase tracking-wider">Tempo de resposta a novas oportunidades (Speed to Lead) *</Label>
-                <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-wide">Quanto tempo a sua equipe leva, em média, para realizar o primeiro contato?</p>
+                <p className="text-xxs text-zinc-500 mb-2 uppercase tracking-wide">Quanto tempo a sua equipe leva, em média, para realizar o primeiro contato?</p>
                 <RadioGroup
                     value={form.watch('revops_speed_to_lead_sla')}
                     onValueChange={(value) => form.setValue('revops_speed_to_lead_sla', value)}

@@ -50,19 +50,19 @@ const JourneySection = () => {
               className="bg-white border border-zinc-100 p-10 md:p-12 rounded-[2.5rem] relative group hover:shadow-sm hover:shadow-zinc-200/50 transition-all duration-700 shadow-sm flex flex-col h-full"
             >
               {/* Number Badge - Inverted Mono */}
-              <div className="w-16 h-16 bg-zinc-900 text-white font-mono text-xl flex items-center justify-center mb-10 group-hover:bg-black transition-all duration-500 rounded-2xl shadow-sm shadow-zinc-200 group-hover:scale-110">
+              <div className="w-16 h-16 bg-zinc-900 text-white font-mono text-xl flex items-center justify-center mb-10 group-hover:bg-black transition-all duration-500 shadow-sm shadow-zinc-200 group-hover:scale-110">
                 {step.id}
               </div>
 
               <h3 className="text-2xl md:text-3xl font-bold text-zinc-900 mb-6 tracking-tight">{step.title}</h3>
-              <p className="text-zinc-500 text-[15px] mb-10 leading-relaxed font-normal flex-1">
+              <p className="text-zinc-500 text-body mb-10 leading-relaxed font-normal flex-1">
                 {step.desc}
               </p>
 
               <div className="pt-8 border-t border-zinc-50">
                 <ul className="space-y-4">
                   {step.items.map((item, idx) => (
-                    <li key={idx} className="flex items-center text-[11px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                    <li key={idx} className="flex items-center text-tiny font-bold uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
                       <div className="w-2 h-2 bg-zinc-900 mr-4 rounded-full"></div>
                       {item}
                     </li>

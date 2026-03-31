@@ -72,7 +72,7 @@ export default function PillarScores({ scores }: PillarScoresProps) {
                             </div>
 
                             {/* Status */}
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 bg-${config.color}/10 ${config.text} text-[10px] font-black uppercase tracking-wider`}>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 bg-${config.color}/10 ${config.text} text-xxs font-black uppercase tracking-wider`}>
                                 {config.label}
                             </div>
                         </div>

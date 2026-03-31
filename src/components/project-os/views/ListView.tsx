@@ -50,7 +50,7 @@ export const ListView = ({ projectId, sprintId, onTaskClick }: { projectId: stri
     columnHelper.accessor('status', {
       header: 'Status',
       cell: info => (
-        <span className="px-2.5 py-1 bg-zinc-800 text-zinc-300 text-xs font-semibold rounded-md border border-zinc-700/50">
+        <span className="px-2.5 py-1 bg-zinc-800 text-zinc-300 text-xs font-semibold border border-zinc-700/50">
           {statusMap[info.getValue()] || info.getValue()}
         </span>
       ),
@@ -89,7 +89,7 @@ export const ListView = ({ projectId, sprintId, onTaskClick }: { projectId: stri
       cell: info => (
         <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 text-sm">
           {info.getValue() ? (
-            <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-bold text-[10px] text-zinc-700 dark:text-zinc-300 flex items-center justify-center">RH</div>
+            <div className="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-bold text-xxs text-zinc-700 dark:text-zinc-300 flex items-center justify-center">RH</div>
           ) : (
             <div className="w-6 h-6 rounded-full border border-dashed border-zinc-400 dark:border-zinc-600 flex items-center justify-center text-zinc-500 dark:text-zinc-600">
               <User className="w-3 h-3" />
@@ -123,7 +123,7 @@ export const ListView = ({ projectId, sprintId, onTaskClick }: { projectId: stri
 
   return (
     <div className="h-full w-full bg-zinc-50 dark:bg-zinc-950 p-6 flex flex-col overflow-hidden">
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden flex flex-col h-full shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col h-full shadow-sm">
         <div className="overflow-x-auto flex-1 custom-scrollbar">
           <table className="w-full text-left border-collapse min-w-[800px] text-sm text-zinc-900 dark:text-zinc-300">
             <thead className="sticky top-0 z-10 bg-zinc-100 dark:bg-zinc-950/50 text-xs uppercase font-bold text-zinc-600 dark:text-zinc-500 border-b border-zinc-200 dark:border-zinc-800 shadow-sm">

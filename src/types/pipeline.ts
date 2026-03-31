@@ -1,5 +1,8 @@
-// Pipeline stages in order - from first contact to conclusion
-export const PIPELINE_STAGES = [
+// ============================================================================
+// OPPORTUNITY STAGES (sales lifecycle)
+// ============================================================================
+
+export const OPPORTUNITY_STAGES = [
   'lead_inbound',
   'lead_qualified',
   'diagnostic_done',
@@ -8,31 +11,62 @@ export const PIPELINE_STAGES = [
   'proposal_viewed',
   'negotiation',
   'won',
+  'lost',
+] as const;
+
+export type OpportunityStage = typeof OPPORTUNITY_STAGES[number];
+
+// ============================================================================
+// PROJECT STAGES (execution lifecycle - starts after won)
+// ============================================================================
+
+export const PROJECT_STAGES = [
   'onboarding',
   'active',
   'completed',
-  'lost',
+  'churned',
+] as const;
+
+export type ProjectStage = typeof PROJECT_STAGES[number];
+
+// ============================================================================
+// UNIFIED TYPE (backward compat - used during migration)
+// ============================================================================
+
+export const PIPELINE_STAGES = [
+  ...OPPORTUNITY_STAGES,
+  'onboarding',
+  'active',
+  'completed',
   'churned',
 ] as const;
 
 export type PipelineStage = typeof PIPELINE_STAGES[number];
 
-// Stage category groupings
-export type StageCategory = 'diagnostico' | 'vendas' | 'execucao' | 'encerrado';
+// ============================================================================
+// STAGE CATEGORIES
+// ============================================================================
 
-// Stage metadata for UI rendering
+export type OpportunityCategory = 'diagnostico' | 'vendas' | 'fechamento';
+export type ProjectCategory = 'execucao' | 'encerrado';
+export type StageCategory = OpportunityCategory | ProjectCategory | 'encerrado';
+
+// ============================================================================
+// STAGE CONFIGS - OPPORTUNITY
+// ============================================================================
+
 export interface StageConfig {
   key: PipelineStage;
   label: string;
   labelShort: string;
   category: StageCategory;
-  color: string; // zinc shades or #00CC6A only
-  icon: string; // lucide-react icon name
+  color: string;
+  icon: string;
   description: string;
   allowedTransitions: PipelineStage[];
 }
 
-export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
+export const OPPORTUNITY_STAGE_CONFIGS: Record<OpportunityStage, StageConfig> = {
   lead_inbound: {
     key: 'lead_inbound',
     label: 'Lead Inbound',
@@ -60,17 +94,17 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     category: 'diagnostico',
     color: 'zinc-600',
     icon: 'ClipboardCheck',
-    description: 'REI preenchido e score de maturidade calculado',
+    description: 'Respostas do diagnostico enviadas. Dados prontos para analise.',
     allowedTransitions: ['proposal_draft', 'lost'],
   },
   proposal_draft: {
     key: 'proposal_draft',
-    label: 'Proposta em Elaboracao',
-    labelShort: 'Rascunho',
+    label: 'Em Elaboração',
+    labelShort: 'Elaboração',
     category: 'vendas',
     color: 'zinc-500',
     icon: 'FileEdit',
-    description: 'Plano estrategico sendo gerado ou revisado pelo analista',
+    description: 'Proposta sendo gerada ou revisada pelo analista',
     allowedTransitions: ['proposal_sent', 'lost'],
   },
   proposal_sent: {
@@ -80,7 +114,7 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     category: 'vendas',
     color: 'zinc-600',
     icon: 'Send',
-    description: 'Link do plano enviado ao cliente, aguardando abertura',
+    description: 'Link da proposta enviado ao cliente, aguardando abertura',
     allowedTransitions: ['proposal_viewed', 'negotiation', 'lost'],
   },
   proposal_viewed: {
@@ -90,7 +124,7 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     category: 'vendas',
     color: 'zinc-700',
     icon: 'Eye',
-    description: 'Cliente abriu e visualizou o plano estrategico',
+    description: 'Cliente abriu e visualizou a proposta',
     allowedTransitions: ['negotiation', 'won', 'lost'],
   },
   negotiation: {
@@ -107,12 +141,29 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     key: 'won',
     label: 'Fechado',
     labelShort: 'Fechado',
-    category: 'execucao',
+    category: 'fechamento',
     color: '#00CC6A',
     icon: 'Trophy',
     description: 'Contrato assinado, projeto aprovado pelo cliente',
-    allowedTransitions: ['onboarding'],
+    allowedTransitions: [],
   },
+  lost: {
+    key: 'lost',
+    label: 'Perdido',
+    labelShort: 'Perdido',
+    category: 'encerrado',
+    color: 'zinc-300',
+    icon: 'XCircle',
+    description: 'Oportunidade perdida antes do fechamento',
+    allowedTransitions: ['lead_inbound'],
+  },
+};
+
+// ============================================================================
+// STAGE CONFIGS - PROJECT
+// ============================================================================
+
+export const PROJECT_STAGE_CONFIGS: Record<ProjectStage, StageConfig> = {
   onboarding: {
     key: 'onboarding',
     label: 'Onboarding',
@@ -120,7 +171,7 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     category: 'execucao',
     color: 'zinc-700',
     icon: 'Rocket',
-    description: 'Kickoff realizado, acessos e materiais sendo coletados',
+    description: 'REI realizado, acessos e materiais sendo coletados',
     allowedTransitions: ['active'],
   },
   active: {
@@ -143,16 +194,6 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     description: 'Todas as entregas finalizadas, projeto encerrado com sucesso',
     allowedTransitions: [],
   },
-  lost: {
-    key: 'lost',
-    label: 'Perdido',
-    labelShort: 'Perdido',
-    category: 'encerrado',
-    color: 'zinc-300',
-    icon: 'XCircle',
-    description: 'Lead ou oportunidade perdida antes do fechamento',
-    allowedTransitions: ['lead_inbound'],
-  },
   churned: {
     key: 'churned',
     label: 'Churned',
@@ -161,11 +202,50 @@ export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
     color: 'zinc-300',
     icon: 'UserMinus',
     description: 'Cliente cancelou durante a execucao do projeto',
-    allowedTransitions: ['lead_inbound'],
+    allowedTransitions: [],
   },
 };
 
-// Category metadata for grouping stages in the UI
+// ============================================================================
+// UNIFIED STAGE_CONFIGS (backward compat during migration)
+// ============================================================================
+
+export const STAGE_CONFIGS: Record<PipelineStage, StageConfig> = {
+  ...OPPORTUNITY_STAGE_CONFIGS,
+  ...PROJECT_STAGE_CONFIGS,
+};
+
+// ============================================================================
+// CATEGORY GROUPINGS
+// ============================================================================
+
+export const OPPORTUNITY_CATEGORIES: Record<OpportunityCategory, { label: string; stages: OpportunityStage[] }> = {
+  diagnostico: {
+    label: 'Diagnostico',
+    stages: ['lead_inbound', 'lead_qualified', 'diagnostic_done'],
+  },
+  vendas: {
+    label: 'Vendas',
+    stages: ['proposal_draft', 'proposal_sent', 'proposal_viewed', 'negotiation'],
+  },
+  fechamento: {
+    label: 'Fechamento',
+    stages: ['won', 'lost'],
+  },
+};
+
+export const PROJECT_CATEGORIES: Record<ProjectCategory, { label: string; stages: ProjectStage[] }> = {
+  execucao: {
+    label: 'Execucao',
+    stages: ['onboarding', 'active', 'completed'],
+  },
+  encerrado: {
+    label: 'Encerrado',
+    stages: ['churned'],
+  },
+};
+
+// Backward compat
 export const STAGE_CATEGORIES: Record<StageCategory, { label: string; stages: PipelineStage[] }> = {
   diagnostico: {
     label: 'Diagnostico',
@@ -175,17 +255,24 @@ export const STAGE_CATEGORIES: Record<StageCategory, { label: string; stages: Pi
     label: 'Vendas',
     stages: ['proposal_draft', 'proposal_sent', 'proposal_viewed', 'negotiation'],
   },
+  fechamento: {
+    label: 'Fechamento',
+    stages: ['won', 'lost'],
+  },
   execucao: {
     label: 'Execucao',
-    stages: ['won', 'onboarding', 'active', 'completed'],
+    stages: ['onboarding', 'active', 'completed'],
   },
   encerrado: {
     label: 'Encerrado',
-    stages: ['lost', 'churned'],
+    stages: ['churned'],
   },
 };
 
-// Lead sources - where the opportunity originated
+// ============================================================================
+// LEAD SOURCES
+// ============================================================================
+
 export const LEAD_SOURCES = [
   'diagnostico_growth',
   'diagnostico_revenue',
@@ -210,8 +297,20 @@ export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
   manual: 'Manual',
 };
 
-// Opportunity data enriched from meeting analysis or AI
+// ============================================================================
+// DATA INTERFACES
+// ============================================================================
+
+export interface Stakeholder {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  type: 'decision_maker' | 'influencer' | 'champion' | 'blocker' | 'other';
+}
+
 export interface OpportunityData {
+  stakeholders?: Stakeholder[];
   score_fechamento: number;
   sinais_compra: string[];
   objecoes_detectadas: string[];
@@ -225,10 +324,62 @@ export interface OpportunityData {
   enriched_at?: string;
 }
 
-// Pipeline stage change event for audit trail
-export interface StageChangeEvent {
+export interface Opportunity {
+  id: string;
+  client_name: string;
+  client_email: string | null;
+  client_company: string | null;
+  client_site: string | null;
+  client_logo: string | null;
+  trade_name: string | null;
+  type: string;
+  lead_source: LeadSource | null;
+  source: string | null;
+  pipeline_stage: OpportunityStage;
+  diagnostico_id: string | null;
+  opportunity_data: OpportunityData | null;
+  enrichment_data: any | null;
+  meeting_recording_id: string | null;
+  analyst_email: string;
+  organization_id: string | null;
+  client_id: string | null;
+  rei_project_id: string | null;
+  won_at: string | null;
+  lost_at: string | null;
+  lost_reason: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================================
+// STAGE CHANGE EVENTS
+// ============================================================================
+
+export interface OpportunityStageEvent {
+  id: string;
+  opportunity_id: string;
+  from_stage: OpportunityStage | null;
+  to_stage: OpportunityStage;
+  changed_at: string;
+  changed_by?: string;
+  notes?: string;
+}
+
+export interface ProjectStageEvent {
   id: string;
   rei_project_id: string;
+  from_stage: ProjectStage | null;
+  to_stage: ProjectStage;
+  changed_at: string;
+  changed_by?: string;
+  notes?: string;
+}
+
+// Backward compat
+export interface StageChangeEvent {
+  id: string;
+  rei_project_id?: string;
+  opportunity_id?: string;
   from_stage: PipelineStage | null;
   to_stage: PipelineStage;
   changed_at: string;
@@ -236,30 +387,70 @@ export interface StageChangeEvent {
   notes?: string;
 }
 
-// Funnel metrics for dashboard aggregation
+// ============================================================================
+// FUNNEL METRICS
+// ============================================================================
+
+export interface OpportunityFunnelMetrics {
+  stage_counts: Record<OpportunityStage, number>;
+  conversion_rates: {
+    from: OpportunityStage;
+    to: OpportunityStage;
+    rate: number;
+  }[];
+  total_pipeline_value: number;
+  avg_days_per_stage: Record<OpportunityStage, number>;
+}
+
+export interface ProjectFunnelMetrics {
+  stage_counts: Record<ProjectStage, number>;
+  avg_days_per_stage: Record<ProjectStage, number>;
+}
+
+// Backward compat
 export interface FunnelMetrics {
   stage_counts: Record<PipelineStage, number>;
   conversion_rates: {
     from: PipelineStage;
     to: PipelineStage;
-    rate: number; // 0-100
+    rate: number;
   }[];
   total_pipeline_value: number;
   avg_days_per_stage: Record<PipelineStage, number>;
 }
 
-// Helper: check if a stage transition is valid
-export function isValidTransition(from: PipelineStage, to: PipelineStage): boolean {
-  const config = STAGE_CONFIGS[from];
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export function isValidOpportunityTransition(from: OpportunityStage, to: OpportunityStage): boolean {
+  const config = OPPORTUNITY_STAGE_CONFIGS[from];
   return config.allowedTransitions.includes(to);
 }
 
-// Helper: get numeric index for stage ordering
+export function isValidProjectTransition(from: ProjectStage, to: ProjectStage): boolean {
+  const config = PROJECT_STAGE_CONFIGS[from];
+  return config.allowedTransitions.includes(to);
+}
+
+// Backward compat
+export function isValidTransition(from: PipelineStage, to: PipelineStage): boolean {
+  const config = STAGE_CONFIGS[from];
+  return config?.allowedTransitions?.includes(to) ?? false;
+}
+
 export function getStageIndex(stage: PipelineStage): number {
   return PIPELINE_STAGES.indexOf(stage);
 }
 
-// Helper: get category for a stage
 export function getStageCategory(stage: PipelineStage): StageCategory {
-  return STAGE_CONFIGS[stage].category;
+  return STAGE_CONFIGS[stage]?.category ?? 'encerrado';
+}
+
+export function isOpportunityStage(stage: string): stage is OpportunityStage {
+  return (OPPORTUNITY_STAGES as readonly string[]).includes(stage);
+}
+
+export function isProjectStage(stage: string): stage is ProjectStage {
+  return (PROJECT_STAGES as readonly string[]).includes(stage);
 }

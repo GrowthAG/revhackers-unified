@@ -34,7 +34,7 @@ const DownloadForm = ({ materialId, materialType, onSubmit, linkMaterial }: Down
           onClick={() => {
             if (linkMaterial) window.open(linkMaterial, '_blank');
           }}
-          className="w-full bg-black hover:bg-zinc-800 text-white font-bold h-12 text-[11px] rounded-none transition-all uppercase tracking-[0.25em] mb-10 border border-black flex items-center justify-center gap-3 group"
+          className="w-full bg-black hover:bg-zinc-800 text-white font-bold h-12 text-tiny rounded-none transition-all uppercase tracking-[0.25em] mb-10 border border-black flex items-center justify-center gap-3 group"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M7 17l9.2-9.2M17 17V7H7" />
@@ -51,8 +51,8 @@ const DownloadForm = ({ materialId, materialType, onSubmit, linkMaterial }: Down
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-zinc-900 text-[10px] uppercase tracking-widest mb-1.5">Verificação de E-mail</h4>
-              <p className="text-zinc-400 text-[10px] leading-relaxed">
+              <h4 className="font-bold text-zinc-900 text-xxs uppercase tracking-widest mb-1.5">Verificação de E-mail</h4>
+              <p className="text-zinc-400 text-xxs leading-relaxed">
                 Enviamos um convite exclusivo. Caso não encontre na caixa de entrada, verifique sua pasta de spans ou promoções.
               </p>
             </div>

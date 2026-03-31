@@ -129,18 +129,18 @@ const Materiais = () => {
           {loading ? (
             <div className="text-center py-20">
               <div className="mx-auto w-12 h-12 rounded-full border-2 border-zinc-100 border-t-black animate-spin mb-4"></div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Carregando Hub...</p>
+              <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Carregando Hub...</p>
             </div>
           ) : filteredMaterials.length === 0 ? (
-            <div className="text-center py-20 border border-dashed border-zinc-200 rounded-xl bg-zinc-50/50 max-w-2xl mx-auto">
+            <div className="text-center py-20 border border-dashed border-zinc-200 bg-zinc-50/50 max-w-2xl mx-auto">
               <div className="mx-auto w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-6">
                 <BookOpen className="h-8 w-8 text-zinc-300" />
               </div>
               <h3 className="text-xl font-black uppercase tracking-tight text-black mb-2">Nenhum material encontrado</h3>
-              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Tente ajustar seus termos de busca.</p>
+              <p className="text-zinc-500 text-xxs font-bold uppercase tracking-widest">Tente ajustar seus termos de busca.</p>
               <Button
                 variant="link"
-                className="text-black uppercase text-[10px] font-black tracking-widest mt-6 hover:text-revgreen transition-colors"
+                className="text-black uppercase text-xxs font-black tracking-widest mt-6 hover:text-revgreen transition-colors"
                 onClick={() => { setSearchQuery(''); setActiveCategory('Todos'); }}
               >
                 Limpar filtros
@@ -169,7 +169,7 @@ const Materiais = () => {
                   >
                     <div className="h-full flex flex-col p-8 rounded-sm border border-zinc-200 bg-white shadow-sm hover:-translate-y-1 transition-all duration-500 relative cursor-pointer group">
                       <div className="flex justify-between items-start mb-6">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-black bg-white px-2 py-1 rounded-sm border border-zinc-200">
+                        <span className="text-2xs font-black uppercase tracking-widest text-black bg-white px-2 py-1 rounded-sm border border-zinc-200">
                           {type}
                         </span>
                         <IconComponent className="h-5 w-5 text-zinc-200 group-hover:text-black transition-all duration-500" />
@@ -181,14 +181,14 @@ const Materiais = () => {
                       ></h3>
 
                       <div
-                        className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] leading-relaxed mb-8 flex-1 line-clamp-4"
+                        className="text-xxs text-zinc-400 font-bold uppercase tracking-[0.2em] leading-relaxed mb-8 flex-1 line-clamp-4"
                         dangerouslySetInnerHTML={{
                           __html: material.description ? (material.description.substring(0, 150) + (material.description.length > 150 ? '...' : '')) : ''
                         }}
                       />
 
                       <div className="mt-auto pt-6 border-t border-zinc-50 flex items-center justify-between">
-                        <span className="text-[10px] font-black text-black uppercase tracking-widest transition-all flex items-center group-hover:gap-2">
+                        <span className="text-xxs font-black text-black uppercase tracking-widest transition-all flex items-center group-hover:gap-2">
                           Baixar Material
                           <ArrowRight className="ml-2 h-3 w-3 transition-all" />
                         </span>

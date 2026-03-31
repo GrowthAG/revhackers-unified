@@ -359,13 +359,13 @@ const KnowledgeDocumentEditor = () => {
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1 bg-zinc-100 p-0.5 rounded-lg mr-4">
-                                <button onClick={() => setViewMode('edit')} className={cn("px-3 py-1 text-xs font-bold rounded-md transition-all", viewMode === 'edit' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Editor</button>
-                                <button onClick={() => setViewMode('split')} className={cn("px-3 py-1 text-xs font-bold rounded-md transition-all", viewMode === 'split' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Dividido</button>
-                                <button onClick={() => setViewMode('preview')} className={cn("px-3 py-1 text-xs font-bold rounded-md transition-all", viewMode === 'preview' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Leitor</button>
+                            <div className="flex items-center gap-1 bg-zinc-100 p-0.5 mr-4">
+                                <button onClick={() => setViewMode('edit')} className={cn("px-3 py-1 text-xs font-bold transition-all", viewMode === 'edit' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Editor</button>
+                                <button onClick={() => setViewMode('split')} className={cn("px-3 py-1 text-xs font-bold transition-all", viewMode === 'split' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Dividido</button>
+                                <button onClick={() => setViewMode('preview')} className={cn("px-3 py-1 text-xs font-bold transition-all", viewMode === 'preview' ? "bg-white text-black shadow-sm" : "text-zinc-400 hover:text-zinc-600")}>Leitor</button>
                             </div>
                             <div className="text-xs text-zinc-400 mr-4 font-mono">{isSaving ? 'Salvando...' : 'Salvo'}</div>
-                            <Button onClick={handleSave} disabled={isSaving} className="bg-black hover:bg-zinc-800 text-white rounded-md px-4 h-8 text-xs font-bold uppercase tracking-widest transition-all">
+                            <Button onClick={handleSave} disabled={isSaving} className="bg-black hover:bg-zinc-800 text-white px-4 h-8 text-xs font-bold uppercase tracking-widest transition-all">
                                 {isSaving && <Loader2 className="w-3 h-3 animate-spin mr-2" />} Salvar
                             </Button>
                         </div>
@@ -383,7 +383,7 @@ const KnowledgeDocumentEditor = () => {
                     />
 
                     {/* Cover Image Area */}
-                    <div className="group relative mb-8 rounded-xl overflow-hidden bg-zinc-50 border-zinc-100 min-h-[60px] hover:bg-zinc-100 transition-all flex flex-col justify-end">
+                    <div className="group relative mb-8 overflow-hidden bg-zinc-50 border-zinc-100 min-h-[60px] hover:bg-zinc-100 transition-all flex flex-col justify-end">
                         <input
                             type="file"
                             ref={coverInputRef}
@@ -396,7 +396,7 @@ const KnowledgeDocumentEditor = () => {
                                 <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
                                 <button
                                     onClick={() => coverInputRef.current?.click()}
-                                    className="absolute bottom-4 right-4 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100 border border-white/20"
+                                    className="absolute bottom-4 right-4 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100 border border-white/20"
                                 >
                                     Alterar Capa
                                 </button>
@@ -429,11 +429,11 @@ const KnowledgeDocumentEditor = () => {
                     {/* Handover Metadata Controls */}
                     <div className="flex flex-wrap items-center gap-4 mb-8">
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Visibilidade</span>
+                            <span className="text-xxs items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Visibilidade</span>
                             <select 
                                 value={visibility} 
                                 onChange={e => setVisibility(e.target.value)}
-                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 rounded-md px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
+                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
                             >
                                 <option value="internal">Interno (Somente Admin)</option>
                                 <option value="shared">Compartilhável (Visível no Hub)</option>
@@ -442,11 +442,11 @@ const KnowledgeDocumentEditor = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Categoria</span>
+                            <span className="text-xxs items-center gap-1 font-bold uppercase tracking-widest text-zinc-400">Categoria</span>
                             <select 
                                 value={category} 
                                 onChange={e => setCategory(e.target.value)}
-                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 rounded-md px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
+                                className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-700 px-3 py-1.5 focus:ring-black focus:border-black outline-none font-medium"
                             >
                                 <option value="geral">Geral</option>
                                 <option value="kickoff">Kickoff & Alinhamento</option>
@@ -462,11 +462,11 @@ const KnowledgeDocumentEditor = () => {
 
                     {/* Visual Toolbar (Subtle) */}
                     <div className="flex items-center gap-1 mb-6 text-zinc-400 border-b border-zinc-50 pb-2">
-                        <span className="text-[10px] uppercase tracking-wider font-medium mr-2">Comandos Rápidos:</span>
-                        <code className="bg-zinc-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-500 border border-zinc-200">/</code>
-                        <span className="text-[10px] text-zinc-300 mr-2">para menu</span>
-                        <code className="bg-zinc-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-500 border border-zinc-200">@</code>
-                        <span className="text-[10px] text-zinc-300">para mencionar</span>
+                        <span className="text-xxs uppercase tracking-wider font-medium mr-2">Comandos Rápidos:</span>
+                        <code className="bg-zinc-100 px-1.5 py-0.5 rounded text-xxs font-mono text-zinc-500 border border-zinc-200">/</code>
+                        <span className="text-xxs text-zinc-300 mr-2">para menu</span>
+                        <code className="bg-zinc-100 px-1.5 py-0.5 rounded text-xxs font-mono text-zinc-500 border border-zinc-200">@</code>
+                        <span className="text-xxs text-zinc-300">para mencionar</span>
                     </div>
 
                     <div className="min-h-[500px] relative">
@@ -507,7 +507,7 @@ const KnowledgeDocumentEditor = () => {
                                                     }
                                                     // Render Table
                                                     elements.push(
-                                                        <div key={`table-${i}`} className="my-6 overflow-x-auto rounded-lg border border-zinc-200 shadow-sm">
+                                                        <div key={`table-${i}`} className="my-6 overflow-x-auto border border-zinc-200 shadow-sm">
                                                             <table className="w-full text-sm text-left">
                                                                 <thead>
                                                                     <tr className="bg-zinc-50 border-b border-zinc-200">
@@ -534,7 +534,7 @@ const KnowledgeDocumentEditor = () => {
                                                 // 2. Images
                                                 const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
                                                 if (imgMatch) {
-                                                    elements.push(<img key={i} src={imgMatch[2]} alt={imgMatch[1]} className="w-full rounded-xl my-4 border border-zinc-100 shadow-sm transition-transform hover:scale-[1.01]" />);
+                                                    elements.push(<img key={i} src={imgMatch[2]} alt={imgMatch[1]} className="w-full my-4 border border-zinc-100 shadow-sm transition-transform hover:scale-[1.01]" />);
                                                     i++; continue;
                                                 }
 
@@ -597,7 +597,7 @@ const KnowledgeDocumentEditor = () => {
                                                                 const match = part.match(/\[task:(.*?):(.*?)\]/);
                                                                 if (match) {
                                                                     return (
-                                                                        <span key={idx} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 font-medium text-sm border border-zinc-200 cursor-pointer hover:bg-zinc-200 transition-colors mx-1 align-middle">
+                                                                        <span key={idx} className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-zinc-100 text-zinc-700 font-medium text-sm border border-zinc-200 cursor-pointer hover:bg-zinc-200 transition-colors mx-1 align-middle">
                                                                             <CheckSquare size={12} />
                                                                             <span className="truncate max-w-[200px]">{match[2]}</span>
                                                                         </span>
@@ -631,33 +631,33 @@ const KnowledgeDocumentEditor = () => {
                                 (commandType === 'mention' && filteredUsers.length > 0) ||
                                 (commandType === 'task') // Task handles its own empty state or filtering
                             ) && (
-                                    <div className="absolute top-20 left-10 z-50 w-64 bg-white rounded-xl shadow-sm border border-zinc-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                                    <div className="absolute top-20 left-10 z-50 w-64 bg-white shadow-sm border border-zinc-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
                                         <div className="bg-zinc-50/50 px-3 py-2 border-b border-zinc-50">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                            <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                                 {commandType === 'slash' ? 'Comandos' : commandType === 'task' ? 'Vincular Tarefa' : 'Mencionar'}
                                             </span>
                                         </div>
                                         <div className="p-1 max-h-60 overflow-y-auto">
                                             {commandType === 'task' ? (
                                                 filteredTasks.length > 0 ? filteredTasks.map(task => (
-                                                    <button key={task.id} onClick={() => insertText(`[task:${task.id}:${task.title}] `)} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg transition-colors group text-left border-b border-zinc-50 last:border-0 relative">
+                                                    <button key={task.id} onClick={() => insertText(`[task:${task.id}:${task.title}] `)} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 transition-colors group text-left border-b border-zinc-50 last:border-0 relative">
                                                         <div className="w-1 absolute left-0 top-2 bottom-2 bg-zinc-900 rounded-r-lg" />
                                                         <div className="pl-4">
                                                             <span className="text-sm font-bold text-zinc-800 group-hover:text-black block">{task.title}</span>
-                                                            <span className="text-[10px] text-zinc-400 uppercase tracking-wider">{task.project_name}</span>
+                                                            <span className="text-xxs text-zinc-400 uppercase tracking-wider">{task.project_name}</span>
                                                         </div>
                                                     </button>
                                                 )) : <div className="p-4 text-xs text-zinc-400 text-center">Nenhuma tarefa encontrada.</div>
                                             ) : commandType === 'slash' ? filteredCommands.map(cmd => (
-                                                <button key={cmd.id} onClick={cmd.action} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg transition-colors group text-left">
-                                                    <div className="w-8 h-8 rounded-md bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 group-hover:border-zinc-300 group-hover:text-black transition-all">
+                                                <button key={cmd.id} onClick={cmd.action} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 transition-colors group text-left">
+                                                    <div className="w-8 h-8 bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 group-hover:border-zinc-300 group-hover:text-black transition-all">
                                                         <cmd.icon size={14} />
                                                     </div>
                                                     <span className="text-sm font-medium text-zinc-600 group-hover:text-black">{cmd.label}</span>
                                                 </button>
                                             )) : filteredUsers.map(user => (
-                                                <button key={user.id} onClick={() => insertText(`@${user.name}`)} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg transition-colors group text-left">
-                                                    <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-500 group-hover:bg-black group-hover:text-white transition-all">
+                                                <button key={user.id} onClick={() => insertText(`@${user.name}`)} className="w-full flex items-center gap-3 p-2 hover:bg-zinc-50 transition-colors group text-left">
+                                                    <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-500 group-hover:bg-black group-hover:text-white transition-all">
                                                         {user.name.charAt(0)}
                                                     </div>
                                                     <span className="text-sm font-medium text-zinc-600 group-hover:text-black">{user.name}</span>

@@ -644,7 +644,7 @@ ${additionalInfo}
         <button
             onClick={() => setActiveTab(id)}
             className={`
-                flex-1 px-6 py-2.5 text-[13px] font-bold transition-all duration-300 rounded-full
+                flex-1 px-6 py-2.5 text-mini font-bold transition-all duration-300 
                 ${activeTab === id
                     ? 'bg-black text-white shadow-sm'
                     : 'text-zinc-400 hover:text-black hover:bg-zinc-50'
@@ -665,22 +665,22 @@ ${additionalInfo}
         return (
             <button
                 onClick={() => setActiveKnowledgeModal(type)}
-                className="text-left p-6 bg-white border border-zinc-100 rounded-2xl hover:border-zinc-200 transition-all group"
+                className="text-left p-6 bg-white border border-zinc-100 hover:border-zinc-200 transition-all group"
             >
                 <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 bg-zinc-50 flex items-center justify-center text-black group-hover:scale-110 transition-transform">
                         <Icon className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                             <h4 className="font-bold text-black text-sm tracking-tight">{title}</h4>
                             {count > 0 && (
-                                <span className="text-[10px] font-bold text-white bg-black px-2 py-0.5 rounded-full">
+                                <span className="text-xxs font-bold text-white bg-black px-2 py-0.5 ">
                                     {count}
                                 </span>
                             )}
                         </div>
-                        <p className="text-[12px] text-zinc-500 font-medium leading-relaxed">{description}</p>
+                        <p className="text-xs text-zinc-500 font-medium leading-relaxed">{description}</p>
                     </div>
                 </div>
             </button>
@@ -718,29 +718,29 @@ ${additionalInfo}
             {/* Chat Header */}
             <div className="h-20 border-b border-zinc-100 flex items-center justify-between px-6 shrink-0 bg-white sticky top-0 z-10">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center">
                         <Bot className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                        <span className="text-[13px] font-bold text-black block leading-none mb-1">
+                        <span className="text-mini font-bold text-black block leading-none mb-1">
                             Preview do Motor
                         </span>
                         <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-[#00CC6A] rounded-full animate-pulse"></span>
-                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Ativo</span>
+                            <span className="w-1.5 h-1.5 bg-[#00CC6A] animate-pulse"></span>
+                            <span className="text-xxs text-zinc-400 font-bold uppercase tracking-widest">Ativo</span>
                         </div>
                     </div>
                 </div>
 
                 <Select value={chatModel} onValueChange={setChatModel}>
-                    <SelectTrigger className="h-10 w-40 text-xs font-bold border-zinc-100 bg-zinc-50 hover:bg-zinc-100 transition-all rounded-full px-4">
+                    <SelectTrigger className="h-10 w-40 text-xs font-bold border-zinc-100 bg-zinc-50 hover:bg-zinc-100 transition-all px-4">
                         <SelectValue placeholder="Engine" />
                     </SelectTrigger>
                     <SelectContent>
                         {MODEL_OPTIONS.map(opt => (
                             <SelectItem key={opt.value} value={opt.value} className="text-xs">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: opt.color || '#000' }} />
+                                    <div className="w-1.5 h-1.5 " style={{ backgroundColor: opt.color || '#000' }} />
                                     {opt.label}
                                 </div>
                             </SelectItem>
@@ -753,11 +753,11 @@ ${additionalInfo}
             <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-zinc-50/30 scroll-smooth">
                 {testMessages.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-0 animate-in fade-in duration-700">
-                        <div className="w-16 h-16 bg-white border border-zinc-100 rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-6">
+                        <div className="w-16 h-16 bg-white border border-zinc-100 shadow-sm flex items-center justify-center mx-auto mb-6">
                             <Bot className="w-8 h-8 text-black" />
                         </div>
-                        <p className="text-[13px] font-bold text-black uppercase tracking-widest">Aguardando Input</p>
-                        <p className="text-[11px] text-zinc-400 mt-4 max-w-[240px] font-medium leading-relaxed">
+                        <p className="text-mini font-bold text-black uppercase tracking-widest">Aguardando Input</p>
+                        <p className="text-tiny text-zinc-400 mt-4 max-w-[240px] font-medium leading-relaxed">
                             Envie uma mensagem para validar o comportamento e a personalidade do seu agente.
                         </p>
                     </div>
@@ -765,13 +765,13 @@ ${additionalInfo}
 
                 {testMessages.map((msg, idx) => (
                     <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''} group animate-in slide-in-from-bottom-2 duration-300`}>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-[10px] font-bold shadow-sm ${msg.role === 'assistant' ? 'bg-black text-white' : 'bg-zinc-100'
+                        <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 text-xxs font-bold shadow-sm ${msg.role === 'assistant' ? 'bg-black text-white' : 'bg-zinc-100'
                             }`}>
                             {msg.role === 'assistant' ? <Cpu className="w-4 h-4 text-[#00CC6A]" /> : 'USER'}
                         </div>
-                        <div className={`max-w-[85%] text-[13px] leading-relaxed ${msg.role === 'assistant'
+                        <div className={`max-w-[85%] text-mini leading-relaxed ${msg.role === 'assistant'
                             ? 'text-zinc-800 font-bold pt-1.5'
-                            : 'bg-zinc-50 border border-zinc-100 text-zinc-900 px-4 py-2.5 rounded-2xl rounded-tr-none font-bold'
+                            : 'bg-zinc-50 border border-zinc-100 text-zinc-900 px-4 py-2.5  font-bold'
                             }`}>
                             {msg.content}
                         </div>
@@ -780,7 +780,7 @@ ${additionalInfo}
 
                 {isLoading && (
                     <div className="flex gap-4 animate-pulse">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white border border-zinc-200">
+                        <div className="w-8 h-8 flex items-center justify-center bg-white border border-zinc-200">
                             <Loader2 className="w-3.5 h-3.5 text-zinc-400 animate-spin" />
                         </div>
                         <div className="pt-2">
@@ -795,7 +795,7 @@ ${additionalInfo}
                 <form onSubmit={(e) => { e.preventDefault(); handleSendTest(); }} className="relative bg-zinc-50 border border-zinc-200 rounded-[24px] focus-within:border-black transition-all">
                     <Input
                         placeholder="Enviar mensagem para teste..."
-                        className="pl-6 pr-14 min-h-[64px] border-none bg-transparent shadow-none focus-visible:ring-0 text-[14px] font-medium text-black placeholder:text-zinc-400"
+                        className="pl-6 pr-14 min-h-[64px] border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-medium text-black placeholder:text-zinc-400"
                         value={testInput}
                         onChange={e => setTestInput(e.target.value)}
                         disabled={isLoading}
@@ -803,14 +803,14 @@ ${additionalInfo}
                     <button
                         type="submit"
                         disabled={!testInput.trim() || isLoading}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center hover:bg-zinc-800 disabled:opacity-30 transition-all shadow-sm"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-black text-white flex items-center justify-center hover:bg-zinc-800 disabled:opacity-30 transition-all shadow-sm"
                     >
                         <Send className="w-5 h-5" />
                     </button>
                 </form>
                 <div className="flex justify-between items-center mt-4 px-1">
-                    <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">Sincronizado</p>
-                    <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">v2.4</p>
+                    <p className="text-xxs font-bold text-zinc-300 uppercase tracking-widest">Sincronizado</p>
+                    <p className="text-xxs font-bold text-zinc-300 uppercase tracking-widest">v2.4</p>
                 </div>
             </div>
         </div>
@@ -823,10 +823,10 @@ ${additionalInfo}
                 description={id ? "Atualize as configurações e treinamento" : "Configuração e Treinamento"}
                 actions={
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/agents')} className="text-zinc-500 hover:text-zinc-900 rounded-full h-9">
+                        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/agents')} className="text-zinc-500 hover:text-zinc-900 h-9">
                             Cancelar
                         </Button>
-                        <Button onClick={handleSave} size="sm" className="bg-black text-white hover:bg-zinc-800 rounded-full h-9 px-5 shadow-sm">
+                        <Button onClick={handleSave} size="sm" className="bg-black text-white hover:bg-zinc-800 h-9 px-5 shadow-sm">
                             <Save className="w-4 h-4 mr-2" /> {id ? 'Atualizar Agente' : 'Salvar Alterações'}
                         </Button>
                     </div>
@@ -834,7 +834,7 @@ ${additionalInfo}
                 sidebarContent={AgentTester}
             >
                 {/* Tabs Navigation (Segmented Control) */}
-                <div className="mb-8 p-1 bg-zinc-100/80 rounded-lg inline-flex w-full lg:w-auto min-w-[400px]">
+                <div className="mb-8 p-1 bg-zinc-100/80 inline-flex w-full lg:w-auto min-w-[400px]">
                     <TabButton id="config" label="Configuração" />
                     <TabButton id="knowledge" label="Conhecimento" />
                     <TabButton id="goals" label="Metas" />
@@ -853,7 +853,7 @@ ${additionalInfo}
                                     placeholder="Ex: Consultor Estratégico de Growth"
                                     value={name}
                                     onChange={e => setName(e.target.value)}
-                                    className="h-12 border-zinc-200 bg-white focus:border-black rounded-xl text-base font-bold placeholder:text-zinc-200"
+                                    className="h-12 border-zinc-200 bg-white focus:border-black text-base font-bold placeholder:text-zinc-200"
                                 />
                             </div>
 
@@ -863,17 +863,17 @@ ${additionalInfo}
                                     Modelo de Linguagem
                                 </Label>
                                 <Select value={model} onValueChange={setModel}>
-                                    <SelectTrigger className="h-12 border-zinc-200 bg-zinc-50/50 hover:border-black rounded-xl font-bold">
+                                    <SelectTrigger className="h-12 border-zinc-200 bg-zinc-50/50 hover:border-black font-bold">
                                         <SelectValue placeholder="Selecionar Modelo" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {MODEL_OPTIONS.map(opt => (
                                             <SelectItem key={opt.value} value={opt.value} className="py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color || '#000' }} />
+                                                    <div className="w-2 h-2 shrink-0" style={{ backgroundColor: opt.color || '#000' }} />
                                                     <div className="flex flex-col">
                                                         <span className="font-bold text-sm">{opt.label}</span>
-                                                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">{opt.description}</span>
+                                                        <span className="text-xxs text-zinc-400 uppercase tracking-wider font-medium">{opt.description}</span>
                                                     </div>
                                                 </div>
                                             </SelectItem>
@@ -886,21 +886,21 @@ ${additionalInfo}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-semibold text-zinc-900">Instruções de Identidade e Comportamento</Label>
-                                <span className="text-xs font-medium text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-full">Prompt do Sistema</span>
+                                <span className="text-xs font-medium text-zinc-400 bg-zinc-100 px-2 py-0.5 ">Prompt do Sistema</span>
                             </div>
 
-                            <p className="text-[11px] text-zinc-500 leading-relaxed bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                            <p className="text-tiny text-zinc-500 leading-relaxed bg-zinc-50 p-3 border border-zinc-100">
                                 💡 **Dica:** Defina aqui *quem* o agente é (Identidade). O **Tom de Voz** (estilo de escrita) será selecionado ou clonado individualmente no chat.
                             </p>
 
                             <div className="relative">
                                 <Textarea
                                     placeholder="Ex: Você é um estrategista de Marketing focado em ROI. Sua comunicação deve ser baseada em dados, sendo direta e sem enrolação..."
-                                    className="min-h-[280px] p-4 border-zinc-200 text-sm leading-relaxed resize-none bg-white rounded-xl focus:ring-1 focus:ring-black/5 focus:border-zinc-400 shadow-sm"
+                                    className="min-h-[280px] p-4 border-zinc-200 text-sm leading-relaxed resize-none bg-white focus:ring-1 focus:ring-black/5 focus:border-zinc-400 shadow-sm"
                                     value={personality}
                                     onChange={e => setPersonality(e.target.value)}
                                 />
-                                <div className="absolute bottom-3 right-3 text-[10px] text-zinc-400 font-medium bg-white px-2 py-1 rounded-md border border-zinc-100 shadow-sm">
+                                <div className="absolute bottom-3 right-3 text-xxs text-zinc-400 font-medium bg-white px-2 py-1 border border-zinc-100 shadow-sm">
                                     {personality.length} caracteres
                                 </div>
                             </div>
@@ -935,9 +935,9 @@ ${additionalInfo}
                             <div className="grid grid-cols-1 gap-2">
                                 {/* Existing persistent sources */}
                                 {knowledgeSources.map(source => (
-                                    <div key={source.id} className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+                                    <div key={source.id} className="flex items-center justify-between p-4 bg-white border border-zinc-200 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center border border-zinc-100">
+                                            <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100">
                                                 {source.type === 'url' && <Globe className="w-5 h-5 text-zinc-400" />}
                                                 {source.type === 'text' && <Type className="w-5 h-5 text-zinc-400" />}
                                                 {source.type === 'faq' && <Terminal className="w-5 h-5 text-zinc-400" />}
@@ -945,7 +945,7 @@ ${additionalInfo}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-zinc-900">{source.name}</p>
-                                                <p className="text-[11px] text-zinc-400 uppercase tracking-wider font-medium">
+                                                <p className="text-tiny text-zinc-400 uppercase tracking-wider font-medium">
                                                     {source.type === 'url' ? 'Site/Link' :
                                                         source.type === 'text' ? 'Texto Manual' :
                                                             source.type === 'faq' ? 'FAQ' : 'Arquivo'}
@@ -954,7 +954,7 @@ ${additionalInfo}
                                         </div>
                                         <button
                                             onClick={() => handleRemoveSource(source.id)}
-                                            className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
+                                            className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -963,15 +963,15 @@ ${additionalInfo}
 
                                 {/* Staged uploaded files (not yet saved) */}
                                 {files.map((file, idx) => (
-                                    <div key={`staged-${idx}`} className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-200 border-dashed rounded-xl opacity-80">
+                                    <div key={`staged-${idx}`} className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-200 border-dashed opacity-80">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-zinc-100">
+                                            <div className="w-10 h-10 bg-white flex items-center justify-center border border-zinc-100">
                                                 <FileText className="w-5 h-5 text-zinc-300" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-zinc-500">{file.name}</p>
-                                                <p className="text-[10px] text-[#00CC6A] font-bold flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A] animate-pulse"></span>
+                                                <p className="text-xxs text-[#00CC6A] font-bold flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 bg-[#00CC6A] animate-pulse"></span>
                                                     CLIQUE EM SALVAR PARA ATIVAR
                                                 </p>
                                             </div>
@@ -992,12 +992,12 @@ ${additionalInfo}
                                     variant="link"
                                     size="sm"
                                     onClick={() => navigate('/admin/knowledge')}
-                                    className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-black"
+                                    className="text-xxs font-bold uppercase tracking-widest text-zinc-400 hover:text-black"
                                 >
                                     Gerenciar Hub
                                 </Button>
                             </div>
-                            <p className="text-[11px] text-zinc-500 leading-relaxed max-w-xl">
+                            <p className="text-tiny text-zinc-500 leading-relaxed max-w-xl">
                                 Vincule este agente a bibliotecas de conhecimento globais. Isso permite que múltiplos agentes compartilhem o mesmo cérebro técnico sem duplicar arquivos.
                             </p>
 
@@ -1007,7 +1007,7 @@ ${additionalInfo}
                                         key={lib.id}
                                         onClick={() => toggleLibrary(lib.id)}
                                         className={cn(
-                                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
+                                            "flex items-center justify-between p-4 border transition-all cursor-pointer group",
                                             agentLibraryIds.includes(lib.id)
                                                 ? "bg-black border-black text-white"
                                                 : "bg-white border-zinc-100 hover:border-zinc-300"
@@ -1015,7 +1015,7 @@ ${additionalInfo}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className={cn(
-                                                "w-8 h-8 rounded-lg flex items-center justify-center border transition-colors",
+                                                "w-8 h-8 flex items-center justify-center border transition-colors",
                                                 agentLibraryIds.includes(lib.id)
                                                     ? "bg-zinc-800 border-zinc-700"
                                                     : "bg-zinc-50 border-zinc-100"
@@ -1025,7 +1025,7 @@ ${additionalInfo}
                                             <div>
                                                 <p className="text-xs font-bold tracking-tight">{lib.name}</p>
                                                 <p className={cn(
-                                                    "text-[9px] font-medium uppercase tracking-widest",
+                                                    "text-2xs font-medium uppercase tracking-widest",
                                                     agentLibraryIds.includes(lib.id) ? "text-zinc-500" : "text-zinc-400"
                                                 )}>
                                                     Biblioteca {lib.is_global ? 'Global' : 'Privada'}
@@ -1033,7 +1033,7 @@ ${additionalInfo}
                                             </div>
                                         </div>
                                         <div className={cn(
-                                            "w-5 h-5 rounded-full flex items-center justify-center transition-all",
+                                            "w-5 h-5 flex items-center justify-center transition-all",
                                             agentLibraryIds.includes(lib.id)
                                                 ? "bg-[#00CC6A] text-black"
                                                 : "bg-zinc-50 text-zinc-300 group-hover:text-zinc-900"
@@ -1043,9 +1043,9 @@ ${additionalInfo}
                                     </div>
                                 ))}
                                 {allLibraries.length === 0 && (
-                                    <div className="col-span-2 py-8 text-center border-2 border-dashed border-zinc-50 rounded-2xl grayscale opacity-40">
+                                    <div className="col-span-2 py-8 text-center border-2 border-dashed border-zinc-50 grayscale opacity-40">
                                         <Database className="w-8 h-8 mx-auto mb-2 text-zinc-300" />
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nenhuma biblioteca disponível</p>
+                                        <p className="text-xxs font-bold uppercase tracking-widest text-zinc-400">Nenhuma biblioteca disponível</p>
                                     </div>
                                 )}
                             </div>
@@ -1056,55 +1056,55 @@ ${additionalInfo}
                 {/* Tab: Metas & Arquitetura */}
                 {activeTab === 'goals' && (
                     <div className="space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
+                        <div className="bg-zinc-50 p-6 border border-zinc-200/60 shadow-sm">
                             <div className="flex items-start gap-4 mb-4">
-                                <div className="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center shadow-sm text-zinc-900">
+                                <div className="w-10 h-10 bg-white border border-zinc-100 flex items-center justify-center shadow-sm text-zinc-900">
                                     <Target className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Metas e Objetivos Estratégicos</h3>
-                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">O que este agente DEVE realizar.</p>
+                                    <p className="text-tiny text-zinc-500 mt-1 uppercase tracking-wider font-bold">O que este agente DEVE realizar.</p>
                                 </div>
                             </div>
                             <Textarea
                                 placeholder="Defina as metas críticas... EX: 'Converter 20% dos leads frios', 'Identificar 5 gargalos em cada relatório'."
-                                className="min-h-32 border-zinc-200 bg-white text-sm font-medium resize-none focus:ring-1 focus:ring-black/5 rounded-xl placeholder:text-zinc-300"
+                                className="min-h-32 border-zinc-200 bg-white text-sm font-medium resize-none focus:ring-1 focus:ring-black/5 placeholder:text-zinc-300"
                                 value={goal}
                                 onChange={e => setGoal(e.target.value)}
                             />
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
+                        <div className="bg-white p-6 border border-zinc-200/60 shadow-sm">
                             <div className="flex items-start gap-4 mb-4">
-                                <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+                                <div className="w-10 h-10 bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
                                     <Terminal className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Instruções Operacionais</h3>
-                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">Protocolos e regras de execução.</p>
+                                    <p className="text-tiny text-zinc-500 mt-1 uppercase tracking-wider font-bold">Protocolos e regras de execução.</p>
                                 </div>
                             </div>
                             <Textarea
                                 placeholder="Protocolos de resposta, restrições, formatos de saída... EX: 'Nunca sugira ferramentas pagas', 'Sempre finalize com um Call to Action'."
-                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors rounded-xl placeholder:text-zinc-300"
+                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors placeholder:text-zinc-300"
                                 value={operatingInstructions}
                                 onChange={e => setOperatingInstructions(e.target.value)}
                             />
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl border border-zinc-200/60 shadow-sm">
+                        <div className="bg-white p-6 border border-zinc-200/60 shadow-sm">
                             <div className="flex items-start gap-4 mb-4">
-                                <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+                                <div className="w-10 h-10 bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
                                     <Box className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-tighter">Biblioteca de Informações Acionais</h3>
-                                    <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-bold">Frameworks, fórmulas e dados fixos de referência.</p>
+                                    <p className="text-tiny text-zinc-500 mt-1 uppercase tracking-wider font-bold">Frameworks, fórmulas e dados fixos de referência.</p>
                                 </div>
                             </div>
                             <Textarea
                                 placeholder="Fórmulas de cálculo de ROI, frameworks de copy (AIDA, PAS), referências técnicas imutáveis."
-                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors rounded-xl placeholder:text-zinc-300"
+                                className="min-h-40 border-zinc-200 text-sm font-medium resize-none bg-zinc-50/30 focus:bg-white transition-colors placeholder:text-zinc-300"
                                 value={actionableInfo}
                                 onChange={e => setActionableInfo(e.target.value)}
                             />
@@ -1115,7 +1115,7 @@ ${additionalInfo}
                 {/* Modal for Knowledge Source */}
                 {activeKnowledgeModal && (
                     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-2xl w-full max-w-lg shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-zinc-200">
+                        <div className="bg-white w-full max-w-lg shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-zinc-200">
                             <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
                                 <h3 className="text-base font-bold text-zinc-900">{getModalContent().title}</h3>
                                 <button onClick={() => setActiveKnowledgeModal(null)} className="text-zinc-400 hover:text-zinc-900 transition-colors">
@@ -1129,7 +1129,7 @@ ${additionalInfo}
                                         placeholder="Ex: Site Principal, FAQ de Vendas..."
                                         value={newSourceName}
                                         onChange={e => setNewSourceName(e.target.value)}
-                                        className="h-11 border-zinc-200 rounded-lg"
+                                        className="h-11 border-zinc-200 "
                                         autoFocus
                                     />
                                 </div>
@@ -1139,16 +1139,16 @@ ${additionalInfo}
                                         placeholder={getModalContent().placeholder}
                                         value={newSourceContent}
                                         onChange={e => setNewSourceContent(e.target.value)}
-                                        className="min-h-40 border-zinc-200 text-sm resize-none rounded-lg font-mono text-zinc-600"
+                                        className="min-h-40 border-zinc-200 text-sm resize-none font-mono text-zinc-600"
                                     />
                                     <p className="text-xs text-zinc-500 ml-1">{getModalContent().hint}</p>
                                 </div>
                             </div>
                             <div className="px-5 py-4 border-t border-zinc-100 flex justify-end gap-3 bg-zinc-50/50">
-                                <Button variant="outline" onClick={() => setActiveKnowledgeModal(null)} className="rounded-lg h-9 text-xs font-semibold">
+                                <Button variant="outline" onClick={() => setActiveKnowledgeModal(null)} className="h-9 text-xs font-semibold">
                                     Cancelar
                                 </Button>
-                                <Button onClick={handleAddKnowledgeSource} className="bg-black text-white hover:bg-zinc-800 rounded-lg h-9 text-xs font-semibold shadow-sm">
+                                <Button onClick={handleAddKnowledgeSource} className="bg-black text-white hover:bg-zinc-800 h-9 text-xs font-semibold shadow-sm">
                                     <Plus className="w-3.5 h-3.5 mr-1.5" /> Adicionar Fonte
                                 </Button>
                             </div>

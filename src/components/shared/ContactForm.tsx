@@ -94,7 +94,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
     ? "bg-black/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-revgreen focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium"
     : "bg-white border-zinc-200 text-black placeholder:text-zinc-300 focus:border-black focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium";
 
-  const labelStyles = "text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400";
+  const labelStyles = "text-xxs font-black uppercase tracking-[0.2em] text-zinc-400";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -208,7 +208,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
 
       <Button
         type="submit"
-        className={`w-full font-black h-14 rounded-none transition-all uppercase tracking-[0.2em] text-[10px] shadow-none ${variant === 'dark'
+        className={`w-full font-black h-14 rounded-none transition-all uppercase tracking-[0.2em] text-xxs shadow-none ${variant === 'dark'
           ? "bg-revgreen text-black hover:bg-revgreen/90"
           : "bg-black text-white hover:bg-zinc-900 border border-black"
           }`}

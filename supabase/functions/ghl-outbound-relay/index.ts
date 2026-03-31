@@ -1,31 +1,32 @@
 // @ts-ignore - Supabase Deno environment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// @ts-ignore - Supabase Deno environment
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 /**
  * ghl-outbound-relay
  *
  * Centralized proxy for ALL outbound GoHighLevel webhook calls.
- * Replaces 12+ hardcoded GHL URLs scattered across the frontend bundle.
+ * Supports MULTI-TENANT: if organization_id is provided, looks up
+ * webhook URLs from organizations.settings before falling back to global secrets.
  *
  * WHY THIS EXISTS:
  *   - GHL webhook URLs in frontend bundle = anyone can POST to your GHL account
  *   - URL changes require frontend redeployment
  *   - No logging, no rate limiting, no validation on raw frontend calls
  *
- * NOW:
- *   - Frontend calls /ghl-outbound-relay with { eventType, payload }
- *   - This function routes to the correct GHL webhook via Supabase Secrets
- *   - GHL URLs never appear in the JS bundle
+ * MULTI-TENANT FLOW:
+ *   1. Frontend sends { eventType, payload, organizationId? }
+ *   2. If organizationId provided, lookup organizations.settings.ghl_webhooks[eventType]
+ *   3. If no org URL found, fall back to global Supabase Secrets
+ *   4. GHL URLs never appear in the JS bundle
  *
- * Supabase Secrets required:
- *   GHL_WEBHOOK_REI          → webhook for REI/kickoff completions
- *   GHL_WEBHOOK_CONTACT      → webhook for contact forms, newsletter, ROI calc
- *   GHL_WEBHOOK_SCORE        → webhook for score pages (Growth, Site, Revenue, Founder)
- *   GHL_WEBHOOK_DOWNLOAD     → webhook for material downloads
- *   GHL_WEBHOOK_EMAIL        → webhook for email material delivery
- *
- * Migration from frontend: replace every hardcoded fetch('https://services.leadconnectorhq.com/...')
- * with a call to sendToGHL(eventType, payload) from src/lib/ghlRelay.ts
+ * Supabase Secrets (global fallback - RevHackers subconta):
+ *   GHL_WEBHOOK_REI          - webhook for REI/kickoff completions
+ *   GHL_WEBHOOK_CONTACT      - webhook for contact forms, newsletter, ROI calc
+ *   GHL_WEBHOOK_SCORE        - webhook for score pages (Growth, Site, Revenue, Founder)
+ *   GHL_WEBHOOK_DOWNLOAD     - webhook for material downloads
+ *   GHL_WEBHOOK_EMAIL        - webhook for email material delivery
  */
 
 const corsHeaders = {
@@ -64,9 +65,18 @@ serve(async (req: Request) => {
         return new Response('ok', { headers: corsHeaders });
     }
 
+    // @ts-ignore
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
     try {
         const body = await req.json();
-        const { eventType, payload } = body as { eventType: string; payload: Record<string, unknown> };
+        const { eventType, payload, organizationId } = body as {
+            eventType: string;
+            payload: Record<string, unknown>;
+            organizationId?: string;
+        };
 
         // Validate event type
         if (!eventType || !ALLOWED_EVENT_TYPES.includes(eventType as EventType)) {
@@ -88,15 +98,54 @@ serve(async (req: Request) => {
             });
         }
 
-        // Resolve GHL webhook URL from Secrets
-        const secretName = EVENT_TO_SECRET[eventType as EventType];
-        // @ts-ignore
-        const ghlUrl = Deno.env.get(secretName);
+        // -- MULTI-TENANT: Try org-specific webhook URL first --
+        let ghlUrl: string | null = null;
+        let resolvedVia = 'none';
+
+        // Map event types to settings keys in organizations.settings.ghl_webhooks
+        const EVENT_TO_SETTINGS_KEY: Record<EventType, string> = {
+            rei_completed:   'rei',
+            contact_form:    'contact',
+            newsletter:      'contact',
+            roi_calculator:  'contact',
+            score_captured:  'score',
+            lead_capture:    'score',
+            download:        'download',
+            email_material:  'email',
+        };
+
+        if (organizationId) {
+            const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+                auth: { autoRefreshToken: false, persistSession: false }
+            });
+
+            const { data: org } = await supabase
+                .from('organizations')
+                .select('settings')
+                .eq('id', organizationId)
+                .single();
+
+            const settingsKey = EVENT_TO_SETTINGS_KEY[eventType as EventType];
+            const orgUrl = org?.settings?.ghl_webhooks?.[settingsKey];
+
+            if (orgUrl) {
+                ghlUrl = orgUrl;
+                resolvedVia = `org:${organizationId}`;
+                console.log(`[ghl-outbound-relay] Resolved URL from org settings (${settingsKey})`);
+            }
+        }
+
+        // Fallback: global Supabase Secrets (RevHackers subconta)
+        if (!ghlUrl) {
+            const secretName = EVENT_TO_SECRET[eventType as EventType];
+            // @ts-ignore
+            ghlUrl = Deno.env.get(secretName) || null;
+            if (ghlUrl) resolvedVia = `secret:${secretName}`;
+        }
 
         if (!ghlUrl) {
-            console.warn(`[ghl-outbound-relay] Secret ${secretName} not configured. Event ${eventType} dropped.`);
-            // Return 200 to avoid frontend errors - GHL is non-critical (CRM enrichment, not core flow)
-            return new Response(JSON.stringify({ success: false, reason: `${secretName} nao configurado nos Supabase Secrets` }), {
+            console.warn(`[ghl-outbound-relay] No URL found for ${eventType} (org: ${organizationId || 'none'}). Event dropped.`);
+            return new Response(JSON.stringify({ success: false, reason: 'Nenhuma URL de webhook configurada' }), {
                 status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         }
@@ -104,13 +153,13 @@ serve(async (req: Request) => {
         // Validate it's actually a GHL URL (security: don't allow SSRF via misconfigured secrets)
         const GHL_URL_PATTERN = /^https:\/\/services\.leadconnectorhq\.com\/hooks\//;
         if (!GHL_URL_PATTERN.test(ghlUrl)) {
-            console.error(`[ghl-outbound-relay] Secret ${secretName} contains invalid URL pattern`);
+            console.error(`[ghl-outbound-relay] ${resolvedVia} contains invalid URL pattern`);
             return new Response(JSON.stringify({ error: 'Configuracao de webhook invalida' }), {
                 status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         }
 
-        console.log(`[ghl-outbound-relay] Relaying ${eventType} to GHL via ${secretName}`);
+        console.log(`[ghl-outbound-relay] Relaying ${eventType} to GHL via ${resolvedVia}`);
 
         // Relay to GHL
         const ghlResponse = await fetch(ghlUrl, {

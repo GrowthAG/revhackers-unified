@@ -228,22 +228,66 @@ select:focus {
   box-shadow: 0 0 0 1px #03FC3B !important;
 }
 
-/* Print Optimization */
+/* Print Optimization & Full Page Non-Slicing Logic */
 @media print {
-  .no-print {
+  .no-print, .plan-edit-bar, header, footer, aside, nav, button {
     display: none !important;
   }
 
-  /* Reset background perfs for printing if needed */
-  body {
+  /* Reset layout for rendering */
+  body, html, #root {
+    height: auto !important;
+    overflow: visible !important;
     background: white !important;
-    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Ensure main content takes full width */
-  main {
+  /* Ensure full width and auto height on sections */
+  main, .plan-presentation {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Prevent random slices inside components */
+  .bg-white, .bg-zinc-50, .bg-zinc-950, .border, .rounded-xl, .rounded-2xl, .p-6, .p-8, p, li, img {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Keep headers glued to text */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-top: 1rem !important;
+  }
+
+  /* Convert Chrome page-breaking nightmares (Grid/Flex) to Blocks */
+  .flex-col, .grid {
+    display: block !important;
+  }
+
+  /* Simulate Grid gaps after converting to block */
+  .grid > div {
+    margin-bottom: 24px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  .grid > div:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  @page {
+    margin: 12mm 15mm;
+    size: A4 portrait;
   }
 }

@@ -15,7 +15,7 @@ const ObrigadoNPS = () => {
     <PageLayout>
       <section className="bg-background py-20 min-h-screen flex items-center">
         <div className="container-custom">
-          <Card className="max-w-3xl mx-auto border-border/20 bg-card/50 backdrop-blur-sm rounded-3xl shadow-soft p-12 text-center">
+          <Card className="max-w-3xl mx-auto border-border/20 bg-card/50 backdrop-blur-sm shadow-soft p-12 text-center">
             <div className="mb-8">
               <CheckCircle className="w-20 h-20 text-revgreen mx-auto mb-6 animate-scale-in" />
               
@@ -29,7 +29,7 @@ const ObrigadoNPS = () => {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 mb-10">
-              <div className="flex flex-col items-center p-4 rounded-xl bg-card/30 border border-border/10">
+              <div className="flex flex-col items-center p-4 bg-card/30 border border-border/10">
                 <Heart className="w-8 h-8 text-revgreen mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">Crescimento</h3>
                 <p className="text-sm text-muted-foreground text-center">
@@ -37,7 +37,7 @@ const ObrigadoNPS = () => {
                 </p>
               </div>
               
-              <div className="flex flex-col items-center p-4 rounded-xl bg-card/30 border border-border/10">
+              <div className="flex flex-col items-center p-4 bg-card/30 border border-border/10">
                 <Star className="w-8 h-8 text-revgreen mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">Excelência</h3>
                 <p className="text-sm text-muted-foreground text-center">
@@ -45,7 +45,7 @@ const ObrigadoNPS = () => {
                 </p>
               </div>
               
-              <div className="flex flex-col items-center p-4 rounded-xl bg-card/30 border border-border/10">
+              <div className="flex flex-col items-center p-4 bg-card/30 border border-border/10">
                 <CheckCircle className="w-8 h-8 text-revgreen mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">Compromisso</h3>
                 <p className="text-sm text-muted-foreground text-center">
