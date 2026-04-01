@@ -156,6 +156,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
 
+            // ── Invite Flow ─────────────────────────────────────────────────
+            // When a user clicks "Accept invite" in the email, Supabase fires SIGNED_IN
+            // with user_metadata.invited = true. We redirect to /reset-password so they
+            // can create their first password. UpdatePassword page clears this flag upon success.
+            if ((_event === 'SIGNED_IN' || _event === 'INITIAL_SESSION') && session?.user?.user_metadata?.invited === true) {
+                if (window.location.pathname !== '/reset-password') {
+                    setIsRecoveringPassword(true);
+                    navigate('/reset-password', { replace: true, state: { fromInvite: true } });
+                }
+            }
+
             // Garantir que carregamento inicial termine
             setIsLoading(false);
         });
@@ -254,6 +265,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const updatePromise = (async () => {
                 const { data, error } = await supabase.auth.updateUser({
                     password,
+                    data: { invited: null }
                 });
                 if (error) throw error;
                 return { data, error: null };

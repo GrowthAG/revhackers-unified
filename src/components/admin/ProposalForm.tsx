@@ -1238,46 +1238,6 @@ Modelo de JSON Exato a ser retornado:
                             />
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-tiny font-bold uppercase tracking-wider text-zinc-400">Mapa Mental (Embed)</Label>
-                                <a
-                                    href="https://whimsical.com/mind-maps"
-                                    target="_blank"
-                                    rel="noopener"
-                                    className="text-xxs text-zinc-700 hover:underline flex items-center gap-1"
-                                >
-                                    <ExternalLink className="w-3 h-3" />
-                                    Criar no Whimsical
-                                </a>
-                            </div>
-
-                            <Input
-                                {...register('mindmap_code')}
-                                className="font-mono text-xs bg-white border-zinc-200"
-                                placeholder="https://whimsical.com/embed/..."
-                            />
-
-                            <p className="text-xxs text-zinc-400 leading-relaxed">
-                                1. Crie um mapa mental no <strong>Whimsical</strong> (use a IA deles para gerar)<br />
-                                2. Clique em <strong>Share → Embed</strong><br />
-                                3. Cole a URL de embed aqui
-                            </p>
-
-                            {/* Preview if URL exists */}
-                            {watch('mindmap_code') && watch('mindmap_code').includes('http') && (
-                                <div className="w-full aspect-video bg-white border border-zinc-100 overflow-hidden">
-                                    <iframe
-                                        src={watch('mindmap_code')}
-                                        className="w-full h-full border-none"
-                                        sandbox="allow-scripts"
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer"
-                                        title="Mapa Mental"
-                                    />
-                                </div>
-                            )}
-                        </div>
 
                         <div className="space-y-4 pt-8 border-t border-zinc-100/50">
                             <div className="flex items-start justify-between">

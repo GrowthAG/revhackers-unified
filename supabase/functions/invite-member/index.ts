@@ -31,15 +31,23 @@ serve(async (req) => {
             }
         );
 
-        console.log(`[INVITE-MEMBER] Disparando Link Magico via API do Supabase Admin para: ${email}`);
+        console.log(`[INVITE-MEMBER] Disparando convite via Supabase Admin para: ${email}`);
+
+        // ── Determine redirect URL ──────────────────────────────────────────
+        // Priority: 1) caller-supplied redirectTo, 2) env var, 3) safe prod default
+        // NOTE: This URL must be in the Supabase allowlist (Authentication → URL Configuration)
+        const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://revhackers.com.br';
+        const finalRedirectTo = redirectTo || `${siteUrl}/reset-password`;
+
+        console.log(`[INVITE-MEMBER] redirectTo final: ${finalRedirectTo}`);
 
         // Generate Invite Link (Admin Auth Route)
         const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
             data: { 
                 role: role || 'user',
-                invited: true
+                invited: true  // Flag used by the frontend to show "Create password" copy
             },
-            redirectTo: redirectTo || `${Deno.env.get('PUBLIC_SITE_URL') || 'http://localhost:5173'}/auth/reset-password`
+            redirectTo: finalRedirectTo
         });
 
         if (error) {
@@ -47,9 +55,7 @@ serve(async (req) => {
             throw error;
         }
 
-        // O Frontend já está gravando na tabela invitations internamente.
-        // Mas a porta de segurança do provedor de Auth é quem envia o e-mail real.
-        console.log(`[INVITE-MEMBER] E-mail despachado para ${email}.`);
+        console.log(`[INVITE-MEMBER] E-mail de convite despachado para ${email}.`);
 
         return new Response(
             JSON.stringify({ 

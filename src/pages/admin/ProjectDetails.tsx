@@ -71,6 +71,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { QRCodeSVG } from 'qrcode.react';
+import { supabase } from '@/integrations/supabase/client';
 import { getReiProjectById } from '@/api/reiProjects';
 import type { ReiProject } from '@/api/reiProjects';
 import OrchestratedOnboarding from '@/pages/admin/OrchestratedOnboarding';
@@ -582,6 +583,7 @@ const ProjectDetails = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const { toast } = useToast();
     const [project, setProject] = useState<ReiProject | null>(null);
+    const [strategicPlanInfo, setStrategicPlanInfo] = useState<{ id: string, access_token: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [advancing, setAdvancing] = useState(false);
     const [stageHistory, setStageHistory] = useState<StageChangeEvent[]>([]);
@@ -637,6 +639,24 @@ const ProjectDetails = () => {
                 return;
             }
             setProject(data);
+
+            // Tenta buscar se existe um planejamento estratégico gerado
+            try {
+                const { data: planData } = await supabase
+                    .from('strategic_plans')
+                    .select('id, access_token')
+                    .eq('rei_project_id', id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (planData) {
+                    setStrategicPlanInfo(planData);
+                }
+            } catch (planErr) {
+                console.error("Error fetching strategic plan:", planErr);
+            }
+
         } catch (error) {
             console.error(error);
         } finally {
@@ -789,7 +809,7 @@ const ProjectDetails = () => {
 
                         <div className="w-px h-6 bg-zinc-200 mx-1" />
 
-                        {stageCategory === 'execucao' && (
+                        {stageCategory === 'execucao' && !strategicPlanInfo && (
                             <Button
                                 variant="default"
                                 size="sm"
@@ -799,6 +819,29 @@ const ProjectDetails = () => {
                             >
                                 <Sparkles size={12} className="mr-2" /> Planejamento IA
                             </Button>
+                        )}
+                        
+                        {stageCategory === 'execucao' && strategicPlanInfo && (
+                            <div className="flex gap-2 items-center">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(`/plan/${strategicPlanInfo.access_token}?edit=1`, '_blank')}
+                                    className="text-xxs font-bold uppercase tracking-widest rounded-none border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 transition-all font-mono shadow-sm"
+                                >
+                                    <Map size={12} className="mr-2" />
+                                    Ver Planejamento
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => navigate(`/admin/planejamento/${project.id}`)}
+                                    className="text-xxs font-bold uppercase tracking-widest rounded-none border border-zinc-200 bg-transparent text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 transition-all px-2"
+                                    title="Editar ou Regerar o plano com IA"
+                                >
+                                    <Sparkles size={12} />
+                                </Button>
+                            </div>
                         )}
 
                         <Dialog>

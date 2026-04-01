@@ -26,7 +26,7 @@ export default function ArchitectureSection({ proposal }: { proposal: any }) {
     };
 
     return (
-        <section className="w-full min-h-[100dvh] flex flex-col items-center bg-black p-8 lg:p-12 pt-16 pb-[200px] lg:pb-[200px] relative overflow-hidden">
+        <section className="w-full min-h-[100dvh] flex flex-col justify-center items-center bg-black p-8 lg:p-12 pt-16 pb-[150px] lg:pb-[150px] relative overflow-hidden">
             {/* Background elements */}
             <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none" />
             

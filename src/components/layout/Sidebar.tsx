@@ -148,7 +148,7 @@ const Sidebar = ({ isOpen, toggle }: SidebarProps) => {
 
             <div className="p-4 border-t border-zinc-900 space-y-2">
                 <Link
-                    to="/admin/settings"
+                    to="/admin/profile"
                     className="flex items-center gap-3 px-3 py-2 text-zinc-400 hover:text-white transition-all"
                 >
                     <Settings size={14} strokeWidth={1.5} />

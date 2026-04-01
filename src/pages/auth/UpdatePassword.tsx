@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,8 @@ const UpdatePassword = () => {
 
     const { updatePassword, setIsRecoveringPassword } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const fromInvite = (location.state as any)?.fromInvite === true;
 
     useEffect(() => {
         const checkSession = async () => {
@@ -53,7 +55,8 @@ const UpdatePassword = () => {
                 setIsRecoveringPassword(false); // Libera o fluxo de redirecionamento normal
                 setSuccess(true);
                 setTimeout(() => {
-                    navigate('/login');
+                    // Invite users are already authenticated — send to hub
+                    navigate(fromInvite ? '/admin' : '/login');
                 }, 2000);
             }
         } catch (err: any) {
@@ -69,10 +72,12 @@ const UpdatePassword = () => {
                     {/* Header Section */}
                     <div className="flex flex-col items-center mb-10">
                         <h1 className="text-2xl font-black tracking-[0.2em] text-black uppercase text-center leading-none mb-4 mt-8">
-                            Nova Senha
+                            {fromInvite ? 'Ative Seu Acesso' : 'Nova Senha'}
                         </h1>
                         <p className="text-zinc-500 text-xxs uppercase tracking-[0.2em] font-bold text-center max-w-[280px] mx-auto leading-relaxed">
-                            Defina uma nova senha para sua conta.
+                            {fromInvite
+                                ? 'Bem-vindo à RevHackers. Crie sua senha para acessar o Hub.'
+                                : 'Defina uma nova senha para sua conta.'}
                         </p>
                     </div>
 
@@ -81,9 +86,11 @@ const UpdatePassword = () => {
                             <div className="w-10 h-10 bg-black text-white flex items-center justify-center mx-auto mb-6 rounded-none">
                                 <CheckCircle className="w-5 h-5" />
                             </div>
-                            <h3 className="text-black font-black uppercase tracking-widest text-xs mb-4">Senha Atualizada</h3>
+                            <h3 className="text-black font-black uppercase tracking-widest text-xs mb-4">
+                                {fromInvite ? 'Acesso Ativado' : 'Senha Atualizada'}
+                            </h3>
                             <p className="text-zinc-500 text-xxs uppercase tracking-widest mb-4 leading-relaxed">
-                                Redirecionando para o login...
+                                {fromInvite ? 'Redirecionando para o Hub...' : 'Redirecionando para o login...'}
                             </p>
                         </div>
                     ) : (
@@ -124,7 +131,7 @@ const UpdatePassword = () => {
                                 className="w-full bg-black text-white hover:bg-zinc-800 h-12 font-black text-xs tracking-[0.3em] uppercase rounded-none border-none transition-all mt-4"
                                 disabled={loading}
                             >
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar Senha"}
+                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (fromInvite ? 'Ativar Acesso' : 'Atualizar Senha')}
                             </Button>
                         </form>
                     )}

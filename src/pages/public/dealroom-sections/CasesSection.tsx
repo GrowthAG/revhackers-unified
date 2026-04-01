@@ -4,9 +4,9 @@ import { TrendingUp, ArrowDownRight, ArrowUpRight } from 'lucide-react';
 
 export default function CasesSection({ proposal }: { proposal: any }) {
     const liveData = proposal?.crm_data?.live_proposal || {};
-    
+
     const defaultCases = [
-        { 
+        {
             company: 'ENICS (Tecnologia & Eventos)',
             metric: 'Venda Rápida (30 Dias)',
             before: 'Estagnada',
@@ -14,7 +14,7 @@ export default function CasesSection({ proposal }: { proposal: any }) {
             trend: 'up',
             insight: 'Motor de remarketing dinâmico multicanal cruzando Meta, Google e Whatsapp.'
         },
-        { 
+        {
             company: 'Universidade Cruzeiro do Sul',
             metric: 'Volume Multidisciplinar',
             before: 'Fricção Alta',
@@ -22,7 +22,7 @@ export default function CasesSection({ proposal }: { proposal: any }) {
             trend: 'up',
             insight: 'Integração de canais e arquitetura de funis unificando o ataque em nível nacional.'
         },
-        { 
+        {
             company: 'Wysion (Tecnologia & SaaS)',
             metric: 'Fechamento de Negócios (Sales)',
             before: '14 Dias',
@@ -36,7 +36,7 @@ export default function CasesSection({ proposal }: { proposal: any }) {
 
     return (
         <section className="w-full min-h-[100dvh] flex flex-col items-center bg-zinc-950 p-8 lg:p-12 pt-16 pb-[200px] lg:pb-[200px] relative overflow-hidden border-t-8 border-[#00CC6A]">
-            
+
             <div className="absolute top-20 left-10 opacity-[0.03]">
                 <TrendingUp className="w-[800px] h-[800px] text-white" />
             </div>
@@ -56,7 +56,7 @@ export default function CasesSection({ proposal }: { proposal: any }) {
                     {cases.map((c: any, i: number) => (
                         <div key={i} className="bg-black border border-zinc-800 p-8 rounded-xl shadow-2xl relative overflow-hidden group hover:border-zinc-600 transition-colors">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00CC6A]/5 rounded-full blur-[40px] group-hover:bg-[#00CC6A]/10 transition-colors" />
-                            
+
                             <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] mb-8 border-b border-zinc-900 pb-2">
                                 <EditableField path={`crm_data.live_proposal.cases.${i}.company`} placeholder="Nome do Cliente" />
                             </h3>

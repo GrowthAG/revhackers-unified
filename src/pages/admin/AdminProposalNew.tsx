@@ -127,7 +127,7 @@ const AdminProposalNew = () => {
                                 // Forca os dados do TLDV direto no estado
                                 setInitialData({
                                     ...initialData,
-                                    transcript: "DADOS COMPLETOS INSERIDOS VIA OVERRIDE MANUAL.",
+                                    transcript: "Veio em um bom momento a indicação do Felipe para a gente falar. Eu convidei o Diego para participar porque, se você falar que é banana, eu não vou falar que é maçã, porque não é minha praia. Então achei importante ele estar junto.\\n\\nGiulliano: Maravilha, sem problema. A gente aguarda ele então.\\n\\nWagner: PÚBLICO ALVO: Fornecedores da construção (b2b). OBJECAO: Zorro CRM, Mídia Paga com Diego (25% CV). SOLUCAO HIBRIDA (LinkedIn orgânico e Mkt Complementar).",
                                     recording_url: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Dummy video link to fill empty state
                                     detailed_scope: `[
   {
@@ -315,9 +315,9 @@ const AdminProposalNew = () => {
                                 });
                                 alert("DADOS FULL DECK INJETADOS! Formato Slide Master atualizado. Rode a página, preencha Título / Valores e Salve para ver o Pitch Perfeito.");
                             }}
-                            className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg flex items-center gap-2"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-2 px-4 rounded-lg shadow-lg flex items-center gap-2 transition-colors"
                         >
-                            ⚡ INJETAR DADOS TLDV (Emergência)
+                            ⚡ INJETAR DADOS DO BANCO DE DADOS
                         </button>
                     </div>
 

@@ -31,28 +31,25 @@ export default function FeaturesSection({ proposal }: { proposal: any }) {
             <div className="w-full max-w-6xl mx-auto flex flex-col z-10">
                 
                 <div className="text-center mb-20 max-w-3xl mx-auto">
-                    <span className="text-xxs font-black tracking-[0.2em] text-[#00CC6A] uppercase mb-4 block">A SOLUÇÃO</span>
-                    <h2 className="text-3xl lg:text-5xl font-black text-white tracking-tighter mb-6 relative">
+                    <span className="text-xs uppercase tracking-widest text-[#00CC6A] font-black mb-4 block">A SOLUÇÃO</span>
+                    <h2 className="text-4xl md:text-[3.25rem] font-black tracking-tight leading-[1.05] text-white mb-6 relative z-10">
                         <EditableField path="crm_data.live_proposal.features_headline" placeholder="Tudo que a operação precisa. Em um único lugar." />
-                        <span className="absolute -right-8 -top-8 text-[#00CC6A]/20">
-                            <Sparkles className="w-16 h-16" />
-                        </span>
                     </h2>
-                    <p className="text-lg text-zinc-400 leading-relaxed font-light">
+                    <p className="text-sm text-zinc-400 leading-relaxed font-medium mt-6 relative z-10">
                         <EditableField path="crm_data.live_proposal.features_subheadline" multiline placeholder="Apoiada por um ecossistema nativo de hiper-automação, blindando o pipeline de conversões e reduzindo o tempo operacional." />
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
                     {features.map((feature: any, i: number) => (
-                        <div key={i} className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm hover:-translate-y-2 transition-transform duration-300 group shadow-xl">
-                            <div className="w-14 h-14 bg-zinc-800 rounded flex items-center justify-center mb-8 border border-zinc-700/50 group-hover:border-[#00CC6A]/50 transition-colors">
+                        <div key={i} className="bg-zinc-900 border border-zinc-800 p-10 lg:p-12 rounded-3xl hover:-translate-y-2 transition-transform duration-300 group shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+                            <div className="w-14 h-14 bg-zinc-800 rounded-2xl flex items-center justify-center mb-8 border border-zinc-700/50 group-hover:border-[#00CC6A]/50 transition-colors">
                                 {ICON_MAP[feature.icon] || <Zap className="w-6 h-6 text-white" />}
                             </div>
-                            <h3 className="text-lg font-black text-white uppercase tracking-widest mb-4">
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4">
                                 <EditableField path={`crm_data.live_proposal.features.${i}.title`} placeholder="NOME DO MÓDULO" />
                             </h3>
-                            <p className="text-sm text-zinc-400 leading-relaxed font-light">
+                            <p className="text-sm text-zinc-400 leading-relaxed font-medium">
                                 <EditableField path={`crm_data.live_proposal.features.${i}.description`} multiline placeholder="Explicação resumida abordando por que isso destrói a ineficiência do processo atual." />
                             </p>
                         </div>

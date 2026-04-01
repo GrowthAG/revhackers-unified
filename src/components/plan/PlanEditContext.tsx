@@ -61,7 +61,12 @@ export function PlanEditProvider({
     const [savedAt, setSavedAt] = useState<Date | null>(null);
 
     const getField = useCallback(
-        (path: string) => (path in pendingChanges ? pendingChanges[path] : getNestedValue(plan, path)),
+        (path: string) => {
+            if (path in pendingChanges) return pendingChanges[path];
+            const override = getNestedValue(plan?.manual_overrides, path);
+            if (override !== undefined && override !== null && override !== '') return override;
+            return getNestedValue(plan, path);
+        },
         [plan, pendingChanges]
     );
 
@@ -73,18 +78,17 @@ export function PlanEditProvider({
         if (!planId || Object.keys(pendingChanges).length === 0) return;
         setSaving(true);
         try {
-            let updated = { ...plan };
+            let updatedOverrides = { ...(plan.manual_overrides || {}) };
             for (const [path, value] of Object.entries(pendingChanges)) {
-                updated = setNestedValue(updated, path, value);
+                updatedOverrides = setNestedValue(updatedOverrides, path, value);
             }
-            const topKeys = new Set(Object.keys(pendingChanges).map(p => p.split('.')[0]));
-            const payload: Record<string, any> = {};
-            topKeys.forEach(k => { payload[k] = updated[k]; });
+
+            const payload = { manual_overrides: updatedOverrides };
 
             const { error } = await supabase.from((tableName || 'strategic_plans') as any).update(payload).eq('id', planId);
             if (error) throw error;
 
-            onPlanUpdate(updated);
+            onPlanUpdate({ ...plan, manual_overrides: updatedOverrides });
             setPendingChanges({});
             setSavedAt(new Date());
         } catch (err) {

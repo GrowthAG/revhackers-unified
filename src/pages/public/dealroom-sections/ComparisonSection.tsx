@@ -85,7 +85,7 @@ export default function ComparisonSection({ proposal }: { proposal: any }) {
                         <div className="mt-8 pt-6 border-t border-zinc-800">
                             <span className="block text-xs uppercase tracking-widest text-zinc-500 font-bold mb-1">Acesso à Plataforma All-in-One</span>
                             <div className="text-3xl font-black text-[#00CC6A] drop-shadow-[0_0_15px_rgba(0,204,106,0.3)]">
-                                Custo Zero
+                                <EditableField path="crm_data.live_proposal.platform_cost" placeholder="Custo Zero" />
                             </div>
                             <p className="text-xxs text-zinc-500 mt-2 font-light">As licenças são cobertas 100% pelo Setup e Retainer do nosso serviço premium de inteligência. Sem surpresas.</p>
                         </div>

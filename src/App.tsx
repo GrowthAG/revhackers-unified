@@ -117,7 +117,7 @@ const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
 const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
 const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
 const OrchestratedOnboarding = lazy(() => import("./pages/admin/OrchestratedOnboarding"));
-const LiveStrategicPlan = lazy(() => import("./pages/admin/LiveStrategicPlan"));
+
 const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
 const KnowledgeDocument = lazy(() => import("./pages/admin/KnowledgeDocument"));
@@ -244,11 +244,10 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
               <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
-              <Route path="/admin/strategic-plan/:projectId" element={<ProtectedRoute><LiveStrategicPlan /></ProtectedRoute>} />
 
               <Route path="/admin/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
-              <Route path="/admin/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<Navigate to="/admin/profile" replace />} />
 
               {/* Admin - Clients */}
               <Route path="/admin/clients" element={<ProtectedRoute><AdminClients /></ProtectedRoute>} />
