@@ -6,6 +6,7 @@ interface BookingPageProps {
     title: string;
     subtitle?: string;
     iframeSrc: string;
+    iframeId?: string;
     label?: string;
     avatarSrc?: string;
     showLogoHeadline?: boolean;
@@ -15,6 +16,7 @@ const BookingPageTemplate = ({
     title,
     subtitle = "Selecione o melhor horário abaixo para falarmos sobre o crescimento da sua empresa.",
     iframeSrc,
+    iframeId,
     label = "Próxima Etapa",
     avatarSrc,
     showLogoHeadline = false,
@@ -66,7 +68,7 @@ const BookingPageTemplate = ({
                                 </h1>
                             </>
                         ) : (
-                            <h1 className="text-3xl md:text-5xl font-semibold text-zinc-900 mb-6 tracking-tighter text-balance uppercase leading-none">
+                            <h1 className="text-3xl md:text-5xl font-black text-zinc-900 mb-6 tracking-tighter text-balance uppercase leading-none">
                                 {title}
                             </h1>
                         )}
@@ -79,6 +81,7 @@ const BookingPageTemplate = ({
                     <div className="bg-white overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-sm shadow-zinc-100/50">
                         <iframe
                             src={iframeSrc}
+                            id={iframeId}
                             style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
                             scrolling="no"
                         />

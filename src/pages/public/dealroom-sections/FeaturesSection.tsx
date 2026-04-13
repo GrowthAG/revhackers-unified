@@ -1,12 +1,12 @@
 import React from 'react';
 import { EditableField } from '@/components/plan/PlanEditContext';
-import { Layers, Bot, MessageSquareText, ShieldAlert, Sparkles, Zap } from 'lucide-react';
+import { Layers, Bot, MessageSquareText, ShieldAlert, Cpu, Zap } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
     'Layers': <Layers className="w-6 h-6 text-white" />,
     'Bot': <Bot className="w-6 h-6 text-white" />,
     'MessageSquareText': <MessageSquareText className="w-6 h-6 text-white" />,
-    'Sparkles': <Sparkles className="w-6 h-6 text-white" />,
+    'Cpu': <Cpu className="w-6 h-6 text-white" />,
     'Zap': <Zap className="w-6 h-6 text-white" />
 };
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, ExternalLink, Copy, CheckCircle2 } from 'lucide-react';
+import { Loader2, Cpu, ExternalLink, Copy, CheckCircle2 } from 'lucide-react';
 import HealthScoreCard from './HealthScoreCard';
 import SuccessMilestones from './SuccessMilestones';
 import RiskMitigationPanel from './RiskMitigationPanel';
@@ -95,8 +95,8 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
     if (!plan) {
         return (
             <div className="border-2 border-dashed border-zinc-200 py-16 text-center">
-                <Sparkles className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
-                <h3 className="text-lg font-black text-zinc-900 mb-2">Nenhum Success Plan encontrado</h3>
+                <Cpu className="w-8 h-8 text-black mx-auto mb-3" />
+                <h3 className="text-lg font-black text-black uppercase tracking-tight mb-2">Nenhum Success Plan Encontrado</h3>
                 <p className="text-sm text-zinc-500 mb-6 max-w-md mx-auto">
                     O Success Plan e criado automaticamente quando uma oportunidade e convertida em projeto.
                     Voce pode gerar um manualmente agora.
@@ -109,7 +109,7 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                     {generating ? (
                         <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Gerando com AI...</>
                     ) : (
-                        <><Sparkles className="w-4 h-4 mr-2" /> Gerar Success Plan</>
+                        <><Cpu className="w-4 h-4 mr-2" /> Gerar Success Plan</>
                     )}
                 </Button>
             </div>
@@ -170,7 +170,7 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                         {generating ? (
                             <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> Gerando...</>
                         ) : (
-                            <><Sparkles className="w-3.5 h-3.5 mr-1.5" /> {isPending ? 'Gerar com AI' : 'Regenerar'}</>
+                            <><Cpu className="w-3.5 h-3.5 mr-1.5" /> {isPending ? 'Gerar com Hardware AI' : 'Regenerar Processamento'}</>
                         )}
                     </Button>
                 </div>
@@ -179,8 +179,8 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
             {/* Pending state */}
             {isPending && (
                 <div className="bg-zinc-50 border border-zinc-200 p-8 text-center">
-                    <Sparkles className="w-6 h-6 text-zinc-400 mx-auto mb-3" />
-                    <h3 className="text-sm font-black text-zinc-900 mb-1">Aguardando Geracao</h3>
+                    <Cpu className="w-6 h-6 text-black mx-auto mb-3" />
+                    <h3 className="text-sm font-black text-black uppercase tracking-widest mb-1">Aguardando Hardware</h3>
                     <p className="text-xs text-zinc-500 mb-4">
                         O success plan foi criado mas os criterios de sucesso ainda nao foram gerados pela AI.
                     </p>
@@ -189,7 +189,7 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                         disabled={generating}
                         className="bg-zinc-900 text-white hover:bg-zinc-800 font-bold uppercase tracking-widest text-xs h-9 px-5"
                     >
-                        {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                        {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Cpu className="w-4 h-4 mr-2" />}
                         Gerar Agora
                     </Button>
                 </div>

@@ -359,7 +359,7 @@ export default function PublicDealRoom() {
     if (!proposal) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-white flex-col gap-4">
-                <h1 className="text-xl font-semibold text-zinc-900 tracking-tight">Página não encontrada</h1>
+                <h1 className="text-xl font-black text-zinc-900 tracking-tight">Página não encontrada</h1>
                 <p className="text-sm text-zinc-500">O link pode ter expirado ou estar incorreto.</p>
             </div>
         )
@@ -393,7 +393,7 @@ export default function PublicDealRoom() {
                                 <span className="h-[1px] w-8 bg-zinc-300"></span>
                             </div>
 
-                            <h1 className="text-3xl lg:text-5xl font-semibold tracking-tighter text-zinc-900 leading-[1.1] text-balance">
+                            <h1 className="text-3xl lg:text-5xl font-black tracking-tighter text-zinc-900 leading-[1.1] text-balance">
                                 {proposal.title || proposal.headline || `Proposta de Implementação RevHackers X ${proposal?.client_name}`}
                             </h1>
 
@@ -472,7 +472,7 @@ export default function PublicDealRoom() {
                             <div className="absolute top-0 left-0 w-1 h-full bg-zinc-900" />
                             <div className="flex items-center gap-3 border-b border-zinc-100 pb-6 mb-8">
                                 <FileText className="w-5 h-5 text-zinc-400" />
-                                <h2 className="text-xl font-semibold text-zinc-900 tracking-tight">Resumo Executivo & Escopo</h2>
+                                <h2 className="text-xl font-black text-zinc-900 tracking-tight">Resumo Executivo & Escopo</h2>
                             </div>
                             <div className="prose prose-zinc max-w-none prose-headings:font-bold prose-h3:text-lg prose-p:text-zinc-600 prose-li:text-zinc-600 prose-strong:text-zinc-900 prose-a:text-zinc-900">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -540,7 +540,7 @@ export default function PublicDealRoom() {
                     {proposal.detailed_scope && (
                         <section id="roadmap" className="max-w-5xl mx-auto pt-8 space-y-12">
                             <div className="text-center space-y-4">
-                                <h3 className="text-3xl font-semibold text-zinc-900 tracking-tighter">Roadmap de Execução</h3>
+                                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter">Roadmap de Execução</h3>
                                 <p className="text-zinc-500 max-w-lg mx-auto text-sm">
                                     O detalhamento técnico das fases, entregáveis e objetivos estratégicos do projeto.
                                 </p>
@@ -555,7 +555,7 @@ export default function PublicDealRoom() {
                     <section className="pt-16 pb-8 border-t border-zinc-100/50 print:hidden">
                         <div className="flex items-center gap-3 border-b border-zinc-100 pb-4 mb-8">
                             <Quote className="w-5 h-5 text-zinc-400" />
-                            <h2 className="text-xl font-semibold text-zinc-900 tracking-tight">O que dizem sobre nós</h2>
+                            <h2 className="text-xl font-black text-zinc-900 tracking-tight">O que dizem sobre nós</h2>
                         </div>
 
                         <div ref={testimonialsRef} className="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent px-1">
@@ -594,7 +594,7 @@ export default function PublicDealRoom() {
                             {/* LEFT: Assinatura Digital (Substitui o Calendar) */}
                             <div className="lg:col-span-8 order-2 lg:order-1 flex flex-col space-y-5">
                                 <div className="h-20 flex flex-col justify-end">
-                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Formalização do Acordo</h2>
+                                    <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest leading-none">Formalização do Acordo</h2>
                                     <p className="text-mini text-zinc-500 mt-2.5 leading-relaxed">Assinatura eletrônica e liberação imediata do espaço de trabalho.</p>
                                 </div>
                                 <div className="flex-grow">
@@ -696,7 +696,7 @@ export default function PublicDealRoom() {
                             {/* RIGHT: Pricing */}
                             <div className="lg:col-span-4 order-1 lg:order-2 flex flex-col space-y-5">
                                 <div className="h-20 flex flex-col justify-end">
-                                    <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-widest leading-none">Proposta Comercial</h2>
+                                    <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest leading-none">Proposta Comercial</h2>
                                     <p className="text-mini text-zinc-500 mt-2.5 leading-relaxed">Valores e condições de investimento</p>
                                 </div>
                                 <div className="flex-grow flex flex-col bg-white rounded-[4px] border border-zinc-200 overflow-hidden shadow-sm">
@@ -705,7 +705,7 @@ export default function PublicDealRoom() {
                                         {/* SERVIÇOS */}
                                         <div className="p-8">
                                             <div className="flex justify-between items-start mb-4">
-                                                <h3 className="text-xs font-semibold text-zinc-900 uppercase tracking-widest">Serviços RevHackers</h3>
+                                                <h3 className="text-xs font-black text-zinc-900 uppercase tracking-widest">Serviços RevHackers</h3>
                                                 <span className="text-xxs text-zinc-500 bg-zinc-100 px-2 py-1 rounded">
                                                     {proposal.crm_data?.project_duration ? `${proposal.crm_data.project_duration} Meses` : '8 Semanas'}
                                                 </span>
@@ -759,7 +759,7 @@ export default function PublicDealRoom() {
 
                                             return (
                                                 <div className="p-8 border-t border-zinc-100 flex-grow flex flex-col">
-                                                    <h3 className="text-xs font-semibold text-zinc-900 uppercase tracking-widest mb-4">Plataforma Funnels</h3>
+                                                    <h3 className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-4">Plataforma Funnels</h3>
 
                                                     <div className="space-y-3 mb-5">
                                                         <div className="flex justify-between items-center">

@@ -3,6 +3,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import Section from '@/components/ui/Section';
 import { ArrowRight, BarChart2, Globe, TrendingUp, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '@/components/shared/SEO';
 
 const DiagnosticoGateway = () => {
   const navigate = useNavigate();
@@ -11,28 +12,24 @@ const DiagnosticoGateway = () => {
     {
       id: 'growth',
       title: 'Diagnóstico 360',
-      description: 'Visão Holística: Produto, Operação, Aquisição e Retenção para encontrar o gargalo da sua empresa.',
       icon: TrendingUp,
       path: '/score',
     },
     {
       id: 'revenue',
       title: 'Diagnóstico CRM',
-      description: 'Deep Dive em Vendas: RevOps, Pipeline, Ferramentas e Processo Comercial.',
       icon: BarChart2,
       path: '/score-revenue',
     },
     {
       id: 'founder',
-      title: 'Diagnóstico Founder',
-      description: 'Como a sua autoridade e dependência operacional afetam o crescimento.',
+      title: 'Diagnóstico do Fundador',
       icon: User,
       path: '/score-founder',
     },
     {
       id: 'site',
-      title: 'Diagnóstico Site',
-      description: 'Auditoria técnica de Infraestrutura, Vitals, Conversão e Tracking.',
+      title: 'Diagnóstico Site / LP',
       icon: Globe,
       path: '/score-site',
     },
@@ -40,15 +37,16 @@ const DiagnosticoGateway = () => {
 
   return (
     <PageLayout>
+      <SEO title="Diagnóstico 360" description="Descubra onde estão os vazamentos na sua operação B2B com diagnósticos gratuitos de Growth, CRM, Founder e Site." canonical="https://revhackers.com.br/diagnostico" />
       <Section variant="light" className="py-24 md:py-32 bg-white min-h-[90vh] flex flex-col justify-center">
         <div className="container-custom max-w-5xl">
 
           <div className="text-center mb-20">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black tracking-tight mb-6">
-              Selecione seu <span className="text-zinc-400">Protocolo</span>
+            <h1 className="text-4xl md:text-5xl lg:text-5xl font-black text-black tracking-tight mb-6 uppercase">
+              Descubra onde o seu <span className="text-revgreen bg-revgreen/10 px-2 py-1 mx-2">caixa vaza</span>
             </h1>
-            <p className="text-xl text-zinc-500 font-light max-w-2xl mx-auto leading-relaxed">
-              Nossa inteligência artificial analisa diferentes dimensões do seu negócio. Escolha por onde começar a otimização.
+            <p className="text-xl text-zinc-500 font-medium max-w-3xl mx-auto leading-relaxed">
+              Responda a perguntas hiper-qualificadas sobre sua estrutura em 1 minuto. Nossa IA calcula o seu gargalo principal e como a ineficiência técnica sabota suas metas.
             </p>
           </div>
 
@@ -67,13 +65,9 @@ const DiagnosticoGateway = () => {
                   <diag.icon className="w-8 h-8 text-black" strokeWidth={1} />
                 </div>
 
-                <h3 className="text-2xl font-bold text-black mb-3 group-hover:translate-x-1 transition-transform duration-300">
+                <h3 className="text-2xl font-bold text-black group-hover:translate-x-1 transition-transform duration-300">
                   {diag.title}
                 </h3>
-
-                <p className="text-zinc-500 font-light leading-relaxed group-hover:text-zinc-600 transition-colors">
-                  {diag.description}
-                </p>
               </div>
             ))}
           </div>

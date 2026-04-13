@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { submitPublicDiagnostic } from "@/api/publicDiagnostic";
 import { analyzeFounderProfileAI, FounderAnalysisResult } from "@/api/founderAnalysis";
-import { Brain, ArrowRight, Target, Users, Linkedin, Loader2, AlertTriangle } from 'lucide-react';
+import { Brain, ArrowRight, Users, Loader2, AlertTriangle } from 'lucide-react';
 import { DiagnosticLayout } from '@/components/diagnostics/DiagnosticLayout';
 import { DiagnosticForm, DiagnosticFormData } from '@/components/diagnostics/DiagnosticForm';
 import { ScoreGauge } from '@/components/diagnostics/ScoreGauge';
@@ -13,6 +13,7 @@ import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActi
 import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
 import DiagnosticBookingEmbed from '@/components/diagnostics/DiagnosticBookingEmbed';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
+import SEO from '@/components/shared/SEO';
 
 // Questions centered on "Founder Authority & Bottleneck" - 4 dimensões, total = 100pts
 const QUESTIONS = [
@@ -87,21 +88,7 @@ const FounderScore = () => {
     const handleStartDiagnostic = (url: string) => {
         if (!url) return;
         setLinkedinUrl(url);
-
-        setIsAnalyzing(true);
-
-        // Simulation: "Scanning Profile..."
-        setTimeout(() => {
-            setIsAnalyzing(false);
-
-            toast({
-                className: "bg-zinc-900 border-zinc-800 text-white",
-                title: "PERFIL LOCALIZADO",
-                description: "Iniciando protocolo de diagnóstico de profundidade."
-            });
-
-            setStep('questions');
-        }, 2000);
+        setStep('questions');
     };
 
     const handleAnswer = (optionScore: number, optionIdx: number) => {
@@ -117,32 +104,12 @@ const FounderScore = () => {
 
         // Add visual delay for "Quiz Effect"
         setTimeout(() => {
+            setShowLog(false);
+            setSelectedOption(null);
             if (currentQ < QUESTIONS.length - 1) {
-                setShowLog(false);
-                setSelectedOption(null);
                 setCurrentQ(prev => prev + 1);
             } else {
-                // FINAL DO QUIZ: Acionar IA
-                setShowLog(false);
-                setIsAnalyzing(true);
-
-                // Chamada à API Gemini
-                analyzeFounderProfileAI(linkedinUrl, updatedAnswers, newScore)
-                    .then(result => {
-                        setAnalysisResult(result);
-                        setStep('results');
-
-                        toast({
-                            className: "bg-zinc-900 border-zinc-800 text-white",
-                            title: "ANÁLISE DE IA CONCLUÍDA",
-                            description: "Perfil comportamental gerado com sucesso."
-                        });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        setStep('results'); // Avança mesmo com erro (vai usar mock)
-                    })
-                    .finally(() => setIsAnalyzing(false));
+                setStep('results');
             }
         }, 1500);
     };
@@ -178,6 +145,17 @@ const FounderScore = () => {
                 title: "DIAGNÓSTICO PROCESSADO",
                 description: "Análise de perfil Founder gerada."
             });
+
+            setIsAnalyzing(true);
+            setStep('results');
+            
+            analyzeFounderProfileAI(linkedinUrl, answers, score)
+                .then(result => {
+                    setAnalysisResult(result);
+                })
+                .catch(err => console.error(err))
+                .finally(() => setIsAnalyzing(false));
+
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: "Erro", description: "Tente novamente." });
@@ -203,92 +181,63 @@ const FounderScore = () => {
 
     if (step === 'start') {
         return (
+            <>
+            <SEO
+                title="Diagnóstico Founder - Avalie sua Autoridade Digital B2B"
+                description="Descubra se você é um CEO Estrategista ou um Gargalo Operacional. Diagnóstico gratuito com análise de IA sobre autoridade, posicionamento e liderança."
+                canonical="https://revhackers.com.br/score-founder"
+                breadcrumbs={[
+                    { name: "Home", url: "https://revhackers.com.br/" },
+                    { name: "Diagnósticos", url: "https://revhackers.com.br/diagnostico" },
+                    { name: "Score Founder", url: "https://revhackers.com.br/score-founder" }
+                ]}
+            />
             <DiagnosticLayout
                 title="Diagnóstico Founder"
-                subtitle="Identifique se você é um CEO Estrategista ou um Gargalo Operacional."
+                subtitle="Analise e entenda como transformar o seu perfil do LinkedIn em um canal ativo de geracao de demanda"
                 showGovernanceFooter={false}
                 variant="light"
             >
-                <div className="max-w-4xl mx-auto flex flex-col items-center">
-                    <div className="bg-white border border-zinc-200 p-12 mb-8 relative overflow-hidden group w-full text-center hover:border-zinc-300 transition-colors shadow-sm">
-                        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none transition-transform group-hover:scale-105 duration-1000">
-                            <Brain className="w-64 h-64 text-black rotate-12" />
-                        </div>
-
-                        <div className="relative z-10 flex flex-col items-center max-w-2xl mx-auto">
-
-                            {/* LinkedIn Input Action Area */}
-                            <div className="mb-16 w-full">
-                                <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white group-hover:border-zinc-300 transition-colors overflow-hidden shadow-sm mb-4">
-                                    <span className="hidden md:flex items-center px-6 font-mono text-xs text-zinc-400 bg-zinc-50 border-r border-zinc-200 select-none gap-2">
-                                        <Linkedin className="w-4 h-4" />
-                                        linkedin.com/in/
-                                    </span>
-                                    <input
-                                        type="text"
-                                        value={linkedinUrl}
-                                        onChange={(e) => setLinkedinUrl(e.target.value)}
-                                        placeholder="seu-perfil"
-                                        className="flex-1 bg-transparent border-none text-black h-16 px-6 focus:ring-0 outline-none font-bold text-lg placeholder:text-zinc-300"
-                                    />
-                                    <button
-                                        onClick={() => handleStartDiagnostic(linkedinUrl)}
-                                        disabled={!linkedinUrl}
-                                        className="bg-black text-white px-8 h-16 font-bold text-xs tracking-wide hover:bg-zinc-800 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3 min-w-[140px]"
-                                    >
-                                        {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <>ANALISAR <ArrowRight className="w-3 h-3" /></>}
-                                    </button>
-                                </div>
-                                <p className="text-xxs uppercase tracking-widest text-zinc-400 font-mono">
-                                    *Usaremos IA para enriquecer seu perfil via Perplexity.
-                                    <span className="block mt-1 opacity-60">Perfis com alta privacidade podem sofrer restrições na coleta de dados biográficos.</span>
-                                </p>
-                            </div>
-
-                            {/* 3-Column Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full border-t border-zinc-100 pt-12">
-                                <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
-                                        <Brain className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">01 // Mindset</span>
-                                        <span className="text-sm font-bold text-zinc-900">Mentalidade de Escala</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
-                                        <Target className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">02 // Decision</span>
-                                        <span className="text-sm font-bold text-zinc-900">Tomada de Decisão</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col items-center justify-center gap-4 group/item">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-100 group-hover/item:border-black group-hover/item:bg-black group-hover/item:text-white transition-all duration-500">
-                                        <Users className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xxs font-mono font-black text-zinc-400 uppercase tracking-widest">03 // Leadership</span>
-                                        <span className="text-sm font-bold text-zinc-900">Gestão de Liderança</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                <div className="max-w-2xl mx-auto w-full">
+                    <div className="flex flex-col md:flex-row gap-0 w-full border border-zinc-200 bg-white overflow-hidden mb-3">
+                        <span className="hidden md:flex items-center px-5 font-mono text-xs text-zinc-400 bg-zinc-50 border-r border-zinc-200 select-none whitespace-nowrap">
+                            linkedin.com/in/
+                        </span>
+                        <input
+                            type="text"
+                            value={linkedinUrl}
+                            onChange={(e) => setLinkedinUrl(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleStartDiagnostic(linkedinUrl)}
+                            placeholder="seu-perfil"
+                            className="flex-1 bg-transparent border-none text-black h-14 px-5 focus:ring-0 outline-none font-bold text-base placeholder:text-zinc-300"
+                        />
+                        <button
+                            onClick={() => handleStartDiagnostic(linkedinUrl)}
+                            disabled={!linkedinUrl}
+                            className="bg-black text-white px-8 h-14 font-black text-xs tracking-widest uppercase hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center justify-center gap-2 whitespace-nowrap"
+                        >
+                            {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <>INICIAR <ArrowRight className="w-3 h-3" /></>}
+                        </button>
                     </div>
+                    <p className="text-xxs uppercase tracking-widest text-zinc-400 font-mono">
+                        Usaremos IA para analisar seu perfil. Perfis com alta privacidade podem ter coleta limitada.
+                    </p>
                 </div>
             </DiagnosticLayout>
+            </>
         );
     }
 
     return (
+        <>
+        <SEO
+            title="Diagnóstico Founder - Avalie sua Autoridade Digital B2B"
+            description="Descubra se você é um CEO Estrategista ou um Gargalo Operacional. Diagnóstico gratuito com análise de IA."
+            canonical="https://revhackers.com.br/score-founder"
+        />
         <DiagnosticLayout
             title={step === 'results' ? "" : "Diagnóstico Founder"}
-            subtitle={step === 'results' ? "" : "Diagnóstico de Autoridade & Posicionamento"}
+            subtitle={step === 'results' ? "" : "Analise e entenda como transformar o seu perfil do LinkedIn em um canal ativo de geracao de demanda"}
             variant={step === 'results' ? 'dark' : 'light'}
             centered={step === 'results'}
             hideHeader={step === 'results'}
@@ -297,10 +246,10 @@ const FounderScore = () => {
             {/* BACKDROP DE SEGURANÇA (Garante fundo preto total nos resultados) */}
             {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}
             {step === 'questions' && (
-                <div className="max-w-3xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center px-4 md:px-0">
+                <div className="max-w-2xl mx-auto flex flex-col w-full px-4 md:px-0">
 
                     {/* Header Clean */}
-                    <div className="w-full flex items-center justify-between mb-8 border-b border-zinc-100 pb-2">
+                    <div className="w-full flex items-center justify-between mb-4 border-b border-zinc-100 pb-2">
                         <div className="flex items-center gap-3">
                             <span className="w-2 h-2 bg-black rounded-full animate-pulse"></span>
                             <span className="text-xs font-mono font-medium text-zinc-500 tracking-wider">Protocolo de Diagnóstico</span>
@@ -308,39 +257,32 @@ const FounderScore = () => {
                         <span className="text-xs font-mono font-medium text-zinc-400">0{currentQ + 1} / 0{QUESTIONS.length}</span>
                     </div>
 
-                    <div className="w-full animate-fade-in flex flex-col items-center relative">
-                        {/* Background Analysis Indicator - Adjusted Position */}
-                        {isAnalyzing && (
-                            <div className="absolute -top-12 right-0 flex items-center gap-2 bg-zinc-50 px-3 py-1 border border-zinc-100 animate-pulse">
-                                <Loader2 className="w-3 h-3 text-revgreen animate-spin" />
-                                <span className="text-xxs font-mono font-bold text-zinc-500 uppercase">Enriquecendo Perfil LinkedIn...</span>
-                            </div>
-                        )}
-
+                    <div className="w-full animate-fade-in flex flex-col">
+    
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentQ}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="w-full flex flex-col items-center space-y-6"
+                                className="w-full flex flex-col space-y-4"
                             >
-                                <h2 className="text-3xl md:text-4xl font-bold text-black tracking-tight leading-tight text-center max-w-2xl">
+                                <h2 className="text-2xl md:text-3xl font-black text-black tracking-tight leading-tight max-w-2xl">
                                     {QUESTIONS[currentQ].question}
                                 </h2>
 
-                                <div className="grid grid-cols-1 gap-3 w-full max-w-xl">
+                                <div className="grid grid-cols-1 gap-2 w-full">
                                     {currentQData.options.map((opt, idx) => (
                                         <button
                                             key={idx}
                                             disabled={selectedOption !== null}
                                             onClick={() => handleAnswer(opt.score, idx)}
-                                            className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
+                                            className={`group relative flex items-center gap-4 p-4 text-left transition-all duration-300 border ${selectedOption === idx
                                                 ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                                 : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                                 } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                         >
-                                            <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                            <div className={`w-6 h-6 flex-shrink-0 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                                 ? "bg-white text-zinc-900 border-white"
                                                 : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                                 }`}>
@@ -354,22 +296,23 @@ const FounderScore = () => {
                                 </div>
                             </motion.div>
                         </AnimatePresence>
-
-                        {/* Minimal Log */}
-                        <AnimatePresence>
-                            {showLog && currentQData.log && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
-                                >
-                                    <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
-                                        <span className="text-black font-bold mr-2">Insight:</span>{currentQData.log}
-                                    </p>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </div>
+
+                    {/* Log strip - fixed bottom */}
+                    <AnimatePresence>
+                        {showLog && currentQData.log && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-100 px-4 py-3"
+                            >
+                                <p className="text-xs font-medium text-zinc-500 text-center max-w-2xl mx-auto">
+                                    <span className="text-black font-bold mr-2">Insight:</span>{currentQData.log}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -477,12 +420,12 @@ const FounderScore = () => {
                                                 </div>
                                                 <div>
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                        <span className="w-1.5 h-1.5 bg-red-500 "></span> Pontos Cegos
+                                                        <span className="w-1.5 h-1.5 bg-zinc-400"></span> Pontos Cegos
                                                     </h4>
                                                     <ul className="space-y-2">
                                                         {analysisResult.blindSpots.map((s, i) => (
                                                             <li key={i} className="text-white text-sm font-medium flex items-center gap-2">
-                                                                <AlertTriangle className="w-3 h-3 text-red-500" /> {s}
+                                                                <AlertTriangle className="w-3 h-3 text-zinc-500" /> {s}
                                                             </li>
                                                         ))}
                                                     </ul>
@@ -506,40 +449,94 @@ const FounderScore = () => {
                         {/* WHITE CONTENT SECTION */}
                         <div className="w-[100vw] relative left-[50%] right-[50%] -ml-[50vw] bg-white text-zinc-900 px-4 md:px-0 py-20 mt-32 border-t border-zinc-200">
                             <div className="max-w-6xl mx-auto">
-                                {/* Standardized Personalization Section */}
-                                <section>
-                                    <div className="space-y-6 mb-20 text-center md:text-left">
-                                        <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
-                                            DIAGNÓSTICO_DE_AUTORIDADE
-                                        </div>
-                                        <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
-                                            {insights.title.split(' ')[0]} <span className="text-zinc-500">{insights.title.split(' ').slice(1).join(' ')}</span>
-                                        </h2>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32 text-left">
-                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 bg-black " />
-                                                Perspectiva Técnica
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                {insights.description}
-                                            </p>
+                                {/* AI Branding Analysis */}
+                                {analysisResult && (analysisResult.brandingGaps?.length || analysisResult.actionableInsight) ? (
+                                    <section>
+                                        <div className="space-y-6 mb-12 text-center md:text-left">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
+                                                DIAGNÓSTICO_DE_AUTORIDADE
+                                            </div>
+                                            <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none">
+                                                {analysisResult.archetype}
+                                            </h2>
                                         </div>
 
-                                        <div className="space-y-6 border-l border-zinc-200 pl-8">
-                                            <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 bg-black " />
-                                                Plano de Ação
-                                            </h4>
-                                            <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
-                                                Sua prioridade estratégica agora é: <strong className="!text-black bg-[#00CC6A]/20 px-1">{insights.action}</strong>.
-                                                O custo de ignorar este ajuste é a perda de autoridade para concorrentes menos qualificados porém mais barulhentos.
-                                            </p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                                            {/* Branding Gaps */}
+                                            <div className="border border-zinc-200 p-8 bg-white">
+                                                <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-zinc-900" />
+                                                    Gaps de Posicionamento
+                                                </h4>
+                                                <div className="space-y-4">
+                                                    {(analysisResult.brandingGaps || []).map((g, i) => (
+                                                        <div key={i} className="flex gap-3">
+                                                            <span className="text-zinc-400 font-bold text-sm mt-0.5">✗</span>
+                                                            <p className="text-zinc-700 text-sm font-medium leading-relaxed">{g}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Perspectiva Técnica */}
+                                            <div className="border border-zinc-200 p-8 bg-zinc-50">
+                                                <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 mb-6 flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-revgreen" />
+                                                    Perspectiva Técnica
+                                                </h4>
+                                                <p className="text-zinc-900 text-sm font-medium leading-relaxed">
+                                                    {insights.description}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </section>
+
+                                        {/* Actionable Insight Card */}
+                                        {analysisResult.actionableInsight && (
+                                            <div className="border-l-4 border-[#00CC6A] bg-zinc-50 rounded-r-2xl p-8 mb-16">
+                                                <h4 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500 mb-3">
+                                                    Ação Imediata Recomendada
+                                                </h4>
+                                                <p className="text-zinc-900 text-base font-semibold leading-relaxed">
+                                                    {analysisResult.actionableInsight}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </section>
+                                ) : (
+                                    <section>
+                                        <div className="space-y-6 mb-20 text-center md:text-left">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
+                                                DIAGNÓSTICO_DE_AUTORIDADE
+                                            </div>
+                                            <h2 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-none italic">
+                                                {insights.title.split(' ')[0]} <span className="text-zinc-500">{insights.title.split(' ').slice(1).join(' ')}</span>
+                                            </h2>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-32 text-left">
+                                            <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                                <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                    <div className="w-1.5 h-1.5 bg-black " />
+                                                    Perspectiva Técnica
+                                                </h4>
+                                                <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                    {insights.description}
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-6 border-l border-zinc-200 pl-8">
+                                                <h4 className="text-sm font-black !text-black uppercase tracking-widest flex items-center gap-3">
+                                                    <div className="w-1.5 h-1.5 bg-black " />
+                                                    Plano de Ação
+                                                </h4>
+                                                <p className="!text-zinc-900 text-base leading-relaxed font-semibold">
+                                                    Sua prioridade estratégica agora é: <strong className="!text-black bg-[#00CC6A]/20 px-1">{insights.action}</strong>.
+                                                    O custo de ignorar este ajuste é a perda de autoridade para concorrentes menos qualificados porém mais barulhentos.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
 
                                 {/* PREMISSAS SECTION */}
                                 <section>
@@ -614,6 +611,7 @@ const FounderScore = () => {
                 </>
             )}
         </DiagnosticLayout >
+        </>
     );
 };
 

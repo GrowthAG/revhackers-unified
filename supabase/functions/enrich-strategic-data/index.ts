@@ -182,7 +182,7 @@ serve(async (req) => {
 });
 
 // ============================================================
-// OPENAI API CALL (GPT-4o-mini - replaces Perplexity sonar-reasoning-pro)
+// OPENAI API CALL (GPT-4o-mini)
 // ============================================================
 
 async function callOpenAI(apiKey: string, prompt: string): Promise<any> {

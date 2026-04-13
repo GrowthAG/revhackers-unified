@@ -255,7 +255,7 @@ export default function ProposalPresentation() {
 
                         {/* Standard floating nav */}
                         {!isFullscreen && (
-                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white border border-zinc-200 p-1.5 shadow-xl print:hidden transition-all rounded-sm">
+                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 bg-white border border-zinc-200 p-1.5 shadow-sm print:hidden transition-all rounded-sm">
                                 {!sidebarOpen && (
                                     <button onClick={() => setSidebarOpen(true)} className="p-2.5 text-zinc-400 hover:text-zinc-900 transition-all">
                                         <PanelLeftOpen className="w-4 h-4" />

@@ -9,7 +9,7 @@ export default function RoadmapSection({ proposal }: { proposal: any }) {
         {
             phase: 'Engenharia Comercial',
             duration: 'Semana 1-2',
-            description: 'Refatoração da máquina de vendas e arquitetura do CRM GoHighLevel.',
+            description: 'Refatoração da máquina de vendas e arquitetura do ecossistema Funnels.',
             deliverables: ['Mapeamento de Funil', 'Setup de Pipelines']
         },
         {
@@ -120,11 +120,11 @@ export default function RoadmapSection({ proposal }: { proposal: any }) {
 
                                 {/* MOBILE LAYOUT (<lg) */}
                                 <div className="lg:hidden flex flex-col pl-[60px] relative">
-                                    <div className="absolute left-[8px] top-6 z-10 w-8 h-8 bg-zinc-900 text-zinc-300 flex items-center justify-center text-sm font-black border border-zinc-700 rounded-full shadow-lg">
+                                    <div className="absolute left-[8px] top-6 z-10 w-8 h-8 bg-zinc-900 text-zinc-300 flex items-center justify-center text-sm font-black border border-zinc-700 rounded-full shadow-sm">
                                         {idx + 1}
                                     </div>
 
-                                    <div className="w-full bg-[#09090b] p-6 border border-zinc-800 relative text-left shadow-xl">
+                                    <div className="w-full bg-[#09090b] p-6 border border-zinc-800 relative text-left shadow-sm">
                                         <div className="absolute top-0 left-0 w-1 h-full bg-[#00CC6A]/30" />
                                         
                                         <span className="inline-block text-xxs font-black tracking-widest uppercase text-zinc-400 mb-3 bg-zinc-900 border border-zinc-800 px-3 py-1">

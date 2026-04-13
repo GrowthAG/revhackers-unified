@@ -62,9 +62,13 @@ const Cases = () => {
   return (
     <PageLayout>
       <SEO
-        title="Cases de Sucesso"
-        description="Histórias reais de empresas que transformaram seus resultados com Revenue Operations, ABM e Growth Engineering."
-        canonical="https://revhackers.com/cases"
+        title="Cases de Sucesso em Revenue Operations"
+        description="Resultados reais de operações B2B que escalaram receita com Revenue Operations, ABM e Growth Engineering. Veja como empresas brasileiras transformaram seus resultados."
+        canonical="https://revhackers.com.br/cases"
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Cases", url: "https://revhackers.com.br/cases" }
+        ]}
       />
       <DarkHeroSection
         title="Cases"
@@ -144,10 +148,12 @@ const Cases = () => {
         <div className="container-custom">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center">
             <div className="flex-1">
-              <h2 className="text-3xl font-normal mb-6 text-black tracking-tight">Sua empresa será nosso próximo case?</h2>
-              <p className="text-lg text-zinc-500 mb-8 font-light">
-                Entre em contato agora mesmo e descubra como podemos ajudar sua empresa
-                a obter resultados excepcionais como estes.
+              <h2 className="text-3xl font-black mb-6 text-black tracking-tighter uppercase relative">
+                <div className="w-2 h-2 bg-revgreen absolute -left-4 top-4" />
+                Quer plugar esta Engenharia na sua operação?
+              </h2>
+              <p className="text-lg text-zinc-500 mb-8 font-bold leading-relaxed">
+                Nós não começamos nenhum projeto sem auditar o vazamento atual da empresa. Aplique agora para uma análise de viabilidade técnica.
               </p>
             </div>
 

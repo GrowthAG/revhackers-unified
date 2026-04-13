@@ -38,9 +38,15 @@ export async function analyzeDiagnosticAI(
     totalScore: number
 ): Promise<DiagnosticAnalysisResult> {
     try {
-        const { data, error } = await supabase.functions.invoke('analyze-diagnostic', {
+        const timeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 30000)
+        );
+
+        const invoke = supabase.functions.invoke('analyze-diagnostic', {
             body: { type, answers, totalScore }
         });
+
+        const { data, error } = await Promise.race([invoke, timeout]);
 
         if (error) throw error;
 

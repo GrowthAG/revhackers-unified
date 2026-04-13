@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp",
+      "description": "Supabase MCP Server - Manage database, migrations, Edge Functions, and more"
+    }
+  }
+}

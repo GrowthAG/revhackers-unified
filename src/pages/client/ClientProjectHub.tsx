@@ -9,33 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { HubNpsBlocker } from '@/components/client/HubNpsBlocker';
 
-// ── Scope items by project type ───────────────────────────────────────────
 const scopeByType: Record<string, string[]> = {
-    advisory: [
-        'Diagnóstico Estratégico Completo',
-        'Roadmap de Ação Personalizado (Playbook)',
-        'Calls de Orientação e Alinhamento por Sprint',
-        'Frameworks e Metodologias Aplicadas',
-        'Review de Execução do Cliente',
-        'Relatório Final + Plano de Sustentação',
-    ],
     crm_ops: [
-        'Diagnóstico de Revenue Operations',
-        'Estruturação e Configuração do CRM',
-        'Automações de Pipeline e Follow-up',
-        'Playbook de Vendas & SLA de Passagem',
-        'Treinamento do Time no CRM',
-        'Uso dos Dashboards Nativos do CRM',
-    ],
-    crm: [
-        'Diagnóstico de Revenue Operations',
-        'Estruturação e Configuração do CRM',
-        'Automações de Pipeline e Follow-up',
-        'Playbook de Vendas & SLA de Passagem',
-        'Treinamento do Time no CRM',
-        'Uso dos Dashboards Nativos do CRM',
-    ],
-    CRM_CS_OPS: [
         'Diagnóstico de Revenue Operations',
         'Estruturação e Configuração do CRM',
         'Automações de Pipeline e Follow-up',
@@ -51,21 +26,13 @@ const scopeByType: Record<string, string[]> = {
         'Benchmark de Contas Âncora',
         'Métricas de Engajamento & Conversão',
     ],
-    dev: [
+    site: [
         'Briefing Técnico Completo',
         'Wireframes e Aprovação de UX',
         'Design de Alta Fidelidade',
         'Desenvolvimento Front-end & Back-end',
         'Testes de Performance (LCP/GTmetrix)',
         'Go Live e Monitoramento',
-    ],
-    funnels_impl: [
-        'Diagnóstico de Funil de Conversão',
-        'Estrutura de Landing Pages',
-        'Automações de Nutrição e Follow-up',
-        'Setup de Ads & Tracking',
-        'Otimização de Taxa de Conversão',
-        'Análise via Dashboards Nativos',
     ],
     default: [
         'Diagnóstico de Receita Profundo (360º)',
@@ -79,14 +46,10 @@ const scopeByType: Record<string, string[]> = {
 
 // ── 3-Horizon Sprint Map ────────────────────────────────────────────────
 const SPRINT_NAMES: Record<string, string[]> = {
-    advisory:     ['Diagnóstico & Alinhamento', 'Arquitetura Estratégica', 'Orientação & Prática', 'Revisão & Sustentação'],
     consulting:   ['Raio-X 360º', 'Engenharia de Receita', 'Ativação de Demanda', 'Escala & Governança'],
     crm_ops:      ['Diagnóstico & Arquitetura', 'Setup & Pipelines', 'Automação & Atrito', 'Governança & Adoção'],
-    crm:          ['Diagnóstico & Arquitetura', 'Setup & Pipelines', 'Automação & Atrito', 'Governança & Adoção'],
-    CRM_CS_OPS:   ['Diagnóstico & Arquitetura', 'Setup & Pipelines', 'Automação & Atrito', 'Governança & Adoção'],
     founder:      ['Posicionamento & Perfil', 'Conteúdo Âncora', 'Cadência & Volume', 'Loop de Conversão'],
-    dev:          ['Briefing & Wireframe', 'Design & Copy', 'Desenvolvimento', 'QA & Lançamento'],
-    funnels_impl: ['Briefing & Oferta', 'Landing & Conversão', 'Tráfego & Automação', 'Otimização & Escala'],
+    site:         ['Briefing & Wireframe', 'Design & Copy', 'Desenvolvimento', 'QA & Lançamento'],
     default:      ['Diagnóstico & Fundação', 'Geração de Demanda', 'Ativação & Onboarding', 'Expansão & Motor'],
 };
 
@@ -361,7 +324,7 @@ const ClientProjectHub = () => {
             return {
                 urgency: 'low',
                 headline: 'Orientação em Andamento.',
-                body: `Ciclo ${activeSprintIndex >= 0 ? `0${activeSprintIndex + 1}` : ''} — ${activeSprint?.name || sprintNames[Math.max(activeSprintIndex, 0)]}. Execute o plano e registre o progresso. Sua próxima call de orientação está agendada.`,
+                body: `Ciclo ${activeSprintIndex >= 0 ? `0${activeSprintIndex + 1}` : ''} - ${activeSprint?.name || sprintNames[Math.max(activeSprintIndex, 0)]}. Execute o plano e registre o progresso. Sua próxima call de orientação está agendada.`,
                 primaryLabel: 'Falar com Analista',
                 primaryHref: `${mailtoAnalyst}?subject=Orientação Advisory`,
                 secondaryLabel: planToken ? 'Acessar Plano' : 'Ver Roadmap',
@@ -388,7 +351,7 @@ const ClientProjectHub = () => {
         return {
             urgency: 'low',
             headline: 'Execução em Andamento.',
-            body: `Sprint ${activeSprintIndex >= 0 ? `0${activeSprintIndex + 1}` : ''} — ${activeSprint?.name || sprintNames[Math.max(activeSprintIndex, 0)]} — ${progressPct}% concluído. Seu analista está operando o projeto. Agende uma apresentação estratégica quando quiser.`,
+            body: `Sprint ${activeSprintIndex >= 0 ? `0${activeSprintIndex + 1}` : ''} - ${activeSprint?.name || sprintNames[Math.max(activeSprintIndex, 0)]} - ${progressPct}% concluído. Seu analista está operando o projeto. Agende uma apresentação estratégica quando quiser.`,
             primaryLabel: 'Agendar Apresentação',
             primaryHref: `${mailtoAnalyst}?subject=Apresentação Estratégica`,
             secondaryLabel: planToken ? 'Acessar Plano' : 'Ver Cronograma',
@@ -444,7 +407,7 @@ const ClientProjectHub = () => {
             <main className="pt-12 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-8">
 
-                    {/* PRÓXIMA AÇÃO — Contextual */}
+                    {/* PROXIMA ACAO - Contextual */}
                     <div className={cn(
                         "border p-8 md:p-12 relative overflow-hidden transition-all",
                         ctaCtx.urgency === 'high'

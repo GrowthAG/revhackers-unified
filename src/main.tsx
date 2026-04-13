@@ -2,8 +2,6 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { SEOProvider } from './components/shared/SEO.tsx'
-import { Analytics } from '@vercel/analytics/react'
-
 
 // Crash Protection: Catch unhandled Supabase auth errors that might cause White Screen
 window.addEventListener('unhandledrejection', (event) => {
@@ -18,9 +16,14 @@ window.addEventListener('unhandledrejection', (event) => {
     }
 });
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root")!;
+
+// Limpa conteúdo pré-renderizado pelo Puppeteer antes de montar o React.
+// hydrateRoot requer HTML identico ao do React - prerender com GTM/tracking quebra isso.
+rootElement.innerHTML = '';
+
+createRoot(rootElement).render(
     <SEOProvider>
         <App />
-        <Analytics />
     </SEOProvider>
 );

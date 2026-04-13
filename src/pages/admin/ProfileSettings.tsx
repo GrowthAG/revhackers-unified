@@ -31,7 +31,7 @@ const ProfileSettings = () => {
                                 window.location.reload();
                             }}
                             variant="destructive"
-                            className="mt-4"
+                            className="mt-4 rounded-none font-black tracking-widest text-xs uppercase"
                         >
                             SAIR E FAZER LOGIN REAL
                         </Button>
@@ -229,7 +229,7 @@ const ProfileSettings = () => {
                                     <Button
                                         type="submit"
                                         disabled={saving || uploading}
-                                        className="w-full bg-black text-white hover:bg-zinc-900 font-black uppercase tracking-[0.2em] h-12 text-xxs rounded-none shadow-none border border-black transition-all"
+                                        className="w-full bg-[#00CC6A] text-black hover:bg-black hover:text-white font-black uppercase tracking-[0.2em] h-12 text-xxs rounded-none shadow-none border-none transition-all"
                                     >
                                         {saving ? <Loader2 className="animate-spin h-4 w-4" /> : "Salvar Dados"}
                                     </Button>

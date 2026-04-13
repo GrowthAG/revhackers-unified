@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-    Send, Plus, Bot, FileText, X, Search, Globe,
-    Sparkles, Loader2, ChevronDown, Mic2, BrainCircuit, Feather, Trash2, Pencil,
+    Send, Plus, Bot, FileText, X,
+    Cpu, Loader2, ChevronDown, Mic2, BrainCircuit, Feather, Trash2, Pencil,
     Download, FileType, Check
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/AdminLayout';
@@ -20,40 +20,14 @@ const ModelIcon = ({ provider, className, color }: { provider: string, className
         </svg>
     );
 
-    // Anthropic Logo
-    if (provider === 'Anthropic') return (
-        <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
-            <path d="M17.43 19.38L13.62 12.87L14.73 11H18L19.5 13.62L20.8 15.86L22.11 18.09L23.41 20.33H19.06L17.43 19.38ZM11.13 12.87L7.33 19.38L5.7 20.33H1.34L11.13 3.5L16.03 11.9L14.92 13.8L11.13 7.33L8.97 11.02L7.33 13.83L11.13 20.33H15.48L11.13 12.87Z" />
-        </svg>
-    );
-
-    // Perplexity Logo (Asterisk)
-    if (provider === 'Perplexity') return (
-        <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
-            <path d="M12 2C12.5523 2 13 2.44772 13 3V11H21C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13H13V21C13 21.5523 12.5523 22 12 22C11.4477 22 11 21.5523 11 21V13H3C2.44772 13 2 12.5523 2 12C2 11.4477 2.44772 11 3 11H11V3C11 2.44772 11.4477 2 12 2Z" />
-        </svg>
-    );
-
-    // Google Logo
-    if (provider === 'Google') return (
-        <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={{ color: color }}>
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.07-3.71 1.07-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-            <path d="M5.84 14.11c-.22-.66-.35-1.36-.35-2.11s.13-1.45.35-2.11V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.83z" fill="#FBBC05" />
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.83c.87-2.6 3.3-4.51 6.16-4.51z" fill="#EA4335" />
-        </svg>
-    );
-
     return <Bot className={className} />;
 };
 
 const MODELS = [
-    { value: 'gpt-5.2', label: 'GPT-5.2 (OpenAI Next)', description: 'OpenAI • Máxima Inteligência', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'gpt-4o', label: 'GPT-4o (Frontier)', description: 'OpenAI • Multimodal', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Economical)', description: 'OpenAI • Eficiente', color: '#10a37f', provider: 'OpenAI' },
-    { value: 'claude-sonnet-4.5', label: 'Claude Sonnet 4.5 (Thinking)', description: 'Anthropic • Extended Thinking', color: '#d97757', provider: 'Anthropic' },
-    { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku', description: 'Anthropic • Ultra Rápido', color: '#d97757', provider: 'Anthropic' },
-    { value: 'sonar-pro', label: 'Perplexity Sonar (Research)', description: 'Web • Busca Realtime', color: '#00a99d', provider: 'Perplexity' },
+    { value: 'gpt-5.4', label: 'GPT-5.4 (Web + O3 Reasoning)', description: 'OpenAI • Raciocínio Máximo', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-5.2', label: 'GPT-5.2 (Consultor)', description: 'OpenAI • Especialista B2B', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-4o', label: 'GPT-4o (Padrão)', description: 'OpenAI • Precisão/Custo', color: '#10a37f', provider: 'OpenAI' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini', description: 'OpenAI • Processamento Veloz', color: '#10a37f', provider: 'OpenAI' }
 ];
 
 const DEFAULT_TONES = [
@@ -137,8 +111,6 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
     const [isKnowledgeModalOpen, setIsKnowledgeModalOpen] = useState(false);
 
     // Research / Search State
-    const [isResearching, setIsResearching] = useState(false);
-    const [searchSteps, setSearchSteps] = useState<string[]>([]);
     const [activeSearchQuery, setActiveSearchQuery] = useState('');
 
     const endRef = useRef<HTMLDivElement>(null);
@@ -415,14 +387,6 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 });
             }
 
-            // --- PERPLEXITY ANIMATION TRIGGER ---
-            if (selectedModel === 'sonar-pro') {
-                setIsResearching(true);
-                // Simulate steps
-                setSearchSteps(['Analisando fontes...']);
-                setTimeout(() => setSearchSteps(prev => [...prev, 'Cruzando dados em tempo real...']), 1500);
-            }
-
             // --- SECURITY UPDATE: Send only ID, backend handles the rest ---
             const { data: chatData, error: chatError } = await supabase.functions.invoke('agent-chat', {
                 body: {
@@ -501,7 +465,6 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
         }
         finally {
             setLoading(false);
-            setIsResearching(false);
         }
     };
 
@@ -1082,84 +1045,6 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                 </div>
             )}
 
-            {/* Search Frame Experience (Perplexity) */}
-            {isResearching && (
-                <div className="hidden lg:flex flex-col w-[35%] bg-zinc-50 border-l border-zinc-100 animate-in slide-in-from-right duration-500 overflow-hidden shadow-sm">
-                    <div className="p-6 bg-white border-b border-zinc-100 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-[#00CC6A]/10 relative">
-                                <Search className="w-5 h-5 text-[#00CC6A] animate-pulse" />
-                                <div className="absolute inset-0 border border-[#00CC6A]/30 animate-ping opacity-20" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Search Intelligence</h3>
-                                <p className="text-xxs font-bold text-[#00CC6A]/60 uppercase tracking-widest">Real-time Web Analysis</p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 "
-                            onClick={() => setIsResearching(false)}
-                        >
-                            <X className="w-4 h-4 text-zinc-400" />
-                        </Button>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8">
-                        {/* Search Query */}
-                        <div className="p-4 bg-white border border-zinc-200 shadow-sm transition-all">
-                            <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest block mb-2">Analyzing Query</span>
-                            <p className="text-sm font-bold text-zinc-800 italic">"{input || 'Explorando novas fronteiras...'}"</p>
-                        </div>
-
-                        {/* Search Steps / Preview */}
-                        <div className="space-y-4">
-                            <span className="text-2xs font-black text-zinc-400 uppercase tracking-widest block">Research Roadmap</span>
-
-                            <div className="space-y-3">
-                                {[
-                                    { label: 'Initializing Deep Scan', status: 'complete', time: '0.2s' },
-                                    { label: 'Verifying Global Sources', status: 'processing', time: '0.8s' },
-                                    { label: 'Synthesizing Intelligence', status: 'pending', time: '--' }
-                                ].map((step, i) => (
-                                    <div key={i} className={cn(
-                                        "flex items-center justify-between p-3 border transition-all",
-                                        step.status === 'complete' ? "bg-[#00CC6A]/10 border-[#00CC6A]/20" :
-                                            step.status === 'processing' ? "bg-white border-zinc-200 shadow-sm animate-pulse" :
-                                                "bg-zinc-50 border-zinc-100 opacity-50"
-                                    )}>
-                                        <div className="flex items-center gap-3">
-                                            {step.status === 'complete' ? <div className="w-1.5 h-1.5 bg-[#00CC6A]" /> : <div className="w-1.5 h-1.5 bg-zinc-300" />}
-                                            <span className="text-tiny font-bold text-zinc-700">{step.label}</span>
-                                        </div>
-                                        <span className="text-2xs font-mono text-zinc-400">{step.time}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Live Preview Placeholder */}
-                        <div className="p-4 bg-zinc-900 border border-white/5 relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-[#00CC6A]/10 opacity-50 transition-opacity group-hover:opacity-100" />
-                            <div className="relative z-10 flex items-center gap-3 mb-4">
-                                <Globe className="w-4 h-4 text-[#00CC6A]" />
-                                <span className="text-xxs font-black text-[#00CC6A] uppercase tracking-widest">Live Preview</span>
-                            </div>
-                            <div className="space-y-2 relative z-10">
-                                <div className="h-2 w-full bg-white/10 animate-pulse" />
-                                <div className="h-2 w-[80%] bg-white/5 animate-pulse" />
-                                <div className="h-2 w-[90%] bg-white/5 animate-pulse" />
-                            </div>
-                        </div>
-
-                        <p className="text-xxs text-zinc-400 text-center font-medium italic mt-auto pt-8">
-                            *This frame represents a live preview of the research and data synthesis process.
-                        </p>
-                    </div>
-                </div>
-            )}
-
             {/* Tone creation Modal */}
             {isToneModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -1250,7 +1135,7 @@ const AdminAIChat = ({ embed = false }: AdminAIChatProps) => {
                             {toneModalStep === 'preview' && (
                                 <div className="space-y-4 text-center">
                                     <div className="w-16 h-16 bg-[#00CC6A]/10 flex items-center justify-center text-[#00CC6A] mx-auto mb-4">
-                                        <Sparkles className="w-8 h-8" />
+                                        <Cpu className="w-8 h-8" />
                                     </div>
                                     <h4 className="text-lg font-bold text-zinc-900">Estilo Analisado!</h4>
                                     <p className="text-sm text-zinc-500">Capturamos a essência do seu tom. Dê um nome a ele para salvar:</p>

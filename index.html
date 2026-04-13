@@ -20,26 +20,32 @@
   <meta name="apple-mobile-web-app-title" content="RevHackers" />
   <meta name="theme-color" content="#09090b" />
   <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/images/icon-192.png" />
 
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="mnJN0Y0oxcM6PFoQsCcacQWBseZol3jbRI4_GEPtp-w" />
 
-  <title>RevHackers | Revenue Operations & Growth B2B</title>
+  <title>RevHackers | Consultoria de Revenue Operations & Growth B2B — São Paulo, Brasil</title>
   <meta name="description"
-    content="RevHackers Growth Hub - A primeira consultoria de Revenue Operations do Brasil. Unificamos Marketing, Vendas e CS para escalar operações B2B." />
+    content="A primeira consultoria de Revenue Operations do Brasil. Integramos IA, CRM e automações para escalar operações B2B em São Paulo e todo o Brasil." />
   <meta name="author" content="RevHackers" />
+
+  <link rel="canonical" href="https://revhackers.com.br/" />
+  <link rel="alternate" hreflang="pt-BR" href="https://revhackers.com.br/" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-  <meta property="og:title" content="RevHackers | Growth & Revenue Operations" />
+  <meta property="og:title" content="RevHackers | Consultoria de Revenue Operations & Growth B2B" />
   <meta property="og:description"
-    content="Escale sua receita recorrente com integração total entre Marketing, Vendas e CS através do Framework RevHackers." />
+    content="Escale sua receita B2B com integração de IA, CRM e automações. Consultoria RevOps em São Paulo e Brasil." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://revhackers.com.br/" />
   <meta property="og:image"
     content="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg" />
+  <meta property="og:site_name" content="RevHackers Growth Hub" />
+  <meta property="og:locale" content="pt_BR" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@RevHackers" />
@@ -48,28 +54,30 @@
 </head>
 
 <body>
-  <!-- Resolucao Red Screen of Death: Se um arquivo JS falhar (cache), auto-refresh forcado. Nao exibe tela vermelha. -->
+  <!-- Chunk stale cache guard: reloads ONCE if a dynamic import fails (outdated cached JS chunk) -->
   <script>
-    window.addEventListener("error", (e) => {
-      const msg = e.message || '';
-      if (msg.includes("Unexpected token '<'") || msg.includes("Failed to fetch dynamically imported module") || msg.includes("Importing a module script failed")) {
-        // Tentativa 1 vez: Se o cache estiver sujo aponta pro index de 1s atras, ele se mata e roda dnovo invisivelmente
-        if (!sessionStorage.getItem('__rx_refresh')) {
-          sessionStorage.setItem('__rx_refresh', '1');
-          window.location.reload(true);
-        }
+    window.addEventListener("error", function(e) {
+      var msg = (e.message || '') + (e.filename || '');
+      var isChunkError = (
+        msg.includes("Failed to fetch dynamically imported module") ||
+        msg.includes("Importing a module script failed") ||
+        msg.includes("error loading dynamically imported module")
+      );
+      if (isChunkError && !sessionStorage.getItem('__rx_chunk_refresh')) {
+        sessionStorage.setItem('__rx_chunk_refresh', '1');
+        window.location.reload();
       }
     });
-    // Limpa a flag e comemora que o site abriu normal
-    setTimeout(() => sessionStorage.removeItem('__rx_refresh'), 3000);
+    // Limpa flag após carregamento bem-sucedido
+    window.addEventListener('load', function() {
+      sessionStorage.removeItem('__rx_chunk_refresh');
+    });
   </script>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MJGSPB3" height="0" width="0"
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <div id="root"></div>
-  <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-  <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

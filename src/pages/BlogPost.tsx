@@ -259,7 +259,7 @@ const BlogPostPage = () => {
       <SEO
         title={post.title}
         description={post.excerpt?.replace(/<[^>]*>?/gm, '').substring(0, 160) || 'Artigo RevHackers sobre Growth e Revenue Operations'}
-        canonical={`https://revhackers.com/blog/${post.slug}`}
+        canonical={`https://revhackers.com.br/blog/${post.slug}`}
         image={resolvedImage || undefined}
         type="article"
         publishedTime={post.date}

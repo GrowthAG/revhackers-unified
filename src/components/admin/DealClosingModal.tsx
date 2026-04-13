@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
   convertOpportunityToProject,
   updateOpportunity,
 } from "@/api/opportunities";
+import { getOrCreateProjectChannel, postSystemEvent } from "@/api/hubMessaging";
 
 interface DealClosingModalProps {
   isOpen: boolean;
@@ -34,6 +36,7 @@ export function DealClosingModal({
 }: DealClosingModalProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     legal_company_name: "",
@@ -95,12 +98,27 @@ export function DealClosingModal({
       } else {
         toast({
           title: "Deal Closed!",
-          description: `Projeto criado (${projectId?.substring(0, 8)}...). Cliente ativado para onboarding.`,
+          description: `Projeto criado. Iniciando jornada de onboarding.`,
         });
+      }
+
+      // Cria canal do projeto no hub e posta evento de abertura
+      if (projectId) {
+        const channelName = displayName || 'Projeto';
+        getOrCreateProjectChannel(projectId, channelName)
+          .then(ch => {
+            if (ch) {
+              postSystemEvent(ch.id, `Deal fechado - Projeto ${channelName} criado. Onboarding iniciado.`).catch(() => {});
+            }
+          })
+          .catch(() => {});
       }
 
       onSuccess();
       onClose();
+      if (projectId) {
+        navigate(`/admin/projects/${projectId}/jornada`);
+      }
     } catch (err: any) {
       toast({
         title: "Erro ao fechar negocio",

@@ -68,7 +68,7 @@ export default function PremisesSection({ proposal }: { proposal: any }) {
                     </div>
 
                     {/* CLIENT SIDE */}
-                    <div className="flex-1 bg-white p-10 rounded-xl relative shadow-xl border border-zinc-200 group">
+                    <div className="flex-1 bg-white p-10 rounded-xl relative shadow-sm border border-zinc-200 group">
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <UserCircle className="w-24 h-24 text-black" />
                         </div>

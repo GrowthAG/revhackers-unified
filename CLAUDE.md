@@ -1,3 +1,26 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Comandos Essenciais
+
+```bash
+npm run dev          # Servidor local Vite (porta 5173)
+npm run build        # Build prod + prerender SSR (scripts/prerender.js)
+npm run lint         # ESLint
+npm run test         # Vitest (run once)
+npm run test:watch   # Vitest (watch mode)
+npm run test:e2e     # Playwright E2E
+```
+
+Para rodar um teste especifico: `npx vitest run src/path/to/file.test.ts`
+
+Deploy via FTP Hostinger: `npm run deploy` (requer `.env` com credenciais FTP)
+
+---
+
 # RevHackers Growth Hub - Contexto do Projeto
 
 ## O que e este projeto
@@ -180,6 +203,72 @@ Isso e um bug conhecido. Nao criar logica que dependa de string matching para de
 - Sempre usar `|| []` e `|| {}` para fallback de dados da IA - o JSON pode ter campos ausentes
 - Imports de icones: sempre de `lucide-react`, nunca instalar outras libs de icones
 - **NUNCA usar o caractere em dash (\u2014) em codigo, strings, comentarios ou conteudo**
+
+---
+
+## Estrutura de Paginas e Rotas
+
+O `App.tsx` define todas as rotas. As areas principais sao:
+
+| Area | Prefixo | Acesso | Descricao |
+|---|---|---|---|
+| Publica | `/`, `/blog`, `/servicos`, `/cases`... | Publico | Site institucional |
+| Score/Lead | `/score`, `/score-site`, `/score-founder`, `/score-revenue` | Publico | Quiz de maturidade (lead gen) |
+| REI | `/rei/wizard`, `/rei/resultado/:id` | ProtectedRoute | Formulario interno de kickoff |
+| Admin (GrowthHub) | `/admin/*` | ProtectedRoute | Dashboard operacional completo |
+| Pipeline | `/admin/pipeline` | ProtectedRoute | Cockpit comercial / Revenue Cockpit |
+| Client | `/plan/:token`, `/success/:token`, `/hub/:id` | Publico com token | Apresentacao do plano ao cliente |
+| Deal Room | `/p/:slug` | Publico com slug | Proposta comercial em slides |
+
+**ProtectedRoute** (`src/components/auth/ProtectedRoute.tsx`) lida com os roles: `super_admin`, `admin`, `user` (via `useAuth()`).
+
+---
+
+## Autenticacao e Roles
+
+`src/contexts/AuthContext.tsx` e o provedor central. Suporta:
+- OTP via email (`signIn`)
+- Email + senha (`signInWithPassword`)
+- Invite flow: usuario com `user_metadata.invited === true` e redirecionado para criar senha no primeiro acesso
+
+Roles lidos da tabela `profiles` no Supabase (campo `role`).
+
+**Importante:** `QueryClient` em `App.tsx` tem `refetchOnWindowFocus: false` e `refetchOnReconnect: false` para evitar perda de estado em formularios ao trocar de aba.
+
+---
+
+## Camadas de Dados
+
+```
+src/api/          -> Chamadas diretas ao Supabase (CRUD simples)
+src/services/     -> Logica de negocio + orquestracao (ex: ReiScoringService, PipelineService)
+supabase/functions/ -> Edge Functions Deno (AI, webhooks, integrações externas)
+```
+
+Hooks (`src/hooks/`) encapsulam react-query + chamadas de API. Ex: `useReiProjects`, `useReiResponses`.
+
+Estado global: **Zustand** (`src/store/`) para estado de UI persistido entre paginas. **React Query** para cache de servidor.
+
+---
+
+## Edge Functions Principais
+
+| Funcao | Proposito |
+|---|---|
+| `generate-strategic-plan` | GPT-5.4 gera plano JSON completo pos-REI |
+| `generate-success-plan` | Gera plano de sucesso (onboarding) |
+| `generate-playbook` | Gera playbook de crescimento |
+| `analyze-site` | Inspeciona site do cliente via scraping |
+| `research-intelligence` | Pesquisa de mercado e concorrentes |
+| `transcribe-meeting` | Transcreve audio de reuniao |
+| `analyze-meeting-transcript` | Analisa transcript e extrai insights |
+| `fathom-webhook` / `fathom-sync` | Integracao com Fathom (gravacoes) |
+| `ghl-webhook-handoff` | Automacao pos-venda no GoHighLevel |
+| `trigger-post-rei-enrichment` | Enriquecimento automatico pos-REI |
+| `invite-member` | Convida usuario com flag `invited` no metadata |
+| `ask-agent` / `agent-chat` | Chat AI contextual por projeto |
+
+Todas as edge functions compartilham CORS em `supabase/functions/_shared/cors.ts`.
 
 ---
 

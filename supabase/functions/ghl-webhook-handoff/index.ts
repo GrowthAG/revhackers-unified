@@ -41,20 +41,23 @@ serve(async (req: Request) => {
         auth: { autoRefreshToken: false, persistSession: false }
     })
 
-    // -- WEBHOOK SECRET VALIDATION --
+    // -- WEBHOOK SECRET VALIDATION (OBRIGATORIO, apenas via header) --
     // @ts-ignore
     const WEBHOOK_SECRET = Deno.env.get('GHL_WEBHOOK_SECRET') || ''
-    if (WEBHOOK_SECRET) {
-        const url = new URL(req.url)
-        const paramSecret = url.searchParams.get('secret') || ''
-        const headerSecret = req.headers.get('x-webhook-secret') || ''
-        if (paramSecret !== WEBHOOK_SECRET && headerSecret !== WEBHOOK_SECRET) {
-            console.error('[ghl-handoff] Rejected: invalid or missing webhook secret')
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-                status: 401,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            })
-        }
+    if (!WEBHOOK_SECRET) {
+        console.error('[ghl-handoff] GHL_WEBHOOK_SECRET nao configurado. Rejeitando.')
+        return new Response(JSON.stringify({ error: 'Webhook secret nao configurado' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+    }
+    const headerSecret = req.headers.get('x-webhook-secret') || ''
+    if (headerSecret !== WEBHOOK_SECRET) {
+        console.error('[ghl-handoff] Rejected: invalid or missing webhook secret')
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
     }
 
     try {

@@ -91,7 +91,7 @@ export default function ContractOverviewSection({
       {/* HEADER */}
       <div className="mb-14 border-b border-zinc-100 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-semibold text-zinc-900 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black text-zinc-900 tracking-tight">
             Acordo Definitivo & Escopo
           </h2>
         </div>
@@ -109,7 +109,7 @@ export default function ContractOverviewSection({
         {/* IN SCOPE / OUT OF SCOPE */}
         <div className="space-y-10 pr-0 lg:pr-8">
           <div>
-            <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 mb-6 tracking-tight">
+            <h3 className="text-lg font-black text-zinc-900 flex items-center gap-2 mb-6 tracking-tight">
               O Que Vamos Entregar (In-Scope)
             </h3>
             <ul className="space-y-2">
@@ -123,13 +123,13 @@ export default function ContractOverviewSection({
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 mb-6 tracking-tight">
+            <h3 className="text-lg font-black text-zinc-900 flex items-center gap-2 mb-6 tracking-tight">
               O Que NÃO Está Incluso (Out-of-Scope)
             </h3>
             <ul className="space-y-2">
               {outOfScopeItems.map((item, i) => (
-                <li key={i} className="flex items-start gap-3 bg-red-50/30 p-3.5 border border-red-100/30">
-                  <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                <li key={i} className="flex items-start gap-3 bg-zinc-100/30 p-3.5 border border-zinc-200/30">
+                  <XCircle className="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" />
                   <span className="text-sm font-medium text-zinc-500 leading-relaxed line-through">{item}</span>
                 </li>
               ))}
@@ -142,7 +142,7 @@ export default function ContractOverviewSection({
 
         {/* FINANCIALS & TERMS */}
         <div className="bg-zinc-50 p-8 lg:p-10 shadow-sm border border-zinc-200/80 h-fit">
-          <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2 mb-8 tracking-tight">
+          <h3 className="text-lg font-black text-zinc-900 flex items-center gap-2 mb-8 tracking-tight">
             Condições Comerciais Acordadas
           </h3>
           

@@ -40,7 +40,7 @@ export default function PremisesSection({ plan }: { plan: any }) {
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="flex-1">
-                                        <h3 className="text-base font-bold text-zinc-900 mb-4 tracking-tight">
+                                        <h3 className="text-base font-black text-zinc-900 mb-4 tracking-tight">
                                             <EditableField
                                                 path={`premises_data.pillars.${i}.name`}
                                                 placeholder={pillar.name}

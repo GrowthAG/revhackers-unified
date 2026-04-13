@@ -39,7 +39,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                         <div>
                             <div className="mb-5">
                                 <p className="text-xxs text-zinc-400 uppercase tracking-widest font-bold mb-1">Nosso Escopo</p>
-                                <h3 className="text-xl font-bold text-black tracking-tight">RevHackers</h3>
+                                <h3 className="text-xl font-black text-black tracking-tight">RevHackers</h3>
                             </div>
 
                             <ul className="space-y-4">
@@ -52,7 +52,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -65,7 +65,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -78,7 +78,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -92,7 +92,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                         <div>
                             <div className="mb-5">
                                 <p className="text-xxs text-zinc-400 uppercase tracking-widest font-bold mb-1">Time B2B</p>
-                                <h3 className="text-xl font-bold text-black tracking-tight">{plan?.cover_data?.company_override || client?.company || 'Líderes de Operação'}</h3>
+                                <h3 className="text-xl font-black text-black tracking-tight">{plan?.cover_data?.company_override || client?.company || 'Líderes de Operação'}</h3>
                             </div>
 
                             <ul className="space-y-4">
@@ -105,7 +105,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -118,7 +118,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -131,7 +131,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                                     <li key={i} className="flex gap-3">
                                         <span className="text-zinc-300 shrink-0 text-xs mt-0.5">/</span>
                                         <div>
-                                            <h4 className="text-mini font-bold text-black mb-0.5">{item.title}</h4>
+                                            <h4 className="text-mini font-black text-black mb-0.5">{item.title}</h4>
                                             <p className="text-tiny text-zinc-500 leading-relaxed">{item.desc}</p>
                                         </div>
                                     </li>
@@ -145,7 +145,7 @@ export default function SlaSection({ plan, client }: SlaSectionProps) {
                 {/* Critical SLA Banner */}
                 <div className="relative bg-zinc-950 p-6 flex flex-col md:flex-row gap-6 md:items-center justify-between shrink-0">
                     <div>
-                        <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-3 mb-1">
+                        <h4 className="text-base font-black text-white tracking-tight flex items-center gap-3 mb-1">
                             {isConsultative ? 'SLA Inegociável de Execução Interna' : (isCrmOps ? 'SLA Inegociável de Higiene' : 'SLA Inegociável de Atendimento')}
                             <span className="text-2xs font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2.5 py-1 ">
                                 CRITICO

@@ -34,7 +34,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                 {risks.length > 0 && (
                     <div className="space-y-5">
                         <div className="flex items-center gap-3">
-                            <h4 className="text-mini font-bold text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
+                            <h4 className="text-mini font-black text-zinc-900 uppercase tracking-[0.2em]">Causas Raiz & Riscos</h4>
                             <span className="text-tiny font-bold text-zinc-400 ml-auto">
                                 {risks.length} {risks.length === 1 ? 'causa identificada' : 'causas identificadas'}
                             </span>
@@ -55,10 +55,18 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
 
                                             {/* Content */}
                                             <div className="flex-1 p-6">
+                                                <div className="mb-2">
+                                                    <EditableField
+                                                        path={`diagnostic_data.risks.${i}.headline`}
+                                                        className="text-lg font-bold text-zinc-900 leading-snug tracking-tight"
+                                                        placeholder={risk.headline || "Causa Raiz"}
+                                                        multiline
+                                                    />
+                                                </div>
                                                 <div className="mb-4">
                                                     <EditableField
                                                         path={`diagnostic_data.risks.${i}.text`}
-                                                        className="text-base font-medium text-zinc-800 leading-snug tracking-tight"
+                                                        className="text-base font-medium text-zinc-800 leading-relaxed tracking-tight"
                                                         placeholder={risk.text}
                                                         multiline
                                                     />
@@ -132,7 +140,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                     <div className="border border-zinc-200 overflow-hidden">
                         <div className="px-8 py-5 border-b border-zinc-100 bg-zinc-50/50">
                             <span className="text-xxs font-bold text-zinc-400 uppercase tracking-[0.3em]">Auditoria Técnica (0-100)</span>
-                            <h3 className="text-lg font-bold text-zinc-900 mt-1 mb-2">Infraestrutura & SEO</h3>
+                            <h3 className="text-lg font-black text-zinc-900 mt-1 mb-2">Infraestrutura & SEO</h3>
                             <p className="text-sm text-zinc-500 max-w-2xl leading-relaxed">
                                 Avaliação baseada no algoritmo oficial do <strong>Google Lighthouse</strong>. Uma infraestrutura lenta ou inacessível penaliza seu rankeamento orgânico e destrói sua taxa de conversão antes mesmo do lead consumir sua oferta.
                             </p>

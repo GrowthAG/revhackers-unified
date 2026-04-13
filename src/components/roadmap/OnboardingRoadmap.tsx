@@ -44,7 +44,7 @@ export function OnboardingRoadmap() {
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00CC6A]"></span>
                     <h3 className="text-tiny font-bold text-[#00CC6A] uppercase tracking-[0.2em]">Metodologia Exclusiva</h3>
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-semibold text-zinc-900 tracking-tight">Onboarding Orquestrado</h2>
+                <h2 className="text-2xl lg:text-3xl font-black text-zinc-900 tracking-tight">Onboarding Orquestrado</h2>
                 <p className="text-zinc-500 max-w-2xl mx-auto text-sm leading-relaxed">
                     Não vendemos apenas software. Fornecemos um <span className="text-zinc-900 font-medium">Ciclo de Sucesso 4x4</span> desenhado para garantir seu ROI via GTM.
                 </p>

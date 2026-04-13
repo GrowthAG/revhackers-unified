@@ -82,7 +82,7 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                         </p>
                         <EditableField
                             path="cover_data.company_override"
-                            className="text-white text-3xl md:text-4xl font-bold tracking-tight"
+                            className="text-white text-3xl md:text-4xl font-black tracking-tight"
                             placeholder={companyName}
                         />
                     </div>

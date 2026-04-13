@@ -16,7 +16,7 @@ const TestimonialsSection = () => {
 
   // Extract testimonials from cases
   const testimonials = Object.entries(casesData)
-    .filter(([key, c]) => c.quote && c.author && !c.title.includes('Lindoya') && key !== 'enics' && key !== 'tegra') // Only cases with quotes
+    .filter(([key, c]) => c.quote && c.author && !c.title.includes('Lindoya') && key !== 'enics' && key !== 'tegra' && key !== 'bolt') // Only cases with quotes
     .map(([key, c]) => ({
       id: key,
       quote: c.quote,
@@ -31,10 +31,10 @@ const TestimonialsSection = () => {
       <div className="container-custom">
         {/* Header - Subtle & Clean */}
         <div className="text-center mb-20 max-w-2xl mx-auto">
-          <h2 className="text-mini font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+          <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">
             Resultados Comprovados
           </h2>
-          <p className="text-3xl md:text-4xl font-semibold text-zinc-900 tracking-tight leading-tight">
+          <p className="text-3xl md:text-4xl font-black text-zinc-900 tracking-tight leading-tight">
             O impacto da nossa metodologia na voz de quem lidera o mercado.
           </p>
         </div>

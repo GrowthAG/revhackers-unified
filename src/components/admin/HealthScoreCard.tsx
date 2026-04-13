@@ -77,7 +77,7 @@ export default function HealthScoreCard({
                             {healthScore}
                         </span>
                     </div>
-                    <div className={`px-2 py-0.5 text-2xs font-black uppercase tracking-widest ${vectorConfig.bg}`}>
+                    <div className={`px-2 py-0.5 text-[0.65rem] font-black uppercase tracking-widest ${vectorConfig.bg}`}>
                         <span style={{ color: vectorConfig.color }}>{vectorConfig.label}</span>
                     </div>
                 </div>
@@ -91,16 +91,16 @@ export default function HealthScoreCard({
             <div className="absolute top-0 left-0 w-full h-[2px]" style={{ backgroundColor: healthScore >= 60 ? '#00CC6A' : '#ef4444' }} />
 
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 border-b border-zinc-800 pb-4">
                 <div>
-                    <span className="text-xxs font-black text-zinc-500 uppercase tracking-[0.25em]">
+                    <span className="text-[0.65rem] font-black text-zinc-500 uppercase tracking-widest">
                         Health Score
                     </span>
                     <div className="flex items-center gap-3 mt-1">
                         <span className="text-4xl font-black text-white">{healthScore}</span>
                         <div className={`px-2.5 py-1 ${vectorConfig.bg} flex items-center gap-1`}>
-                            <VectorIcon className="w-3 h-3" style={{ color: vectorConfig.color }} />
-                            <span className="text-xxs font-black uppercase tracking-widest" style={{ color: vectorConfig.color }}>
+                            <VectorIcon className="w-3.5 h-3.5" style={{ color: vectorConfig.color }} />
+                            <span className="text-[0.65rem] font-black uppercase tracking-widest" style={{ color: vectorConfig.color }}>
                                 {vectorConfig.label}
                             </span>
                         </div>
@@ -110,8 +110,8 @@ export default function HealthScoreCard({
                 {/* Milestones mini */}
                 {totalMilestones > 0 && (
                     <div className="text-right">
-                        <span className="text-xxs font-black text-zinc-500 uppercase tracking-widest">Milestones</span>
-                        <div className="text-lg font-black text-white mt-0.5">
+                        <span className="text-[0.65rem] font-black text-zinc-500 uppercase tracking-widest">Milestones</span>
+                        <div className="text-xl font-black text-white mt-0.5">
                             {milestonesCompleted}<span className="text-zinc-600">/{totalMilestones}</span>
                         </div>
                     </div>
@@ -126,13 +126,13 @@ export default function HealthScoreCard({
                     const percentage = Math.min(score, 100);
 
                     return (
-                        <div key={key} className="bg-zinc-900/50 p-3 border border-zinc-800">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Icon className="w-3 h-3 text-zinc-400" />
-                                <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">
+                        <div key={key} className="bg-zinc-900/50 p-4 border border-zinc-800 hover:border-zinc-700 transition-colors">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Icon className="w-3.5 h-3.5 text-zinc-400" />
+                                <span className="text-[0.65rem] font-black text-zinc-400 uppercase tracking-widest">
                                     {config.label}
                                 </span>
-                                <span className="ml-auto text-xs font-black text-white">{score}</span>
+                                <span className="ml-auto text-sm font-black text-white">{score}</span>
                             </div>
                             <div className="w-full h-1.5 bg-zinc-800 overflow-hidden">
                                 <div
@@ -149,9 +149,9 @@ export default function HealthScoreCard({
             </div>
 
             {/* Weight distribution footer */}
-            <div className="mt-4 flex items-center gap-1 justify-center">
+            <div className="mt-5 flex items-center gap-1 justify-center border-t border-zinc-900 pt-3">
                 {(Object.entries(DIMENSION_CONFIG) as [keyof typeof DIMENSION_CONFIG, typeof DIMENSION_CONFIG[keyof typeof DIMENSION_CONFIG]][]).map(([key, config]) => (
-                    <span key={key} className="text-2xs text-zinc-600 font-mono">
+                    <span key={key} className="text-[0.55rem] text-zinc-600 font-black uppercase tracking-widest">
                         {config.label} {Math.round(dimensions[key].weight * 100)}%
                         {key !== 'sentiment' && <span className="mx-1 text-zinc-700">|</span>}
                     </span>

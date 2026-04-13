@@ -32,7 +32,16 @@ export const OrphanedRecordingsAlert: React.FC = () => {
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [selectedProject, setSelectedProject] = useState<Record<string, string>>({});
   const [linking, setLinking] = useState<string | null>(null);
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState<false | { count: number }>(() => {
+    try {
+      const stored = localStorage.getItem('revhackers_orphaned_alert_dismissed');
+      if (!stored) return false;
+      const { dismissed_at, count } = JSON.parse(stored);
+      const hoursSince = (Date.now() - new Date(dismissed_at).getTime()) / (1000 * 60 * 60);
+      if (hoursSince >= 24) return false;
+      return { count };
+    } catch { return false; }
+  });
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -94,13 +103,21 @@ export const OrphanedRecordingsAlert: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('rei_projects')
-        .select('id, client_name, client_company, trade_name, type, status')
+        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage')
+        .not('status', 'eq', 'archived')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      const options: ProjectOption[] = (data || []).map((p: any) => ({
+      
+      const PRE_SALE  = ['lead_inbound','lead_qualified','diagnostic_done','proposal_draft','proposal_sent','proposal_viewed','negotiation'];
+      
+      const filteredData = (data || []).filter((p: any) => 
+          !PRE_SALE.includes(p.pipeline_stage || '') && p.pipeline_stage !== 'lost' && p.status !== 'lead'
+      );
+
+      const options: ProjectOption[] = filteredData.map((p: any) => ({
         id: p.id,
-        label: `${p.trade_name || p.client_company || p.client_name} ${p.status === 'lead' ? '(Lead)' : `(Projeto ${p.type})`}`,
+        label: `${p.trade_name || p.client_company || p.client_name} (Projeto ${p.type})`,
       }));
       setProjects(options);
     } catch (err) {
@@ -166,7 +183,17 @@ export const OrphanedRecordingsAlert: React.FC = () => {
     }
   };
 
-  if (loading || dismissed || recordings.length === 0) return null;
+  const handleDismiss = () => {
+    localStorage.setItem('revhackers_orphaned_alert_dismissed', JSON.stringify({
+      dismissed_at: new Date().toISOString(),
+      count: recordings.length,
+    }));
+    setDismissed({ count: recordings.length });
+  };
+
+  if (loading || recordings.length === 0) return null;
+  // If dismissed and count hasn't changed, stay hidden
+  if (dismissed && typeof dismissed === 'object' && dismissed.count === recordings.length) return null;
 
   return (
     <>
@@ -184,7 +211,7 @@ export const OrphanedRecordingsAlert: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-          <Button onClick={() => setDismissed(true)} variant="ghost" className="text-xs font-bold text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 px-3 h-8 rounded-sm uppercase tracking-widest">
+          <Button onClick={handleDismiss} variant="ghost" className="text-xs font-bold text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 px-3 h-8 rounded-sm uppercase tracking-widest">
             Ignorar
           </Button>
           <Button onClick={() => setIsModalOpen(true)} className="bg-black hover:bg-zinc-800 text-white text-xs font-bold tracking-widest uppercase h-8 px-4 rounded-sm flex-1 md:flex-none">
@@ -253,7 +280,7 @@ export const OrphanedRecordingsAlert: React.FC = () => {
                       onChange={(e) => setSelectedProject(prev => ({ ...prev, [rec.id]: e.target.value }))}
                       className="w-full bg-white border border-zinc-200 text-xs font-bold text-zinc-900 px-4 py-2.5 outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all cursor-pointer truncate shadow-sm"
                     >
-                      <option value="">Buscar e vincular a um Cliente...</option>
+                      <option value="">Buscar e vincular a um Projeto...</option>
                       {projects.map(p => (
                         <option key={p.id} value={p.id}>{p.label}</option>
                       ))}

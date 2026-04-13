@@ -8,6 +8,7 @@ import { CheckCircle, ArrowRight, BarChart3, Settings, Users, Zap, TrendingUp, T
 import Section from '@/components/ui/Section';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import BookingModal from '@/components/shared/BookingModal';
+import SEO from '@/components/shared/SEO';
 
 // --- DATA SOURCE ---
 const servicosData = {
@@ -211,6 +212,16 @@ const ServicosDetalhe = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title={`${service.title} - Consultoria RevHackers`}
+        description={service.subtitle}
+        canonical={`https://revhackers.com.br/servicos/${slug}`}
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Ecossistema", url: "https://revhackers.com.br/servicos" },
+          { name: service.title, url: `https://revhackers.com.br/servicos/${slug}` }
+        ]}
+      />
       {/* 1. HERO SECTION - Now with Dynamic Background for "Surprise" */}
       <Section variant="dark" className="relative pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10 overflow-hidden">
 
@@ -229,11 +240,8 @@ const ServicosDetalhe = () => {
               {service.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-14 px-8 text-sm shadow-sm shadow-revgreen/10 cursor-pointer">
-                Agendar Consultoria
-              </Button>
-              <Button asChild className="h-14 px-8 text-sm bg-transparent border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
-                <Link to="/cases">Ver Cases</Link>
+              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-16 px-12 font-bold text-sm shadow-sm shadow-revgreen/10 cursor-pointer uppercase tracking-widest text-black">
+                Aplicar para Integração Mínima
               </Button>
             </div>
           </div>
@@ -243,8 +251,8 @@ const ServicosDetalhe = () => {
       {/* 2. O QUE FAZEMOS (What We Do) */}
       <Section variant="light" className="py-24 bg-white">
         <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-black tracking-tight text-center">
-            O que fazemos
+          <h2 className="text-3xl md:text-5xl font-black mb-16 text-black tracking-tighter text-center uppercase">
+            A Engenharia (Como funciona)
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {service.whatWeDo.map((item, i) => (
@@ -271,8 +279,8 @@ const ServicosDetalhe = () => {
       {/* 3. COMO FUNCIONA (How It Works) */}
       <Section variant="light" className="py-24 bg-zinc-50 border-y border-zinc-200">
         <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-black tracking-tight text-center">
-            Como funciona
+          <h2 className="text-3xl md:text-5xl font-black mb-16 text-black tracking-tighter text-center uppercase">
+            Teardown Logístico
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             {/* Connector Line (Desktop only) */}
@@ -297,8 +305,8 @@ const ServicosDetalhe = () => {
       {/* 4. RESULTADOS (Results) */}
       <Section variant="dark" className="py-24 bg-black border-t border-white/5">
         <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-normal mb-16 text-white tracking-tight text-center">
-            Resultados Típicos
+          <h2 className="text-3xl md:text-5xl font-black mb-16 text-white tracking-tighter text-center uppercase">
+            Eficiência Pós-Implementação
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {service.results.map((result, i) => (
@@ -319,15 +327,15 @@ const ServicosDetalhe = () => {
       <Section variant="light" className="py-24 bg-white">
         <div className="container-custom text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold mb-6 text-black">Pronto para começar?</h2>
-            <p className="text-xl text-zinc-500 mb-10 font-light">
-              Agende uma consultoria gratuita e descubra como podemos ajudar sua empresa a escalar.
+            <h2 className="text-4xl md:text-5xl font-black mb-6 text-black tracking-tighter uppercase">Está com o caixa sangrando?</h2>
+            <p className="text-xl text-zinc-500 mb-10 font-bold">
+              Avaliaremos sua operação tecnicamente e te diremos exatamente porque seu marketing não fecha a conta. Call bruta e pontual.
             </p>
             <Button
               onClick={() => setIsBookingOpen(true)}
-              className="btn-aggressive h-16 px-12 text-base bg-black text-white hover:bg-revgreen hover:text-black shadow-sm cursor-pointer"
+              className="bg-black text-white hover:bg-revgreen hover:text-black h-16 px-12 rounded-sm text-sm font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer"
             >
-              Agendar Consultoria Gratuita
+              Aplicar para Diagnóstico de Funil
             </Button>
           </div>
         </div>

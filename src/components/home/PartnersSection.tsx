@@ -10,8 +10,6 @@ const partners = [
   { name: "Agence", logo: "/uploads/6c09375e-5298-4672-9226-27eb60a6b038.png" },
   { name: "BLDN", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c77062fe4f1854fadf797.svg", scale: 1.1 },
   { name: "Idee Seguros", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694c73dcdda192452a508485.png" },
-  { name: "Wysion", logo: "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f321cb62dd3a75de235ca.jpg" },
-  { name: "Bolt", logo: "/uploads/bolt-logo-new.png" },
   { name: "Emagrecentro", logo: "/uploads/emagrecentro-logo-new.png", scale: 1.5, customOpacity: 1 },
   { name: "BT", logo: "/uploads/bt-logo-new.png" },
   { name: "Tegra", logo: "/uploads/tegra-logo-new.png", scale: 1.4 },
@@ -32,7 +30,7 @@ const PartnersSection = () => {
         </div>
 
         {/* Grid Layout with Sophisticated Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-[1400px] mx-auto px-4">
+        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-5 gap-4 max-w-[1400px] mx-auto px-4">
           {partners.map((partner: any, index) => (
             <div
               key={index}

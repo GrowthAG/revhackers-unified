@@ -47,13 +47,21 @@ const STATIC_ROUTES = [
   '/metodologia',
   '/diagnostico',
   '/booking',
-  '/agenda',
   '/score',
   '/score-revenue',
   '/score-site',
   '/score-founder',
   '/privacidade',
   '/termos-de-uso',
+];
+
+// Routes that should NOT be prerendered or included in sitemap
+const EXCLUDED_FROM_SITEMAP = [
+  '/agenda',           // redirect to /booking
+  '/agenda-giulliano', // iframe-only thin content
+  '/agenda-luna',
+  '/agenda-linkedin',
+  '/agenda-kickoff',
 ];
 
 // Simple static file server for dist/
@@ -95,29 +103,38 @@ function createServer() {
 
 function generateSitemap(routes) {
   const baseUrl = 'https://revhackers.com.br';
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
   for (const route of routes) {
-    let priority = '0.7';
+    // Skip excluded routes
+    if (EXCLUDED_FROM_SITEMAP.includes(route)) continue;
+    
+    // Skip test/placeholder content
+    if (route.includes('post-teste')) continue;
+    
+    let priority = '0.5';
     let changefreq = 'monthly';
     
     if (route === '/') { priority = '1.0'; changefreq = 'weekly'; }
-    else if (route === '/blog') { priority = '0.9'; changefreq = 'weekly'; }
-    else if (route.startsWith('/blog/')) { priority = '0.8'; changefreq = 'monthly'; }
+    else if (route === '/blog' || route === '/servicos') { priority = '0.9'; changefreq = 'weekly'; }
+    else if (route === '/cases' || route === '/diagnostico' || route === '/materiais') { priority = '0.8'; changefreq = 'weekly'; }
+    else if (route.startsWith('/blog/')) { priority = '0.7'; changefreq = 'monthly'; }
+    else if (route.startsWith('/cases/')) { priority = '0.6'; changefreq = 'monthly'; }
+    else if (route.startsWith('/servicos/')) { priority = '0.7'; changefreq = 'monthly'; }
+    else if (route.startsWith('/materiais/')) { priority = '0.6'; changefreq = 'monthly'; }
+    else if (route === '/booking' || route === '/quem-somos' || route === '/metodologia') { priority = '0.7'; changefreq = 'monthly'; }
+    else if (route.startsWith('/score')) { priority = '0.6'; changefreq = 'monthly'; }
+    else if (route === '/privacidade' || route === '/termos-de-uso') { priority = '0.3'; changefreq = 'yearly'; }
 
-    sitemap += `
-  <url>
-    <loc>${baseUrl}${route}</loc>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
+    sitemap += `\n  <url>\n    <loc>${baseUrl}${route}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
   }
 
   sitemap += `\n</urlset>`;
   
   const sitemapPath = path.join(DIST_DIR, 'sitemap.xml');
   fs.writeFileSync(sitemapPath, sitemap);
-  console.log(`✅ Generated dynamic sitemap.xml with ${routes.length} URLs`);
+  console.log(`✅ Generated dynamic sitemap.xml with ${routes.length} URLs (excl. ${EXCLUDED_FROM_SITEMAP.length} blocked)`);
 }
 
 async function fetchDynamicRoutes() {

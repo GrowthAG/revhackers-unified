@@ -44,7 +44,7 @@ export const DiagnosticLayout = ({
                 <Section
                     variant={isDark ? 'dark' : 'light'}
                     className={cn(
-                        "pt-24 md:pt-32 pb-20 min-h-screen flex flex-col",
+                        "pt-16 pb-12 min-h-screen flex flex-col",
                         centered ? "items-center justify-start text-center" : "items-center justify-start"
                     )}
                 >
@@ -52,11 +52,11 @@ export const DiagnosticLayout = ({
                         {/* Standard Header */}
                         {!hideHeader && (
                             <div className={cn(
-                                "mb-20 md:mb-32 w-full",
+                                "mb-6 w-full",
                                 isDark ? "border-zinc-900" : "border-zinc-100",
                                 centered && "flex flex-col items-center text-center"
                             )}>
-                                <div className={cn("space-y-8 w-full", centered && "flex flex-col items-center")}>
+                                <div className={cn("space-y-3 w-full", centered && "flex flex-col items-center")}>
                                     <div className="flex items-center gap-3 animate-fade-in">
                                         <div className={cn(
                                             "w-1 h-1 rounded-full",

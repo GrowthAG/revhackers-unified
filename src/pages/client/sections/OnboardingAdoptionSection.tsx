@@ -30,7 +30,7 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                                     01
                                 </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight">
+                            <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight">
                                 <EditableField
                                     placeholder="Auditoria Silenciosa"
                                     path="onboarding_data.adoption.p1_title"
@@ -55,7 +55,7 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                                     02
                                 </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight">
+                            <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight">
                                 <EditableField
                                     placeholder="Micro-Ajustes Estruturais"
                                     path="onboarding_data.adoption.p2_title"
@@ -79,7 +79,7 @@ export default function OnboardingAdoptionSection({ plan }: OnboardingSectionPro
                             <div className="flex items-start gap-4">
                                 <div className="mt-1 w-2 h-2 bg-[#00CC6A] shadow-[0_0_8px_rgba(0,204,106,0.6)]" />
                                 <div>
-                                    <h4 className="text-body text-zinc-900 font-bold mb-1">Ciclo Rápido de Retorno</h4>
+                                    <h4 className="text-body text-zinc-900 font-black mb-1">Ciclo Rápido de Retorno</h4>
                                     <p className="text-mini text-zinc-500 font-medium">Reunião semanal de 15min com a liderança para reportar atritos</p>
                                 </div>
                             </div>

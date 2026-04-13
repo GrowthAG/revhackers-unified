@@ -91,7 +91,7 @@ export default function MaterialLanding() {
             <SEO
                 title={((material.headline || material.title || '').replace(/<[^>]*>/g, '')).substring(0, 60)}
                 description={(material.description || material.subheadline || 'Material gratuito RevHackers').replace(/<[^>]*>/g, '').substring(0, 160)}
-                canonical={`https://revhackers.com/materiais/${slug}`}
+                canonical={`https://revhackers.com.br/materiais/${slug}`}
             />
             {/* Hero Section - Apple/OpenAI Minimalist Style */}
             <section className="pt-32 pb-24 px-6 bg-white min-h-[70vh] flex items-center justify-center">

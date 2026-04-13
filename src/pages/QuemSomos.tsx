@@ -7,6 +7,7 @@ import HistorySection from '@/components/quem-somos/HistorySection';
 import TimelineSection from '@/components/quem-somos/TimelineSection';
 import ValuesSection from '@/components/quem-somos/ValuesSection';
 import CTASection from '@/components/quem-somos/CTASection';
+import SEO from '@/components/shared/SEO';
 
 const QuemSomos = () => {
   // Scroll to top when component mounts
@@ -16,6 +17,15 @@ const QuemSomos = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title="Quem Somos - Consultoria de Revenue Operations"
+        description="Conheça a RevHackers: a primeira consultoria de Revenue Operations do Brasil. Fundada em São Paulo, integramos IA, CRM e automações para escalar empresas B2B."
+        canonical="https://revhackers.com.br/quem-somos"
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Quem Somos", url: "https://revhackers.com.br/quem-somos" }
+        ]}
+      />
       <div className="min-h-screen bg-black animate-fade-in bg-grain">
         {/* Hero Section */}
         <HeroSection />

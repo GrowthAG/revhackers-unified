@@ -1,9 +1,15 @@
 
 import PageLayout from '@/components/layout/PageLayout';
+import SEO from '@/components/shared/SEO';
 
 const Privacidade = () => {
   return (
     <PageLayout>
+      <SEO
+        title="Política de Privacidade"
+        description="Política de privacidade e proteção de dados da RevHackers. Saiba como tratamos seus dados pessoais de acordo com a LGPD."
+        canonical="https://revhackers.com.br/privacidade"
+      />
       <section className="pt-32 pb-20">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto bg-white p-8 shadow-sm">

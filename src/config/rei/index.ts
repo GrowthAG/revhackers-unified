@@ -6,7 +6,10 @@ import { REIType, REIConfig } from '@/types/rei';
 export const REI_CONFIGS: Record<REIType, REIConfig> = {
     consulting: consultingConfig,
     dev: devConfig,
-    founder: founderConfig
+    founder: founderConfig,
+    crm_ops: consultingConfig,
+    site: devConfig,
+    funnel: consultingConfig,
 };
 
 export const getREIConfig = (type: REIType): REIConfig => {
@@ -15,9 +18,12 @@ export const getREIConfig = (type: REIType): REIConfig => {
 
 export const getREITitle = (type: REIType): string => {
     const titles: Record<REIType, string> = {
-        consulting: 'Consultoria 360º',
+        consulting: 'Consultoria 360',
         dev: 'Dev Web & Design',
-        founder: 'Founder Growth'
+        founder: 'Founder Growth',
+        crm_ops: 'CRM & RevOps',
+        site: 'Site & Landing Pages',
+        funnel: 'Funil de Vendas',
     };
     return titles[type];
 };
@@ -26,7 +32,11 @@ export const getREIIcon = (type: REIType): string => {
     const icons: Record<REIType, string> = {
         consulting: 'Target',
         dev: 'Code',
-        founder: 'Crown'
+        founder: 'Crown',
+        crm_ops: 'Database',
+        site: 'Globe',
+        funnel: 'Filter',
     };
     return icons[type];
 };
+

@@ -181,7 +181,7 @@ export const KickoffSignaturePanel: React.FC<KickoffSignaturePanelProps> = ({ pr
                                                 : 'bg-transparent border-zinc-200 hover:border-zinc-300'
                                         }`}
                                     >
-                                        <span className="text-sm font-bold text-zinc-900">Externo (Autentique)</span>
+                                        <span className="text-sm font-bold text-zinc-900">Externo (link do contrato)</span>
                                         <span className="text-[11px] text-zinc-500">Link hospedado em outro lugar</span>
                                     </button>
                                 </div>
@@ -196,11 +196,11 @@ export const KickoffSignaturePanel: React.FC<KickoffSignaturePanelProps> = ({ pr
                                         type="url" 
                                         value={configUrl}
                                         onChange={e => setConfigUrl(e.target.value)}
-                                        placeholder="https://app.autentique.com.br/..."
-                                        className="w-full bg-white border border-zinc-300 p-4 text-sm text-zinc-900 focus:ring-black focus:border-black outline-none transition-shadow" 
+                                        placeholder="https://docs.google.com/... ou link do contrato"
+                                        className="w-full bg-white border border-zinc-300 p-4 text-sm text-zinc-900 focus:ring-black focus:border-black outline-none transition-shadow"
                                     />
                                     <p className="text-[11px] text-zinc-500 mt-2">
-                                        Cole a URL do documento assinado no Autentique, DocuSign ou similar.
+                                        Cole a URL do documento assinado (Google Docs, PDF Drive ou similar).
                                     </p>
                                 </div>
                             )}
@@ -353,7 +353,7 @@ export const KickoffSignaturePanel: React.FC<KickoffSignaturePanelProps> = ({ pr
                             
                             {isSigned ? (
                                 <div className="text-center space-y-4 animate-in fade-in zoom-in duration-500">
-                                    <div className="w-24 h-24 bg-[#00CC6A]/10 flex items-center justify-center mx-auto shadow-inner rounded-full mb-6">
+                                    <div className="w-24 h-24 bg-[#00CC6A]/10 flex items-center justify-center mx-auto shadow-inner rounded-3xl mb-6">
                                         <CheckCircle2 className="w-12 h-12 text-[#00CC6A]" />
                                     </div>
                                     <div>

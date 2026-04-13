@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ReiProject } from '@/api/reiProjects';
-import { Sparkles, Presentation } from 'lucide-react';
+import { Cpu, Presentation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProposalForm from '@/components/admin/ProposalForm';
 import { AIProvider } from '@/context/AIContext';
@@ -34,7 +34,7 @@ export const SalesRoomTab: React.FC<SalesRoomTabProps> = ({ project }) => {
                             className="w-full sm:w-auto bg-black hover:bg-zinc-800 text-white font-black uppercase tracking-widest h-14 px-10 "
                             onClick={() => setShowBuilder(true)}
                         >
-                            <Sparkles className="w-5 h-5 mr-3" />
+                            <Cpu className="w-5 h-5 mr-3" />
                             Começar
                         </Button>
                     </div>

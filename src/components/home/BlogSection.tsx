@@ -40,7 +40,7 @@ const BlogSection = () => {
           new Date(b.date).getTime() - new Date(a.date).getTime()
         ).slice(0, 4);
 
-        setFeaturedArticles(sortedPosts);
+        setFeaturedArticles(sortedPosts as any);
       } catch (error) {
         console.error("Erro ao carregar artigos do blog:", error);
         setFeaturedArticles([]);

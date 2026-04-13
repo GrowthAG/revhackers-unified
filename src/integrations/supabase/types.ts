@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       agent_documents: {
@@ -596,6 +621,103 @@ export type Database = {
           },
         ]
       }
+      clickup_integrations: {
+        Row: {
+          clickup_folder_id: string | null
+          clickup_space_id: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          rei_project_id: string
+          sprint_lists: Json
+          sprints_status: string
+          updated_at: string
+          workspace_status: string
+        }
+        Insert: {
+          clickup_folder_id?: string | null
+          clickup_space_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          rei_project_id: string
+          sprint_lists?: Json
+          sprints_status?: string
+          updated_at?: string
+          workspace_status?: string
+        }
+        Update: {
+          clickup_folder_id?: string | null
+          clickup_space_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          rei_project_id?: string
+          sprint_lists?: Json
+          sprints_status?: string
+          updated_at?: string
+          workspace_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clickup_integrations_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: true
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clickup_orchestrator_runs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          folder_id: string | null
+          id: string
+          kind: string
+          list_ids_created: string[] | null
+          rei_project_id: string | null
+          status: string
+          tasks_created_count: number | null
+          triggered_by: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          folder_id?: string | null
+          id?: string
+          kind: string
+          list_ids_created?: string[] | null
+          rei_project_id?: string | null
+          status: string
+          tasks_created_count?: number | null
+          triggered_by: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          folder_id?: string | null
+          id?: string
+          kind?: string
+          list_ids_created?: string[] | null
+          rei_project_id?: string | null
+          status?: string
+          tasks_created_count?: number | null
+          triggered_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clickup_orchestrator_runs_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_meetings: {
         Row: {
           attendees: Json | null
@@ -858,6 +980,164 @@ export type Database = {
           },
         ]
       }
+      hub_conversation_members: {
+        Row: {
+          conversation_id: string
+          id: string
+          joined_at: string | null
+          last_read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "hub_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_conversations: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          organization_id: string | null
+          project_id: string | null
+          slug: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          organization_id?: string | null
+          project_id?: string | null
+          slug: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          organization_id?: string | null
+          project_id?: string | null
+          slug?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_conversations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_message_references: {
+        Row: {
+          entity_id: string
+          entity_label: string | null
+          entity_type: string
+          id: string
+          message_id: string
+        }
+        Insert: {
+          entity_id: string
+          entity_label?: string | null
+          entity_type: string
+          id?: string
+          message_id: string
+        }
+        Update: {
+          entity_id?: string
+          entity_label?: string | null
+          entity_type?: string
+          id?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_message_references_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "hub_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          is_system_event: boolean | null
+          metadata: Json | null
+          sender_id: string | null
+          sender_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          is_system_event?: boolean | null
+          metadata?: Json | null
+          sender_id?: string | null
+          sender_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          is_system_event?: boolean | null
+          metadata?: Json | null
+          sender_id?: string | null
+          sender_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "hub_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           created_at: string | null
@@ -1015,46 +1295,85 @@ export type Database = {
         Row: {
           ai_insights: Json | null
           ai_summary: string | null
+          client_acknowledged: boolean | null
+          client_acknowledged_at: string | null
           client_id: string | null
           created_at: string | null
+          decisions: Json | null
           drive_file_id: string | null
+          duration_seconds: number | null
+          fathom_meeting_id: string | null
           happened_at: string | null
           id: string
+          meeting_phase: string | null
+          meeting_type: string | null
+          opportunity_id: string | null
+          participants: Json | null
           rei_project_id: string | null
           scheduled_meeting_id: string | null
+          tags: string[] | null
           title: string | null
           transcript: string | null
           transcript_status: string | null
+          updated_at: string | null
+          uploaded_by: string | null
+          video_hash: string | null
           video_url: string | null
         }
         Insert: {
           ai_insights?: Json | null
           ai_summary?: string | null
+          client_acknowledged?: boolean | null
+          client_acknowledged_at?: string | null
           client_id?: string | null
           created_at?: string | null
+          decisions?: Json | null
           drive_file_id?: string | null
+          duration_seconds?: number | null
+          fathom_meeting_id?: string | null
           happened_at?: string | null
           id?: string
+          meeting_phase?: string | null
+          meeting_type?: string | null
+          opportunity_id?: string | null
+          participants?: Json | null
           rei_project_id?: string | null
           scheduled_meeting_id?: string | null
+          tags?: string[] | null
           title?: string | null
           transcript?: string | null
           transcript_status?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          video_hash?: string | null
           video_url?: string | null
         }
         Update: {
           ai_insights?: Json | null
           ai_summary?: string | null
+          client_acknowledged?: boolean | null
+          client_acknowledged_at?: string | null
           client_id?: string | null
           created_at?: string | null
+          decisions?: Json | null
           drive_file_id?: string | null
+          duration_seconds?: number | null
+          fathom_meeting_id?: string | null
           happened_at?: string | null
           id?: string
+          meeting_phase?: string | null
+          meeting_type?: string | null
+          opportunity_id?: string | null
+          participants?: Json | null
           rei_project_id?: string | null
           scheduled_meeting_id?: string | null
+          tags?: string[] | null
           title?: string | null
           transcript?: string | null
           transcript_status?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          video_hash?: string | null
           video_url?: string | null
         }
         Relationships: [
@@ -1063,6 +1382,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_recordings_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
           {
@@ -2495,6 +2821,7 @@ export type Database = {
           created_at: string | null
           diagnostico_id: string | null
           enrichment_data: Json | null
+          final_expectations: string | null
           focal_points: Json | null
           id: string
           last_rei_date: string | null
@@ -2503,6 +2830,8 @@ export type Database = {
           market_data_updated_at: string | null
           next_rei_date: string
           notion_sprint_id: string | null
+          onboarding_phase: number | null
+          onboarding_phase_entered_at: string | null
           opportunity_data: Json | null
           organization_id: string | null
           pipeline_stage: string | null
@@ -2528,6 +2857,7 @@ export type Database = {
           created_at?: string | null
           diagnostico_id?: string | null
           enrichment_data?: Json | null
+          final_expectations?: string | null
           focal_points?: Json | null
           id?: string
           last_rei_date?: string | null
@@ -2536,6 +2866,8 @@ export type Database = {
           market_data_updated_at?: string | null
           next_rei_date: string
           notion_sprint_id?: string | null
+          onboarding_phase?: number | null
+          onboarding_phase_entered_at?: string | null
           opportunity_data?: Json | null
           organization_id?: string | null
           pipeline_stage?: string | null
@@ -2561,6 +2893,7 @@ export type Database = {
           created_at?: string | null
           diagnostico_id?: string | null
           enrichment_data?: Json | null
+          final_expectations?: string | null
           focal_points?: Json | null
           id?: string
           last_rei_date?: string | null
@@ -2569,6 +2902,8 @@ export type Database = {
           market_data_updated_at?: string | null
           next_rei_date?: string
           notion_sprint_id?: string | null
+          onboarding_phase?: number | null
+          onboarding_phase_entered_at?: string | null
           opportunity_data?: Json | null
           organization_id?: string | null
           pipeline_stage?: string | null
@@ -2766,6 +3101,7 @@ export type Database = {
           financial_projections: Json | null
           goals_data: Json | null
           id: string
+          manual_overrides: Json | null
           methodology_data: Json | null
           next_steps_data: Json | null
           okr_data: Json | null
@@ -2798,6 +3134,7 @@ export type Database = {
           financial_projections?: Json | null
           goals_data?: Json | null
           id?: string
+          manual_overrides?: Json | null
           methodology_data?: Json | null
           next_steps_data?: Json | null
           okr_data?: Json | null
@@ -2830,6 +3167,7 @@ export type Database = {
           financial_projections?: Json | null
           goals_data?: Json | null
           id?: string
+          manual_overrides?: Json | null
           methodology_data?: Json | null
           next_steps_data?: Json | null
           okr_data?: Json | null
@@ -3169,6 +3507,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

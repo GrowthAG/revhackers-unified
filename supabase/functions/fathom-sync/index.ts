@@ -91,34 +91,49 @@ serve(async (req) => {
             if (matches) {
                 console.log(`Match encontrado em meeting ${meeting.id} - ${title}`);
 
-                // Check if this recording was already imported
-                const { data: existing } = await supabaseClient
-                    .from('meeting_recordings')
-                    .select('id')
-                    .eq('title', title) // Note: matching by title or ext-id is better. Assuming Fathom payload has meeting ID or we filter by date
-                    .maybeSingle();
+                // Deduplica por fathom_meeting_id (robusto) ou por titulo+data (fallback)
+                const fathomId = meeting.id || meeting.uuid || null;
+                const dedupeQuery = fathomId
+                    ? supabaseClient.from('meeting_recordings').select('id').eq('fathom_meeting_id', fathomId).maybeSingle()
+                    : supabaseClient.from('meeting_recordings').select('id').eq('title', title).eq('happened_at', happenedAt).maybeSingle();
+
+                const { data: existing } = await dedupeQuery;
 
                 if (!existing) {
-                    // Start transcription processing / summary
-                    // We extract transcript explicitly from Fathom payload if available, else ''
-                    const scriptText = meeting.transcript || meeting.transcript_url ? 'Transcrição carregada do Fathom' : 'Processando Transcrição...';
-                    const summary = meeting.summary || 'Resumo gerado pelo Fathom.';
+                    // Extrai transcript real do payload do Fathom
+                    let transcript: string | null = null;
+                    if (typeof meeting.transcript === 'string' && meeting.transcript.length > 10) {
+                        transcript = meeting.transcript;
+                    } else if (meeting.transcript_text) {
+                        transcript = meeting.transcript_text;
+                    }
 
-                    const recordingPayload = {
-                        title: title,
+                    // Extrai action items do Fathom
+                    const actionItems: string[] = [];
+                    if (Array.isArray(meeting.action_items)) {
+                        meeting.action_items.forEach((item: any) => {
+                            if (typeof item === 'string') actionItems.push(item);
+                            else if (item.text || item.title) actionItems.push(item.text || item.title);
+                        });
+                    }
+
+                    const summary = meeting.summary || meeting.ai_summary || null;
+
+                    const recordingPayload: any = {
+                        title,
                         video_url: recordingUrl,
-                        transcript: scriptText,
+                        transcript,
                         ai_summary: summary,
                         happened_at: happenedAt,
-                        transcript_status: 'completed',
-                        agent_id: user.id
+                        transcript_status: transcript ? 'completed' : 'pending',
+                        fathom_meeting_id: fathomId,
+                        agent_id: user.id,
                     };
 
                     if (targetProjectId) {
                         recordingPayload.rei_project_id = targetProjectId;
                     }
 
-                    // Insert recording
                     const { data: insertedRecording, error: insertError } = await supabaseClient
                         .from('meeting_recordings')
                         .insert([recordingPayload])
@@ -129,13 +144,25 @@ serve(async (req) => {
                         console.error('Erro ao inserir gravacao', insertError);
                     } else if (insertedRecording) {
                         importedMeetings.push(insertedRecording);
-                        
-                        // Enfilerar para análise extra de insights da IA
-                        // Invoke existing parse function in BG to generate `sinais_compra` e `objecoes`
-                        if (scriptText && scriptText.length > 50) {
-                             supabaseClient.functions.invoke('analyze-meeting-transcript', {
+
+                        // Dispara analise IA se houver transcript real
+                        if (transcript && transcript.length > 50) {
+                            supabaseClient.functions.invoke('analyze-meeting-transcript', {
                                 body: { recordingId: insertedRecording.id }
-                            }).catch(err => console.error("Erro ao chamar analyze-meeting: ", err));
+                            }).catch(err => console.error('[fathom-sync] Erro ao chamar analise:', err));
+                        }
+
+                        // Cria tasks dos action items se houver projeto associado
+                        if (actionItems.length > 0 && targetProjectId) {
+                            const tasks = actionItems.map(item => ({
+                                project_id: targetProjectId,
+                                title: item,
+                                status: 'todo',
+                                priority: 'medium',
+                                description: `Combinado na reuniao: ${title}`,
+                            }));
+                            supabaseClient.from('orqflow_tasks').insert(tasks)
+                                .catch(err => console.error('[fathom-sync] Erro ao criar tasks:', err));
                         }
                     }
                 }

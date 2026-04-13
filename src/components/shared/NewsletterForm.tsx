@@ -89,7 +89,8 @@ const NewsletterForm = ({ variant = 'default' }: NewsletterFormProps) => {
           />
           <Button
             type="submit"
-            className="w-full h-11 bg-revgreen hover:bg-white text-black font-bold text-mini rounded-sm transition-all shadow-none"
+            variant="default"
+            className="w-full h-11 rounded"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Enviando..." : "Inscrever-se"}
@@ -101,7 +102,7 @@ const NewsletterForm = ({ variant = 'default' }: NewsletterFormProps) => {
               onCheckedChange={(checked) => setConsent(checked as boolean)}
               className="h-4 w-4 border-zinc-800 rounded-none data-[state=checked]:bg-revgreen data-[state=checked]:border-revgreen data-[state=checked]:text-black"
             />
-            <label htmlFor="footerConsent" className="text-xxs text-zinc-600 leading-tight">
+            <label htmlFor="footerConsent" className="text-xxs text-zinc-500 leading-tight">
               Ao se inscrever, você aceita receber conteúdos da RevHackers.
             </label>
           </div>
@@ -145,10 +146,11 @@ const NewsletterForm = ({ variant = 'default' }: NewsletterFormProps) => {
 
         <Button
           type="submit"
-          className="w-full h-12 bg-white hover:bg-revgreen text-black font-black text-tiny uppercase tracking-[0.3em] rounded-none transition-all"
+          variant="default"
+          className="w-full h-12 rounded"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "ENVIANDO..." : "INSCREVER →"}
+          {isSubmitting ? "Enviando..." : "Inscrever-se"}
         </Button>
       </form>
     </div>

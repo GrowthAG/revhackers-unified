@@ -79,19 +79,19 @@ export default function ThesisSection({ plan }: { plan: any }) {
                 <div className="text-center max-w-4xl mx-auto mt-2 mb-16 px-4">
                     <EditableField
                         path="diagnostic_data.thesis_statement.before"
-                        className="text-xl md:text-2xl font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-black text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.before}
                     />
                     {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.highlight"
-                        className="text-xl md:text-2xl font-bold text-[#00CC6A] leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-black text-[#00CC6A] leading-[1.4] tracking-tight inline"
                         placeholder={thesis.highlight}
                     />
                     {' '}
                     <EditableField
                         path="diagnostic_data.thesis_statement.after"
-                        className="text-xl md:text-2xl font-semibold text-zinc-800 leading-[1.4] tracking-tight inline"
+                        className="text-xl md:text-2xl font-black text-zinc-800 leading-[1.4] tracking-tight inline"
                         placeholder={thesis.after}
                     />
                 </div>
@@ -112,7 +112,7 @@ export default function ThesisSection({ plan }: { plan: any }) {
                                         <div className="h-px w-8 bg-zinc-200 shrink-0" />
                                     </div>
                                     
-                                    <h4 className="text-reading font-bold text-zinc-900 mb-3 tracking-tight">
+                                    <h4 className="text-reading font-black text-zinc-900 mb-3 tracking-tight">
                                         <EditableField
                                             path={`diagnostic_data.thesis_pillars.${i}.title`}
                                             placeholder={pillar.title}

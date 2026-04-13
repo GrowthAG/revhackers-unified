@@ -30,6 +30,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     public render() {
         if (this.state.hasError) {
+            const isAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
             return (
                 <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 p-6">
                     <div className="max-w-2xl w-full bg-white border border-zinc-200 p-8 shadow-sm">
@@ -55,11 +56,11 @@ export class ErrorBoundary extends Component<Props, State> {
                         <div className="flex justify-end gap-3">
                             <Button
                                 variant="outline"
-                                onClick={() => window.location.href = '/admin'}
+                                onClick={() => window.location.href = isAdmin ? '/admin' : '/'}
                                 className="gap-2"
                             >
                                 <Home className="w-4 h-4" />
-                                Voltar para Admin
+                                {isAdmin ? 'Voltar para Admin' : 'Voltar ao Início'}
                             </Button>
                             <Button
                                 onClick={() => window.location.reload()}

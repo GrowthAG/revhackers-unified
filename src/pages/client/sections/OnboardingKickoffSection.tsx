@@ -86,7 +86,7 @@ export default function OnboardingKickoffSection({ plan }: OnboardingSectionProp
                                         <span className="text-xxs text-zinc-300 font-mono font-bold">{String(i + 1).padStart(2, '0')}</span>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="text-lg font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                                        <h4 className="text-lg font-black text-zinc-900 mb-2 tracking-tight group-hover:text-[#00CC6A] transition-colors">
                                             <EditableField
                                                 placeholder={pillar.titlePlaceholder}
                                                 path={pillar.titlePath}

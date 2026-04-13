@@ -1,29 +1,88 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM - RevHackers
+   Arquiteto: Sistema B - Refinado Moderno (4px radius)
+   Verde único: #00C060 | Tracking máx: 0.08em | Zero glow
+   ═══════════════════════════════════════════════════════════════ */
+
 @layer base {
+
+  /* 
+   * BRUTALIST INDUSTRIAL SCROLLBARS
+   * Replaces the native rounded OS scrollbar with a sharp, thin data-line.
+   */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: theme('colors.zinc.50'); 
+    border-left: 1px solid theme('colors.zinc.200');
+  }
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.zinc.900'); 
+    border-radius: 0px; 
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.black'); 
+  }
+
+  /* Dark surfaces: scrollbar adapts to dark backgrounds */
+  .bg-zinc-950 ::-webkit-scrollbar-track,
+  .bg-zinc-900 ::-webkit-scrollbar-track,
+  .bg-black ::-webkit-scrollbar-track {
+    background: theme('colors.zinc.900');
+    border-left-color: theme('colors.zinc.800');
+  }
+
   :root {
-    /* Aggressive Editorial Palette */
-    --background: 0 0% 100%;
-    /* Pure White */
-    --foreground: 0 0% 0%;
-    /* Pure Black */
+    /* ─── Surface ─── */
+    --background:   0 0% 100%;    /* #FFFFFF */
+    --foreground:   0 0% 4%;      /* #0A0A0A */
 
-    --primary: 134 98% 50%;
-    /* Signal Green #03FC3B */
-    --primary-foreground: 0 0% 0%;
+    /* ─── Brand Action - SINGLE GREEN ─── */
+    --primary:          150 100% 38%;   /* #00C060 */
+    --primary-foreground: 0 0% 0%;      /* #000000 */
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 100%;
+    /* ─── Cards / Panels ─── */
+    --card:           0 0% 100%;
+    --card-foreground: 0 0% 4%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    /* ─── Secondary ─── */
+    --secondary:          0 0% 96%;    /* zinc-100 */
+    --secondary-foreground: 0 0% 9%;
 
-    --radius: 0px;
-    /* 0px - Brutalist/Sharp - Mantendo o padrão industrial rigoroso */
+    /* ─── Muted ─── */
+    --muted:          0 0% 96%;
+    --muted-foreground: 0 0% 45%;      /* zinc-500 */
+
+    /* ─── Accent ─── */
+    --accent:          0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+
+    /* ─── Borders & Inputs ─── */
+    --border: 0 0% 89%;   /* zinc-200 */
+    --input:  0 0% 89%;
+    --ring:   150 100% 38%;  /* matches primary */
+
+    /* ─── Semantic ─── */
+    --destructive:          0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* ─── Popover ─── */
+    --popover:          0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+
+    /* ─── Radius Scale - B: 4px base ─── */
+    --radius-sm: 0.125rem;   /* 2px  - badges, tags */
+    --radius:    0.25rem;    /* 4px  - buttons, inputs (base) */
+    --radius-lg: 0.5rem;     /* 8px  - cards, panels */
+    --radius-xl: 0.75rem;    /* 12px - modals, sheets */
   }
 }
 
@@ -33,208 +92,191 @@
   }
 
   html {
-    /* Base font size for rem calculations. Default is 16px */
     font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  /* Ultrawide scaling for REM sizing */
+  @media (min-width: 1536px) {
+    html {
+      font-size: 17px; /* 106.25% factor on wide monitors */
+    }
+  }
+
+  @media (min-width: 1920px) {
+    html {
+      font-size: 18px; /* 112.5% factor on ultra-wide / full hd full screen */
+    }
   }
 
   body {
-    @apply bg-white text-foreground font-sans antialiased selection:bg-revgreen selection:text-black;
+    @apply bg-white text-foreground font-sans antialiased;
+    @apply selection:bg-revgreen selection:text-black;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Standardized Typography System */
+  /* ─── Tipografia Global - Hierarquia de 5 niveis ─── */
+  /* Usar via classes explícitas, nunca sobrescrever inline */
+
   h1 {
-    @apply font-black tracking-tight md:tracking-tighter text-balance;
+    @apply font-black tracking-tight leading-[1.05] text-balance;
   }
 
   h2 {
-    @apply font-black tracking-tight text-balance text-3xl md:text-5xl lg:text-6xl;
+    @apply font-bold tracking-tight leading-[1.1] text-balance;
   }
 
   h3 {
-    @apply font-black tracking-tight text-balance text-2xl md:text-3xl;
+    @apply font-semibold tracking-tight leading-[1.2] text-balance;
+  }
+
+  h4 {
+    @apply font-semibold leading-[1.3];
   }
 }
 
 @layer components {
 
-  /* Editorial Layouts */
+  /* ─── Layout ─── */
   .container-custom {
     @apply mx-auto px-6 md:px-12 max-w-[1400px] w-full;
   }
 
-  /* Aggressive Buttons - Text Only or Outlined */
-  .btn-aggressive {
-    @apply bg-white text-black font-medium h-14 px-10 hover:bg-revgreen transition-colors duration-200 uppercase tracking-widest text-xs border border-transparent;
+  /* ─── Section Padding Scale ─── */
+  .section-xs  { @apply py-12; }
+  .section-sm  { @apply py-24; }
+  .section-md  { @apply py-32; }
+  .section-lg  { @apply py-48; }
+
+  /* ─── Typography Named Styles ─── */
+  /* display-xl: hero único */
+  .type-display-xl {
+    font-size: clamp(2.25rem, 4.5vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
-  .btn-green-flat {
-    @apply bg-revgreen text-black font-bold h-14 px-10 hover:bg-white hover:text-black transition-colors duration-200 uppercase tracking-widest text-xs border border-transparent rounded-sm;
+  /* display-lg: títulos de seção */
+  .type-display-lg {
+    @apply text-5xl md:text-6xl lg:text-7xl font-black tracking-tight;
+    line-height: 1.05;
   }
 
-  .btn-outline-flat {
-    @apply bg-transparent text-white font-bold h-14 px-10 hover:bg-white hover:text-black transition-colors duration-200 uppercase tracking-widest text-xs border border-white/20 hover:border-white rounded-sm;
+  /* heading-md: sub-seções */
+  .type-heading-md {
+    @apply text-2xl md:text-3xl font-bold tracking-tight;
+    line-height: 1.2;
   }
 
-  .btn-minimal {
-    @apply bg-transparent text-white font-medium h-14 px-0 hover:text-revgreen transition-colors duration-200 uppercase tracking-widest text-xs flex items-center gap-2 border-b border-white/20 hover:border-revgreen;
+  /* heading-sm: cards, componentes */
+  .type-heading-sm {
+    @apply text-lg md:text-xl font-semibold;
+    line-height: 1.3;
   }
 
-  /* Utilities */
-  .text-giant {
-    font-size: clamp(3rem, 8vw, 8rem);
-    /* Reduced max size from 10rem to 8rem */
-    line-height: 0.9;
+  /* label: labels, badges, meta - tracking MAXIMO 0.08em */
+  .type-label {
+    @apply text-tiny font-bold uppercase;
+    letter-spacing: 0.06em;
   }
 
-  .font-mono-tech {
-    font-family: inherit;
-    /* Neutralized Vibe Code */
+  /* ─── Buttons - Sistema Unico ─── */
+
+  /* Primário: verde sólido */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-revgreen text-black font-semibold
+           h-11 px-6
+           rounded
+           transition-colors duration-150
+           hover:bg-revgreen-hover
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-revgreen focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+    letter-spacing: 0;
   }
 
-  /* Premium Subtle Dot Patterns */
-  .bg-dot-light {
-    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.7;
+  /* Secundário: outline neutro */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-white font-medium
+           h-11 px-6
+           rounded border border-white/20
+           transition-colors duration-150
+           hover:bg-white/5 hover:border-white/40
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-0
+           disabled:opacity-50 disabled:pointer-events-none;
   }
 
-  .bg-dot-dark {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 32px 32px;
+  /* Secundário em fundo claro */
+  .btn-secondary-light {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-zinc-900 font-medium
+           h-11 px-6
+           rounded border border-zinc-200
+           transition-colors duration-150
+           hover:bg-zinc-50 hover:border-zinc-300
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
   }
 
-  /* Industrial Masterpiece Utilities */
-  .bg-grain {
-    position: relative;
+  /* Ghost */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-zinc-400 font-medium
+           h-11 px-4
+           rounded
+           transition-colors duration-150
+           hover:text-white hover:bg-white/5
+           focus-visible:outline-none;
   }
 
-  .bg-grain::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 200%;
-    height: 200%;
-    pointer-events: none;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.04;
-    z-index: 50;
-    animation: grain 8s steps(10) infinite;
+  /* ─── Cards - 2 variantes ─── */
+
+  /* Editorial: sem radius perceptível (usa --radius-sm), borda sutil */
+  .card-editorial {
+    @apply bg-white border border-zinc-100 rounded
+           transition-all duration-200
+           hover:border-zinc-200 hover:shadow-xs;
   }
 
-  @keyframes grain {
-
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-
-    10% {
-      transform: translate(-5%, -10%);
-    }
-
-    30% {
-      transform: translate(-15%, -20%);
-    }
-
-    50% {
-      transform: translate(-5%, -10%);
-    }
-
-    70% {
-      transform: translate(-15%, -20%);
-    }
-
-    90% {
-      transform: translate(-5%, -10%);
-    }
+  /* Surface: card elevado com sombra leve */
+  .card-surface {
+    @apply bg-white border border-zinc-100 rounded-lg shadow-xs
+           transition-all duration-200
+           hover:shadow-sm;
   }
 
-  /* Apple/OpenAI Minimalist Overhaul Utilities */
-  .rounded-apple {
-    border-radius: 2.5rem;
+  /* Dark editorial */
+  .card-editorial-dark {
+    @apply bg-white/5 border border-white/8 rounded
+           transition-all duration-200
+           hover:bg-white/8 hover:border-white/15;
   }
 
-  .card-apple {
-    @apply bg-white border border-zinc-100 shadow-sm transition-all duration-700 hover:shadow-2xl hover:shadow-zinc-200/50 hover:-translate-y-1 rounded-apple;
+  /* ─── Labels / Badges ─── */
+  .label-section {
+    @apply text-tiny font-bold uppercase text-zinc-400;
+    letter-spacing: 0.06em;
   }
 
+  .label-section-light {
+    @apply text-tiny font-bold uppercase text-revgreen;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Text helpers ─── */
   .text-balance {
     text-wrap: balance;
   }
-
-  .tracking-ultratight {
-    letter-spacing: -0.05em;
-  }
-
-  @keyframes pulse-subtle {
-
-    0%,
-    100% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  .animate-pulse-subtle {
-    animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
 }
 
-/* === CONTRASTE (scoped - sem !important global em p) === */
-/* Os componentes usam Tailwind utilities (text-black, text-zinc-500, text-white, etc.)
-   de forma explícita. Não forçamos cor globalmente para evitar quebrar dark sections. */
-
-@layer utilities {
-
-  /* 
-     Temporarily commented out to fix Vite/Tailwind circular dependency error.
-     Explicit classes have been added to components (bg-white text-gray-900) to handle this.
-  */
-  @media (max-width: 640px) {
-    .container-custom {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-}
-
-.card-subtitle,
-.secondary-text {
-  color: #4a4a4a;
-}
-
-/* 3. ALINHAR HEADLINES - Configurações globais restauradas no bloco @layer base principal */
-
-/* Native Select Styling - Industrial & Functional */
-select {
-  appearance: menulist !important;
-  cursor: pointer !important;
-  background-color: white !important;
-  color: black !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 0.5rem 1rem !important;
-  font-size: 0.875rem !important;
-  height: 2.5rem !important;
-  outline: none !important;
-}
-
-select:focus {
-  border-color: #03FC3B !important;
-  box-shadow: 0 0 0 1px #03FC3B !important;
-}
-
-/* Print Optimization & Full Page Non-Slicing Logic */
+/* ─── Print Optimization ─── */
 @media print {
   .no-print, .plan-edit-bar, header, footer, aside, nav, button {
     display: none !important;
   }
 
-  /* Reset layout for rendering */
   body, html, #root {
     height: auto !important;
     overflow: visible !important;
@@ -245,7 +287,6 @@ select:focus {
     padding: 0 !important;
   }
 
-  /* Ensure full width and auto height on sections */
   main, .plan-presentation {
     margin: 0 !important;
     padding: 0 !important;
@@ -255,13 +296,11 @@ select:focus {
     display: block !important;
   }
 
-  /* Prevent random slices inside components */
-  .bg-white, .bg-zinc-50, .bg-zinc-950, .border, .rounded-xl, .rounded-2xl, .p-6, .p-8, p, li, img {
+  .bg-white, .bg-zinc-50, .bg-zinc-950, .border, p, li, img {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  /* Keep headers glued to text */
   h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid !important;
     break-after: avoid !important;
@@ -270,18 +309,16 @@ select:focus {
     margin-top: 1rem !important;
   }
 
-  /* Convert Chrome page-breaking nightmares (Grid/Flex) to Blocks */
   .flex-col, .grid {
     display: block !important;
   }
 
-  /* Simulate Grid gaps after converting to block */
   .grid > div {
     margin-bottom: 24px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
-  
+
   .grid > div:last-child {
     margin-bottom: 0 !important;
   }

@@ -7,12 +7,10 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 
 const MODEL_OPTIONS = [
-    { value: 'gpt-5.2', label: 'GPT-5.2' },
-    { value: 'gpt-4o', label: 'GPT-4o' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'claude-sonnet-4.5', label: 'Claude Sonnet 4.5' },
-    { value: 'claude-3-5-haiku-20241022', label: 'Claude Haiku 3.5' },
-    { value: 'sonar-pro', label: 'Perplexity Sonar' },
+    { value: 'gpt-5.4', label: 'GPT-5.4 (Raciocínio Máximo + Web)' },
+    { value: 'gpt-5.2', label: 'GPT-5.2 (Consultor Estratégico)' },
+    { value: 'gpt-4o', label: 'GPT-4o (Padrão/Legado)' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Veloz/Custo-Eficiente)' },
 ];
 
 const ARTICLE_GENERATOR_PROMPT = `Você é redator B2B da RevHackers. Crie artigos em HTML otimizados para SEO.

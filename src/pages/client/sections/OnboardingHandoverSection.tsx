@@ -31,7 +31,7 @@ export default function OnboardingHandoverSection({ plan }: OnboardingSectionPro
                                     Revisão Executiva
                                 </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                            <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight group-hover:text-[#00CC6A] transition-colors">
                                 <EditableField
                                     placeholder="Revisão Executiva do Trimestre"
                                     path="onboarding_data.handover.p1_title"
@@ -62,7 +62,7 @@ export default function OnboardingHandoverSection({ plan }: OnboardingSectionPro
                                     Modo Sustentação
                                 </span>
                             </div>
-                            <h3 className="text-xl font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                            <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight group-hover:text-[#00CC6A] transition-colors">
                                 <EditableField
                                     placeholder="Tração e Foco em Crescimento"
                                     path="onboarding_data.handover.p2_title"

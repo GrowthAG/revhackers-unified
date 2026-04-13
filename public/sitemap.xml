@@ -3,88 +3,99 @@
   <!-- Core Pages -->
   <url>
     <loc>https://revhackers.com.br/</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://revhackers.com.br/quem-somos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://revhackers.com.br/servicos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/cases</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://revhackers.com.br/blog</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://revhackers.com.br/cases</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://revhackers.com.br/diagnostico</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://revhackers.com.br/materiais</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://revhackers.com.br/quem-somos</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://revhackers.com.br/metodologia</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://revhackers.com.br/booking</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/comunidade</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/metodologia</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/diagnostico</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/booking</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/agenda</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
 
   <!-- Service Detail Pages -->
   <url>
     <loc>https://revhackers.com.br/servicos/tracao-midia-paga</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/servicos/ecossistema-crm</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/servicos/automacao-inteligente</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/servicos/founder-led-growth</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/servicos/web-conversion</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/servicos/ai-operations</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -92,188 +103,25 @@
   <!-- Score/Tools Pages -->
   <url>
     <loc>https://revhackers.com.br/score</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/score-revenue</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/score-site</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/score-founder</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- Blog Posts -->
-  <url>
-    <loc>https://revhackers.com.br/blog/polemic-led-growth-metodo-linkedin-maquina-oportunidades</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/chatgpt-para-growth-15-prompts-produtividade-marketing</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/cold-email-2025-7-estrategias-que-funcionam</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/ltv-vs-cac-calcular-otimizar-crescimento-sustentavel</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/product-market-fit-5-sinais-encontrou-3-que-nao</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/linkedin-sales-navigator-guia-completo-prospeccao-b2b</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/o-funil-que-realmente-funciona-para-empresas-b2b</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/o-que-e-plg-e-como-aplicar-em-startups-brasileiras</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/cro-na-pratica-como-dobrar-sua-taxa-de-conversao</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/7-automacoes-de-marketing-que-escalam-sua-operacao</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/como-construir-um-funil-de-aquisicao-usando-seu-proprio-produto</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/estrategias-de-inteligencia-artificial-aplicadas-a-pre-vendas</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/diagnostico-de-marketing-orientado-por-dados</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/playbooks-de-vendas-e-marketing-que-escalam-resultados</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/como-combinar-inbound-outbound-e-plg</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/canais-de-aquisicao-com-roi-imediato-para-startups</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/como-estruturar-um-time-de-growth-com-poucos-recursos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/analise-de-dados-para-fundadores-quais-metricas-importam</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/os-melhores-crms-e-automacoes-para-crescimento-b2b</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/saas-trial-pipeline-optimization</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/como-desenhar-uma-jornada-do-usuario-que-ativa-e-converte</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/integracao-marketing-vendas-sucesso-cliente</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/estrategia-gtm-go-to-market-para-novos-produtos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/anatomia-da-demo-perfeita-vendas-b2b</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/revops-framework-definitivo-revenue-operations</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/psicologia-pricing-b2b-estrategia-precos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/comissionamento-vendas-sdr-closer-modelos</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/manual-anti-churn-retencao-clientes-cs</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/saas-plg-como-usar-seu-trial-gratuito-para-gerar-pipeline</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/ia-generativa-marketing-alem-do-hype</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/diagnostico-360-descobrir-gargalos-funil</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/abm-na-pratica-escolher-contas-alvo</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://revhackers.com.br/blog/diagnostico-funil-comercial-identificar-gargalos</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -281,11 +129,13 @@
   <!-- Legal -->
   <url>
     <loc>https://revhackers.com.br/privacidade</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://revhackers.com.br/termos-de-uso</loc>
+    <lastmod>2026-04-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

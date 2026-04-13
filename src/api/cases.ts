@@ -6,8 +6,8 @@ export type CaseStudy = Database['public']['Tables']['cases']['Row'];
 
 const CASE_OVERRIDES: Record<string, { logo?: string; scale?: number }> = {
     'Heineken': {
-        logo: 'https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/694f38836caf495cf06a30c4.jpg',
-        scale: 2.4 // Aggressively increased
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Heineken_logo.svg',
+        scale: 1.5 // Standardized size to match ENICS and others
     },
     'ENICS': {
         logo: 'https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/695996b8748303e24fe82be8.png',

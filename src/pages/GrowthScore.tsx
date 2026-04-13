@@ -13,6 +13,7 @@ import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBooki
 import { QuestionProgressBar } from '@/components/diagnostics/QuestionProgressBar';
 import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
+import SEO from '@/components/shared/SEO';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
 // Questions centered on "Visão Holística (REI 360)" - 5 dimensões, total = 100pts
@@ -108,12 +109,6 @@ const GrowthScore = () => {
             if (currentQ < QUESTIONS.length - 1) {
                 setCurrentQ(prev => prev + 1);
             } else {
-                // Última pergunta - trigger IA e avançar
-                setIsAnalyzing(true);
-                analyzeDiagnosticAI('growth', updatedAnswers, newScore)
-                    .then(result => setAnalysisResult(result))
-                    .catch(() => {}) // Mock é retornado internamente
-                    .finally(() => setIsAnalyzing(false));
                 setStep('results');
             }
         }, 2000);
@@ -143,6 +138,14 @@ const GrowthScore = () => {
                 title: "DIAGNÓSTICO PROCESSADO",
                 description: "Seu relatório oficial foi gerado."
             });
+            
+            setIsAnalyzing(true);
+            setStep('results');
+            analyzeDiagnosticAI('growth', answers, score)
+                .then(result => setAnalysisResult(result))
+                .catch(() => {}) 
+                .finally(() => setIsAnalyzing(false));
+
         } catch (error) {
             console.error(error);
             toast({
@@ -156,9 +159,9 @@ const GrowthScore = () => {
     };
 
     const getResultMap = (s: number) => {
-        if (s >= 80) return { title: "Growth Machine", msg: "Operação madura e escalável." };
-        if (s >= 50) return { title: "Tração Manual", msg: "Crescimento depende de esforço excessivo." };
-        return { title: "Estágio Inicial", msg: "Processos fundamentais ausentes." };
+        if (s >= 80) return { title: "Blindagem Parcial", msg: "Operação sólida, mas subutilizando Automação." };
+        if (s >= 50) return { title: "Vazamento Sistêmico", msg: "Processos manuais destruindo margem líquida." };
+        return { title: "Hemorragia de Caixa", msg: "Estrutura comercial travada, alta perda de leads." };
     };
 
     const result = getResultMap(score);
@@ -166,9 +169,20 @@ const GrowthScore = () => {
 
 
     return (
+        <>
+        <SEO
+            title="Score 360° - Diagnóstico de Growth B2B Gratuito"
+            description="Faça o diagnóstico gratuito de Growth e descubra onde sua operação B2B está vazando receita. Análise com IA em 5 perguntas estratégicas."
+            canonical="https://revhackers.com.br/score"
+            breadcrumbs={[
+                { name: "Home", url: "https://revhackers.com.br/" },
+                { name: "Diagnósticos", url: "https://revhackers.com.br/diagnostico" },
+                { name: "Score 360°", url: "https://revhackers.com.br/score" }
+            ]}
+        />
         <DiagnosticLayout
             title={step === 'results' ? "" : "Diagnóstico 360"}
-            subtitle={step === 'results' ? "" : "Visão Holística: Produto, Operação, Aquisição e Retenção"}
+            subtitle={step === 'results' ? "" : "Identifique gargalos no seu funil de Marketing e Vendas de ponta a ponta"}
             variant={step === 'results' ? 'dark' : 'light'}
             hideHeader={step === 'results'}
             centered={step === 'results'}
@@ -177,31 +191,31 @@ const GrowthScore = () => {
             {/* BACKDROP DE SEGURANÇA */}
             {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}
             {step === 'questions' && (
-                <div className="max-w-4xl animate-fade-in w-full">
+                <div className="max-w-2xl animate-fade-in w-full mx-auto">
                     <QuestionProgressBar current={currentQ} total={QUESTIONS.length} variant="light" />
-                    <div className="space-y-6 mt-6">
+                    <div className="space-y-4 mt-4">
                         <div className="flex justify-between items-center text-xxs font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
                             <span>Questão {currentQ + 1} de {QUESTIONS.length}</span>
                             <span>ID: 0{currentQ + 1}</span>
                         </div>
 
-                        <div className="space-y-6 relative pb-40"> {/* Standardized spacing */}
-                            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tighter leading-tight">
+                        <div className="space-y-4">
+                            <h2 className="text-2xl md:text-3xl font-black text-black tracking-tighter leading-tight">
                                 {currentQData.question}
                             </h2>
 
-                            <div className="grid grid-cols-1 gap-3 max-w-xl mx-auto">
+                            <div className="grid grid-cols-1 gap-2">
                                 {currentQData.options.map((opt, idx) => (
                                     <button
                                         key={idx}
                                         disabled={selectedOption !== null}
                                         onClick={() => handleAnswer(opt.score, idx)}
-                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
+                                        className={`group relative flex items-center gap-4 p-4 text-left transition-all duration-300 border ${selectedOption === idx
                                             ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                             : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                             } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
-                                        <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                        <div className={`w-6 h-6 flex-shrink-0 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                             ? "bg-white text-zinc-900 border-white"
                                             : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                             }`}>
@@ -213,24 +227,24 @@ const GrowthScore = () => {
                                     </button>
                                 ))}
                             </div>
-
-                            {/* Minimal Log */}
-                            <AnimatePresence>
-                                {showLog && currentQData.log && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
-                                    >
-                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
-                                            <span className="text-black font-bold mr-2">Info:</span>{currentQData.log}
-                                        </p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
                     </div>
+
+                    {/* Log strip - fixed bottom */}
+                    <AnimatePresence>
+                        {showLog && currentQData.log && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-100 px-4 py-3"
+                            >
+                                <p className="text-xs font-medium text-zinc-500 text-center max-w-2xl mx-auto">
+                                    <span className="text-black font-bold mr-2">Info:</span>{currentQData.log}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -243,7 +257,7 @@ const GrowthScore = () => {
                                 {/* Coluna Esquerda: Teaser */}
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-zinc-900 md:pr-12">
                                     <div className="inline-flex items-center gap-2 bg-zinc-950 px-3 py-1 border border-zinc-900">
-                                        <div className={`w-1.5 h-1.5 ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-red-500'} animate-pulse shadow-[0_0_10px_currentColor]`}></div>
+                                        <div className={`w-1.5 h-1.5 ${teaserScore >= 50 ? 'bg-revgreen' : 'bg-zinc-400'} animate-pulse`}></div>
                                         <span className="text-2xs font-mono font-bold text-zinc-500 tracking-wider uppercase">Análise Finalizada</span>
                                     </div>
 
@@ -252,7 +266,7 @@ const GrowthScore = () => {
                                     </div>
 
                                     <h3 className="text-sm font-medium text-zinc-400 leading-relaxed max-w-xs">
-                                        Detectamos oportunidades de <span className="text-revgreen font-bold">otimização crítica</span> na sua operação de growth.
+                                        O nível técnico da sua operação comercial projeta um vazamento de <span className="text-zinc-900 font-bold font-mono text-base whitespace-nowrap bg-zinc-100 px-2 py-1 border border-zinc-200">{( (100 - teaserScore) * 3450 ).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/ano</span>.
                                     </h3>
                                 </div>
 
@@ -261,8 +275,8 @@ const GrowthScore = () => {
                                     <DiagnosticForm
                                         onSubmit={handleFormSubmit}
                                         isSubmitting={isSubmitting}
-                                        title="Receber Relatório"
-                                        subtitle="Desbloqueie sua análise completa."
+                                        title="Estancar Bleeding Cost"
+                                        subtitle="Libere o acesso ao seu mapeamento financeiro."
                                         variant="dark"
                                         diagnosticType="Growth"
                                     />
@@ -300,22 +314,31 @@ const GrowthScore = () => {
                             <div className="lg:col-span-8 flex flex-col">
                                 {/* AI Archetype Card */}
                                 <div className="border border-zinc-900 p-8 bg-zinc-950 h-full flex flex-col justify-center">
-                                    {isAnalyzing || !analysisResult ? (
+                                    {isAnalyzing ? (
                                         <div className="flex flex-col items-center justify-center gap-4 py-8">
                                             <div className="w-6 h-6 border-2 border-revgreen border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-xxs font-mono text-zinc-500 uppercase tracking-widest">Processando Inteligência...</span>
+                                            <div className="text-center space-y-1">
+                                                <span className="block text-xs font-mono text-zinc-300 uppercase tracking-widest">IA Processando Análise</span>
+                                                <span className="block text-xxs font-mono text-zinc-600 uppercase tracking-widest">Aguarde alguns segundos...</span>
+                                            </div>
                                         </div>
-                                    ) : (
+                                    ) : analysisResult ? (
                                         <>
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900 bg-zinc-100 px-3 py-1.5 ">
-                                                    {analysisResult.archetype}
+                                                <span className="text-xxs font-black uppercase tracking-[0.25em] text-red-500 bg-red-500/10 px-3 py-1.5 border border-red-500/20">
+                                                    VAZAMENTO CRÍTICO DETECTADO
                                                 </span>
                                             </div>
                                             <p className="text-white text-lg font-medium leading-relaxed mb-0">
-                                                {analysisResult.headline}
+                                                Sem Inteligência Artificial para qualificar e um CRM que obriga o follow-up, sua operação perde R$ {( (100 - score) * 3450 ).toLocaleString('pt-BR')} anualmente, no mínimo. {analysisResult.headline}
                                             </p>
                                         </>
+                                    ) : (
+                                        <div className="flex flex-col justify-center py-8">
+                                            <p className="text-zinc-400 text-sm font-mono uppercase tracking-widest text-center">
+                                                Análise será gerada após identificação
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -411,8 +434,66 @@ const GrowthScore = () => {
                                     </section>
                                 )}
 
-                                {/* Fallback if no AI */}
-                                {!analysisResult && (
+                                {/* Skeleton while AI processes */}
+                                {isAnalyzing && !analysisResult && (
+                                    <section>
+                                        <div className="space-y-6 mb-12 text-center md:text-left">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
+                                                DIAGNÓSTICO_DE_CRESCIMENTO
+                                            </div>
+                                            <div className="flex items-center gap-3 mt-2">
+                                                <div className="w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                                                <span className="text-sm font-mono text-zinc-500 uppercase tracking-widest">IA gerando sua análise personalizada...</span>
+                                            </div>
+                                            <div className="h-14 md:h-20 bg-zinc-100 animate-pulse rounded w-2/3" />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                                            <div className="border border-zinc-100 p-8 bg-zinc-50 space-y-4">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-28" />
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-3/5" />
+                                                </div>
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                </div>
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-2/3" />
+                                                </div>
+                                            </div>
+                                            <div className="border border-zinc-100 p-8 bg-white space-y-4">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-28" />
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-3/5" />
+                                                </div>
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                </div>
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-2/3" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="border-l-4 border-zinc-200 bg-zinc-50 rounded-r-2xl p-8">
+                                            <div className="h-3 bg-zinc-200 animate-pulse rounded w-48 mb-4" />
+                                            <div className="space-y-2">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-3/5" />
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
+
+                                {/* Fallback if AI failed */}
+                                {!isAnalyzing && !analysisResult && (
                                     <section>
                                         <div className="space-y-6 mb-12 text-center md:text-left">
                                             <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
@@ -445,8 +526,8 @@ const GrowthScore = () => {
                                 <BenchmarkBar userScore={score} type="growth" variant="light" />
 
                                 <DiagnosticActionSection
-                                title="Destrave sua Operação."
-                                subtitle="Agende um diagnóstico gratuito com um especialista para desenhar seu plano de ação."
+                                title="Estanque o Vazamento de Caixa."
+                                subtitle="Apenas 3 slots mensais abertos. Avaliaremos tecnicamente se sua operação é elegível para plugar a Inteligência Artificial no CRM e sanar essa perda."
                                 onCtaClick={() => setIsBookingModalOpen(true)}
                             />
 
@@ -478,6 +559,7 @@ const GrowthScore = () => {
                 </>
             )}
         </DiagnosticLayout>
+        </>
     );
 };
 

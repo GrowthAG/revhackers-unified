@@ -18,7 +18,7 @@ export const APP_CONFIG = {
         BOOKING_DEFAULT: 'MmyRuRPox3ZComQA3jJ1', // AgendaGiulliano / ProposalForm Default
         BOOKING_KICKOFF: 'BJ1Owbo1nHufbjOFjwEf',
         BOOKING_LUNA: 'QFssBFGbqyJMUzg5Bssr',
-        BOOKING_GENERIC: 'E6Mw5guvWZc7ADFgxnJh', // Agenda / BookingModal
+        BOOKING_GENERIC: 'frZ10gIRdS8iNvtlGq3q', // Agenda default / Booking
         BOOKING_LINKEDIN: '2lhKFml52GYo4yFMSh3y',
         BOOKING_DEAL_ROOM: 't705eSgxmMHJrqU5VW1z',
         SURVEY_NPS: '4G2jjpQtGCrUqrSFMj3y',

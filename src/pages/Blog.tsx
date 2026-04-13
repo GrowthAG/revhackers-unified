@@ -189,9 +189,13 @@ const Blog = () => {
   return (
     <PageLayout>
       <SEO
-        title="Blog"
-        description="Artigos sobre Growth, Revenue Operations, ABM, Automação e Tecnologia B2B. Estratégias avançadas para escalar sua operação de receita."
-        canonical="https://revhackers.com/blog"
+        title="Blog de Revenue Operations & Growth B2B"
+        description="Artigos sobre Growth, Revenue Operations, ABM, Automação e Tecnologia B2B. Estratégias avançadas para escalar sua operação de receita no Brasil."
+        canonical="https://revhackers.com.br/blog"
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Blog", url: "https://revhackers.com.br/blog" }
+        ]}
       />
       <BlogHeader
         activeCategory={activeCategory}

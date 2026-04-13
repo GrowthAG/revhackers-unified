@@ -278,7 +278,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                 <div>
                     <div className="flex items-center gap-3 mb-6">
                         <BarChart3 className="w-5 h-5 text-black" />
-                        <h3 className="text-xl font-bold text-black">Distribuição por Canal</h3>
+                        <h3 className="text-xl font-black text-black">Distribuição por Canal</h3>
                     </div>
                     <div className="h-3 flex overflow-hidden mb-8 bg-zinc-100">
                         {channelsDisplay.map((ch, i) => {
@@ -350,7 +350,7 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
                 {/* ROI Projection */}
                 <div className="bg-white border border-zinc-200 p-8 pt-10 overflow-hidden">
                     <div className="flex items-center gap-3 mb-8">
-                        <h3 className="text-xl font-bold text-black">Projeção de Retorno</h3>
+                        <h3 className="text-xl font-black text-black">Projeção de Retorno</h3>
                     </div>
                     <div className="grid md:grid-cols-4 gap-6 relative z-10">
                         <div>

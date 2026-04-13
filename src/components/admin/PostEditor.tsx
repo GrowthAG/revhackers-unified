@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Save, Upload, Loader2, Trash2, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Save, Upload, Loader2, Trash2, Image as ImageIcon, Cpu } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import AIEditorLayout from '@/components/layout/AIEditorLayout';
@@ -318,7 +318,7 @@ const PostEditor = ({ post, isEditing = false }: PostEditorProps) => {
             variant="outline"
             className="h-9 text-xs font-medium text-zinc-600 border-zinc-300 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-900 transition-all"
           >
-            {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Sparkles className="w-3 h-3 mr-2" />}
+            {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Cpu className="w-3 h-3 mr-2" />}
             IA: Sugerir Imagens
           </Button>
         </>

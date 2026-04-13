@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle2, XCircle, Loader2, Link2, CheckSquare } from 'lucide-react';
 import { generateHTML } from '@tiptap/react';
+import DOMPurify from 'dompurify';
 import StarterKit from '@tiptap/starter-kit';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
@@ -53,7 +54,7 @@ export default function MagicApproval() {
       // Render JSONB to HTML
       if (taskData.content) {
         try {
-           const html = generateHTML(taskData.content, [
+           const html = generateHTML(taskData.content as any, [
              StarterKit, TaskList, TaskItem
            ]);
            setHtmlContent(html);
@@ -173,7 +174,7 @@ export default function MagicApproval() {
             
             <div 
               className="prose prose-invert prose-revhackers max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-revhackers prose-li:my-1"
-              dangerouslySetInnerHTML={{ __html: htmlContent || '<p class="text-zinc-500 italic">Nenhum detalhe adicional na tarefa.</p>' }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent || '<p class="text-zinc-500 italic">Nenhum detalhe adicional na tarefa.</p>') }}
             />
          </div>
 

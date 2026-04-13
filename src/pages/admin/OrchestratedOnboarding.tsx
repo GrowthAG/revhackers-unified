@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { getReiProjectById } from '@/api/reiProjects';
+import { getOrCreateProjectChannel, postSystemEvent } from '@/api/hubMessaging';
 import { getLatestReiResponse, getReiResponsesByProject } from '@/api/reiResponses'; // Added getReiResponsesByProject
 import type { ReiProject } from '@/api/reiProjects';
 import type { ReiResponse } from '@/api/reiResponses';
@@ -104,6 +105,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
     const [latestResponse, setLatestResponse] = useState<ReiResponse | null>(null);
     const [history, setHistory] = useState<ReiResponse[]>([]); // New history state
     const [loading, setLoading] = useState(true);
+    const [activating, setActivating] = useState(false);
     const [planAccessToken, setPlanAccessToken] = useState<string | null>(null);
 
     const steps = [
@@ -128,16 +130,21 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
     }, [id]);
 
     // Auto-navigate to correct step based on project state
+    // Tambem persiste fase no banco se avancou sem persistencia (ex: REI concluido)
     useEffect(() => {
         if (!project || loading) return;
 
-        // Determine correct step based on progress
+        const storedPhase = (project as any).onboarding_phase || 1;
+
         if (project.status === 'active') {
             setCurrentStep(3);
+            if (storedPhase < 4) persistPhase(4);
         } else if (project.scheduling_completed) {
             setCurrentStep(2);
+            if (storedPhase < 3) persistPhase(3);
         } else if (latestResponse && latestResponse.total_score > 0) {
             setCurrentStep(1);
+            if (storedPhase < 2) persistPhase(2);
         } else {
             setCurrentStep(0);
         }
@@ -202,12 +209,32 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
         }
     };
 
+    // Persiste a fase atual no banco para rastreamento real
+    const persistPhase = async (phase: number) => {
+        if (!id) return;
+        try {
+            await supabase
+                .from('rei_projects')
+                .update({
+                    onboarding_phase: phase,
+                    onboarding_phase_entered_at: new Date().toISOString(),
+                } as never)
+                .eq('id', id as string);
+        } catch (err) {
+            console.warn('[OrchestratedOnboarding] Falha ao persistir fase:', err);
+        }
+    };
+
     const confirmScheduling = async () => {
         try {
             setLoading(true);
             const { error } = await supabase
                 .from('rei_projects')
-                .update({ scheduling_completed: true } as never)
+                .update({
+                    scheduling_completed: true,
+                    onboarding_phase: 3,
+                    onboarding_phase_entered_at: new Date().toISOString(),
+                } as never)
                 .eq('id', id as string);
 
             if (error) throw error;
@@ -215,10 +242,48 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
             setProject(prev => prev ? ({ ...prev, scheduling_completed: true } as ReiProject) : null);
             toast({ title: 'Agendamento Confirmado', description: 'Fase de Planejamento Desbloqueada.' });
             setCurrentStep(2);
+
+            // Posta evento no canal do projeto
+            const projName = project?.trade_name || project?.client_company || project?.client_name || 'Projeto';
+            getOrCreateProjectChannel(id as string, projName)
+              .then(ch => { if (ch) postSystemEvent(ch.id, `Agendamento confirmado - Fase 03: Planejamento desbloqueada.`).catch(() => {}); })
+              .catch(() => {});
         } catch (error) {
             toast({ title: 'Erro', description: 'Falha ao confirmar agendamento.', variant: 'destructive' });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const activateProject = async () => {
+        if (!id) return;
+        try {
+            setActivating(true);
+            const { error } = await supabase
+                .from('rei_projects')
+                .update({
+                    status: 'active',
+                    pipeline_stage: 'active',
+                    onboarding_phase: 4,
+                    onboarding_phase_entered_at: new Date().toISOString(),
+                } as never)
+                .eq('id', id as string);
+
+            if (error) throw error;
+
+            setProject(prev => prev ? ({ ...prev, status: 'active', pipeline_stage: 'active' } as ReiProject) : null);
+            toast({ title: 'Projeto Ativado!', description: 'Go Live desbloqueado. Execucao iniciada.' });
+            setCurrentStep(3);
+
+            // Posta evento no canal do projeto
+            const projName = project?.trade_name || project?.client_company || project?.client_name || 'Projeto';
+            getOrCreateProjectChannel(id as string, projName)
+              .then(ch => { if (ch) postSystemEvent(ch.id, `Projeto ativado - Fase 04: Go Live iniciada. Execucao em andamento.`).catch(() => {}); })
+              .catch(() => {});
+        } catch (err) {
+            toast({ title: 'Erro', description: 'Falha ao ativar projeto.', variant: 'destructive' });
+        } finally {
+            setActivating(false);
         }
     };
 
@@ -464,7 +529,7 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                                         variant="outline" 
                                                         className="text-xs font-bold w-full uppercase tracking-wider"
                                                         onClick={() => {
-                                                            navigator.clipboard.writeText('https://revhackers.com/agenda-kickoff');
+                                                            navigator.clipboard.writeText('https://revhackers.com.br/agenda-kickoff');
                                                             toast({ title: 'Link Copiado!', description: 'Envie para o cliente via WhatsApp ou Email.' });
                                                         }}
                                                     >
@@ -530,11 +595,30 @@ const OrchestratedOnboarding = ({ embedded = false, projectId: propProjectId }: 
                                         <Button
                                             variant="outline"
                                             onClick={() => window.open(`/plan/${planAccessToken}`, '_blank')}
-                                            className="border-zinc-200 text-zinc-700 hover:bg-zinc-50 h-12 px-8 uppercase text-tiny font-black tracking-[0.2em] shadow-sm transition-all"
+                                            className="border-zinc-200 text-zinc-700 hover:bg-zinc-50 h-12 px-8 uppercase text-tiny font-black tracking-[0.2em] transition-all"
                                         >
-                                            🚀 Ver Planejamento Gerado (Ao Vivo)
+                                            Ver Planejamento Gerado
                                         </Button>
                                     )}
+
+                                    <div className="pt-4 border-t border-zinc-100 mt-2">
+                                        <p className="text-xs text-zinc-400 mb-3 leading-relaxed">
+                                            Planejamento entregue e aprovado pelo cliente? Ative o projeto para iniciar a execucao.
+                                        </p>
+                                        <Button
+                                            onClick={activateProject}
+                                            disabled={activating || project?.status === 'active'}
+                                            className="w-full bg-[#00CC6A] hover:bg-[#00b35d] text-white h-12 px-8 uppercase text-tiny font-black tracking-[0.2em] transition-all disabled:opacity-50"
+                                        >
+                                            {activating ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : project?.status === 'active' ? (
+                                                'Projeto Ativo'
+                                            ) : (
+                                                'Ativar Projeto - Go Live'
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,10 +1,9 @@
 import { lazy, Suspense } from "react";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import "./styles/article.css";
 
@@ -20,8 +19,8 @@ import ChatbotManager from "./components/shared/ChatbotManager";
 
 // ─── Loading Fallback ────────────────────────────────────────────────
 const PageLoader = () => (
-  <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-    <div className="w-10 h-10 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
+  <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+    <div className="w-10 h-10 border-2 border-zinc-800 border-t-revgreen rounded-full animate-spin"></div>
   </div>
 );
 
@@ -40,16 +39,16 @@ const Downloads = lazy(() => import("./pages/Downloads"));
 const Materiais = lazy(() => import("./pages/Materiais"));
 const MaterialLanding = lazy(() => import("./pages/MaterialLanding"));
 const Metodologia = lazy(() => import("./pages/Metodologia"));
-const AgendaDiagnostico = lazy(() => import("./pages/AgendaDiagnostico"));
+// Dead import removed: AgendaDiagnostico (route is redirect to /booking)
 const Comunidade = lazy(() => import("./pages/Comunidade"));
 const Booking = lazy(() => import("./pages/Booking"));
-const Agenda = lazy(() => import("./pages/Agenda"));
+// Dead import removed: Agenda (route is redirect to /booking)
 const PartnerDetail = lazy(() => import("./pages/PartnerDetail"));
 const PartnerEnics = lazy(() => import("./pages/PartnerEnics"));
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const Privacidade = lazy(() => import("./pages/Privacidade"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
-const SecureBooking = lazy(() => import("./pages/SecureBooking"));
+
 const CadastroParceiro = lazy(() => import("./pages/CadastroParceiro"));
 const PesquisaNPS = lazy(() => import("./pages/PesquisaNPS"));
 const ObrigadoNPS = lazy(() => import("./pages/ObrigadoNPS"));
@@ -62,11 +61,8 @@ const CertificateOfAuthenticity = lazy(() => import("./pages/public/CertificateO
 const MagicApproval = lazy(() => import("./pages/public/MagicApproval"));
 const PublicKickoffValidation = lazy(() => import("./pages/public/PublicKickoffValidation"));
 
-// Specialized Agenda Pages
-const AgendaLuna = lazy(() => import("./pages/AgendaLuna"));
+// Specialized Agenda Pages (kept only real pages, others are redirects)
 const AgendaGiulliano = lazy(() => import("./pages/AgendaGiulliano"));
-const AgendaLinkedin = lazy(() => import("./pages/AgendaLinkedin"));
-const AgendaKickoff = lazy(() => import("./pages/AgendaKickoff"));
 
 // Score Pages (Heavy - 21-70KB each)
 const GrowthScore = lazy(() => import("./pages/GrowthScore"));
@@ -75,29 +71,26 @@ const FounderScore = lazy(() => import("./pages/FounderScore"));
 const RevenueScore = lazy(() => import("./pages/RevenueScore"));
 
 // REI Workflows (Heavy - 15-38KB each)
-const ReiHub = lazy(() => import("./pages/REI-Hub"));
+// Dead import removed: ReiHub (route is redirect to /admin/projects)
 const ReiDev = lazy(() => import("./pages/REI-Dev"));
 const ReiConsulting = lazy(() => import("./pages/REI-Consulting"));
 const ReiFounder = lazy(() => import("./pages/REI-Founder"));
 const REIWizardPage = lazy(() => import("./pages/REIWizardPage"));
 const REIResult = lazy(() => import("./pages/REIResult"));
-const REIDashboard = lazy(() => import("./pages/REIDashboard"));
-const REIOnboarding = lazy(() => import("./pages/REIOnboarding"));
+// Dead imports removed: REIDashboard, REIOnboarding (routes are redirects to /admin/projects)
 
 // Auth Pages
 const Login = lazy(() => import("./pages/auth/Login"));
-const Signup = lazy(() => import("./pages/auth/Signup"));
+// Dead import removed: Signup (route is redirect to /login)
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const UpdatePassword = lazy(() => import("./pages/auth/UpdatePassword"));
 const CompleteProfile = lazy(() => import("./pages/auth/CompleteProfile"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Admin Pages (Never loaded by public visitors)
-const Admin = lazy(() => import("./pages/Admin"));
-const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const ProfileSettings = lazy(() => import("./pages/admin/ProfileSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const Settings = lazy(() => import("./pages/admin/Settings"));
+const HubMessaging = lazy(() => import("./pages/admin/HubMessaging"));
+
 const AdminMaterials = lazy(() => import("./pages/admin/AdminMaterials"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
 const ClientForm = lazy(() => import("./pages/admin/ClientForm"));
@@ -116,9 +109,10 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
 const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
 const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
-const OrchestratedOnboarding = lazy(() => import("./pages/admin/OrchestratedOnboarding"));
+// Dead import removed: OrchestratedOnboarding (no route defined)
 
 const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
+const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
 const KnowledgeDocument = lazy(() => import("./pages/admin/KnowledgeDocument"));
 const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
@@ -134,6 +128,12 @@ const ClientProjectHub = lazy(() => import("./pages/client/ClientProjectHub"));
 
 // Pitch Deck (Cinema Mode para Vendas)
 const PitchDeckPresentation = lazy(() => import("./pages/admin/PitchDeckPresentation"));
+
+// ─── Redirect Helper: /admin/jornada/:id → /admin/projects/:id ─────────────
+const JornadaRedirect = () => {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/admin/projects/${id}`} replace />;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -178,8 +178,8 @@ const App = () => (
               <Route path="/materiais/:slug" element={<MaterialLanding />} />
               <Route path="/comunidade" element={<Comunidade />} />
               <Route path="/booking" element={<Booking />} />
-              <Route path="/agenda" element={<Agenda />} />
-              <Route path="/agenda-diagnostico" element={<AgendaDiagnostico />} />
+              <Route path="/agenda" element={<Navigate to="/booking" replace />} />
+              <Route path="/agenda-diagnostico" element={<Navigate to="/booking" replace />} />
               <Route path="/supabase-diagnostic" element={<SupabaseDiagnostic />} />
 
               {/* Public Onboarding */}
@@ -199,24 +199,24 @@ const App = () => (
               {/* Epic 8: Magic Approval Route */}
               <Route path="/approve/:token" element={<MagicApproval />} />
 
-              {/* Specialized Pages */}
-              <Route path="/agenda/giulliano" element={<SecureBooking />} />
+              {/* Specialized Pages - Consolidadas em /booking */}
+              <Route path="/agenda/giulliano" element={<Navigate to="/booking" replace />} />
               <Route path="/agenda-giulliano" element={<AgendaGiulliano />} />
-              <Route path="/agenda-luna" element={<AgendaLuna />} />
-              <Route path="/agenda-linkedin" element={<AgendaLinkedin />} />
-              <Route path="/agenda-kickoff" element={<AgendaKickoff />} />
-
+              <Route path="/agenda-luna" element={<Navigate to="/booking" replace />} />
+              <Route path="/agenda-linkedin" element={<Navigate to="/booking" replace />} />
+              <Route path="/agenda-kickoff" element={<Navigate to="/booking" replace />} />
+              
               <Route path="/cadastro-parceiro" element={<CadastroParceiro />} />
 
               {/* REI System (Internal) - Unified */}
-              <Route path="/rei" element={<Navigate to="/rei-hub" replace />} />
+              <Route path="/rei" element={<Navigate to="/admin/projects" replace />} />
               <Route path="/rei/wizard" element={<ProtectedRoute><REIWizardPage /></ProtectedRoute>} />
-              <Route path="/rei/resultado/:id" element={<REIResult />} />
+              <Route path="/rei/resultado/:id" element={<ProtectedRoute><REIResult /></ProtectedRoute>} />
               <Route path="/rei/success" element={<ProtectedRoute><SchedulingSuccess /></ProtectedRoute>} />
 
-              {/* Legacy REI Routes - Redirect to new system */}
-              <Route path="/rei-onboarding" element={<Navigate to="/rei-hub" replace />} />
-              <Route path="/rei-dashboard" element={<Navigate to="/rei-hub" replace />} />
+              {/* Legacy REI Routes - Redirect to projects */}
+              <Route path="/rei-onboarding" element={<Navigate to="/admin/projects" replace />} />
+              <Route path="/rei-dashboard" element={<Navigate to="/admin/projects" replace />} />
 
               {/* Public Scores (Lead Gen) */}
               <Route path="/score" element={<GrowthScore />} />
@@ -227,11 +227,11 @@ const App = () => (
 
               {/* Auth Routes */}
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/signup" element={<Navigate to="/login" replace />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<UpdatePassword />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
-              <Route path="/rei-hub" element={<ReiHub />} />
+              <Route path="/rei-hub" element={<Navigate to="/admin/projects" replace />} />
               <Route path="/rei-dev" element={<ReiDev />} />
               <Route path="/rei-consulting" element={<ReiConsulting />} />
               <Route path="/rei-founder" element={<ReiFounder />} />
@@ -243,10 +243,12 @@ const App = () => (
               {/* Admin Management - GROWTHHUB */}
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
-              <Route path="/admin/jornada/:id" element={<ProtectedRoute><OrchestratedOnboarding /></ProtectedRoute>} />
+              {/* Redirect legado: /jornada/:id → /projects/:id */}
+              <Route path="/admin/jornada/:id" element={<JornadaRedirect />} />
 
               <Route path="/admin/profile" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
+              <Route path="/admin/mensagens" element={<ProtectedRoute><HubMessaging /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<Navigate to="/admin/profile" replace />} />
 
               {/* Admin - Clients */}
@@ -257,7 +259,7 @@ const App = () => (
               {/* Admin - Posts */}
               {/* Admin - Posts (Rotas removidas) */}
 
-              {/* Pitch Deck (Cinema Mode) */}
+              {/* Pitch Deck (Cinema Mode - fullscreen) */}
               <Route path="/admin/pitch/:id" element={<ProtectedRoute><PitchDeckPresentation /></ProtectedRoute>} />
 
               {/* Admin - Materials */}
@@ -272,7 +274,7 @@ const App = () => (
               <Route path="/admin/cases/edit/:id" element={<ProtectedRoute><AdminCaseEdit /></ProtectedRoute>} />
 
               {/* Admin - REI Projects (Redirected to Cockpit) */}
-              <Route path="/admin/rei" element={<Navigate to="/admin/proposals" replace />} />
+              <Route path="/admin/rei" element={<Navigate to="/admin/pipeline" replace />} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/rei/:id" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
 
@@ -281,8 +283,10 @@ const App = () => (
               <Route path="/admin/estrategia/:id" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
               <Route path="/admin/cronograma" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               <Route path="/admin/cronograma/:id" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
+              {/* Projects Listing */}
+              <Route path="/admin/projects" element={<ProtectedRoute><AdminProjects /></ProtectedRoute>} />
               {/* Unified Project Workspace */}
-              <Route path="/admin/projects/:id" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
+              <Route path="/admin/projects/:id/*" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
               
               {/* Project Wiki / Document Editor */}
               <Route path="/admin/knowledge/:libraryId/doc/new" element={<ProtectedRoute><KnowledgeDocument /></ProtectedRoute>} />
@@ -292,8 +296,8 @@ const App = () => (
               <Route path="/admin/recording/:id" element={<ProtectedRoute><MeetingRecordingDoc /></ProtectedRoute>} />
               
               {/* Legacy Redirects */}
-              <Route path="/admin/jornada" element={<Navigate to="/admin/proposals" replace />} />
-              <Route path="/admin/jornada/:id" element={<Navigate to="/admin/projects/:id" replace />} />
+              <Route path="/admin/jornada" element={<Navigate to="/admin/pipeline" replace />} />
+              {/* /admin/jornada/:id - handled above with JornadaRedirect */}
 
               {/* Admin - Diagnostic View (The Voice) */}
               <Route path="/admin/diagnostico/:id" element={<ProtectedRoute><DiagnosticView /></ProtectedRoute>} />
@@ -301,10 +305,13 @@ const App = () => (
               {/* Admin - Strategic Plan Generator */}
               <Route path="/admin/planejamento/:reiProjectId" element={<ProtectedRoute><StrategicPlanGenerator /></ProtectedRoute>} />
               <Route path="/admin/integrations" element={<ProtectedRoute><AdminIntegrations /></ProtectedRoute>} />
+              <Route path="/admin/integrations/ghl" element={<ProtectedRoute><AdminGHLIntegrations /></ProtectedRoute>} />
 
 
 
-              {/* Revenue Cockpit - substitui o Centro de Propostas */}
+              {/* Pipeline - URL canonica do cockpit comercial */}
+              <Route path="/admin/pipeline" element={<ProtectedRoute><RevenueCockpit /></ProtectedRoute>} />
+              {/* /admin/proposals - mantido como alias para compatibilidade com links internos */}
               <Route path="/admin/proposals" element={<ProtectedRoute><RevenueCockpit /></ProtectedRoute>} />
               <Route path="/admin/proposals/legacy" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
               <Route path="/admin/proposals/new" element={<ProtectedRoute><AdminProposalNew /></ProtectedRoute>} />

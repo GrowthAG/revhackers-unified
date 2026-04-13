@@ -143,7 +143,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                     <span className="text-xxs font-black text-zinc-400 uppercase tracking-widest block mb-4">
                                         {decision.basedOn?.join(' + ')}
                                     </span>
-                                    <h4 className="text-lg font-bold text-zinc-900 mb-2.5 leading-tight">{decision.title}</h4>
+                                    <h4 className="text-lg font-black text-zinc-900 mb-2.5 leading-tight">{decision.title}</h4>
                                     <p className="text-body font-medium text-zinc-500 leading-relaxed mb-6">{decision.recommendation}</p>
                                 </div>
                                 {decision.ruleApplied && (
@@ -165,7 +165,7 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                     <div className="space-y-6">
                         <div>
                             <span className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em] block mb-1">Auditoria Técnica</span>
-                            <h3 className="text-xl font-bold text-zinc-900">Infraestrutura & SEO</h3>
+                            <h3 className="text-xl font-black text-zinc-900">Infraestrutura & SEO</h3>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

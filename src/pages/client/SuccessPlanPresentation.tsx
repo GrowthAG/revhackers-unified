@@ -9,7 +9,7 @@ import SuccessMilestones from '@/components/admin/SuccessMilestones';
 import RiskMitigationPanel from '@/components/admin/RiskMitigationPanel';
 import {
     Target, Shield, Rocket, CheckCircle2, Clock, ArrowRight,
-    Sparkles, Flag, Users, Activity,
+    Cpu, Flag, Users, Activity,
 } from 'lucide-react';
 
 /**
@@ -232,7 +232,7 @@ export default function SuccessPlanPresentation() {
 
                         {criteria.ttfv_definition && (
                             <Card className="bg-zinc-900/50 border border-zinc-800 p-4 mt-4 flex items-start gap-3">
-                                <Sparkles className="w-4 h-4 text-[#00CC6A] mt-0.5 flex-shrink-0" />
+                                <Cpu className="w-4 h-4 text-[#00CC6A] mt-0.5 flex-shrink-0" />
                                 <div>
                                     <span className="text-xxs font-black text-zinc-500 uppercase tracking-widest">
                                         Primeiro Valor (TTFV)

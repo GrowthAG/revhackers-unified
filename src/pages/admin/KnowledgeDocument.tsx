@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Save, ChevronLeft, Loader2, Sparkles, Hash, User, FileText, CheckSquare, Image as ImageIcon } from 'lucide-react';
+import { Save, ChevronLeft, Loader2, Cpu, Hash, User, FileText, CheckSquare, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { cn } from '@/lib/utils';
@@ -269,7 +269,7 @@ const KnowledgeDocumentEditor = () => {
         { id: 'table', label: 'Tabela', icon: Database, action: () => insertText('| Coluna 1 | Coluna 2 |\n|---|---|\n| Dado | Dado |') },
         { id: 'task', label: 'Vincular Tarefa', icon: CheckSquare, action: () => setCommandType('task') },
         { id: 'image', label: 'Imagem / Anexo', icon: ImageIcon, action: () => contentImageInputRef.current?.click() },
-        { id: 'ai', label: 'AI Writer', icon: Sparkles, action: () => handleAIExpand() },
+        { id: 'ai', label: 'AI Writer', icon: Cpu, action: () => handleAIExpand() },
     ];
 
     // Filter Logic

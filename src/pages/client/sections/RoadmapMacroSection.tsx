@@ -207,7 +207,7 @@ export default function RoadmapSection({ plan }: { plan: any }) {
                                                     className="bg-transparent focus:bg-zinc-50 outline-none"
                                                 />
                                             </span>
-                                            <h3 className={`text-reading md:text-xl font-bold tracking-tight leading-tight ${isFullyDone ? 'text-zinc-500' : 'text-zinc-900'}`}>
+                                            <h3 className={`text-reading md:text-xl font-black tracking-tight leading-tight ${isFullyDone ? 'text-zinc-500' : 'text-zinc-900'}`}>
                                                 <EditableField
                                                     placeholder="Nome da Fase"
                                                     path={`roadmap_data.phases.${index}.title`}

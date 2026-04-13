@@ -30,6 +30,33 @@ serve(async (req) => {
     // A InfinitePay manda 'order_nsu' e o status de 'paid'
     const { order_nsu, paid, status } = payload
 
+    // ── IDEMPOTENCY GUARD ──
+    // Payment providers (InfinitePay included) may send the same webhook
+    // multiple times. Without this check, duplicate deliveries could trigger
+    // redundant opportunity conversions and project creation.
+    // Strategy: if the proposal already has payment_status = 'paid' in its
+    // crm_data, the webhook was already processed - return 200 and skip.
+    if ((paid === true || status === 'approved') && order_nsu) {
+        const supabaseCheck = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        )
+
+        const { data: existingProposal } = await supabaseCheck
+            .from('proposals')
+            .select('id, status, crm_data')
+            .eq('id', order_nsu)
+            .single()
+
+        if (existingProposal?.status === 'paid' && existingProposal?.crm_data?.payment_status === 'paid via infinitepay') {
+            console.warn(`[infinitepay-webhook] DUPLICATA DETECTADA - Proposta ${order_nsu} ja processada. Ignorando.`)
+            return new Response(
+              JSON.stringify({ status: 'already_processed', order_nsu }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+        }
+    }
+
     if (paid === true || status === 'approved') {
         const supabaseAdmin = createClient(
           Deno.env.get('SUPABASE_URL') ?? '',

@@ -75,7 +75,7 @@ export type EnrichmentType = 'benchmark' | 'personas' | 'market' | 'synthesis' |
 
 export class StrategicEnrichmentService {
     /**
-     * Enrich strategic data using Perplexity AI (via Edge Function)
+     * Enrich strategic data using OpenAI (via Edge Function)
      */
     static async enrich(
         segment: string,

@@ -210,7 +210,9 @@ export default function StrategicPlanPresentation() {
                 if (!read.includes(sectionId)) {
                     await supabase.from('strategic_plans').update({ next_steps_data: { ...existing, read_sections: [...read, sectionId] } }).eq('id', plan.id);
                 }
-            } catch { }
+            } catch (trackErr) {
+                console.warn('[plan-tracking] falha ao registrar seção lida:', trackErr);
+            }
         }, 3000);
         return () => clearTimeout(timeout);
     }, [currentIndex, plan?.id]);
@@ -502,15 +504,21 @@ export default function StrategicPlanPresentation() {
                                 setShowSign(false);
                                 setShowApproved(true);
 
-                                // Dispara criacao de sprints no ClickUp (fire-and-forget).
-                                // Pre-requisito: workspace_status='ready' (folder criado apos assinatura do kickoff).
+                                // Dispara criação de sprints no ClickUp com feedback.
+                                // Pre-requisito: workspace_status='ready' (folder criado após assinatura do kickoff).
                                 const projectIdForClickup = plan.rei_projects?.id || plan.project_id;
                                 if (projectIdForClickup) {
-                                    supabase.functions
-                                        .invoke('clickup-sprint-orchestrator', {
-                                            body: { project_id: projectIdForClickup, triggered_by: 'plan_approval' },
-                                        })
-                                        .catch((err) => console.error('[clickup-sprint] falha no disparo:', err));
+                                    try {
+                                        const { error: sprintError } = await supabase.functions
+                                            .invoke('clickup-sprint-orchestrator', {
+                                                body: { project_id: projectIdForClickup, triggered_by: 'plan_approval' },
+                                            });
+                                        if (sprintError) {
+                                            console.error('[clickup-sprint] erro no disparo:', sprintError);
+                                        }
+                                    } catch (err) {
+                                        console.error('[clickup-sprint] falha crítica no disparo:', err);
+                                    }
                                 }
                             }}
                         />

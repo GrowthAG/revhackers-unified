@@ -38,6 +38,7 @@ export interface ImplementationStep {
 export interface DiagnosticSignal {
     id: string;
     type: 'positive' | 'negative' | 'neutral';
+    headline?: string;
     text: string;
     impact: string;
 }
@@ -45,6 +46,7 @@ export interface DiagnosticSignal {
 export interface DiagnosticRisk {
     id: string;
     severity: 'high' | 'medium' | 'low';
+    headline?: string;
     text: string;
     mitigation: string;
 }
@@ -275,19 +277,19 @@ export class DiagnosticService {
                 const hasPipelines = Array.isArray(answers.revops_custom_pipelines) && answers.revops_custom_pipelines.length > 0;
                 const pipelineCount = hasPipelines ? answers.revops_custom_pipelines.length : 0;
                 
-                if (hasCRM) signals.push({ id: 's1', type: 'positive', text: `Arquitetura inicial presente no ${crmName}`, impact: 'Base tecnológica pré-existente diminui atrito de infraestrutura.' });
-                else signals.push({ id: 's2', type: 'negative', text: 'Operação de Vendas Desestruturada', impact: 'Falta de Controle Central resulta em vazamentos no funil comercial.' });
+                if (hasCRM) signals.push({ id: 's1', type: 'positive', headline: 'Arquitetura Presente', text: `Arquitetura inicial presente no ${crmName}`, impact: 'Base tecnológica pré-existente diminui atrito de infraestrutura.' });
+                else signals.push({ id: 's2', type: 'negative', headline: 'Vendas Desestruturada', text: 'Operação de Vendas Desestruturada', impact: 'Falta de Controle Central resulta em vazamentos no funil comercial.' });
                 
                 if (hasPipelines) {
-                    signals.push({ id: 'spipe', type: 'neutral', text: `${pipelineCount} Fun${pipelineCount > 1 ? 'is' : 'il'} de Negócios Mapeado${pipelineCount > 1 ? 's' : ''}`, impact: `Mapeamento As-Is indicou a existência de ${answers.revops_custom_pipelines.map((p: any) => p.name).join(', ')}.`});
+                    signals.push({ id: 'spipe', type: 'neutral', headline: 'Múltiplos Funis', text: `${pipelineCount} Fun${pipelineCount > 1 ? 'is' : 'il'} de Negócios Mapeado${pipelineCount > 1 ? 's' : ''}`, impact: `Mapeamento As-Is indicou a existência de ${answers.revops_custom_pipelines.map((p: any) => p.name).join(', ')}.`});
                 }
 
-                if (answers.revops_sla_marketing_vendas) signals.push({ id: 's3', type: 'neutral', text: 'Critério de MQL/SQL Declarado', impact: 'Exige validação das réguas de hand-off para garantir alinhamento entre áreas.' });
-                else if (isB2B) signals.push({ id: 's3', type: 'neutral', text: 'Ciclo B2B Complexo', impact: 'O ticket e o fechamento B2B exigem rastreabilidade avançada e automação de SLAs.' });
+                if (answers.revops_sla_marketing_vendas) signals.push({ id: 's3', type: 'neutral', headline: 'SLA Declarado', text: 'Critério de MQL/SQL Declarado', impact: 'Exige validação das réguas de hand-off para garantir alinhamento entre áreas.' });
+                else if (isB2B) signals.push({ id: 's3', type: 'neutral', headline: 'Ciclo B2B Complexo', text: 'Ciclo B2B Complexo', impact: 'O ticket e o fechamento B2B exigem rastreabilidade avançada e automação de SLAs.' });
             } else {
-                if (hasCRM) signals.push({ id: 's1', type: 'positive', text: 'Infraestrutura de Dados Presente', impact: 'Permite Escala e Otimização Rápida' });
-                else signals.push({ id: 's2', type: 'negative', text: 'Ausência de CRM', impact: 'Cegueira Operacional' });
-                if (isB2B) signals.push({ id: 's3', type: 'neutral', text: 'Jornada B2B', impact: 'Necessidade Múltipla de Nutrição' });
+                if (hasCRM) signals.push({ id: 's1', type: 'positive', headline: 'Infraestrutura Presente', text: 'Infraestrutura de Dados Presente', impact: 'Permite Escala e Otimização Rápida' });
+                else signals.push({ id: 's2', type: 'negative', headline: 'Cegueira Operacional', text: 'Ausência de CRM', impact: 'Cegueira Operacional' });
+                if (isB2B) signals.push({ id: 's3', type: 'neutral', headline: 'Jornada B2B', text: 'Jornada B2B', impact: 'Necessidade Múltipla de Nutrição' });
             }
         }
 
@@ -298,22 +300,22 @@ export class DiagnosticService {
                 const hasLostReasons = Array.isArray(answers.revops_lost_reasons) && answers.revops_lost_reasons.length > 0;
                 const lostCount = hasLostReasons ? answers.revops_lost_reasons.length : 0;
 
-                if (!hasCRM) risks.push({ id: 'r1', severity: 'high', text: 'Maturidade de Dados Crítica (Cegueira Analítica)', mitigation: 'Setup obrigatório da fundação do CRM na semana 1 como marco principal do projeto.' });
+                if (!hasCRM) risks.push({ id: 'r1', severity: 'high', headline: 'Cegueira Analítica', text: 'Maturidade de Dados Crítica (Cegueira Analítica)', mitigation: 'Setup obrigatório da fundação do CRM na semana 1 como marco principal do projeto.' });
                 
                 if (answers.revops_pipeline_stagnation) {
-                    risks.push({ id: 'r2', severity: 'medium', text: `Gargalo: Regras de Estagnação Ausentes ou Fracas`, mitigation: `Desenhar alertas e automações no CRM para evitar o apodrecimento de deals baseado no cenário descrito: "${answers.revops_pipeline_stagnation.substring(0, 50)}..."` });
+                    risks.push({ id: 'r2', severity: 'medium', headline: 'Gargalos no Funil', text: `Gargalo: Regras de Estagnação Ausentes ou Fracas`, mitigation: `Desenhar alertas e automações no CRM para evitar o apodrecimento de deals baseado no cenário descrito: "${answers.revops_pipeline_stagnation.substring(0, 50)}..."` });
                 } else {
-                    risks.push({ id: 'r2', severity: 'medium', text: 'Pipelines Visuais mas sem Governança', mitigation: 'Mapeamento As-Is dos estágios e imposição de propriedades obrigatórias por fase.' });
+                    risks.push({ id: 'r2', severity: 'medium', headline: 'Sem Governança', text: 'Pipelines Visuais mas sem Governança', mitigation: 'Mapeamento As-Is dos estágios e imposição de propriedades obrigatórias por fase.' });
                 }
 
                 if (hasLostReasons) {
-                    risks.push({ id: 'rlost', severity: 'medium', text: `${lostCount} Motivos de Perda Estruturais sem Matriz de Win/Loss`, mitigation: `Criar relatórios de conversão invertida agrupando as objeções (${answers.revops_lost_reasons.slice(0, 3).map((l: any) => l.reason).join(', ')}...) para loop de feedback com produto/marketing.` });
+                    risks.push({ id: 'rlost', severity: 'medium', headline: 'Perdas Estruturais', text: `${lostCount} Motivos de Perda Estruturais sem Matriz de Win/Loss`, mitigation: `Criar relatórios de conversão invertida agrupando as objeções (${answers.revops_lost_reasons.slice(0, 3).map((l: any) => l.reason).join(', ')}...) para loop de feedback com produto/marketing.` });
                 } else if (answers.revops_win_loss_analysis) {
-                     risks.push({ id: 'rwinloss', severity: 'medium', text: 'Cultura de Win/Loss não está retroalimentando o Pipeline', mitigation: 'Institucionalizar o processo de Loss Reason auditável para entender onde o Lead escapa.' });
+                     risks.push({ id: 'rwinloss', severity: 'medium', headline: 'Sem Feedback de Perdas', text: 'Cultura de Win/Loss não está retroalimentando o Pipeline', mitigation: 'Institucionalizar o processo de Loss Reason auditável para entender onde o Lead escapa.' });
                 }
             } else {
-                if (!hasCRM && objective === 'Escala Agressiva') risks.push({ id: 'r1', severity: 'high', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar o Spend em Ads' });
-                if (budget === 'Baixo' && isB2B) risks.push({ id: 'r2', severity: 'medium', text: 'Budget insuficiente para Paid Media', mitigation: 'Focar em Social Selling e Outbound' });
+                if (!hasCRM && objective === 'Escala Agressiva') risks.push({ id: 'r1', severity: 'high', headline: 'Escala sem rastro', text: 'Escala sem rastreabilidade', mitigation: 'Implantar CRM antes de aumentar o Spend em Ads' });
+                if (budget === 'Baixo' && isB2B) risks.push({ id: 'r2', severity: 'medium', headline: 'Budget Insuficiente', text: 'Budget insuficiente para Paid Media', mitigation: 'Focar em Social Selling e Outbound' });
             }
         }
 
@@ -1270,7 +1272,7 @@ export class DiagnosticService {
     }
 
     // ── PUBLIC FALLBACK GENERATORS ──────────────────────────────────────────
-    // Used by StrategicPlanGenerator when Perplexity AI is unavailable.
+    // Used by StrategicPlanGenerator when AI enrichment is unavailable.
     // Builds structured persona/benchmark data from raw REI answers
     // so the plan never saves undefined to the database.
     // IMPORTANT: These must work with BOTH optional text fields (icpDescription,

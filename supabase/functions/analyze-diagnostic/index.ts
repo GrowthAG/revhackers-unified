@@ -39,26 +39,22 @@ type DiagnosticType = 'growth' | 'revenue' | 'founder';
 
 const DIMENSION_LABELS: Record<'growth' | 'revenue', string[]> = {
     growth: [
-        "Estratégia de Aquisição",
-        "CAC (Custo de Aquisição)",
-        "Processo de Vendas",
-        "Retenção / LTV",
-        "Metas de Receita do Time",
-        "Conteúdo / Inbound",
-        "Data Analytics"
+        "1. Gargalo Operacional (Varinha Mágica)",
+        "2. Unit Economics e CAC Limitador",
+        "3. Matriz de Canais de Tração e Risco",
+        "4. Capacidade Estrutural de Escala",
+        "5. Precisão de Segmentação e ICP"
     ],
     revenue: [
-        "Previsibilidade de Receita",
-        "Estrutura Comercial",
-        "Taxa de Conversão",
-        "CRM e Tecnologia",
-        "Ciclo de Vendas",
-        "CS / Retenção",
-        "Expansion Revenue"
+        "1. Adoção e Maturidade de CRM",
+        "2. SLA de Tempo de Resposta a Leads",
+        "3. Critérios Objetivos de Qualificação MQL/SQL",
+        "4. SLA de Hand-off e Acordo Mkt/Vendas",
+        "5. Desdobramento de Metas Agressivas"
     ]
 };
 
-const MAX_PER_QUESTION = 16;
+const MAX_PER_QUESTION = 20;
 
 function buildContextMap(type: 'growth' | 'revenue', answers: number[]): string[] {
     const labels = DIMENSION_LABELS[type] || DIMENSION_LABELS.growth;
@@ -98,29 +94,47 @@ REGRAS:
     `.trim();
 }
 
+const FOUNDER_ARCHETYPES = ['Executor', 'Visionario', 'Tecnico', 'Relacionamento', 'Analitico'] as const;
+
 function getFounderPrompt(linkedinUrl: string, answers: number[], quizScore: number): string {
-    const contextMap = [
-        "Perfil LinkedIn: " + (answers[0] >= 15 ? "Otimizado" : answers[0] >= 5 ? "Parcial" : "Básico"),
-        "Frequência de Postagem: " + (answers[1] > 10 ? "Alta" : "Baixa"),
-        "Material Rico: " + (answers[2] > 10 ? "Sim" : "Não"),
-        "Geração de Leads: " + (answers[3] > 10 ? "Alta" : "Baixa"),
-        "Autoridade Percebida: " + (answers[4] > 10 ? "Alta" : "Baixa")
+    const quizContext = [
+        "Atuacao Executiva vs Operacional (Alavancagem): " + (answers[0] >= 20 ? "Frente Estrategica Dominante" : answers[0] >= 15 ? "Gerencia Ativa" : "Viciado na Operacao"),
+        "Maquina de Influencia e Exposicao Nominal: " + (answers[1] >= 20 ? "Alto Nivel" : answers[1] >= 15 ? "Mediano" : "Basico/Nulo"),
+        "Resolucao de Autoridade (Pipeline vs Ego digital): " + (answers[2] >= 20 ? "Construtor de Pipeline" : answers[2] >= 15 ? "Influenciador Vazio" : "Sem Relevancia"),
+        "Fosso Competitivo vs Commodity de Mercado: " + (answers[3] >= 20 ? "Metodologia Proprietaria Forte" : answers[3] >= 15 ? "Diferenciacao Media" : "Vendido como Commodity")
     ];
 
     return `
-Analise o perfil deste fundador com base nesses dados comportamentais (simule uma análise profunda do LinkedIn dele: ${linkedinUrl}):
+Voce e um investidor de Venture Capital acido e direto da RevHackers. Analise este fundador com base nos dados abaixo.
 
-Dados:
-${contextMap.join('\n')}
+Dados Comportamentais (Quiz):
+${quizContext.join('\n')}
 Score Total do Quiz: ${quizScore}/100.
 
-Aja como um investidor de Venture Capital ácido e direto.
+IMPORTANTE: Voce TEM a capacidade de buscar dados atualizados na internet.
+BUSQUE EXATAMENTE o perfil LinkedIn: "${linkedinUrl}".
+Baseado no que voce encontrar sobre o cargo, experiencia, headline, conteudo abordado e nome real desse fundador (combine com o quiz), gere a analise. Se o link for invalido ou inacessivel, faca a analise apenas com base no quiz mas avise discretamente na analise.
+
+Os 5 arquetipos disponiveis sao EXATAMENTE: ${FOUNDER_ARCHETYPES.join(', ')}.
+  Executor: resultados, metricas, eficiencia operacional.
+  Visionario: futuro, tendencias, transformacao, inovacao.
+  Tecnico: produto, tecnologia, metodologia, frameworks.
+  Relacionamento: pessoas, cultura, networking, parcerias.
+  Analitico: dados, pesquisa, estrategia, benchmarks.
+
 Gere um JSON com:
-- archetype: "Visionário" | "Vendedor" | "Técnico"
-- headline: Uma frase de impacto definindo ele (ex: "O gênio invisível" ou "Vendedor de fumaça").
-- analysis: Um parágrafo de 3 linhas analisando brutalmente a presença digital dele.
+- archetype: um dos 5 arquetipos listados
+- headline: Uma frase de impacto definindo ele (ex: "O genio invisivel" ou "Vendedor de fumaca")
+- analysis: Um paragrafo de 3 linhas analisando brutalmente a presenca digital e posicionamento dele. Incorpore os dados reais (nome/headline) se encontrados.
 - strengths: 2 pontos fortes curtos.
-- blindSpots: 2 pontos cegos críticos que estão custando dinheiro.
+- blindSpots: 2 pontos cegos criticos que estao custando dinheiro.
+- brandingGaps: 2 gaps de posicionamento digital que precisam ser corrigidos.
+- actionableInsight: 1 conselho pratico e direto em 1-2 frases para implementar amanha.
+- linkedinData: Retorne um objeto com os dados reias encontrados (fullName, headline). Caso contrário, null.
+
+REGRAS:
+- Seja direto, tecnico e baseado nos dados. Nada generico.
+- Nunca use travessao longo. Use hifen simples (-).
     `.trim();
 }
 
@@ -128,25 +142,31 @@ Gere um JSON com:
 // OPENAI API CALL (GPT-4o-mini - same pattern as generate-strategic-plan)
 // ============================================================
 
-async function callOpenAI(apiKey: string, prompt: string): Promise<any> {
+async function callOpenAI(apiKey: string, prompt: string, useWebSearch: boolean = false): Promise<any> {
+    const payload: any = {
+        model: 'gpt-5.4',
+        messages: [
+            {
+                role: 'system',
+                content: 'Você é um Analista Sênior da RevHackers. Suas análises são brutais, diretas e baseadas puramente nos dados fornecidos. Aja como um cirurgião de negócios. Siga o Schema JSON estritamente. Nunca use travessao (—), use hifen simples (-).'
+            },
+            { role: 'user', content: prompt }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.7
+    };
+
+    if (useWebSearch) {
+        payload.tools = [{ type: 'web_search' }];
+    }
+
     const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            model: 'gpt-5.4',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'Você é um Analista Sênior da RevHackers. Suas análises são brutais, diretas e baseadas puramente nos dados fornecidos. Aja como um cirurgião de negócios. Siga o Schema JSON estritamente.'
-                },
-                { role: 'user', content: prompt }
-            ],
-            response_format: { type: 'json_object' },
-            reasoning_effort: 'high'
-        }),
+        body: JSON.stringify(payload),
     }));
 
     if (!response.ok) {
@@ -201,6 +221,13 @@ serve(async (req: Request) => {
             throw new Error('Missing required fields: type, answers, totalScore');
         }
 
+        // Input sanitization
+        if (!Array.isArray(answers) || answers.length > 100) {
+            throw new Error('Invalid answers format');
+        }
+        const safeLinkedinUrl = linkedinUrl ? String(linkedinUrl).replace(/[`${}]/g, '').substring(0, 500) : '';
+        const safeType = String(type).replace(/[^a-z_]/g, '');
+
         const apiKey = Deno.env.get('OPENAI_API_KEY');
         if (!apiKey) {
             throw new Error('OPENAI_API_KEY not configured');
@@ -211,19 +238,27 @@ serve(async (req: Request) => {
         let prompt: string;
         let result: any;
 
-        if (type === 'founder') {
-            // FOUNDER PATH
-            prompt = getFounderPrompt(linkedinUrl || '', answers, totalScore);
-            const parsed = await callOpenAI(apiKey, prompt);
+        if (safeType === 'founder') {
+            // FOUNDER PATH - Native Web Search
+            prompt = getFounderPrompt(safeLinkedinUrl, answers, totalScore);
+            const parsed = await callOpenAI(apiKey, prompt, true);
 
-            // Validate and return only expected fields (no unsafe spread)
+            // Validate archetype against allowed list
+            const resolvedArchetype = FOUNDER_ARCHETYPES.includes(parsed.archetype)
+                ? parsed.archetype
+                : 'Executor';
+
+            // Return expanded result with LinkedIn data when available
             result = {
-                archetype: parsed.archetype || 'Técnico',
+                archetype: resolvedArchetype,
                 score: totalScore,
                 headline: parsed.headline || '',
                 analysis: parsed.analysis || '',
                 strengths: Array.isArray(parsed.strengths) ? parsed.strengths.slice(0, 2) : [],
-                blindSpots: Array.isArray(parsed.blindSpots) ? parsed.blindSpots.slice(0, 2) : []
+                blindSpots: Array.isArray(parsed.blindSpots) ? parsed.blindSpots.slice(0, 2) : [],
+                brandingGaps: Array.isArray(parsed.brandingGaps) ? parsed.brandingGaps.slice(0, 2) : [],
+                actionableInsight: String(parsed.actionableInsight || '').substring(0, 400),
+                linkedinData: parsed.linkedinData || null,
             };
         } else {
             // GROWTH / REVENUE PATH

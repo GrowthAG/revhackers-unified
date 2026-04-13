@@ -7,7 +7,8 @@ import {
   MessageSquare, Trophy, Rocket, Activity, CheckCircle2,
   XCircle, UserMinus, RefreshCw, Plus, ChevronRight,
   Flame, AlertTriangle, Phone, Target, Zap, BarChart3,
-  CalendarCheck, ShieldAlert, TrendingUp, Clock, Radar
+  CalendarCheck, ShieldAlert, TrendingUp, Clock, Radar,
+  LayoutList, Columns3, Filter, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ import {
 import { advanceStage } from '@/services/PipelineService';
 import { advanceOpportunityStage } from '@/api/opportunities';
 import { useToast } from '@/hooks/use-toast';
+import { PipelineSkeleton } from '@/components/ui/skeleton';
 
 // ---- Icon map (lucide) keyed by STAGE_CONFIGS.icon string ----
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -54,8 +56,12 @@ interface ProjectRow {
   pipeline_stage: PipelineStage | null;
   lead_source: string | null;
   opportunity_data: OpportunityData | null;
+  enrichment_data: any | null;
   created_at: string;
   updated_at: string;
+  // Onboarding
+  onboarding_phase: number | null;
+  onboarding_phase_entered_at: string | null;
   // Joined
   maturity_pct: number;
   rei_score: number;
@@ -68,6 +74,10 @@ interface ProjectRow {
   // Derived
   display_name: string;
   days_in_stage: number;
+  days_in_phase: number;
+  // Diagnostico (joined from opportunities query)
+  diagnostico_score?: number | null;
+  diagnostico_tipo?: string | null;
 }
 
 // ---- Helpers ----
@@ -301,7 +311,7 @@ const DiagnosticoRow = ({
           >
             <option value="lead_inbound">Lead Inbound</option>
             <option value="lead_qualified">Qualificado</option>
-            <option value="diagnostic_done">Diagnóstico Realizado</option>
+            <option value="diagnostic_done">Lead com Diagnostico</option>
             <option value="lost">Desqualificado / Perdido</option>
           </select>
           {project.pipeline_stage === 'diagnostic_done' && onCreateProposal && (
@@ -427,14 +437,15 @@ const ExecucaoRow = ({
   const Icon = stageIcon(project.pipeline_stage || 'active');
   const pctDone = project.total_tasks > 0 ? Math.round((project.done_tasks / project.total_tasks) * 100) : 0;
 
-  let onboardingStep = '';
-  if (project.pipeline_stage === 'onboarding') {
-    if (pctDone === 0) onboardingStep = 'Setup Inicial & Kickoff';
-    else if (pctDone < 30) onboardingStep = 'Integrações & Tracking';
-    else if (pctDone < 60) onboardingStep = 'Diagnóstico Técnico';
-    else if (pctDone < 90) onboardingStep = 'Plano Estratégico';
-    else onboardingStep = 'Aprovação Final';
-  }
+  const PHASE_LABELS: Record<number, string> = {
+    1: 'Fase 01: Diagnostico',
+    2: 'Fase 02: Agendamento',
+    3: 'Fase 03: Planejamento',
+    4: 'Fase 04: Go Live',
+  };
+  const phase = project.onboarding_phase || 1;
+  const daysInPhase = project.days_in_phase || 0;
+  const isStuck = daysInPhase > 10 && project.pipeline_stage !== 'active' && project.pipeline_stage !== 'completed';
 
   return (
     <div
@@ -454,12 +465,18 @@ const ExecucaoRow = ({
           )} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
             <StageBadge stage={project.pipeline_stage || 'active'} />
-            {onboardingStep && (
-              <span className="text-3xs font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-0.5 ml-1">
-                etapa: {onboardingStep}
+            {project.pipeline_stage !== 'won' && project.pipeline_stage !== 'completed' && (
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-0.5">
+                {PHASE_LABELS[phase] || `Fase ${phase}`}
+              </span>
+            )}
+            {isStuck && (
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900 bg-zinc-100 border border-zinc-300 px-2 py-0.5 flex items-center gap-1">
+                <AlertTriangle className="w-2.5 h-2.5" />
+                Parado {daysInPhase}d
               </span>
             )}
           </div>
@@ -484,6 +501,14 @@ const ExecucaoRow = ({
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {project.pipeline_stage === 'won' && (
+            <StageActionButton
+              label="Iniciar Jornada"
+              variant="accent"
+              onClick={() => navigate(`/admin/projects/${project.id}/jornada`)}
+              loading={false}
+            />
+          )}
           <select
             onClick={(e) => e.stopPropagation()}
             onChange={(e) => onAction(project.id, e.target.value as PipelineStage)}
@@ -543,7 +568,16 @@ export const RevenueCockpit: React.FC = () => {
   const [transitioning, setTransitioning] = useState<string | null>(null);
 
   // Tab navigation
-  const [activeTab, setActiveTab] = useState<'vendas' | 'projetos'>('vendas');
+  const [activeTab, setActiveTab] = useState<'vendas' | 'projetos' | 'network'>('vendas');
+  // Sub-view mode for vendas tab (Notion-style multi-view)
+  const [vendasView, setVendasView] = useState<'list' | 'kanban' | 'followups'>('list');
+
+  // Filters
+  const [filterSource, setFilterSource] = useState<string | null>(null);
+  const [filterMinDays, setFilterMinDays] = useState<number | null>(null);
+  const [filterMinInvestment, setFilterMinInvestment] = useState<number | null>(null);
+  const activeFilterCount = [filterSource, filterMinDays, filterMinInvestment].filter(Boolean).length;
+  const clearFilters = () => { setFilterSource(null); setFilterMinDays(null); setFilterMinInvestment(null); };
 
   // War Room sheet state
   const [warRoomOpen, setWarRoomOpen] = useState(false);
@@ -571,7 +605,6 @@ export const RevenueCockpit: React.FC = () => {
           diagnosticos ( score, tipo )
         `)
         .neq('pipeline_stage', 'won')
-        .neq('pipeline_stage', 'lost')
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -611,7 +644,7 @@ export const RevenueCockpit: React.FC = () => {
     queryFn: async () => {
       const { data: rawProjects, error } = await supabase
         .from('rei_projects')
-        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage, created_at, updated_at')
+        .select('id, client_name, client_company, trade_name, type, status, pipeline_stage, created_at, updated_at, onboarding_phase, onboarding_phase_entered_at')
         .in('pipeline_stage', ['won', 'onboarding', 'active', 'completed'])
         .order('updated_at', { ascending: false });
 
@@ -651,6 +684,9 @@ export const RevenueCockpit: React.FC = () => {
           plan_status: null,
           display_name: getDisplayName({ trade_name: proj.trade_name, client_company: proj.client_company, client_name: proj.client_name }),
           days_in_stage: getDaysSince(proj.updated_at),
+          onboarding_phase: proj.onboarding_phase || 1,
+          onboarding_phase_entered_at: proj.onboarding_phase_entered_at || proj.created_at,
+          days_in_phase: getDaysSince(proj.onboarding_phase_entered_at || proj.updated_at),
         } as ProjectRow;
       });
     }
@@ -759,13 +795,35 @@ export const RevenueCockpit: React.FC = () => {
 
   // ---- Grouped data ----
 
+  const applyFilters = useCallback((items: ProjectRow[]) => {
+    let result = items;
+    if (filterSource) {
+      result = result.filter(p => (p.lead_source || 'manual') === filterSource);
+    }
+    if (filterMinDays) {
+      result = result.filter(p => p.days_in_stage >= filterMinDays);
+    }
+    if (filterMinInvestment) {
+      result = result.filter(p => {
+        const inv = (p.opportunity_data as any)?.investment || 0;
+        return inv >= filterMinInvestment;
+      });
+    }
+    return result;
+  }, [filterSource, filterMinDays, filterMinInvestment]);
+
   const diagnostico = useMemo(
-    () => opportunities.filter(p => p.pipeline_stage && DIAGNOSTICO_STAGES.includes(p.pipeline_stage)),
-    [opportunities],
+    () => applyFilters(opportunities.filter(p => p.pipeline_stage && DIAGNOSTICO_STAGES.includes(p.pipeline_stage))),
+    [opportunities, applyFilters],
   );
 
   const vendas = useMemo(
-    () => opportunities.filter(p => p.pipeline_stage && VENDAS_STAGES.includes(p.pipeline_stage)),
+    () => applyFilters(opportunities.filter(p => p.pipeline_stage && VENDAS_STAGES.includes(p.pipeline_stage))),
+    [opportunities, applyFilters],
+  );
+
+  const network = useMemo(
+    () => opportunities.filter(p => p.pipeline_stage === 'lost'),
     [opportunities],
   );
 
@@ -834,6 +892,12 @@ export const RevenueCockpit: React.FC = () => {
     return Math.round((activeProjects / execucao.length) * 100);
   }, [execucao]);
 
+  // Follow-ups: deals stagnant >3 days needing action
+  const followups = useMemo(
+    () => [...diagnostico, ...vendas].filter(p => p.days_in_stage >= 3).sort((a, b) => b.days_in_stage - a.days_in_stage),
+    [diagnostico, vendas],
+  );
+
   // WbD Metrics: Avg days in execution (TTV proxy)
   const avgTTV = useMemo(() => {
     if (execucao.length === 0) return 0;
@@ -845,9 +909,7 @@ export const RevenueCockpit: React.FC = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-screen bg-white">
-          <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
-        </div>
+        <PipelineSkeleton />
       </AdminLayout>
     );
   }
@@ -910,7 +972,7 @@ export const RevenueCockpit: React.FC = () => {
             </div>
 
             {/* ── Tab Navigator ───────────────────────────────────────── */}
-            <div className="flex items-center gap-0 mb-8 border-b border-zinc-200">
+            <div className="flex flex-wrap items-center gap-0 mb-8 border-b border-zinc-200">
               <button
                 onClick={() => setActiveTab('vendas')}
                 className={cn(
@@ -941,50 +1003,167 @@ export const RevenueCockpit: React.FC = () => {
                   </span>
                 )}
               </button>
+              <button
+                onClick={() => setActiveTab('network')}
+                className={cn(
+                  'px-6 py-3 text-xs font-black uppercase tracking-[0.15em] border-b-2 transition-all flex items-center gap-2',
+                  activeTab === 'network'
+                    ? 'border-zinc-900 text-zinc-900'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-600',
+                )}
+              >
+                Base de Contatos
+                {network.length > 0 && (
+                  <span className={cn(
+                    "w-auto px-1.5 h-4 text-[10px] font-black flex items-center justify-center rounded-sm leading-none",
+                    activeTab === 'network' ? "bg-zinc-100 text-zinc-600" : "bg-zinc-50 text-zinc-400"
+                  )}>
+                    {network.length}
+                  </span>
+                )}
+              </button>
             </div>
 
             {/* ── Copilot Engine ────────────────────────────────────────── */}
             <RevOpsCopilot 
-              activeTab={activeTab} 
+              activeTab={activeTab as 'vendas' | 'projetos'} 
               diagnostico={diagnostico} 
               vendas={vendas} 
               execucao={execucao} 
             />
 
-            {/* ── Visualização de VENDAS ──────────────────────────────── */}
-            <div className="bg-white border border-zinc-200 p-5 mb-10">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="w-4 h-4 text-zinc-400" />
-                <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
-                  {activeTab === 'vendas' ? 'Funil de Vendas' : 'Funil de Execução'}
-                </p>
+            {/* ── Sub-view switcher (vendas tab only, Notion-style) ──── */}
+            {activeTab === 'vendas' && (
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-1 border border-zinc-200 p-0.5">
+                  {([
+                    { key: 'list' as const,      icon: LayoutList, label: 'Lista' },
+                    { key: 'kanban' as const,     icon: Columns3,  label: 'Kanban' },
+                    { key: 'followups' as const,  icon: Filter,    label: `Follow-ups${followups.length > 0 ? ` (${followups.length})` : ''}` },
+                  ]).map(({ key, icon: VIcon, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setVendasView(key)}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-colors',
+                        vendasView === key
+                          ? 'bg-zinc-900 text-white'
+                          : 'text-zinc-400 hover:text-zinc-600',
+                      )}
+                    >
+                      <VIcon className="w-3.5 h-3.5" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                {activeTab === 'vendas' ? (
-                  <>
-                    {DIAGNOSTICO_STAGES.map(s => (
-                      <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
-                    ))}
-                    {VENDAS_STAGES.map(s => (
-                      <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
-                    ))}
-                  </>
-                ) : (
-                  EXECUCAO_STAGES.map(s => (
-                    <FunnelBar
-                      key={s}
-                      label={STAGE_CONFIGS[s].labelShort}
-                      count={stageCounts[s] || 0}
-                      max={maxStageCount}
-                      accent={s === 'won'}
-                    />
-                  ))
+            )}
+
+            {/* ── Filter Bar (vendas tab) ─────────────────────────── */}
+            {activeTab === 'vendas' && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                {/* Source filter */}
+                <select
+                  value={filterSource || ''}
+                  onChange={(e) => setFilterSource(e.target.value || null)}
+                  className={cn(
+                    'text-xs font-bold border px-3 py-1.5 transition-colors cursor-pointer',
+                    filterSource
+                      ? 'bg-zinc-900 text-white border-zinc-900'
+                      : 'text-zinc-400 border-zinc-200 hover:bg-zinc-50'
+                  )}
+                >
+                  <option value="">Fonte do Lead</option>
+                  {Object.entries(LEAD_SOURCE_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+                {/* Days filter */}
+                <select
+                  value={filterMinDays || ''}
+                  onChange={(e) => setFilterMinDays(e.target.value ? Number(e.target.value) : null)}
+                  className={cn(
+                    'text-xs font-bold border px-3 py-1.5 transition-colors cursor-pointer',
+                    filterMinDays
+                      ? 'bg-zinc-900 text-white border-zinc-900'
+                      : 'text-zinc-400 border-zinc-200 hover:bg-zinc-50'
+                  )}
+                >
+                  <option value="">Dias no Estagio</option>
+                  <option value="3">3+ dias</option>
+                  <option value="7">7+ dias</option>
+                  <option value="14">14+ dias</option>
+                  <option value="30">30+ dias</option>
+                </select>
+                {/* Investment filter */}
+                <select
+                  value={filterMinInvestment || ''}
+                  onChange={(e) => setFilterMinInvestment(e.target.value ? Number(e.target.value) : null)}
+                  className={cn(
+                    'text-xs font-bold border px-3 py-1.5 transition-colors cursor-pointer',
+                    filterMinInvestment
+                      ? 'bg-zinc-900 text-white border-zinc-900'
+                      : 'text-zinc-400 border-zinc-200 hover:bg-zinc-50'
+                  )}
+                >
+                  <option value="">Investimento</option>
+                  <option value="0">Qualquer</option>
+                  <option value="5000">R$5k+</option>
+                  <option value="15000">R$15k+</option>
+                  <option value="50000">R$50k+</option>
+                </select>
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 text-xs font-bold text-zinc-400 hover:text-zinc-900 px-2 py-1.5 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                    Limpar ({activeFilterCount})
+                  </button>
                 )}
               </div>
-            </div>
+            )}
+
+            {/* ── Funnel Visualization ──────────────────────────────── */}
+            {vendasView === 'list' && (
+              <div className="bg-white border border-zinc-200 p-5 mb-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <BarChart3 className="w-4 h-4 text-zinc-400" />
+                  <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
+                    {activeTab === 'vendas' ? 'Funil de Vendas' : 'Funil de Execução'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {activeTab === 'vendas' ? (
+                    <>
+                      {DIAGNOSTICO_STAGES.map(s => (
+                        <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
+                      ))}
+                      {VENDAS_STAGES.map(s => (
+                        <FunnelBar key={s} label={STAGE_CONFIGS[s].labelShort} count={stageCounts[s] || 0} max={maxStageCount} />
+                      ))}
+                    </>
+                  ) : (
+                    EXECUCAO_STAGES.map(s => (
+                      <FunnelBar
+                        key={s}
+                        label={STAGE_CONFIGS[s].labelShort}
+                        count={stageCounts[s] || 0}
+                        max={maxStageCount}
+                        accent={s === 'won'}
+                      />
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════ */}
+            {/* ── VENDAS: LIST VIEW (default) ──────────────────────── */}
+            {/* ══════════════════════════════════════════════════════════ */}
 
             {/* ── SECTION 1: DIAGNOSTICO ──────────────────────────────────────── */}
-            {activeTab === 'vendas' && <div className="mb-14">
+            {activeTab === 'vendas' && vendasView === 'list' && <div className="mb-14">
               <SectionTitle
                 eyebrow="Top de Funil"
                 title="Diagnóstico"
@@ -1044,16 +1223,14 @@ export const RevenueCockpit: React.FC = () => {
               )}
             </div>}
 
-            {/* ── SECTION 2: VENDAS ───────────────────────────────────────────────── */}
-            {activeTab === 'vendas' && <div className="mb-14">
+            {/* ── SECTION 2: VENDAS (list view) ──────────────────────────────── */}
+            {activeTab === 'vendas' && vendasView === 'list' && <div className="mb-14">
               <SectionTitle
                 eyebrow="Meio de Funil"
                 title="Vendas"
                 description={`${vendas.length} oportunidade${vendas.length !== 1 ? 's' : ''} em negociação | Pipeline: ${formatCurrency(totalPipelineValue)}`}
                 count={vendas.length}
               />
-
-              {/* Vendas KPIs foram movidos para o Top Bar */}
 
               {/* Stage sub-groups */}
               {VENDAS_STAGES.map(stage => {
@@ -1092,6 +1269,179 @@ export const RevenueCockpit: React.FC = () => {
                 </div>
               )}
             </div>}
+
+            {/* ══════════════════════════════════════════════════════════ */}
+            {/* ── VENDAS: KANBAN VIEW ──────────────────────────────── */}
+            {/* ══════════════════════════════════════════════════════════ */}
+            {activeTab === 'vendas' && vendasView === 'kanban' && (
+              <div className="mb-14">
+                <div className="overflow-x-auto -mx-6 md:-mx-10 lg:-mx-14 px-6 md:px-10 lg:px-14">
+                  <div className="flex gap-4 min-w-max pb-4">
+                    {[...DIAGNOSTICO_STAGES, ...VENDAS_STAGES].map(stage => {
+                      const stageItems = [...diagnostico, ...vendas].filter(p => p.pipeline_stage === stage);
+                      const isVendasStage = VENDAS_STAGES.includes(stage);
+                      return (
+                        <div key={stage} className="w-[280px] shrink-0">
+                          {/* Column header */}
+                          <div className="flex items-center gap-2 mb-3 px-1">
+                            <div className={cn(
+                              'w-2 h-2 rounded-full',
+                              isVendasStage ? 'bg-zinc-900' : 'bg-zinc-400',
+                            )} />
+                            <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
+                              {STAGE_CONFIGS[stage].labelShort}
+                            </span>
+                            <span className="text-xs text-zinc-300 ml-auto">{stageItems.length}</span>
+                          </div>
+
+                          {/* Cards */}
+                          <div className="space-y-2">
+                            {stageItems.length === 0 ? (
+                              <div className="border border-dashed border-zinc-200 p-4 text-center">
+                                <p className="text-xxs font-medium text-zinc-300">Vazio</p>
+                              </div>
+                            ) : (
+                              stageItems.map(p => {
+                                const opp = p.opportunity_data;
+                                const investAvg = opp?.investimento_estimado
+                                  ? (opp.investimento_estimado.range_min + opp.investimento_estimado.range_max) / 2
+                                  : 0;
+                                return (
+                                  <div
+                                    key={p.id}
+                                    onClick={() => openWarRoom(p)}
+                                    className="bg-white border border-zinc-200 p-3 hover:shadow-sm transition-shadow cursor-pointer"
+                                  >
+                                    <p className="text-sm font-bold text-zinc-900 truncate mb-1">{p.display_name}</p>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xxs font-medium text-zinc-400">
+                                        {p.days_in_stage}d neste estagio
+                                      </span>
+                                      {investAvg > 0 && (
+                                        <span className="text-xxs font-black text-zinc-600">
+                                          {formatCurrency(investAvg)}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {p.days_in_stage >= 5 && (
+                                      <div className="mt-2 flex items-center gap-1">
+                                        <Clock className="w-3 h-3 text-zinc-400" />
+                                        <span className="text-xxs font-bold text-zinc-500">Precisa de follow-up</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════ */}
+            {/* ── VENDAS: FOLLOW-UPS VIEW ──────────────────────────── */}
+            {/* ══════════════════════════════════════════════════════════ */}
+            {activeTab === 'vendas' && vendasView === 'followups' && (
+              <div className="mb-14">
+                <SectionTitle
+                  eyebrow="Acao Necessaria"
+                  title="Follow-ups Hoje"
+                  description="Leads e oportunidades parados ha 3+ dias sem movimentacao"
+                  count={followups.length}
+                />
+
+                {followups.length === 0 ? (
+                  <div className="bg-white border-2 border-dashed border-zinc-200 py-14 text-center">
+                    <CheckCircle2 className="w-7 h-7 text-[#00CC6A] mx-auto mb-2" />
+                    <p className="text-sm font-black text-zinc-900">Tudo em dia</p>
+                    <p className="text-xs font-medium text-zinc-400 mt-1">Nenhum lead precisa de follow-up agora.</p>
+                  </div>
+                ) : (
+                  <div className="border border-zinc-200 overflow-hidden">
+                    {/* Table header */}
+                    <div className="grid grid-cols-12 gap-4 px-5 py-3 border-b border-zinc-100 bg-zinc-50">
+                      <div className="col-span-4 text-xxs font-black uppercase tracking-widest text-zinc-400">Lead</div>
+                      <div className="col-span-2 text-xxs font-black uppercase tracking-widest text-zinc-400">Estagio</div>
+                      <div className="col-span-2 text-xxs font-black uppercase tracking-widest text-zinc-400">Dias Parado</div>
+                      <div className="col-span-2 text-xxs font-black uppercase tracking-widest text-zinc-400">Investimento</div>
+                      <div className="col-span-2 text-xxs font-black uppercase tracking-widest text-zinc-400">Acao</div>
+                    </div>
+                    {/* Table rows */}
+                    <div className="divide-y divide-zinc-50">
+                      {followups.map(p => {
+                        const opp = p.opportunity_data;
+                        const investAvg = opp?.investimento_estimado
+                          ? (opp.investimento_estimado.range_min + opp.investimento_estimado.range_max) / 2
+                          : 0;
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => openWarRoom(p)}
+                            className="grid grid-cols-12 gap-4 px-5 py-3.5 hover:bg-zinc-50 cursor-pointer transition-colors items-center"
+                          >
+                            <div className="col-span-4">
+                              <p className="text-sm font-bold text-zinc-900 truncate">{p.display_name}</p>
+                              <p className="text-xxs font-medium text-zinc-400 truncate mt-0.5">
+                                {p.lead_source ? LEAD_SOURCE_LABELS[p.lead_source as LeadSource] || p.lead_source : '-'}
+                              </p>
+                            </div>
+                            <div className="col-span-2">
+                              <StageBadge stage={p.pipeline_stage || 'lead_inbound'} />
+                            </div>
+                            <div className="col-span-2">
+                              <span className={cn(
+                                'text-sm font-black tabular-nums',
+                                p.days_in_stage >= 7 ? 'text-zinc-900' : 'text-zinc-500',
+                              )}>
+                                {p.days_in_stage}d
+                              </span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-sm font-bold text-zinc-600">
+                                {investAvg > 0 ? formatCurrency(investAvg) : '-'}
+                              </span>
+                            </div>
+                            <div className="col-span-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); openWarRoom(p); }}
+                                className="text-xxs font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 transition-colors"
+                              >
+                                Abrir Dossie
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Funnel for Projetos tab ──────────────────────────── */}
+            {activeTab === 'projetos' && (
+              <div className="bg-white border border-zinc-200 p-5 mb-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <BarChart3 className="w-4 h-4 text-zinc-400" />
+                  <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">Funil de Execução</p>
+                </div>
+                <div className="space-y-2">
+                  {EXECUCAO_STAGES.map(s => (
+                    <FunnelBar
+                      key={s}
+                      label={STAGE_CONFIGS[s].labelShort}
+                      count={stageCounts[s] || 0}
+                      max={maxStageCount}
+                      accent={s === 'won'}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* ── SECTION 3: EXECUÇÃO ────────────────────────────────────────── */}
             {activeTab === 'projetos' && <div className="mb-14">
@@ -1141,6 +1491,57 @@ export const RevenueCockpit: React.FC = () => {
                   <p className="text-xs font-medium text-zinc-300 mt-1">Feche vendas para iniciar projetos.</p>
                 </div>
               )}
+            </div>}
+            {/* ── SECTION 4: NETWORK / CONTATOS ────────────────────────────────────────── */}
+            {activeTab === 'network' && <div className="mb-14">
+              <SectionTitle
+                eyebrow="Network"
+                title="Base de Contatos"
+                description={`Lista de contatos e empresas que não estão com negociações ativas no funil.`}
+                count={network.length}
+              />
+              
+              <div className="bg-white border border-zinc-200">
+                {network.length > 0 ? (
+                  <div className="divide-y divide-zinc-100">
+                    {network.map(contact => (
+                      <div key={contact.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-zinc-50 transition-colors group cursor-pointer" onClick={() => navigate(`/admin/projects/${contact.id}`)}>
+                        <div className="flex flex-col md:flex-row md:items-center gap-4">
+                          <div className="w-10 h-10 bg-zinc-100 flex items-center justify-center shrink-0">
+                            <UserMinus className="w-5 h-5 text-zinc-400" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-black text-zinc-900 uppercase tracking-tight">{contact.display_name}</h4>
+                            <p className="text-xxs font-bold uppercase tracking-widest text-zinc-400 mt-0.5">{contact.type} • Estagnado há {contact.days_in_stage}d</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-1">
+                            Lead Perdido
+                          </span>
+                          <Button
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if(window.confirm('Deseja reativar este lead no funil em "Diagnóstico"?')) {
+                                handleAdvance(contact.id, 'lead_inbound');
+                              }
+                            }}
+                            className="bg-zinc-100 hover:bg-black text-zinc-500 hover:text-white rounded-sm h-8 px-3 text-2xs font-black uppercase tracking-widest transition-all"
+                          >
+                            Reativar Info
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-20 text-center">
+                    <UserCheck className="w-8 h-8 text-zinc-200 mx-auto mb-3" />
+                    <p className="text-xs font-black text-zinc-400 uppercase tracking-widest">Nenhum contato arquivado</p>
+                  </div>
+                )}
+              </div>
             </div>}
 
           </div>

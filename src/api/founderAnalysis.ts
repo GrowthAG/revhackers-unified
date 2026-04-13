@@ -1,12 +1,20 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface FounderAnalysisResult {
-    archetype: "Visionário" | "Vendedor" | "Técnico";
+    archetype: string;
     score: number;
     headline: string;
     analysis: string;
     strengths: string[];
     blindSpots: string[];
+    brandingGaps?: string[];
+    actionableInsight?: string;
+    linkedinData?: {
+        fullName?: string;
+        headline?: string;
+        followerCount?: number;
+        authorityScore?: number;
+    };
 }
 
 export async function analyzeFounderProfileAI(
@@ -15,20 +23,29 @@ export async function analyzeFounderProfileAI(
     quizScore: number
 ): Promise<FounderAnalysisResult> {
     try {
-        const { data, error } = await supabase.functions.invoke('analyze-diagnostic', {
+        const timeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 30000)
+        );
+
+        const invoke = supabase.functions.invoke('analyze-diagnostic', {
             body: { type: 'founder', answers, totalScore: quizScore, linkedinUrl }
         });
+
+        const { data, error } = await Promise.race([invoke, timeout]);
 
         if (error) throw error;
 
         // Validate and return only expected fields (no unsafe ...parsed spread)
         return {
-            archetype: data.archetype || 'Técnico',
+            archetype: data.archetype || 'Executor',
             score: quizScore,
             headline: data.headline || '',
             analysis: data.analysis || '',
             strengths: Array.isArray(data.strengths) ? data.strengths.slice(0, 2) : [],
-            blindSpots: Array.isArray(data.blindSpots) ? data.blindSpots.slice(0, 2) : []
+            blindSpots: Array.isArray(data.blindSpots) ? data.blindSpots.slice(0, 2) : [],
+            brandingGaps: Array.isArray(data.brandingGaps) ? data.brandingGaps.slice(0, 2) : [],
+            actionableInsight: data.actionableInsight || '',
+            linkedinData: data.linkedinData || undefined,
         };
     } catch (error) {
         console.error("Erro founder analysis:", error);
@@ -38,27 +55,33 @@ export async function analyzeFounderProfileAI(
 
 function getMockAnalysis(score: number): FounderAnalysisResult {
     if (score > 80) return {
-        archetype: "Visionário",
+        archetype: "Visionario",
         score,
-        headline: "O Líder de Mercado",
-        analysis: "Sua presença impõe respeito, mas cuidado para não se distanciar da realidade operacional.",
-        strengths: ["Autoridade Clara", "Visão de Futuro"],
-        blindSpots: ["Distância do Cliente", "Excesso de Abstração"]
+        headline: "O Lider de Mercado",
+        analysis: "Sua presenca impoe respeito, mas cuidado para nao se distanciar da realidade operacional.",
+        strengths: ["Autoridade Clara", "Visao de Futuro"],
+        blindSpots: ["Distancia do Cliente", "Excesso de Abstracao"],
+        brandingGaps: ["Falta de conteudo tecnico", "Audiencia nao qualificada"],
+        actionableInsight: "Publique um caso de estudo real com metricas concretas esta semana.",
     };
     if (score > 50) return {
-        archetype: "Vendedor",
+        archetype: "Relacionamento",
         score,
-        headline: "A Máquina de Vendas",
-        analysis: "Você gera movimento, mas falta profundidade técnica para sustentar LTV longo.",
-        strengths: ["Energia Alta", "Conversão Rápida"],
-        blindSpots: ["Churn Alto", "Conteúdo Raso"]
+        headline: "O Conector Estrategico",
+        analysis: "Voce gera movimento e networking, mas falta profundidade tecnica para sustentar LTV longo.",
+        strengths: ["Energia Alta", "Rede de Contatos"],
+        blindSpots: ["Churn Alto", "Conteudo Raso"],
+        brandingGaps: ["Perfil sem tese clara", "Posts sem CTA de conversao"],
+        actionableInsight: "Defina sua tese proprietaria em 1 frase e a adicione ao headline do LinkedIn.",
     };
     return {
-        archetype: "Técnico",
+        archetype: "Tecnico",
         score,
         headline: "O Especialista Oculto",
-        analysis: "Você é brilhante tecnicamente, mas o mercado não sabe que você existe. Isso custa milhões.",
-        strengths: ["Produto Sólido", "Conhecimento Profundo"],
-        blindSpots: ["Invisibilidade", "Vendas Passivas"]
+        analysis: "Voce e brilhante tecnicamente, mas o mercado nao sabe que voce existe. Isso custa milhoes.",
+        strengths: ["Produto Solido", "Conhecimento Profundo"],
+        blindSpots: ["Invisibilidade", "Vendas Passivas"],
+        brandingGaps: ["Zero presenca digital", "Nenhum conteudo publicado"],
+        actionableInsight: "Crie um post no LinkedIn contando 1 resultado real de um cliente. Faca isso hoje.",
     };
 }

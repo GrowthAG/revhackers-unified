@@ -9,6 +9,7 @@ import { ProjectTimeline } from '@/components/admin/ProjectTimeline';
 import { StrategicEnrichmentService, StrategicEnrichmentResult } from '@/services/StrategicEnrichmentService';
 import { DiagnosticService } from '@/services/DiagnosticService';
 import { getMaterialsByProject, ReiMaterial } from '@/api/reiMaterials';
+import { safeParseStrategicPlanLenient } from '@/schemas/strategicPlan';
 import {
     Dialog,
     DialogContent,
@@ -114,7 +115,12 @@ export default function StrategicPlanGenerator() {
                 
             if (fetchError || !job) throw new Error('Falha ao recuperar os dados completos do Job.');
 
-            const aiPlanData = job.result_data as any;
+            // Validate AI output using Zod schema to prevent silent UI breakages
+            const validatedPlanData = safeParseStrategicPlanLenient(job.result_data);
+            if (!validatedPlanData) {
+                console.warn('[StrategicPlan] AI Payload Validation failed, but attempting to proceed with raw data as fallback');
+            }
+            const aiPlanData = validatedPlanData || (job.result_data as any);
             const context_data = job.context_data as any;
             if (!context_data) throw new Error('O job nao tem context_data salvo no banco de dados.');
 
@@ -124,7 +130,7 @@ export default function StrategicPlanGenerator() {
             } = context_data;
 
             const fullDiagnostic = DiagnosticService.generateDiagnosis(diagnosticResponse, marketCtx, projectType, aiPlanData);
-            const { plan_data, ...diagnosticContext } = fullDiagnostic;
+            const { plan_data, ...diagnosticContext } = fullDiagnostic as any;
             const { market_intelligence, ...dbSafePlanData } = plan_data;
 
             const finalPlanData = {
@@ -499,7 +505,7 @@ export default function StrategicPlanGenerator() {
                 console.warn('AI Enrichment failed (non-blocking):', aiError);
             }
 
-            // ── Map Perplexity personas → PersonaSection format ──────────────
+            // ── Map AI personas → PersonaSection format ──────────────
             const mappedPersonas = (enrichmentResult.personas?.personas || []).map((p: any, i: number) => ({
                 name: p.nome || `Persona ${i + 1}`,
                 role: p.cargo || 'Decisor',
@@ -520,7 +526,7 @@ export default function StrategicPlanGenerator() {
                 wiifm: (p.ganhos_desejados || []).slice(0, 2).join('. ') || 'Resultado concreto e mensurável.',
             }));
 
-            // ── Map Perplexity market → BenchmarkSection format ──────────────
+            // ── Map AI market → BenchmarkSection format ──────────────
             const mappedCompetitors = (enrichmentResult.market?.concorrentes_benchmark || []).map((c: any) => ({
                 company_name: c.nome || 'Concorrente',
                 domain: c.url || '',
@@ -546,7 +552,7 @@ export default function StrategicPlanGenerator() {
                 ? `Oportunidades: ${(enrichmentResult.market.analise_swot_rapida.oportunidades || []).join('; ')}. Ameaças: ${(enrichmentResult.market.analise_swot_rapida.ameacas || []).join('; ')}.`
                 : 'Foco em eficiência operacional e decisões baseadas em dados.';
 
-            // ── REI-based fallbacks (used when Perplexity AI fails) ───────────
+            // ── REI-based fallbacks (used when AI enrichment fails) ───────────
             // These are built from real client answers - uses normalizedAnswers so CRM Ops
             // fields (revops_*) are correctly mapped before DiagnosticService reads them.
             const reiFallbackPersonas = DiagnosticService.generatePersonasFromREI(normalizedAnswers);
@@ -554,11 +560,11 @@ export default function StrategicPlanGenerator() {
             const reiFallbackTrends = DiagnosticService.generateDefaultTrends(normalizedAnswers);
 
             if (!aiSuccess) {
-                // Perplexity unavailable - using REI fallback data
+                // AI enrichment unavailable - using REI fallback data
             }
 
             // ── Build persona_data (for PersonaSection + BenchmarkSection) ────
-            // Priority: AI (Perplexity) > REI answers > undefined (frontend fallback)
+            // Priority: AI (OpenAI) > REI answers > undefined (frontend fallback)
             const personaData = {
                 personas: mappedPersonas.length > 0
                     ? mappedPersonas
@@ -929,27 +935,27 @@ export default function StrategicPlanGenerator() {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <Button variant="ghost" onClick={() => navigate(`/admin/jornada/${reiProjectId}`)} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-black mb-2 pl-0">
+                        <Button variant="ghost" onClick={() => navigate(`/admin/jornada/${reiProjectId}`)} className="text-[0.65rem] font-black uppercase tracking-widest text-zinc-500 hover:text-black mb-2 pl-0">
                             <ArrowLeft className="w-3 h-3 mr-2" /> Voltar para Jornada
                         </Button>
-                        <h1 className="text-3xl font-bold text-black tracking-tight">Painel Estratégico</h1>
-                        <p className="text-zinc-500">Cliente: <span className="font-semibold text-black">{client.trade_name || client.company || client.company_name || client.name || 'N/A'}</span></p>
+                        <h1 className="text-4xl font-black text-black tracking-tighter uppercase">Painel Estratégico</h1>
+                        <p className="text-zinc-500 font-bold tracking-tight mt-1">CLIENTE: <span className="font-black text-black uppercase">{client.trade_name || client.company || client.company_name || client.name || 'N/A'}</span></p>
                     </div>
                     <div className="flex gap-3">
                         {existingPlan && (
-                            <Button variant="outline" onClick={() => setEditMode(!editMode)}>
+                            <Button variant="outline" onClick={() => setEditMode(!editMode)} className="uppercase font-black text-[0.65rem] tracking-widest rounded-none border-2 border-zinc-200 hover:border-black h-12 px-6">
                                 {editMode ? 'Cancelar Edição' : 'Editar Plano'}
                             </Button>
                         )}
                         {editMode ? (
-                            <Button onClick={handleSaveEdits} disabled={sending} className="bg-zinc-900 text-white hover:bg-zinc-800">
+                            <Button onClick={handleSaveEdits} disabled={sending} className="bg-black text-white hover:bg-zinc-800 rounded-none uppercase font-black text-[0.65rem] tracking-widest h-12 px-6 border-none shadow-[0_4px_0_0_#00CC6A] hover:-translate-y-1 hover:shadow-[0_6px_0_0_#00CC6A] transition-all">
                                 {sending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ShieldAlert className="w-4 h-4 mr-2" />}
                                 Salvar Alterações
                             </Button>
                         ) : (
-                            <Button onClick={handleGenerate} disabled={generating || !!pendingJob} className="bg-black text-white hover:bg-zinc-800">
+                            <Button onClick={handleGenerate} disabled={generating || !!pendingJob} className="bg-black text-white hover:bg-zinc-800 rounded-none uppercase font-black text-[0.65rem] tracking-widest h-12 px-6 border-none shadow-[0_4px_0_0_#00CC6A] hover:-translate-y-1 hover:shadow-[0_6px_0_0_#00CC6A] transition-all">
                                 {(generating || pendingJob) ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <BrainCircuit className="w-4 h-4 mr-2" />}
-                                {(generating || pendingJob) ? 'Gerando em Background...' : (existingPlan ? 'Regerar Inteligência Base' : 'Gerar Planejamento')}
+                                {(generating || pendingJob) ? 'PROCESSANDO HARDWARE...' : (existingPlan ? 'REGENAR INTELIGÊNCIA BASE' : 'GERAR PLANEJAMENTO')}
                             </Button>
                         )}
                     </div>
@@ -963,16 +969,16 @@ export default function StrategicPlanGenerator() {
                 )}
 
                 {/* Materials Section */}
-                <div className="bg-white border border-zinc-200 p-5 mb-8">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="bg-white border-2 border-zinc-200 p-8 mb-8 hover:border-black transition-all">
+                    <div className="flex items-center justify-between mb-6 border-b-2 border-zinc-100 pb-4">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-zinc-400" />
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">
-                                Materiais do Cliente
+                            <FileText className="w-4 h-4 text-black" />
+                            <h3 className="text-[0.7rem] font-black uppercase tracking-widest text-zinc-400">
+                                MATERIAIS DO CLIENTE
                             </h3>
                             {materials.length > 0 && (
-                                <span className="text-xxs font-bold bg-zinc-100 text-zinc-600 px-2 py-0.5 ">
-                                    {materials.length}
+                                <span className="text-[0.65rem] font-black tracking-widest bg-black text-[#00CC6A] px-2 py-0.5 ml-2">
+                                    {materials.length} ARQUIVOS
                                 </span>
                             )}
                         </div>
@@ -981,10 +987,10 @@ export default function StrategicPlanGenerator() {
                                 onClick={() => {
                                     window.open(`/upload-materiais/${reiProjectId}`, '_blank');
                                 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-zinc-900 text-xxs font-bold uppercase tracking-widest text-white hover:bg-black transition-colors"
+                                className="flex items-center gap-1.5 px-4 py-2.5 bg-black text-white text-[0.65rem] font-black uppercase tracking-widest hover:bg-[#00CC6A] hover:text-black transition-colors"
                             >
-                                <ExternalLink className="w-3 h-3" />
-                                Fazer Upload Agora
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                FAZER UPLOAD
                             </button>
                             <button
                                 onClick={() => {
@@ -1055,7 +1061,7 @@ export default function StrategicPlanGenerator() {
                                 type="text"
                                 defaultValue={client.logo_url}
                                 onBlur={(e) => handleUpdateLogo(e.target.value)}
-                                className="bg-white border border-zinc-300 rounded px-3 py-1 text-xs w-64"
+                                className="bg-transparent border-b border-zinc-300 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs w-64 transition-all"
                                 placeholder="https://logo.url/logo.png"
                             />
                         </div>
@@ -1147,7 +1153,7 @@ export default function StrategicPlanGenerator() {
                                                         type="text"
                                                         value={editedData.market.tam_sam_som?.[k] || ''}
                                                         onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, tam_sam_som: { ...editedData.market.tam_sam_som, [k]: e.target.value } } })}
-                                                        className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs"
+                                                        className="bg-transparent border-b border-zinc-200 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs transition-all"
                                                     />
                                                 </div>
                                             ))}
@@ -1158,7 +1164,7 @@ export default function StrategicPlanGenerator() {
                                                 <textarea
                                                     value={editedData.market.analise_swot_rapida?.oportunidades?.join(', ') || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, oportunidades: e.target.value.split(',').map((s: string) => s.trim()) } } })}
-                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[50px]"
+                                                    className="w-full bg-transparent border-b border-zinc-200 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs min-h-[50px] transition-all resize-none"
                                                 />
                                             </div>
                                             <div>
@@ -1166,7 +1172,7 @@ export default function StrategicPlanGenerator() {
                                                 <textarea
                                                     value={editedData.market.analise_swot_rapida?.ameacas?.join(', ') || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, market: { ...editedData.market, analise_swot_rapida: { ...editedData.market.analise_swot_rapida, ameacas: e.target.value.split(',').map((s: string) => s.trim()) } } })}
-                                                    className="w-full bg-white border border-zinc-200 rounded px-2 py-1 text-xs min-h-[50px]"
+                                                    className="w-full bg-transparent border-b border-zinc-200 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs min-h-[50px] transition-all resize-none"
                                                 />
                                             </div>
                                         </div>
@@ -1205,8 +1211,8 @@ export default function StrategicPlanGenerator() {
                                         {editedData.personas.personas.map((persona: any, idx: number) => (
                                             <div key={idx} className="flex items-center gap-3 p-3 bg-zinc-50 border border-zinc-100">
                                                 <img src={`https://ui-avatars.com/api/?name=${persona.name || persona.nome}&size=32`} alt="" className="w-8 h-8 object-cover" />
-                                                <input type="text" value={persona.name || persona.nome || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].name = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs font-semibold flex-1" />
-                                                <input type="text" value={persona.role || persona.cargo || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].role = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-white border border-zinc-200 rounded px-2 py-1 text-xs flex-1" />
+                                                <input type="text" value={persona.name || persona.nome || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].name = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-transparent border-b border-zinc-200 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs font-semibold flex-1 transition-all" />
+                                                <input type="text" value={persona.role || persona.cargo || ''} onChange={(e) => { const n = [...editedData.personas.personas]; n[idx].role = e.target.value; setEditedData({ ...editedData, personas: { ...editedData.personas, personas: n } }); }} className="bg-transparent border-b border-zinc-200 hover:border-black focus:border-[#00CC6A] outline-none rounded-none px-0 py-1 text-xs flex-1 transition-all" />
                                             </div>
                                         ))}
                                     </div>
@@ -1247,7 +1253,7 @@ export default function StrategicPlanGenerator() {
                                                 <textarea
                                                     value={(editedData.benchmark as any)[key] || ''}
                                                     onChange={(e) => setEditedData({ ...editedData, benchmark: { ...editedData.benchmark, [key]: e.target.value } })}
-                                                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-white min-h-[60px]"
+                                                    className="bg-transparent border-b border-zinc-700 hover:border-zinc-400 focus:border-[#00CC6A] outline-none rounded-none px-0 py-1.5 text-xs text-white min-h-[60px] transition-all resize-none"
                                                 />
                                             </div>
                                         ))}

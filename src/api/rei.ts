@@ -43,8 +43,8 @@ export const getREIProjectById = async (id: string): Promise<REIProject | null> 
  * PROJETOS REI DO USUÁRIO
  */
 export const getUserREIProjects = async (userId: string): Promise<REIProject[]> => {
-    const { data, error } = await supabase
-        .from('rei_projects')
+    const { data, error } = await (supabase
+        .from('rei_projects') as any)
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
@@ -63,7 +63,7 @@ export const getUserREIProjects = async (userId: string): Promise<REIProject[]> 
 export const createREIProject = async (project: Partial<REIProject>): Promise<REIProject | null> => {
     const { data, error } = await supabase
         .from('rei_projects')
-        .insert(project)
+        .insert(project as any)
         .select()
         .single();
 
@@ -99,7 +99,7 @@ export const updateREIProject = async (id: string, updates: Partial<REIProject>)
  */
 export const deleteREIProject = async (id: string): Promise<boolean> => {
     // 1. Delete associated client_documents
-    await supabase.from('client_documents').delete().eq('project_id', id);
+    await (supabase.from('client_documents' as any) as any).delete().eq('project_id', id);
 
     // 2. Delete associated strategic_plans
     await supabase.from('strategic_plans').delete().eq('rei_project_id', id);

@@ -315,7 +315,7 @@ const AdminProposalNew = () => {
                                 });
                                 alert("DADOS FULL DECK INJETADOS! Formato Slide Master atualizado. Rode a página, preencha Título / Valores e Salve para ver o Pitch Perfeito.");
                             }}
-                            className="bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-2 px-4 rounded-lg shadow-lg flex items-center gap-2 transition-colors"
+                            className="bg-revgreen hover:bg-revgreen-hover text-zinc-950 font-bold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 transition-colors"
                         >
                             ⚡ INJETAR DADOS DO BANCO DE DADOS
                         </button>

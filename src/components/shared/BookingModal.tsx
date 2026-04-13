@@ -11,7 +11,7 @@ interface BookingModalProps {
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 }
 
-const BookingModal = ({ isOpen, onClose, triggerText = "Agendar Diagnóstico", className, variant = "default" }: BookingModalProps) => {
+const BookingModal = ({ isOpen, onClose, triggerText = "Aplicar para Auditoria", className, variant = "default" }: BookingModalProps) => {
     const navigate = useNavigate();
 
     // When modal "opens", navigate to /booking page directly

@@ -91,10 +91,10 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
   };
 
   const inputStyles = variant === 'dark'
-    ? "bg-black/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-revgreen focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium"
-    : "bg-white border-zinc-200 text-black placeholder:text-zinc-300 focus:border-black focus:ring-0 focus:outline-none focus:ring-offset-0 text-xs font-medium";
+    ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600 focus:border-revgreen focus:ring-0 focus:outline-none focus:ring-offset-0 text-sm"
+    : "bg-white border-zinc-200 text-black placeholder:text-zinc-300 focus:border-black focus:ring-0 focus:outline-none focus:ring-offset-0 text-sm";
 
-  const labelStyles = "text-xxs font-black uppercase tracking-[0.2em] text-zinc-400";
+  const labelStyles = "text-xs font-medium text-zinc-500";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -108,7 +108,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             required
-            className={`${inputStyles} h-12 rounded-none transition-all`}
+          className={`${inputStyles} h-11 rounded transition-all`}
           />
         </div>
 
@@ -121,7 +121,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             required
-            className={`${inputStyles} h-12 rounded-none transition-all`}
+          className={`${inputStyles} h-11 rounded transition-all`}
           />
         </div>
       </div>
@@ -136,7 +136,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
             value={formData.company}
             onChange={(e) => handleInputChange('company', e.target.value)}
             required
-            className={`${inputStyles} h-12 rounded-none transition-all`}
+          className={`${inputStyles} h-11 rounded transition-all`}
           />
         </div>
 
@@ -149,7 +149,7 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
             value={formData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             required
-            className={`${inputStyles} h-12 rounded-none transition-all`}
+          className={`${inputStyles} h-11 rounded transition-all`}
           />
         </div>
       </div>
@@ -202,16 +202,14 @@ const ContactForm = ({ formType = 'contact', variant = 'light' }: ContactFormPro
           placeholder="Descreva brevemente seus desafios atuais..."
           value={formData.message}
           onChange={(e) => handleInputChange('message', e.target.value)}
-          className={`${inputStyles} min-h-[120px] rounded-none py-3`}
+          className={`${inputStyles} min-h-[100px] rounded py-3`}
         />
       </div>
 
       <Button
         type="submit"
-        className={`w-full font-black h-14 rounded-none transition-all uppercase tracking-[0.2em] text-xxs shadow-none ${variant === 'dark'
-          ? "bg-revgreen text-black hover:bg-revgreen/90"
-          : "bg-black text-white hover:bg-zinc-900 border border-black"
-          }`}
+        variant={variant === 'dark' ? 'default' : 'default'}
+        className="w-full h-12 rounded mt-2"
         disabled={isSubmitting}
       >
         {isSubmitting ? 'Enviando...' : formType === 'diagnosis' ? 'Agendar Diagnóstico' : 'Solicitar Aprovação'}

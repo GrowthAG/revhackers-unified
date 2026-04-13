@@ -84,7 +84,7 @@ const ForgotPassword = () => {
     };
     return (
         <PageLayout>
-            <div className="w-full h-full min-h-[60vh] flex items-center justify-center p-4 bg-white">
+            <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white pt-32">
                 <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-700">
                     {/* Header Section */}
                     <div className="flex flex-col items-center mb-10">

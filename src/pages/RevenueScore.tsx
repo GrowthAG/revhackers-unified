@@ -13,6 +13,7 @@ import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBooki
 import { QuestionProgressBar } from '@/components/diagnostics/QuestionProgressBar';
 import { ShareButtons } from '@/components/diagnostics/ShareButtons';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
+import SEO from '@/components/shared/SEO';
 import { analyzeDiagnosticAI, DiagnosticAnalysisResult } from '@/api/diagnosticAnalysis';
 
 // Questions centered on "REI CRM (RevOps)" - 5 dimensões, total = 100pts
@@ -109,12 +110,6 @@ const RevenueScore = () => {
                 setSelectedOption(null);
                 setCurrentQ(prev => prev + 1);
             } else {
-                // Última pergunta - trigger IA e avançar
-                setIsAnalyzing(true);
-                analyzeDiagnosticAI('revenue', updatedAnswers, newScore)
-                    .then(result => setAnalysisResult(result))
-                    .catch(() => {})
-                    .finally(() => setIsAnalyzing(false));
                 setStep('results');
             }
         }, 2000);
@@ -144,6 +139,14 @@ const RevenueScore = () => {
                 title: "DIAGNÓSTICO PROCESSADO",
                 description: "Seu relatório oficial foi gerado."
             });
+            
+            setIsAnalyzing(true);
+            setStep('results');
+            analyzeDiagnosticAI('revenue', answers, score)
+                .then(result => setAnalysisResult(result))
+                .catch(() => {})
+                .finally(() => setIsAnalyzing(false));
+
         } catch (error) {
             console.error(error);
             toast({
@@ -166,9 +169,20 @@ const RevenueScore = () => {
     const teaserScore = score;
 
     return (
+        <>
+        <SEO
+            title="Score de Revenue - Diagnóstico de Operação Comercial"
+            description="Avalie a maturidade da sua operação de revenue B2B em 5 perguntas. Diagnóstico gratuito com análise de IA sobre pipeline, CRM e processos comerciais."
+            canonical="https://revhackers.com.br/score-revenue"
+            breadcrumbs={[
+                { name: "Home", url: "https://revhackers.com.br/" },
+                { name: "Diagnósticos", url: "https://revhackers.com.br/diagnostico" },
+                { name: "Score Revenue", url: "https://revhackers.com.br/score-revenue" }
+            ]}
+        />
         <DiagnosticLayout
             title={step === 'results' ? "" : "Diagnóstico CRM"}
-            subtitle={step === 'results' ? "" : "RevOps, Pipeline, Ferramentas e Processo Comercial"}
+            subtitle={step === 'results' ? "" : "Identifique oportunidades de melhoria no seu processo de CRM, com automacoes e IA"}
             variant={step === 'results' ? 'dark' : 'light'}
             centered={step === 'results'}
             hideHeader={step === 'results'}
@@ -178,31 +192,31 @@ const RevenueScore = () => {
             {step === 'results' && <div className="fixed inset-0 bg-black -z-50 pointer-events-none" />}
 
             {step === 'questions' && (
-                <div className="max-w-4xl animate-fade-in w-full mx-auto">
+                <div className="max-w-2xl animate-fade-in w-full mx-auto">
                     <QuestionProgressBar current={currentQ} total={QUESTIONS.length} variant="light" />
-                    <div className="space-y-6 mt-6">
+                    <div className="space-y-4 mt-4">
                         <div className="flex justify-between items-center text-xxs font-mono text-zinc-400 uppercase tracking-widest font-black border-b border-zinc-100 pb-2">
                             <span>Questão {currentQ + 1} de {QUESTIONS.length}</span>
                             <span>ID: 0{currentQ + 1}</span>
                         </div>
 
-                        <div className="space-y-6 relative">
-                            <h2 className="text-3xl md:text-4xl font-black text-black tracking-tighter leading-tight">
+                        <div className="space-y-4">
+                            <h2 className="text-2xl md:text-3xl font-black text-black tracking-tighter leading-tight">
                                 {QUESTIONS[currentQ].question}
                             </h2>
 
-                            <div className="grid grid-cols-1 gap-3 max-w-xl mx-auto">
+                            <div className="grid grid-cols-1 gap-2">
                                 {currentQData.options.map((opt, idx) => (
                                     <button
                                         key={idx}
                                         disabled={selectedOption !== null}
                                         onClick={() => handleAnswer(opt.score, idx)}
-                                        className={`group relative flex items-center gap-5 p-5 text-left transition-all duration-300 border ${selectedOption === idx
+                                        className={`group relative flex items-center gap-4 p-4 text-left transition-all duration-300 border ${selectedOption === idx
                                             ? "bg-zinc-900 text-white border-zinc-900 scale-[1.01]"
                                             : "bg-white border-zinc-200 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50"
                                             } ${selectedOption !== null && selectedOption !== idx ? "opacity-40" : "opacity-100"}`}
                                     >
-                                        <div className={`w-6 h-6 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
+                                        <div className={`w-6 h-6 flex-shrink-0 flex items-center justify-center text-xxs font-mono font-bold border rounded transition-colors ${selectedOption === idx
                                             ? "bg-white text-zinc-900 border-white"
                                             : "bg-zinc-100 border-zinc-200 text-zinc-500 group-hover:border-zinc-400 group-hover:text-zinc-900"
                                             }`}>
@@ -214,23 +228,24 @@ const RevenueScore = () => {
                                     </button>
                                 ))}
                             </div>
-
-                            {/* Minimal Log */}
-                            <AnimatePresence>
-                                {showLog && currentQData.log && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="absolute -bottom-32 left-0 right-0 mx-auto w-full max-w-xl text-center"
-                                    >
-                                        <p className="text-xs font-medium text-zinc-500 bg-zinc-50 px-4 py-2 inline-block border border-zinc-100">
-                                            <span className="text-black font-bold mr-2">Análise:</span>{currentQData.log}
-                                        </p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
                     </div>
+
+                    {/* Log strip - fixed bottom */}
+                    <AnimatePresence>
+                        {showLog && currentQData.log && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-100 px-4 py-3"
+                            >
+                                <p className="text-xs font-medium text-zinc-500 text-center max-w-2xl mx-auto">
+                                    <span className="text-black font-bold mr-2">Análise:</span>{currentQData.log}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -299,12 +314,15 @@ const RevenueScore = () => {
 
                             <div className="lg:col-span-8 flex flex-col">
                                 <div className="border border-zinc-900 p-8 bg-zinc-950 h-full flex flex-col justify-center">
-                                    {isAnalyzing || !analysisResult ? (
+                                    {isAnalyzing ? (
                                         <div className="flex flex-col items-center justify-center gap-4 py-8">
                                             <div className="w-6 h-6 border-2 border-revgreen border-t-transparent animate-spin" />
-                                            <span className="text-xxs font-mono text-zinc-500 uppercase tracking-widest">Processando Inteligência...</span>
+                                            <div className="text-center space-y-1">
+                                                <span className="block text-xs font-mono text-zinc-300 uppercase tracking-widest">IA Processando Análise</span>
+                                                <span className="block text-xxs font-mono text-zinc-600 uppercase tracking-widest">Aguarde alguns segundos...</span>
+                                            </div>
                                         </div>
-                                    ) : (
+                                    ) : analysisResult ? (
                                         <>
                                             <div className="flex items-center gap-2 mb-4">
                                                 <span className="text-xxs font-black uppercase tracking-[0.25em] text-[#00CC6A] bg-[#00CC6A]/10 px-3 py-1.5">
@@ -315,6 +333,12 @@ const RevenueScore = () => {
                                                 {analysisResult.headline}
                                             </p>
                                         </>
+                                    ) : (
+                                        <div className="flex flex-col justify-center py-8">
+                                            <p className="text-zinc-400 text-sm font-mono uppercase tracking-widest text-center">
+                                                Análise será gerada após identificação
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -407,8 +431,49 @@ const RevenueScore = () => {
                                     </section>
                                 )}
 
+                                {/* Skeleton while AI processes */}
+                                {isAnalyzing && !analysisResult && (
+                                    <section>
+                                        <div className="space-y-6 mb-12 text-center md:text-left">
+                                            <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
+                                                DIAGNÓSTICO_DE_RECEITA
+                                            </div>
+                                            <div className="flex items-center gap-3 mt-2">
+                                                <div className="w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                                                <span className="text-sm font-mono text-zinc-500 uppercase tracking-widest">IA gerando sua análise personalizada...</span>
+                                            </div>
+                                            <div className="h-14 md:h-20 bg-zinc-100 animate-pulse rounded w-2/3" />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                                            <div className="border border-zinc-100 p-8 bg-zinc-50 space-y-4">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-28" />
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-3/5" />
+                                                </div>
+                                            </div>
+                                            <div className="border border-zinc-100 p-8 bg-white space-y-4">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-28" />
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                                    <div className="h-3 bg-zinc-200 animate-pulse rounded w-3/5" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="border-l-4 border-zinc-200 bg-zinc-50 p-8">
+                                            <div className="h-3 bg-zinc-200 animate-pulse rounded w-48 mb-4" />
+                                            <div className="space-y-2">
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-full" />
+                                                <div className="h-3 bg-zinc-200 animate-pulse rounded w-4/5" />
+                                            </div>
+                                        </div>
+                                    </section>
+                                )}
+
                                 {/* Fallback if no AI */}
-                                {!analysisResult && (
+                                {!isAnalyzing && !analysisResult && (
                                     <section>
                                         <div className="space-y-6 mb-12 text-center md:text-left">
                                             <div className="inline-block bg-black text-white px-4 py-1.5 text-2xs font-mono uppercase tracking-[0.5em] font-black">
@@ -474,6 +539,7 @@ const RevenueScore = () => {
                 </>
             )}
         </DiagnosticLayout>
+        </>
     );
 };
 

@@ -118,7 +118,7 @@ const AdminUsers = () => {
         if (!inviteData.email) return;
         setInviting(true);
         try {
-            const { error: functionError } = await supabase.functions.invoke('invite-member', {
+            const { data, error: functionError } = await supabase.functions.invoke('invite-member', {
                 body: {
                     email: inviteData.email,
                     role: inviteData.role,
@@ -126,7 +126,14 @@ const AdminUsers = () => {
                 }
             });
 
-            if (functionError) throw new Error(functionError.message || "Erro ao disparar e-mail de convite");
+            if (functionError) {
+                // Supabase lança FunctionsHttpError que esconde o JSON. Extraímos se possível.
+                throw new Error(functionError.message || "Erro gŕafico no Edge Function");
+            }
+            
+            if (data?.error) {
+                throw new Error(data.error);
+            }
 
             await supabase
                 .from("invitations")
@@ -273,7 +280,7 @@ const AdminUsers = () => {
                     actions={
                         <Button
                             onClick={() => setIsInviteModalOpen(true)}
-                            className="bg-black text-white hover:bg-zinc-800 rounded-sm h-9 px-4 text-xs font-bold uppercase tracking-widest shadow-sm transition-all"
+                            className="bg-black text-white hover:bg-zinc-800 h-9 px-4 text-xs font-bold uppercase tracking-widest shadow-sm transition-all"
                         >
                             <Plus className="mr-2 h-4 w-4" /> Adicionar membro
                         </Button>
@@ -337,7 +344,7 @@ const AdminUsers = () => {
                                                 <TableCell className="py-3 pr-6 text-right">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-100 rounded-sm">
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-black hover:bg-zinc-100">
                                                                 <MoreHorizontal className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
@@ -435,10 +442,10 @@ const AdminUsers = () => {
                                 </div>
                             </div>
                             <DialogFooter className="px-6 py-4 bg-zinc-50 border-t border-zinc-100 flex items-center justify-end gap-2">
-                                <Button variant="outline" onClick={() => setIsInviteModalOpen(false)} className="h-9 rounded-sm border-zinc-200 text-zinc-600 hover:bg-white hover:text-black uppercase text-xxs font-bold tracking-widest">
+                                <Button variant="outline" onClick={() => setIsInviteModalOpen(false)} className="h-9 border-zinc-200 text-zinc-600 hover:bg-white hover:text-black uppercase text-xxs font-bold tracking-widest">
                                     Cancelar
                                 </Button>
-                                <Button onClick={handleInvite} disabled={inviting} className="h-9 rounded-sm bg-black text-white hover:bg-zinc-800 shadow-sm uppercase text-xxs font-bold tracking-widest">
+                                <Button onClick={handleInvite} disabled={inviting} className="h-9 !bg-zinc-900 !text-white hover:!bg-black shadow-sm uppercase text-xxs font-bold tracking-widest">
                                     {inviting ? "Enviando..." : "Enviar convite"}
                                 </Button>
                             </DialogFooter>
@@ -497,10 +504,10 @@ const AdminUsers = () => {
                                 </div>
                             )}
                             <DialogFooter className="px-6 py-4 bg-zinc-50 border-t border-zinc-100 flex items-center justify-end gap-2">
-                                <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="h-9 rounded-sm border-zinc-200 text-zinc-600 hover:bg-white hover:text-black uppercase text-xxs font-bold tracking-widest">
+                                <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="h-9 border-zinc-200 text-zinc-600 hover:bg-white hover:text-black uppercase text-xxs font-bold tracking-widest">
                                     Cancelar
                                 </Button>
-                                <Button onClick={handleRunUpdateUser} className="h-9 rounded-sm bg-black text-white hover:bg-zinc-800 shadow-sm uppercase text-xxs font-bold tracking-widest">
+                                <Button onClick={handleRunUpdateUser} className="h-9 !bg-zinc-900 !text-white hover:!bg-black shadow-sm uppercase text-xxs font-bold tracking-widest">
                                     Salvar
                                 </Button>
                             </DialogFooter>

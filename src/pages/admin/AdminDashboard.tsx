@@ -7,12 +7,13 @@ import {
 import {
   FolderKanban, AlertTriangle, CheckCircle2, Plus, ChevronRight,
   Clock, Zap, Users, TrendingUp, Circle, FileText, ArrowUpRight,
-  Calendar, Target, Activity, Radar
+  Calendar, Target, Activity, Radar, BarChart3, BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { OrphanedRecordingsAlert } from '@/components/admin/OrphanedRecordingsAlert';
+import { DashboardSkeleton } from '@/components/ui/skeleton';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -186,8 +187,8 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const loadDeals = async () => {
-    const { data } = await supabase
-      .from('opportunities')
+    const { data } = await (supabase
+      .from('opportunities') as any)
       .select('id, status')
       .neq('status', 'won')
       .neq('status', 'lost');
@@ -321,9 +322,7 @@ export const AdminDashboard: React.FC = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-screen bg-white">
-          <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin" />
-        </div>
+        <DashboardSkeleton />
       </AdminLayout>
     );
   }
@@ -392,16 +391,46 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Global Copilot Alert (If Critical) */}
         {derived.isCritical && (
-          <div className="mb-8 bg-red-50 border border-red-100 flex items-start p-4 gap-4">
-            <div className="bg-red-500 text-white p-2 shrink-0">
-              <Radar className="w-4 h-4" />
+          <div className="mb-8 bg-zinc-50 border border-zinc-200 flex items-start p-5 gap-4">
+            <div className="w-10 h-10 bg-zinc-950 text-white flex items-center justify-center shrink-0">
+              <Radar className="w-5 h-5" />
             </div>
             <div className="pt-0.5">
-              <h3 className="text-xs font-black uppercase text-red-900 tracking-widest mb-1">REVOPS COPILOT OVERSIGHT</h3>
-              <p className="text-tiny font-bold text-red-700">{derived.copilotMessage}</p>
+              <h3 className="text-xxs font-black uppercase text-zinc-900 tracking-[0.25em] mb-1">RevOps Copilot</h3>
+              <p className="text-sm font-medium text-zinc-600">{derived.copilotMessage}</p>
             </div>
           </div>
         )}
+
+        {/* ── Quick Access - 3 colunas (inspirado no Hub Notion) ───── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+          {[
+            { icon: FolderKanban, label: 'Projetos',    path: '/admin/projects' },
+            { icon: BarChart3,    label: 'Pipeline',     path: '/admin/pipeline' },
+            { icon: BookOpen,     label: 'Materiais',    path: '/admin/materials' },
+            { icon: Users,        label: 'Clientes',     path: '/admin/clients' },
+          ].map(({ icon: Icon, label, path }) => (
+            <button
+              key={path}
+              onClick={() => navigate(path)}
+              className="bg-zinc-50 hover:bg-zinc-100 p-4 text-left transition-colors group"
+            >
+              <div className="w-9 h-9 bg-white border border-zinc-200 rounded-lg flex items-center justify-center mb-2.5">
+                <Icon className="w-4 h-4 text-zinc-900" />
+              </div>
+              <span className="text-xs font-bold text-zinc-700 group-hover:text-zinc-900">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* ── Divider ───────────────────────────────────────────── */}
+        <div className="flex items-center gap-3 mb-10">
+          <div className="h-[2px] flex-1 bg-zinc-100" />
+          <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-300">Operacao</span>
+          <div className="h-[2px] flex-1 bg-zinc-100" />
+        </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
@@ -409,7 +438,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="xl:col-span-2 space-y-8">
 
             {/* Saude dos Projetos */}
-            <div className="border border-zinc-200  overflow-hidden">
+            <div className="border border-zinc-200 overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
                 <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Saude dos Projetos</h2>
                 <button
@@ -422,7 +451,11 @@ export const AdminDashboard: React.FC = () => {
 
               {derived.health.length === 0 ? (
                 <div className="px-6 py-12 text-center">
-                  <p className="text-sm font-medium text-zinc-400">Nenhum projeto encontrado.</p>
+                  <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <FolderKanban className="w-5 h-5 text-zinc-300" />
+                  </div>
+                  <p className="text-sm font-bold text-zinc-900 mb-0.5">Nenhum projeto ativo</p>
+                  <p className="text-xs font-medium text-zinc-400">Crie um projeto para comecar.</p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-50">
@@ -477,7 +510,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Velocidade */}
-            <div className="border border-zinc-200  p-6">
+            <div className="border border-zinc-200 p-6">
               <div className="flex items-baseline justify-between mb-6">
                 <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Velocidade - 7 Dias</h2>
                 <div className="flex items-baseline gap-1">
@@ -508,14 +541,17 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
 
             {/* Proximos 7 dias */}
-            <div className="border border-zinc-200  overflow-hidden">
+            <div className="border border-zinc-200 overflow-hidden">
               <div className="flex items-center gap-2 px-5 py-4 border-b border-zinc-100">
                 <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Proximos 7 Dias</h2>
               </div>
 
               {derived.upcoming.length === 0 ? (
                 <div className="px-5 py-8 text-center">
-                  <p className="text-xs font-black text-zinc-900 mb-0.5">Nenhuma entrega</p>
+                  <div className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center mx-auto mb-2.5">
+                    <Calendar className="w-4 h-4 text-zinc-300" />
+                  </div>
+                  <p className="text-xs font-bold text-zinc-900 mb-0.5">Nenhuma entrega</p>
                   <p className="text-tiny font-medium text-zinc-400">nos proximos 7 dias.</p>
                 </div>
               ) : (
@@ -543,7 +579,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Atividade Recente */}
-            <div className="border border-zinc-200  overflow-hidden">
+            <div className="border border-zinc-200 overflow-hidden">
               <div className="px-5 py-4 border-b border-zinc-100">
                 <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Atividade Recente</h2>
               </div>
@@ -563,8 +599,6 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-
-
 
           </div>
         </div>

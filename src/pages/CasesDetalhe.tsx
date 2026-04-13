@@ -85,7 +85,7 @@ const CasesDetalhe = () => {
       <SEO
         title={`${caseData.title} | Case de Sucesso`}
         description={caseData.preview_description || `Confira como a ${caseData.title} transformou seus resultados com a RevHackers.`}
-        canonical={`https://revhackers.com/cases/${slug}`}
+        canonical={`https://revhackers.com.br/cases/${slug}`}
       />
 
       <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-32 pb-24 overflow-hidden bg-white">

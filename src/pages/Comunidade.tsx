@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MessageSquare, Users, Calendar, Video, BookOpen, GraduationCap, Repeat, Lightbulb, ArrowUpRight } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import DarkHeroSection from '@/components/shared/DarkHeroSection';
+import SEO from '@/components/shared/SEO';
 
 const Comunidade = () => {
   useEffect(() => {
@@ -13,6 +14,15 @@ const Comunidade = () => {
 
   return (
     <PageLayout>
+      <SEO
+        title="Comunidade de Revenue Operations do Brasil"
+        description="Participe da maior comunidade de Revenue Operations, Marketing B2B e Vendas do Brasil. Networking, bootcamps, meetups e conteúdo exclusivo para profissionais de RevOps."
+        canonical="https://revhackers.com.br/comunidade"
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Comunidade", url: "https://revhackers.com.br/comunidade" }
+        ]}
+      />
       {/* Hero - Standardized DarkHeroSection */}
       <DarkHeroSection
         title="Comunidade RevHackers"

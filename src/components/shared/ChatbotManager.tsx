@@ -25,8 +25,8 @@ function removeAllChatWidgets() {
     document.querySelectorAll('chat-widget').forEach(el => el.remove());
     // LeadConnector containers
     document.querySelectorAll('[id*="chat-widget"], [class*="chat-widget"], [id*="leadconnector"], [class*="leadconnector"]').forEach(el => el.remove());
-    // Any floating chat bubble iframes
-    document.querySelectorAll('iframe[src*="leadconnector"], iframe[src*="widget"]').forEach(el => el.remove());
+    // Remove only iframes tagged by our chatbot loader - never touch booking/calendar iframes
+    document.querySelectorAll('iframe[data-revhackers-chatbot]').forEach(el => el.remove());
 }
 
 const ChatbotManager = () => {
@@ -54,6 +54,14 @@ const ChatbotManager = () => {
     return null;
 };
 
+function tagChatIframes() {
+    document.querySelectorAll('iframe[src*="leadconnector"], iframe[src*="widget.leadconnectorhq"]').forEach(el => {
+        if (!el.hasAttribute('data-revhackers-chatbot')) {
+            el.setAttribute('data-revhackers-chatbot', 'true');
+        }
+    });
+}
+
 function loadChatbot(widgetId: string) {
     // Remover widget anterior
     const existingScript = document.getElementById('ghl-chat-script');
@@ -70,6 +78,12 @@ function loadChatbot(widgetId: string) {
     script.id = 'ghl-chat-script';
     script.async = true;
     document.body.appendChild(script);
+
+    // Tag chat iframes as they appear so removeAllChatWidgets targets only them
+    const observer = new MutationObserver(() => tagChatIframes());
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Stop observing after 10s (widget should be loaded by then)
+    setTimeout(() => observer.disconnect(), 10000);
 }
 
 export default ChatbotManager;

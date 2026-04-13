@@ -12,6 +12,7 @@ import { MetricCard } from '@/components/diagnostics/MetricCard';
 import { DiagnosticActionSection } from '@/components/diagnostics/DiagnosticActionSection';
 import { DiagnosticBookingModal } from '@/components/diagnostics/DiagnosticBookingModal';
 import { getDiagnosticInsights } from '@/utils/diagnosticMapping';
+import SEO from '@/components/shared/SEO';
 
 // Perguntas Padronizadas REI Site (3 dimensões, total = 100pts)
 const QUESTIONS = [
@@ -350,11 +351,25 @@ const SiteScore = () => {
     const psiSeoScore = psiResults?.mobile?.lighthouseResult?.categories?.seo?.score ? Math.round(psiResults.mobile.lighthouseResult.categories.seo.score * 100) : null;
 
 
+    const seoComponent = (
+        <SEO
+            title="Auditoria de Site B2B - Diagnóstico de Performance Gratuito"
+            description="Analise gratuitamente a performance, SEO e conformidade do seu site B2B. Auditoria técnica com PageSpeed Insights e análise de Core Web Vitals."
+            canonical="https://revhackers.com.br/score-site"
+            breadcrumbs={[
+                { name: "Home", url: "https://revhackers.com.br/" },
+                { name: "Diagnósticos", url: "https://revhackers.com.br/diagnostico" },
+                { name: "Score Site", url: "https://revhackers.com.br/score-site" }
+            ]}
+        />
+    );
+
     if (step === 'url-input') {
         return (
+            <>{seoComponent}
             <DiagnosticLayout
                 title="Diagnóstico Site"
-                subtitle="Auditoria Técnica de Conversão B2B"
+                subtitle="Veja como esta a performance do seu site e entenda os pontos de melhoria"
                 variant="light"
                 centered={true}
                 hideHeader={false}
@@ -458,12 +473,14 @@ const SiteScore = () => {
                     </div>
                 </div>
             </DiagnosticLayout>
+            </>
         );
     }
 
     if (step === 'questions') {
         const question = QUESTIONS[currentQ];
         return (
+            <>{seoComponent}
             <DiagnosticLayout title="Diagnóstico Site" subtitle="Em análise" variant="light" centered={true} hideHeader={false} headerVariant="default">
                 <div className="max-w-3xl mx-auto flex flex-col items-center w-full min-h-[60vh] justify-center px-4 md:px-0">
 
@@ -532,11 +549,13 @@ const SiteScore = () => {
                     </div>
                 </div>
             </DiagnosticLayout>
+            </>
         );
     }
 
     if (step === 'analyzing') {
         return (
+            <>{seoComponent}
             <DiagnosticLayout title="Analisando" subtitle="Processando..." variant="light" centered={true} hideHeader={false} headerVariant="default">
                 <div className="max-w-xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
                     <div className="w-full space-y-12">
@@ -560,6 +579,7 @@ const SiteScore = () => {
                     </div>
                 </div>
             </DiagnosticLayout>
+            </>
         );
     }
 
@@ -568,6 +588,7 @@ const SiteScore = () => {
         const currentScore = currentData?.vitals?.score || finalScore;
 
         return (
+            <>{seoComponent}
             <DiagnosticLayout
                 title=""
                 subtitle=""
@@ -1012,10 +1033,11 @@ const SiteScore = () => {
                     </div>
                 </div>
             </DiagnosticLayout>
+            </>
         );
     }
 
-    return null;
+    return <>{seoComponent}</>;
 };
 
 export default SiteScore;

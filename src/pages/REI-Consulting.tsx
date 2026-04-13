@@ -279,7 +279,7 @@ const ReiConsultingPage = () => {
                         </Link>
 
                         {/* White Minimal Header */}
-                        <h1 className="text-4xl md:text-6xl font-semibold text-black mb-4 tracking-tighter leading-none">
+                        <h1 className="text-4xl md:text-6xl font-black text-black mb-4 tracking-tighter leading-none">
                             REI Consulting<span className="text-revgreen">.</span>
                         </h1>
                         <p className="text-xl text-zinc-500 font-normal tracking-tight">

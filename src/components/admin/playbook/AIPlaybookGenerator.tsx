@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Zap, Send, FileText, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
+import { Loader2, Zap, Send, FileText, CheckCircle2, Cpu, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface AIPlaybookGeneratorProps {
@@ -143,7 +143,7 @@ export const AIPlaybookGenerator: React.FC<AIPlaybookGeneratorProps> = ({ projec
             <div className="lg:col-span-1 border border-zinc-200 bg-zinc-50/50 p-6 overflow-y-auto hidden-scrollbar flex flex-col">
                 <div className="mb-6">
                     <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 flex items-center justify-center mb-4">
-                        <Sparkles className="w-5 h-5" />
+                        <Cpu className="w-5 h-5" />
                     </div>
                     <h2 className="text-xl font-black text-zinc-900 mb-2">Fábrica de Playbooks</h2>
                     <p className="text-xs text-zinc-500 font-medium leading-relaxed">

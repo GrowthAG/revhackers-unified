@@ -1,104 +1,218 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Section from '@/components/ui/Section';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+
+/* ── Ilustracoes SVG por servico - estilo abstrato Supabase ── */
+const illustrations = {
+  tracao: (
+    <svg viewBox="0 0 160 120" fill="none" className="w-full h-full opacity-30">
+      <path d="M20 100 Q60 20 140 40" stroke="#00C060" strokeWidth="1.5" strokeDasharray="4 4"/>
+      <circle cx="140" cy="40" r="4" fill="#00C060"/>
+      <circle cx="20" cy="100" r="3" fill="#00C060" opacity="0.5"/>
+      <circle cx="80" cy="55" r="2" fill="#00C060" opacity="0.4"/>
+      <circle cx="110" cy="44" r="2" fill="#00C060" opacity="0.3"/>
+      <line x1="0" y1="100" x2="160" y2="100" stroke="#ffffff" strokeWidth="0.5" opacity="0.1"/>
+      <line x1="0" y1="70"  x2="160" y2="70"  stroke="#ffffff" strokeWidth="0.5" opacity="0.07"/>
+      <line x1="0" y1="40"  x2="160" y2="40"  stroke="#ffffff" strokeWidth="0.5" opacity="0.07"/>
+    </svg>
+  ),
+  crm: (
+    <svg viewBox="0 0 160 120" fill="none" className="w-full h-full opacity-30">
+      <rect x="20" y="20" width="36" height="26" rx="4" stroke="#00C060" strokeWidth="1.2"/>
+      <rect x="66" y="20" width="36" height="26" rx="4" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <rect x="112" y="20" width="36" height="26" rx="4" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <rect x="43" y="72" width="36" height="26" rx="4" stroke="#00C060" strokeWidth="1.2" opacity="0.7"/>
+      <rect x="89" y="72" width="36" height="26" rx="4" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <line x1="38" y1="46" x2="61" y2="72" stroke="#00C060" strokeWidth="0.8" opacity="0.5"/>
+      <line x1="84" y1="46" x2="61" y2="72" stroke="#ffffff" strokeWidth="0.8" opacity="0.2"/>
+      <line x1="84" y1="46" x2="107" y2="72" stroke="#ffffff" strokeWidth="0.8" opacity="0.2"/>
+    </svg>
+  ),
+  automacao: (
+    <svg viewBox="0 0 160 120" fill="none" className="w-full h-full opacity-30">
+      <circle cx="80" cy="60" r="28" stroke="#00C060" strokeWidth="1.2" strokeDasharray="4 3"/>
+      <circle cx="80" cy="60" r="16" stroke="#ffffff" strokeWidth="0.8" opacity="0.2"/>
+      <circle cx="80" cy="60" r="5" fill="#00C060" opacity="0.8"/>
+      <line x1="80" y1="20" x2="80" y2="32" stroke="#00C060" strokeWidth="1.2"/>
+      <line x1="80" y1="88" x2="80" y2="100" stroke="#00C060" strokeWidth="1.2" opacity="0.5"/>
+      <line x1="40" y1="60" x2="52" y2="60" stroke="#00C060" strokeWidth="1.2" opacity="0.5"/>
+      <line x1="108" y1="60" x2="120" y2="60" stroke="#00C060" strokeWidth="1.2" opacity="0.5"/>
+      <circle cx="80" cy="20" r="3" fill="#00C060"/>
+      <circle cx="40" cy="60" r="2.5" fill="#00C060" opacity="0.6"/>
+    </svg>
+  ),
+  founder: (
+    <svg viewBox="0 0 160 120" fill="none" className="w-full h-full opacity-30">
+      <circle cx="80" cy="40" r="18" stroke="#00C060" strokeWidth="1.2"/>
+      <path d="M44 100 C44 76 116 76 116 100" stroke="#00C060" strokeWidth="1.2"/>
+      <circle cx="35" cy="50" r="12" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <circle cx="125" cy="50" r="12" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <path d="M25 95 C25 79 45 79 45 95" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+      <path d="M115 95 C115 79 135 79 135 95" stroke="#ffffff" strokeWidth="0.8" opacity="0.3"/>
+    </svg>
+  ),
+};
 
 const services = [
   {
-    id: "01",
-    title: "Tração",
-    subtitle: "& Mídia Paga",
-    desc: "Arquitetura de receitas.",
-    link: "/servicos/tracao-midia-paga",
-    color: "group-hover:text-revgreen",
-    border: "group-hover:border-revgreen/50"
+    id: '01',
+    title: 'IA + Vendas',
+    subtitle: '& Personalização',
+    desc: 'Usamos inteligência artificial para mandar a mensagem certa, para o decisor certo, na hora em que ele quer comprar.',
+    link: '/servicos/tracao-midia-paga',
+    visual: illustrations.tracao,
   },
   {
-    id: "02",
-    title: "Ecossistema",
-    subtitle: "& CRM",
-    desc: "Verdade nos dados.",
-    link: "/servicos/ecossistema-crm",
-    color: "group-hover:text-revgreen",
-    border: "group-hover:border-revgreen/50"
+    id: '02',
+    title: 'CRM Inteligente',
+    subtitle: '& Dados',
+    desc: 'Organizamos a casa. Fim das planilhas perdidas e achismos. Seu CRM passa a rastrear cada passo do lead sozinho.',
+    link: '/servicos/ecossistema-crm',
+    visual: illustrations.crm,
   },
   {
-    id: "03",
-    title: "Automação",
-    subtitle: "Inteligente + IA",
-    desc: "Máquina invisível.",
-    link: "/servicos/automacao-inteligente",
-    color: "group-hover:text-revgreen",
-    border: "group-hover:border-revgreen/50"
+    id: '03',
+    title: 'Automação B2B',
+    subtitle: '& Eficiência',
+    desc: 'Tiramos o trabalho braçal do vendedor. O sistema faz o follow-up; seu time só entra na ligação para fechar negócio.',
+    link: '/servicos/automacao-inteligente',
+    visual: illustrations.automacao,
   },
   {
-    id: "04",
-    title: "Founder-Led",
-    subtitle: "Growth",
-    desc: "CPF compra de CPF.",
-    link: "/servicos/founder-led-growth",
-    color: "group-hover:text-revgreen",
-    border: "group-hover:border-revgreen/50"
-  }
+    id: '04',
+    title: 'Treinamento',
+    subtitle: '& Prática Conjunta',
+    desc: 'Não entregamos um PDF e sumimos. Sentamos junto com a sua equipe e ensinamos a operar a estratégia na vida real.',
+    link: '/servicos/founder-led-growth',
+    visual: illustrations.founder,
+  },
 ];
 
+const fadeUp: any = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: 'easeOut' },
+  }),
+};
+
 const ServicesSection = () => {
-  const scrollToTop = () => {
-    window.scrollTo(0, 0);
-  };
+  const scrollToTop = () => window.scrollTo(0, 0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <Section variant="dark" className="bg-black py-32 border-b border-white/10">
-      <div className="container-custom">
-        {/* Header - Minimalist */}
-        <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
-          <div className="max-w-xl">
-            <span className="font-mono-tech text-revgreen text-xs uppercase tracking-widest mb-4 block">
-              Capabilities
-            </span>
-            <h2 className="text-4xl md:text-6xl font-medium text-white tracking-tighter">
-              O Que Entregamos
-            </h2>
+    <section
+      ref={ref}
+      className="relative py-24 border-b border-white/6"
+      style={{ background: '#0a0a0a' }}
+    >
+      <div className="max-w-6xl mx-auto px-6">
+
+        {/* Header */}
+        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <motion.p
+              variants={fadeUp}
+              custom={0}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+              className="text-revgreen text-tiny font-medium uppercase mb-4"
+              style={{ letterSpacing: '0.06em' }}
+            >
+              Como a Máquina Funciona
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              custom={1}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+              className="text-white text-balance"
+              style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', fontWeight: 700, letterSpacing: '-0.02em', maxWidth: '30ch' }}
+            >
+              Tecnologia que elimina trabalho chato.{' '}
+              <span style={{ color: '#00C060' }}>Nós construímos e fazemos rodar.</span>
+            </motion.h2>
           </div>
-          <div className="mb-2">
-            <Link to="/servicos" onClick={scrollToTop} className="text-zinc-400 hover:text-revgreen uppercase tracking-wider text-xs border-b border-transparent hover:border-revgreen transition-all pb-1">
-              Ver Todos os Serviços
+          <motion.div
+            variants={fadeUp}
+            custom={2}
+            initial="hidden"
+            animate={inView ? 'visible' : 'hidden'}
+          >
+            <Link
+              to="/servicos"
+              onClick={scrollToTop}
+              className="text-tiny font-medium text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-2"
+              style={{ letterSpacing: '0.04em' }}
+            >
+              Ver todos <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.5} />
             </Link>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Minimalist Grid - High Impact, Low Text */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {services.map((service) => (
-            <Link
+        {/* Cards grid - estilo Supabase */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {services.map((service, i) => (
+            <motion.div
               key={service.id}
-              to={service.link}
-              onClick={scrollToTop}
-              className={`group relative h-96 p-8 bg-white/5 border border-white/10 flex flex-col justify-between transition-all duration-500 hover:bg-white/10 ${service.border}`}
+              variants={fadeUp}
+              custom={3 + i}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
             >
-              <div className="flex justify-between items-start">
-                <span className="font-mono-tech text-zinc-600 text-xs tracking-widest">{service.id}</span>
-                <ArrowUpRight className={`w-6 h-6 text-zinc-600 transition-colors duration-300 ${service.color}`} />
-              </div>
+              <Link
+                to={service.link}
+                onClick={scrollToTop}
+                className="group flex flex-col h-full p-6 border border-white/8 hover:border-revgreen/30 transition-all duration-300"
+                style={{
+                  background: '#111111',
+                  borderRadius: '8px',
+                  minHeight: '280px',
+                }}
+              >
+                {/* Ilustração SVG geométrica */}
+                <div className="h-24 mb-6 flex items-center justify-center">
+                  {service.visual}
+                </div>
 
-              <div>
-                <h3 className={`text-3xl font-bold text-white mb-1 leading-none group-hover:translate-x-2 transition-transform duration-300 ${service.color}`}>
-                  {service.title}
-                  <br />
-                  <span className="opacity-70">{service.subtitle}</span>
+                {/* Número */}
+                <span
+                  className="text-zinc-700 font-mono text-xs mb-3 group-hover:text-zinc-600 transition-colors"
+                  style={{ letterSpacing: '0.04em' }}
+                >
+                  {service.id}
+                </span>
+
+                {/* Título */}
+                <h3
+                  className="text-white font-semibold mb-1 group-hover:text-revgreen transition-colors duration-200"
+                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                >
+                  {service.title}{' '}
+                  <span className="text-zinc-500 font-normal">{service.subtitle}</span>
                 </h3>
-                <p className="mt-4 text-zinc-500 text-sm font-light tracking-wide group-hover:text-zinc-300 transition-colors">
+
+                {/* Descrição */}
+                <p className="text-zinc-500 text-sm mt-2 leading-relaxed font-light flex-1">
                   {service.desc}
                 </p>
-              </div>
 
-              {/* Hover Effect Line */}
-              <div className={`absolute bottom-0 left-0 h-1 bg-current w-0 group-hover:w-full transition-all duration-500 ${service.color.replace('group-hover:text-', 'bg-')}`}></div>
-            </Link>
+                {/* CTA do card */}
+                <div className="mt-6 flex items-center gap-2 text-zinc-600 group-hover:text-revgreen transition-colors text-tiny font-medium">
+                  <span style={{ letterSpacing: '0.04em' }}>Ver estratégia</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={1.5} />
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
+
       </div>
-    </Section>
+    </section>
   );
 };
 

@@ -43,12 +43,9 @@ const DURATION_OPTIONS = [
 ];
 
 const DEFAULT_DURATION_BY_TYPE: Record<string, string> = {
-    advisory:    '90 dias',
     crm_ops:     '90 dias',
-    funnels_impl:'60 dias',
     consulting:  '90 dias',
     founder:     '90 dias',
-    dev:         '60 dias',
     site:        '60 dias',
 };
 
@@ -442,7 +439,7 @@ const REIProjectForm = () => {
                                                 <Label className={labelClasses}>Selecione do Portfólio</Label>
                                                 <Dialog open={mode === 'new'} onOpenChange={(open) => setMode(open ? 'new' : 'existing')}>
                                                     <DialogTrigger asChild>
-                                                        <button type="button" className="text-xxs uppercase font-bold text-indigo-600 hover:underline">
+                                                        <button type="button" className="text-xxs uppercase font-bold text-zinc-500 hover:underline">
                                                             + Novo Cliente
                                                         </button>
                                                     </DialogTrigger>
@@ -519,7 +516,7 @@ const REIProjectForm = () => {
                                         />
                                         {!watch('trade_name') && watch('client_name') && (
                                             <p className="text-xxs text-amber-600 font-medium pl-1">
-                                                ⚠ Sem nome fantasia — será exibida a Razão Social da Receita Federal.
+                                                ⚠ Sem nome fantasia - será exibida a Razão Social da Receita Federal.
                                             </p>
                                         )}
                                     </div>
@@ -549,12 +546,12 @@ const REIProjectForm = () => {
                                 {focalPoints.map((field, index) => {
                                     const isMain = index === 0;
                                     return (
-                                    <div key={field.id} className={`p-5 relative group border transition-all ${isMain ? 'border-indigo-200 bg-indigo-50/10 shadow-sm' : 'border-zinc-200 bg-white'}`}>
+                                    <div key={field.id} className={`p-5 relative group border transition-all ${isMain ? 'border-zinc-200 bg-zinc-50/10 shadow-sm' : 'border-zinc-200 bg-white'}`}>
                                         <div className="mb-4 flex items-center gap-2">
                                             {isMain ? (
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Ponto Focal Principal (Decisor)</span>
+                                                    <div className="w-2 h-2 rounded-full bg-[#00CC6A] animate-pulse" />
+                                                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-700">Ponto Focal Principal (Decisor)</span>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-2">
@@ -578,7 +575,7 @@ const REIProjectForm = () => {
                                                 <Label className="text-2xs font-bold uppercase tracking-wider text-zinc-400">Nome {isMain && '*'}</Label>
                                                 <Input
                                                     {...register(`focal_points.${index}.name` as const, { required: isMain })}
-                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-zinc-200 focus:border-zinc-400' : 'border-zinc-200'}`}
                                                     placeholder={isMain ? "Nome do Contato Principal" : "Nome do Integrante"}
                                                 />
                                             </div>
@@ -586,7 +583,7 @@ const REIProjectForm = () => {
                                                 <Label className="text-2xs font-bold uppercase tracking-wider text-zinc-400">Cargo {isMain && '*'}</Label>
                                                 <Input
                                                     {...register(`focal_points.${index}.role` as const, { required: isMain })}
-                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-zinc-200 focus:border-zinc-400' : 'border-zinc-200'}`}
                                                     placeholder={isMain ? "Sócio / Diretor" : "Cargo..."}
                                                 />
                                             </div>
@@ -595,7 +592,7 @@ const REIProjectForm = () => {
                                                 <Input
                                                     {...register(`focal_points.${index}.email` as const, { required: isMain })}
                                                     type="email"
-                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-indigo-100 focus:border-indigo-400' : 'border-zinc-200'}`}
+                                                    className={`bg-white h-11 border text-sm ${isMain ? 'border-zinc-200 focus:border-zinc-400' : 'border-zinc-200'}`}
                                                     placeholder={isMain ? "decisor@empresa.com.br" : "email@empresa.com.br"}
                                                 />
                                             </div>
@@ -633,11 +630,10 @@ const REIProjectForm = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="border-zinc-100 shadow-sm">
-                                            <SelectItem value="advisory">Advisory (Estratégico s/ Execução)</SelectItem>
-                                            <SelectItem value="consulting">Consulting (Mão na Massa)</SelectItem>
-                                            <SelectItem value="crm_ops">CRM Ops</SelectItem>
-                                            <SelectItem value="founder">Founder</SelectItem>
-                                            <SelectItem value="funnels_impl">Site / Funis</SelectItem>
+                                            <SelectItem value="consulting">REI 360 (Consulting Geral)</SelectItem>
+                                            <SelectItem value="crm_ops">REI CRM & RevOps</SelectItem>
+                                            <SelectItem value="founder">REI Founder (Founder Led Sales)</SelectItem>
+                                            <SelectItem value="site">REI Sites e LPs</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -808,7 +804,7 @@ const REIProjectForm = () => {
                                     />
                                 </div>
 
-                                {/* Previsão de Encerramento — calculada, sem coluna nova no banco */}
+                                {/* Previsão de Encerramento - calculada, sem coluna nova no banco */}
                                 {watch('next_rei_date') && watch('project_duration') && (() => {
                                     const start = new Date(watch('next_rei_date'));
                                     const days = parseInt((watch('project_duration') || '').replace(/\s*dias?/i, '').trim(), 10);
@@ -928,7 +924,7 @@ const ProposalListByClient = ({ clientName }: { clientName: string }) => {
             {proposals.map((doc) => (
                 <div key={doc.id} className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-100 hover:border-zinc-300 transition-all group">
                     <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 bg-white border border-zinc-200 flex items-center justify-center rounded text-indigo-600">
+                        <div className="h-8 w-8 bg-white border border-zinc-200 flex items-center justify-center rounded text-zinc-500">
                             <FileText size={16} />
                         </div>
                         <div>

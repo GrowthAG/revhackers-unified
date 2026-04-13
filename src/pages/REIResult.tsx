@@ -101,7 +101,7 @@ export default function REIResult() {
                     const segment = answers.segmento || 'B2B';
                     const objective = answers.objetivoPrincipal || 'Crescimento';
 
-                    // 2a. Fetch REAL Market Intelligence (Perplexity/API)
+                    // 2a. Fetch REAL Market Intelligence (OpenAI/API)
                     // If we have budget for API calls, otherwise use mock
                     const marketData = await MarketIntelligenceService.fetchMarketData(segment, objective);
 
@@ -195,7 +195,7 @@ export default function REIResult() {
                 hideHeader={false}
             >
                 <div className="flex justify-center mt-10">
-                    <Button onClick={() => navigate('/rei-hub')} variant="outline" className="text-black border-white bg-white hover:bg-zinc-200">
+                    <Button onClick={() => navigate('/admin/projects')} variant="outline" className="text-black border-white bg-white hover:bg-zinc-200">
                         Voltar ao Hub
                     </Button>
                 </div>
@@ -260,7 +260,7 @@ export default function REIResult() {
                     <div className="relative pt-10 pb-20">
                         {/* Floating Back Button */}
                         <button
-                            onClick={() => navigate('/rei-hub')}
+                            onClick={() => navigate('/admin/projects')}
                             className="absolute top-0 left-0 text-xxs text-zinc-500 hover:text-white uppercase tracking-widest font-bold flex items-center gap-2 transition-colors no-print"
                         >
                             <ArrowLeft className="w-3 h-3" /> Voltar

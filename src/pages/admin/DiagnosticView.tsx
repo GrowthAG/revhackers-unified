@@ -30,7 +30,7 @@ export default function DiagnosticView() {
             setPlan(data);
 
             if (data.diagnostic_data) {
-                setDiagnostic(data.diagnostic_data);
+                setDiagnostic(data.diagnostic_data as any);
             }
         } catch (error) {
             console.error('Error loading diagnostic:', error);
@@ -114,7 +114,7 @@ export default function DiagnosticView() {
                                         <span className="font-bold text-sm text-zinc-900">{s.text}</span>
                                         <Badge variant="secondary" className="text-2xs uppercase">{s.type}</Badge>
                                     </div>
-                                    <p className="text-xs text-zinc-500 leading-relaxed">{s.implication}</p>
+                                    <p className="text-xs text-zinc-500 leading-relaxed">{(s as any).implication || s.impact}</p>
                                 </div>
                             ))}
                         </div>
@@ -127,7 +127,7 @@ export default function DiagnosticView() {
                                 <div key={i} className="bg-white border border-red-100 p-4 border-l-4 border-l-red-500">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="font-bold text-sm text-red-900">{r.text}</span>
-                                        <Badge className="bg-red-50 text-red-600 hover:bg-red-50 text-2xs uppercase border-0">{r.level} Risk</Badge>
+                                        <Badge className="bg-red-50 text-red-600 hover:bg-red-50 text-2xs uppercase border-0">{(r as any).level || r.severity} Risk</Badge>
                                     </div>
                                     <p className="text-xs text-red-800/70 leading-relaxed">Mitigação: {r.mitigation}</p>
                                 </div>

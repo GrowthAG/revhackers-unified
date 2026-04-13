@@ -89,12 +89,12 @@ export const OPPORTUNITY_STAGE_CONFIGS: Record<OpportunityStage, StageConfig> = 
   },
   diagnostic_done: {
     key: 'diagnostic_done',
-    label: 'Diagnostico Realizado',
+    label: 'Lead com Diagnostico',
     labelShort: 'Diagnosticado',
     category: 'diagnostico',
     color: 'zinc-600',
     icon: 'ClipboardCheck',
-    description: 'Respostas do diagnostico enviadas. Dados prontos para analise.',
+    description: 'Lead preencheu o diagnostico publico. Dados prontos para qualificacao.',
     allowedTransitions: ['proposal_draft', 'lost'],
   },
   proposal_draft: {

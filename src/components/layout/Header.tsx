@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, Activity, Users, TrendingUp, BarChart2, Lock, User, ArrowRight, Settings } from 'lucide-react';
+import { Menu, X, ChevronDown, Activity, Users, TrendingUp, BarChart2, Lock, User, ArrowRight, Settings, Globe } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -145,55 +145,54 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
           {/* Center: Navigation */}
           <nav className="hidden md:flex items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className={`flex items-center rounded-full px-2 py-1 backdrop-blur-md ${navBg}`}>
+            <div className={`flex items-center rounded-none px-2 py-1 backdrop-blur-md ${navBg}`}>
               <div className="flex items-center space-x-1">
                 <NavLink to="/">Home</NavLink>
                 <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
 
-                {/* Dropdown de Ferramentas */}
                 <DropdownMenu>
                   <DropdownMenuTrigger className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex items-center gap-1 focus:outline-none data-[state=open]:bg-white/5",
+                    "px-4 py-2 text-sm font-medium rounded-none transition-all duration-200 flex items-center gap-1 focus:outline-none data-[state=open]:bg-white/5",
                     isLightMode ? "text-zinc-600 hover:text-black data-[state=open]:text-black data-[state=open]:bg-zinc-100" : "text-zinc-300 hover:text-white data-[state=open]:text-white"
                   )}>
-                    Diagnósticos <ChevronDown className="w-3 h-3 opacity-50" />
+                    Auditoria <ChevronDown className="w-3 h-3 opacity-50" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent sideOffset={8} className="bg-black/95 border-white/10 p-2 backdrop-blur-xl w-[220px] z-[70]">
+                  <DropdownMenuContent sideOffset={8} className="bg-black/95 border-white/10 p-2 backdrop-blur-xl w-[260px] z-[70]">
                     <DropdownMenuItem asChild>
-                      <Link to="/score-site" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
-                        <Activity className="w-4 h-4 text-revgreen" /> Site / Conversão
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/score-founder" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
-                        <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
+                      <Link to="/score" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                        <Activity className="w-4 h-4 text-revgreen" /> Diagnostico 360
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/score-revenue" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
-                        <TrendingUp className="w-4 h-4 text-revgreen" /> Máquina de Vendas
+                        <TrendingUp className="w-4 h-4 text-revgreen" /> Diagnostico CRM
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/score-founder" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                        <Users className="w-4 h-4 text-revgreen" /> Diagnostico do Fundador
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/score-site" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                        <Globe className="w-4 h-4 text-revgreen" /> Diagnostico Site / LP
                       </Link>
                     </DropdownMenuItem>
                     <div className="h-px bg-white/10 my-1" />
                     <DropdownMenuItem asChild>
-                      <Link to="/score" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
-                        <BarChart2 className="w-4 h-4 text-white" /> Diagnóstico Geral
+                      <Link to="/diagnostico" className="flex items-center gap-2 text-zinc-300 hover:text-revgreen hover:bg-white/5 cursor-pointer px-3 py-2 rounded-sm" onClick={scrollToTop}>
+                        <BarChart2 className="w-4 h-4 text-white" /> Ver Todas as Auditorias
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
                 <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
-                <NavLink to="/quem-somos">Quem Somos</NavLink>
+                <NavLink to="/metodologia">Metodologia</NavLink>
                 <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
-                <NavLink to="/servicos">Serviços</NavLink>
+                <NavLink to="/servicos">Ecossistema</NavLink>
                 <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
-                <NavLink to="/cases">Cases</NavLink>
-                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
-                <NavLink to="/materiais">Materiais</NavLink>
-                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
-                <NavLink to="/blog">Blog</NavLink>
-                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
+                <NavLink to="/cases">Casos</NavLink>
               </div>
             </div>
           </nav>
@@ -204,11 +203,11 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               <DropdownMenu>
                 <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none ${textColor}`}>
                   {avatarUrl ? (
-                    <div className="w-8 h-8 rounded-full border border-revgreen/30 overflow-hidden">
+                    <div className="w-8 h-8 rounded-none border border-revgreen/30 overflow-hidden">
                       <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" />
                     </div>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-revgreen/20 border border-revgreen/30 flex items-center justify-center text-revgreen font-bold text-xs">
+                    <div className="w-8 h-8 rounded-none bg-revgreen/20 border border-revgreen/30 flex items-center justify-center text-revgreen font-bold text-xs">
                       {user.email?.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -250,11 +249,11 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
             <Button
               onClick={() => setIsLeadModalOpen(true)}
-              className="bg-revgreen text-black hover:bg-revgreen/90 font-bold rounded-full px-6 transition-all duration-300 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+              variant="default"
+              size="default"
+              className="font-bold uppercase tracking-widest text-xs rounded-none"
             >
-              <span className="flex items-center gap-2">
-                Agendar Call <ArrowRight className="w-4 h-4" />
-              </span>
+              Solicitar Auditoria <ArrowRight className="w-4 h-4 ml-1" strokeWidth={1.5} />
             </Button>
           </div>
 
@@ -283,25 +282,27 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <MobileNavLink to="/" onClick={scrollToTop}>Home</MobileNavLink>
 
                 <div className="py-2 border-b border-white/5">
-                  <div className="text-xs font-mono-tech text-zinc-500 uppercase mb-3">Diagnósticos Gratuitos</div>
+                  <div className="text-xs font-mono-tech text-zinc-500 uppercase mb-3">Auditorias Críticas</div>
                   <div className="space-y-4 pl-2">
-                    <Link to="/score-site" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
-                      <Activity className="w-4 h-4 text-revgreen" /> Site / Conversão
-                    </Link>
-                    <Link to="/score-founder" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
-                      <Users className="w-4 h-4 text-revgreen" /> Founder Led Sales
+                    <Link to="/score" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
+                      <Activity className="w-4 h-4 text-revgreen" /> Diagnostico 360
                     </Link>
                     <Link to="/score-revenue" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
-                      <TrendingUp className="w-4 h-4 text-revgreen" /> Máquina de Vendas
+                      <TrendingUp className="w-4 h-4 text-revgreen" /> Diagnostico CRM
+                    </Link>
+                    <Link to="/score-founder" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
+                      <Users className="w-4 h-4 text-revgreen" /> Diagnostico do Fundador
+                    </Link>
+                    <Link to="/score-site" onClick={scrollToTop} className="flex items-center gap-3 text-lg font-medium text-zinc-300 hover:text-revgreen">
+                      <Globe className="w-4 h-4 text-revgreen" /> Diagnostico Site / LP
                     </Link>
                   </div>
                 </div>
 
-                <MobileNavLink to="/quem-somos" onClick={scrollToTop}>Quem Somos</MobileNavLink>
-                <MobileNavLink to="/servicos" onClick={scrollToTop}>Serviços</MobileNavLink>
-                <MobileNavLink to="/cases" onClick={scrollToTop}>Cases</MobileNavLink>
-                <MobileNavLink to="/materiais" onClick={scrollToTop}>Materiais</MobileNavLink>
-                <MobileNavLink to="/blog" onClick={scrollToTop}>Blog</MobileNavLink>
+                <MobileNavLink to="/metodologia" onClick={scrollToTop}>Metodologia</MobileNavLink>
+                <MobileNavLink to="/servicos" onClick={scrollToTop}>Ecossistema</MobileNavLink>
+                <MobileNavLink to="/cases" onClick={scrollToTop}>Casos</MobileNavLink>
+                <MobileNavLink to="/blog" onClick={scrollToTop}>Aulas</MobileNavLink>
 
                 <div className="py-2 border-b border-white/5 mb-4">
                   <Link
@@ -315,11 +316,11 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
                 <Button
                   onClick={() => { scrollToTop(); setIsLeadModalOpen(true); }}
-                  className="w-full bg-revgreen text-black hover:bg-revgreen/90 font-bold rounded-full h-12 text-lg shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+                  variant="default"
+                  size="lg"
+                  className="w-full font-bold uppercase tracking-widest text-xs"
                 >
-                  <span className="flex items-center justify-center gap-2">
-                    Agendar Call <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Agendar Integração <ArrowRight className="w-4 h-4 ml-1" strokeWidth={1.5} />
                 </Button>
               </div>
             </div>

@@ -13,8 +13,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     if (isLoading || (user && isProfileLoading)) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-revgreen animate-spin" />
+            <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 border-2 border-zinc-800 border-t-revgreen rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -29,7 +29,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
 
     if (userRole === 'user') {
-        return <Navigate to="/" replace />;
+        // Apenas roles admin/super_admin acessam /admin.
+        // Qualquer 'user' sem role elevado vai para o Hub do cliente.
+        return <Navigate to="/login" replace />;
     }
 
     return <>{children}</>;

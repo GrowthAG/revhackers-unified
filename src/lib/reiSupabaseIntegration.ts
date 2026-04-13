@@ -71,8 +71,8 @@ export const createREIProject = async (
 
     // Inserção usando 'reis' e 'data'
     // O cast para 'any' é necessário pois o types.ts local está desatualizado
-    const { data: row, error } = await supabase
-        .from('reis' as any)
+    const { data: row, error } = await (supabase
+        .from('reis' as any) as any)
         .insert({
             data: jsonPayload
         })
@@ -95,8 +95,8 @@ export const createREIProject = async (
  * Busca todos os projetos REI (Lê de 'reis' -> extrai de 'data')
  */
 export const getAllREIProjects = async (): Promise<{ data: REIProject[] | null; error: any }> => {
-    const { data: rows, error } = await supabase
-        .from('reis' as any)
+    const { data: rows, error } = await (supabase
+        .from('reis' as any) as any)
         .select('*');
 
     if (error) {
@@ -146,8 +146,8 @@ export const saveREIResponse = async (
         completed_at: nowStr
     };
 
-    const { data: row, error } = await supabase
-        .from('diagnosticos' as any)
+    const { data: row, error } = await (supabase
+        .from('diagnosticos' as any) as any)
         .insert({
             rei_id: projectId, // Vínculo FK Explícito
             data: jsonPayload
@@ -181,8 +181,8 @@ export const updateREIProjectAfterCompletion = async (
     projectId: string
 ): Promise<{ data: REIProject | null; error: any }> => {
     // 1. Fetch current data
-    const { data: fetchRow, error: fetchError } = await supabase
-        .from('reis' as any)
+    const { data: fetchRow, error: fetchError } = await (supabase
+        .from('reis' as any) as any)
         .select('data')
         .eq('id', projectId)
         .single();
@@ -206,8 +206,8 @@ export const updateREIProjectAfterCompletion = async (
     };
 
     // 3. Update JSONB column
-    const { data: row, error } = await supabase
-        .from('reis' as any)
+    const { data: row, error } = await (supabase
+        .from('reis' as any) as any)
         .update({
             data: updatedData
         })
@@ -230,8 +230,8 @@ export const updateREIProjectAfterCompletion = async (
  * Busca histórico de respostas de um projeto
  */
 export const getREIHistory = async (projectId: string): Promise<{ data: REIResponse[] | null; error: any }> => {
-    const { data: rows, error } = await supabase
-        .from('diagnosticos' as any)
+    const { data: rows, error } = await (supabase
+        .from('diagnosticos' as any) as any)
         .select('*')
         .eq('rei_id', projectId)
         .order('created_at', { ascending: false });

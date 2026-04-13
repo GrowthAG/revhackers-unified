@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { FileText, Plus, Search, BookOpen, Layers, Loader2, ArrowRight, Link as LinkIcon, ExternalLink, Eye, BadgeCheck } from 'lucide-react';
+import { FileText, Plus, Search, BookOpen, Layers, Loader2, ArrowRight, Link as LinkIcon, ExternalLink, Eye, BadgeCheck, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { getMaterialsByProject, ReiMaterial } from '@/api/reiMaterials';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -138,6 +138,34 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
             setIsSavingLink(false);
         }
     };
+
+    const handleDeleteMaterial = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!confirm('Tem certeza que deseja excluir este material? Esta ação não pode ser desfeita.')) return;
+        try {
+            const { error } = await (supabase as any).from('rei_materials').delete().eq('id', id);
+            if (error) throw error;
+            toast.success('Material removido com sucesso!');
+            setMaterials(prev => prev.filter(m => m.id !== id));
+            if (selectedMaterial?.id === id) setSelectedMaterial(null);
+        } catch (err: any) {
+            toast.error('Erro ao excluir material: ' + err.message);
+        }
+    };
+
+    const handleDeleteDocument = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!confirm('Tem certeza que deseja excluir este documento?')) return;
+        try {
+            const { error } = await (supabase as any).from('agent_documents').delete().eq('id', id);
+            if (error) throw error;
+            toast.success('Documento removido com sucesso!');
+            setDocs(prev => prev.filter(d => d.id !== id));
+        } catch (err: any) {
+            toast.error('Erro ao excluir documento: ' + err.message);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-64">
@@ -260,7 +288,7 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                                     onClick={() => {
                                         if (isReadableText) setSelectedMaterial(mat);
                                     }}
-                                    className={`group relative bg-white border border-zinc-200 p-5 hover:border-zinc-300 transition-all flex flex-col justify-between overflow-hidden ${isReadableText ? 'cursor-pointer hover:-translate-y-0.5 shadow-sm hover:shadow-md' : ''}`}
+                                    className={`group relative bg-white border border-zinc-200 p-5 hover:border-zinc-300 transition-all flex flex-col justify-between overflow-hidden ${isReadableText ? 'cursor-pointer hover:-translate-y-0.5 shadow-sm hover:shadow-sm' : ''}`}
                                 >
                                     <div className="flex justify-between items-start z-10 relative mb-4">
                                         <div className="w-10 h-10 bg-[#00CC6A]/10 flex items-center justify-center text-[#00CC6A] group-hover:bg-[#00CC6A] group-hover:text-white transition-colors">
@@ -283,11 +311,16 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                                             {isReadableText ? 'Conteúdo processado pela IA Deep Intelligence de base.' : (mat.description || 'Arquivo indexado.')}
                                         </p>
                                     </div>
-                                    {mat.file_url && mat.source_type === 'link' && (
-                                        <a href={mat.file_url} target="_blank" rel="noopener noreferrer" className="absolute bottom-5 right-5 text-zinc-300 hover:text-zinc-600 z-20" onClick={(e) => e.stopPropagation()} title="Abrir link original">
-                                            <ExternalLink className="w-4 h-4" />
-                                        </a>
-                                    )}
+                                    <div className="absolute bottom-5 right-5 flex gap-2 z-20">
+                                        {mat.file_url && mat.source_type === 'link' && (
+                                            <a href={mat.file_url} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-zinc-600" onClick={(e) => e.stopPropagation()} title="Abrir link original">
+                                                <ExternalLink className="w-4 h-4" />
+                                            </a>
+                                        )}
+                                        <button onClick={(e) => handleDeleteMaterial(mat.id, e)} className="text-zinc-300 hover:text-red-500 transition-colors" title="Excluir Material">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             );
                         })}
@@ -345,6 +378,10 @@ const ProjectWiki = ({ projectId, projectName }: ProjectWikiProps) => {
                                 {doc.content?.slice(0, 100).replace(/[#*`]/g, '') || "Sem preview..."}
                             </p>
                         </div>
+                        
+                        <button onClick={(e) => handleDeleteDocument(doc.id, e)} className="absolute bottom-5 right-5 text-zinc-300 hover:text-red-500 transition-colors z-20 opacity-0 group-hover:opacity-100" title="Excluir Documento">
+                            <Trash2 className="w-4 h-4" />
+                        </button>
 
                         {/* Background Decoration */}
                         <div className="absolute -right-4 -bottom-4 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none">

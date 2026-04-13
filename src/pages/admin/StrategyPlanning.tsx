@@ -57,24 +57,7 @@ const StrategyPlanning = () => {
         );
     }
 
-    const PlanSection = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
-        <section className="space-y-6">
-            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-black border-b border-zinc-100 pb-2 flex items-center gap-2">
-                <Icon size={14} className="text-[#00CC6A]" /> {title}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {children}
-            </div>
-        </section>
-    );
 
-    const PlanCard = ({ label, value, desc }: { label: string, value: string, desc?: string }) => (
-        <div className="bg-white border border-zinc-100 p-8 hover:border-black transition-all group">
-            <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-2">{label}</p>
-            <p className="text-lg font-black text-black uppercase tracking-tight mb-2 group-hover:text-[#00CC6A] transition-colors">{value}</p>
-            {desc && <p className="text-xxs text-zinc-500 font-medium leading-relaxed uppercase">{desc}</p>}
-        </div>
-    );
 
     return (
         <PageLayout>
@@ -85,54 +68,75 @@ const StrategyPlanning = () => {
             >
                 <div className="max-w-6xl space-y-24 py-12">
 
-                    {/* Objetivos & OKRs */}
-                    <PlanSection title="OBJETIVOS & RESULTADOS CHAVE (OKRs)" icon={Target}>
-                        <PlanCard
-                            label="Objetivo Principal"
-                            value={responses.objetivoPrincipal || "Tração Inicial"}
-                            desc={`Foco em Q${project?.quarter} ${project?.year} para atingir metas de ${responses.metaCrescimento}.`}
-                        />
-                        <PlanCard
-                            label="Métrica Norte"
-                            value={responses.metricaPrincipal || "Novos Clientes"}
-                            desc="Indicador primário de sucesso para validação do modelo de crescimento."
-                        />
-                        <PlanCard
-                            label="Gargalo Operacional"
-                            value={responses.desafios?.[0] || "Escalabilidade"}
-                            desc="Principal ponto de fricção identificado no diagnóstico REI."
-                        />
-                    </PlanSection>
+                    {/* Bento Box Master Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        {/* CELL 1: Huge Objective */}
+                        <div className="md:col-span-8 bg-black text-white p-8 md:p-12 flex flex-col justify-between border border-zinc-900 group">
+                            <div>
+                                <p className="text-[0.7rem] font-black text-zinc-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                    <Target size={14} className="text-[#00CC6A]" /> OBJETIVO PRINCIPAL
+                                </p>
+                                <h2 className="text-4xl md:text-[4rem] font-black uppercase tracking-tighter leading-[0.9] text-white group-hover:text-[#00CC6A] transition-colors selection:bg-[#00CC6A] selection:text-black">
+                                    {responses.objetivoPrincipal || "Tração Inicial"}
+                                </h2>
+                            </div>
+                            <p className="text-sm font-medium text-zinc-400 mt-12 md:max-w-md border-l-2 border-zinc-800 pl-4">
+                                Foco em <strong className="text-white">Q{project?.quarter} {project?.year}</strong> para escalar e atingir metas de <strong className="text-[#00CC6A]">{responses.metaCrescimento}</strong>.
+                            </p>
+                        </div>
 
-                    {/* Framework GTM */}
-                    <PlanSection title="FRAMEWORK GO-TO-MARKET" icon={BarChart3}>
-                        <PlanCard
-                            label="Persona Alvo"
-                            value={responses.segmento || "Enterprise SaaS"}
-                            desc="Perfil de cliente ideal com maior propensão de fechamento e LTV."
-                        />
-                        <PlanCard
-                            label="Canal Prioritário"
-                            value={responses.canaisAquisicao?.[0] || "LinkedIn Ads"}
-                            desc="Primeira alavanca de aquisição para geração de demanda qualificada."
-                        />
-                        <PlanCard
-                            label="Stack Tecnológica"
-                            value={responses.crm || "HubSpot / Pipedrive"}
-                            desc="Infraestrutura base para medição de conversão e gestão de pipeline."
-                        />
-                    </PlanSection>
+                        {/* CELL 2: Métrica Norte */}
+                        <div className="md:col-span-4 bg-zinc-50 border-2 border-zinc-200 p-8 md:p-10 flex flex-col justify-between group hover:border-black transition-all">
+                            <p className="text-[0.7rem] font-black text-zinc-400 uppercase tracking-widest mb-6">Métrica Norte</p>
+                            <div>
+                                <h3 className="text-3xl font-black text-black uppercase tracking-tight mb-2 group-hover:text-[#00CC6A] transition-colors selection:bg-black selection:text-white">
+                                    {responses.metricaPrincipal || "Novos Clientes"}
+                                </h3>
+                                <p className="text-sm text-zinc-500 font-bold uppercase tracking-widest">Indicador Vital</p>
+                            </div>
+                        </div>
+
+                        {/* CELL 3: Gargalo Operacional (Alert) */}
+                        <div className="md:col-span-4 bg-white border-2 border-zinc-200 p-8 md:p-10 flex flex-col justify-between group hover:bg-[#FF004D]/5 hover:border-[#FF004D] transition-all">
+                            <p className="text-[0.7rem] font-black text-[#FF004D] uppercase tracking-widest mb-4 flex items-center gap-2">Gargalo Crítico</p>
+                            <div>
+                                <p className="text-xl font-black text-black uppercase tracking-tight group-hover:text-[#FF004D] transition-colors">
+                                    {responses.desafios?.[0] || "Escalabilidade"}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CELL 4: Persona */}
+                        <div className="md:col-span-4 bg-white border-2 border-zinc-200 p-8 md:p-10 flex flex-col justify-between group hover:border-black transition-all">
+                            <p className="text-[0.7rem] font-black text-zinc-400 uppercase tracking-widest mb-4">Persona Alvo</p>
+                            <div>
+                                <p className="text-xl font-black text-black uppercase tracking-tight group-hover:text-[#00CC6A] transition-colors">
+                                    {responses.segmento || "Enterprise SaaS"}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CELL 5: Tecnologias */}
+                        <div className="md:col-span-4 bg-white border-2 border-zinc-200 p-8 md:p-10 flex flex-col justify-between group hover:border-black transition-all">
+                            <p className="text-[0.7rem] font-black text-zinc-400 uppercase tracking-widest mb-4">Stack Vital</p>
+                            <div>
+                                <p className="text-xl font-black text-black uppercase tracking-tight group-hover:text-black transition-colors">
+                                    {responses.crm || "HubSpot / Pipedrive"}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Investimento em Mídia - Platform Selection */}
                     <section className="space-y-8 bg-black p-12 text-white">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-zinc-800 pb-8 gap-4">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-2 border-zinc-800 pb-8 gap-4">
                             <div>
-                                <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">INVESTIMENTO EM MÍDIA</h3>
-                                <h2 className="text-4xl font-black uppercase tracking-tighter text-[#00CC6A]">ALOCAÇÃO DE BUDGET</h2>
+                                <h3 className="text-[0.7rem] font-black uppercase tracking-widest text-zinc-500 mb-2">INVESTIMENTO EM MÍDIA</h3>
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-[#00CC6A]">ALOCAÇÃO DE BUDGET</h2>
                             </div>
-                            <div className="text-right">
-                                <p className="text-xxs font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
-                                <p className="text-5xl font-black tracking-tighter">R$ {(getBudgetAmount() * 3).toLocaleString()}</p>
+                            <div className="text-left md:text-right">
+                                <p className="text-[0.7rem] font-black text-zinc-500 uppercase tracking-widest mb-1">TOTAL ESTIMADO</p>
+                                <p className="text-5xl md:text-6xl font-black tracking-tighter">R$ {(getBudgetAmount() * 3).toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -174,11 +178,11 @@ const StrategyPlanning = () => {
                                             />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">{platform.name}</p>
-                                            <p className="text-xxs text-zinc-500 uppercase tracking-wider">Performance</p>
+                                            <p className="text-sm font-black text-white uppercase tracking-tight">{platform.name}</p>
+                                            <p className="text-[0.65rem] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">Performance</p>
                                         </div>
                                         <div className="ml-auto">
-                                            <div className={`w-5 h-5 rounded border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-[#00CC6A] border-[#00CC6A]' : ''}`}>
+                                            <div className={`w-5 h-5 rounded-none border-2 border-zinc-600 flex items-center justify-center ${platform.defaultValue > 0 ? 'bg-[#00CC6A] border-[#00CC6A]' : ''}`}>
                                                 {platform.defaultValue > 0 && (
                                                     <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -190,8 +194,8 @@ const StrategyPlanning = () => {
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xxs font-bold text-zinc-400 uppercase tracking-widest">Investimento Mensal</span>
-                                            <span className="text-lg font-black text-white">
+                                            <span className="text-[0.65rem] font-black text-zinc-400 uppercase tracking-widest">Investimento Mensal</span>
+                                            <span className="text-xl font-black text-white tracking-tight">
                                                 R$ {Math.round(getBudgetAmount() * (platform.defaultValue / 100)).toLocaleString()}
                                             </span>
                                         </div>
@@ -201,31 +205,31 @@ const StrategyPlanning = () => {
                                                 style={{ width: `${platform.defaultValue}%` }}
                                             />
                                         </div>
-                                        <p className="text-xxs text-zinc-500 text-right">{platform.defaultValue}% do budget</p>
+                                        <p className="text-[0.65rem] font-bold text-zinc-500 text-right uppercase tracking-widest">{platform.defaultValue}% do budget</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Summary */}
-                        <div className="flex items-center justify-between pt-6 border-t border-zinc-800">
-                            <p className="text-xxs text-zinc-500 uppercase tracking-widest">
-                                Plataformas selecionadas: <span className="text-[#00CC6A] font-bold">3</span>
+                        <div className="flex items-center justify-between pt-8 mt-2 border-t border-zinc-800">
+                            <p className="text-[0.7rem] font-black text-zinc-500 uppercase tracking-widest">
+                                Plataformas selecionadas: <span className="text-[#00CC6A]">3</span>
                             </p>
-                            <p className="text-sm text-zinc-400">
+                            <p className="text-[0.7rem] font-bold text-zinc-400 uppercase tracking-widest">
                                 Distribuição recomendada baseada no diagnóstico REI
                             </p>
                         </div>
                     </section>
 
                     {/* Próximos Passos */}
-                    <div className="flex flex-col md:flex-row items-center justify-between p-12 border border-zinc-200 gap-8 group">
-                        <div className="space-y-2">
-                            <p className="text-xxs font-black text-zinc-400 uppercase tracking-[0.3em]">PRÓXIMA ETAPA</p>
-                            <h3 className="text-2xl font-black uppercase tracking-tight">Cronograma de Execução 90 Dias</h3>
-                            <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Transformação do plano em tarefas operacionais de growth.</p>
+                    <div className="flex flex-col md:flex-row items-center justify-between p-10 md:p-12 border-2 border-zinc-200 gap-8 group hover:border-black transition-all">
+                        <div className="space-y-3">
+                            <p className="text-[0.7rem] font-black text-zinc-400 uppercase tracking-widest">PRÓXIMA ETAPA</p>
+                            <h3 className="text-3xl font-black uppercase tracking-tight text-black">Cronograma de Execução 90 Dias</h3>
+                            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Transformação do plano em tarefas operacionais de growth.</p>
                         </div>
-                        <Button asChild className="bg-black text-white hover:bg-[#00CC6A] hover:text-black rounded-none h-14 px-8 font-black text-tiny uppercase tracking-[0.2em] transition-all shadow-none shrink-0">
+                        <Button asChild className="bg-black text-white hover:bg-[#00CC6A] hover:text-black rounded-none h-14 px-8 font-black text-[0.7rem] uppercase tracking-widest transition-all shadow-[0_4px_0_0_#00CC6A] group-hover:-translate-y-1 group-hover:shadow-[0_8px_0_0_#00CC6A] shrink-0 border-none">
                             <Link to={`/admin/cronograma/${id}`}>Visualizar Roadmap →</Link>
                         </Button>
                     </div>

@@ -59,6 +59,7 @@ export const migrateCases = async () => {
     for (const caseStudy of casesArray) {
         // Map static case to DB matching types_utf8.ts
         const dbCase = {
+            title: caseStudy.title,
             client_name: caseStudy.title,
             slug: caseStudy.slug,
             case_category: caseStudy.category,
@@ -78,7 +79,7 @@ export const migrateCases = async () => {
 
         const { error } = await supabase
             .from('cases')
-            .upsert(dbCase, { onConflict: 'slug' });
+            .upsert(dbCase as any, { onConflict: 'slug' });
 
         if (error) {
             console.error(`❌ Falha ao migrar case ${caseStudy.slug}:`, error.message, error.details);

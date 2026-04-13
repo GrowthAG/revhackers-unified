@@ -27,7 +27,7 @@ function CompetitorRow({ bench, index }: { bench: any; index: number }) {
                                 target="_blank" 
                                 rel="noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="text-zinc-300 hover:text-indigo-500 transition-colors p-0.5"
+                                className="text-zinc-300 hover:text-zinc-400 transition-colors p-0.5"
                                 title="Abrir site do concorrente"
                             >
                                 <ExternalLink size={11} strokeWidth={2.5} />
@@ -202,7 +202,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                     {/* Competitors Table */}
                     <div>
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                            <h3 className="text-sm font-black text-zinc-900 flex items-center gap-2">
                                 <BarChart3 className="w-4 h-4" />
                                 Concorrentes Analisados
                             </h3>
@@ -231,7 +231,7 @@ export default function BenchmarkSection({ plan }: { plan: any }) {
                         <div>
                             <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp className="w-4 h-4 text-zinc-700" />
-                                <h3 className="text-sm font-bold text-zinc-900">Tendências do Segmento</h3>
+                                <h3 className="text-sm font-black text-zinc-900">Tendências do Segmento</h3>
                             </div>
                             <div className={`grid gap-3 ${trends.length % 3 === 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                                 {trends.map((trend: string, i: number) => (

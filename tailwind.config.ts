@@ -20,81 +20,98 @@ export default {
 		},
 		extend: {
 			fontSize: {
-				// Custom rem scale replacing px brackets
-				'4xs': ['0.4375rem', { lineHeight: '0.625rem' }],   // 7px
-				'3xs': ['0.5rem', { lineHeight: '0.75rem' }],       // 8px
-				'2xs': ['0.5625rem', { lineHeight: '0.875rem' }],   // 9px
-				'xxs': ['0.625rem', { lineHeight: '1rem' }],        // 10px
-				'tiny': ['0.6875rem', { lineHeight: '1rem' }],      // 11px
-				'mini': ['0.8125rem', { lineHeight: '1.25rem' }],   // 13px
-				'body': ['0.9375rem', { lineHeight: '1.5rem' }],    // 15px
-				'reading': ['1.0625rem', { lineHeight: '1.75rem' }],// 17px
+				'4xs':    ['0.4375rem', { lineHeight: '0.625rem' }],
+				'3xs':    ['0.5rem',    { lineHeight: '0.75rem' }],
+				'2xs':    ['0.5625rem', { lineHeight: '0.875rem' }],
+				'xxs':    ['0.625rem',  { lineHeight: '1rem' }],
+				'tiny':   ['0.6875rem', { lineHeight: '1.1rem' }],
+				'mini':   ['0.8125rem', { lineHeight: '1.4rem' }],
+				'body':   ['0.9375rem', { lineHeight: '1.6rem' }],
+				'reading':['1.0625rem', { lineHeight: '1.75rem' }],
 			},
 			spacing: {
-				// Pixel-precise spacing in rem for layout elements
-				'0.25': '0.0625rem',  // 1px
-				'0.375': '0.09375rem', // 1.5px
-				'0.5': '0.125rem',    // 2px
-				'0.75': '0.1875rem',  // 3px
-				'1.25': '0.3125rem',  // 5px
-				'4.5': '1.125rem',    // 18px
-				'13': '3.25rem',      // 52px
-				'15': '3.75rem',      // 60px
-				'18': '4.5rem',       // 72px
-				'25': '6.25rem',      // 100px
-				'30': '7.5rem',       // 120px
+				'0.25':  '0.0625rem',
+				'0.375': '0.09375rem',
+				'0.5':   '0.125rem',
+				'0.75':  '0.1875rem',
+				'1.25':  '0.3125rem',
+				'4.5':   '1.125rem',
+				'13':    '3.25rem',
+				'15':    '3.75rem',
+				'18':    '4.5rem',
+				'25':    '6.25rem',
+				'30':    '7.5rem',
 			},
 			maxWidth: {
-				'page': '87.5rem',    // 1400px
-				'content': '100rem',  // 1600px
+				'page':    '87.5rem',
+				'content': '100rem',
+				'prose':   '65ch',
 			},
 			fontFamily: {
-				'sans': ['DM Sans', 'Inter', 'sans-serif'],
+				'sans':    ['DM Sans', 'Inter', 'sans-serif'],
 				'display': ['DM Sans', 'Inter', 'sans-serif'],
 			},
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
+				border:     'hsl(var(--border))',
+				input:      'hsl(var(--input))',
+				ring:       'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT:    'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
+					DEFAULT:    'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
+					DEFAULT:    'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
+					DEFAULT:    'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
+					DEFAULT:    'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
+					DEFAULT:    'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
 				},
 				card: {
-					DEFAULT: 'hsl(var(--card))',
+					DEFAULT:    'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// ─── Brand action color — SINGLE SOURCE OF TRUTH ───
+				// #00C060 = hsl(150, 100%, 38%)
 				revgreen: {
-					DEFAULT: '#00CC6A',
-					accent: '#00B85E'
+					DEFAULT: '#00C060',
+					hover:   '#00A850',
+				},
+				// Alias — components migrating from old brand name
+				revhackers: {
+					DEFAULT: '#00C060',
 				},
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				// System: 2px | 4px | 8px | 12px | 9999px
+				'sm':   'var(--radius-sm)',
+				DEFAULT:'var(--radius)',
+				'md':   'var(--radius)',
+				'lg':   'var(--radius-lg)',
+				'xl':   'var(--radius-xl)',
+				'2xl':  'var(--radius-xl)',
+				'full': '9999px',
+			},
+			boxShadow: {
+				// Functional only — zero glow, zero color
+				'xs':  '0 1px 2px rgba(0,0,0,0.05)',
+				'sm':  '0 2px 8px rgba(0,0,0,0.08)',
+				'md':  '0 8px 24px rgba(0,0,0,0.10)',
+				'lg':  '0 16px 40px rgba(0,0,0,0.12)',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -106,19 +123,24 @@ export default {
 					to: { height: '0' }
 				},
 				'fade-up': {
-					"0%": { opacity: "0", transform: "translateY(20px)" },
+					"0%":   { opacity: "0", transform: "translateY(16px)" },
 					"100%": { opacity: "1", transform: "translateY(0)" }
 				},
 				'fade-in': {
-					"0%": { opacity: "0" },
+					"0%":   { opacity: "0" },
 					"100%": { opacity: "1" }
-				}
+				},
+				'slide-in': {
+					"0%":   { opacity: "0", transform: "translateX(-8px)" },
+					"100%": { opacity: "1", transform: "translateX(0)" }
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-up': 'fade-up 0.5s ease-out forwards',
-				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'accordion-up':   'accordion-up 0.2s ease-out',
+				'fade-up':        'fade-up 0.4s ease-out forwards',
+				'fade-in':        'fade-in 0.4s ease-out forwards',
+				'slide-in':       'slide-in 0.3s ease-out forwards',
 			}
 		}
 	},

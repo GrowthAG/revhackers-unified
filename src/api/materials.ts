@@ -44,8 +44,8 @@ export const getMaterialBySlug = async (slug: string): Promise<Material | null> 
  * MATERIAIS EM DESTAQUE
  */
 export const getFeaturedMaterials = async (): Promise<Material[]> => {
-    const { data, error } = await supabase
-        .from('materials')
+    const { data, error } = await (supabase
+        .from('materials') as any)
         .select('*')
         .eq('published', true)
         .eq('featured', true)

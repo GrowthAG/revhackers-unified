@@ -568,7 +568,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                 {mode === 'admin' && isEditing && clientId && (
                     <div className="bg-white border border-zinc-200 p-8 space-y-6">
                         <h3 className="text-xxs font-black tracking-[0.2em] text-black uppercase border-b border-zinc-100 pb-3 flex items-center gap-2">
-                            <Cloud size={14} className="text-blue-600"/>
+                            <Cloud size={14} className="text-zinc-500"/>
                             Cérebro Operacional (Funnels)
                         </h3>
                         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-zinc-50 p-6 border border-zinc-100">
@@ -580,7 +580,7 @@ const ClientFormContent = ({ initialData, isEditing = false, mode = 'admin', cli
                                 type="button"
                                 onClick={handleProvisionSubaccount}
                                 disabled={isProvisioning}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 px-6 shadow-md shadow-blue-600/20 whitespace-nowrap !rounded-sm uppercase tracking-widest text-xxs"
+                                className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold h-12 px-6 whitespace-nowrap !rounded-sm uppercase tracking-widest text-xxs"
                             >
                                 {isProvisioning ? <Loader2 className="animate-spin mr-2" size={16}/> : <Cloud className="mr-2" size={16}/>}
                                 Provisionar Subconta

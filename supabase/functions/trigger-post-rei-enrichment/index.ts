@@ -13,7 +13,7 @@ const corsHeaders = {
  * Called automatically after REI 360 is submitted.
  * Orchestrates:
  * 1. Fetch REI data
- * 2. Enrich with Perplexity (benchmark, personas, market)
+ * 2. Enrich with OpenAI (benchmark, personas, market)
  * 3. Create draft Strategic Plan
  * 4. Create draft Success Plan
  */
@@ -77,7 +77,7 @@ serve(async (req) => {
         console.log(`[trigger-post-rei-enrichment] Enriching for segment: ${segment}`);
 
         // ========================================
-        // STEP 2: Trigger Enrichment (Perplexity)
+        // STEP 2: Trigger Enrichment (OpenAI)
         // ========================================
         const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
         const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

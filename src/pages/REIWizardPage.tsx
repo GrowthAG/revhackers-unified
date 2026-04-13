@@ -19,7 +19,7 @@ export default function REIWizardPage() {
     useEffect(() => {
         const loadProject = async () => {
             if (!projectId) {
-                navigate('/rei-hub');
+                navigate('/admin/projects');
                 return;
             }
 
@@ -28,7 +28,7 @@ export default function REIWizardPage() {
                 setType(project?.type as REIType);
             } catch (error) {
                 console.error('Erro ao carregar projeto:', error);
-                navigate('/rei-hub');
+                navigate('/admin/projects');
             } finally {
                 setLoading(false);
             }

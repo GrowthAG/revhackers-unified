@@ -68,13 +68,18 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-w-md bg-white border-zinc-100 p-0 overflow-hidden">
-                <DialogHeader className="p-6 pb-2 border-b border-zinc-50">
-                    <DialogTitle className="text-xl font-bold text-zinc-900 leading-tight">
-                        Agendar Diagnóstico
+                <DialogHeader className="p-6 pb-4 border-b border-zinc-50 bg-zinc-950">
+                    <DialogTitle className="text-xl font-bold text-white leading-tight flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-revgreen" />
+                        Auditoria de Funil B2B
                     </DialogTitle>
-                    <p className="text-sm text-zinc-500 mt-1">
-                        Preencha seus dados para acessar a agenda oficial.
+                    <p className="text-sm text-zinc-400 mt-2 leading-relaxed">
+                        Operamos com vagas restritas (Max 3/mês). Avaliaremos seu negócio e montaremos um mapa de IA e Automação para o seu CRM se houver fit.
                     </p>
+                    <div className="mt-4 flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-sm">
+                        <span className="text-revgreen font-bold text-xs uppercase tracking-widest">+12 Reuniões semanais</span>
+                        <span className="text-zinc-500 text-xs">geradas em média pelos nossos clientes.</span>
+                    </div>
                 </DialogHeader>
 
                 <div className="p-6 pt-4">
@@ -135,14 +140,14 @@ const LeadCaptureModal = ({ isOpen, onClose }: LeadCaptureModalProps) => {
 
                         <Button
                             type="submit"
-                            className="w-full bg-revgreen text-black hover:bg-revgreen/90 font-bold tracking-wide mt-2 h-12 text-sm uppercase"
+                            className="w-full bg-revgreen text-black hover:bg-revgreen/90 font-black tracking-widest mt-2 h-14 text-sm uppercase transition-all"
                             disabled={loading}
                         >
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continuar para Agenda"}
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verificar Disponibilidade Agora"}
                         </Button>
 
-                        <p className="text-xxs text-center text-zinc-400 mt-4 leading-relaxed px-4">
-                            Ao continuar, você concorda em receber comunicações sobre sua solicitação. Seus dados estão seguros.
+                        <p className="text-2xs text-center text-zinc-400 mt-6 leading-relaxed px-2 font-mono uppercase tracking-wider">
+                            Análise Estrutural 100% gratuita. Confidencialidade absoluta dos dados de CRM.
                         </p>
                     </form>
                 </div>

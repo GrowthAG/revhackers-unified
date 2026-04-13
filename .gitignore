@@ -37,13 +37,18 @@ dist-ssr
 # Scripts one-off (dados de clientes, service role key)
 *.pdf
 tunad_contrato.txt
-analysis_output.txt
-check_tunad_plan.js
-fix_final.js
-fix_tunad_name.js
-fix_tunad_plan.js
-insert_tunad_meetings.js
-query_tunad.js
-query_tunad_calls.js
-test_tldv.js
-ddg_test.js
+
+# Deploy artifacts
+deploy*.zip
+dist_*.zip
+*.zip
+
+# Temp scripts and data dumps
+*_dump.json
+strategic_plans_dump.json
+rei_projects_dump.json
+update-obras*.ts
+extract_obras*.js
+upload.sh
+upload_ftp.mjs
+

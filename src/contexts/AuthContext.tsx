@@ -69,16 +69,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        // Safety timeout to prevent infinite loading
+        // Safety timeout: se o auth travar por mais de 5s, força o estado de pronto
         const safetyTimeout = setTimeout(() => {
-            if (isLoading) {
-                console.warn('⚠️ [AUTH] Loading state trapped for 5s. Forcing ready.');
-                setIsLoading(false);
-            }
+            setIsLoading(false);
         }, 5000);
 
         return () => clearTimeout(safetyTimeout);
-    }, [user, isLoading, userRole]);
+    }, []); // [] = roda UMA VEZ ao montar, não reage a mudanças de estado
 
     useEffect(() => {
         if (window.location.hash.includes('type=recovery') ||
@@ -87,35 +84,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setIsRecoveringPassword(true);
         }
 
-        // Safe Session Initialization
-        const initSession = async () => {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (error) {
-                    console.warn('⚠️ [AUTH] Initial session check failed:', error.message);
-                    // Force clean state if session check fails
-                    if (error.message.includes('Invalid Refresh Token')) {
-                        localStorage.removeItem('sb-eqspbruarsdybpfeijnf-auth-token');
-                    }
-                    return;
-                }
-                if (session) {
-                    setSession(session);
-                    setUser(session.user);
-                    // fetchUserRole will be triggered by the listener
-                }
-            } catch (err) {
-                console.error('⚠️ [AUTH] Unexpected initialization error:', err);
-            } finally {
-                setIsLoading(false); // Ensure we stop loading even on error
-            }
-        };
-
-        initSession();
-
+        // ── Single source of truth: onAuthStateChange ────────────────────────
+        // O Supabase dispara INITIAL_SESSION imediatamente ao registrar o listener,
+        // com a sessão atual (ou null). Não precisamos chamar getSession() manualmente.
+        // Fazer as duas coisas gera race condition e múltiplos re-renders (flash).
         let mounted = true;
 
-        // Listen for auth changes - Supabase handles sync/initial check via INITIAL_SESSION event
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (!mounted) return;
 
@@ -123,7 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
 
-            // Resiliência contra loop de carregamento
+            // INITIAL_SESSION: primeira leitura da sessão, sempre desliga o loading
             if (_event === 'INITIAL_SESSION') {
                 setIsLoading(false);
             }
@@ -136,15 +110,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 return;
             }
 
-            // Lógica de perfil para eventos que realmente mudam o usuario
-            // TOKEN_REFRESHED NAO dispara loading - o perfil/role nao muda quando o token renova.
-            // Isso evita desmontar componentes filhos (e perder estado de formularios) ao trocar de aba.
-            if (session?.user && (_event === 'SIGNED_IN' || _event === 'USER_UPDATED' || _event === 'INITIAL_SESSION')) {
+            // TOKEN_REFRESHED e USER_UPDATED (foco de aba) NÃO disparam loading!
+            // Isso evita desmontar a árvore da DOM ao trocar de aba do navegador.
+            if (session?.user && (_event === 'SIGNED_IN' || _event === 'INITIAL_SESSION')) {
                 setIsProfileLoading(true);
                 fetchUserRole(session.user.id);
-            } else if (session?.user && _event === 'TOKEN_REFRESHED') {
-                // Refresh silencioso - atualiza perfil em background sem loading state
-                // Isso preserva formularios e estado dos componentes ao trocar de aba
+            } else if (session?.user && (_event === 'TOKEN_REFRESHED' || _event === 'USER_UPDATED')) {
+                // Refresh silencioso - atualiza perfil em background sem destruir a UI
                 fetchUserRole(session.user.id, true);
             }
 
@@ -156,10 +128,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
 
-            // ── Invite Flow ─────────────────────────────────────────────────
-            // When a user clicks "Accept invite" in the email, Supabase fires SIGNED_IN
-            // with user_metadata.invited = true. We redirect to /reset-password so they
-            // can create their first password. UpdatePassword page clears this flag upon success.
+            // Invite Flow: redireciona para criação de senha no primeiro acesso
             if ((_event === 'SIGNED_IN' || _event === 'INITIAL_SESSION') && session?.user?.user_metadata?.invited === true) {
                 if (window.location.pathname !== '/reset-password') {
                     setIsRecoveringPassword(true);
@@ -167,7 +136,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
 
-            // Garantir que carregamento inicial termine
+            // Garantir que carregamento inicial termine em qualquer evento
             setIsLoading(false);
         });
 
@@ -183,7 +152,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
-                    emailRedirectTo: window.location.origin + '/dashboard',
+                    emailRedirectTo: window.location.origin + '/admin',
                 },
             });
 
@@ -224,18 +193,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const signUp = async (email: string, password: string) => {
-        try {
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-            });
-            if (error) throw error;
-            return { error: null };
-        } catch (error: any) {
-            console.error("Signup error:", error.message);
-            return { error };
-        }
+    const signUp = async (_email: string, _password: string) => {
+        // BLOQUEADO: Cadastro público desabilitado.
+        // Toda criação de conta é feita exclusivamente via convite administrativo (invite-member).
+        console.warn('[Auth] Tentativa de signUp bloqueada - cadastro publico desabilitado.');
+        return { error: new Error('Cadastro desabilitado. Contas são criadas exclusivamente via convite do administrador.') };
     };
 
     const resetPassword = async (email: string) => {

@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import PageLayout from '@/components/layout/PageLayout';
 import { getFormData } from '@/utils/formStorage';
-import { ExternalLink, Calendar } from 'lucide-react';
+import { ExternalLink, Calendar, CheckCircle } from 'lucide-react';
+import SEO from '@/components/shared/SEO';
 
-const BOOKING_BASE_URL = "https://pages.revhackers.com.br/widget/booking/E6Mw5guvWZc7ADFgxnJh";
+const BOOKING_BASE_URL = "https://pages.revhackers.com.br/widget/booking/frZ10gIRdS8iNvtlGq3q";
 
 const BookingPage = () => {
   const [userData, setUserData] = useState({
@@ -49,75 +50,48 @@ const BookingPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const buildQueryParams = () => {
-    const params = new URLSearchParams();
-    if (userData.email) params.append('email', userData.email);
-    if (userData.name) params.append('name', userData.name);
-    if (userData.phone) params.append('phone', userData.phone);
-    if (userData.company) params.append('company', userData.company);
-    const queryString = params.toString();
-    return queryString ? `?${queryString}` : '';
-  };
-
-  const bookingUrl = `${BOOKING_BASE_URL}${buildQueryParams()}`;
+  const bookingUrl = BOOKING_BASE_URL;
 
   return (
     <PageLayout>
+      <SEO title="Agendar Auditoria de Receita" description="Agende uma auditoria técnica com a RevHackers para mapear vazamentos na sua operação B2B." canonical="https://revhackers.com.br/booking" />
       <section className="pt-32 pb-24 bg-white min-h-screen">
         <div className="w-full max-w-4xl mx-auto px-6">
 
           {/* Header */}
+          {/* Header Brutalist */}
           <div className="text-center mb-12">
-            <span className="text-xxs font-mono font-black uppercase tracking-[0.4em] text-revgreen mb-4 block">
-              Agendamento
+            <span className="inline-block border border-zinc-800 text-zinc-900 px-3 py-1 font-mono font-bold uppercase tracking-[0.3em] mb-6 text-xs bg-transparent">
+              [ Vagas Restritas: 3 / mês ]
             </span>
-            <h1 className="text-3xl md:text-5xl font-bold text-zinc-900 tracking-tighter mb-4 uppercase">
-              Agende uma <span className="text-revgreen">conversa</span> agora
+            <h1 className="text-4xl md:text-6xl font-black text-zinc-900 tracking-tighter mb-6 uppercase">
+              Auditoria de Receita
             </h1>
-            <p className="text-base text-zinc-500 max-w-lg mx-auto font-light leading-relaxed">
-              Escolha o melhor horário para conversarmos sobre suas necessidades e discutir soluções sob medida para seu negócio.
+            <p className="text-lg text-zinc-600 max-w-2xl mx-auto font-medium leading-relaxed">
+              Não fazemos "calls para nos conhecer". Esta é uma agenda técnica focada em achar vazamentos no seu LTV e CAC. Se nossa Engenharia não puder dobrar a eficiência da sua máquina comercial em 90 dias, não faremos proposta.
             </p>
+
+            {/* Checklist Scarcity */}
+            <div className="max-w-lg mx-auto mt-8 flex flex-col gap-3 text-left bg-zinc-50 border border-zinc-200 p-6 rounded-sm shadow-sm">
+              <span className="font-bold text-xxs tracking-widest uppercase text-zinc-500 mb-2 border-b border-zinc-200 pb-2">Pré-Requisitos da Operação:</span>
+              <div className="flex items-start gap-3 text-sm text-zinc-700 font-bold">
+                <CheckCircle className="w-5 h-5 text-black shrink-0" /> Operação B2B (High Ticket) validada e tracionando.
+              </div>
+              <div className="flex items-start gap-3 text-sm text-zinc-700 font-bold">
+                <CheckCircle className="w-5 h-5 text-black shrink-0" /> Participação do Fundador/C-Level na reunião técnica.
+              </div>
+            </div>
           </div>
 
-          {/* Calendar embed with fallback */}
-          <div className="w-full border border-zinc-200 rounded-none overflow-hidden bg-white shadow-sm">
-            <div className="relative w-full" style={{ minHeight: '700px' }}>
-              {/* Loading state */}
-              {!iframeLoaded && !iframeFailed && (
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white">
-                  <div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin mb-4" />
-                  <p className="text-sm text-zinc-400 font-light">Carregando calendário...</p>
-                </div>
-              )}
-
-              {/* Fallback when iframe fails */}
-              {iframeFailed && !iframeLoaded && (
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white p-8">
-                  <Calendar className="w-10 h-10 text-zinc-300 mb-4" />
-                  <h3 className="text-lg font-bold text-zinc-900 mb-2">Calendário indisponível</h3>
-                  <p className="text-sm text-zinc-500 text-center mb-6 max-w-sm">
-                    O widget de agendamento não carregou. Clique abaixo para agendar diretamente.
-                  </p>
-                  <a
-                    href={bookingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-950 text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-revgreen hover:text-black transition-all duration-300"
-                  >
-                    <ExternalLink className="w-4 h-4" /> Agendar Diretamente
-                  </a>
-                </div>
-              )}
-
-              <iframe
-                src={bookingUrl}
-                style={{ width: '100%', height: '700px', border: 'none', background: '#ffffff' }}
-                scrolling="yes"
-                title="Agendar diagnóstico"
-                className="relative z-10 w-full"
-                onLoad={() => setIframeLoaded(true)}
-              />
-            </div>
+          {/* Calendar embed */}
+          <div className="bg-white overflow-hidden max-w-3xl mx-auto min-h-[700px] border border-zinc-100 shadow-sm shadow-zinc-100/50">
+            <iframe
+              src={bookingUrl}
+              style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px', background: '#ffffff' }}
+              scrolling="no"
+              id="frZ10gIRdS8iNvtlGq3q_1775165036136"
+              title="Auditoria de Receita"
+            />
           </div>
         </div>
       </section>

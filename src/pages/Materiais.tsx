@@ -105,9 +105,13 @@ const Materiais = () => {
   return (
     <PageLayout>
       <SEO
-        title="Materiais"
-        description="Frameworks, checklists, playbooks e templates para escalar sua operação de revenue. Downloads gratuitos para profissionais B2B."
-        canonical="https://revhackers.com/materiais"
+        title="Materiais Gratuitos para Escalar Vendas B2B"
+        description="Frameworks, checklists, playbooks e templates gratuitos para escalar sua operação de revenue B2B. Conteúdo exclusivo para gestores de vendas e RevOps no Brasil."
+        canonical="https://revhackers.com.br/materiais"
+        breadcrumbs={[
+          { name: "Home", url: "https://revhackers.com.br/" },
+          { name: "Materiais", url: "https://revhackers.com.br/materiais" }
+        ]}
       />
       <DarkHeroSection
         title="Materiais"
@@ -207,20 +211,20 @@ const Materiais = () => {
         <div className="container-custom">
           <div className="flex flex-col md:flex-row items-center justify-between gap-10">
             <div className="max-w-2xl text-center md:text-left">
-              <h2 className="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tighter uppercase leading-tight">
-                Precisa de Ajuda Estratégica?
+              <h2 className="text-3xl md:text-5xl font-black mb-6 text-black tracking-tighter uppercase leading-tight">
+                Identificou a Dor?
               </h2>
-              <p className="text-xl text-zinc-500 font-normal tracking-tight leading-relaxed">
-                Agende um diagnóstico gratuito e descubra onde sua operação está perdendo receita.
+              <p className="text-xl text-zinc-500 font-bold tracking-tight leading-relaxed">
+                Pare de ler teoria. Aplique para que nossa Engenharia audite o seu funil e conecte seu CRM à ferramentas de IA.
               </p>
             </div>
             <div className="flex-shrink-0">
               <Button
                 size="lg"
                 onClick={() => setIsBookingOpen(true)}
-                className="bg-black text-white hover:bg-revgreen hover:text-black font-black tracking-widest uppercase px-10 h-16 rounded-sm text-xs transition-all duration-500 shadow-sm hover:shadow-revgreen/20"
+                className="bg-black text-white hover:bg-revgreen hover:text-black font-black tracking-widest uppercase px-10 h-16 rounded-sm text-xs transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-revgreen/20"
               >
-                Agendar Conversa
+                Aplicar para Auditoria Grátis
               </Button>
             </div>
           </div>

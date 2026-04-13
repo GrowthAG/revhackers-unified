@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Loader2, Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import PageLayout from '@/components/layout/PageLayout';
 
 const Login = () => {
@@ -11,16 +11,23 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const { signInWithPassword, user, isRecoveringPassword } = useAuth();
+    const { signInWithPassword, user, userRole, isProfileLoading, isRecoveringPassword } = useAuth();
     const navigate = useNavigate();
 
     // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
     useEffect(() => {
-        if (user && !isRecoveringPassword) {
-            navigate('/admin');
+        if (user && !isRecoveringPassword && !isProfileLoading) {
+            if (userRole === 'super_admin' || userRole === 'admin') {
+                navigate('/admin');
+            } else if (userRole === 'user') {
+                // Previne Loop Infinito. Se tentar entrar no admin sem permissão, quebra o redirect
+                setError('Sua conta não possui privilégios de acesso ao painel de administração.');
+                setLoading(false); // PARA O SPINNER!
+            }
         }
-    }, [user, navigate, isRecoveringPassword]);
+    }, [user, userRole, isProfileLoading, isRecoveringPassword, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +40,8 @@ const Login = () => {
             setError('Credenciais inválidas. Tente novamente.');
             setLoading(false);
         } else {
-            navigate('/admin');
+            // A responsabilidade de check de role agora cai no useAuth state update via useEffect acima.
+            // Para não piscar erro se der sucesso, deixamos o AuthContext e o useEffect guiarem.
         }
     };
 
@@ -89,14 +97,23 @@ const Login = () => {
                                         Recuperar
                                     </Link>
                                 </div>
-                                <Input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-sm border focus:border-black focus:ring-1 focus:ring-black transition-all text-sm px-4"
-                                    required
-                                />
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 h-12 rounded-sm border focus:border-black focus:ring-1 focus:ring-black transition-all text-sm px-4 pr-12"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                             </div>
 
                             <Button

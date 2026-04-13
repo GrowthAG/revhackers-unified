@@ -53,7 +53,7 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                                     Marco Zero • O Ponto Sem Retorno
                                 </span>
                                 
-                                <h4 className="text-xl font-bold text-white mb-3">
+                                <h4 className="text-xl font-black text-white mb-3">
                                     <EditableField
                                         placeholder="Dia da Virada"
                                         path="onboarding_data.training.p3_title"
@@ -84,7 +84,7 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                                     </span>
                                 </div>
                                 <div className="flex-1 pb-2">
-                                    <h4 className="text-reading font-bold text-zinc-900 mb-2 tracking-tight">
+                                    <h4 className="text-reading font-black text-zinc-900 mb-2 tracking-tight">
                                         <EditableField
                                             placeholder="Aulas Técnicas Gravadas"
                                             path="onboarding_data.training.p1_title"
@@ -110,7 +110,7 @@ export default function OnboardingTrainingSection({ plan, clientName = "Cliente"
                                     </span>
                                 </div>
                                 <div className="flex-1 pb-2">
-                                    <h4 className="text-reading font-bold text-zinc-900 mb-2 tracking-tight">
+                                    <h4 className="text-reading font-black text-zinc-900 mb-2 tracking-tight">
                                         <EditableField
                                             placeholder="Avaliação e Simulação Prática"
                                             path="onboarding_data.training.p2_title"

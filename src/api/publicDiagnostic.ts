@@ -39,6 +39,16 @@ export const submitPublicDiagnostic = async (
         diagnostic_type: diagnosticType,
     };
 
+    // Mapeamento correto dos protocolos REI oficiais
+    type OfficialREIType = 'consulting' | 'crm_ops' | 'founder' | 'site';
+    const diagToProjectMap: Record<string, OfficialREIType> = {
+        growth: 'consulting',
+        revenue: 'crm_ops',
+        founder: 'founder',
+        site: 'site',
+    };
+    const officialProjectType = diagToProjectMap[diagnosticType] || 'consulting';
+
     // 1. Criar registro em `diagnosticos` (entidade correta para assessments)
     const { data: diagData, error: diagError } = await supabase
         .from('diagnosticos')
@@ -109,18 +119,19 @@ export const submitPublicDiagnostic = async (
     }
 
     if (!opportunityId) {
-        // Criar nova opportunity
+        // Criar nova opportunity com a tipagem oficial e o intelligence data (handoff)
         const { data: oppData, error: oppError } = await supabase
             .from('opportunities')
             .insert({
-                client_name: lead.name || lead.company,
+                client_name: lead.name || lead.company || 'Novo Lead B2B',
                 client_email: lead.email?.toLowerCase() || null,
                 client_company: lead.company || null,
-                type: diagnosticType === 'founder' ? 'founder' : 'consulting',
+                type: officialProjectType,
                 lead_source: leadSource,
                 pipeline_stage: 'diagnostic_done',
                 diagnostico_id: diagnosticoId,
                 analyst_email: 'giulliano@revhackers.com.br',
+                opportunity_data: fullResponses // Injeção inteligente para pre-fill automático futuro
             })
             .select('id')
             .single();

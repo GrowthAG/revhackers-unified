@@ -46,7 +46,7 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                             <div key={pIdx}>
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-2.5 h-2.5 bg-black rounded-full" />
-                                    <h3 className="text-body font-bold text-zinc-900 tracking-wider uppercase">
+                                    <h3 className="text-body font-black text-zinc-900 tracking-wider uppercase">
                                         {pipeline.name}
                                     </h3>
                                     <span className="text-mini text-zinc-400 font-medium ml-3">
@@ -83,7 +83,7 @@ export default function PipelineArchitectureSection({ plan }: PipelineArchitectu
                     <div className="mt-16 pt-12 border-t border-zinc-100">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-2.5 h-2.5 bg-zinc-900 rounded-full" />
-                            <h3 className="text-body font-bold text-zinc-900 tracking-wider uppercase">
+                            <h3 className="text-body font-black text-zinc-900 tracking-wider uppercase">
                                 Motivos de Perda (Lost Reasons)
                             </h3>
                         </div>

@@ -9,6 +9,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { getAllOrganizations, updateOrganizationSettings, type Organization } from "@/api/organizations";
+import { getAllReiProjects } from "@/api/reiProjects";
 
 const GHL_CLIENT_ID = import.meta.env.VITE_GHL_CLIENT_ID || "";
 const GHL_SCOPES = "opportunities.readonly opportunities.write contacts.readonly contacts.write locations.readonly locations/customValues.readonly locations/customValues.write users.readonly";
@@ -34,7 +35,7 @@ const AdminGHLIntegrations = () => {
         if (!code) return;
 
         setLoading(true);
-        const toastId = toast.loading("Finalizando Handshake com a HighLevel...");
+        const toastId = toast.loading("Finalizando Handshake com Funnels...");
 
         try {
             const redirectUri = window.location.origin + window.location.pathname;
@@ -60,11 +61,20 @@ const AdminGHLIntegrations = () => {
         setLoading(true);
         try {
             const orgs = await getAllOrganizations();
-            setOrganizations(orgs);
+            const projects = await getAllReiProjects();
+            
+            const activeOrgIds = new Set(
+                projects
+                    .filter(p => p.status !== 'lead' && p.status !== 'diagnostic')
+                    .map(p => p.organization_id)
+            );
+            
+            const filteredOrgs = orgs.filter(org => org.is_master || activeOrgIds.has(org.id));
+            setOrganizations(filteredOrgs);
             
             // Map the initial state for edits
             const initialEdits: Record<string, any> = {};
-            orgs.forEach(org => {
+            filteredOrgs.forEach(org => {
                 const settings = org.settings || {};
                 const hooks = settings.ghl_webhooks || {};
                 initialEdits[org.id] = {
@@ -127,49 +137,52 @@ const AdminGHLIntegrations = () => {
     return (
         <AdminLayout>
             <div className="min-h-screen bg-[#F8F9FA] p-8 pb-32">
-                <div className="max-w-6xl mx-auto space-y-8">
+                <div className="max-w-3xl mx-auto space-y-8">
                     {/* Header */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 border border-zinc-200 shadow-sm">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 border-2 border-zinc-200">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 mb-2">
                                 <Button 
                                     variant="ghost" 
                                     size="sm" 
                                     onClick={() => navigate('/admin/integrations')}
-                                    className="p-0 h-auto hover:bg-transparent text-zinc-400 hover:text-zinc-900 pr-2 border-r border-zinc-200 mr-2 rounded-none"
+                                    className="p-0 h-auto hover:bg-transparent text-zinc-400 hover:text-black pr-2 mr-2 rounded-none transition-colors"
                                 >
-                                    <ChevronLeft size={16} className="mr-1"/> Voltar
+                                    <ChevronLeft size={16} className="mr-1"/> VOLTAR
                                 </Button>
+                                <span className="h-1.5 w-1.5 bg-[#00CC6A]" />
                                 <span className="text-xxs font-bold text-zinc-500 uppercase tracking-widest">Multi-Tenant Routing</span>
                             </div>
                             <h1 className="text-4xl font-black tracking-tight text-zinc-900">
-                                GoHighLevel Subcontas
+                                Funnels Sub-Contas
                             </h1>
                             <p className="text-zinc-500 text-sm max-w-md">
-                                Mapeie as chaves de API OAuth e URLs de Webhook exclusivas para o roteamento isolado de cada cliente.
+                                Mapeie as chaves de API OAuth e URLs de Webhook exclusivas para orquestração e roteamento de cada cliente.
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
                             <Button 
                                 onClick={startOAuthFlow}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 px-6 shadow-md shadow-blue-600/20"
+                                className="bg-[#00CC6A] text-black hover:bg-black hover:text-white transition-all font-black uppercase text-xs tracking-widest h-12 px-6 rounded-none shadow-none"
                             >
                                 <KeyRound size={18} className="mr-2" />
-                                Autorizar Nova Subconta (V2)
+                                AUTORIZAR FUNNELS
                             </Button>
-                            <div className="h-16 w-16 bg-blue-600 border border-blue-700 flex items-center justify-center shadow-lg transform rotate-3 ml-4">
-                                <Server className="text-white" size={28} />
+                            <div className="h-12 w-12 bg-black border-2 border-black flex items-center justify-center transition-all cursor-default">
+                                <Server className="text-[#00CC6A]" size={20} />
                             </div>
                         </div>
                     </div>
 
                     {!GHL_CLIENT_ID && (
-                        <div className="bg-amber-50 border border-amber-200 p-4 rounded-md flex items-start gap-4 text-amber-900">
-                            <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={20} />
+                        <div className="bg-white border-2 border-dashed border-red-500 p-6 flex items-start gap-4 text-red-900">
+                            <div className="bg-red-50 p-2 shrink-0">
+                                <AlertCircle className="text-red-500" size={24} />
+                            </div>
                             <div>
-                                <h4 className="font-bold text-sm">Falta a Variável VITE_GHL_CLIENT_ID</h4>
-                                <p className="text-sm mt-1">
-                                    Para o painel roubar os tokens automaticamente e usar o fluxo OAuth V2, cole o <strong>Client ID</strong> gerado pelo GHL no seu arquivo <code>.env</code> do servidor.
+                                <h4 className="font-black text-sm uppercase tracking-widest text-red-600">Alerta de Infraestrutura</h4>
+                                <p className="text-xs font-bold text-zinc-500 mt-2">
+                                    Para ativar o Handshake transparente, sua variável de ambiente <code>VITE_GHL_CLIENT_ID</code> precisa estar configurada.
                                 </p>
                             </div>
                         </div>
@@ -189,84 +202,65 @@ const AdminGHLIntegrations = () => {
 
                                 return (
                                     <div key={org.id} className={cn(
-                                        "bg-white border p-6 transition-all",
-                                        isMaster ? "border-blue-600 shadow-sm" : "border-zinc-200 hover:border-zinc-300"
+                                        "bg-white border-2 p-6 transition-all",
+                                        isMaster ? "border-black" : "border-zinc-200 hover:border-black"
                                     )}>
                                         <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
                                             
                                             {/* Info Col */}
                                             <div className="w-full lg:w-1/4">
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <div className={cn("p-2", isMaster ? "bg-blue-100 text-blue-700" : "bg-zinc-100 text-zinc-600")}>
+                                                    <div className={cn("p-2 border-2", isMaster ? "bg-black text-white border-black" : "bg-zinc-50 text-zinc-500 border-zinc-200")}>
                                                         <Building2 size={18} />
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-lg text-zinc-900 uppercase tracking-tight">{org.name}</h3>
-                                                        <span className="text-xs text-zinc-500 font-mono">{org.slug}</span>
+                                                        <h3 className="font-black text-lg text-zinc-900 uppercase tracking-tight">{org.name}</h3>
+                                                        <span className="text-xxs font-black text-zinc-400 uppercase tracking-widest">{org.slug}</span>
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
                                                     {isMaster ? (
-                                                        <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-xxs tracking-widest uppercase">
-                                                            Agência Master
+                                                        <Badge className="bg-black text-[#00CC6A] text-[0.6rem] font-black tracking-widest uppercase rounded-none border-none py-1">
+                                                            NÓ MASTER
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="outline" className="text-zinc-500 text-xxs tracking-widest uppercase">
-                                                            Cliente Filha
+                                                        <Badge variant="outline" className="text-zinc-500 border-2 border-zinc-200 bg-white text-[0.6rem] font-black tracking-widest uppercase rounded-none py-1">
+                                                            WORKER
                                                         </Badge>
                                                     )}
                                                     {hasAccessToken ? (
-                                                        <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-xxs tracking-widest uppercase font-bold">
-                                                            ✅ OAuth V2 Ativo
+                                                        <Badge className="bg-[#00CC6A] text-black text-[0.6rem] font-black tracking-widest uppercase rounded-none border-none py-1">
+                                                            OAUTH ATIVO
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="outline" className="bg-zinc-50 text-zinc-400 border-zinc-200 text-xxs tracking-widest uppercase">
-                                                            ❌ Sem Token V2
+                                                        <Badge variant="outline" className="bg-zinc-100 text-zinc-400 border-none text-[0.6rem] font-black tracking-widest uppercase rounded-none py-1">
+                                                            S/ CONEXÃO
                                                         </Badge>
                                                     )}
                                                 </div>
                                             </div>
 
                                             {/* Inputs Col */}
-                                            <div className="w-full lg:flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-1 lg:pt-0">
+                                            <div className="w-full lg:flex-1 grid grid-cols-1 gap-6 pt-1 lg:pt-0">
                                                 <div className="space-y-2">
-                                                    <label className="text-xxs font-bold text-zinc-500 uppercase tracking-wider">Location ID (GHL)</label>
+                                                    <label className="text-[0.65rem] font-black text-zinc-500 uppercase tracking-widest">Location ID (Funnels)</label>
                                                     <Input 
                                                         value={editState.ghl_location_id}
                                                         onChange={(e) => handleChange(org.id, 'ghl_location_id', e.target.value)}
                                                         placeholder="Ex: oFTw9DcsKRU..."
-                                                        className="font-mono text-sm bg-zinc-50 border-zinc-200 focus-visible:ring-black"
+                                                        className="font-mono text-sm bg-zinc-50 border-2 border-zinc-200 focus-visible:ring-black focus-visible:border-black rounded-none"
                                                     />
-                                                    <p className="text-tiny text-zinc-400">Deve ser exato para rotear Oauth.</p>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-xxs font-bold text-zinc-500 uppercase tracking-wider">Webhook Inbound Geral</label>
-                                                    <Input 
-                                                        value={editState.contact}
-                                                        onChange={(e) => handleChange(org.id, 'contact', e.target.value)}
-                                                        placeholder="https://services.leadconnectorhq.com/hooks/..."
-                                                        className="text-xs bg-zinc-50 border-zinc-200"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-xxs font-bold text-zinc-500 uppercase tracking-wider">Webhook de Diagnósticos</label>
-                                                    <Input 
-                                                        value={editState.rei}
-                                                        onChange={(e) => handleChange(org.id, 'rei', e.target.value)}
-                                                        placeholder="https://services.leadconnectorhq.com/hooks/..."
-                                                        className="text-xs bg-zinc-50 border-zinc-200"
-                                                    />
+                                                    <p className="text-[0.65rem] font-bold text-zinc-400">Chave estrutural de orquestração via OAuth.</p>
                                                 </div>
                                             </div>
 
-                                            {/* Actions Col */}
-                                            <div className="w-full lg:w-auto pt-6 lg:pt-0 flex flex-col gap-3">
+                                            <div className="w-full lg:w-auto pt-6 lg:pt-0 flex flex-col justify-end gap-3 h-full">
                                                 <Button 
                                                     onClick={() => handleSave(org.id, org.name)}
                                                     disabled={savingId === org.id}
-                                                    className="w-full bg-black text-white hover:bg-zinc-800 font-bold px-8 h-12"
+                                                    className="w-full bg-black text-white hover:bg-[#00CC6A] hover:text-black transition-all font-black uppercase text-[0.65rem] tracking-widest px-8 h-10 mt-auto rounded-none"
                                                 >
-                                                    {savingId === org.id ? <Loader2 className="animate-spin" size={16} /> : <><Save size={16} className="mr-2" /> Salvar</>}
+                                                    {savingId === org.id ? <Loader2 className="animate-spin" size={16} /> : <><Save size={16} className="mr-2" /> SALVAR</>}
                                                 </Button>
                                             </div>
 

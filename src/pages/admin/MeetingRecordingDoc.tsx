@@ -4,7 +4,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { 
     ChevronLeft, Loader2, Video, FileText, 
-    Calendar, Clock, Sparkles, BrainCircuit, 
+    Calendar, Clock, Cpu, BrainCircuit, 
     Target, Users, FileArchive, Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -101,7 +101,7 @@ const MeetingRecordingDoc = () => {
                     <Button 
                         variant="ghost" 
                         size="sm" 
-                        onClick={() => recording.rei_project_id ? navigate(`/admin/projects/${recording.rei_project_id}?tab=reunioes`) : navigate(-1)} 
+                        onClick={() => recording.rei_project_id ? navigate(`/admin/projects/${recording.rei_project_id}/reunioes`) : navigate(-1)} 
                         className="text-zinc-500 hover:text-black -ml-2"
                     >
                         <ChevronLeft className="w-5 h-5 mr-1" /> Voltar ao Projeto
@@ -178,7 +178,7 @@ const MeetingRecordingDoc = () => {
                         
                         {/* Extracted Intelligence / AI Notes */}
                         <h2 className="flex items-center gap-2 font-black text-2xl tracking-tight mb-6">
-                            <Sparkles className="w-6 h-6 text-[#00E5FF] -mt-1" fill="currentColor" /> 
+                            <Cpu className="w-6 h-6 text-[#00E5FF] -mt-1" fill="currentColor" /> 
                             Notas Extraídas (AI)
                         </h2>
                         

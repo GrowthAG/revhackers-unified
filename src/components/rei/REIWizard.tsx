@@ -194,20 +194,6 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                 { id: 'founder_deepdive', title: 'Posicionamento & Conteúdo', component: StepFounderDeepDive, fields: ['authority_topics', 'industry_myths', 'target_audience', 'tone_voice', 'content_frequency', 'preferred_formats', 'anti_goals', 'success_vision'] },
                 { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
             ];
-        } else if (type === 'dev') {
-            return [
-                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
-                { id: 'technical', title: 'Briefing Técnico', component: StepDevTechnical, fields: ['projectType', 'deadline', 'primaryGoal', 'brandGuidelines', 'contentStatus'] },
-                { id: 'contexto', title: 'Contexto do Negócio', component: Step2Contexto, fields: ['segmento', 'tamanho'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
-            ];
-        } else if (type === 'funnel') {
-            return [
-                { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
-                { id: 'estrategia', title: 'Estratégia & Funis', component: Step4Estrategia, fields: ['canaisAquisicao', 'crm'] },
-                { id: 'desafios', title: 'Objetivos Comerciais', component: Step3Desafios, fields: ['metaCrescimento', 'gargaloFunil'] },
-                { id: 'expectativas', title: 'Expectativas', component: Step5Expectativas, fields: ['expectativas', 'areasPrioridade'] },
-            ];
         } else if (type === 'site') {
             return [
                 { id: 'identificacao', title: 'Identificação', component: Step1Identificacao, fields: ['email'] },
@@ -434,8 +420,8 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
         <div className="max-w-4xl mx-auto">
             {/* Back to Hub */}
             <div className="mb-12 text-center">
-                <Link to="/rei-hub" className="inline-flex items-center text-xxs text-zinc-400 hover:text-black mb-10 transition-colors uppercase tracking-[0.2em] font-bold">
-                    <ArrowLeft className="w-3 h-3 mr-2" /> Voltar ao Hub
+                <Link to="/admin/projects" className="inline-flex items-center text-xxs text-zinc-400 hover:text-black mb-10 transition-colors uppercase tracking-[0.2em] font-bold">
+                    <ArrowLeft className="w-3 h-3 mr-2" /> Voltar aos Projetos
                 </Link>
 
                 {/* Header Clean */}

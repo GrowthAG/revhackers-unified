@@ -62,10 +62,19 @@ export default function DiagnosticSection({ plan }: DiagnosticSectionProps) {
                                 return (
                                     <div key={i} className="bg-white border border-zinc-200 p-6 flex flex-col">
                                         {/* Header */}
-                                        <div className="flex items-center gap-3 mb-5">
+                                        <div className="flex items-center gap-3 mb-2">
                                             <span className="text-xxs font-bold uppercase tracking-widest text-zinc-400">
                                                 Sinal {String(i + 1).padStart(2, '0')}
                                             </span>
+                                        </div>
+
+                                        {/* Headline */}
+                                        <div className="mb-3">
+                                            <EditableField
+                                                path={`diagnostic_data.signals.${i}.headline`}
+                                                className="text-base font-bold text-zinc-900 leading-snug tracking-tight"
+                                                placeholder={signal.headline || "Título do Sinal"}
+                                            />
                                         </div>
 
                                         {/* Quote */}

@@ -58,28 +58,6 @@ const consultingSteps = [
     },
 ];
 
-const funnelsImplSteps = [
-    {
-        phase: '01', name: 'Briefing & Oferta', tagline: 'Semana 1',
-        description: 'Nenhuma página antes de definir o que vai ser vendido e para quem. Mapeamos os ângulos da oferta, escolhemos o formato do funil (VSL, quiz, webinar, direto) e entregamos o documento-matriz de copy que serve de base para tudo que vem a seguir.',
-        principles: ['Pesquisa de Avatar: dores, objeções e linguagem do ICP', 'Definição do formato do funil e da promessa principal', 'Documento-Matriz: headline, CTA, proposta de valor e caminhos', 'Wireframe conceitual aprovado antes de qualquer código'],
-    },
-    {
-        phase: '02', name: 'Landing & Conversão', tagline: 'Semana 2–3',
-        description: 'A página entra no ar com estrutura de conversão testada. Configuramos o rastreamento ponta-a-ponta (Pixel, API de Conversões, eventos) para que cada visita seja mensurável antes de receber qualquer tráfego pago.',
-        principles: ['Landing page de alta conversão no ar com copy e design finais', 'Pixel, API de Conversões e eventos configurados no servidor', 'Formulários e integrações com CRM e e-mail funcionando', 'Checkout ou agendamento testados end-to-end antes do tráfego'],
-    },
-    {
-        phase: '03', name: 'Tráfego & Automação', tagline: 'Semana 4–6',
-        description: 'As campanhas entram no ar com configuração certa: estrutura de campanha, segmentação por ICP e criativos de teste. Em paralelo, ativamos as sequências automáticas de nutrição para os leads que entram mas não convertem de imediato.',
-        principles: ['Estrutura de campanha: campanha única, adsets por segmento', 'Criativos de teste A/B por ângulo da oferta', 'Flows de follow-up: SMS, e-mail e WhatsApp configurados', 'Primeiro ROAS real aferido e documentado'],
-    },
-    {
-        phase: '04', name: 'Otimização & Escala', tagline: 'Mês 2 em diante',
-        description: 'Com dados reais de CPL, CPA e Taxa de Conversão, cortamos o que não funciona e dobramos no que funciona. A fase final entrega um blueprint completo de tráfego que o cliente pode operar ou escalar com qualquer agência de mídia futuramente.',
-        principles: ['Testes A/B em dobras de objeção e variantes de CTA', 'Corte de adsets perdedores e escala dos vencedores', 'Dashboard de métricas: CPL, CPA, ROAS e LTV por canal', 'Entrega: Blueprint completo de tráfego + playbook de operação'],
-    },
-];
 
 const crmSteps = [
     {
@@ -152,36 +130,8 @@ const devSteps = [
     },
 ];
 
-// ── Advisory steps (No-Hands-On: calls, frameworks, orientação) ─────────────────
-const advisorySteps = [
-    {
-        phase: '01', name: 'Diagnóstico & Imersão', tagline: 'Semana 1–2',
-        description: 'Antes de qualquer orientação, precisamos entender exatamente onde você está. Realizamos um diagnóstico profundo da operação via calls estruturadas, identificamos os principais gargalos de receita e mapeamos o estado atual vs. o estado ideal.',
-        principles: ['Call de imersão: Revenue Stack, funil, time e métricas', 'Mapeamento de gargalos críticos priorizados por impacto', 'Definição de OKRs e critérios de sucesso do engajamento', 'Entrega: Diagnóstico executivo + Roadmap de Ação'],
-    },
-    {
-        phase: '02', name: 'Arquitetura Estratégica', tagline: 'Semana 2–4',
-        description: 'Com o diagnóstico em mãos, entregamos o blueprint completo. Desenhamos os processos ideais, os playbooks de operação e os frameworks que o cliente vai implementar. O resultado é um manual de instruções personalizado para o seu negócio.',
-        principles: ['Playbooks de processo desenhados para o seu contexto', 'Frameworks de priorização e tomada de decisão', 'Definição de SLAs internos e ritmo de operação', 'Entrega: Blueprint Operacional aprovado pelo cliente'],
-    },
-    {
-        phase: '03', name: 'Orientação & Prática', tagline: 'Semana 3–8',
-        description: 'O cliente executa, nós orientamos. Calls de acompanhamento por ciclo para revisar o que foi implementado, corrigir desvios e validar os próximos passos. Cada sessão gera atas e encaminhamentos documentados.',
-        principles: ['Calls quinzenais de orientação e revisão de execução', 'ATA de cada sessão com encaminhamentos e responsáveis', 'Análise das métricas do cliente vs. OKRs acordados', 'Ajustes de rota quando os dados indicam mudança de estratégia'],
-    },
-    {
-        phase: '04', name: 'Revisão & Sustentação', tagline: 'Mês final',
-        description: 'Encerramos o ciclo com uma revisão abrangente dos OKRs alcançados, lições aprendidas e um plano de sustentação para o cliente continuar crescendo de forma autônoma. O cliente sai com claridade e autonomia.',
-        principles: ['Review final de OKRs: o que foi alcançado e o que ajustar', 'Documentação das lições e decisões do ciclo', 'Plano de sustentação para operação autônoma', 'Entrega: Playbook Final + Relatório do Ciclo Advisory'],
-    },
-];
 
 const differentialsByType: Record<string, { title: string; desc: string }[]> = {
-    advisory: [
-        { title: 'Orientação sem Dependência', desc: 'Você aprende a operar. Não criamos dependência: cada entrega vira conhecimento interno que permanece na empresa.' },
-        { title: 'Playbook Personalizado', desc: 'Nada genérico. Cada framework e processo é desenhado para o seu segmento, estratégia e momento de crescimento.' },
-        { title: 'Ritmo de Decisão Acelerado', desc: 'Calls estruturadas com ATA, encaminhamentos e responsáveis. A orientação não para entre sessões.' },
-    ],
     consulting: [
         { title: 'Visão 360º Completa', desc: 'Auditamos toda a operação de receita antes de executar qualquer ação. Nada é construído em cima de suposições.' },
         { title: 'Três Fontes de Demanda', desc: 'Seeds, Nets e Spears ativados em paralelo. O crescimento não depende de um único canal que pode falhar.' },
@@ -202,11 +152,6 @@ const differentialsByType: Record<string, { title: string; desc: string }[]> = {
         { title: 'Entrega Incremental', desc: 'Páginas entregues por prioridade de conversão - não por ordem alfabética. Resultado visível toda semana.' },
         { title: 'Performance como Critério', desc: 'LCP < 2.5s e GTmetrix ≥ 90 são critérios de aceite do projeto - não bônus. Entregamos o que prometemos.' },
     ],
-    funnels_impl: [
-        { title: 'Oferta Antes de Página', desc: 'Nenhum pixel de código antes da promessa de venda estar aprovada. A estrutura da oferta detérmina tudo.' },
-        { title: 'Rastreamento Cirurgico', desc: 'API de Conversões + eventos no servidor instalados antes do primeiro real investido em tráfego.' },
-        { title: 'Dados como Balizador', desc: 'CPL, CPA e ROAS reais determinam onde escalar. Sem achismo, sem gasto às cegas.' },
-    ],
     default: [
         { title: 'Receita Previsível', desc: 'Três fontes de demanda paralelas (Seeds, Nets, Spears) que funcionam mesmo quando uma falha.' },
         { title: 'Ciclo Completo de Receita', desc: 'Da atração ao fechamento ao sucesso do cliente - cada etapa conectada e medida.' },
@@ -220,13 +165,10 @@ export default function MethodologySection({ plan }: { plan: any }) {
 
     // Bloquear alucinação da IA. O Framework Metodológico da RevHackers não muda por cliente.
     const stepsMap: Record<string, typeof defaultSteps> = {
-        advisory:     advisorySteps,
         consulting:   consultingSteps,
         crm_ops:      crmSteps,
         founder:      founderSteps,
-        dev:          devSteps,
         site:         devSteps,
-        funnels_impl: funnelsImplSteps,
     };
     
     let baseSteps = stepsMap[projectType] || defaultSteps;
@@ -261,22 +203,16 @@ export default function MethodologySection({ plan }: { plan: any }) {
     const differentials = differentialsByType[projectType] || differentialsByType['default'];
 
     const eyebrowByType: Record<string, string> = {
-        advisory:     'Protocolo Advisory',
         consulting:   'Protocolo 360 Growth',
         crm_ops:      'Protocolo CRM',
         founder:      'Protocolo Founder',
-        dev:          'Protocolo de Entrega',
         site:         'Protocolo de Entrega',
-        funnels_impl: 'Protocolo de Funis',
     };
     const titleLine2ByType: Record<string, string> = {
-        advisory:     'Advisory™',
         consulting:   '360º™',
         crm_ops:      'RevHackers™',
         founder:      'Founder™',
-        dev:          'Dev™',
         site:         'Dev™',
-        funnels_impl: 'Funis™',
     };
 
     return (
@@ -304,7 +240,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
                                         <p className="text-mini uppercase tracking-widest font-bold text-zinc-400">
                                             {step.tagline || ''}
                                         </p>
-                                        <h3 className="text-xl md:text-2xl font-bold text-black mt-1 leading-tight">
+                                        <h3 className="text-xl md:text-2xl font-black text-black mt-1 leading-tight">
                                             {step.name}
                                         </h3>
                                     </div>

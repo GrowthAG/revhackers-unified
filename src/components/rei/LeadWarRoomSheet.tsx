@@ -507,8 +507,8 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
                                                     "text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 border flex items-center gap-1",
                                                     st.type === 'decision_maker' ? 'border-[#03FC3B] bg-[#03FC3B]/10 text-zinc-900' :
                                                     st.type === 'influencer' ? 'border-yellow-400 bg-yellow-400/10 text-zinc-900' :
-                                                    st.type === 'champion' ? 'border-blue-400 bg-blue-400/10 text-zinc-900' :
-                                                    st.type === 'blocker' ? 'border-red-400 bg-red-400/10 text-zinc-900' :
+                                                    st.type === 'champion' ? 'border-zinc-400 bg-zinc-100 text-zinc-900' :
+                                                    st.type === 'blocker' ? 'border-zinc-700 bg-zinc-200 text-zinc-900' :
                                                     'border-zinc-300 bg-zinc-100 text-zinc-600'
                                                 )}>
                                                     {st.type === 'decision_maker' && <ShieldCheck className="w-2.5 h-2.5" />}
@@ -818,12 +818,12 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
 
                             {/* OSINT / LinkedIn Diagnostic (Foco do Vendedor) */}
                             {osint && (
-                                <div className="border border-blue-200/60 rounded-xl overflow-hidden shadow-sm bg-gradient-to-b from-[#0a66c2]/5 to-transparent">
-                                    <div className="flex items-center gap-2 px-4 py-3 border-b border-blue-100 bg-[#0a66c2]/10">
-                                        <Linkedin className="w-4 h-4 text-[#0a66c2]" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-[#0a66c2]">Diagnóstico LinkedIn (OSINT)</span>
+                                <div className="border border-zinc-200 overflow-hidden shadow-sm">
+                                    <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-100 bg-zinc-50">
+                                        <Linkedin className="w-4 h-4 text-zinc-500" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Diagnóstico LinkedIn (OSINT)</span>
                                         {osint.authorityScore > 0 && (
-                                            <span className="ml-auto text-[9px] font-black uppercase tracking-widest flex items-center gap-1 bg-white text-[#0a66c2] border border-blue-200 px-2 py-0.5 rounded shadow-sm">
+                                            <span className="ml-auto text-[9px] font-black uppercase tracking-widest flex items-center gap-1 bg-white text-zinc-900 border border-zinc-200 px-2 py-0.5">
                                                 <ShieldCheck className="w-3 h-3" /> Score {osint.authorityScore}/100
                                             </span>
                                         )}
@@ -832,10 +832,10 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
                                         {/* Header Humano */}
                                         <div className="flex items-start gap-4">
                                             {osint.profileImageUrl ? (
-                                                <img src={osint.profileImageUrl} alt="Linkedin" className="w-12 h-12 rounded-full border border-blue-100/50 shadow-sm shrink-0" />
+                                                <img src={osint.profileImageUrl} alt="Linkedin" className="w-12 h-12 rounded-full border border-zinc-200 shadow-sm shrink-0" />
                                             ) : (
-                                                <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                                                    <UserCircle className="w-6 h-6 text-blue-300" />
+                                                <div className="w-12 h-12 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center shrink-0">
+                                                    <UserCircle className="w-6 h-6 text-zinc-400" />
                                                 </div>
                                             )}
                                             <div>
@@ -850,22 +850,22 @@ export const LeadWarRoomSheet: React.FC<LeadWarRoomSheetProps> = ({
 
                                         {/* Classificador GPT */}
                                         <div className="grid grid-cols-2 gap-2">
-                                            <div className="bg-white/80 border border-blue-100/50 rounded-lg p-2.5 shadow-sm">
+                                            <div className="bg-white/80 border border-zinc-200 rounded-lg p-2.5 shadow-sm">
                                                 <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-0.5 flex items-center gap-1"><Target className="w-2.5 h-2.5" /> Arquétipo B2B</p>
                                                 <p className="text-[11px] font-black text-blue-900">{osint.archetype}</p>
                                             </div>
-                                            <div className="bg-white/80 border border-blue-100/50 rounded-lg p-2.5 shadow-sm">
+                                            <div className="bg-white/80 border border-zinc-200 rounded-lg p-2.5 shadow-sm">
                                                 <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-0.5 flex items-center gap-1"><Briefcase className="w-2.5 h-2.5" /> Estilo de Gestão</p>
                                                 <p className="text-[11px] font-black text-zinc-800">{osint.managementStyle}</p>
                                             </div>
                                         </div>
 
                                         {/* Inteligência Executável */}
-                                        <div className="bg-white/80 border border-blue-100/50 rounded-lg p-3 shadow-sm">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1 flex items-center gap-1"><BrainCircuit className="w-3 h-3 text-[#0a66c2]" /> Diagnóstico & Playbook</p>
+                                        <div className="bg-white/80 border border-zinc-200 rounded-lg p-3 shadow-sm">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1 flex items-center gap-1"><BrainCircuit className="w-3 h-3 text-zinc-400" /> Diagnóstico & Playbook</p>
                                             <p className="text-xs font-medium text-zinc-700 leading-relaxed mb-2">{osint.summary}</p>
                                             
-                                            <div className="bg-blue-50/50 border-l-2 border-[#0a66c2] p-2 mt-2">
+                                            <div className="bg-zinc-50 border-l-2 border-zinc-400 p-2 mt-2">
                                                 <p className="text-[10px] text-zinc-800 italic leading-relaxed">
                                                     "{osint.actionableInsight}"
                                                 </p>

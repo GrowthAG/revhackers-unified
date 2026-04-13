@@ -4,8 +4,8 @@ VALUES (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     'RevAssistant',
     'Assistente Geral',
-    'claude-3-5-sonnet',
-    'Você é um assistente útil e inteligente da RevHackers.'
+    'gpt-5.4',
+    'Você é o RevAssistant, Operando na Fronteira da OpenAI em nome da RevHackers.'
 )
 ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     ClipboardCheck,
     ChevronDown,
@@ -8,6 +9,9 @@ import {
     FileText,
     Loader2,
     BarChart3,
+    ArrowRight,
+    Link2,
+    Check,
 } from 'lucide-react';
 import { getReiResponsesByProject, type ReiResponse } from '@/api/reiResponses';
 import { REI_CONFIGS } from '@/config/rei/index';
@@ -369,6 +373,17 @@ function ResponseCard({ response, projectType, index }: {
 export default function DiagnosticResponsesPanel({ projectId, projectType }: DiagnosticResponsesPanelProps) {
     const [responses, setResponses] = useState<ReiResponse[]>([]);
     const [loading, setLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
+    const navigate = useNavigate();
+
+    const wizardUrl = `${window.location.origin}/rei/wizard?projectId=${projectId}`;
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(wizardUrl).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
 
     useEffect(() => {
         async function load() {
@@ -394,14 +409,30 @@ export default function DiagnosticResponsesPanel({ projectId, projectType }: Dia
 
     if (responses.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-[60vh] text-center border border-dashed border-zinc-200 bg-white">
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center border border-dashed border-zinc-200 bg-white px-6">
                 <div className="w-12 h-12 bg-zinc-50 border border-zinc-200 flex items-center justify-center mb-4">
                     <ClipboardCheck className="w-5 h-5 text-zinc-900" />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Sem Diagnosticos</h3>
-                <p className="text-xs text-zinc-400 max-w-sm leading-relaxed">
-                    Nenhum diagnostico foi preenchido para este projeto ainda. Os diagnosticos aparecerao aqui apos o cliente preencher o formulario REI.
+                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">REI Pendente</h3>
+                <p className="text-xs text-zinc-400 max-w-sm leading-relaxed mb-6">
+                    O formulario REI ainda nao foi preenchido. Inicie agora ou compartilhe o link com o cliente para que ele preencha.
                 </p>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate(`/rei/wizard?projectId=${projectId}`)}
+                        className="inline-flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 transition-colors"
+                    >
+                        Preencher REI
+                        <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={handleCopyLink}
+                        className="inline-flex items-center gap-2 border border-zinc-200 hover:border-zinc-400 text-zinc-600 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] h-10 px-4 transition-colors bg-white"
+                    >
+                        {copied ? <Check className="w-3.5 h-3.5 text-[#00CC6A]" /> : <Link2 className="w-3.5 h-3.5" />}
+                        {copied ? 'Copiado' : 'Copiar Link'}
+                    </button>
+                </div>
             </div>
         );
     }
@@ -419,7 +450,7 @@ export default function DiagnosticResponsesPanel({ projectId, projectType }: Dia
                         <ClipboardCheck className="w-4 h-4 text-zinc-900" />
                     </div>
                     <span className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-500">
-                        Resumo de Diagnosticos
+                        Resumo do REI
                     </span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

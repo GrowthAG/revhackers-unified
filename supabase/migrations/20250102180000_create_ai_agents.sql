@@ -9,7 +9,7 @@ create table if not exists public.agents (
   description text,
   system_prompt text not null,
   avatar_url text,
-  model text not null default 'gpt-4-turbo', -- 'gpt-4-turbo', 'claude-3-5-sonnet', etc.
+  model text not null default 'gpt-4o', -- 'gpt-5.4', 'gpt-4o', etc.
   is_public boolean default false, -- if true, visible to all clients
   client_id uuid references public.clients(id) on delete cascade, -- if set, specific to a client
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
