@@ -715,7 +715,7 @@ export const RevenueCockpit: React.FC = () => {
     let result;
     if (isOpp) {
       // Advance opportunity stage
-      result = await advanceOpportunityStage(entityId, newStage as any);
+      result = await advanceOpportunityStage(entityId, newStage as any, undefined, { adminOverride: true });
     } else {
       // Advance project stage
       result = await advanceStage(entityId, newStage);

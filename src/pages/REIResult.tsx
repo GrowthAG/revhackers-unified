@@ -96,22 +96,18 @@ export default function REIResult() {
                 // Use the answers we already fetched
                 if (answers) {
                     const { DiagnosticService } = await import('@/services/DiagnosticService');
-                    const { MarketIntelligenceService } = await import('@/services/MarketIntelligenceService');
 
                     const segment = answers.segmento || 'B2B';
                     const objective = answers.objetivoPrincipal || 'Crescimento';
 
-                    // 2a. Fetch REAL Market Intelligence (OpenAI/API)
-                    // If we have budget for API calls, otherwise use mock
-                    const marketData = await MarketIntelligenceService.fetchMarketData(segment, objective);
+                    // Market data vazio como fallback (MarketIntelligenceService removido)
+                    const marketData = {
+                        segment,
+                        objective,
+                        benchmarks: null,
+                        trends: null,
+                    };
 
-                    // 2b. Generate Full Diagnosis
-                    // We need to reconstruct a response-like object for the service
-                    // The service expects response object to have 'responses' key or similar structure
-                    // Actually generateDiagnosis takes (response: ReiResponse, marketData)
-                    // We need to fetch the actual response object or mock it
-                    // Fortunately we fetched 'latestResponse' in useEffect but didn't save the whole object
-                    // Let's refetch or just pass a constructed object
                     const mockResponseObj = { responses: answers };
                     const fullDiagnostic = DiagnosticService.generateDiagnosis(mockResponseObj as any, marketData);
                     const { plan_data, ...diagnosticContext } = fullDiagnostic;

@@ -175,17 +175,42 @@ serve(async (req: Request) => {
       throw new Error(`Plano estrategico nao encontrado para o projeto ${projectId}`);
     }
 
-    // 6. Extrai as fases do roadmap
+    // 6. Extrai e NORMALIZA as fases do roadmap (resiliência contra variações do GPT)
     const roadmapData: any = plan.roadmap_data || {};
-    const phases: RoadmapPhase[] = Array.isArray(roadmapData.roadmap_phases)
+
+    // O GPT pode gerar como 'roadmap_phases', 'phases', ou 'sprints'
+    let rawPhases: any[] = Array.isArray(roadmapData.roadmap_phases)
       ? roadmapData.roadmap_phases
-      : [];
+      : Array.isArray(roadmapData.phases)
+        ? roadmapData.phases
+        : Array.isArray(roadmapData.sprints)
+          ? roadmapData.sprints
+          : [];
+
+    // Normaliza cada fase: GPT pode usar 'tasks' em vez de 'items', 'description' em vez de 'title'
+    const normalizedPhases: RoadmapPhase[] = rawPhases.map((p: any, idx: number) => ({
+      name: p.name || p.sprint_name || `Sprint ${String(idx + 1).padStart(2, '0')}`,
+      title: p.title || p.description || p.objetivo || '',
+      items: Array.isArray(p.items)
+        ? p.items.filter((i: any) => typeof i === 'string' && i.trim().length > 0)
+        : Array.isArray(p.tasks)
+          ? p.tasks.map((t: any) => typeof t === 'string' ? t : t.name || t.title || String(t)).filter((s: string) => s.trim().length > 0)
+          : Array.isArray(p.deliverables)
+            ? p.deliverables.filter((i: any) => typeof i === 'string' && i.trim().length > 0)
+            : [],
+    }));
+
+    // Filtra fases inválidas (sem items reais ou sem identificação)
+    const phases: RoadmapPhase[] = normalizedPhases.filter(p =>
+      p.items && p.items.length > 0 && (p.name || p.title)
+    );
 
     if (phases.length === 0) {
-      throw new Error('roadmap_data.roadmap_phases vazio ou ausente no plano aprovado.');
+      const debugInfo = JSON.stringify(Object.keys(roadmapData)).substring(0, 200);
+      throw new Error(`roadmap_phases sem fases válidas com items. Keys disponíveis: ${debugInfo}. Raw phases count: ${rawPhases.length}`);
     }
 
-    console.log(`[clickup-sprint-orchestrator] criando ${phases.length} sprint(s) no folder ${integration.clickup_folder_id}`);
+    console.log(`[clickup-sprint-orchestrator] ${rawPhases.length} fases brutas → ${phases.length} válidas`);
 
     // 7. Para cada fase: cria List, depois cria Tasks dentro dela
     const sprintLists: SprintListRecord[] = [];

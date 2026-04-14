@@ -264,10 +264,12 @@ serve(async (req: Request) => {
                     .single()
 
                 if (newOpp) {
-                    // Converter atomicamente em projeto
-                    const { data: projectId } = await supabase.rpc('convert_opportunity_to_project', {
+                    // Converter atomicamente em projeto (v2: idempotente + sprints)
+                    const { data: convResult } = await supabase.rpc('convert_opportunity_to_project_v2', {
                         p_opportunity_id: newOpp.id,
                     })
+
+                    const projectId = convResult?.project_id || null
 
                     // Auto-trigger: gerar success plan via AI (fire-and-forget)
                     if (projectId) {
@@ -316,14 +318,14 @@ serve(async (req: Request) => {
                 console.error(`[ghl-handoff] History error: ${historyErr?.message}`)
             }
 
-            // Converter em projeto via RPC atomico
+            // Converter em projeto via RPC v2 (idempotente + sprints automáticos)
             let projectId = null
             try {
-                const { data } = await supabase.rpc('convert_opportunity_to_project', {
+                const { data: convResult } = await supabase.rpc('convert_opportunity_to_project_v2', {
                     p_opportunity_id: opp.id,
                 })
-                projectId = data
-                console.log(`[ghl-handoff] Opportunity ${opp.id} convertida em projeto ${projectId}`)
+                projectId = convResult?.project_id || null
+                console.log(`[ghl-handoff] Opportunity ${opp.id} convertida em projeto ${projectId} (sprints: ${convResult?.sprints_created || 0})`)
 
                 // Auto-trigger: gerar success plan via AI (fire-and-forget)
                 if (projectId) {

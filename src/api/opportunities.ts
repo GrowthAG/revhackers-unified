@@ -187,7 +187,8 @@ export async function updateOpportunity(
 export async function advanceOpportunityStage(
   opportunityId: string,
   newStage: OpportunityStage,
-  notes?: string
+  notes?: string,
+  options?: { adminOverride?: boolean }
 ): Promise<{ success: boolean; error?: string }> {
   // 1. Fetch current stage
   const { data: opp, error: fetchErr } = await supabase
@@ -202,13 +203,16 @@ export async function advanceOpportunityStage(
 
   const currentStage = (opp as any).pipeline_stage as OpportunityStage | null;
 
-  // 2. Validate transition
-  // if (currentStage && !isValidOpportunityTransition(currentStage, newStage)) {
-  //   return {
-  //     success: false,
-  //     error: `Transicao invalida: ${currentStage} -> ${newStage}`,
-  //   };
-  // }
+  // 2. Validate transition (com override de admin para flexibilidade operacional)
+  if (currentStage && !isValidOpportunityTransition(currentStage, newStage)) {
+    if (!options?.adminOverride) {
+      return {
+        success: false,
+        error: `Transição inválida: ${currentStage} → ${newStage}. Use override de admin se necessário.`,
+      };
+    }
+    console.warn(`[Opportunities] Admin override: ${currentStage} → ${newStage} para opportunity ${opportunityId}`);
+  }
 
   // 3. Build update payload
   const updatePayload: any = {
@@ -239,7 +243,9 @@ export async function advanceOpportunityStage(
     opportunityId,
     fromStage: currentStage,
     toStage: newStage,
-    notes: notes || undefined,
+    notes: options?.adminOverride
+      ? `[ADMIN OVERRIDE] ${notes || ''}`
+      : notes || undefined,
   });
 
   return { success: true };
@@ -253,8 +259,11 @@ export async function convertOpportunityToProject(
   opportunityId: string,
   analystEmail?: string
 ): Promise<{ projectId: string | null; error?: string }> {
+  // Usa a v2 com idempotência e sprints automáticos.
+  // O idempotency_key é nullificado aqui (a v2 já verifica rei_project_id internamente),
+  // mas pode ser passado se necessário para proteção contra webhook double-fire.
   const { data, error } = await supabase
-    .rpc('convert_opportunity_to_project', {
+    .rpc('convert_opportunity_to_project_v2', {
       p_opportunity_id: opportunityId,
       p_analyst_email: analystEmail || 'giulliano@revhackers.com',
     });
@@ -264,56 +273,66 @@ export async function convertOpportunityToProject(
     return { projectId: null, error: error.message };
   }
 
-  const projectId = data as string;
+  // v2 retorna JSONB: { success, project_id, sprints_created, ... }
+  const result = data as { success: boolean; project_id: string; already_converted?: boolean; sprints_created?: number; message?: string } | null;
+
+  if (!result?.success || !result?.project_id) {
+    return { projectId: null, error: result?.message || 'Conversão retornou sem project_id' };
+  }
+
+  const projectId = result.project_id;
+
+  if (result.already_converted) {
+    console.log(`[Opportunities] Projeto já existia para opportunity ${opportunityId}: ${projectId}`);
+    return { projectId };
+  }
+
+  console.log(`[Opportunities] Projeto criado via v2: ${projectId} (sprints: ${result.sprints_created || 0})`);
 
   // 1. Handover Automático (Horizonte 1) - Injetar o contexto de vendas na operação
-  if (projectId) {
-    try {
-      const { data: opp } = await supabase
-        .from('opportunities')
-        .select('opportunity_data')
-        .eq('id', opportunityId)
-        .single();
-        
-      if (opp && opp.opportunity_data) {
-        const oppData = opp.opportunity_data as any;
-        
-        // Extrai as dores (Bleeding Cost) e objeçoes que basearam o fechamento
-        const bleedingCost = oppData.dor_principal || oppData.pitch_summary || "Oportunidade convertida. Verificar notas de vendas.";
-        const objecoes = oppData.objecoes_detectadas?.length > 0 ? oppData.objecoes_detectadas.join(', ') : 'Nenhuma objeção mapeada na inteligência de vendas';
-        const setupFee = oppData.contract_data?.setup_fee ? `Setup: R$ ${oppData.contract_data.setup_fee}` : '';
-        const retainerFee = oppData.contract_data?.retainer_fee ? `MRR: R$ ${oppData.contract_data.retainer_fee}` : '';
-        
-        // Cria a Task Urgent (The Handover Briefing) no quadro do time de Execução
-        await supabase.from('orqflow_tasks').insert({
-          project_id: projectId,
-          title: '[HANDOVER] Revisar Bleeding Cost & Alinhamento',
-          description: `**BLEEDING COST (Por que o cliente comprou):**\n${bleedingCost}\n\n**Condições Comercias:**\n${setupFee} | ${retainerFee}\n\n**Objeções Superadas:**\n${objecoes}\n\n_Handover Bridge automático do Revenue Cockpit._`,
-          status: 'todo',
-          priority: 'urgent',
-          assignee_email: analystEmail || 'giulliano@revhackers.com',
-        });
-        console.log('[Opportunities] Handover Bridge executado com sucesso para o Projeto:', projectId);
-      }
-    } catch (handoverErr) {
-      console.warn('[Opportunities] Falha no Handover Bridge (não critico):', handoverErr);
+  try {
+    const { data: opp } = await supabase
+      .from('opportunities')
+      .select('opportunity_data')
+      .eq('id', opportunityId)
+      .single();
+      
+    if (opp && opp.opportunity_data) {
+      const oppData = opp.opportunity_data as any;
+      
+      // Extrai as dores (Bleeding Cost) e objeçoes que basearam o fechamento
+      const bleedingCost = oppData.dor_principal || oppData.pitch_summary || "Oportunidade convertida. Verificar notas de vendas.";
+      const objecoes = oppData.objecoes_detectadas?.length > 0 ? oppData.objecoes_detectadas.join(', ') : 'Nenhuma objeção mapeada na inteligência de vendas';
+      const setupFee = oppData.contract_data?.setup_fee ? `Setup: R$ ${oppData.contract_data.setup_fee}` : '';
+      const retainerFee = oppData.contract_data?.retainer_fee ? `MRR: R$ ${oppData.contract_data.retainer_fee}` : '';
+      
+      // Cria a Task Urgent (The Handover Briefing) no quadro do time de Execução
+      await supabase.from('orqflow_tasks').insert({
+        project_id: projectId,
+        title: '[HANDOVER] Revisar Bleeding Cost & Alinhamento',
+        description: `**BLEEDING COST (Por que o cliente comprou):**\n${bleedingCost}\n\n**Condições Comercias:**\n${setupFee} | ${retainerFee}\n\n**Objeções Superadas:**\n${objecoes}\n\n_Handover Bridge automático do Revenue Cockpit._`,
+        status: 'todo',
+        priority: 'urgent',
+        assignee_email: analystEmail || 'giulliano@revhackers.com',
+      });
+      console.log('[Opportunities] Handover Bridge executado com sucesso para o Projeto:', projectId);
     }
+  } catch (handoverErr) {
+    console.warn('[Opportunities] Falha no Handover Bridge (não critico):', handoverErr);
   }
 
   // 2. Auto-trigger: gerar success plan via AI (nao bloqueia o fluxo principal)
-  if (projectId) {
-    supabase.functions.invoke('generate-success-plan', {
-      body: { project_id: projectId },
-    }).then((res) => {
-      if (res.error) {
-        console.warn('[Opportunities] generate-success-plan falhou (nao critico):', res.error.message);
-      } else {
-        console.log('[Opportunities] Success plan gerado automaticamente para projeto', projectId);
-      }
-    }).catch((err) => {
-      console.warn('[Opportunities] generate-success-plan error (nao critico):', err?.message);
-    });
-  }
+  supabase.functions.invoke('generate-success-plan', {
+    body: { project_id: projectId },
+  }).then((res) => {
+    if (res.error) {
+      console.warn('[Opportunities] generate-success-plan falhou (nao critico):', res.error.message);
+    } else {
+      console.log('[Opportunities] Success plan gerado automaticamente para projeto', projectId);
+    }
+  }).catch((err) => {
+    console.warn('[Opportunities] generate-success-plan error (nao critico):', err?.message);
+  });
 
   return { projectId };
 }
