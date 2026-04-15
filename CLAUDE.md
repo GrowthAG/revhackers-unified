@@ -19,6 +19,30 @@ Para rodar um teste especifico: `npx vitest run src/path/to/file.test.ts`
 
 Deploy via FTP Hostinger: `npm run deploy` (requer `.env` com credenciais FTP)
 
+Testes unitarios (Vitest): `src/__tests__/**/*.spec.{ts,tsx}` | Testes E2E (Playwright): `tests/` (chromium, firefox, webkit)
+
+CI: `.github/workflows/ci.yml` - TypeScript check + build em push para `develop` e `main`
+
+**Scripts operacionais ClickUp (ad-hoc, nao sao npm scripts):**
+```bash
+node scripts/setup-clickup-templates.js    # semeia clickup_template_map com folder IDs dos templates
+node scripts/register-clickup-webhook.js   # registra endpoint do clickup-sync na API ClickUp
+```
+
+---
+
+## Variaveis de Ambiente
+
+**Frontend (VITE_*):**
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` - obrigatorias
+- `VITE_GHL_CLIENT_ID` - OAuth GoHighLevel
+- `VITE_GHL_SALES_BOT_ID` / `VITE_GHL_CONTENT_BOT_ID` - chatbots GHL
+
+**Edge Functions (server-side, configuradas no Supabase Dashboard):**
+- `OPENAI_API_KEY` - geracao de planos
+- `FATHOM_API_KEY` - integracao de gravacoes
+- `PSI_API_KEY` - PageSpeed Insights (analyze-site)
+
 ---
 
 # RevHackers Growth Hub - Contexto do Projeto
@@ -195,14 +219,24 @@ Isso e um bug conhecido. Nao criar logica que dependa de string matching para de
 
 ## Convencoes de Codigo
 
-- Componentes de secao do plano ficam em `src/pages/client/sections/`
-- Nomenclatura: `[Nome]Section.tsx` - PascalCase
+- Componentes de secao do plano ficam em `src/pages/client/sections/` (24 componentes, padrao `[Nome]Section.tsx`)
 - Props padrao: `{ plan: any, client?: any }` - tipar mais estritamente ao refatorar
 - Dados do plano acessados via: `plan.diagnostic_data`, `plan.roadmap_data`, `plan.okr_data`, `plan.onboarding_data`
 - Campos do cliente: `client.company`, `client.logo_url`, `client.email`
 - Sempre usar `|| []` e `|| {}` para fallback de dados da IA - o JSON pode ter campos ausentes
 - Imports de icones: sempre de `lucide-react`, nunca instalar outras libs de icones
+- **NUNCA hardcodar URLs/caminhos - usar `src/config/routes.ts` (APP_ROUTES) que define ~70+ rotas nomeadas**
 - **NUNCA usar o caractere em dash (\u2014) em codigo, strings, comentarios ou conteudo**
+
+### Estrutura de Config
+
+```
+src/config/
+  routes.ts           - dicionario central de rotas (APP_ROUTES) - NUNCA hardcodar URLs
+  constants.ts        - dominios, IDs de widget, numero WhatsApp
+  onboardingTemplates.ts - 4 templates de onboarding: fullConsulting, crmOps, funnels/site, founder
+  rei/                - configs de perguntas REI (ver secao REIs Existentes)
+```
 
 ---
 
@@ -247,35 +281,92 @@ supabase/functions/ -> Edge Functions Deno (AI, webhooks, integrações externas
 
 Hooks (`src/hooks/`) encapsulam react-query + chamadas de API. Ex: `useReiProjects`, `useReiResponses`.
 
-Estado global: **Zustand** (`src/store/`) para estado de UI persistido entre paginas. **React Query** para cache de servidor.
+Estado global: **Zustand** - unico store: `useOrqflow` (`src/store/useOrqflow.ts`) - gerencia tarefas com statuses `backlog | todo | doing | review | done | archived` e TimeLog. **React Query** para cache de servidor.
 
 ---
 
-## Edge Functions Principais
+## Edge Functions
 
-| Funcao | Proposito |
+Todas compartilham CORS em `supabase/functions/_shared/cors.ts`.
+
+| Grupo | Funcoes |
 |---|---|
-| `generate-strategic-plan` | GPT-5.4 gera plano JSON completo pos-REI |
-| `generate-success-plan` | Gera plano de sucesso (onboarding) |
-| `generate-playbook` | Gera playbook de crescimento |
-| `analyze-site` | Inspeciona site do cliente via scraping |
-| `research-intelligence` | Pesquisa de mercado e concorrentes |
-| `transcribe-meeting` | Transcreve audio de reuniao |
-| `analyze-meeting-transcript` | Analisa transcript e extrai insights |
-| `fathom-webhook` / `fathom-sync` | Integracao com Fathom (gravacoes) |
-| `ghl-webhook-handoff` | Automacao pos-venda no GoHighLevel |
-| `trigger-post-rei-enrichment` | Enriquecimento automatico pos-REI |
-| `invite-member` | Convida usuario com flag `invited` no metadata |
-| `ask-agent` / `agent-chat` | Chat AI contextual por projeto |
+| AI / Geracao | `generate-strategic-plan`, `generate-success-plan`, `generate-playbook`, `generate-image`, `generate-project-tasks`, `enrich-strategic-data` |
+| Analise | `analyze-site`, `analyze-meeting-transcript`, `analyze-diagnostic`, `research-intelligence`, `market-intelligence`, `inspect-website`, `crux-benchmark` |
+| Reunioes | `transcribe-meeting`, `process-meeting-audio`, `fathom-webhook`, `fathom-sync`, `google-meetings` |
+| ClickUp | `clickup-orchestrator`, `clickup-sprint-orchestrator`, `clickup-provision`, `clickup-sync` |
+| GoHighLevel | `ghl-webhook-handoff`, `ghl-outbound-relay`, `ghl-oauth-callback`, `ghl-oauth-refresh`, `ghl-create-location`, `ghl-deploy-strategy`, `ghl-inspect` |
+| Pagamentos | `infinitepay-webhook`, `infinitepay-create-link` |
+| Agentes AI | `agent-chat`, `agent-documents` |
+| Enriquecimento | `trigger-post-rei-enrichment`, `auto-enrich-project`, `scrape-profile`, `fetch-cnpj` |
+| Usuarios | `invite-member`, `delete-user` |
 
-Todas as edge functions compartilham CORS em `supabase/functions/_shared/cors.ts`.
+Observacao: `ghl-inspect` e uma ferramenta temporaria de introspecao manual do GHL (reconstrucao do fluxo em andamento).
+
+---
+
+## Integracao ClickUp (abril/2026)
+
+Quando um projeto REI e provisionado, a edge function `clickup-provision` aplica uma state machine por cima do `rei_projects`:
+
+```
+idle -> pending -> folder_created -> metadata_set -> sprint_folder_created
+     -> sprints_created -> tasks_created -> doc_created -> done  (ou failed)
+```
+
+Cada transicao e gravada em `clickup_provisioning_log` (auditoria, payload e erro). Em caso de falha, o projeto fica em `failed` com a mensagem em `rei_projects.provisioning_error`.
+
+**Entrada de dados:**
+- `rei_projects.type` define qual template usar (lookup em `clickup_template_map`).
+- `rei_projects.duration_days` e um enum restrito: 30, 60, 90, 180 ou 360 dias (CHECK constraint). Determina quantidade de sprints.
+- `rei_projects.tier` e derivado: `free` quando `type = 'consulting'` AND `duration_days <= 60` (add-on do plano anual); `paid` nos demais casos.
+
+**Saida no ClickUp:**
+- Folder por cliente em Space `90175101115` (RevHackers), ID salvo em `rei_projects.clickup_folder_id`.
+- Sprint folder com N sprints em `clickup_sprints` (sprint_index, sprint_name, clickup_list_id, start_date, end_date).
+- Doc de onboarding em `rei_projects.clickup_doc_id`.
+
+**Webhook inverso:**
+- `clickup-sync` recebe eventos do ClickUp (`taskStatusUpdated`, `taskCreated`, `folderDeleted`) e sincroniza de volta para o Hub. O secret do webhook fica em `clickup_config` (chave `webhook_secret`), mesmo valor do secret do Supabase.
+
+**Seeds iniciais** (em `clickup_template_map`): `consulting`, `crm_ops`, `dev`, `founder` ja tem `folder_id_created` apontando para os folders template criados manualmente via ClickUp UI. Os campos `folder_template_id` e `sprint_template_id` precisam ser preenchidos apos o usuario salvar as pastas como template no ClickUp.
+
+**Monitoria:**
+- View `v_clickup_provisioning_status` agrega `rei_projects` + `clickup_sprints` + `strategic_plans` para dashboards (filtra `provisioning_state != 'idle'`).
+- Componente `src/components/admin/ClickUpStatusWidget.tsx` assina Realtime em `rei_projects` e exibe o estado atual de provisionamento no admin.
+
+---
+
+## Tabelas Novas (abril/2026)
+
+Referencia rapida das migracoes `20260415*` a `20260417*`.
+
+**`client_accounts`** (`20260417*`): visao unificada do cliente entre GHL RevHackers e GHL Funnels.
+- Chave: `client_email` (UNIQUE).
+- Mapeamentos GHL: `revhackers_contact_id`, `revhackers_opportunity_id`, `funnels_contact_id`, `funnels_opportunity_id`.
+- Flags e valores: `has_consulting`, `has_software`, `consulting_value`, `software_value`.
+- Ciclo de vida: `consulting_start_date`, `consulting_end_date`, `software_activation_date`, `software_renewal_date`.
+- Status: `consulting_status` (pending/active/completed), `software_status` (pending/onboarding/active/churn).
+- Status atual: tabela criada, **sem integracao no frontend ainda** (ver Problema #6).
+
+**`clickup_sprints`** (`20260416*`): uma linha por sprint criada no ClickUp. Chave composta `(rei_project_id, sprint_index)`.
+
+**`clickup_provisioning_log`** (`20260416*`): audit trail da state machine. Campos: `from_state`, `to_state`, `payload` (jsonb), `error`, `duration_ms`.
+
+**`clickup_template_map`** (`20260416*`): PK `rei_type`. Define `space_id`, `folder_template_id`, `sprint_template_id`, `folder_id_created` por tipo de REI.
+
+**`clickup_config`** (`20260416*`): key-value global. Chaves conhecidas: `workspace_id`, `space_id_revhackers`, `space_id_funnels_cs`, `sprint_folder_template_id`, `webhook_secret`.
+
+**Colunas novas em `rei_projects`** (`20260416*`): `duration_days`, `tier`, `clickup_space_id`, `clickup_folder_id`, `clickup_sprint_folder_id`, `clickup_doc_id`, `provisioning_state`, `clickup_provisioned_at`, `provisioning_error`.
 
 ---
 
 ## Problemas Arquiteturais Conhecidos (nao "corrigir" sem planejamento)
 
-1. `crm_ops` fora do sistema `REIConfig` - campos com padrao diferente dos demais REIs
+1. `crm_ops` fora do sistema `REIConfig` - campos com padrao diferente dos demais REIs.
+   - Nota: existe um alias cosmetico em `src/config/rei/index.ts` (`crm_ops: consultingConfig`) apenas para satisfazer o typing de `REIType`. O wizard real de CRM continua usando `StepCrmOps1-5.tsx` standalone com campos `revops_*` em snake_case. O problema estrutural persiste.
 2. `reiScoring.ts` usa `WizardData` desconectada dos REIs reais - scores no DB podem ser incorretos
 3. Sem bloco universal de identificacao entre REIs - cada um tem campos de empresa/email diferentes
 4. Schema de plano gerado e unico para todos os tipos - nao ha prompt especifico por REI type
 5. `site` e `funnel` tem tipo em `REIType` mas sem config de perguntas dedicada
+6. `client_accounts` existe no DB mas nao esta plugada no frontend. O fluxo de matching GHL RevHackers <-> GHL Funnels ainda nao foi implementado; a tabela serve hoje apenas como destino futuro para `ghl-webhook-handoff` / `ghl-outbound-relay`.

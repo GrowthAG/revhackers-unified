@@ -222,31 +222,27 @@ const ServicosDetalhe = () => {
           { name: service.title, url: `https://revhackers.com.br/servicos/${slug}` }
         ]}
       />
-      {/* 1. HERO SECTION - Now with Dynamic Background for "Surprise" */}
-      <Section variant="dark" className="relative pt-32 pb-20 md:pt-48 md:pb-32 border-b border-white/10 overflow-hidden">
-
-        {/* Dynamic Glow Background */}
-        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl opacity-40 pointer-events-none bg-gradient-radial ${service.color} blur-[100px] `}></div>
-
+      {/* 1. HERO SECTION - Minimal White Header */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-white">
         <div className="container-custom text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <span className={`font-mono-tech ${service.accent} text-xl md:text-2xl font-bold mb-6 block`}>
-              {service.number}
+            <span className="font-bold text-revgreen bg-revgreen/10 px-3 py-1 text-xxs border border-revgreen/20 uppercase tracking-[0.2em] mb-6 inline-block">
+              {service.number} // {service.title}
             </span>
-            <h1 className="text-5xl md:text-7xl font-normal text-white mb-8 tracking-tighter text-balance">
-              {service.title}
+            <h1 className="text-5xl md:text-7xl font-black text-black mb-8 tracking-tighter text-balance leading-[1.05]">
+              {service.title}<span className="text-revgreen">.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-zinc-300 font-light leading-relaxed mb-12">
+            <p className="text-xl md:text-2xl text-zinc-500 font-medium leading-relaxed max-w-3xl mx-auto tracking-tight mb-12">
               {service.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={() => setIsBookingOpen(true)} className="btn-green-flat h-16 px-12 font-bold text-sm shadow-sm shadow-revgreen/10 cursor-pointer uppercase tracking-widest text-black">
+              <Button onClick={() => setIsBookingOpen(true)} className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all focus:outline-none">
                 Aplicar para Integração Mínima
               </Button>
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* 2. O QUE FAZEMOS (What We Do) */}
       <Section variant="light" className="py-24 bg-white">

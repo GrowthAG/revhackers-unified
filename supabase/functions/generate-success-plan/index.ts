@@ -91,7 +91,7 @@ serve(async (req: Request) => {
 
     try {
         const body = await req.json()
-        const { success_plan_id, project_id, opportunity_id } = body
+        const { success_plan_id, project_id, opportunity_id, clickup_doc_id } = body
 
         // 1. Localizar o success_plan
         let plan: any = null
@@ -144,15 +144,24 @@ serve(async (req: Request) => {
         const oppSignals = diagData.opportunity_signals || {}
         const oppType = diagData.opportunity_type || 'consulting'
 
+        // 2.5 Atualiza o rei_projects com o clickup_doc_id fornecido pelo usuario se aplicavel
+        let finalClickupDocId = clickup_doc_id || null
+        if (plan.rei_project_id && clickup_doc_id) {
+            await supabase.from('rei_projects').update({ clickup_doc_id }).eq('id', plan.rei_project_id)
+        }
+
         // Buscar dados do projeto (se existir)
         let projectData: any = null
         if (plan.rei_project_id) {
             const { data } = await supabase
                 .from('rei_projects')
-                .select('client_name, client_company, client_site, type, status')
+                .select('client_name, client_company, client_site, type, status, clickup_doc_id')
                 .eq('id', plan.rei_project_id)
                 .single()
             projectData = data
+            if (!finalClickupDocId && data?.clickup_doc_id) {
+                finalClickupDocId = data.clickup_doc_id
+            }
         }
 
         // Buscar dados da opportunity (se existir)
@@ -166,8 +175,10 @@ serve(async (req: Request) => {
             oppData = data
         }
 
-        // Buscar meeting transcript (se houver)
+        // Buscar meeting transcript da Opportunity (antigo) e do ClickUp Doc (novo)
         let meetingContext = ''
+        const meetingParts: string[] = []
+
         if (plan.opportunity_id) {
             const { data: opp } = await supabase
                 .from('opportunities')
@@ -184,17 +195,50 @@ serve(async (req: Request) => {
 
                 if (meeting) {
                     const insights = meeting.ai_insights || {}
-                    meetingContext = [
+                    meetingParts.push(
                         insights.resumo_executivo ? `Resumo da Reuniao: ${insights.resumo_executivo}` : '',
                         insights.gargalos ? `Gargalos Identificados: ${JSON.stringify(insights.gargalos)}` : '',
                         insights.objecoes ? `Objecoes do Cliente: ${JSON.stringify(insights.objecoes)}` : '',
                         insights.sentimento ? `Sentimento: ${insights.sentimento}` : '',
                         insights.score_qualificacao ? `Score de Qualificacao: ${insights.score_qualificacao}` : '',
-                        meeting.transcript ? `Transcricao (resumo): ${String(meeting.transcript).substring(0, 3000)}` : '',
-                    ].filter(Boolean).join('\n')
+                        meeting.transcript ? `Transcricao (resumo ant.): ${String(meeting.transcript).substring(0, 3000)}` : ''
+                    )
                 }
             }
         }
+
+        // Fetch do ClickUp Notetaker Doc
+        if (finalClickupDocId) {
+            try {
+                // @ts-ignore
+                const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
+                
+                // Pega workspaceId do clickup_config para ser dinamico
+                const { data: cfg } = await supabase.from('clickup_config').select('value').eq('key', 'workspace_id').maybeSingle()
+                const workspaceId = cfg?.value || '9017035197'
+
+                console.log(`[generate-success-plan] Buscando ClickUp Doc ${finalClickupDocId} no WS ${workspaceId}`);
+                
+                const clickupRes = await fetch(`https://api.clickup.com/api/v3/workspaces/${workspaceId}/docs/${finalClickupDocId}/pages`, {
+                    headers: { 'Authorization': CLICKUP_API_KEY || '' }
+                });
+
+                if (clickupRes.ok) {
+                    const pages = await clickupRes.json();
+                    if (pages && pages.length > 0) {
+                        const content = pages[0].content || '';
+                        meetingParts.push(`\n=== NOTAS DO CLICKUP NOTETAKER ===\n${content.substring(0, 5000)}`); // Limita tamanho
+                        console.log(`[generate-success-plan] ClickUp Doc capitulado. Tamanho: ${content.length}`);
+                    }
+                } else {
+                    console.warn(`[generate-success-plan] Falha p/ ClickUp Doc: ${clickupRes.status}`);
+                }
+            } catch (err: any) {
+                console.warn(`[generate-success-plan] Erro tentando buscar ClickUp doc:`, err.message);
+            }
+        }
+
+        meetingContext = meetingParts.filter(Boolean).join('\n')
 
         // Buscar strategic plan existente (se ja tiver plano estrategico gerado)
         let strategicPlanContext = ''

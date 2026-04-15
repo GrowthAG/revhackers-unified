@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       agent_documents: {
@@ -144,6 +119,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "agents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
+          },
         ]
       }
       ai_generation_jobs: {
@@ -193,6 +175,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_generation_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -433,6 +422,13 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "call_recordings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       cases: {
@@ -621,6 +617,24 @@ export type Database = {
           },
         ]
       }
+      clickup_config: {
+        Row: {
+          key: string
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string | null
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       clickup_integrations: {
         Row: {
           clickup_folder_id: string | null
@@ -665,6 +679,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clickup_integrations_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: true
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -716,7 +737,215 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "clickup_orchestrator_runs_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
+      }
+      clickup_provisioning_log: {
+        Row: {
+          created_at: string | null
+          duration_ms: number | null
+          error: string | null
+          from_state: string | null
+          id: string
+          payload: Json | null
+          rei_project_id: string | null
+          to_state: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          from_state?: string | null
+          id?: string
+          payload?: Json | null
+          rei_project_id?: string | null
+          to_state: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          from_state?: string | null
+          id?: string
+          payload?: Json | null
+          rei_project_id?: string | null
+          to_state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clickup_provisioning_log_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clickup_provisioning_log_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      clickup_sprints: {
+        Row: {
+          clickup_list_id: string
+          created_at: string | null
+          end_date: string
+          id: string
+          rei_project_id: string
+          sprint_index: number
+          sprint_name: string
+          sprint_theme: string | null
+          start_date: string
+          task_count: number | null
+        }
+        Insert: {
+          clickup_list_id: string
+          created_at?: string | null
+          end_date: string
+          id?: string
+          rei_project_id: string
+          sprint_index: number
+          sprint_name: string
+          sprint_theme?: string | null
+          start_date: string
+          task_count?: number | null
+        }
+        Update: {
+          clickup_list_id?: string
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          rei_project_id?: string
+          sprint_index?: number
+          sprint_name?: string
+          sprint_theme?: string | null
+          start_date?: string
+          task_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clickup_sprints_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "rei_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clickup_sprints_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      clickup_template_map: {
+        Row: {
+          folder_id_created: string | null
+          folder_template_id: string | null
+          notes: string | null
+          rei_type: string
+          space_id: string
+          sprint_template_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          folder_id_created?: string | null
+          folder_template_id?: string | null
+          notes?: string | null
+          rei_type: string
+          space_id: string
+          sprint_template_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          folder_id_created?: string | null
+          folder_template_id?: string | null
+          notes?: string | null
+          rei_type?: string
+          space_id?: string
+          sprint_template_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      client_accounts: {
+        Row: {
+          client_company: string | null
+          client_email: string
+          client_name: string | null
+          consulting_end_date: string | null
+          consulting_start_date: string | null
+          consulting_status: string | null
+          consulting_value: number | null
+          created_at: string | null
+          funnels_contact_id: string | null
+          funnels_opportunity_id: string | null
+          has_consulting: boolean | null
+          has_software: boolean | null
+          id: string
+          revhackers_contact_id: string | null
+          revhackers_opportunity_id: string | null
+          software_activation_date: string | null
+          software_renewal_date: string | null
+          software_status: string | null
+          software_value: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_company?: string | null
+          client_email: string
+          client_name?: string | null
+          consulting_end_date?: string | null
+          consulting_start_date?: string | null
+          consulting_status?: string | null
+          consulting_value?: number | null
+          created_at?: string | null
+          funnels_contact_id?: string | null
+          funnels_opportunity_id?: string | null
+          has_consulting?: boolean | null
+          has_software?: boolean | null
+          id?: string
+          revhackers_contact_id?: string | null
+          revhackers_opportunity_id?: string | null
+          software_activation_date?: string | null
+          software_renewal_date?: string | null
+          software_status?: string | null
+          software_value?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_company?: string | null
+          client_email?: string
+          client_name?: string | null
+          consulting_end_date?: string | null
+          consulting_start_date?: string | null
+          consulting_status?: string | null
+          consulting_value?: number | null
+          created_at?: string | null
+          funnels_contact_id?: string | null
+          funnels_opportunity_id?: string | null
+          has_consulting?: boolean | null
+          has_software?: boolean | null
+          id?: string
+          revhackers_contact_id?: string | null
+          revhackers_opportunity_id?: string | null
+          software_activation_date?: string | null
+          software_renewal_date?: string | null
+          software_status?: string | null
+          software_value?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       client_meetings: {
         Row: {
@@ -978,6 +1207,13 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "document_signatures_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       hub_conversation_members: {
@@ -1010,10 +1246,18 @@ export type Database = {
             referencedRelation: "hub_conversations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hub_conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["hub_conversation_id"]
+          },
         ]
       }
       hub_conversations: {
         Row: {
+          client_id: string | null
           created_at: string | null
           created_by: string | null
           description: string | null
@@ -1027,6 +1271,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          client_id?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -1040,6 +1285,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          client_id?: string | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
@@ -1054,11 +1300,32 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "hub_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hub_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
+          },
+          {
             foreignKeyName: "hub_conversations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hub_conversations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1136,6 +1403,13 @@ export type Database = {
             referencedRelation: "hub_conversations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hub_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["hub_conversation_id"]
+          },
         ]
       }
       invitations: {
@@ -1205,11 +1479,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "knowledge_libraries_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
+          },
+          {
             foreignKeyName: "knowledge_libraries_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "knowledge_libraries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1385,6 +1673,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "meeting_recordings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
+          },
+          {
             foreignKeyName: "meeting_recordings_opportunity_id_fkey"
             columns: ["opportunity_id"]
             isOneToOne: false
@@ -1397,6 +1692,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_recordings_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
           {
             foreignKeyName: "meeting_recordings_scheduled_meeting_id_fkey"
@@ -1576,6 +1878,7 @@ export type Database = {
           client_site: string | null
           created_at: string
           diagnostico_id: string | null
+          duration_days: number | null
           enrichment_data: Json | null
           id: string
           lead_source: string | null
@@ -1589,6 +1892,7 @@ export type Database = {
           rei_project_id: string | null
           site_analysis: Json | null
           source: string | null
+          tier: string | null
           trade_name: string | null
           type: string
           updated_at: string
@@ -1604,6 +1908,7 @@ export type Database = {
           client_site?: string | null
           created_at?: string
           diagnostico_id?: string | null
+          duration_days?: number | null
           enrichment_data?: Json | null
           id?: string
           lead_source?: string | null
@@ -1617,6 +1922,7 @@ export type Database = {
           rei_project_id?: string | null
           site_analysis?: Json | null
           source?: string | null
+          tier?: string | null
           trade_name?: string | null
           type?: string
           updated_at?: string
@@ -1632,6 +1938,7 @@ export type Database = {
           client_site?: string | null
           created_at?: string
           diagnostico_id?: string | null
+          duration_days?: number | null
           enrichment_data?: Json | null
           id?: string
           lead_source?: string | null
@@ -1645,6 +1952,7 @@ export type Database = {
           rei_project_id?: string | null
           site_analysis?: Json | null
           source?: string | null
+          tier?: string | null
           trade_name?: string | null
           type?: string
           updated_at?: string
@@ -1657,6 +1965,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
           },
           {
             foreignKeyName: "opportunities_diagnostico_id_fkey"
@@ -1692,6 +2007,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -1976,6 +2298,13 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "orqflow_custom_fields_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       orqflow_magic_links: {
@@ -2051,6 +2380,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orqflow_sprints_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -2260,6 +2596,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "orqflow_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
             foreignKeyName: "orqflow_tasks_sprint_id_fkey"
             columns: ["sprint_id"]
             isOneToOne: false
@@ -2341,6 +2684,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipeline_stage_history_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -2517,6 +2867,13 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_sprints_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       project_tasks: {
@@ -2595,6 +2952,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
           {
             foreignKeyName: "project_tasks_sprint_id_fkey"
@@ -2761,6 +3125,13 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "proposals_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       rei_materials: {
@@ -2808,11 +3179,23 @@ export type Database = {
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rei_materials_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
+          },
         ]
       }
       rei_projects: {
         Row: {
           analyst_email: string
+          clickup_doc_id: string | null
+          clickup_folder_id: string | null
+          clickup_provisioned_at: string | null
+          clickup_space_id: string | null
+          clickup_sprint_folder_id: string | null
           client_company: string | null
           client_email: string
           client_id: string | null
@@ -2820,6 +3203,7 @@ export type Database = {
           client_site: string | null
           created_at: string | null
           diagnostico_id: string | null
+          duration_days: number | null
           enrichment_data: Json | null
           final_expectations: string | null
           focal_points: Json | null
@@ -2836,12 +3220,15 @@ export type Database = {
           organization_id: string | null
           pipeline_stage: string | null
           project_duration: string | null
+          provisioning_error: string | null
+          provisioning_state: string
           quarter: string
           scheduling_completed: boolean | null
           site_analysis: Json | null
           source: string | null
           status: string
           technical_evidences: Json | null
+          tier: string | null
           trade_name: string | null
           type: string
           updated_at: string | null
@@ -2849,6 +3236,11 @@ export type Database = {
         }
         Insert: {
           analyst_email: string
+          clickup_doc_id?: string | null
+          clickup_folder_id?: string | null
+          clickup_provisioned_at?: string | null
+          clickup_space_id?: string | null
+          clickup_sprint_folder_id?: string | null
           client_company?: string | null
           client_email: string
           client_id?: string | null
@@ -2856,6 +3248,7 @@ export type Database = {
           client_site?: string | null
           created_at?: string | null
           diagnostico_id?: string | null
+          duration_days?: number | null
           enrichment_data?: Json | null
           final_expectations?: string | null
           focal_points?: Json | null
@@ -2872,12 +3265,15 @@ export type Database = {
           organization_id?: string | null
           pipeline_stage?: string | null
           project_duration?: string | null
+          provisioning_error?: string | null
+          provisioning_state?: string
           quarter: string
           scheduling_completed?: boolean | null
           site_analysis?: Json | null
           source?: string | null
           status?: string
           technical_evidences?: Json | null
+          tier?: string | null
           trade_name?: string | null
           type?: string
           updated_at?: string | null
@@ -2885,6 +3281,11 @@ export type Database = {
         }
         Update: {
           analyst_email?: string
+          clickup_doc_id?: string | null
+          clickup_folder_id?: string | null
+          clickup_provisioned_at?: string | null
+          clickup_space_id?: string | null
+          clickup_sprint_folder_id?: string | null
           client_company?: string | null
           client_email?: string
           client_id?: string | null
@@ -2892,6 +3293,7 @@ export type Database = {
           client_site?: string | null
           created_at?: string | null
           diagnostico_id?: string | null
+          duration_days?: number | null
           enrichment_data?: Json | null
           final_expectations?: string | null
           focal_points?: Json | null
@@ -2908,12 +3310,15 @@ export type Database = {
           organization_id?: string | null
           pipeline_stage?: string | null
           project_duration?: string | null
+          provisioning_error?: string | null
+          provisioning_state?: string
           quarter?: string
           scheduling_completed?: boolean | null
           site_analysis?: Json | null
           source?: string | null
           status?: string
           technical_evidences?: Json | null
+          tier?: string | null
           trade_name?: string | null
           type?: string
           updated_at?: string | null
@@ -2926,6 +3331,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rei_projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
           },
           {
             foreignKeyName: "rei_projects_diagnostico_id_fkey"
@@ -3000,6 +3412,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rei_responses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -3196,6 +3615,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "strategic_plans_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["client_id"]
+          },
+          {
             foreignKeyName: "strategic_plans_opportunity_id_fkey"
             columns: ["opportunity_id"]
             isOneToOne: false
@@ -3208,6 +3634,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rei_projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "strategic_plans_rei_project_id_fkey"
+            columns: ["rei_project_id"]
+            isOneToOne: false
+            referencedRelation: "v_client_hub_summary"
+            referencedColumns: ["project_id"]
           },
         ]
       }
@@ -3294,6 +3727,36 @@ export type Database = {
         }
         Relationships: []
       }
+      v_client_hub_summary: {
+        Row: {
+          client_company: string | null
+          client_email: string | null
+          client_id: string | null
+          client_name: string | null
+          client_status: string | null
+          client_trade_name: string | null
+          hub_conversation_id: string | null
+          hub_conversation_name: string | null
+          hub_conversation_slug: string | null
+          last_message_at: string | null
+          logo_url: string | null
+          message_count: number | null
+          onboarding_phase: number | null
+          organization_id: string | null
+          pipeline_stage: string | null
+          project_id: string | null
+          project_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       calculate_next_quarter: {
@@ -3319,6 +3782,14 @@ export type Database = {
       convert_opportunity_to_project: {
         Args: { p_analyst_email?: string; p_opportunity_id: string }
         Returns: string
+      }
+      convert_opportunity_to_project_v3: {
+        Args: {
+          p_analyst_email?: string
+          p_idempotency_key?: string
+          p_opportunity_id: string
+        }
+        Returns: Json
       }
       create_diagnostic_entry: {
         Args: {
@@ -3507,9 +3978,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import {
   Home, LayoutDashboard, Users, FileText,
   Book, Briefcase, ChevronLeft, ChevronRight,
-  FolderKanban, Settings, Plug, Target, MessageSquare,
+  FolderKanban, Settings, Plug, Target, MessageSquare, Layers,
   type LucideIcon
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
@@ -21,9 +21,12 @@ interface NavItem {
 const NAVIGATION: Record<string, NavItem[]> = {
   WORKSPACE: [
     { icon: Home, label: 'Dashboard', to: '/admin' },
+    { icon: FolderKanban, label: 'Pipeline', to: '/admin/pipeline' },
+    { icon: LayoutDashboard, label: 'Projetos', to: '/admin/projects' },
   ],
   CLIENTES: [
     { icon: Users, label: 'Clientes', to: '/admin/clients' },
+    { icon: Layers, label: 'Contas GHL', to: '/admin/contas' },
   ],
   CONTEÚDO: [
     { icon: Book, label: 'Materiais', to: '/admin/materials' },

@@ -18,7 +18,7 @@ const capabilities = [
   {
     id: "02",
     title: "Engenharia de CRM (O Cofre)",
-    description: "Configuração blindada de Hubspot/Salesforce. Onde seus vendedores não terão desculpa para perder reuniões ou follow-ups.",
+    description: "Infraestrutura comercial blindada e à prova de falhas. Onde seus vendedores não terão desculpas para perder reuniões ou follow-ups.",
     tech: ["CRM Architecture", "Pipeline Logic", "Data Sync"],
     icon: Database,
     slug: "ecossistema-crm"
@@ -74,19 +74,27 @@ const Servicos = () => {
           { question: "Quais empresas a RevHackers atende?", answer: "Atendemos empresas B2B com operações comerciais complexas que buscam escalar receita através de tecnologia, automação e processos de Revenue Operations." }
         ]}
       />
-      {/* Hero Section - Absolute Black "Capa" Style */}
-      <Section variant="dark" className="pt-32 pb-20 md:pt-48 md:pb-32 bg-black border-b border-zinc-900">
-        <div className="container-custom relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 text-white tracking-tight leading-[1.1] uppercase">
+      {/* Hero Section - Standard White Minimal (Match Metodologia/Home) */}
+      <section className="pt-32 pb-20 md:pt-48 md:pb-32 bg-white">
+        <div className="container-custom text-center relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <span className="font-bold text-revgreen bg-revgreen/10 px-3 py-1 text-xxs border border-revgreen/20 uppercase tracking-[0.2em] mb-6 inline-block">
+              Ecossistema RevOps
+            </span>
+            <h1 className="text-5xl md:text-7xl font-black text-black mb-8 tracking-tighter text-balance leading-[1.05]">
               O Mecanismo<span className="text-revgreen">.</span>
             </h1>
-            <p className="text-lg md:text-xl text-zinc-400 font-bold tracking-widest leading-relaxed max-w-2xl mx-auto uppercase">
-              Nós não prestamos "Serviços". Nós alugamos nossa infraestrutura de IA e CRM para o seu B2B.
+            <p className="text-xl md:text-2xl text-zinc-500 font-medium leading-relaxed max-w-3xl mx-auto tracking-tight">
+              Nós não prestamos "serviços". Nós alugamos nossa infraestrutura de IA e CRM para o seu B2B.
             </p>
+            <div className="mt-12 flex justify-center gap-4">
+               <Button asChild className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all">
+                   <Link to="/booking">Aplicar para Ecossistema</Link>
+               </Button>
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Capabilities Matrix - The "Machine" View */}
       <Section variant="light" className="py-24 md:py-40 bg-zinc-50 relative overflow-hidden">

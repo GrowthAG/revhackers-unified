@@ -16,6 +16,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { ensureHubProjectIdField, buildCustomFieldsPayload } from "../_shared/clickup-custom-fields.ts";
 
 // @ts-ignore Deno runtime
 const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
@@ -158,6 +159,22 @@ serve(async (req: Request) => {
       .update({ sprints_status: 'creating', updated_at: new Date().toISOString() })
       .eq('id', integration.id);
 
+    // X. Garante o Custom Field hub_project_id
+    let hubProjectIdFieldId: string | null = null;
+    try {
+      const folderRes = await clickupFetch(`${CLICKUP_API_BASE}/folder/${integration.clickup_folder_id}`, { 
+          headers: { 'Authorization': CLICKUP_API_KEY! } 
+      });
+      const folderData = await folderRes.json();
+      const spaceId = folderData.space?.id;
+      if (spaceId) {
+          hubProjectIdFieldId = await ensureHubProjectIdField(spaceId, CLICKUP_API_KEY!);
+          console.log(`[clickup-sprint-orchestrator] Field hub_project_id garantido no space ${spaceId} (${hubProjectIdFieldId})`);
+      }
+    } catch(err) {
+      console.warn(`[clickup-sprint-orchestrator] Aviso: falha ao garantir custom field: ${err}`);
+    }
+
     // 5. Busca o plano estrategico aprovado
     const { data: plan, error: planError } = await supabase
       .from('strategic_plans')
@@ -253,18 +270,25 @@ serve(async (req: Request) => {
       // Cria tasks dentro da list
       for (const item of items) {
         const taskName = String(item).substring(0, 500);
+        
+        const bodyPayload: any = {
+            name: taskName,
+            description: `Tarefa gerada a partir do plano estrategico aprovado.\n\nFase: ${phaseName}${phaseTitle ? ' - ' + phaseTitle : ''}`,
+        };
+
+        if (hubProjectIdFieldId && projectId) {
+            bodyPayload.custom_fields = buildCustomFieldsPayload(projectId, hubProjectIdFieldId);
+        }
+
         const taskRes = await clickupFetch(
           `${CLICKUP_API_BASE}/list/${listId}/task`,
           {
             method: 'POST',
             headers: {
-              'Authorization': CLICKUP_API_KEY,
+              'Authorization': CLICKUP_API_KEY!,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              name: taskName,
-              description: `Tarefa gerada a partir do plano estrategico aprovado.\n\nFase: ${phaseName}${phaseTitle ? ' - ' + phaseTitle : ''}`,
-            }),
+            body: JSON.stringify(bodyPayload),
           }
         );
 

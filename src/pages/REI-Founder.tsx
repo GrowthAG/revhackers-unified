@@ -19,30 +19,38 @@ const section1Schema = z.object({
     currentRole: z.string().min(2, "Cargo atual obrigatório"),
     biography: z.string().min(10, "Conte um pouco da sua história"),
     superpowers: z.string().min(5, "Quais seus diferenciais estratégicos?"),
+    brandPersonification: z.string().min(5, "Personificacao obrigatoria"),
 });
 
 const section2Schema = z.object({
-    authorityTopics: z.string().min(5, "Sobre o que você quer falar?"),
-    industryMyths: z.string().optional(),
-    coreValues: z.string().min(5, "Seus valores inegociáveis"),
+    authorityTopics: z.string().min(5, "Tópicos obrigatórios"),
+    perceptionGap: z.string().min(10, "Este campo é essencial"),
+    industryMyths: z.string().min(5, "Qual dogma você quer derrubar?"),
+    coreValues: z.string().min(5, "Valores inegociáveis"),
+    marketFuture: z.string().optional(),
 });
 
 const section3Schema = z.object({
-    targetAudience: z.string().min(5, "Com quem você quer falar?"),
+    targetAudience: z.string().min(5, "Público alvo obrigatório"),
+    unspokenPain: z.string().min(10, "Qual é a dor oculta?"),
+    journeyState: z.string().min(10, "Descreva a jornada."),
+    antiClient: z.string().min(5, "Quais são as red flags?"),
     toneVoice: z.string().min(1, "Defina o tom de voz"),
     references: z.string().optional(),
 });
 
 const section4Schema = z.object({
-    contentFrequency: z.string().min(1, "Disponibilidade"),
-    preferredFormats: z.string().min(1, "Formatos preferidos"),
+    contentFrequency: z.string().min(1, "Disponibilidade obrigatória"),
+    preferredFormats: z.string().min(1, "Formatos obrigatórios"),
+    vocabulary: z.string().min(5, "Defina suas palavras chave."),
     approvalWorkflow: z.string().optional(),
 });
 
 const section5Schema = z.object({
-    antiGoals: z.string().min(2, "O que você NÃO quer ser?"),
+    antiGoals: z.string().min(2, "Anti-Metas"),
     topicsToAvoid: z.string().optional(),
-    successVision: z.string().min(5, "Onde quer chegar?"),
+    successVision: z.string().min(5, "Visao obrigatória"),
+    realLegacy: z.string().min(5, "Qual o legado?"),
 });
 
 const formSchema = section1Schema
@@ -53,16 +61,16 @@ const formSchema = section1Schema
 
 type FormData = z.infer<typeof formSchema>;
 
-const TONES = ["Totalmente Profissional/Corporativo", "Profissional mas Acessível", "Líder de Pensamento (Polêmico)", "Mentor/Educador", "Vida Real (Misto Pessoal/Profissional)"];
-const FORMATS = ["Apenas Texto", "Foto + Texto", "Vídeos Curtos (Reels/TikTok)", "Vídeos Longos", "Artigos Longos"];
+const TONES = ["Totalmente Profissional/Corporativo", "Profissional mas Acessível", "Líder de Pensamento (Polêmico)", "Mentor/Educador"];
+const FORMATS = ["Apenas Texto", "Foto + Texto", "Vídeos Curtos (Reels/TikTok)", "Vídeos Longos"];
 const FREQUENCY = ["1x por semana", "2-3x por semana", "Diariamente", "Quando der na telha"];
 
 const STEPS = [
     { id: 1, title: "Identidade & História" },
-    { id: 2, title: "Pilares de Autoridade" },
-    { id: 3, title: "Audiência & Tom" },
+    { id: 2, title: "Autoridade & Crenças" },
+    { id: 3, title: "Audiência & Psicologia" },
     { id: 4, title: "Motor de Conteúdo" },
-    { id: 5, title: "Anti-Metas & Visão" },
+    { id: 5, title: "Visão & Legado" },
 ];
 
 const ReiFounderPage = () => {
@@ -94,7 +102,7 @@ const ReiFounderPage = () => {
         } else {
             toast({
                 title: "Campos obrigatórios",
-                description: "Por favor, preencha todos os campos obrigatórios (*).",
+                description: "Por favor, preencha todos os campos abertos obrigatórios (*).",
                 variant: "destructive"
             });
         }
@@ -110,21 +118,16 @@ const ReiFounderPage = () => {
         let growthScore = 50;
         let consistencyScore = 50;
         let authorityScore = 50;
-        let uniquenessScore = 60;
+        let uniquenessScore = 50;
 
-        // Influence of Frequency
-        if (data.contentFrequency.includes("Diariamente")) consistencyScore = 95;
-        else if (data.contentFrequency.includes("2-3x")) consistencyScore = 80;
-        else if (data.contentFrequency.includes("1x")) consistencyScore = 60;
-        else consistencyScore = 30;
+        if (data.contentFrequency.includes("Diariamente")) consistencyScore += 45;
+        else if (data.contentFrequency.includes("2-3x")) consistencyScore += 30;
 
-        // Influence of Formats
         if (data.preferredFormats.includes("Vídeos")) { growthScore += 20; authorityScore += 10; }
-        if (data.preferredFormats.includes("Artigos")) { authorityScore += 20; growthScore -= 5; }
 
-        // Influence of Tone
-        if (data.toneVoice.includes("Polêmico")) { growthScore += 15; uniquenessScore += 20; }
-        if (data.toneVoice.includes("Mentor")) { authorityScore += 15; }
+        if (data.antiClient && data.antiClient.length > 50) uniquenessScore += 20;
+        if (data.perceptionGap && data.perceptionGap.length > 50) authorityScore += 20;
+        if (data.vocabulary && data.vocabulary.length > 30) uniquenessScore += 15;
 
         const totalScore = Math.round((growthScore + consistencyScore + authorityScore + uniquenessScore) / 4);
 
@@ -137,18 +140,35 @@ const ReiFounderPage = () => {
                 { label: "UNICIDADE", value: Math.min(100, uniquenessScore) },
             ],
             insights: [
-                consistencyScore < 60 ? "CRITICAL: Sua consistência é o maior gargalo. O algoritmo ignora baixa frequência de publicação." : "Sua cadência de postagem está alinhada com as métricas de tração do mercado.",
-                data.toneVoice.includes("Polêmico") ? "ANÁLISE: Seu tom provocativo tende a gerar polarização positiva para autoridade." : "MÉTRICA: Seu tom é conservador. Considere adicionar opiniões mais fortes para aumentar o alcance.",
-                data.preferredFormats.includes("Vídeo") ? "DADO: Vídeo é o formato com maior alcance orgânico atual. Estratégia validada." : "ESTRUTURA: Texto constrói autoridade profunda, mas tem alcance menor. Recomenda-se transposição para vídeo."
+                data.antiClient.length > 30 ? "FILTRO ATIVO: Você possui clareza sobre o Anti-ICP." : "RISCO CULTURAL: Falta definição estrita de red flags comerciais.",
+                data.perceptionGap.length > 30 ? "ANÁLISE: O gap de percepção mapeado será a espinha dorsal." : "FALHA ESTRATÉGICA: Você precisa comunicar melhor a diferença entre o que vende e o que entrega.",
+                "ESTRUTURA: A personificação de marca e o legado estão alinhados."
             ]
         };
     };
 
-    const onSubmit = (data: FormData) => {
+    const onSubmit = async (data: FormData) => {
         const calculated = calculateMetrics(data);
         setMetrics(calculated);
         setShowDashboard(true);
         window.scrollTo(0, 0);
+
+        // -- Automação: Enviar payload para o Funnels (RevHackers / Própria Funnels) via Edge Function --
+        // A edge function `ghl-outbound-relay` escuta o evento `rei_completed`
+        try {
+            const { sendToGHL } = await import('@/lib/ghlRelay');
+            await sendToGHL('rei_completed', {
+                ...data,
+                scores: {
+                    total: calculated.score,
+                    radar: calculated.radarData
+                },
+                insights: calculated.insights,
+                origin: 'rei-founder-protocol'
+            });
+        } catch (error) {
+            console.error("Falha ao notificar o CRM Funnels:", error);
+        }
     };
 
     const variants = {
@@ -187,7 +207,7 @@ const ReiFounderPage = () => {
                         <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">
                             REI – Revenue Excellence Initiative
                             <span className="block text-lg md:text-xl text-revgreen font-normal font-mono-tech mt-2 tracking-wide uppercase">
-                                Protocolo Founder Growth
+                                Entrevista Founder Integral
                             </span>
                         </h1>
 
@@ -235,39 +255,63 @@ const ReiFounderPage = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Mini-Bio / História de Origem *</label>
-                                            <textarea {...form.register("biography")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-32" placeholder="Resuma quem é você e como chegou aqui..." />
+                                            <textarea {...form.register("biography")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Resuma quem é você e como chegou aqui..." />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Seus Diferenciais Estratégicos *</label>
                                             <textarea {...form.register("superpowers")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="O que você faz melhor que 90% das pessoas?" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Se a sua marca pessoal fosse uma pessoa, onde ela seria vista, como se vestiria e como falaria? *</label>
+                                            <textarea {...form.register("brandPersonification")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Séria, fala baixo, veste cores sólidas... " />
                                         </div>
                                     </div>
                                 )}
 
                                 {currentStep === 2 && (
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Pilares de Autoridade</h2>
+                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Autoridade & Crenças</h2>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Sobre quais tópicos você quer ser referência? *</label>
-                                            <textarea {...form.register("authorityTopics")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-32" placeholder="Ex: Vendas B2B, Liderança Remota, Futuro do Varejo..." />
+                                            <textarea {...form.register("authorityTopics")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Ex: Vendas B2B, Liderança Remota, Futuro do Varejo..." />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-zinc-300">Quais mitos do seu mercado você discorda? (Hot Takes)</label>
-                                            <textarea {...form.register("industryMyths")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
+                                            <label className="text-sm font-medium text-zinc-300">Qual é a coisa mais importante que você quer que as pessoas entendam sobre o que faz — e que poucas realmente entendem? *</label>
+                                            <textarea {...form.register("perceptionGap")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Gap de percepção..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Existe alguma 'verdade popular' no seu nicho que você considera um mito perigoso? *</label>
+                                            <textarea {...form.register("industryMyths")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="O que todo mundo aceita como verdade, mas você sabe que está errado?" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Seus Valores Inegociáveis *</label>
                                             <textarea {...form.register("coreValues")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">O que você acredita que vai mudar radicalmente no seu mercado nos próximos 5 anos — e por quê?</label>
+                                            <textarea {...form.register("marketFuture")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Sinalizações fracas do mercado..." />
                                         </div>
                                     </div>
                                 )}
 
                                 {currentStep === 3 && (
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Audiência & Tom</h2>
+                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Audiência & Psicologia</h2>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Quem é o público-alvo principal? (Ex: Investidores, Talentos, Clientes) *</label>
                                             <textarea {...form.register("targetAudience")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Qual é a maior dor que o seu cliente sente mas raramente consegue verbalizar? *</label>
+                                            <textarea {...form.register("unspokenPain")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Ex: A dor real não é falta de leads, é o medo de não bater a meta e ser demitido..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">De onde você pega o cliente e para onde o conduz? (Estado de Entrada vs Saída) *</label>
+                                            <textarea {...form.register("journeyState")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="De [Confusão/Custo alto] para [Clareza/Eficiência]." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Existe algum tipo de cliente que você aprendeu a NÃO atender mais? O que aconteceu? *</label>
+                                            <textarea {...form.register("antiClient")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Red flags de clientes que você demite..." />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Tom de Voz Desejado *</label>
@@ -277,7 +321,7 @@ const ReiFounderPage = () => {
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-zinc-300">Quem são suas referências de Personal Branding? (Opcional)</label>
+                                            <label className="text-sm font-medium text-zinc-300">Referências de Personal Branding? (Opcional)</label>
                                             <input {...form.register("references")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" />
                                         </div>
                                     </div>
@@ -285,7 +329,7 @@ const ReiFounderPage = () => {
 
                                 {currentStep === 4 && (
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Logística & Conteúdo</h2>
+                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Motor de Conteúdo</h2>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">DIsponibilidade para criar/revisar conteúdo *</label>
                                             <select {...form.register("contentFrequency")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all">
@@ -301,6 +345,10 @@ const ReiFounderPage = () => {
                                             </select>
                                         </div>
                                         <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Quais palavras/expressões são muito suas, e quais você detesta que usem no mercado? *</label>
+                                            <textarea {...form.register("vocabulary")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="Uso sempre: 'Tração'. Destesto: 'Sinergia'..." />
+                                        </div>
+                                        <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">Como deve ser o fluxo de aprovação?</label>
                                             <textarea {...form.register("approvalWorkflow")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
                                         </div>
@@ -309,7 +357,7 @@ const ReiFounderPage = () => {
 
                                 {currentStep === 5 && (
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Anti-Metas & Visão</h2>
+                                        <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-revgreen pl-4">Visão & Legado</h2>
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-zinc-300">O que você NÃO quer ser/parecer? (Anti-Role Models) *</label>
                                             <textarea {...form.register("antiGoals")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
@@ -319,8 +367,12 @@ const ReiFounderPage = () => {
                                             <input {...form.register("topicsToAvoid")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all" />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-zinc-300">Visão de Sucesso: Como você quer estar daqui a 1 ano? *</label>
+                                            <label className="text-sm font-medium text-zinc-300">Visão de Sucesso: Como você quer estar mercadologicamente daqui a 1 ano? *</label>
                                             <textarea {...form.register("successVision")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-zinc-300">Como você quer ser lembrado daqui a 20 anos? Qual é a missão que te faz continuar quando fica difícil? *</label>
+                                            <textarea {...form.register("realLegacy")} className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white focus:border-revgreen focus:ring-1 focus:ring-revgreen outline-none transition-all h-24" placeholder="O real legado..." />
                                         </div>
                                     </div>
                                 )}

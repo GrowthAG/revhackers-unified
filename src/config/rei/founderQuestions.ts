@@ -6,97 +6,38 @@ export const founderSections: REISection[] = [
         id: 1,
         title: "Identidade & História",
         questions: [
-            {
-                id: "fullName",
-                label: "Seu Nome",
-                type: "input",
-                validation: z.string().min(2, "Nome obrigatório"),
-            },
-            {
-                id: "linkedinUrl",
-                label: "Seu LinkedIn Atual",
-                type: "input",
-                validation: z.string().url("URL do LinkedIn inválida").optional().or(z.literal("")),
-                optional: true,
-            },
-            {
-                id: "currentRole",
-                label: "Cargo/Posição Atual",
-                type: "input",
-                validation: z.string().min(2, "Cargo atual obrigatório"),
-            },
-            {
-                id: "biography",
-                label: "Mini-Bio / História de Origem",
-                type: "textarea",
-                validation: z.string().min(10, "Conte um pouco da sua história"),
-                placeholder: "Resuma quem é você e como chegou aqui...",
-            },
-            {
-                id: "superpowers",
-                label: "Seus 'Superpoderes' (Diferenciais)",
-                type: "textarea",
-                validation: z.string().min(5, "Quais seus superpoderes?"),
-                placeholder: "O que você faz melhor que 90% das pessoas?",
-            },
+            { id: "fullName", label: "Seu Nome", type: "input", validation: z.string().min(2, "Nome obrigatório") },
+            { id: "linkedinUrl", label: "Seu LinkedIn Atual", type: "input", validation: z.string().url("URL inválida").optional().or(z.literal("")), optional: true },
+            { id: "currentRole", label: "Cargo/Posição Atual", type: "input", validation: z.string().min(2, "Obrigatório") },
+            { id: "biography", label: "Mini-Bio / História de Origem", type: "textarea", validation: z.string().min(10, "Breve biografia necessária"), placeholder: "Resuma quem é e como chegou aqui..." },
+            { id: "superpowers", label: "Seus 'Superpoderes' (Diferenciais)", type: "textarea", validation: z.string().min(5, "Obrigatório"), placeholder: "O que você faz melhor que 90% das pessoas?" },
+            { id: "brandPersonification", label: "Se a sua marca pessoal fosse uma pessoa, como seria?", type: "textarea", validation: z.string().min(5, "Obrigatório"), placeholder: "Onde seria vista, como se vestiria, como falaria?" },
         ]
     },
     {
         id: 2,
-        title: "Pilares de Autoridade",
+        title: "Autoridade & Crenças",
         questions: [
-            {
-                id: "authorityTopics",
-                label: "Sobre quais tópicos você quer ser referência?",
-                type: "textarea",
-                validation: z.string().min(5, "Sobre o que você quer falar?"),
-                placeholder: "Ex: Vendas B2B, Liderança Remota, Futuro do Varejo...",
-            },
-            {
-                id: "industryMyths",
-                label: "Quais mitos do seu mercado você discorda? (Hot Takes)",
-                type: "textarea",
-                validation: z.string().optional(),
-                optional: true,
-            },
-            {
-                id: "coreValues",
-                label: "Seus Valores Inegociáveis",
-                type: "textarea",
-                validation: z.string().min(5, "Seus valores inegociáveis"),
-            },
+            { id: "authorityTopics", label: "Sobre quais tópicos você quer ser referência?", type: "textarea", validation: z.string().min(5, "Tópicos obrigatórios") },
+            { id: "perceptionGap", label: "Gap de Percepção (O que poucos entendem)", type: "textarea", validation: z.string().min(10, "Este campo é essencial para fechar o gap."), placeholder: "Acham que eu faço X, mas na verdade a mágica é Y..." },
+            { id: "industryMyths", label: "Quais mitos/dogmas do seu mercado você discorda?", type: "textarea", validation: z.string().min(5, "Quais dogmas você quer derrubar?") },
+            { id: "coreValues", label: "Seus Valores Inegociáveis", type: "textarea", validation: z.string().min(5, "Valores inegociáveis obrigatórios") },
+            { id: "marketFuture", label: "O que vai mudar radicalmente no seu mercado nos próximos 5 anos?", type: "textarea", validation: z.string().optional(), optional: true, placeholder: "Quais são as sinalizações fracas?" },
         ]
     },
     {
         id: 3,
-        title: "Audiência & Tom",
+        title: "Audiência & Psicologia",
         questions: [
+            { id: "targetAudience", label: "Quem é o público-alvo principal?", type: "textarea", validation: z.string().min(5, "Com quem você quer falar?") },
+            { id: "unspokenPain", label: "Qual é a maior dor que o seu cliente raramente verbaliza?", type: "textarea", validation: z.string().min(10, "Qual é a dor oculta?"), placeholder: "A dor real não é X, é o medo de... " },
+            { id: "journeyState", label: "A Jornada: Estado de Entrada vs Estado de Saída", type: "textarea", validation: z.string().min(10, "Descreva a jornada"), placeholder: "De confusão total para clareza absoluta..." },
+            { id: "antiClient", label: "Red Flags: Qual tipo de cliente você NÃO atende mais?", type: "textarea", validation: z.string().min(5, "Descreva o anti-cliente"), placeholder: "O que aconteceu para você demitir um perfil de cliente?" },
             {
-                id: "targetAudience",
-                label: "Quem é o público-alvo principal? (Ex: Investidores, Talentos, Clientes)",
-                type: "textarea",
-                validation: z.string().min(5, "Com quem você quer falar?"),
+                id: "toneVoice", label: "Tom de Voz Desejado", type: "select", validation: z.string().min(1, "Defina o tom"),
+                options: ["Totalmente Profissional/Corporativo", "Profissional mas Acessível", "Líder de Pensamento (Polêmico)", "Mentor/Educador"]
             },
-            {
-                id: "toneVoice",
-                label: "Tom de Voz Desejado",
-                type: "select",
-                validation: z.string().min(1, "Defina o tom de voz"),
-                options: [
-                    "Totalmente Profissional/Corporativo",
-                    "Profissional mas Acessível",
-                    "Líder de Pensamento (Polêmico)",
-                    "Mentor/Educador",
-                    "Vida Real (Misto Pessoal/Profissional)"
-                ]
-            },
-            {
-                id: "references",
-                label: "Quem são suas referências de Personal Branding? (Opcional)",
-                type: "input",
-                validation: z.string().optional(),
-                optional: true,
-            },
+            { id: "references", label: "Referências de Personal Branding?", type: "input", validation: z.string().optional(), optional: true },
         ]
     },
     {
@@ -104,62 +45,25 @@ export const founderSections: REISection[] = [
         title: "Motor de Conteúdo",
         questions: [
             {
-                id: "contentFrequency",
-                label: "Disponibilidade para criar/revisar conteúdo",
-                type: "select",
-                validation: z.string().min(1, "Disponibilidade"),
-                options: [
-                    "1x por semana",
-                    "2-3x por semana",
-                    "Diariamente",
-                    "Quando der na telha"
-                ]
+                id: "contentFrequency", label: "Disponibilidade", type: "select", validation: z.string().min(1, "Disponibilidade"),
+                options: ["1x por semana", "2-3x por semana", "Diariamente", "Quando der na telha"]
             },
             {
-                id: "preferredFormats",
-                label: "Formatos Preferidos",
-                type: "select",
-                validation: z.string().min(1, "Formatos preferidos"),
-                options: [
-                    "Apenas Texto",
-                    "Foto + Texto",
-                    "Vídeos Curtos (Reels/TikTok)",
-                    "Vídeos Longos",
-                    "Artigos Longos"
-                ]
+                id: "preferredFormats", label: "Formatos", type: "select", validation: z.string().min(1, "Formatos preferidos"),
+                options: ["Apenas Texto", "Foto + Texto", "Vídeos Curtos (Reels/TikTok)", "Vídeos Longos"]
             },
-            {
-                id: "approvalWorkflow",
-                label: "Como deve ser o fluxo de aprovação?",
-                type: "textarea",
-                validation: z.string().optional(),
-                optional: true,
-            },
+            { id: "vocabulary", label: "Seu Vocabulário Oficial (E palavras que detesta)", type: "textarea", validation: z.string().min(5, "Defina suas palavras"), placeholder: "Uso: Tração. Detesto: Sinergia..." },
+            { id: "approvalWorkflow", label: "Fluxo de aprovação desejado?", type: "textarea", validation: z.string().optional(), optional: true },
         ]
     },
     {
         id: 5,
-        title: "Anti-Metas & Visão",
+        title: "Visão & Legado",
         questions: [
-            {
-                id: "antiGoals",
-                label: "O que você NÃO quer ser/parecer? (Anti-Role Models)",
-                type: "textarea",
-                validation: z.string().min(2, "O que você NÃO quer ser?"),
-            },
-            {
-                id: "topicsToAvoid",
-                label: "Assuntos proibidos ou sensíveis?",
-                type: "input",
-                validation: z.string().optional(),
-                optional: true,
-            },
-            {
-                id: "successVision",
-                label: "Visão de Sucesso: Como você quer estar daqui a 1 ano?",
-                type: "textarea",
-                validation: z.string().min(5, "Onde quer chegar?"),
-            },
+            { id: "antiGoals", label: "O que você NÃO quer ser ou parecer? (Anti-Role Models)", type: "textarea", validation: z.string().min(2, "Anti-Metas") },
+            { id: "topicsToAvoid", label: "Assuntos proibidos ou sensíveis?", type: "input", validation: z.string().optional(), optional: true },
+            { id: "successVision", label: "Como você quer estar classificado mercadologicamente daqui a 1 ano?", type: "textarea", validation: z.string().min(5, "Visão obrigatória") },
+            { id: "realLegacy", label: "Como você quer ser lembrado daqui a 20 anos? (Qual é o Legado real?)", type: "textarea", validation: z.string().min(5, "Legado obrigatório"), placeholder: "Não o que está no site, mas a missão real..." },
         ]
     },
 ];
@@ -167,7 +71,7 @@ export const founderSections: REISection[] = [
 export const founderConfig: REIConfig = {
     type: 'founder',
     title: 'REI – Revenue Excellence Initiative',
-    subtitle: 'Protocolo Founder Growth',
+    subtitle: 'Consultoria Estratégica: Entrevista Founder Integral',
     sections: founderSections,
-    totalQuestions: 14
+    totalQuestions: 24
 };

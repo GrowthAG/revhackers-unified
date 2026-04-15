@@ -98,9 +98,8 @@ serve(async (req: Request) => {
             });
         }
 
-        // -- MULTI-TENANT: Try org-specific webhook URL first --
-        let ghlUrl: string | null = null;
-        let resolvedVia = 'none';
+        // -- MULTI-TENANT: Coletar URLs de disparo em paralelo (Dupla Notificação) --
+        const targetUrls: Array<{ url: string, source: string }> = [];
 
         // Map event types to settings keys in organizations.settings.ghl_webhooks
         const EVENT_TO_SETTINGS_KEY: Record<EventType, string> = {
@@ -114,6 +113,7 @@ serve(async (req: Request) => {
             email_material:  'email',
         };
 
+        // 1. URL do Cliente (Subconta Funnels CRM do parceiro)
         if (organizationId) {
             const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
                 auth: { autoRefreshToken: false, persistSession: false }
@@ -129,22 +129,25 @@ serve(async (req: Request) => {
             const orgUrl = org?.settings?.ghl_webhooks?.[settingsKey];
 
             if (orgUrl) {
-                ghlUrl = orgUrl;
-                resolvedVia = `org:${organizationId}`;
-                console.log(`[ghl-outbound-relay] Resolved URL from org settings (${settingsKey})`);
+                targetUrls.push({ url: orgUrl, source: `org:${organizationId}` });
+                console.log(`[ghl-outbound-relay] Encontrada URL da Org (${settingsKey})`);
             }
         }
 
-        // Fallback: global Supabase Secrets (RevHackers subconta)
-        if (!ghlUrl) {
-            const secretName = EVENT_TO_SECRET[eventType as EventType];
-            // @ts-ignore
-            ghlUrl = Deno.env.get(secretName) || null;
-            if (ghlUrl) resolvedVia = `secret:${secretName}`;
+        // 2. URL Master (Conta RevHackers Funnels - Telemetria Global)
+        const secretName = EVENT_TO_SECRET[eventType as EventType];
+        // @ts-ignore
+        const globalUrl = Deno.env.get(secretName) || null;
+        if (globalUrl) {
+            // Evitar disparo duplo se a orgUrl for idêntica à globalUrl por acerto de setup
+            if (!targetUrls.some(t => t.url === globalUrl)) {
+                targetUrls.push({ url: globalUrl, source: `secret:${secretName}` });
+                console.log(`[ghl-outbound-relay] Encontrada URL Master (${secretName})`);
+            }
         }
 
-        if (!ghlUrl) {
-            console.warn(`[ghl-outbound-relay] No URL found for ${eventType} (org: ${organizationId || 'none'}). Event dropped.`);
+        if (targetUrls.length === 0) {
+            console.warn(`[ghl-outbound-relay] Nenhuma URL encontrada para ${eventType} (org: ${organizationId || 'none'}). Event dropped.`);
             return new Response(JSON.stringify({ success: false, reason: 'Nenhuma URL de webhook configurada' }), {
                 status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
@@ -152,37 +155,46 @@ serve(async (req: Request) => {
 
         // Validate it's actually a GHL URL (security: don't allow SSRF via misconfigured secrets)
         const GHL_URL_PATTERN = /^https:\/\/services\.leadconnectorhq\.com\/hooks\//;
-        if (!GHL_URL_PATTERN.test(ghlUrl)) {
-            console.error(`[ghl-outbound-relay] ${resolvedVia} contains invalid URL pattern`);
-            return new Response(JSON.stringify({ error: 'Configuracao de webhook invalida' }), {
+        const validTargets = targetUrls.filter(t => {
+            const isValid = GHL_URL_PATTERN.test(t.url);
+            if (!isValid) console.error(`[ghl-outbound-relay] ${t.source} contains invalid URL pattern`);
+            return isValid;
+        });
+
+        if (validTargets.length === 0) {
+            return new Response(JSON.stringify({ error: 'Configuracoes de webhook invalidas' }), {
                 status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         }
 
-        console.log(`[ghl-outbound-relay] Relaying ${eventType} to GHL via ${resolvedVia}`);
+        console.log(`[ghl-outbound-relay] Disparando ${eventType} para ${validTargets.length} endpoints GHL.`);
 
-        // Relay to GHL
-        const ghlResponse = await fetch(ghlUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...payload,
-                _source: 'revhackers-app',
-                _event_type: eventType,
-                _relayed_at: new Date().toISOString(),
-            }),
+        // Relay para multiplos endpoints (Disparo em Paralelo)
+        const dispatchPromises = validTargets.map(async (target) => {
+            const ghlResponse = await fetch(target.url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...payload,
+                    _source: 'revhackers-app',
+                    _event_type: eventType,
+                    _relayed_at: new Date().toISOString(),
+                    _dispatched_to: target.source
+                }),
+            });
+
+            if (!ghlResponse.ok) {
+                const errText = await ghlResponse.text();
+                console.error(`[ghl-outbound-relay] Erro no GHL (${target.source}) status ${ghlResponse.status}: ${errText.substring(0, 200)}`);
+                return { success: false, source: target.source, status: ghlResponse.status };
+            }
+            return { success: true, source: target.source };
         });
 
-        if (!ghlResponse.ok) {
-            const errText = await ghlResponse.text();
-            console.error(`[ghl-outbound-relay] GHL returned ${ghlResponse.status}: ${errText.substring(0, 200)}`);
-            // Still return 200 to frontend - GHL failure is not user-facing
-            return new Response(JSON.stringify({ success: false, ghl_status: ghlResponse.status }), {
-                status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
-        }
+        const results = await Promise.all(dispatchPromises);
+        const hasSuccess = results.some(r => r.success);
 
-        return new Response(JSON.stringify({ success: true, eventType }), {
+        return new Response(JSON.stringify({ success: hasSuccess, eventType, results }), {
             status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 

@@ -93,6 +93,7 @@ const HubMessaging = lazy(() => import("./pages/admin/HubMessaging"));
 
 const AdminMaterials = lazy(() => import("./pages/admin/AdminMaterials"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
+const AdminClientAccounts = lazy(() => import("./pages/admin/AdminClientAccounts"));
 const ClientForm = lazy(() => import("./pages/admin/ClientForm"));
 const AdminIntegrations = lazy(() => import("./pages/admin/AdminIntegrations"));
 const AdminGHLIntegrations = lazy(() => import("./pages/admin/AdminGHLIntegrations"));
@@ -251,10 +252,13 @@ const App = () => (
               <Route path="/admin/mensagens" element={<ProtectedRoute><HubMessaging /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<Navigate to="/admin/profile" replace />} />
 
-              {/* Admin - Clients */}
+              {/* Admin - Clients (legado - tabela clients) */}
               <Route path="/admin/clients" element={<ProtectedRoute><AdminClients /></ProtectedRoute>} />
               <Route path="/admin/clients/novo" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
               <Route path="/admin/clients/edit/:id" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
+
+              {/* Admin - Client Accounts (nova - tabela unificada GHL) */}
+              <Route path="/admin/contas" element={<ProtectedRoute><AdminClientAccounts /></ProtectedRoute>} />
 
               {/* Admin - Posts */}
               {/* Admin - Posts (Rotas removidas) */}

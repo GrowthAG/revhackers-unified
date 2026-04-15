@@ -156,7 +156,18 @@ serve(async (req: Request) => {
           'Authorization': CLICKUP_API_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: clientName }),
+        body: JSON.stringify({ 
+          name: clientName,
+          override_statuses: true,
+          statuses: [
+            { status: "Backlog", color: "#b9bdcf", type: "open" },
+            { status: "A Fazer", color: "#f2d600", type: "custom" },
+            { status: "Em Progresso", color: "#00a2ff", type: "custom" },
+            { status: "Em Revisão", color: "#eb5a46", type: "custom" },
+            { status: "Aguardando Cliente", color: "#c377e0", type: "custom" },
+            { status: "Concluído", color: "#61bd4f", type: "closed" }
+          ]
+        }),
       }
     );
 

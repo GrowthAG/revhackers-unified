@@ -94,6 +94,12 @@ verify_jwt = true
 import_map = "./functions/clickup-sprint-orchestrator/deno.json"
 entrypoint = "./functions/clickup-sprint-orchestrator/index.ts"
 
+[functions.clickup-provision]
+enabled = true
+verify_jwt = true
+import_map = "./functions/clickup-provision/deno.json"
+entrypoint = "./functions/clickup-provision/index.ts"
+
 # ── User Management (Destrutivo — JWT obrigatório) ───────────────────────────
 [functions.delete-user]
 enabled = true

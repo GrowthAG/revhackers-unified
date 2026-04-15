@@ -342,7 +342,7 @@ export default function REIWizard({ projectId, type, onComplete }: REIWizardProp
                     formatted_summary: formattedSummary,
                     ...data,
                     submittedAt: new Date().toISOString()
-                });
+                }, projectDetails?.organization_id);
             } catch (webhookError) {
                 console.error("Webhook failed:", webhookError);
             }
