@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticate, requireRoleIn, toErrorResponse } from "../_shared/require-role.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -9,18 +10,24 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-    // CORS Preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
     try {
+        // Autorizacao: setup OAuth e admin op. Bloqueia user comum trocar codigo
+        // por tokens e extrair access_token/refresh_token no payload de resposta.
+        const auth = await authenticate(req);
+        requireRoleIn(auth, ['admin', 'super_admin']);
+
         const body = await req.json();
         const { code, redirect_uri } = body;
 
         if (!code || !redirect_uri) {
              throw new Error("Missing 'code' or 'redirect_uri'");
         }
+
+        console.log(`[GHL-OAUTH-CALLBACK] caller=${auth.callerId ?? 'service'} role=${auth.callerRole}`);
 
         // @ts-ignore
         const clientId = Deno.env.get('GHL_CLIENT_ID');
@@ -119,11 +126,7 @@ serve(async (req: Request) => {
             status: 200,
         });
 
-    } catch (err: any) {
-        console.error("GHL OAuth Callback Errored:", err);
-        return new Response(JSON.stringify({ error: err.message }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400,
-        });
+    } catch (err) {
+        return toErrorResponse(err, corsHeaders);
     }
 });

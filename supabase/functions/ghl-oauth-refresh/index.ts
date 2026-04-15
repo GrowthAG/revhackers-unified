@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticate, requireRoleIn, toErrorResponse } from "../_shared/require-role.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -9,12 +10,19 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-    // CORS Preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
     try {
+        // Autorizacao: refresh em massa de todas as orgs e acao administrativa
+        // ou de cron interno. Qualquer user comum disparando causa rate-limit no
+        // GHL + rotacao descontrolada de refresh_tokens.
+        const auth = await authenticate(req);
+        requireRoleIn(auth, ['admin', 'super_admin']);
+
+        console.log(`[GHL-OAUTH-REFRESH] caller=${auth.callerId ?? 'service'} role=${auth.callerRole}`);
+
         // @ts-ignore
         const clientId = Deno.env.get('GHL_CLIENT_ID');
         // @ts-ignore
@@ -22,7 +30,7 @@ serve(async (req: Request) => {
 
         if (!clientId || !clientSecret) {
             console.error("Missing GHL_CLIENT_ID or GHL_CLIENT_SECRET in Edge Function Env.");
-            return new Response(JSON.stringify({ error: "GHL_CLIENT_ID ou GHL_CLIENT_SECRET ausentes no cofre." }), { status: 500, headers: corsHeaders });
+            return new Response(JSON.stringify({ error: "GHL_CLIENT_ID ou GHL_CLIENT_SECRET ausentes no cofre." }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
         // Initialize Supabase Admin Client
@@ -125,11 +133,7 @@ serve(async (req: Request) => {
             status: 200,
         });
 
-    } catch (err: any) {
-        console.error("GHL OAuth Refresh Errored:", err);
-        return new Response(JSON.stringify({ error: err.message }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500,
-        });
+    } catch (err) {
+        return toErrorResponse(err, corsHeaders);
     }
 });

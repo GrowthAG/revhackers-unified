@@ -230,6 +230,40 @@ Sobrescrever esta tabela conforme a realidade — ela e um ponto de partida, nao
 
 ---
 
+## Debito tecnico: sweep de Auth em edge functions (2026-04-15)
+
+Auditoria varreu 31 edge functions que usam `SUPABASE_SERVICE_ROLE_KEY`. 6 foram patchadas em 2 ciclos. 10 restantes tem o helper canonico (`_shared/require-role.ts`) disponivel e devem receber `authenticate(req) + requireRoleIn(auth, [...])` quando forem tocadas por qualquer outro motivo (drive-by fix).
+
+**Patchadas em 9fce42a (escalacao vertical):**
+- `invite-member`, `delete-user` — role check + trigger DB em `profiles`
+
+**Patchadas em e1600fb (IDOR + cost abuse):**
+- `ghl-create-location`, `ghl-deploy-strategy` — admin/super_admin only
+- `trigger-post-rei-enrichment` — service_role | admin | owner-email
+- `agent-documents` — ownership pre-ping + admin em libraries
+
+**Patchadas em 2026-04-15 ciclo 3 (OAuth takeover):**
+- `ghl-oauth-callback` — admin/super_admin only (vaza tokens para user comum no payload)
+- `ghl-oauth-refresh` — admin/super_admin only (mass refresh sem caller check = rate abuse)
+
+**Restantes (10, nenhuma critica isolada, base canonica disponivel):**
+
+| Funcao | Risco | Politica sugerida |
+|---|---|---|
+| `clickup-orchestrator` | IDOR cria folder ClickUp para projeto alheio | admin/super_admin OR project owner |
+| `clickup-provision` | IDOR materializa sprints/tasks | admin/super_admin OR project owner |
+| `clickup-sprint-orchestrator` | Idem | admin/super_admin OR project owner |
+| `ghl-outbound-relay` | Tem whitelist de event_types (defensivo ok), confirmar validacao de organizationId | authenticated + org match |
+| `analyze-meeting-transcript` | Le transcricoes PII de qualquer reuniao | admin OR owner |
+| `transcribe-meeting` | Acessa audio | admin OR owner |
+| `process-meeting-audio` | Acessa audio + dispara enrichment | admin OR owner |
+| `google-meetings` | Le calendario | admin OR owner |
+| `scrape-profile` | Cost abuse (fetch externo) | authenticated basta, adicionar rate limit |
+| `fathom-sync` | Ja tem alguma validacao, revisar | revisar |
+
+**Pendencia de teste:** regressao curl com JWT de user comum rodou em `invite-member`? Se nao, validar os 6 fixes em producao antes de novos ciclos.
+
 ## Historico
 
 - **2026-04-15** (Claude Code local): documento criado a partir de 3 auditorias paralelas verificadas.
+- **2026-04-15** (Claude Code local): 3 ciclos de auth hardening. Helper `_shared/require-role.ts` criado. 6 edge functions patchadas + trigger DB. 10 edge functions registradas como debito tecnico com politica sugerida por funcao.
