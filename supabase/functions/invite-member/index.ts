@@ -6,77 +6,106 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+const SERVICE_KEY  = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+const ANON_KEY     = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+
+function json(status: number, body: unknown): Response {
+    return new Response(JSON.stringify(body), {
+        status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+}
+
 serve(async (req) => {
-    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
     try {
-        const { email, role, redirectTo } = await req.json();
-
-        if (!email) {
-            throw new Error('O e-mail é obrigatório para o convite.');
+        // Step 1: Extract caller JWT.
+        const authHeader = req.headers.get('Authorization') ?? '';
+        if (!authHeader.startsWith('Bearer ')) {
+            return json(401, { error: 'Authorization header ausente ou invalido' });
         }
 
-        // Connect with Service Role (Admin Powers)
-        const supabaseAdmin = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-            {
-                auth: {
-                    autoRefreshToken: false,
-                    persistSession: false,
-                }
-            }
-        );
+        // Step 2: Client ancorado ao JWT do chamador (respeita RLS e popula auth.uid()).
+        const supabaseUser = createClient(SUPABASE_URL, ANON_KEY, {
+            global: { headers: { Authorization: authHeader } },
+            auth: { autoRefreshToken: false, persistSession: false },
+        });
 
-        console.log(`[INVITE-MEMBER] Disparando convite via Supabase Admin para: ${email}`);
+        const { data: userData, error: userErr } = await supabaseUser.auth.getUser();
+        if (userErr || !userData?.user) {
+            return json(401, { error: 'JWT invalido ou expirado' });
+        }
+        const callerId = userData.user.id;
 
-        // ── Determine redirect URL ──────────────────────────────────────────
-        // Priority: 1) caller-supplied redirectTo, 2) env var, 3) safe prod default
-        // NOTE: This URL must be in the Supabase allowlist (Authentication → URL Configuration)
+        // Step 3: Lookup role do chamador via profiles (com JWT dele, nao service role).
+        const { data: callerProfile, error: profErr } = await supabaseUser
+            .from('profiles')
+            .select('role')
+            .eq('id', callerId)
+            .single();
+
+        if (profErr || !callerProfile) {
+            return json(403, { error: 'Perfil do solicitante nao encontrado' });
+        }
+
+        const callerRole = callerProfile.role as string | null;
+        const allowedCallerRoles = ['super_admin', 'admin'];
+        if (!callerRole || !allowedCallerRoles.includes(callerRole)) {
+            return json(403, { error: 'Permissao insuficiente para convidar usuarios' });
+        }
+
+        // Step 4: Validar payload.
+        const { email, role: requestedRole, redirectTo } = await req.json();
+        if (!email) {
+            return json(400, { error: 'O campo email e obrigatorio' });
+        }
+        const finalRole = (requestedRole as string) || 'user';
+
+        // Step 5: Escalacao de privilegio: apenas super_admin pode conceder admin/super_admin.
+        const elevatedRoles = ['admin', 'super_admin'];
+        if (elevatedRoles.includes(finalRole) && callerRole !== 'super_admin') {
+            return json(403, {
+                error: 'Apenas super_admin pode conceder roles admin ou super_admin',
+            });
+        }
+
+        // Step 6: Agora sim, elevar para SERVICE_ROLE para disparar convite no Auth.
+        const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY, {
+            auth: { autoRefreshToken: false, persistSession: false },
+        });
+
         const siteUrl = Deno.env.get('PUBLIC_SITE_URL') || 'https://revhackers.com.br';
         const finalRedirectTo = redirectTo || `${siteUrl}/reset-password`;
 
-        console.log(`[INVITE-MEMBER] redirectTo final: ${finalRedirectTo}`);
+        console.log(
+            `[INVITE-MEMBER] caller=${callerId} callerRole=${callerRole} invitee=${email} newRole=${finalRole}`
+        );
 
-        // Generate Invite Link (Admin Auth Route)
         const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-            data: { 
-                role: role || 'user',
-                invited: true  // Flag used by the frontend to show "Create password" copy
+            data: {
+                role: finalRole,
+                invited: true,
             },
-            redirectTo: finalRedirectTo
+            redirectTo: finalRedirectTo,
         });
 
         if (error) {
-            console.error('[INVITE-MEMBER] Falha de comunicação com o Auth Server:', error);
-            throw error;
+            console.error('[INVITE-MEMBER] Auth server error:', error);
+            return json(500, { error: error.message });
         }
 
-        console.log(`[INVITE-MEMBER] E-mail de convite despachado para ${email}.`);
-
-        return new Response(
-            JSON.stringify({ 
-                success: true, 
-                message: 'E-mail de convite enviado via Supabase Auth!',
-                userId: data.user.id
-            }),
-            {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 200,
-            }
-        );
+        return json(200, {
+            success: true,
+            message: 'E-mail de convite enviado via Supabase Auth',
+            userId: data.user.id,
+        });
 
     } catch (error: any) {
-        console.error('[INVITE-MEMBER] Erro de Servidor:', error);
-        return new Response(
-            JSON.stringify({ error: error.message || 'Erro ao comunicar com provedor SMTP.' }),
-            {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 400,
-            }
-        );
+        console.error('[INVITE-MEMBER] Unexpected error:', error);
+        return json(500, { error: error.message || 'Erro interno ao processar convite' });
     }
 });
