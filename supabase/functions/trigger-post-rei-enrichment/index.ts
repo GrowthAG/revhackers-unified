@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticate, AuthError, toErrorResponse } from "../_shared/require-role.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -9,13 +10,20 @@ const corsHeaders = {
 
 /**
  * Trigger Post-REI Enrichment
- * 
+ *
  * Called automatically after REI 360 is submitted.
  * Orchestrates:
  * 1. Fetch REI data
  * 2. Enrich with OpenAI (benchmark, personas, market)
  * 3. Create draft Strategic Plan
  * 4. Create draft Success Plan
+ *
+ * Autorizacao:
+ *   - service_role (ex: process-meeting-audio invocando): bypass
+ *   - admin/super_admin: allow
+ *   - user comum: allow apenas se email bate com rei_projects.client_email
+ *                 OU rei_projects.analyst_email (ownership fraco, mas eh o que
+ *                 o schema permite hoje).
  */
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
@@ -23,16 +31,38 @@ serve(async (req) => {
     }
 
     try {
+        const auth = await authenticate(req);
+
         const { projectId, reiType, source, kickoffData } = await req.json();
 
         if (!projectId) {
-            throw new Error('projectId is required');
+            throw new AuthError(400, 'projectId is required');
         }
 
         const supabaseClient = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
+
+        // Ownership check para users comuns. service_role e admin/super_admin passam direto.
+        if (!auth.isServiceRole && !['admin', 'super_admin'].includes(auth.callerRole ?? '')) {
+            const { data: proj } = await supabaseClient
+                .from('rei_projects')
+                .select('client_email, analyst_email')
+                .eq('id', projectId)
+                .single();
+
+            const email = auth.callerEmail?.toLowerCase() ?? '';
+            const ownerEmails = [proj?.client_email, proj?.analyst_email]
+                .filter(Boolean)
+                .map((e) => String(e).toLowerCase());
+
+            if (!email || !ownerEmails.includes(email)) {
+                throw new AuthError(403, 'Usuario nao autorizado a enriquecer este projeto');
+            }
+        }
+
+        console.log(`[trigger-post-rei-enrichment] caller=${auth.callerId ?? 'service'} role=${auth.callerRole} projectId=${projectId}`);
 
         console.log(`[trigger-post-rei-enrichment] Starting enrichment for project: ${projectId} (Source: ${source || 'REI'})`);
 
@@ -242,15 +272,9 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
-    } catch (error: any) {
-        console.error('Post-REI enrichment error:', error.message);
-        return new Response(JSON.stringify({
-            success: false,
-            error: error.message
-        }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500,
-        });
+    } catch (err: any) {
+        console.error('Post-REI enrichment error:', err?.message ?? err);
+        return toErrorResponse(err, corsHeaders);
     }
 });
 

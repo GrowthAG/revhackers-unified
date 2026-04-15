@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticate, requireRoleIn, toErrorResponse } from "../_shared/require-role.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -13,27 +14,34 @@ async function sleep(ms: number) {
 }
 
 serve(async (req: Request) => {
-    // CORS Preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
     try {
+        // Autorizacao: deploy de plano aprovado para GHL e operacao administrativa.
+        // Bloqueia IDOR (qualquer user autenticado disparando deploy de qualquer projeto).
+        const auth = await authenticate(req);
+        requireRoleIn(auth, ['admin', 'super_admin']);
+
         const reqBody = await req.json();
         const { projectId } = reqBody;
 
         if (!projectId) {
-            return new Response(JSON.stringify({ error: "Missing projectId parameter" }), { status: 400, headers: corsHeaders });
+            return new Response(JSON.stringify({ error: "Missing projectId parameter" }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
         }
 
-        // Initialize Supabase Admin Client
         // @ts-ignore
         const supabaseUrl = Deno.env.get('SUPABASE_URL');
         // @ts-ignore
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
         const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
-        // 1. Load the Project & Strategic Plan
+        console.log(`[GHL-DEPLOY-STRATEGY] caller=${auth.callerId ?? 'service'} role=${auth.callerRole} projectId=${projectId}`);
+
         const { data: project, error: projErr } = await supabase
             .from('rei_projects')
             .select('client_id, name')
@@ -45,12 +53,12 @@ serve(async (req: Request) => {
         }
 
         const clientId = project.client_id;
-        
+
         const { data: planArray, error: planErr } = await supabase
             .from('strategic_plans')
             .select('personas_data, okrs')
             .eq('rei_project_id', projectId)
-            .eq('status', 'approved') // Only deploy approved plans
+            .eq('status', 'approved')
             .order('generated_at', { ascending: false })
             .limit(1);
 
@@ -60,7 +68,6 @@ serve(async (req: Request) => {
 
         const plan = planArray[0];
 
-        // 2. Load the Organization (Multi-Tenant mapping) to find Oauth Token
         const { data: orgs, error: orgErr } = await supabase
             .from('organizations')
             .select('id, settings')
@@ -78,8 +85,6 @@ serve(async (req: Request) => {
             throw new Error("Subconta da Funnels (Location ID) não encontrada nas configurações da organização.");
         }
 
-        // 3. Prepare the Variables (Custom Values Payload)
-        // We map the personas and OKRs into flat strings for GHL injection
         const customValuesToInject: { name: string, value: string }[] = [];
 
         if (plan.personas_data && plan.personas_data.length > 0) {
@@ -101,7 +106,6 @@ serve(async (req: Request) => {
             throw new Error("O plano estratégico aprovado está em branco nas variáveis cruciais (Personas/OKRs).");
         }
 
-        // 4. API Logic: To avoid 409 Conflicts, we must GET existing custom values first
         // @ts-ignore
         const fallbackKey = Deno.env.get('GHL_AGENCY_API_KEY');
         const apiHeaders = {
@@ -123,14 +127,12 @@ serve(async (req: Request) => {
 
         const existingCvData = await getCvResponse.json();
         const existingValuesList: { id: string, name: string }[] = existingCvData.customValues || [];
-        
-        // Cria um mapa para busca rápida: Mapeia Nome -> ID
+
         const existingValuesMap = new Map<string, string>();
         existingValuesList.forEach(cv => {
             existingValuesMap.set(cv.name, cv.id);
         });
 
-        // 5. Inject Sequence (POST/PUT Custom Values) with Sleep
         let successCount = 0;
         let errorCount = 0;
 
@@ -139,14 +141,12 @@ serve(async (req: Request) => {
 
             try {
                 if (existingId) {
-                    // Update existing
                     await fetch(`https://services.leadconnectorhq.com/locations/${ghlLocationId}/customValues/${existingId}`, {
                         method: 'PUT',
                         headers: apiHeaders,
                         body: JSON.stringify({ name: item.name, value: item.value })
                     });
                 } else {
-                    // Create new
                     await fetch(`https://services.leadconnectorhq.com/locations/${ghlLocationId}/customValues`, {
                         method: 'POST',
                         headers: apiHeaders,
@@ -159,12 +159,11 @@ serve(async (req: Request) => {
                 errorCount++;
             }
 
-            // Sleep 350ms to obey Funnels' strict rate limits
             await sleep(350);
         }
 
-        return new Response(JSON.stringify({ 
-            success: true, 
+        return new Response(JSON.stringify({
+            success: true,
             message: `Deploy Concluído. ${successCount} Variáveis sincronizadas.`,
             stats: { success: successCount, failed: errorCount }
         }), {
@@ -172,11 +171,7 @@ serve(async (req: Request) => {
             status: 200,
         });
 
-    } catch (err: any) {
-        console.error("GHL Deploy Strategy Errored:", err);
-        return new Response(JSON.stringify({ error: err.message }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500,
-        });
+    } catch (err) {
+        return toErrorResponse(err, corsHeaders);
     }
 });

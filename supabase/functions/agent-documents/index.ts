@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { authenticate, requireRoleIn, AuthError, toErrorResponse } from "../_shared/require-role.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -11,12 +12,15 @@ serve(async (req) => {
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
     try {
+        // Todas as acoes exigem autenticacao. service_role bypassa (chamadas internas).
+        const auth = await authenticate(req);
+
         let body;
         try { body = await req.json(); }
-        catch (jsonErr) { throw new Error('Payload JSON inválido'); }
+        catch (jsonErr) { throw new AuthError(400, 'Payload JSON invalido'); }
 
-        const { action, agentId, documents } = body || {};
-        console.log(`[EDGE] Req: action=${action}, agentId=${agentId}`);
+        const { action, agentId } = body || {};
+        console.log(`[agent-documents] caller=${auth.callerId ?? 'service'} role=${auth.callerRole} action=${action} agentId=${agentId}`);
 
         const openaiKey = Deno.env.get('OPENAI_API_KEY');
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -24,25 +28,47 @@ serve(async (req) => {
         const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
         const userJwt = req.headers.get('Authorization')!;
 
-        if (!openaiKey || !supabaseUrl || !supabaseServiceKey || !supabaseAnonKey || !userJwt) {
-            throw new Error('Ambiente não configurado corretamente');
+        if (!openaiKey || !supabaseUrl || !supabaseServiceKey || !supabaseAnonKey) {
+            throw new Error('Ambiente nao configurado corretamente');
         }
 
         const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-        const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
-            global: { headers: { Authorization: userJwt } },
-        });
+        const supabaseUser = auth.isServiceRole
+            ? supabaseAdmin
+            : createClient(supabaseUrl, supabaseAnonKey, {
+                global: { headers: { Authorization: userJwt } },
+            });
+
+        // Helper: valida que o caller tem acesso ao agentId especifico.
+        // service_role e admin/super_admin bypassam. User comum precisa ser dono do agente via RLS.
+        const assertAgentAccess = async () => {
+            if (auth.isServiceRole) return;
+            if (['admin', 'super_admin'].includes(auth.callerRole ?? '')) return;
+            if (!agentId || agentId === 'default') return;
+
+            const { data: agentRow, error: agentErr } = await supabaseUser
+                .from('agents')
+                .select('id')
+                .eq('id', agentId)
+                .single();
+
+            if (agentErr || !agentRow) {
+                throw new AuthError(403, 'Acesso negado ou agente nao encontrado');
+            }
+        };
 
         // ACTION: Ping (Health & Diagnostics)
+        // Antes: retornava counts/filenames sem checar ownership -> vazava dados.
+        // Agora: ownership check vem ANTES de qualquer query.
         if (action === 'ping') {
             if (!agentId || agentId === 'default') {
                 return new Response(JSON.stringify({ success: true, documentCount: 0, filenames: [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             }
 
-            // Count documents directly assigned to the agent
+            await assertAgentAccess();
+
             const { count: directCount } = await supabaseAdmin.from('agent_documents').select('*', { count: 'exact', head: true }).eq('agent_id', agentId);
 
-            // Count documents from linked libraries
             const { data: linkedLibs } = await supabaseAdmin.from('agent_libraries').select('library_id').eq('agent_id', agentId);
             let libraryCount = 0;
             if (linkedLibs?.length) {
@@ -57,38 +83,26 @@ serve(async (req) => {
 
             return new Response(JSON.stringify({
                 success: true,
-                message: 'Pong! Conexão ativa.',
+                message: 'Pong! Conexao ativa.',
                 documentCount: (directCount || 0) + libraryCount,
                 filenames: uniqueFilenames,
             }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        // Security Check: Verify Ownership
-        const { data: agentData, error: agentError } = await supabaseUser
-            .from('agents')
-            .select('id')
-            .eq('id', agentId)
-            .single();
-
-        if (agentError || !agentData) {
-            console.error('[EDGE] Access Denied:', agentError);
-            throw new Error('Acesso negado ou agente não encontrado.');
-        }
+        // Para todas as acoes abaixo que operam sobre um agentId especifico,
+        // ownership check e obrigatorio.
+        await assertAgentAccess();
 
         // ACTION: Upload (Strictly via Chunks)
         if (action === 'upload_chunks') {
             const { documents, libraryId } = body;
-            if (!documents || !Array.isArray(documents)) throw new Error('Documentos (chunks) obrigatórios');
+            if (!documents || !Array.isArray(documents)) throw new AuthError(400, 'Documentos (chunks) obrigatorios');
             if (documents.length === 0) return new Response(JSON.stringify({ success: true, message: 'Nada para processar' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-            if (!agentId && !libraryId) throw new Error('AgentId ou LibraryId é obrigatório');
+            if (!agentId && !libraryId) throw new AuthError(400, 'AgentId ou LibraryId e obrigatorio');
 
-            console.log(`[EDGE] Processing ${documents.length} chunks. Agent: ${agentId}, Lib: ${libraryId}`);
-
-            // Validate Structure
             const validChunks = documents.filter((d: any) => d.content && d.filename);
-            if (validChunks.length === 0) throw new Error('Nenhum chunk válido encontrado');
+            if (validChunks.length === 0) throw new AuthError(400, 'Nenhum chunk valido encontrado');
 
-            // Generate Embeddings (Batching)
             const BATCH_SIZE = 10;
             for (let i = 0; i < validChunks.length; i += BATCH_SIZE) {
                 const batch = validChunks.slice(i, i + BATCH_SIZE);
@@ -124,16 +138,13 @@ serve(async (req) => {
         // ACTION: Crawl (Fetch URL & Extract Text)
         if (action === 'crawl') {
             const { url } = body;
-            if (!url) throw new Error('URL obrigatória');
+            if (!url) throw new AuthError(400, 'URL obrigatoria');
 
-            console.log(`[EDGE] Crawling: ${url}`);
             try {
                 const res = await fetch(url);
                 if (!res.ok) throw new Error(`Falha ao acessar URL: ${res.statusText}`);
                 const html = await res.text();
 
-                // Simple HTML to Text (Regex fallback since DOMParser might need imports)
-                // Removes scripts, styles, tags
                 let text = html
                     .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "")
                     .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gim, "")
@@ -144,8 +155,10 @@ serve(async (req) => {
 
                 return new Response(JSON.stringify({ success: true, content: text }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
             } catch (err: any) {
-                console.error('[EDGE] Crawl error:', err);
-                return new Response(JSON.stringify({ success: false, error: err.message }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+                return new Response(JSON.stringify({ success: false, error: err.message }), {
+                    status: 502,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                });
             }
         }
 
@@ -171,11 +184,13 @@ serve(async (req) => {
         }
 
         // --- LIBRARY ACTIONS ---
+        // Biblioteca e recurso global compartilhado entre agentes.
+        // Criacao/atribuicao restrita a admin/super_admin.
 
-        // ACTION: Create Library
         if (action === 'create_library') {
+            requireRoleIn(auth, ['admin', 'super_admin']);
             const { name, description } = body;
-            if (!name) throw new Error('Nome da biblioteca é obrigatório');
+            if (!name) throw new AuthError(400, 'Nome da biblioteca e obrigatorio');
 
             const { data, error } = await supabaseAdmin
                 .from('knowledge_libraries')
@@ -187,8 +202,8 @@ serve(async (req) => {
             return new Response(JSON.stringify({ success: true, library: data }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        // ACTION: List Libraries
         if (action === 'list_libraries') {
+            // Autenticado basta; biblioteca e recurso nominalmente publico dentro do hub.
             const { data, error } = await supabaseAdmin
                 .from('knowledge_libraries')
                 .select('*')
@@ -198,10 +213,10 @@ serve(async (req) => {
             return new Response(JSON.stringify({ success: true, libraries: data }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        // ACTION: Assign Library to Agent
         if (action === 'assign_library') {
+            requireRoleIn(auth, ['admin', 'super_admin']);
             const { libraryId } = body;
-            if (!agentId || !libraryId) throw new Error('AgentId e LibraryId são obrigatórios');
+            if (!agentId || !libraryId) throw new AuthError(400, 'AgentId e LibraryId sao obrigatorios');
 
             const { error } = await supabaseAdmin
                 .from('agent_libraries')
@@ -211,17 +226,15 @@ serve(async (req) => {
             return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        // ACTION: Delete
         if (action === 'delete') {
             const { error: delError } = await supabaseAdmin.from('agent_documents').delete().eq('agent_id', agentId);
             if (delError) throw delError;
             return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
-        throw new Error(`Ação inválida: ${action}`);
+        throw new AuthError(400, `Acao invalida: ${action}`);
 
-    } catch (error: any) {
-        console.error('Final Edge Function Error:', error);
-        return new Response(JSON.stringify({ success: false, error: error.message }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    } catch (err) {
+        return toErrorResponse(err, corsHeaders);
     }
 });
