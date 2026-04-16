@@ -4,6 +4,8 @@
 -- 62 custom fields de contato, 14 custom fields de opportunity (11 existentes + 3 novos)
 -- 3 pipelines: CS (Jornada do Cliente), Sales-Led Growth, PLG
 
+ALTER TABLE organizations DISABLE TRIGGER USER;
+
 INSERT INTO organizations (
   slug,
   name,
@@ -27,13 +29,21 @@ INSERT INTO organizations (
     'ghl_pipelines', jsonb_build_object(
       'sales_led', 'NbgGot6qGPdQIxmvDEgo',
       'plg', 'b6L19WdZw6kDkathDU2j',
-      'cs_journey', 'gpV3bJxWJz1dPlPBVGrD'
+      'cs_journey', 'CHb1xb6yXG3NXjwyOjnv', -- Pós-venda / Receita Recorrente
+      'cs_journey_stages', jsonb_build_object(
+        'onboarding', 'c274cfc9-cd9b-4eb7-9d87-ee3e36972c88',
+        'active',     '92aa9fae-602f-4065-a8f6-bf442f15efef',
+        'risk',       '302ae5b0-3f26-4f19-9009-3574b5d92cb1',
+        'expansion',  'b3085774-ce7e-42e4-9aa6-440e12e53f00'
+      )
     ),
     'ghl_opp_custom_fields', jsonb_build_object(
       -- Campos novos (criados via API 15/04/2026)
       'mrr',                       'sfoqdLRZqLWvE8fLmVPJ',
       'contract_duration_months',  'iuuumGsW7LqLotA5rALE',
       'hub_project_id',            'CMcraKg2YezLWNJJ6M0y',
+      'clickup_workspace',         '0gJ96bwN7eZcrvJwcZv5',
+      'clickup_docs',              'Z9FhcD0jUOIu45yn6ceP',
       -- Campos existentes
       'data_inicio_contrato',      'bY1bxgElioieDZlds7fu',
       'data_renovacao',            'lfr3qQ5GIyHY6OTPn0mB',
@@ -52,3 +62,5 @@ INSERT INTO organizations (
 ON CONFLICT (slug) DO UPDATE SET
   settings = EXCLUDED.settings,
   status = 'active';
+
+ALTER TABLE organizations ENABLE TRIGGER USER;

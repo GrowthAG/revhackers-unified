@@ -75,9 +75,17 @@ export default function PlanSignPage() {
                         },
                     })
                     .catch((err: unknown) => {
-                        // Nao bloqueia a confirmacao ao cliente.
-                        // O admin pode re-provisionar manualmente no Hub se necessario.
                         console.error('[PlanSignPage] clickup-provision falhou:', err);
+                    });
+                
+                // Módulo 2: Dual Link Strategy - Hook de Aprovação
+                // Dispara o update da Task Zero no ClickUp com o link do Portal do Cliente
+                supabase.functions
+                    .invoke('clickup-update-docs-link', {
+                        body: { planId: plan.id }
+                    })
+                    .catch((err: unknown) => {
+                        console.error('[PlanSignPage] clickup-update-docs-link falhou:', err);
                     });
             }
 

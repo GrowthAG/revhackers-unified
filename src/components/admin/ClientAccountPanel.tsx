@@ -126,7 +126,7 @@ export function ClientAccountPanel({ clientEmail, projectName }: Props) {
             onClick={() => setLinking(true)}
             className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border border-zinc-300 text-zinc-600 hover:border-zinc-900 hover:text-zinc-900 transition-all"
           >
-            <Link2 className="w-3 h-3" /> Vincular GHL IDs
+            <Link2 className="w-3 h-3" /> Vincular Contatos CRM
           </button>
         ) : (
           <div className="space-y-2">
@@ -200,8 +200,8 @@ export function ClientAccountPanel({ clientEmail, projectName }: Props) {
 
         {/* GHL Links */}
         <div className="pt-1 space-y-1">
-          <GHLLink label="RevHackers GHL" contactId={account.revhackers_contact_id} />
-          <GHLLink label="Funnels GHL" contactId={account.funnels_contact_id} />
+          <GHLLink label="Contato RevHackers" contactId={account.revhackers_contact_id} />
+          <GHLLink label="Contato Funnels" contactId={account.funnels_contact_id} />
         </div>
 
         {/* Valores */}

@@ -291,7 +291,7 @@ export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
   diagnostico_revenue: 'Diagnostico Revenue',
   diagnostico_founder: 'Diagnostico Founder',
   diagnostico_site: 'Diagnostico Site',
-  ghl_calendar: 'Agenda GHL',
+  ghl_calendar: 'Agenda CRM',
   referral: 'Indicacao',
   cold_outbound: 'Outbound',
   manual: 'Manual',

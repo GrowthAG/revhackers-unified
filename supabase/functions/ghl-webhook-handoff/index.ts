@@ -177,7 +177,8 @@ serve(async (req: Request) => {
         ) as string | null
 
         // Web Crypto API signature mapping
-        const idempotencyKeyRaw = `${eventType}|${ghlContactId ?? contactEmail}|${payload.deal_id ?? ''}|${payload.timestamp ?? ''}`
+        // MODULO 1: Deterministic Idempotency Key (Remove volatile timestamp to prevent duplicate firing on webhook retries)
+        const idempotencyKeyRaw = `${eventType}|${ghlContactId ?? contactEmail}|${payload.opportunity_id ?? payload.deal_id ?? ''}|deterministic`
         const msgUint8 = new TextEncoder().encode(idempotencyKeyRaw);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -379,7 +380,7 @@ serve(async (req: Request) => {
                     // Roteia contact_id pelo location de origem
                     const isFunnels = locationId === 'S7HEFAz97UKuC8NLHMmI'
                     if (contactEmail) {
-                        supabase
+                        const { error: caErr } = await supabase
                             .from('client_accounts' as any)
                             .upsert({
                                 client_email: contactEmail.toLowerCase(),
@@ -392,15 +393,15 @@ serve(async (req: Request) => {
                                 has_software: reiType !== 'consulting',
                                 consulting_value: reiType === 'consulting' ? tcv : 0,
                                 software_value: reiType === 'consulting' ? 0 : tcv,
+                                consulting_mrr: reiType === 'consulting' ? mrr : 0,
+                                software_mrr: reiType === 'consulting' ? 0 : mrr,
                                 consulting_status: reiType === 'consulting' ? 'active' : null,
                                 consulting_start_date: reiType === 'consulting' ? (contractStartDate || new Date().toISOString()) : null,
                                 software_activation_date: reiType !== 'consulting' ? (contractStartDate || new Date().toISOString()) : null,
                                 software_renewal_date: reiType !== 'consulting' ? renewalDate : null,
                             }, { onConflict: 'client_email' })
-                            .then(({ error: caErr }: { error: any }) => {
-                                if (caErr) console.warn('[ghl-handoff] client_accounts upsert nao critico:', caErr.message)
-                                else console.log('[ghl-handoff] client_accounts upserted para', contactEmail)
-                            })
+                        if (caErr) console.error('[ghl-handoff] client_accounts upsert FALHOU:', caErr.message)
+                        else console.log('[ghl-handoff] client_accounts upserted com sucesso para', contactEmail)
                     }
 
                     // Auto-trigger: gerar success plan via AI (fire-and-forget)
@@ -476,10 +477,10 @@ serve(async (req: Request) => {
                     console.log(`[ghl-handoff] Opportunity ${opp.id} convertida em projeto ${projectId} (sprints: ${result?.sprints_created || 0})`)
                 }
 
-                // Upsert client_accounts (fire-and-forget, nao critico)
+                // Upsert client_accounts (awaited — crítico para observabilidade)
                 const isFunnelsOpp = locationId === 'S7HEFAz97UKuC8NLHMmI'
                 if (contactEmail) {
-                    supabase
+                    const { error: caErr } = await supabase
                         .from('client_accounts' as any)
                         .upsert({
                             client_email: contactEmail.toLowerCase(),
@@ -492,14 +493,15 @@ serve(async (req: Request) => {
                             has_software: reiType !== 'consulting',
                             consulting_value: reiType === 'consulting' ? tcv : 0,
                             software_value: reiType === 'consulting' ? 0 : tcv,
+                            consulting_mrr: reiType === 'consulting' ? mrr : 0,
+                            software_mrr: reiType === 'consulting' ? 0 : mrr,
                             consulting_status: reiType === 'consulting' ? 'active' : null,
                             consulting_start_date: reiType === 'consulting' ? (contractStartDate || new Date().toISOString()) : null,
                             software_activation_date: reiType !== 'consulting' ? (contractStartDate || new Date().toISOString()) : null,
                             software_renewal_date: reiType !== 'consulting' ? renewalDate : null,
                         }, { onConflict: 'client_email' })
-                        .then(({ error: caErr }: { error: any }) => {
-                            if (caErr) console.warn('[ghl-handoff] client_accounts upsert nao critico:', caErr.message)
-                        })
+                    if (caErr) console.error('[ghl-handoff] client_accounts upsert FALHOU:', caErr.message)
+                    else console.log('[ghl-handoff] client_accounts upserted com sucesso para', contactEmail)
                 }
 
                 // Auto-trigger: gerar success plan via AI (fire-and-forget)

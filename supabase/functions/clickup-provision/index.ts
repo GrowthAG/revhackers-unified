@@ -152,7 +152,11 @@ serve(async (req: Request) => {
     // 2. Busca dados do projeto
     const { data: project, error: projectError } = await supabase
       .from('rei_projects')
-      .select('id, client_name, client_company, trade_name, type, duration_days, project_duration')
+      .select(`
+        id, client_name, client_company, trade_name, type, 
+        duration_days, project_duration, ghl_opportunity_id, organization_id,
+        organizations ( slug, settings )
+      `)
       .eq('id', projectId)
       .single();
 
@@ -410,6 +414,71 @@ serve(async (req: Request) => {
           duration_ms: Date.now() - t0,
         })
         .eq('id', runId);
+    }
+
+    // 11. Write-back das URLs mestre pro GHL (Workflow "Round-Trip")
+    if ((project as any)?.ghl_opportunity_id && (project as any)?.organizations?.settings) {
+      const org = (project as any).organizations;
+      const settings = org.settings;
+      const slug = org.slug;
+      
+      const clickupWorkspaceField = settings.ghl_opp_custom_fields?.clickup_workspace;
+      const clickupDocsField = settings.ghl_opp_custom_fields?.clickup_docs;
+
+      if (clickupWorkspaceField && clickupDocsField) {
+        // Obter chave da API via env baseada no slug
+        let ghlToken = '';
+        if (slug === 'growth-funnels') ghlToken = Deno.env.get('GHL_PIT_FUNNELS') || '';
+        if (slug === 'revhackers') ghlToken = Deno.env.get('GHL_PIT_REVHACKERS') || '';
+        
+        if (ghlToken) {
+          const workspaceUrl = `https://app.clickup.com/v/l/f/${integration.clickup_folder_id}`;
+          const docsUrl = `https://app.clickup.com/v/l/f/${integration.clickup_folder_id}`;
+          
+          console.log(`[clickup-provision] Enviando URLs Write-Back pro GHL (Opp: ${(project as any).ghl_opportunity_id})...`);
+          
+          try {
+            const csPipelineId = settings.ghl_pipelines?.cs_journey_pipeline;
+            const csOnboardingStageId = settings.ghl_pipelines?.cs_journey_stages?.onboarding;
+
+            const updatePayload: any = {
+              customFields: [
+                { id: clickupWorkspaceField, field_value: workspaceUrl },
+                { id: clickupDocsField, field_value: docsUrl }
+              ]
+            };
+
+            // Se os IDs do Pipeline CS estiverem parametrizados, move o Card pra lá
+            if (csPipelineId && csOnboardingStageId) {
+              updatePayload.pipelineId = csPipelineId;
+              updatePayload.pipelineStageId = csOnboardingStageId;
+              console.log(`[clickup-provision] Enviando Opportunity para CS Pipeline (Pipeline: ${csPipelineId}, Stage: ${csOnboardingStageId})`);
+            }
+            
+            const ghlRes = await fetch(`https://services.leadconnectorhq.com/opportunities/${(project as any).ghl_opportunity_id}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${ghlToken}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(updatePayload)
+            });
+            
+            if (!ghlRes.ok) {
+              const errTxt = await ghlRes.text();
+              console.error(`[clickup-provision] Falha no write-back GHL: ${errTxt}`);
+            } else {
+              console.log(`[clickup-provision] Write-Back URLs pro GHL com sucesso!`);
+            }
+          } catch(err) {
+            console.error(`[clickup-provision] Excecao no write-back GHL:`, err);
+          }
+        } else {
+          console.warn(`[clickup-provision] Nenhuma chave GHL_PIT configurada para a subconta ${slug}`);
+        }
+      }
     }
 
     const summary = {

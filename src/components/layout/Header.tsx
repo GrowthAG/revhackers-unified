@@ -128,7 +128,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
             ? "bg-black/95 backdrop-blur-md border-white/10 shadow-sm py-4"
             : isLightMode
               ? "bg-white/80 backdrop-blur-md border-zinc-200/50 py-6"
-              : "bg-black border-transparent py-6"
+              : "bg-[#0a0a0a] border-transparent py-6"
         )}
       >
         <div className="container-custom flex justify-between items-center relative">

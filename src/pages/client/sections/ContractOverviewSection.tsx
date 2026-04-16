@@ -44,7 +44,7 @@ export default function ContractOverviewSection({
     ? [
         "Mapeamento de Processo Comercial (Blueprint)",
         "Configuração de Pipelines e Estágios Customizados",
-        "Automações de Follow-up (Workflows GHL)",
+        "Automações de Follow-up (Workflows CRM)",
         "Integrações Nativas (Calendários, Email, Meta Ads)",
         "Treinamento da Equipe Comercial (Handover)"
       ] 

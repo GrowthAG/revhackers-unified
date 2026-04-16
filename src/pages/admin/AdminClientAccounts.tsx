@@ -24,6 +24,8 @@ interface ClientAccount {
   has_software: boolean;
   consulting_value: number;
   software_value: number;
+  consulting_mrr: number;
+  software_mrr: number;
   consulting_status: string;
   software_status: string;
   consulting_start_date: string | null;
@@ -135,6 +137,12 @@ const AdminClientAccounts: React.FC = () => {
     return s + (a.consulting_value || 0) + (a.software_value || 0);
   }, 0);
 
+  const totalMRR = filteredByOrg.reduce((s, a) => {
+    if (orgFilter === 'revhackers') return s + (a.consulting_mrr || 0);
+    if (orgFilter === 'funnels') return s + (a.software_mrr || 0);
+    return s + (a.consulting_mrr || 0) + (a.software_mrr || 0);
+  }, 0);
+
   const dualCount = filteredByOrg.filter(a => a.has_consulting && a.has_software).length;
   const semVinculo = filteredByOrg.filter(a => !a.revhackers_contact_id && !a.funnels_contact_id).length;
 
@@ -172,7 +180,7 @@ const AdminClientAccounts: React.FC = () => {
                   Contas Unificadas
                 </h1>
                 <p className="text-sm font-medium text-zinc-400 mt-2">
-                  Visao GHL RevHackers + GHL Funnels por cliente
+                  Visao unificada RevHackers + Funnels por cliente
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -197,16 +205,19 @@ const AdminClientAccounts: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 border-t border-zinc-100 divide-x divide-zinc-100 mb-0">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 border-t border-zinc-100 divide-x divide-zinc-100 mb-0">
               {[
                 { label: 'Total', value: filteredByOrg.length, icon: Users },
-                { label: 'Dual (Cons. + Soft.)', value: dualCount, icon: TrendingUp },
-                { label: 'LTV Total', value: formatBRL(totalLTV), icon: TrendingUp },
-                { label: 'Sem Vinculo GHL', value: semVinculo, icon: AlertTriangle },
+                { label: 'Dual', value: dualCount, icon: TrendingUp },
+                { label: 'MRR Base', value: formatBRL(totalMRR), icon: TrendingUp },
+                { label: 'TCV Base', value: formatBRL(totalLTV), icon: TrendingUp },
+                { label: 'Sem Vinculo', value: semVinculo, icon: AlertTriangle },
               ].map(({ label, value, icon: Icon }) => (
                 <div key={label} className="px-6 py-5 first:pl-0">
                   <p className="text-xxs font-black uppercase tracking-widest text-zinc-400 mb-1">{label}</p>
-                  <p className="text-2xl font-black text-zinc-900">{value}</p>
+                  <p className={cn("text-xl md:text-2xl font-black", label === 'MRR Base' ? 'text-[#00CC6A]' : 'text-zinc-900')}>
+                     {value}
+                  </p>
                 </div>
               ))}
             </div>
@@ -260,7 +271,7 @@ const AdminClientAccounts: React.FC = () => {
               <Building2 className="w-10 h-10 text-zinc-200 mb-4" />
               <p className="text-sm font-black text-zinc-900 uppercase tracking-tight mb-1">Nenhuma conta encontrada</p>
               <p className="text-xs text-zinc-400 font-medium">
-                Contas sao criadas automaticamente quando um deal e ganho no GHL.
+                Contas sao criadas automaticamente quando um deal e ganho no CRM.
               </p>
             </div>
           ) : (
@@ -277,18 +288,26 @@ const AdminClientAccounts: React.FC = () => {
                   <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Software</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">LTV</p>
+                  <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Financeiro</p>
                 </div>
                 <div className="col-span-3">
-                  <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Vinculos GHL</p>
+                  <p className="text-xxs font-black uppercase tracking-widest text-zinc-400">Vinculos CRM</p>
                 </div>
               </div>
 
               {filtered.map(account => {
                 let ltv = 0;
-                if (orgFilter === 'revhackers') ltv = account.consulting_value || 0;
-                else if (orgFilter === 'funnels') ltv = account.software_value || 0;
-                else ltv = (account.consulting_value || 0) + (account.software_value || 0);
+                let mrr = 0;
+                if (orgFilter === 'revhackers') {
+                   ltv = account.consulting_value || 0;
+                   mrr = account.consulting_mrr || 0;
+                } else if (orgFilter === 'funnels') {
+                   ltv = account.software_value || 0;
+                   mrr = account.software_mrr || 0;
+                } else {
+                   ltv = (account.consulting_value || 0) + (account.software_value || 0);
+                   mrr = (account.consulting_mrr || 0) + (account.software_mrr || 0);
+                }
 
                 return (
                   <div
@@ -328,10 +347,13 @@ const AdminClientAccounts: React.FC = () => {
                       )}
                     </div>
 
-                    {/* LTV */}
+                    {/* Financeiro */}
                     <div className="col-span-2">
-                      {ltv > 0 ? (
-                        <span className="text-sm font-black text-zinc-900">{formatBRL(ltv)}</span>
+                      {ltv > 0 || mrr > 0 ? (
+                        <div className="flex flex-col gap-0.5">
+                           {mrr > 0 && <span className="text-sm font-black text-[#00CC6A] tracking-tight">{formatBRL(mrr)}/mês</span>}
+                           {ltv > 0 && <span className="text-[11px] font-bold text-zinc-400">TCV: {formatBRL(ltv)}</span>}
+                        </div>
                       ) : (
                         <span className="text-[11px] text-zinc-300">-</span>
                       )}

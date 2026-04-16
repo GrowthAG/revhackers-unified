@@ -1,9 +1,9 @@
 import { useLocation, Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  Home, LayoutDashboard, Users, FileText,
+  Home, LayoutDashboard, Users,
   Book, Briefcase, ChevronLeft, ChevronRight,
-  FolderKanban, Settings, Plug, Target, MessageSquare, Layers,
+  FolderKanban,
   type LucideIcon
 } from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
@@ -26,7 +26,6 @@ const NAVIGATION: Record<string, NavItem[]> = {
   ],
   CLIENTES: [
     { icon: Users, label: 'Clientes', to: '/admin/clients' },
-    { icon: Layers, label: 'Contas GHL', to: '/admin/contas' },
   ],
   CONTEÚDO: [
     { icon: Book, label: 'Materiais', to: '/admin/materials' },
@@ -34,8 +33,6 @@ const NAVIGATION: Record<string, NavItem[]> = {
   ],
   SISTEMA: [
     { icon: Users, label: 'Usuarios', to: '/admin/users' },
-    { icon: Plug, label: 'Integracoes', to: '/admin/integrations' },
-    { icon: Target, label: 'Estrategia', to: '/admin/estrategia' },
   ],
 };
 

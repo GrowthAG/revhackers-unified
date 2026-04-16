@@ -114,11 +114,13 @@ serve(async (req: Request) => {
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-  // --- DEDUPLICACAO POR CONFLITO (Idempotency Lock) ---
-  const webhookId = payload.webhook_id ?? '';
-  let eventId = webhookId;
+  // --- DEDUPLICACAO POR CONFLITO ESTRITO (Idempotency Lock - MODULO 3) ---
+  // Jamais usar webhook_id como identificador de evento: webhook_id identifica a CONFIGURACAO (e eh o mesmo para milhares de callbacks)
+  // Usamos primariamente o ID da mutacao (history item) imutavel.
+  let eventId = payload.history_items?.[0]?.id;
   
   if (!eventId) {
+    // Falha em fallback: Hasheamos o bodyText inteiro. Assinatura infalivel para um mesmo payload (GHL retry behavior).
     const msgUint8 = new TextEncoder().encode(bodyText);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -160,10 +162,20 @@ serve(async (req: Request) => {
 
   // ─── taskStatusUpdated ──────────────────────────────────────────────────
   if (event === 'taskStatusUpdated') {
-    const newStatus: string = taskData?.status?.status ?? taskData?.after ?? '';
-    const listId: string    = taskData?.list?.id ?? '';
+    // [GHL Pipeline Round-Trip]: Ignorando propositalmente notificacoes granulares 
+    // de tasks individuais para evitar estouro de quotas e rate limits na Edge Function.
+    // O controle macro agora eh feito pelo trigger listUpdated (Sprints).
+    return new Response(JSON.stringify({ ok: true, ignored: 'taskStatusUpdated bypassed para economizar cota' }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-    if (!listId) {
+  // ─── listUpdated ────────────────────────────────────────────────────────
+  if (event === 'listUpdated') {
+    const listId: string = payload.list_id ?? payload.id ?? '';
+    const newStatus: string = payload.history_items?.[0]?.after?.status ?? '';
+    
+    if (!listId || !newStatus) {
       return new Response(JSON.stringify({ ok: true, ignored: true }), {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -195,27 +207,79 @@ serve(async (req: Request) => {
     }
 
     console.log(
-      `[clickup-sync] taskStatusUpdated projeto=${matchedProjectId} ` +
+      `[clickup-sync] listUpdated projeto=${matchedProjectId} ` +
       `sprint=${matchedSprintIndex} novo_status=${newStatus}`
     );
+
+    // [GHL Pipeline Round-Trip]: Sincroniza estado macro de volta pro CRM
+    const { data: project } = await supabase
+      .from('rei_projects')
+      .select('ghl_opportunity_id, organizations ( slug, settings )')
+      .eq('id', matchedProjectId)
+      .maybeSingle();
+
+    if (project?.ghl_opportunity_id && (project as any).organizations?.settings) {
+      const org = (project as any).organizations;
+      const settings = org.settings;
+      const slug = org.slug;
+      
+      const csPipelineStages = settings.ghl_pipelines?.cs_journey_stages;
+      
+      if (csPipelineStages) {
+        let targetStageId = null;
+        const normalizedStatus = newStatus.toLowerCase();
+        
+        if (['atrasado', 'risk', 'blocked', 'overdue', 'impedimento', 'risco'].some(s => normalizedStatus.includes(s))) {
+          targetStageId = csPipelineStages.risk;
+        } else if (['done', 'concluído', 'complete', 'completed'].some(s => normalizedStatus.includes(s))) {
+          targetStageId = csPipelineStages.active;
+        } else if (['in progress', 'doing', 'em andamento'].some(s => normalizedStatus.includes(s))) {
+          targetStageId = csPipelineStages.active;
+        }
+        
+        if (targetStageId) {
+          let ghlToken = '';
+          if (slug === 'growth-funnels') ghlToken = Deno.env.get('GHL_PIT_FUNNELS') || '';
+          if (slug === 'revhackers') ghlToken = Deno.env.get('GHL_PIT_REVHACKERS') || '';
+          
+          if (ghlToken) {
+            console.log(`[clickup-sync] Deslizando pipeline no GHL (Opp: ${project.ghl_opportunity_id}) para Stage: ${targetStageId}`);
+            try {
+              const ghlRes = await fetch(`https://services.leadconnectorhq.com/opportunities/${project.ghl_opportunity_id}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${ghlToken}`,
+                  'Version': '2021-07-28',
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({ pipelineStageId: targetStageId })
+              });
+              if (!ghlRes.ok) {
+                console.error(`[clickup-sync] Falha ao deslizar pipeline GHL: ${await ghlRes.text()}`);
+              }
+            } catch(e) {
+              console.error(`[clickup-sync] Excecao deslizando pipeline GHL:`, e);
+            }
+          }
+        }
+      }
+    }
 
     // Salva log de atividade (extensivel para metricas de progresso)
     await supabase
       .from('clickup_provisioning_log')
       .insert({
         rei_project_id: matchedProjectId,
-        from_state: 'task_status_sync',
-        to_state: 'task_status_sync',
+        from_state: 'list_status_sync',
+        to_state: 'list_status_sync',
         payload: {
           event,
-          task_id: taskId,
           list_id: listId,
           sprint_index: matchedSprintIndex,
           new_status: newStatus,
         },
-      })
-      .select()
-      .maybeSingle();
+      });
 
     // Atualiza flag de observabilidade de consistencia bidirecional
     await supabase.from('rei_projects')

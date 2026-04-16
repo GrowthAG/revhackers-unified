@@ -19,7 +19,10 @@ SET settings = jsonb_build_object(
     'proximo_passo',      'OOCmYeHtgx9d4vIak1Lc',
     'origem',             'RWtRx46o0D9HzYUEkYBf',
     'data_ultimo_contato','fg05xaTcVz6Y1WU23GCF',
-    'como_ajudar',        'iIm0fYcptgBIQruEK674'
+    'como_ajudar',        'iIm0fYcptgBIQruEK674',
+    'hub_project_id',     'oZv5ftBubon8Nmn6fWQr',
+    'clickup_workspace',  'bbPwQqCUNwUhoWnHSZ7D',
+    'clickup_docs',       'Ypygilknnq5PGuZeuKul'
   )
 )
 WHERE slug = 'revhackers';

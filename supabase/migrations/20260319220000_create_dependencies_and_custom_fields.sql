@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS public.orqflow_task_dependencies (
 );
 
 -- Índices Velozes
-CREATE INDEX idx_orqflow_custom_values_task ON public.orqflow_task_custom_values(task_id);
-CREATE INDEX idx_orqflow_dep_blocked ON public.orqflow_task_dependencies(blocked_task_id);
-CREATE INDEX idx_orqflow_dep_blocker ON public.orqflow_task_dependencies(blocker_task_id);
+CREATE INDEX IF NOT EXISTS idx_orqflow_custom_values_task ON public.orqflow_task_custom_values(task_id);
+CREATE INDEX IF NOT EXISTS idx_orqflow_dep_blocked ON public.orqflow_task_dependencies(blocked_task_id);
+CREATE INDEX IF NOT EXISTS idx_orqflow_dep_blocker ON public.orqflow_task_dependencies(blocker_task_id);
 
 -- HABILITAR RLS MURALHA (Epic 5)
 ALTER TABLE public.orqflow_custom_fields ENABLE ROW LEVEL SECURITY;
@@ -45,9 +45,17 @@ ALTER TABLE public.orqflow_task_custom_values ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orqflow_task_dependencies ENABLE ROW LEVEL SECURITY;
 
 -- POLICIES DE RLS: Admins da Agência veem tudo
-CREATE POLICY "Enable FULL for authenticated on custom fields" ON public.orqflow_custom_fields FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Enable FULL for authenticated on custom values" ON public.orqflow_task_custom_values FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Enable FULL for authenticated on dependencies" ON public.orqflow_task_dependencies FOR ALL USING (auth.role() = 'authenticated');
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Enable FULL for authenticated on custom fields') THEN
+    CREATE POLICY "Enable FULL for authenticated on custom fields" ON public.orqflow_custom_fields FOR ALL USING (auth.role() = 'authenticated');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Enable FULL for authenticated on custom values') THEN
+    CREATE POLICY "Enable FULL for authenticated on custom values" ON public.orqflow_task_custom_values FOR ALL USING (auth.role() = 'authenticated');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Enable FULL for authenticated on dependencies') THEN
+    CREATE POLICY "Enable FULL for authenticated on dependencies" ON public.orqflow_task_dependencies FOR ALL USING (auth.role() = 'authenticated');
+  END IF;
+END $$;
 
 -- ==============================================================================
 -- GATILHO DE PROTEÇÃO (Impedir Card de Fechar se Blocker não tiver Status 'done')
@@ -76,6 +84,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_orqflow_prevent_premature_close ON public.orqflow_tasks;
 CREATE TRIGGER trg_orqflow_prevent_premature_close
 BEFORE UPDATE ON public.orqflow_tasks
 FOR EACH ROW EXECUTE FUNCTION check_orqflow_dependencies_before_close();
