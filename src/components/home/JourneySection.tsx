@@ -2,23 +2,24 @@
 import { Check } from 'lucide-react';
 import Section from '@/components/ui/Section';
 
+
 const journeySteps = [
   {
     id: "01",
-    title: "Diagnóstico & Blueprint",
-    desc: "Mapeamento completo de gargalos. Entregamos o plano de arquitetura de dados e funil em 7 dias.",
-    items: ["Auditoria de CRM", "Análise de Unit Economics", "Definição de Stack"]
+    title: "Você Para de Adivinhar",
+    desc: "Em 7 dias, mapeamos os vazamentos reais da sua operação. Diagnóstico técnico com dados — não com intuição.",
+    items: ["Auditoria de CRM e Pipeline", "Análise de Unit Economics", "Mapa de Gargalos"]
   },
   {
     id: "02",
-    title: "Setup de Arquitetura",
-    desc: "Implementação técnica. Configuramos suas ferramentas para falarem a mesma língua (Marketing + Sales).",
-    items: ["Integração via API/Webhook", "Tracking Avançado", "Score de Leads"]
+    title: "Sua Máquina Funciona",
+    desc: "Em 30 dias, você tem CRM integrado, IA filtrando leads e automações rodando. Sua equipe para de fazer trabalho manual.",
+    items: ["Integração via API/Webhook", "Qualificação Automatizada", "Score de Leads Ativo"]
   },
   {
     id: "03",
-    title: "Tração & Otimização",
-    desc: "Escala baseada em dados. Otimizamos campanhas e processos de vendas semanalmente.",
+    title: "Você Escala Sem Contratar",
+    desc: "Com a base certa, crescemos seu resultado semana a semana — sem precisar expandir o time de vendas.",
     items: ["Testes A/B em Canais", "Refinamento de Playbooks", "Reporting Executivo"]
   }
 ];
@@ -32,10 +33,10 @@ const JourneySection = () => {
           Metodologia Proprietária
         </span>
         <h2 className="text-4xl md:text-6xl font-black mb-8 text-zinc-900 tracking-tighter text-balance">
-          Como Construímos Máquinas.
+          Em 90 Dias, Sua Operação<br className="hidden md:block" /> Funciona Sem Você.
         </h2>
         <p className="text-xl md:text-2xl text-zinc-500 font-light tracking-tight max-w-2xl mx-auto leading-relaxed">
-          Do caos à previsibilidade em 3 etapas de integração sistêmica.
+          Três passos. Do diagnóstico à escala previsível.
         </p>
       </div>
 

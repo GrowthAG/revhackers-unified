@@ -264,6 +264,8 @@ const BlogPostPage = () => {
         type="article"
         publishedTime={post.date}
         author={post.author.name}
+        wordCount={post.content ? post.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length : undefined}
+        keywords={[post.category, 'Revenue Operations', 'RevOps', 'Growth B2B', 'RevHackers']}
       />
       {/* 1. Hero Section - Matching Landing Page EXACTLY (HeroSection.tsx) */}
       <section className="relative min-h-[60vh] flex flex-col items-center justify-center pt-24 pb-20 overflow-hidden bg-black">

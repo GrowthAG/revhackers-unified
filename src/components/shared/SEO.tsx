@@ -7,9 +7,12 @@ interface SEOProps {
     image?: string;
     type?: 'website' | 'article';
     publishedTime?: string;
+    modifiedTime?: string;
     author?: string;
     breadcrumbs?: { name: string; url: string }[];
     faq?: { question: string; answer: string }[];
+    wordCount?: number;
+    keywords?: string[];
 }
 
 export const SEOProvider = ({ children }: { children: React.ReactNode }) => {
@@ -23,9 +26,12 @@ const SEO = ({
     image = "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg",
     type = 'website',
     publishedTime,
+    modifiedTime,
     author = "RevHackers",
     breadcrumbs,
-    faq
+    faq,
+    wordCount,
+    keywords,
 }: SEOProps) => {
 
     const siteTitle = "RevHackers | Revenue Operations & Growth B2B";
@@ -136,14 +142,14 @@ const SEO = ({
         }
     };
 
-    // Schema.org: Article (for blog posts - AI/GEO citation essential)
+    // Schema.org: BlogPosting (for blog posts - more specific type, better SEO indexing)
     const articleSchema = type === 'article' ? {
         "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": fullTitle,
+        "@type": "BlogPosting",
+        "headline": title.substring(0, 110), // Google limits headline to 110 chars
         "image": image ? [image] : [],
         "datePublished": publishedTime || new Date().toISOString(),
-        "dateModified": publishedTime || new Date().toISOString(),
+        "dateModified": modifiedTime || publishedTime || new Date().toISOString(),
         "author": [{
             "@type": "Person",
             "name": author,
@@ -158,11 +164,20 @@ const SEO = ({
             }
         },
         "description": description,
+        ...(wordCount ? { "wordCount": wordCount } : {}),
+        ...(keywords && keywords.length > 0 ? { "keywords": keywords.join(', ') } : {}),
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": currentUrl
         },
+        "url": currentUrl,
         "inLanguage": "pt-BR",
+        "isPartOf": {
+            "@type": "Blog",
+            "@id": "https://revhackers.com.br/blog",
+            "name": "Blog RevHackers",
+            "publisher": { "@id": "https://revhackers.com.br/#organization" }
+        },
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": ["h1", ".article-content p:first-of-type"]

@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { buildBookingUrl } from '@/utils/utm';
 
 const stats = [
   { value: '47+',    label: 'empresas B2B' },
@@ -79,7 +80,7 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row gap-4 mb-16 w-full sm:w-auto px-6 sm:px-0"
         >
           <Button asChild size="lg" variant="default" className="bg-revgreen text-black hover:bg-[#00A050] font-bold uppercase tracking-[0.1em] text-xs h-14 px-8 w-full sm:w-auto rounded-none">
-            <Link to="/booking" onClick={scrollToTop}>
+            <Link to={buildBookingUrl('homepage', 'hero_primary')} onClick={scrollToTop}>
               Auditar Minha Operação
               <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2} />
             </Link>
