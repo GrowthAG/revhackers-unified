@@ -75,7 +75,7 @@ export const crmOpsSections: REISection[] = [
 export const crmOpsConfig: REIConfig = {
     type: 'crm_ops',
     title: 'REI – Revenue Excellence Initiative',
-    subtitle: 'Protocolo de Arquitetura de CRM e RevOps',
+    subtitle: 'Funnels: Arquitetura & Onboarding de CRM',
     sections: crmOpsSections,
     totalQuestions: 28
 };

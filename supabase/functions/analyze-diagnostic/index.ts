@@ -144,7 +144,7 @@ REGRAS:
 
 async function callOpenAI(apiKey: string, prompt: string, useWebSearch: boolean = false): Promise<any> {
     const payload: any = {
-        model: 'gpt-5.4',
+        model: 'gpt-5.4-mini',
         messages: [
             {
                 role: 'system',

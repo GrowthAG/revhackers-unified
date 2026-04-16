@@ -482,14 +482,15 @@ O cronograma DEVE respeitar a duração de ${effectiveDuration}. Distribua as fa
 Os OKRs devem ter metas de CAC, LTV e ROAS onde aplicável.
 REGRA DE FORMATAÇÃO OBRIGATÓRIA: NUNCA use o caractere em dash (travessão longo). Use apenas hífen simples (-), dois pontos (:), ponto (.) ou vírgula (,) como separadores. Isso se aplica a TODOS os campos do JSON.`;
 
-    if (isCrmOps) {
-      strategicContext = `Crie um Roadmap cirúrgico focado EXATAMENTE em ${effectiveDuration} de implementação de RevOps/CRM de excelência.
-O roadmap deve transformar o caos atual (vide respostas e transcrição) em uma máquina previsível.
+    if (isCrmOps || projectType === 'funnel') {
+      strategicContext = `Crie um Roadmap cirúrgico focado EXATAMENTE em ${effectiveDuration} de IMPLEMENTAÇÃO DE SOFTWARE E ONBOARDING do CRM "Funnels".
+ATENÇÃO CRÍTICA: O cliente comprou um Software (Funnels). Este plano é um SETUP DE PLATAFORMA e adoção de tecnologia. O foco ÚNICO é fazer o cliente usar a ferramenta corretamente. NUNCA cite escopos de agência de marketing, compra de mídia ou "consultoria genérica".
+O roadmap deve transformar o caos atual (vide respostas) em uma máquina funcionando DENTRO do Funnels.
 Distribua as fases proporcionalmente ao prazo de ${effectiveDuration}:
-- Fase 1 (Fundação Operacional): Centralizar os dados fragmentados do cliente, mapear processo atual e configurar o Projeto Técnico do CRM.
-- Fase 2 (SLA e Automações): Velocidade de resposta ao lead, automação de Passagem de Bastão MKT→SDR→Closer e painéis de pipeline.
-- Fase 3 (Governança e Retenção): Rito de Revisão de Pipeline semanal, Higiene de Dados e Onboarding do CS.
-LEI IMUTÁVEL: Seja ABSURDAMENTE específico. Se o cliente reclamou de leads frios, escreva "Filtro de Leads Frios com Lead Scoring no Funnels". Nomeie TODAS as ferramentas, cargos e gargalos citados. Os OKRs devem ter métricas de Taxa de Conversão, Velocidade do Pipeline e % de preenchimento do CRM.
+- Fase 1 (Setup Técnico e Fundação): Centralizar os dados fragmentados do cliente, mapear processo atual e configurar o Pipeline dentro do Funnels.
+- Fase 2 (Treinamento e Automações): Velocidade de resposta ao lead, automação de Passagem de Bastão MKT→VENDAS via fluxos automáticos.
+- Fase 3 (Adoção e Go-Live): Rito de Revisão de Pipeline semanal e Higiene de Dados usando os relatórios do sistema local.
+LEI IMUTÁVEL: Seja ABSURDAMENTE específico. O tech stack visado será SEMPRE o Funnels substituindo sistemas antigos. Substitua mentalmente a palavra 'Consultoria' por 'Onboarding Técnico'. Os OKRs devem ter métricas sistêmicas como Taxa de Preenchimento do CRM, Velocidade do Pipeline e Acessos ao Sistema.
 REGRA DE FORMATAÇÃO OBRIGATÓRIA: NUNCA use o caractere em dash (travessão longo). Use apenas hífen simples (-), dois pontos (:), ponto (.) ou vírgula (,) como separadores.`;
     } else if (isFounder) {
       strategicContext = `Crie um Protocolo de Autoridade Digital e Personal Branding para EXATAMENTE ${effectiveDuration} no LinkedIn.
@@ -537,9 +538,14 @@ O "Vale da Morte" é a transição de crescimento orgânico para crescimento pre
 Use esses conceitos ao estruturar geração de demanda, pipeline e OKRs do plano.`;
     }
 
-    const prompt = `Você é o Diretor Estratégico "World-Class" de Growth & RevOps na RevHackers. Você age com autoridade absoluta, pragmatismo brutal e foco obsessivo em eficiência e MRR. Você não tem pena de cortar "gordura" processual ou apontar falhas na arquitetura que o cliente desenhou.
+    const isFunnelsContext = isCrmOps || projectType === 'funnel';
+    const expertRole = isFunnelsContext 
+        ? 'Gerente de Customer Success (CS) Especialista em Onboarding do CRM Funnels' 
+        : 'Diretor Estratégico "World-Class" de Growth & Consultoria na RevHackers';
+
+    const prompt = `Você é o ${expertRole}. Você age com pragmatismo brutal e foco obsessivo em eficiência e MRR. Você não tem pena de apontar falhas na arquitetura que o cliente desenhou.
 Acabamos de realizar o Onboarding/Diagnóstico (Kickoff) com um cliente.
-As respostas do diagnóstico (REI) fornecidas revelam os gargalos, o caos interno e as restrições da empresa.
+As respostas do diagnóstico fornecidas revelam os gargalos, o caos interno e as restrições operacionais da empresa.
 
 REGRA ABSOLUTA DE IDIOMA E ORTOGRAFIA:
 1. TODO o texto gerado DEVE estar em Português do Brasil IMPECÁVEL.

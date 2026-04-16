@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Cpu, CheckCircle2, Map } from 'lucide-react';
+import { Cpu, CheckCircle2, Map, CalendarClock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { StageTransitionButtons } from '@/components/project-os/layout/StageTransitionButtons';
 import type { ReiProject } from '@/api/reiProjects';
@@ -86,6 +86,21 @@ export function ProjectHeaderActions({
                     >
                         <Cpu size={12} />
                     </Button>
+                    {!project.scheduling_completed && (
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => {
+                                // A placeholder alert or navigation for the actual scheduling popup/link 
+                                // that CS team should click to schedule the Kickoff/Presentation
+                                alert('Abre modal ou envia link Calendly para o cliente B2B');
+                            }}
+                            className="text-xxs font-black uppercase tracking-widest rounded-none border border-black bg-black text-white hover:bg-zinc-800 transition-all font-mono shadow-sm ml-2 animate-pulse"
+                        >
+                            <CalendarClock size={12} className="mr-2" />
+                            Agendar Apresentação
+                        </Button>
+                    )}
                 </div>
             )}
         </React.Fragment>
