@@ -1,13 +1,14 @@
 import { consultingConfig } from './consultingQuestions';
 import { devConfig } from './devQuestions';
 import { founderConfig } from './founderQuestions';
+import { crmOpsConfig } from './crmOpsQuestions';
 import { REIType, REIConfig } from '@/types/rei';
 
 export const REI_CONFIGS: Record<REIType, REIConfig> = {
     consulting: consultingConfig,
     dev: devConfig,
     founder: founderConfig,
-    crm_ops: consultingConfig,
+    crm_ops: crmOpsConfig,
     site: devConfig,
     funnel: consultingConfig,
 };

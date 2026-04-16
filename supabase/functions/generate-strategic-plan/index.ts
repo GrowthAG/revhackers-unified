@@ -871,6 +871,9 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       return node;
     };
     planData = purgeEmDashes(planData);
+    
+    // INJECT FORM DATA PASSTHROUGH FOR PIPELINE ARCHITECTURE COMPONENTS
+    planData.form_data = cleanResponses;
 
     if (jobId) {
       const SUPABASE_URL = Deno.env.get('SUPABASE_URL');

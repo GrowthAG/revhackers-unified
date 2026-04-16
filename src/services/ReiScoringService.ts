@@ -159,32 +159,62 @@ export class ReiScoringService {
         let dataScore = 30;
         let automationsScore = 30;
 
-        // 1. CRM Setup Influence
-        const crm = data.crm || "";
-        if (crm.length > 3 && !crm.includes("nao-utilizo")) {
-            adoptionScore += 30;
-            dataScore += 20;
+        // 1. CRM Setup & Adoption Influence
+        const hubCentral = data.revops_hub_central || "";
+        if (hubCentral && hubCentral !== 'nao_tem') {
+            adoptionScore += 20;
         }
-
-        // 2. Pain / Challenge Influence
-        const desafios = data.desafios || [];
-        if (desafios.includes("conversao") || desafios.includes("previsibilidade")) {
+        
+        const shadowIt = data.revops_shadow_it_index || "";
+        if (shadowIt.includes("alto") || shadowIt.includes("freestyle")) {
+            adoptionScore -= 15;
             processScore -= 10;
-        }
-        if (desafios.includes("escalar")) {
-            automationsScore -= 5;
+        } else if (shadowIt.includes("baixo")) {
+            adoptionScore += 15;
         }
 
-        // 3. Bottleneck Influence
-        const gargalo = data.gargaloFunil || data.gargalo || "";
-        if (gargalo.includes("meio-processo")) processScore -= 15;
-        if (gargalo.includes("dados-cegueira")) dataScore -= 20;
-        if (gargalo.includes("meio-followup")) automationsScore -= 15;
+        const toxicComp = data.revops_toxic_compensation || "";
+        if (toxicComp.includes("comissao_volume_burro") || toxicComp.includes("volume")) {
+            adoptionScore -= 10;
+        }
 
-        // 4. Metrics / KPIs Influence
-        const metrics = data.metricas && Array.isArray(data.metricas) ? data.metricas : [];
-        if (metrics.length > 4) dataScore += 30;
-        else if (metrics.length > 2) dataScore += 15;
+        // 2. Process Influence
+        const sla = data.revops_sla_marketing_vendas || "";
+        if (sla.includes("padronizado") || sla.includes("estruturado")) processScore += 15;
+        if (sla.includes("informal")) processScore += 5;
+
+        const scoring = data.revops_lead_scoring || "";
+        if (scoring.includes("automatizado") || scoring.includes("inteligente")) processScore += 15;
+
+        const playbook = data.revops_expansion_playbook || "";
+        if (playbook.includes("formal") || playbook.includes("estruturado")) processScore += 10;
+
+        const onbHandoff = data.revops_onboarding_handoff || "";
+        if (onbHandoff.includes("caotico") || onbHandoff.includes("perde_dados")) processScore -= 15;
+
+        // 3. Data & Hygiene Influence
+        const owner = data.revops_data_hygiene_owner || "";
+        if (owner && owner !== "ninguem") dataScore += 20;
+
+        const winloss = data.revops_win_loss_analysis || "";
+        if (winloss.includes("estruturado")) dataScore += 20;
+        else if (winloss.includes("inexistente")) dataScore -= 10;
+
+        const forecast = data.revops_forecasting_accuracy || "";
+        if (forecast.includes("alta_confianca") || forecast.includes("crm_nativo")) dataScore += 15;
+        else if (forecast.includes("planilhas") || forecast.includes("achismo")) dataScore -= 10;
+
+        // 4. Automation Influence
+        const coreAuto = data.revops_automacoes_core || "";
+        if (coreAuto.includes("avancado")) automationsScore += 30;
+        else if (coreAuto.includes("basico")) automationsScore += 10;
+
+        const cadencia = data.revops_flow_cadencia || "";
+        if (cadencia.includes("automatizado")) automationsScore += 20;
+        else if (cadencia.includes("caotico") || cadencia.includes("manual")) automationsScore -= 10;
+
+        const routing = data.revops_routing_vip || "";
+        if (routing.includes("imediato_automatizado")) automationsScore += 10;
 
         const totalScore = Math.round((adoptionScore + processScore + dataScore + automationsScore) / 4);
 
@@ -197,9 +227,9 @@ export class ReiScoringService {
                 { label: "AUTOMAÇÃO", value: Math.max(10, Math.min(100, automationsScore)) },
             ],
             insights: [
-                adoptionScore < 60 ? "A ferramenta não está sendo alimentada corretamente pelo time. O foco inicial deve ser reduzir a fricção de entrada e criar playbooks de uso." : "O time utiliza a ferramenta, agora o foco será enriquecer as propriedades capturadas no pipeline.",
-                dataScore < 50 ? "Identificamos cegueira de dados. Sem métricas rastreáveis, não há como otimizar conversão do meio do funil." : "A base de dados permite criar dashboards avançados para acelerar a previsibilidade de receita.",
-                automationsScore < 60 ? "Excesso de tarefas manuais no follow-up. Implementar fluxos de cadência e alertas liberará tempo produtivo dos vendedores." : "Sua automação base já está rodando, permitindo focar em lógicas complexas de lead scoring e roteamento."
+                adoptionScore < 60 ? "Alto índice de Shadow IT ou processos descentralizados. Adoção é o gargalo central." : "O time confia no sistema primário. A base de adoção está pronta para receber automações avançadas.",
+                dataScore < 50 ? "Sintomas de 'Cegueira de Dados'. A falta de análise estruturada (Win-Loss/Forecast) impede o ganho de eficiência." : "A governança de dados está acima da média, permitindo implementação de modelos de Scoring preditivos.",
+                processScore < 50 ? "Os processos de passagem de bastão (SLA) estão informais, causando quebra de confiança entre Vendas e CS." : "O fluxo transacional parece padronizado, permitindo escalar o volume de leads sem quebrar a operação."
             ]
         };
     }
