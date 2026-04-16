@@ -52,3 +52,6 @@ extract_obras*.js
 upload.sh
 upload_ftp.mjs
 
+
+# Claude Code chat prompts (not source)
+CLAUDE_PROMPT.md
