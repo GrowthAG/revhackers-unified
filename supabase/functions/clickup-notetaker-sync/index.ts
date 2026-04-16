@@ -23,11 +23,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
 // @ts-ignore Deno runtime
-const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY') || 'pk_84197570_GYIBMGTI4Z9MCTUUVG6T8THHO6YJR0BB';
+const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
 // @ts-ignore Deno runtime
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 // @ts-ignore Deno runtime
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+// @ts-ignore Deno runtime
+const CLICKUP_WORKSPACE_ID = Deno.env.get('CLICKUP_WORKSPACE_ID') ?? '84197570';
 
 const CLICKUP_API_BASE = 'https://api.clickup.com/api/v2';
 
@@ -211,8 +213,15 @@ serve(async (req: Request) => {
       });
     }
 
-    // Workspace ID fixo (Customer Centric)
-    const workspaceId = '84197570';
+    if (!CLICKUP_API_KEY) {
+      return new Response(JSON.stringify({ error: 'CLICKUP_API_KEY nao configurada no servidor.' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Workspace ID via env var (fallback para workspace Customer Centric)
+    const workspaceId = CLICKUP_WORKSPACE_ID;
 
     // Buscar todos os docs do workspace
     const allDocs = await getDocsForWorkspace(workspaceId);

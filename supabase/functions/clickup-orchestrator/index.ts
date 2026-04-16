@@ -15,7 +15,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
 // @ts-ignore Deno runtime
-const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY') || 'pk_84197570_GYIBMGTI4Z9MCTUUVG6T8THHO6YJR0BB';
+const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
 // @ts-ignore Deno runtime
 const CLICKUP_SPACE_ID = Deno.env.get('CLICKUP_SPACE_ID') || '90175101115';
 // @ts-ignore Deno runtime
