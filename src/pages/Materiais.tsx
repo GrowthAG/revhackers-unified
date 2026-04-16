@@ -224,7 +224,7 @@ const Materiais = () => {
                 onClick={() => setIsBookingOpen(true)}
                 className="bg-black text-white hover:bg-revgreen hover:text-black font-black tracking-widest uppercase px-10 h-16 rounded-sm text-xs transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-revgreen/20"
               >
-                Aplicar para Auditoria Grátis
+                Auditar Minha Operação
               </Button>
             </div>
           </div>

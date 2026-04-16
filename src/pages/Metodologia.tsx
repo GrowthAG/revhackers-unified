@@ -50,7 +50,7 @@ const Metodologia = () => {
 
                         <div className="mt-12 flex justify-center gap-4">
                             <Button asChild className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all">
-                                <Link to="/booking">Aplicar para Implementação</Link>
+                                <Link to="/booking">Auditar Minha Operação</Link>
                             </Button>
                         </div>
                     </div>
@@ -176,7 +176,7 @@ const Metodologia = () => {
                         Deixe a IA e o CRM trabalharem suas conversões. Vagas Restritas (Max 3/mês).
                     </p>
                     <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black h-16 px-12 rounded-sm text-sm font-black tracking-widest uppercase transition-all shadow-sm hover:translate-y-[-2px]">
-                        <Link to="/booking">Aplicar para Implementação</Link>
+                        <Link to="/booking">Auditar Minha Operação</Link>
                     </Button>
 
                     <div className="mt-8 flex items-center justify-center gap-2 text-xxs font-bold uppercase tracking-widest text-zinc-400">

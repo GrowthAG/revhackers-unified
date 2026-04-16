@@ -88,9 +88,9 @@ const Servicos = () => {
               Nós não prestamos "serviços". Nós alugamos nossa infraestrutura de IA e CRM para o seu B2B.
             </p>
             <div className="mt-12 flex justify-center gap-4">
-               <Button asChild className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all">
-                   <Link to="/booking">Aplicar para Ecossistema</Link>
-               </Button>
+                <Button asChild className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all">
+                    <Link to="/booking">Auditar Minha Operação</Link>
+                </Button>
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@ const Servicos = () => {
             </p>
             <Button asChild className="bg-black text-white hover:bg-revgreen hover:text-black border-none rounded-sm px-10 py-8 text-sm uppercase tracking-[0.2em] font-black transition-all transform hover:-translate-y-1">
               <Link to="/booking">
-                Aplicar para Auditoria
+                Auditar Minha Operação
               </Link>
             </Button>
           </div>

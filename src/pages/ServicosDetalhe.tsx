@@ -237,7 +237,7 @@ const ServicosDetalhe = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button onClick={() => setIsBookingOpen(true)} className="bg-revgreen text-black hover:bg-black hover:text-white h-16 px-12 rounded-sm text-sm font-black uppercase tracking-widest shadow-sm transition-all focus:outline-none">
-                Aplicar para Integração Mínima
+                Auditar Minha Operação
               </Button>
             </div>
           </div>
@@ -331,7 +331,7 @@ const ServicosDetalhe = () => {
               onClick={() => setIsBookingOpen(true)}
               className="bg-black text-white hover:bg-revgreen hover:text-black h-16 px-12 rounded-sm text-sm font-black tracking-widest uppercase transition-all shadow-sm cursor-pointer"
             >
-              Aplicar para Diagnóstico de Funil
+              Auditar Minha Operação
             </Button>
           </div>
         </div>
