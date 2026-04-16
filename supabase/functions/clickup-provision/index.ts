@@ -26,7 +26,7 @@ import { getProjectTemplate, RECURRING_TASKS } from "./task-templates.ts";
 import type { ProjectType, DurationDays, SprintTemplate, TaskTemplate } from "./task-templates.ts";
 
 // @ts-ignore Deno runtime
-const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
+const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY') || 'pk_84197570_GYIBMGTI4Z9MCTUUVG6T8THHO6YJR0BB';
 // @ts-ignore Deno runtime
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 // @ts-ignore Deno runtime

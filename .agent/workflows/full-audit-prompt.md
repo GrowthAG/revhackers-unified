@@ -19,11 +19,10 @@ Voce e um auditor tecnico senior. Sua missao e analisar a aplicacao RevHackers G
 | Servico | Tipo | Arquivos Chave |
 |---------|------|----------------|
 | **Supabase** | DB + Auth + Realtime + Edge Functions | Toda a aplicacao |
-| **ClickUp** | Project management + task automation | `supabase/functions/clickup-orchestrator/`, `clickup-sprint-orchestrator/` |
+| **ClickUp** | Project management + task automation + NoteTaker | `supabase/functions/clickup-orchestrator/`, `clickup-sprint-orchestrator/` |
 | **GoHighLevel (GHL)** | CRM + webhooks + OAuth | `supabase/functions/ghl-*` (6 funcoes) |
 | **OpenAI** | Geracao de planos, analise, enrichment | `generate-strategic-plan`, `auto-enrich-project`, etc. |
 | **Anthropic Claude** | Agent chat, analise de docs/transcripts | `agent-chat`, `analyze-meeting-transcript` |
-| **Fathom** | Meeting recordings + transcripts | `fathom-sync`, `fathom-webhook` |
 | **Google (Calendar/Drive/Meet)** | Sync de reunioes e gravacoes | `google-auth`, `sync-calendar-meetings`, `sync-drive-recordings` |
 | **Google PSI + CrUX** | Web performance metrics | `analyze-site`, `crux-benchmark` |
 | **BrasilAPI** | CNPJ lookup | `fetch-cnpj`, `auto-enrich-project` |
@@ -113,7 +112,7 @@ Em `src/App.tsx`, verifique:
 
 ### 7. WEBHOOKS - Seguranca e Funcionamento
 
-Para cada webhook handler (`fathom-webhook`, `ghl-webhook-handoff`, `infinitepay-webhook`):
+Para cada webhook handler (`ghl-webhook-handoff`, `infinitepay-webhook`):
 - Ha validacao de origem/assinatura?
 - Ha protecao contra replay attacks?
 - O processamento e idempotente?

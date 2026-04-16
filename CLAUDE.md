@@ -40,7 +40,6 @@ node scripts/register-clickup-webhook.js   # registra endpoint do clickup-sync n
 
 **Edge Functions (server-side, configuradas no Supabase Dashboard):**
 - `OPENAI_API_KEY` - geracao de planos
-- `FATHOM_API_KEY` - integracao de gravacoes
 - `PSI_API_KEY` - PageSpeed Insights (analyze-site)
 
 ---
@@ -293,7 +292,7 @@ Todas compartilham CORS em `supabase/functions/_shared/cors.ts`.
 |---|---|
 | AI / Geracao | `generate-strategic-plan`, `generate-success-plan`, `generate-playbook`, `generate-image`, `generate-project-tasks`, `enrich-strategic-data` |
 | Analise | `analyze-site`, `analyze-meeting-transcript`, `analyze-diagnostic`, `research-intelligence`, `market-intelligence`, `inspect-website`, `crux-benchmark` |
-| Reunioes | `transcribe-meeting`, `process-meeting-audio`, `fathom-webhook`, `fathom-sync`, `google-meetings` |
+| Reunioes | `transcribe-meeting`, `process-meeting-audio`, `google-meetings` |
 | ClickUp | `clickup-orchestrator`, `clickup-sprint-orchestrator`, `clickup-provision`, `clickup-sync` |
 | GoHighLevel | `ghl-webhook-handoff`, `ghl-outbound-relay`, `ghl-oauth-callback`, `ghl-oauth-refresh`, `ghl-create-location`, `ghl-deploy-strategy`, `ghl-inspect` |
 | Pagamentos | `infinitepay-webhook`, `infinitepay-create-link` |

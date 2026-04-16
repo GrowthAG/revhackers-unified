@@ -585,8 +585,7 @@ interface MeetingIntelligenceTimelineProps {
 export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelineProps> = ({ projectId }) => {
     const [meetings, setMeetings] = useState<MeetingRecording[]>([]);
     const [loading, setLoading] = useState(true);
-    const [syncingFathom, setSyncingFathom] = useState(false);
-    // tl;dv integration removed (plan expired 2026-03-29). Recordings from tl;dv are kept in DB.
+    // Meetings now arrive automatically via ClickUp NoteTaker webhook
 
     const fetchMeetings = async () => {
         try {
@@ -602,24 +601,6 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
             console.error('Error fetching meetings for timeline:', error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleSyncFathom = async () => {
-        try {
-            setSyncingFathom(true);
-            const { data, error } = await supabase.functions.invoke('fathom-sync', {
-                body: { projectId: projectId }
-            });
-            if (error) throw error;
-            if (data?.error) throw new Error(data.error);
-
-            toast.success('Sucesso', { description: data.message || 'Sincronizado com Fathom' });
-            fetchMeetings(); // recarregar lista
-        } catch (e: any) {
-            toast.error('Erro na sincronizacao do Fathom', { description: e.message });
-        } finally {
-            setSyncingFathom(false);
         }
     };
 
@@ -666,17 +647,8 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
                 </div>
                 <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900 mb-2">Cofre Documental Vazio</h3>
                 <p className="text-mini text-zinc-500 font-medium max-w-md leading-relaxed px-6 mb-6">
-                    Aperte no botão "Buscar Chamadas" para importar as gravações deste cliente.
+                    Reuniões gravadas pelo ClickUp NoteTaker aparecerão aqui automaticamente quando vinculadas ao projeto.
                 </p>
-                <Button 
-                    onClick={handleSyncFathom} 
-                    disabled={syncingFathom}
-                    variant="outline"
-                    className="bg-white border-zinc-300 text-zinc-900 hover:bg-zinc-100 hover:text-zinc-900 text-xxs font-black uppercase tracking-widest rounded-none h-10 px-6 gap-2 shadow-sm transition-colors"
-                >
-                    {syncingFathom ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4 text-[#00CC6A]" />}
-                    BUSCAR CHAMADAS
-                </Button>
             </div>
         );
     }
@@ -694,16 +666,6 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
                         Documentação jurídica e inteligência extraída de todas as interações
                     </p>
                 </div>
-                
-                <Button 
-                    variant="outline"
-                    onClick={handleSyncFathom} 
-                    disabled={syncingFathom}
-                    className="bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-100 hover:text-zinc-900 text-xxs font-black uppercase tracking-widest rounded-none h-10 px-4 gap-2 shadow-sm transition-colors"
-                >
-                    {syncingFathom ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4 text-[#00CC6A]" />}
-                    BUSCAR CHAMADAS
-                </Button>
             </div>
 
             {/* Phase progress bar */}

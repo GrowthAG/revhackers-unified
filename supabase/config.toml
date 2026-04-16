@@ -74,13 +74,6 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/autentique-webhook/index.ts"
 
-# ── Analytics ────────────────────────────────────────────────────────────────
-[functions.fathom-sync]
-enabled = true
-verify_jwt = true
-import_map = "./functions/fathom-sync/deno.json"
-entrypoint = "./functions/fathom-sync/index.ts"
-
 # ── ClickUp Orchestration ───────────────────────────────────────────────────
 [functions.clickup-orchestrator]
 enabled = true

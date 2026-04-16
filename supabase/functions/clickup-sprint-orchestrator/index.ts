@@ -19,7 +19,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { ensureHubProjectIdField, buildCustomFieldsPayload } from "../_shared/clickup-custom-fields.ts";
 
 // @ts-ignore Deno runtime
-const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY');
+const CLICKUP_API_KEY = Deno.env.get('CLICKUP_API_KEY') || 'pk_84197570_GYIBMGTI4Z9MCTUUVG6T8THHO6YJR0BB';
 // @ts-ignore Deno runtime
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 // @ts-ignore Deno runtime

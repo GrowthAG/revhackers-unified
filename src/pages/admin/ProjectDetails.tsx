@@ -143,14 +143,16 @@ function getVisibleTabs(category: StageCategory | null): string[] {
         case 'diagnostico':
             return ['jornada', 'inteligencia', 'diagnostico', 'reunioes', 'kickoff'];
         case 'vendas':
-            return ['jornada', 'inteligencia', 'diagnostico', 'proposta', 'reunioes', 'kickoff'];
+            return ['jornada', 'inteligencia', 'diagnostico', 'proposta', 'playbook', 'reunioes', 'kickoff'];
+        case 'fechamento':
+            return ['jornada', 'inteligencia', 'diagnostico', 'proposta', 'playbook', 'reunioes', 'kickoff'];
         case 'execucao':
-            return ['jornada', 'execucao', 'diagnostico', 'success', 'reunioes', 'biblioteca', 'kickoff'];
+            return ['jornada', 'execucao', 'diagnostico', 'playbook', 'success', 'reunioes', 'biblioteca', 'kickoff'];
         case 'encerrado':
-            return ['jornada', 'inteligencia', 'diagnostico', 'success', 'reunioes', 'biblioteca'];
+            return ['jornada', 'inteligencia', 'diagnostico', 'playbook', 'success', 'reunioes', 'biblioteca'];
         default:
             // Fallback: show all core tabs
-            return ['jornada', 'inteligencia', 'diagnostico', 'reunioes', 'kickoff'];
+            return ['jornada', 'inteligencia', 'diagnostico', 'playbook', 'reunioes', 'kickoff'];
     }
 }
 

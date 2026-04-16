@@ -259,7 +259,6 @@ Auditoria varreu 31 edge functions que usam `SUPABASE_SERVICE_ROLE_KEY`. 6 foram
 | `process-meeting-audio` | Acessa audio + dispara enrichment | admin OR owner |
 | `google-meetings` | Le calendario | admin OR owner |
 | `scrape-profile` | Cost abuse (fetch externo) | authenticated basta, adicionar rate limit |
-| `fathom-sync` | Ja tem alguma validacao, revisar | revisar |
 
 **Pendencia de teste:** regressao curl com JWT de user comum rodou em `invite-member`? Se nao, validar os 6 fixes em producao antes de novos ciclos.
 

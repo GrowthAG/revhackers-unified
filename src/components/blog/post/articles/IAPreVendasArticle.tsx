@@ -76,7 +76,7 @@ Não use exclamações.`
         "Não automatize o envio sem revisão humana",
         "Use IA para 'Draft' (Rascunho), Humano para 'Polish' (Polimento)",
         "DADOS: Limpe seu CRM antes de plugar qualquer IA",
-        "Treine o modelo com suas melhores calls (Gong/Fathom)"
+        "Treine o modelo com suas melhores calls (Conversation Intelligence)"
     ];
 
     return (

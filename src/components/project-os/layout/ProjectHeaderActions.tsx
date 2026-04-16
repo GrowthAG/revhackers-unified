@@ -50,7 +50,7 @@ export function ProjectHeaderActions({
 
             <div className="w-px h-6 bg-zinc-200 mx-1" />
 
-            {stageCategory === 'execucao' && !strategicPlanInfo && (
+            {['execucao', 'fechamento', 'vendas', 'encerrado'].includes(stageCategory || '') && !strategicPlanInfo && (
                 <Button
                     variant="default"
                     size="sm"
@@ -66,7 +66,7 @@ export function ProjectHeaderActions({
                 </Button>
             )}
 
-            {stageCategory === 'execucao' && strategicPlanInfo && (
+            {['execucao', 'fechamento', 'vendas', 'encerrado'].includes(stageCategory || '') && strategicPlanInfo && (
                 <div className="flex gap-2 items-center">
                     <Button
                         variant="outline"
