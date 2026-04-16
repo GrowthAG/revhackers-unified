@@ -93,10 +93,7 @@ const HubMessaging = lazy(() => import("./pages/admin/HubMessaging"));
 
 const AdminMaterials = lazy(() => import("./pages/admin/AdminMaterials"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
-const AdminClientAccounts = lazy(() => import("./pages/admin/AdminClientAccounts"));
 const ClientForm = lazy(() => import("./pages/admin/ClientForm"));
-const AdminIntegrations = lazy(() => import("./pages/admin/AdminIntegrations"));
-const AdminGHLIntegrations = lazy(() => import("./pages/admin/AdminGHLIntegrations"));
 const AdminMaterialNew = lazy(() => import("./pages/admin/AdminMaterialNew"));
 const AdminMaterialEdit = lazy(() => import("./pages/admin/AdminMaterialEdit"));
 const AdminSync = lazy(() => import("./pages/admin/AdminSync"));
@@ -108,7 +105,6 @@ const DiagnosticView = lazy(() => import("./pages/admin/DiagnosticView"));
 // Deprecated: const AdminREIProjects = lazy(() => import("./pages/admin/AdminREIProjects"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const REIProjectForm = lazy(() => import("./pages/admin/REIProjectForm"));
-const StrategyPlanning = lazy(() => import("./pages/admin/StrategyPlanning"));
 const GrowthCronograma = lazy(() => import("./pages/admin/GrowthCronograma"));
 // Dead import removed: OrchestratedOnboarding (no route defined)
 
@@ -116,10 +112,6 @@ const ProjectDetails = lazy(() => import("./pages/admin/ProjectDetails"));
 const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
 const StrategicPlanGenerator = lazy(() => import("./pages/admin/StrategicPlanGenerator"));
 const KnowledgeDocument = lazy(() => import("./pages/admin/KnowledgeDocument"));
-const AdminProposals = lazy(() => import("./pages/admin/AdminProposals"));
-const RevenueCockpit = lazy(() => import("./pages/admin/RevenueCockpit"));
-const AdminProposalNew = lazy(() => import("./pages/admin/AdminProposalNew"));
-const AdminProposalEdit = lazy(() => import("./pages/admin/AdminProposalEdit"));
 const MeetingRecordingDoc = lazy(() => import("./pages/admin/MeetingRecordingDoc"));
 
 // Client Pages
@@ -257,9 +249,6 @@ const App = () => (
               <Route path="/admin/clients/novo" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
               <Route path="/admin/clients/edit/:id" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
 
-              {/* Admin - Client Accounts (nova - tabela unificada GHL) */}
-              <Route path="/admin/contas" element={<ProtectedRoute><AdminClientAccounts /></ProtectedRoute>} />
-
               {/* Admin - Posts */}
               {/* Admin - Posts (Rotas removidas) */}
 
@@ -278,13 +267,11 @@ const App = () => (
               <Route path="/admin/cases/edit/:id" element={<ProtectedRoute><AdminCaseEdit /></ProtectedRoute>} />
 
               {/* Admin - REI Projects (Redirected to Cockpit) */}
-              <Route path="/admin/rei" element={<Navigate to="/admin/pipeline" replace />} />
+              <Route path="/admin/rei" element={<Navigate to="/admin/projects" replace />} />
               <Route path="/admin/rei/novo" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
               <Route path="/admin/rei/:id" element={<ProtectedRoute><REIProjectForm /></ProtectedRoute>} />
 
               <Route path="/admin/sync" element={<ProtectedRoute><AdminSync /></ProtectedRoute>} />
-              <Route path="/admin/estrategia" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
-              <Route path="/admin/estrategia/:id" element={<ProtectedRoute><StrategyPlanning /></ProtectedRoute>} />
               <Route path="/admin/cronograma" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               <Route path="/admin/cronograma/:id" element={<ProtectedRoute><GrowthCronograma /></ProtectedRoute>} />
               {/* Projects Listing */}
@@ -300,7 +287,7 @@ const App = () => (
               <Route path="/admin/recording/:id" element={<ProtectedRoute><MeetingRecordingDoc /></ProtectedRoute>} />
               
               {/* Legacy Redirects */}
-              <Route path="/admin/jornada" element={<Navigate to="/admin/pipeline" replace />} />
+              <Route path="/admin/jornada" element={<Navigate to="/admin/projects" replace />} />
               {/* /admin/jornada/:id - handled above with JornadaRedirect */}
 
               {/* Admin - Diagnostic View (The Voice) */}
@@ -308,18 +295,6 @@ const App = () => (
 
               {/* Admin - Strategic Plan Generator */}
               <Route path="/admin/planejamento/:reiProjectId" element={<ProtectedRoute><StrategicPlanGenerator /></ProtectedRoute>} />
-              <Route path="/admin/integrations" element={<ProtectedRoute><AdminIntegrations /></ProtectedRoute>} />
-              <Route path="/admin/integrations/ghl" element={<ProtectedRoute><AdminGHLIntegrations /></ProtectedRoute>} />
-
-
-
-              {/* Pipeline - URL canonica do cockpit comercial */}
-              <Route path="/admin/pipeline" element={<ProtectedRoute><RevenueCockpit /></ProtectedRoute>} />
-              {/* /admin/proposals - mantido como alias para compatibilidade com links internos */}
-              <Route path="/admin/proposals" element={<ProtectedRoute><RevenueCockpit /></ProtectedRoute>} />
-              <Route path="/admin/proposals/legacy" element={<ProtectedRoute><AdminProposals /></ProtectedRoute>} />
-              <Route path="/admin/proposals/new" element={<ProtectedRoute><AdminProposalNew /></ProtectedRoute>} />
-              <Route path="/admin/proposals/edit/:id" element={<ProtectedRoute><AdminProposalEdit /></ProtectedRoute>} />
 
               {/* Client - Strategic Plan Presentation (Public with token) */}
               <Route path="/plan/:token" element={<StrategicPlanPresentation />} />
