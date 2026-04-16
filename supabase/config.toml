@@ -75,6 +75,11 @@ verify_jwt = false
 entrypoint = "./functions/autentique-webhook/index.ts"
 
 # ── ClickUp Orchestration ───────────────────────────────────────────────────
+[functions.clickup-notetaker-sync]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/clickup-notetaker-sync/index.ts"
+
 [functions.clickup-orchestrator]
 enabled = true
 verify_jwt = true

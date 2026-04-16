@@ -20,6 +20,7 @@ import {
     Users,
     Tag,
     Shield,
+    RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -585,7 +586,44 @@ interface MeetingIntelligenceTimelineProps {
 export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelineProps> = ({ projectId }) => {
     const [meetings, setMeetings] = useState<MeetingRecording[]>([]);
     const [loading, setLoading] = useState(true);
-    // Meetings now arrive automatically via ClickUp NoteTaker webhook
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const handleSyncNotes = async () => {
+        setIsSyncing(true);
+        try {
+            toast.info('Sincronizando notas do ClickUp...', {
+                description: 'Buscando reunião gravadas no NoteTaker.'
+            });
+
+            const { data, error } = await supabase.functions.invoke('clickup-notetaker-sync', {
+                body: { project_id: projectId }
+            });
+
+            if (error) throw error;
+
+            if (data?.imported > 0) {
+                toast.success(`Sincronização concluída!`, {
+                    description: `${data.imported} nota(s) importada(s) do ClickUp.`
+                });
+                await fetchMeetings(); // reload
+            } else if (data?.skipped > 0) {
+                toast.success('Sincronização concluída!', {
+                    description: 'As notas encontradas já estavam no hub.'
+                });
+            } else {
+                toast.info('Nenhuma nova nota encontrada', {
+                    description: 'Certifique-se de que a reunião foi gravada na pasta do projeto no ClickUp.'
+                });
+            }
+        } catch (error: any) {
+            console.error('Error syncing ClickUp notes:', error);
+            toast.error('Erro na sincronização', {
+                description: error.message || 'Não foi possível buscar as notas do ClickUp.'
+            });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     const fetchMeetings = async () => {
         try {
@@ -649,6 +687,15 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
                 <p className="text-mini text-zinc-500 font-medium max-w-md leading-relaxed px-6 mb-6">
                     Reuniões gravadas pelo ClickUp NoteTaker aparecerão aqui automaticamente quando vinculadas ao projeto.
                 </p>
+                <Button
+                    variant="outline"
+                    onClick={handleSyncNotes}
+                    disabled={isSyncing}
+                    className="h-9 px-4 text-xs font-bold text-zinc-600 border-zinc-200 hover:bg-zinc-50"
+                >
+                    <RefreshCw className={`w-3.5 h-3.5 mr-2 ${isSyncing ? 'animate-spin text-revgreen' : ''}`} />
+                    {isSyncing ? 'Sincronizando...' : 'Sincronizar Notas Agora'}
+                </Button>
             </div>
         );
     }
@@ -666,6 +713,15 @@ export const MeetingIntelligenceTimeline: React.FC<MeetingIntelligenceTimelinePr
                         Documentação jurídica e inteligência extraída de todas as interações
                     </p>
                 </div>
+                <Button
+                    variant="outline"
+                    onClick={handleSyncNotes}
+                    disabled={isSyncing}
+                    className="h-9 px-4 text-xs font-bold text-zinc-600 border-zinc-200 hover:bg-zinc-50 hidden md:flex"
+                >
+                    <RefreshCw className={`w-3.5 h-3.5 mr-2 ${isSyncing ? 'animate-spin text-revgreen' : ''}`} />
+                    {isSyncing ? 'Sincronizando...' : 'Sincronizar ClickUp'}
+                </Button>
             </div>
 
             {/* Phase progress bar */}
