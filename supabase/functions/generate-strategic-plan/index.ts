@@ -60,12 +60,14 @@ serve(async (req: Request) => {
     // @ts-ignore
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     // @ts-ignore
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+    // @ts-ignore
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     // @ts-ignore
     const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-      throw new Error('API keys are not configured on the server');
+    if ((!OPENAI_API_KEY && !ANTHROPIC_API_KEY) || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+      throw new Error('API keys are not configured on the server. At least one AI provider (OpenAI or Anthropic) is required.');
     }
 
     const authHeader = req.headers.get('Authorization');
@@ -768,35 +770,97 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
 - Use tom executivo direto, cortando gordura e fluff.
 - SEJA EXATO SOBRE SISTEMAS (ex: Onde diz "Integracao de entrada", escreva "Integracao RD Station -> Funnels").
 `;
-    const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-5.4',
-        messages: [
-          { role: 'system', content: 'Você é o Diretor Estratégico da RevHackers. Gere análises baseadas puramente nos dados reais do cliente. Não alucine e siga rigidamente a estrutura do Schema JSON solicitado.' },
-          { role: 'user', content: prompt }
-        ],
-        response_format: { type: "json_object" },
-        reasoning_effort: 'high'
-      })
-    }));
 
-    if (!response.ok) {
+    // ========================================================================
+    // HYBRID ROUTER: Claude Opus 4.7 (Primary) → OpenAI GPT-5.4 (Fallback)
+    // ========================================================================
+    const systemPrompt = 'Você é o Diretor Estratégico da RevHackers. Gere análises baseadas puramente nos dados reais do cliente. Não alucine e siga rigidamente a estrutura do Schema JSON solicitado. Responda APENAS com JSON válido, sem markdown, sem ```json, sem texto antes ou depois do JSON.';
+
+    let content: string | null = null;
+    let providerUsed = 'none';
+
+    // --- PRIMARY: Claude Opus 4.7 (Extended Thinking) ---
+    if (ANTHROPIC_API_KEY) {
+      try {
+        console.log('[generate-strategic-plan] PRIMARY: Calling Claude Opus 4.7 with Extended Thinking...');
+        const anthropicResponse = await withAutoRetry(() => fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'claude-opus-4-7',
+            max_tokens: 16000,
+            thinking: {
+              type: 'enabled',
+              budget_tokens: 4096
+            },
+            system: systemPrompt,
+            messages: [
+              { role: 'user', content: prompt }
+            ]
+          })
+        }));
+
+        if (anthropicResponse.ok) {
+          const anthropicData = await anthropicResponse.json();
+          // Claude response: content is an array of blocks. Extract text block(s).
+          const textBlocks = anthropicData.content?.filter((b: any) => b.type === 'text') || [];
+          if (textBlocks.length > 0) {
+            content = textBlocks.map((b: any) => b.text).join('');
+            providerUsed = 'claude-opus-4-7';
+            console.log(`[generate-strategic-plan] Claude Opus 4.7 responded successfully. Output length: ${content?.length || 0}`);
+          } else {
+            console.warn('[generate-strategic-plan] Claude Opus 4.7 returned no text blocks. Falling back to OpenAI.');
+          }
+        } else {
+          const errText = await anthropicResponse.text();
+          console.warn(`[generate-strategic-plan] Claude Opus 4.7 failed (${anthropicResponse.status}): ${errText.substring(0, 300)}. Falling back to OpenAI.`);
+        }
+      } catch (claudeError: any) {
+        console.warn(`[generate-strategic-plan] Claude Opus 4.7 exception: ${claudeError.message}. Falling back to OpenAI.`);
+      }
+    }
+
+    // --- FALLBACK: OpenAI GPT-5.4 ---
+    if (!content && OPENAI_API_KEY) {
+      console.log('[generate-strategic-plan] FALLBACK: Calling OpenAI GPT-5.4...');
+      const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-5.4',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          response_format: { type: 'json_object' },
+          reasoning_effort: 'high'
+        })
+      }));
+
+      if (!response.ok) {
         const err = await response.text();
         console.error('[generate-strategic-plan] OpenAI API Error:', err);
-        throw new Error(`OpenAI API failed: ${response.status}`);
-    }
+        throw new Error(`Both AI providers failed. OpenAI: ${response.status}`);
+      }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
+      const data = await response.json();
+      content = data.choices?.[0]?.message?.content;
+      providerUsed = 'gpt-5.4';
+      console.log(`[generate-strategic-plan] OpenAI GPT-5.4 responded successfully.`);
+    }
 
     if (!content) {
-      throw new Error('Recieved empty response from OpenAI');
+      throw new Error('No AI provider available or all providers returned empty responses.');
     }
+
+    console.log(`[generate-strategic-plan] Provider used: ${providerUsed}`);
 
     let planData;
     try {
@@ -880,6 +944,7 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
     
     // INJECT FORM DATA PASSTHROUGH FOR PIPELINE ARCHITECTURE COMPONENTS
     planData.form_data = cleanResponses;
+    planData.ai_provider = providerUsed;
 
     if (jobId) {
       const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
