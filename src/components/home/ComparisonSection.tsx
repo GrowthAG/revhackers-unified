@@ -1,0 +1,170 @@
+
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Check, X, Minus } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { buildBookingUrl } from '@/utils/utm';
+
+const criteria = [
+  {
+    label: 'Tempo até primeiros resultados',
+    revhackers: '7–30 dias',
+    interno: '90–180 dias',
+    agencia: '60–120 dias',
+    revhackersGood: true,
+    internoGood: false,
+    agenciaGood: false,
+  },
+  {
+    label: 'Custo mensal estimado',
+    revhackers: 'Engineering-level ROI',
+    interno: 'R$25k–60k/mês em salários',
+    agencia: 'R$8k–20k + fee variável',
+    revhackersGood: true,
+    internoGood: false,
+    agenciaGood: null, // neutro
+  },
+  {
+    label: 'Domínio de RevOps (CRM + IA + Ops)',
+    revhackers: 'Especialidade central',
+    interno: 'Depende do perfil contratado',
+    agencia: 'Raramente coberto',
+    revhackersGood: true,
+    internoGood: null,
+    agenciaGood: false,
+  },
+  {
+    label: 'Integração CRM ↔ Marketing ↔ CS',
+    revhackers: '✓ Nativo ao processo',
+    interno: 'Requer múltiplos perfis',
+    agencia: 'Fora do escopo usual',
+    revhackersGood: true,
+    internoGood: false,
+    agenciaGood: false,
+  },
+  {
+    label: 'Accountability por receita gerada',
+    revhackers: 'Sim — métricas acordadas',
+    interno: 'Difícil de isolar',
+    agencia: 'Raramente formalizado',
+    revhackersGood: true,
+    internoGood: false,
+    agenciaGood: false,
+  },
+  {
+    label: 'Risco de desligamento / turnover',
+    revhackers: 'Zero — time externo dedicado',
+    interno: 'Alto — 3–6 meses para reposição',
+    agencia: 'Médio — rotatividade de account',
+    revhackersGood: true,
+    internoGood: false,
+    agenciaGood: null,
+  },
+];
+
+function StatusIcon({ value }: { value: true | false | null }) {
+  if (value === true) return <Check className="w-5 h-5 text-revgreen shrink-0" strokeWidth={2.5} />;
+  if (value === false) return <X className="w-5 h-5 text-zinc-300 shrink-0" strokeWidth={2.5} />;
+  return <Minus className="w-4 h-4 text-zinc-400 shrink-0" />;
+}
+
+const ComparisonSection = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+
+  return (
+    <section
+      ref={ref}
+      className="py-24 md:py-40 bg-white border-t border-zinc-100"
+    >
+      <div className="container-custom">
+
+        {/* Header */}
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <span className="font-mono text-xs text-zinc-400 uppercase tracking-[0.2em] mb-6 block">
+            Por que RevHackers
+          </span>
+          <h2 className="text-4xl md:text-6xl font-black text-zinc-900 tracking-tighter leading-[1.05] mb-6 text-balance">
+            Por Que Não Contratar<br className="hidden md:block" /> Internamente?
+          </h2>
+          <p className="text-xl text-zinc-500 font-light leading-relaxed max-w-2xl mx-auto">
+            Montar um time de RevOps interno leva de 6 a 12 meses e custa R$300k+ no primeiro ano. Veja o que cada caminho entrega de fato.
+          </p>
+        </div>
+
+        {/* Comparison Table */}
+        <div className="max-w-5xl mx-auto overflow-x-auto">
+
+          {/* Column Headers */}
+          <div className="grid grid-cols-4 gap-0 mb-0">
+            <div className="col-span-1" />
+            {/* RevHackers header — highlighted */}
+            <div className="col-span-1 bg-zinc-900 px-6 py-5 text-center rounded-t-sm">
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-revgreen block">RevHackers</span>
+              <span className="text-revgreen/60 text-xxs font-mono">Consultoria RevOps</span>
+            </div>
+            <div className="col-span-1 bg-zinc-50 border-x border-t border-zinc-200 px-6 py-5 text-center">
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-700 block">Time Interno</span>
+              <span className="text-zinc-400 text-xxs font-mono">RevOps Manager + Ops</span>
+            </div>
+            <div className="col-span-1 bg-zinc-50 border-t border-r border-zinc-200 px-6 py-5 text-center">
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-700 block">Agência Digital</span>
+              <span className="text-zinc-400 text-xxs font-mono">Marketing / Growth</span>
+            </div>
+          </div>
+
+          {/* Rows */}
+          {criteria.map((row, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -8 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.4, delay: 0.05 * i, ease: 'easeOut' }}
+              className="grid grid-cols-4 gap-0 border-b border-zinc-100 last:border-b-0"
+            >
+              {/* Label */}
+              <div className="col-span-1 bg-white px-4 py-5 flex items-center border-r border-zinc-100">
+                <span className="text-xs font-bold text-zinc-700 leading-snug">{row.label}</span>
+              </div>
+
+              {/* RevHackers — highlighted column */}
+              <div className="col-span-1 bg-zinc-900 px-6 py-5 flex items-center gap-3">
+                <StatusIcon value={row.revhackersGood} />
+                <span className="text-xs text-zinc-100 font-medium leading-snug">{row.revhackers}</span>
+              </div>
+
+              {/* Interno */}
+              <div className="col-span-1 bg-white border-x border-zinc-100 px-5 py-5 flex items-center gap-3">
+                <StatusIcon value={row.internoGood} />
+                <span className="text-xs text-zinc-500 font-medium leading-snug">{row.interno}</span>
+              </div>
+
+              {/* Agência */}
+              <div className="col-span-1 bg-white border-r border-zinc-100 px-5 py-5 flex items-center gap-3">
+                <StatusIcon value={row.agenciaGood} />
+                <span className="text-xs text-zinc-500 font-medium leading-snug">{row.agencia}</span>
+              </div>
+            </motion.div>
+          ))}
+
+        </div>
+
+        {/* CTA abaixo da tabela */}
+        <div className="mt-14 text-center">
+          <p className="text-sm text-zinc-500 mb-6 font-medium max-w-lg mx-auto">
+            Veja quanto sua operação está perdendo agora — antes de contratar qualquer pessoa.
+          </p>
+          <Button asChild size="lg" className="bg-zinc-900 text-white hover:bg-revgreen hover:text-black font-black uppercase tracking-[0.12em] text-xs h-14 px-10 rounded-none transition-all">
+            <Link to={buildBookingUrl('homepage', 'comparison_cta')}>
+              Auditar Minha Operação
+            </Link>
+          </Button>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+export default ComparisonSection;

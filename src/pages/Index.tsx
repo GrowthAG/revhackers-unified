@@ -5,6 +5,7 @@ import PartnersSection from '@/components/home/PartnersSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import CasesSection from '@/components/home/CasesSection';
 import JourneySection from '@/components/home/JourneySection';
+import ComparisonSection from '@/components/home/ComparisonSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import SEO from '@/components/shared/SEO';
@@ -27,6 +28,7 @@ const Index = () => {
       <ServicesSection />
       <CasesSection />
       <JourneySection />
+      <ComparisonSection />
       <TestimonialsSection />
       <ContactFormSection />
     </PageLayout>

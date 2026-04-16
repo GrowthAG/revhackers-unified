@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { buildBookingUrl } from '@/utils/utm';
 
+import { NumberTicker } from '@/components/ui/NumberTicker';
+
 const stats = [
-  { value: '47+',    label: 'empresas B2B' },
-  { value: 'R$48M+', label: 'em vendas geradas' },
-  { value: 'NPS 94', label: 'satisfação de clientes' },
+  { value: 47, suffix: '+',    label: 'empresas B2B' },
+  { value: 48, prefix: 'R$', suffix: 'M+', label: 'em vendas geradas' },
+  { prefix: 'NPS ', value: 94, label: 'satisfação de clientes' },
 ];
 
 const HeroSection = () => {
@@ -131,12 +133,21 @@ const HeroSection = () => {
           {stats.map((stat, i) => (
             <div key={stat.value} className="flex items-center">
               <div className="flex flex-col items-center px-8 py-2">
-                <span
-                  className="text-white font-bold text-lg leading-none"
-                  style={{ letterSpacing: '-0.02em' }}
-                >
-                  {stat.value}
-                </span>
+                {typeof stat.value === 'number' ? (
+                  <NumberTicker 
+                    value={stat.value} 
+                    suffix={stat.suffix} 
+                    prefix={stat.prefix} 
+                    className="text-white font-bold text-lg leading-none" 
+                  />
+                ) : (
+                  <span
+                    className="text-white font-bold text-lg leading-none"
+                    style={{ letterSpacing: '-0.02em' }}
+                  >
+                    {stat.value}
+                  </span>
+                )}
                 <span
                   className="text-zinc-600 mt-1"
                   style={{ fontSize: '0.6875rem', letterSpacing: '0.04em' }}
