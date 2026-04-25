@@ -193,6 +193,8 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <NavLink to="/servicos">Ecossistema</NavLink>
                 <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
                 <NavLink to="/cases">Casos</NavLink>
+                <div className={`w-px h-3 mx-1 ${isLightMode ? "bg-zinc-200" : "bg-white/10"}`}></div>
+                <NavLink to="/materiais">Materiais</NavLink>
               </div>
             </div>
           </nav>
@@ -302,6 +304,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
                 <MobileNavLink to="/metodologia" onClick={scrollToTop}>Metodologia</MobileNavLink>
                 <MobileNavLink to="/servicos" onClick={scrollToTop}>Ecossistema</MobileNavLink>
                 <MobileNavLink to="/cases" onClick={scrollToTop}>Casos</MobileNavLink>
+                <MobileNavLink to="/materiais" onClick={scrollToTop}>Materiais</MobileNavLink>
                 <MobileNavLink to="/blog" onClick={scrollToTop}>Aulas</MobileNavLink>
 
                 <div className="py-2 border-b border-white/5 mb-4">
