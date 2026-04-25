@@ -99,7 +99,7 @@ function greeting(): string {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const TypeBadge = ({ type }: { type: string }) => (
-  <span className="text-2xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded">
+  <span className="text-label text-zinc-500 border border-zinc-200 px-1.5 py-0.5 bg-white">
     {TYPE_LABELS[type] ?? type}
   </span>
 );
@@ -391,13 +391,16 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Global Copilot Alert (If Critical) */}
         {derived.isCritical && (
-          <div className="mb-8 bg-zinc-50 border border-zinc-200 flex items-start p-5 gap-4">
-            <div className="w-10 h-10 bg-zinc-950 text-white flex items-center justify-center shrink-0">
-              <Radar className="w-5 h-5" />
+          <div className="mb-8 border border-red-200 bg-red-50/30 flex items-start p-5 gap-4">
+            <div className="w-10 h-10 bg-red-500 text-white flex items-center justify-center shrink-0 rounded-none">
+              <AlertTriangle className="w-5 h-5" />
             </div>
             <div className="pt-0.5">
-              <h3 className="text-xxs font-black uppercase text-zinc-900 tracking-[0.25em] mb-1">RevOps Copilot</h3>
-              <p className="text-sm font-medium text-zinc-600">{derived.copilotMessage}</p>
+              <h3 className="text-label text-zinc-900 mb-1 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-red-500 animate-pulse" />
+                RevOps Copilot_
+              </h3>
+              <p className="text-sm font-medium text-red-900 mt-2">{derived.copilotMessage}</p>
             </div>
           </div>
         )}
@@ -413,12 +416,12 @@ export const AdminDashboard: React.FC = () => {
             <button
               key={path}
               onClick={() => navigate(path)}
-              className="bg-zinc-50 hover:bg-zinc-100 p-4 text-left transition-colors group"
+              className="border border-zinc-200 bg-white hover:bg-zinc-50 p-4 text-left transition-colors flex items-center gap-4 group rounded-none"
             >
-              <div className="w-9 h-9 bg-white border border-zinc-200 rounded-lg flex items-center justify-center mb-2.5">
+              <div className="w-8 h-8 flex items-center justify-center shrink-0">
                 <Icon className="w-4 h-4 text-zinc-900" />
               </div>
-              <span className="text-xs font-bold text-zinc-700 group-hover:text-zinc-900">
+              <span className="text-sm font-bold text-zinc-700 group-hover:text-zinc-900">
                 {label}
               </span>
             </button>
@@ -439,8 +442,10 @@ export const AdminDashboard: React.FC = () => {
 
             {/* Saude dos Projetos */}
             <div className="border border-zinc-200 overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Saude dos Projetos</h2>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-200 bg-zinc-50">
+                <h2 className="text-label text-zinc-900 flex items-center gap-2">
+                  <span className="w-1 h-3 bg-zinc-900" /> SYS.HEALTH(Projetos)
+                </h2>
                 <button
                   onClick={() => navigate('/admin/rei')}
                   className="text-xxs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 flex items-center gap-1 transition-colors"
@@ -477,8 +482,8 @@ export const AdminDashboard: React.FC = () => {
                             <span className="text-sm font-black text-zinc-900 truncate">{proj.name}</span>
                             <TypeBadge type={proj.type} />
                             {proj.overdueTasks > 0 && (
-                              <span className="text-2xs font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5">
-                                {proj.overdueTasks} atrasada{proj.overdueTasks > 1 ? 's' : ''}
+                              <span className="text-label text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5">
+                                [ {proj.overdueTasks} DELAYED ]
                               </span>
                             )}
                           </div>
@@ -510,14 +515,17 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Velocidade */}
-            <div className="border border-zinc-200 p-6">
-              <div className="flex items-baseline justify-between mb-6">
-                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Velocidade - 7 Dias</h2>
+            <div className="border border-zinc-200 overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-200 bg-zinc-50">
+                <h2 className="text-label text-zinc-900 flex items-center gap-2">
+                  <span className="w-1 h-3 bg-zinc-900" /> SYS.VELOCITY(7d)
+                </h2>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-zinc-900 tabular-nums">{velocityTotal}</span>
-                  <span className="text-xxs font-black uppercase tracking-widest text-zinc-400 ml-1">concluidas</span>
+                  <span className="text-2xl font-black text-zinc-900 tabular-nums">{velocityTotal}</span>
+                  <span className="text-label text-zinc-400 ml-1">DEPLOYS</span>
                 </div>
               </div>
+              <div className="p-5">
               <ResponsiveContainer width="100%" height={120}>
                 <BarChart data={velocity} margin={{ top: 0, right: 0, left: -32, bottom: 0 }} barSize={28}>
                   <XAxis
@@ -534,6 +542,7 @@ export const AdminDashboard: React.FC = () => {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
@@ -542,8 +551,10 @@ export const AdminDashboard: React.FC = () => {
 
             {/* Proximos 7 dias */}
             <div className="border border-zinc-200 overflow-hidden">
-              <div className="flex items-center gap-2 px-5 py-4 border-b border-zinc-100">
-                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Proximos 7 Dias</h2>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-200 bg-zinc-50">
+                <h2 className="text-label text-zinc-900 flex items-center gap-2">
+                  <span className="w-1 h-3 bg-zinc-900" /> SYS.SCHEDULER(7d)
+                </h2>
               </div>
 
               {derived.upcoming.length === 0 ? (
@@ -578,22 +589,27 @@ export const AdminDashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Atividade Recente */}
-            <div className="border border-zinc-200 overflow-hidden">
-              <div className="px-5 py-4 border-b border-zinc-100">
-                <h2 className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-900">Atividade Recente</h2>
+            {/* System Console: Atividade Recente */}
+            <div className="bg-black text-white p-1">
+              <div className="px-4 py-2 border-b border-white/10 flex items-center gap-2 mb-2">
+                <div className="flex gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-red-500" />
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <div className="w-2 h-2 rounded-full bg-[#00CC6A]" />
+                </div>
+                <h2 className="text-[10px] text-zinc-500 font-mono tracking-widest ml-2">sys.log / recent_activity</h2>
               </div>
               {activity.length === 0 ? (
-                <div className="px-5 py-8 text-center text-xs font-medium text-zinc-400">
-                  Nenhuma atividade recente.
+                <div className="px-5 py-8 text-center text-xs font-mono text-zinc-600">
+                  {'> _'}
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-50">
+                <div className="font-mono text-xs pb-2">
                   {activity.slice(0, 5).map(item => (
-                    <div key={item.id} className="px-5 py-3 flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-zinc-300 shrink-0" />
-                      <p className="flex-1 text-xs font-medium text-zinc-600 truncate">{item.text}</p>
-                      <span className="text-xxs font-bold text-zinc-400 shrink-0">{item.time}</span>
+                    <div key={item.id} className="px-4 py-2 flex items-start gap-4 hover:bg-white/5 transition-colors group">
+                      <span className="text-zinc-600 w-20 shrink-0">[{item.time.replace(/ /g, '')}]</span>
+                      <span className="text-[#00CC6A] shrink-0">INFO</span>
+                      <p className="flex-1 text-zinc-300 truncate">{item.text}</p>
                     </div>
                   ))}
                 </div>

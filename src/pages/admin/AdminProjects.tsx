@@ -120,15 +120,16 @@ const AdminProjects: React.FC = () => {
 
             <div className="flex items-start justify-between gap-6 mb-8">
               <div>
-                <p className="text-xxs font-black uppercase tracking-[0.25em] text-zinc-400 mb-2">Hub</p>
-                <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight leading-[1.05]">Projetos</h1>
-                <p className="text-sm font-medium text-zinc-400 mt-2">
-                  {isLoading ? 'Carregando...' : `${projects.length} registros`}
+                <p className="text-label text-zinc-400 mb-2 border-b border-zinc-100 pb-1">DIR / ADMIN</p>
+                <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight leading-[1.05]">PROJETOS</h1>
+                <p className="text-sm font-medium text-zinc-400 mt-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-zinc-900" />
+                  {isLoading ? 'SYS.LOAD()' : <span className="text-metric text-zinc-900">{projects.length} REGISTROS_</span>}
                 </p>
               </div>
               <button
                 onClick={() => navigate('/admin/rei/novo')}
-                className="shrink-0 inline-flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-xxs h-10 px-5 transition-colors"
+                className="shrink-0 inline-flex items-center gap-2 bg-zinc-950 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-xxs h-10 px-5 transition-colors rounded-none"
               >
                 <Plus className="w-4 h-4" /> Novo Projeto
               </button>
@@ -145,14 +146,14 @@ const AdminProjects: React.FC = () => {
                   key={f.key}
                   onClick={() => setFilter(f.key)}
                   className={cn(
-                    'py-4 text-xxs font-black uppercase tracking-widest border-b-2 transition-colors',
+                    'py-4 text-label uppercase tracking-widest border-b-2 transition-colors',
                     filter === f.key
-                      ? 'border-zinc-900 text-zinc-900'
-                      : 'border-transparent text-zinc-400 hover:text-zinc-600'
+                      ? 'border-zinc-900 text-zinc-900 bg-zinc-50'
+                      : 'border-transparent text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50/50'
                   )}
                 >
                   {f.label}
-                  <span className="ml-1.5 text-zinc-300">{counts[f.key]}</span>
+                  <span className="ml-2 text-metric text-zinc-400 px-1.5 border border-zinc-200 bg-white">{counts[f.key]}</span>
                 </button>
               ))}
             </div>
@@ -199,7 +200,7 @@ const AdminProjects: React.FC = () => {
                     <div
                       key={project.id}
                       onClick={() => navigate(`/admin/projects/${project.id}`)}
-                      className="flex items-center gap-4 px-6 py-5 bg-white border border-zinc-200 hover:border-black cursor-pointer transition-all hover:-translate-x-0.5 group"
+                      className="flex items-center gap-4 px-5 py-4 bg-white border border-zinc-200 hover:bg-zinc-50 hover:border-zinc-400 cursor-pointer transition-colors group rounded-none"
                     >
                       {/* Status dot */}
                       <div className={cn(
@@ -213,39 +214,38 @@ const AdminProjects: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                           <span className="text-sm font-black text-zinc-900 truncate">{project.display_name}</span>
-                          <span className="text-2xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-500 px-2 py-0.5 shrink-0">
+                          <span className="text-label text-zinc-500 border border-zinc-200 px-1.5 py-0.5 bg-white shrink-0">
                             {TYPE_LABELS[project.type] || project.type}
                           </span>
-                          <span className={cn('text-2xs font-black uppercase tracking-widest px-2 py-0.5 shrink-0', stageInfo.color)}>
+                          <span className={cn('text-label px-1.5 py-0.5 shrink-0 bg-white', stageInfo.color)}>
                             {stageInfo.label}
                           </span>
                           {project.tasks.overdue > 0 && (
-                            <span className="text-2xs font-black uppercase tracking-widest text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 flex items-center gap-1 shrink-0">
-                              <AlertTriangle className="w-2.5 h-2.5" />
-                              {project.tasks.overdue} atrasada{project.tasks.overdue > 1 ? 's' : ''}
+                            <span className="text-label text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 shrink-0">
+                              [ {project.tasks.overdue} DELAYED ]
                             </span>
                           )}
                         </div>
 
                         {isExecution && project.tasks.total > 0 ? (
                           <div className="flex items-center gap-3">
-                            <div className="w-32 h-1.5 bg-zinc-100 overflow-hidden">
+                            <div className="w-32 h-1.5 bg-zinc-200 overflow-hidden rounded-none">
                               <div
                                 className="h-full transition-all"
                                 style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#00CC6A' : '#18181b' }}
                               />
                             </div>
-                            <span className="text-xxs font-black text-zinc-400 tabular-nums">
-                              {project.tasks.done}/{project.tasks.total} tarefas
+                            <span className="text-metric text-zinc-500 tabular-nums">
+                              {project.tasks.done}/{project.tasks.total} TAREFAS
                             </span>
                           </div>
                         ) : isExecution ? (
-                          <span className="text-2xs font-black uppercase tracking-wider bg-zinc-900 text-white px-2 py-0.5">
-                            Setup Pendente
+                          <span className="text-label bg-zinc-900 text-white px-2 py-0.5">
+                            #SETUP_PEN
                           </span>
                         ) : (
-                          <span className="text-xxs font-medium text-zinc-400">
-                            Atualizado {new Date(project.updated_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          <span className="text-label text-zinc-400">
+                            UPDATED: {new Date(project.updated_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </span>
                         )}
                       </div>

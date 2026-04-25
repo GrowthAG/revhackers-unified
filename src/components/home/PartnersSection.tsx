@@ -20,34 +20,56 @@ const partners = [
 ];
 
 const PartnersSection = () => {
-  return (
-    <Section variant="light" className="bg-white border-b border-zinc-100 py-16 md:py-24">
-      <div className="container-custom">
-        <div className="text-center mb-16">
-          <span className="font-mono text-xxs text-zinc-400 uppercase tracking-[0.3em] font-bold">
-            LÍDERES DE MERCADO QUE CONFIAM NO NOSSO ECOSSISTEMA
-          </span>
+  const renderLogos = () => (
+    <>
+      {partners.map((partner: any, index) => (
+        <div
+          key={index}
+          className="flex-shrink-0 flex items-center justify-center w-40 h-20 transition-opacity duration-300"
+        >
+          <img
+            src={partner.logo}
+            alt={partner.name}
+            style={{
+              transform: partner.scale ? `scale(${partner.scale})` : 'scale(1)',
+            }}
+            className="max-h-12 w-auto object-contain grayscale opacity-60 hover:opacity-100 mix-blend-multiply transition-all duration-300"
+          />
         </div>
+      ))}
+    </>
+  );
 
-        {/* Grid Layout with Sophisticated Cards */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-5 gap-4 max-w-[1400px] mx-auto px-4">
-          {partners.map((partner: any, index) => (
-            <div
-              key={index}
-              className="h-24 w-full flex items-center justify-center bg-zinc-50/50 p-4 hover:bg-white hover:shadow-sm hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-500 group border border-zinc-100/50 cursor-pointer overflow-hidden"
-            >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                style={{
-                  transform: partner.scale ? `scale(${partner.scale})` : 'scale(1)',
-                  opacity: partner.customOpacity || undefined
-                }}
-                className={`h-12 md:h-16 w-auto object-contain transition-all duration-500 
-                grayscale ${partner.customOpacity ? '' : 'opacity-40'} group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110`}
-              />
-            </div>
-          ))}
+  return (
+    <Section variant="light" className="bg-white pt-16 md:pt-24 pb-0 overflow-hidden">
+      <div className="text-center mb-12">
+        <span className="font-mono text-xs text-zinc-900 uppercase tracking-[0.3em] font-black">
+          Líderes de Mercado Que Confiam No Ecossistema
+        </span>
+      </div>
+
+      <div className="relative border-y-2 border-black bg-zinc-50 py-10 flex overflow-hidden">
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+          }
+          .animate-marquee-infinite {
+            animation: marquee 40s linear infinite;
+          }
+        `}</style>
+
+        {/* Track 1 */}
+        <div className="flex min-w-fit animate-marquee-infinite items-center gap-24 px-12">
+          {renderLogos()}
+        </div>
+        {/* Track 2 - Clone para Infinite Loop */}
+        <div className="flex min-w-fit animate-marquee-infinite items-center gap-24 px-12" aria-hidden="true">
+          {renderLogos()}
+        </div>
+        {/* Track 3 - Garantia de preenchimento em telas ultrawide */}
+        <div className="flex min-w-fit animate-marquee-infinite items-center gap-24 px-12 hidden 2xl:flex" aria-hidden="true">
+          {renderLogos()}
         </div>
       </div>
     </Section>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -268,6 +268,22 @@
   /* ─── Text helpers ─── */
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* USWDS Reading Measure (Max 65-75ch) */
+  .text-reading {
+    width: 100%;
+    max-width: 65ch;
+  }
+  
+  /* GitHub Foundations Mono Labeling */
+  .text-label {
+    @apply font-mono-tech uppercase tracking-widest text-[0.65em] font-bold;
+  }
+  
+  /* GitHub Foundations Mono Metrics */
+  .text-metric {
+    @apply font-mono-tech tabular-nums tracking-wider;
   }
 }
 

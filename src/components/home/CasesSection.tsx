@@ -42,7 +42,7 @@ const CasesSection = () => {
             className="flex items-center gap-3 mb-6 bg-zinc-100 px-4 py-2 rounded-full"
           >
             <div className="w-2 h-2 bg-zinc-900 rounded-full animate-pulse" />
-            <span className="text-xxs font-black uppercase tracking-[0.3em] text-zinc-900">Portfolio de Impacto</span>
+            <span className="text-label text-zinc-900">Portfolio de Impacto</span>
           </motion.div>
 
           <motion.h2
@@ -93,14 +93,14 @@ const CasesSection = () => {
 
                       {/* Floating Index Number */}
                       <div className="absolute top-8 left-8">
-                        <span className="text-xxs font-mono font-bold text-zinc-300 group-hover:text-zinc-900 transition-colors">
+                        <span className="text-metric text-xs text-zinc-300 group-hover:text-zinc-900 transition-colors">
                           0{index + 1}
                         </span>
                       </div>
 
                       {/* Floating Category tag */}
                       <div className="absolute bottom-6 left-8">
-                        <span className="text-2xs font-black uppercase tracking-[0.2em] text-zinc-400 border border-zinc-200 px-3 py-1 bg-white ">
+                        <span className="text-label text-zinc-400 border border-zinc-200 px-3 py-1 bg-white ">
                           {anyItem.case_category || 'B2B'}
                         </span>
                       </div>
@@ -113,7 +113,7 @@ const CasesSection = () => {
                         <div className="p-2 bg-zinc-900 group-hover:scale-110 transition-transform duration-500">
                           <TrendingUp className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="text-2xl font-black text-zinc-900 tracking-tighter group-hover:tracking-normal transition-all duration-500">
+                        <span className="text-2xl font-bold text-zinc-900 text-metric transition-all duration-500">
                           {resultMetric}
                         </span>
                       </div>
@@ -122,13 +122,13 @@ const CasesSection = () => {
                         {anyItem.title || anyItem.client_name}
                       </h3>
 
-                      <p className="text-body text-zinc-500 font-normal leading-relaxed mb-10 line-clamp-3">
+                      <p className="text-zinc-500 text-reading leading-[1.6] mb-10 line-clamp-3">
                         {description}
                       </p>
 
                       <div className="mt-auto flex items-center justify-between pt-8 border-t border-zinc-50">
                         <div className="flex items-center gap-3 group-hover:gap-5 transition-all duration-500">
-                          <span className="text-xxs font-black text-zinc-900 uppercase tracking-[0.3em]">ESTRATÉGIA</span>
+                          <span className="text-label text-zinc-900">ESTRATÉGIA</span>
                           <div className="w-8 h-px bg-zinc-900" />
                         </div>
                         <div className="p-2 bg-zinc-50 group-hover:bg-zinc-900 transition-colors duration-500 ">

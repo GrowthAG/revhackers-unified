@@ -41,31 +41,32 @@ const AdminPageLayout = ({
     };
 
     return (
-        <div className="min-h-screen bg-white pt-32 pb-20 transition-colors duration-300 relative bg-grain">
-            <div className={`container mx-auto px-12 ${maxWidthClasses[maxWidth]}`}>
-                {/* Header - Hyper Minimalist Surgical Standard */}
+        <div className="min-h-screen bg-white py-10 transition-colors duration-300 relative border-b border-zinc-100">
+            <div className={`container mx-auto px-8 md:px-12 max-w-7xl`}>
+                {/* Header - OS Console Standard */}
                 <div className="mb-20">
                     <div className="flex items-center justify-between mb-16">
                         {showBackButton ? (
                             <button
                                 onClick={() => navigate(backTo)}
-                                className="text-zinc-400 hover:text-black text-xs font-medium tracking-tight transition-all flex items-center gap-2 group"
+                                className="text-label text-zinc-400 hover:text-black transition-all flex items-center gap-2 group"
                             >
-                                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" strokeWidth={1} />
-                                {backLabel}
+                                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" strokeWidth={1.5} />
+                                [ {backLabel} ]
                             </button>
-                        ) : <div></div>}
+                        ) : <div className="text-label text-zinc-400">DIR / ROOT</div>}
                         <div className="flex items-center gap-6">
                             {actions}
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <h1 className="text-5xl md:text-6xl font-black text-black tracking-tighter leading-tight">
+                        <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight leading-[1.05] uppercase">
                             {title}
                         </h1>
                         {description && (
-                            <p className="text-sm text-zinc-500 font-medium tracking-tight max-w-2xl leading-relaxed">
+                            <p className="text-label text-zinc-500 max-w-2xl leading-relaxed mt-2 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-zinc-900 shrink-0" />
                                 {description}
                             </p>
                         )}

@@ -71,7 +71,6 @@ const AdminMaterialEdit = () => {
         slug: material.slug || '',
         type: material.material_type || material.type || 'framework',
         description: material.description || '',
-        cover_image: material.cover_image || '',
         published: material.published || false,
         is_active: material.is_active || true,
         material_url: material.link_material || material.material_url || ''

@@ -100,9 +100,13 @@ const ComparisonSection = () => {
           <div className="grid grid-cols-4 gap-0 mb-0">
             <div className="col-span-1" />
             {/* RevHackers header — highlighted */}
-            <div className="col-span-1 bg-zinc-900 px-6 py-5 text-center rounded-t-sm">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-revgreen block">RevHackers</span>
-              <span className="text-revgreen/60 text-xxs font-mono">Consultoria RevOps</span>
+            <div className="col-span-1 bg-zinc-900 px-6 py-5 text-center rounded-t-sm flex flex-col items-center justify-center">
+              <img 
+                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" 
+                alt="RevHackers" 
+                className="h-7 w-auto mx-auto mb-3 opacity-100 invert" 
+              />
+              <span className="text-revgreen/60 text-[10px] font-mono tracking-widest uppercase">Consultoria RevOps</span>
             </div>
             <div className="col-span-1 bg-zinc-50 border-x border-t border-zinc-200 px-6 py-5 text-center">
               <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-700 block">Time Interno</span>

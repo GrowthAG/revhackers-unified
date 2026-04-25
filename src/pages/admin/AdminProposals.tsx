@@ -136,40 +136,40 @@ const AdminProposals = () => {
                 actions={
                     <Button
                         onClick={() => navigate("/admin/proposals/new")}
-                        className="bg-black text-white hover:bg-zinc-800 font-bold uppercase tracking-widest text-xs h-12 px-8 rounded-sm no-print shadow-sm"
+                        className="bg-black text-white hover:bg-zinc-800 text-label h-10 px-6 rounded-none no-print shadow-none min-w-0"
                     >
                         <Plus className="w-4 h-4 mr-2" />
-                        Nova Proposta
+                        NOVA PROPOSTA
                     </Button>
                 }
             >
                 {/* 1. Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-zinc-200 bg-white mb-10 divide-y md:divide-y-0 md:divide-x divide-zinc-200">
+                    <div className="p-6 flex items-start justify-between group hover:bg-zinc-50 transition-colors">
                         <div>
-                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Total de Propostas</p>
-                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.total}</h3>
+                            <p className="text-label text-zinc-400 mb-2">TOTAL PROPOSTAS</p>
+                            <h3 className="text-3xl font-black text-zinc-900 tabular-nums">{stats.total}</h3>
                         </div>
-                        <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
-                            <Rocket className="w-5 h-5 text-zinc-400 group-hover:text-white" />
+                        <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center border border-zinc-200 group-hover:border-zinc-300">
+                            <Rocket className="w-4 h-4 text-zinc-500" />
                         </div>
                     </div>
-                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                    <div className="p-6 flex items-start justify-between group hover:bg-zinc-50 transition-colors">
                         <div>
-                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Propostas Aprovadas</p>
-                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.approved}</h3>
+                            <p className="text-label text-zinc-400 mb-2">STATUS: APPROVED</p>
+                            <h3 className="text-3xl font-black text-[#00CC6A] tabular-nums">{stats.approved}</h3>
                         </div>
-                        <div className="w-10 h-10 bg-[#00CC6A]/10 flex items-center justify-center border border-[#00CC6A]/20 group-hover:bg-[#00CC6A] group-hover:border-[#00CC6A] transition-colors">
-                            <CheckCircle2 className="w-5 h-5 text-[#00CC6A] group-hover:text-white" />
+                        <div className="w-8 h-8 bg-[#00CC6A]/10 flex items-center justify-center border border-[#00CC6A]/20">
+                            <CheckCircle2 className="w-4 h-4 text-[#00CC6A]" />
                         </div>
                     </div>
-                    <div className="bg-white border border-zinc-200 p-8 flex items-start justify-between group hover:border-black transition-all">
+                    <div className="p-6 flex items-start justify-between group hover:bg-zinc-50 transition-colors">
                         <div>
-                            <p className="text-xxs font-bold text-zinc-400 uppercase tracking-widest mb-2">Em Negociação</p>
-                            <h3 className="text-4xl font-black text-black tracking-tight">{stats.active}</h3>
+                            <p className="text-label text-zinc-400 mb-2">IN NEGOTIATION</p>
+                            <h3 className="text-3xl font-black text-zinc-900 tabular-nums">{stats.active}</h3>
                         </div>
-                        <div className="w-10 h-10 bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-black group-hover:border-black transition-colors">
-                            <Clock className="w-5 h-5 text-zinc-400 group-hover:text-white" />
+                        <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center border border-zinc-200 group-hover:border-zinc-300">
+                            <Clock className="w-4 h-4 text-zinc-500" />
                         </div>
                     </div>
                 </div>
@@ -182,7 +182,7 @@ const AdminProposals = () => {
                             placeholder="Buscar por cliente, título ou tipo..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-14 pl-12 bg-white border-zinc-200 rounded-sm focus-visible:ring-1 focus-visible:ring-black focus-visible:border-black text-sm transition-all placeholder:text-zinc-400 font-medium shadow-sm"
+                            className="h-10 pl-12 bg-white border-zinc-200 rounded-none focus-visible:ring-0 focus-visible:border-black text-label transition-none shadow-none"
                         />
                     </div>
                     {/* Add Filter Buttons if needed later */}
@@ -213,10 +213,10 @@ const AdminProposals = () => {
                                             {clientName.substring(0, 2).toUpperCase()}
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-bold text-black uppercase tracking-tight">{clientName}</h3>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="inline-flex items-center border border-zinc-200 px-2 py-0.5 text-xxs font-bold uppercase tracking-wide text-zinc-500 h-5">
-                                                    {clientProposals.length} PROPOSTAS
+                                            <h3 className="text-lg font-black text-black tracking-tight uppercase">{clientName}</h3>
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <span className="inline-flex items-center text-label text-zinc-500 bg-zinc-50 border border-zinc-200 px-1.5 h-5 tabular-nums">
+                                                    [{clientProposals.length} PROPOSTAS]
                                                 </span>
                                             </div>
                                         </div>
@@ -259,15 +259,15 @@ const AdminProposals = () => {
                                                     <FileText className="w-4 h-4 text-zinc-400 group-hover/item:text-black transition-colors" />
                                                     <div>
                                                         <p className="font-semibold text-sm text-zinc-900">{item.title || "Sem Título"}</p>
-                                                        <div className="flex items-center gap-3 mt-1">
-                                                            <span className="text-xxs text-zinc-500 uppercase tracking-wide">
-                                                                Criado em {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                                                        <div className="flex items-center gap-3 mt-1.5">
+                                                            <span className="text-label text-zinc-400 lowercase">
+                                                                created()_ {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                                             </span>
-                                                            <span className={`text-xxs font-bold uppercase tracking-wide ${item.status === 'approved' ? 'text-[#00CC6A]' :
-                                                                item.status === 'sent' ? 'text-zinc-900' : 'text-zinc-400'
+                                                            <span className={`text-label ${item.status === 'approved' ? 'text-[#00CC6A]' :
+                                                                item.status === 'sent' ? 'text-zinc-900 border border-zinc-200 px-1' : 'text-zinc-400 border border-zinc-200 px-1 pb-0.5'
                                                                 }`}>
-                                                                {item.status === 'approved' ? '● Aprovado' :
-                                                                    item.status === 'sent' ? '● Enviado' : '● Rascunho'}
+                                                                {item.status === 'approved' ? 'APPROVED' :
+                                                                    item.status === 'sent' ? 'SENT' : 'DRAFT'}
                                                             </span>
                                                         </div>
                                                     </div>

@@ -54,42 +54,45 @@ const AdminCases = () => {
 
     return (
         <AdminLayout>
-            <div className="min-h-screen bg-zinc-50/50 p-8 font-sans">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight flex items-center gap-2">
-                            <Briefcase className="w-6 h-6" /> Cases de Sucesso
-                        </h1>
-                        <p className="text-sm text-zinc-500 mt-1">
-                            Gerencie seus cases de sucesso e métricas. ({filtered.length} total)
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 transition-colors" />
-                            <input
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Buscar cases..."
-                                className="h-10 pl-9 pr-3 w-64 text-mini bg-white border border-zinc-200 rounded-sm outline-none focus:border-black focus:ring-1 focus:ring-black/5 transition-all placeholder:text-zinc-400 shadow-sm"
-                            />
+            <div className="min-h-screen bg-white">
+                <div className="max-w-7xl mx-auto px-8 md:px-12 py-10">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-10 border-b border-zinc-100 pb-6">
+                        <div>
+                            <p className="text-label text-zinc-400 mb-2 border-b border-zinc-100 pb-1 w-max">DIR / CASES</p>
+                            <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight flex items-center gap-4 uppercase mt-4">
+                                <Briefcase className="w-10 h-10 text-zinc-300" /> CASES DE SUCESSO
+                            </h1>
+                            <p className="text-label text-zinc-500 mt-4 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-zinc-900 shrink-0" />
+                                GERENCIAMENTO DE PIPELINE DE CASES. <span className="text-metric text-zinc-900 tabular-nums">[{filtered.length}]</span>
+                            </p>
                         </div>
-                        <button
-                            onClick={handleMigrate}
-                            className="h-10 px-4 flex items-center gap-2 bg-white border border-zinc-200 hover:border-zinc-300 text-zinc-700 text-tiny font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
-                            title="Importar do arquivo estático"
-                        >
-                            <Download className="w-4 h-4" /> Importar
-                        </button>
-                        <button
-                            onClick={() => navigate('/admin/cases/new')}
-                            className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-tiny font-bold uppercase tracking-widest rounded-sm transition-all shadow-sm"
-                        >
-                            <Plus className="w-4 h-4" /> Novo Case
-                        </button>
-                    </div>
+
+                        <div className="flex items-center gap-3">
+                            <div className="relative group">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 transition-colors" />
+                                <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="BUSCAR CASES..."
+                                    className="h-10 pl-9 pr-3 w-64 text-label bg-white border border-zinc-200 rounded-none outline-none focus:border-black focus:ring-0 transition-none shadow-none"
+                                />
+                            </div>
+                            <button
+                                onClick={handleMigrate}
+                                className="h-10 px-4 flex items-center gap-2 bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-label rounded-none transition-colors shadow-none"
+                                title="Importar do arquivo estático"
+                            >
+                                <Download className="w-3.5 h-3.5" /> MIGRAR
+                            </button>
+                            <button
+                                onClick={() => navigate('/admin/cases/new')}
+                                className="h-10 px-5 flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-label rounded-none transition-colors shadow-none"
+                            >
+                                <Plus className="w-3.5 h-3.5" /> NOVO CASE
+                            </button>
+                        </div>
                 </div>
 
                 {/* Grid Layout */}
@@ -113,45 +116,45 @@ const AdminCases = () => {
                                 )}
                                 <div className="absolute top-3 left-3 flex gap-2">
                                     <span className={`
-                                        text-2xs font-black uppercase tracking-wider px-2 py-1 rounded-sm shadow-sm backdrop-blur-md
+                                        text-label border px-1.5 py-0.5 rounded-none
                                         ${item.published
-                                            ? 'bg-[#00CC6A]/90 text-white'
-                                            : 'bg-zinc-200 text-zinc-700'
+                                            ? 'bg-[#00CC6A] text-black border-[#00CC6A]'
+                                            : 'bg-white text-zinc-500 border-zinc-200'
                                         }
                                     `}>
-                                        {item.published ? 'Publicado' : 'Rascunho'}
+                                        {item.published ? 'PUBLISHED' : 'DRAFT'}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Content */}
-                            <div className="p-5 flex-1 flex flex-col">
-                                <span className="text-2xs font-black uppercase tracking-widest text-zinc-400 mb-2 block">
-                                    {item.case_category || 'Geral'}
+                            <div className="p-5 flex-1 flex flex-col bg-white">
+                                <span className="text-label text-zinc-400 mb-2 block">
+                                    {item.case_category || 'GERAL'}
                                 </span>
-                                <h3 className="text-lg font-bold text-zinc-900 leading-snug mb-2 line-clamp-1 group-hover:text-black transition-colors">
-                                    {item.client_name || 'Cliente'}
+                                <h3 className="text-lg font-black text-black leading-snug mb-2 line-clamp-1 truncate uppercase">
+                                    {item.client_name || 'CLIENTE'}
                                 </h3>
 
                                 {item.primary_metric && (
-                                    <div className="mb-4 flex items-center gap-2 text-[#00CC6A] bg-[#00CC6A]/10 px-2 py-1.5 rounded-sm self-start">
-                                        <TrendingUp className="w-3 h-3" />
-                                        <span className="text-tiny font-bold">{item.primary_metric}</span>
+                                    <div className="mb-4 flex items-center gap-2 text-zinc-900 border border-zinc-200 bg-zinc-50 px-2 py-1.5 rounded-none self-start mt-2">
+                                        <TrendingUp className="w-3 h-3 text-[#00CC6A]" />
+                                        <span className="text-metric">{item.primary_metric}</span>
                                     </div>
                                 )}
 
                                 <div className="mt-auto pt-4 border-t border-zinc-100 flex items-center justify-between">
-                                    <span className="text-xxs text-zinc-400 font-mono">
-                                        {new Date(item.created_at).toLocaleDateString()}
+                                    <span className="text-label text-zinc-400">
+                                        CREATED: {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Hover Actions */}
-                            <div className="absolute inset-x-0 bottom-0 p-4 bg-black/70 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-zinc-900 border-t border-zinc-800 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-end gap-2">
                                 <button
                                     onClick={(e) => handleDelete(item.id, e)}
-                                    className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-sm backdrop-blur-md transition-colors"
+                                    className="p-2 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-none transition-colors border border-transparent hover:border-red-900"
                                     title="Excluir"
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -161,26 +164,14 @@ const AdminCases = () => {
                                         e.stopPropagation();
                                         navigate(`/admin/cases/edit/${item.id}`);
                                     }}
-                                    className="px-4 py-2 bg-white text-black text-xxs font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-100 transition-colors shadow-sm"
+                                    className="px-4 py-2 bg-white text-black text-label rounded-none hover:bg-zinc-200 transition-colors"
                                 >
-                                    Editar
+                                    EDIT
                                 </button>
                             </div>
                         </div>
                     ))}
-
-                    {filtered.length === 0 && (
-                        <div className="col-span-full py-20 text-center bg-white border border-dashed border-zinc-200 rounded-sm">
-                            <Briefcase className="w-12 h-12 text-zinc-200 mx-auto mb-4" />
-                            <h3 className="text-lg font-bold text-zinc-900">Nenhum case encontrado</h3>
-                            <button
-                                onClick={() => navigate('/admin/cases/new')}
-                                className="mt-4 px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-zinc-800 transition-colors"
-                            >
-                                Criar Case
-                            </button>
-                        </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </AdminLayout>

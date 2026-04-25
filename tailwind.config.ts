@@ -48,8 +48,9 @@ export default {
 				'prose':   '65ch',
 			},
 			fontFamily: {
-				'sans':    ['DM Sans', 'Inter', 'sans-serif'],
-				'display': ['DM Sans', 'Inter', 'sans-serif'],
+				'sans':      ['"Plus Jakarta Sans"', 'sans-serif'],
+				'display':   ['"Plus Jakarta Sans"', 'sans-serif'],
+				'mono-tech': ['"JetBrains Mono"', 'monospace'],
 			},
 			colors: {
 				border:     'hsl(var(--border))',

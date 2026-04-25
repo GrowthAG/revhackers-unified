@@ -51,11 +51,11 @@ export const Sidebar = () => {
       <div className="h-16 flex items-center justify-between px-3 border-b border-zinc-800">
         {!collapsed ? (
           <>
-            <Link to="/admin" className="flex items-center gap-2">
+            <Link to="/admin" className="flex items-center gap-2 pl-2">
               <img 
                 src={LOGO_URL}
                 alt="RevHackers" 
-                className="h-7 w-auto brightness-0 invert opacity-90"
+                className="h-9 w-auto brightness-0 invert opacity-100"
               />
             </Link>
             <button

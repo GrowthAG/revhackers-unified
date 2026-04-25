@@ -1,12 +1,13 @@
 #!/bin/bash
-LOCAL="$1"
-FTP="$2"
-AUTH="$3"
-f="$4"
-rel="${f#$LOCAL/}"
-result=$(curl -m 30 -s -T "$f" "$FTP/$rel" --user "$AUTH" --ftp-create-dirs 2>&1)
-if [ $? -eq 0 ]; then
-  echo "✅ $rel"
-else
-  echo "❌ ERRO: $rel - $result"
-fi
+source .env
+
+export FTP="ftp://$FTP_HOST"
+export AUTH="$FTP_USER:$FTP_PASSWORD"
+export LOCAL="$(pwd)/dist"
+
+echo "🚀 Iniciando deploy de $(find "$LOCAL" -type f | wc -l) arquivos..."
+
+chmod +x upload_worker.sh
+find "$LOCAL" -type f | xargs -P 8 -I{} ./upload_worker.sh "{}"
+
+echo "✅ Deploy concluído!"

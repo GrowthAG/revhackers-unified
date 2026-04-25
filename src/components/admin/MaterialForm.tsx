@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
+import { uploadFileToSupabase } from '@/utils/uploadFileToSupabase';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Save, Upload, Trash2, Image as ImageIcon } from 'lucide-react';
 // import AIEditorLayout from '@/components/layout/AIEditorLayout';
@@ -21,7 +21,6 @@ interface MaterialFormValues {
     material_url: string;
     type: string;
     description: string;
-    cover_image: string | null;
     published: boolean;
     is_active: boolean;
 };
@@ -36,17 +35,28 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [imagePreview, setImagePreview] = useState<string | null>(initialData?.cover_image || null);
+    const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<MaterialFormValues>({
-        defaultValues: initialData ? {
+    const draftKey = `draft_material_${initialData?.id || 'new'}`;
+
+    const loadDraft = () => {
+        try {
+            const saved = localStorage.getItem(draftKey);
+            if (saved) return JSON.parse(saved);
+        } catch (e) {}
+        return null;
+    };
+
+    const draft = loadDraft();
+
+    const { register, handleSubmit, setValue, watch, formState: { errors, isDirty } } = useForm<MaterialFormValues>({
+        defaultValues: draft || (initialData ? {
             ...initialData,
             title: initialData.title || (initialData as any).material_name || '', // Handle DB column name change if needed
             slug: initialData.slug || '',
             material_url: initialData.material_url || (initialData as any).link_material || '',
             type: initialData.type || (initialData as any).material_type || 'framework',
             description: initialData.description || '',
-            cover_image: initialData.cover_image || '',
             published: initialData.published || false,
             is_active: initialData.is_active ?? true
         } : {
@@ -54,14 +64,33 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
             slug: '',
             type: 'framework',
             description: '',
-            cover_image: '',
             published: false,
             is_active: true,
             material_url: ''
-        }
+        })
     });
 
     const title = watch('title');
+
+    // Auto-save draft
+    useEffect(() => {
+        const subscription = watch((value) => {
+            localStorage.setItem(draftKey, JSON.stringify(value));
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, draftKey]);
+
+    // Bloqueia atualizacao da pagina ou fechamento acidental
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
 
     useEffect(() => {
         if (!isEditing && title) {
@@ -70,20 +99,19 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
         }
     }, [title, isEditing, setValue]);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleMaterialFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
-        setUploading(true);
+        setUploadingMaterial(true);
         try {
-            const publicUrl = await uploadImageToSupabase(e.target.files[0]);
+            const publicUrl = await uploadFileToSupabase(e.target.files[0], 'admin-materials');
             if (publicUrl) {
-                setValue('cover_image', publicUrl);
-                setImagePreview(publicUrl);
-                toast({ title: 'Capa enviada com sucesso' });
+                setValue('material_url', publicUrl);
+                toast({ title: 'Material enviado com sucesso!' });
             }
         } catch (error: any) {
-            toast({ title: 'Erro ao enviar imagem', description: error.message, variant: 'destructive' });
+            toast({ title: 'Erro ao enviar material', description: error.message, variant: 'destructive' });
         } finally {
-            setUploading(false);
+            setUploadingMaterial(false);
         }
     };
 
@@ -115,7 +143,6 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                 material_url: data.material_url, // Add redundant field to satisfy types if needed, or check DB
                 slug: data.slug,
                 description: data.description,
-                cover_image: data.cover_image,
                 published: data.published,
                 is_active: true,
             };
@@ -124,10 +151,12 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                 const { error } = await supabase.from('materials').update(payload).eq('id', initialData.id);
                 if (error) throw error;
                 toast({ title: 'Material atualizado!' });
+                localStorage.removeItem(draftKey);
             } else {
                 const { error } = await supabase.from('materials').insert(payload);
                 if (error) throw error;
                 toast({ title: 'Material criado!' });
+                localStorage.removeItem(draftKey);
                 navigate('/admin/materials');
             }
         } catch (error: any) {
@@ -192,8 +221,22 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                     <div className="p-4 bg-zinc-50 border border-zinc-100 space-y-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-bold text-zinc-700">🔗 Link do Material (URL)</Label>
-                            <Input {...register('material_url', { required: true })} placeholder="https://clickup.com/..." className="bg-white font-mono text-xs" />
-                            <p className="text-xxs text-zinc-500">Este é o link que o lead receberá após preencher o formulário.</p>
+                            <div className="flex gap-2">
+                                <Input {...register('material_url', { required: true })} placeholder="https://clickup.com/... ou URL do arquivo" className="bg-white font-mono text-xs flex-1" />
+                                <div className="relative">
+                                    <Input 
+                                        type="file" 
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full" 
+                                        onChange={handleMaterialFileUpload} 
+                                        disabled={uploadingMaterial}
+                                        title="Ou envie um arquivo do seu computador"
+                                    />
+                                    <Button type="button" variant="outline" className="px-3" disabled={uploadingMaterial}>
+                                        {uploadingMaterial ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+                            </div>
+                            <p className="text-xxs text-zinc-500">Cole um link ou clique no botão para fazer o upload do arquivo PDF/Docx.</p>
                             {errors.material_url && <span className="text-zinc-900 font-bold text-xxs">O link é obrigatório!</span>}
                         </div>
 

@@ -120,8 +120,7 @@ const ServicesSection = () => {
               custom={0}
               initial="hidden"
               animate={inView ? 'visible' : 'hidden'}
-              className="text-revgreen text-tiny font-medium uppercase mb-4"
-              style={{ letterSpacing: '0.06em' }}
+              className="text-label text-revgreen mb-4"
             >
               Como a Máquina Funciona
             </motion.p>
@@ -154,61 +153,65 @@ const ServicesSection = () => {
           </motion.div>
         </div>
 
-        {/* Cards grid - estilo Supabase */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.id}
-              variants={fadeUp}
-              custom={3 + i}
-              initial="hidden"
-              animate={inView ? 'visible' : 'hidden'}
-            >
-              <Link
-                to={service.link}
-                onClick={scrollToTop}
-                className="group flex flex-col h-full p-6 border border-white/8 hover:border-revgreen/30 transition-all duration-300"
-                style={{
-                  background: '#111111',
-                  borderRadius: '8px',
-                  minHeight: '280px',
-                }}
+        {/* Bento Grid Brutalista - Zero gaps, border-only, rounded-none */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-l border-white/10 mt-12 bg-black">
+          {services.map((service, i) => {
+            // Assimetria de Bento Grid: 1º e 4º card ocupam 2 colunas, 2º e 3º ocupam 1.
+            const isLarge = i === 0 || i === 3;
+            return (
+              <motion.div
+                key={service.id}
+                variants={fadeUp}
+                custom={3 + i}
+                initial="hidden"
+                animate={inView ? 'visible' : 'hidden'}
+                className={`border-b border-r border-white/10 ${isLarge ? 'md:col-span-2' : 'md:col-span-1'}`}
               >
-                {/* Ilustração SVG geométrica */}
-                <div className="h-24 mb-6 flex items-center justify-center">
-                  {service.visual}
-                </div>
-
-                {/* Número */}
-                <span
-                  className="text-zinc-700 font-mono text-xs mb-3 group-hover:text-zinc-600 transition-colors"
-                  style={{ letterSpacing: '0.04em' }}
+                <Link
+                  to={service.link}
+                  onClick={scrollToTop}
+                  className="group flex flex-col h-full p-8 lg:p-12 hover:bg-white/[0.02] transition-all duration-300 rounded-none relative overflow-hidden"
+                  style={{ minHeight: isLarge ? '360px' : '320px' }}
                 >
-                  {service.id}
-                </span>
+                  {/* Número estilo painel */}
+                  <span
+                    className="absolute top-6 right-6 text-zinc-800 text-metric text-xs group-hover:text-revgreen transition-colors"
+                  >
+                    [{service.id}]
+                  </span>
 
-                {/* Título */}
-                <h3
-                  className="text-white font-semibold mb-1 group-hover:text-revgreen transition-colors duration-200"
-                  style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}
-                >
-                  {service.title}{' '}
-                  <span className="text-zinc-500 font-normal">{service.subtitle}</span>
-                </h3>
+                  {/* Ilustração SVG geométrica */}
+                  <div className="h-24 mb-10 flex items-center justify-start opacity-70 group-hover:opacity-100 transition-opacity">
+                    <div className="w-32 h-full"> 
+                      {service.visual}
+                    </div>
+                  </div>
 
-                {/* Descrição */}
-                <p className="text-zinc-500 text-sm mt-2 leading-relaxed font-light flex-1">
-                  {service.desc}
-                </p>
+                  {/* Título */}
+                  <h3
+                    className="text-white font-black mb-2 uppercase tracking-widest group-hover:text-revgreen transition-colors duration-200"
+                    style={{ fontSize: '1.25rem' }}
+                  >
+                    {service.title}
+                  </h3>
+                  <span className="text-label text-zinc-500 mb-4 block">
+                    {service.subtitle}
+                  </span>
 
-                {/* CTA do card */}
-                <div className="mt-6 flex items-center gap-2 text-zinc-600 group-hover:text-revgreen transition-colors text-tiny font-medium">
-                  <span style={{ letterSpacing: '0.04em' }}>Ver estratégia</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={1.5} />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                  {/* Descrição */}
+                  <p className="text-zinc-400 text-[0.875rem] leading-[1.6] text-reading flex-1">
+                    {service.desc}
+                  </p>
+
+                  {/* CTA do card - Terminal arrow */}
+                  <div className="mt-8 flex items-center gap-2 text-zinc-500 group-hover:text-revgreen transition-colors text-label">
+                    <span>Acessar</span>
+                    <ArrowUpRight className="w-4 h-4" strokeWidth={2} />
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
 
       </div>

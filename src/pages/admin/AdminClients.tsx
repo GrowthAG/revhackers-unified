@@ -75,32 +75,32 @@ const AdminClients = () => {
                 actions={
                     <Button
                         onClick={() => navigate('/admin/clients/novo')}
-                        className="bg-black text-white hover:bg-zinc-800 rounded-sm h-11 px-6 text-xs font-black uppercase tracking-widest shadow-sm gap-2"
+                        className="bg-black text-white hover:bg-zinc-800 rounded-none h-10 px-6 text-label shadow-none gap-2 flex items-center"
                     >
-                        <Plus size={16} /> Novo Cliente
+                        <Plus size={14} /> NOVO CLIENTE
                     </Button>
                 }
             >
                 <div className="space-y-10 py-10">
                     {/* Search & Stats */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-10 border-b border-zinc-100">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-8 border-b border-zinc-100">
                         <div className="relative w-full md:w-96">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                             <Input
                                 placeholder="BUSCAR CLIENTE OU EMPRESA..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-12 h-12 bg-zinc-50 border-transparent rounded-sm text-xxs font-black uppercase tracking-widest focus-visible:ring-1 focus-visible:ring-black focus-visible:bg-white transition-all shadow-none"
+                                className="pl-12 h-10 bg-white border-zinc-200 rounded-none text-label focus-visible:ring-0 focus-visible:border-black transition-all shadow-none"
                             />
                         </div>
                         <div className="flex gap-8">
                             <div className="text-right">
-                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-1">Total</p>
-                                <p className="text-2xl font-black">{clients.length}</p>
+                                <p className="text-label text-zinc-400 mb-1">TOTAL</p>
+                                <p className="text-2xl font-black text-zinc-900 tabular-nums">{clients.length}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xxs font-black text-zinc-400 uppercase tracking-widest mb-1">Ativos</p>
-                                <p className="text-2xl font-black text-[#03FC3B]">{clients.filter(c => c.status === 'active').length}</p>
+                                <p className="text-label text-zinc-400 mb-1">ATIVOS</p>
+                                <p className="text-2xl font-black text-[#00CC6A] tabular-nums">{clients.filter(c => c.status === 'active').length}</p>
                             </div>
                         </div>
                     </div>
@@ -116,75 +116,76 @@ const AdminClients = () => {
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse">
                                         <thead>
-                                            <tr className="border-b border-zinc-100 bg-zinc-50/50">
-                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Cliente / Empresa</th>
-                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Contato</th>
-                                                <th className="p-6 text-xxs font-black uppercase tracking-widest text-zinc-400">Status</th>
-                                                <th className="p-6 text-right text-xxs font-black uppercase tracking-widest text-zinc-400">Ações</th>
+                                            <tr className="border-b border-zinc-200 bg-zinc-50">
+                                                <th className="p-4 text-label text-zinc-500">CLIENTE / EMPRESA</th>
+                                                <th className="p-4 text-label text-zinc-500">CONTATO DA CONTA</th>
+                                                <th className="p-4 text-label text-zinc-500">SYSTEM STATUS</th>
+                                                <th className="p-4 text-right text-label text-zinc-500">ACTIONS</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-zinc-50">
+                                        <tbody className="divide-y divide-zinc-100">
                                             {filteredClients.map((client) => (
-                                                <tr key={client.id} className="hover:bg-zinc-50/50 transition-colors group">
-                                                    <td className="p-6">
+                                                <tr key={client.id} className="hover:bg-zinc-50 transition-colors group">
+                                                    <td className="px-4 py-3">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 bg-black flex items-center justify-center shrink-0">
-                                                                <Building2 className="text-[#03FC3B] h-6 w-6" strokeWidth={1.5} />
+                                                            <div className="w-10 h-10 bg-zinc-900 flex items-center justify-center shrink-0">
+                                                                <Building2 className="text-[#00CC6A] h-5 w-5" strokeWidth={2} />
                                                             </div>
                                                             <div>
-                                                                <p className="text-sm font-black uppercase tracking-tight">{client.name}</p>
-                                                                <p className="text-xxs text-zinc-400 font-bold uppercase tracking-widest">{client.company || 'Empresa não informada'}</p>
+                                                                <p className="text-sm font-black uppercase tracking-tight text-zinc-900">{client.name}</p>
+                                                                <p className="text-label text-zinc-500 mt-1">[{client.company || 'N/A'}]</p>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="p-6">
+                                                    <td className="px-4 py-3">
                                                         <div className="space-y-1">
-                                                            <div className="flex items-center gap-2 text-zinc-500 hover:text-black transition-colors">
-                                                                <Mail size={12} />
-                                                                <span className="text-xxs font-bold uppercase tracking-widest">{client.email}</span>
+                                                            <div className="flex items-center gap-2 text-zinc-500">
+                                                                <Mail className="w-3.5 h-3.5" />
+                                                                <span className="text-label lowercase">{client.email}</span>
                                                             </div>
                                                             {client.website && (
-                                                                <div className="flex items-center gap-2 text-zinc-500 hover:text-black transition-colors">
-                                                                    <Globe size={12} />
-                                                                    <span className="text-xxs font-bold uppercase tracking-widest">{client.website}</span>
+                                                                <div className="flex items-center gap-2 text-zinc-500">
+                                                                    <Globe className="w-3.5 h-3.5" />
+                                                                    <span className="text-label lowercase">{client.website}</span>
                                                                 </div>
                                                             )}
                                                         </div>
                                                     </td>
-                                                    <td className="p-6">
-                                                        <span className="inline-flex items-center gap-1.5 text-xxs font-bold uppercase tracking-widest">
-                                                            <span className={`w-1.5 h-1.5 ${client.status === 'active' ? 'bg-[#03FC3B]' : client.status === 'onboarding' ? 'bg-zinc-400' : 'bg-zinc-200'}`} />
-                                                            <span className={client.status === 'active' ? 'text-zinc-900' : 'text-zinc-400'}>
-                                                                {client.status === 'active' ? 'Ativo' : client.status === 'onboarding' ? 'Onboarding' : 'Inativo'}
-                                                            </span>
-                                                        </span>
+                                                    <td className="px-4 py-3">
+                                                        {client.status === 'active' ? (
+                                                            <span className="text-label bg-[#00CC6A] text-black px-1.5 py-0.5">ACTIVE</span>
+                                                        ) : client.status === 'onboarding' ? (
+                                                            <span className="text-label bg-zinc-900 text-white px-1.5 py-0.5">#ONBOARDING</span>
+                                                        ) : (
+                                                            <span className="text-label border border-zinc-200 text-zinc-400 px-1.5 py-0.5">INACTIVE</span>
+                                                        )}
                                                     </td>
-                                                    <td className="p-6">
+                                                    <td className="px-4 py-3">
                                                         <div className="flex justify-end items-center gap-2">
                                                             <Button
                                                                 variant="ghost"
-                                                                size="icon"
+                                                                size="sm"
                                                                 onClick={() => navigate(`/admin/rei?search=${client.email}`)}
                                                                 title="Ver Projetos REI"
-                                                                className="h-10 w-10 text-zinc-300 hover:text-[#03FC3B] hover:bg-black transition-all rounded-sm"
+                                                                className="h-8 w-8 p-0 text-zinc-400 hover:text-black focus:ring-0 rounded-none transition-colors border border-transparent hover:border-zinc-200 bg-white"
                                                             >
-                                                                <Zap size={16} />
+                                                                <Zap size={14} />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
-                                                                size="icon"
+                                                                size="sm"
                                                                 onClick={() => navigate(`/admin/clients/edit/${client.id}`)}
-                                                                className="h-10 w-10 text-zinc-300 hover:text-black hover:bg-zinc-100 transition-all rounded-sm"
+                                                                className="h-8 w-8 p-0 text-zinc-400 hover:text-black focus:ring-0 rounded-none transition-colors border border-transparent hover:border-zinc-200 bg-white"
                                                             >
-                                                                <Edit2 size={16} />
+                                                                <Edit2 size={14} />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
-                                                                size="icon"
+                                                                size="sm"
                                                                 onClick={() => handleDelete(client.id, client.name)}
-                                                                className="h-10 w-10 text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 transition-all rounded-sm"
+                                                                className="h-8 w-8 p-0 text-zinc-400 hover:text-red-600 focus:ring-0 rounded-none transition-colors border border-transparent hover:border-red-200 bg-white hover:bg-red-50"
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={14} />
                                                             </Button>
                                                         </div>
                                                     </td>
