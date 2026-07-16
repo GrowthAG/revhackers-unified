@@ -15,13 +15,13 @@ vídeos e `token.pickle`.
 
 | Local | Classificação | Destino |
 | --- | --- | --- |
-| `Projects/active/revhackers-growth-hub` | fonte anterior, conteúdo já incorporado | quarentena após validação |
-| `Backups/revhackers-growth-hub-backup-*` | backup exato anterior ao commit | manter até o push validado |
-| `Projects/active/Site RevHackers` | snapshot legado de janeiro de 2026 | arquivar somente documentos exclusivos |
-| `Desktop/.../usefunnels.io-rebuild (1)/revhackers-growth-hub` | clone antigo da `main` | quarentena |
-| `Desktop/.../Revhackers-Upload*` | builds antigos para upload | quarentena |
-| `Desktop/.../Site_RevHackers_v13` | build antigo e um documento privado | separar documento e remover build |
-| `Desktop/.../00_Projetos Antigravity/Site RevHackers` | templates genéricos | quarentena |
+| `Projects/active/revhackers-growth-hub` | fonte anterior, conteúdo incorporado | removida após validação |
+| `Backups/revhackers-growth-hub-backup-*` | backup exato anterior ao commit | removido após clone limpo |
+| `Projects/active/Site RevHackers` | snapshot legado de janeiro de 2026 | exclusivos preservados; cópia removida |
+| `Desktop/.../usefunnels.io-rebuild (1)/revhackers-growth-hub` | clone antigo da `main` | removido |
+| `Desktop/.../Revhackers-Upload*` | builds antigos para upload | removidos |
+| `Desktop/.../Site_RevHackers_v13` | build antigo e um documento privado | documento preservado; build removido |
+| `Desktop/.../00_Projetos Antigravity/Site RevHackers` | templates genéricos | removidos |
 
 ## Conteúdo excluído do repositório público
 
@@ -39,5 +39,12 @@ vídeos e `token.pickle`.
 - O lint ainda registra dívida técnica preexistente no código ativo.
 - A configuração de testes não encontra testes unitários no padrão configurado.
 
-Nenhuma pasta histórica deve ser excluída definitivamente antes de a branch
-organizada ser publicada e conferida em um clone limpo.
+## Resultado final
+
+- `main` publicada e conferida por clone limpo.
+- Hash local e remoto idênticos.
+- Nenhum token, vídeo ou certificado presente na árvore publicada.
+- Objetos Git locais contaminados foram podados.
+- Aproximadamente 5 GB de duplicidades e arquivos gerados foram removidos.
+- Tutoriais de Funnels foram transferidos para `Projects/archive/Funnels`, fora
+  da área RevHackers; 67 duplicatas exatas, o token e dois binários foram removidos.
