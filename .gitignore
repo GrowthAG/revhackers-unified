@@ -36,6 +36,13 @@ dist-ssr
 
 # Scripts one-off (dados de clientes, service role key)
 *.pdf
+*.pptx
+*.docx
+*.pages
+*.pfx
+*.pem
+*.key
+*.pickle
 tunad_contrato.txt
 
 # Deploy artifacts

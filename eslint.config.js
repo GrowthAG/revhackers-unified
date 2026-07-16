@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default tsPlugin.config(
-  { ignores: ['dist', 'node_modules', 'supabase/functions'] },
+  { ignores: ['dist', 'node_modules', 'supabase/functions', 'experiments/**'] },
   {
     extends: [js.configs.recommended, ...tsPlugin.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -17,6 +17,7 @@ export default tsPlugin.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // Desabilita regras que geram muito ruido no codebase existente
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/ban-ts-comment': 'off',
       'no-console': 'off',
