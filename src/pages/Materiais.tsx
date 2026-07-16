@@ -180,7 +180,7 @@ const Materiais = () => {
                       </div>
 
                       <h3
-                        className="text-lg md:text-xl font-bold text-white mb-3 group-hover:text-revgreen transition-colors line-clamp-2 leading-tight"
+                        className="text-lg md:text-xl font-bold text-black mb-3 group-hover:text-revgreen transition-colors line-clamp-2 leading-tight"
                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(removeEmojis(title)) }}
                       ></h3>
 

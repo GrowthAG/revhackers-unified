@@ -26,8 +26,8 @@ async function deploy() {
         
         // This is safe, sequential, and doesn't trigger max connections limit
         const localDir = join(__dirname, '../dist');
-        await client.ensureDir("/");
-        await client.uploadFromDir(localDir, "/");
+        await client.ensureDir("/public_html");
+        await client.uploadFromDir(localDir, "/public_html");
         
         console.log("🚀 DEPLOY FINALIZADO COM SUCESSO (SEM TIMEOUTS)!");
     }

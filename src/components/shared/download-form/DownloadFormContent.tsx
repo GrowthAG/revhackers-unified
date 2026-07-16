@@ -55,7 +55,7 @@ const DownloadFormContent: React.FC<DownloadFormContentProps> = ({
       <div className="pt-2">
         <Button
           type="submit"
-          className="w-full bg-black hover:bg-zinc-800 text-white font-bold h-12 text-tiny rounded-none transition-all uppercase tracking-[0.25em] shadow-none flex items-center justify-center gap-2 group"
+          className="w-full font-bold h-12 text-tiny rounded-none transition-all uppercase tracking-[0.25em] shadow-none flex items-center justify-center gap-2 group"
           disabled={isSubmitting}
         >
           {isSubmitting ? (

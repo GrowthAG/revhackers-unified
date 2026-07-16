@@ -2,6 +2,7 @@
 export const APP_CONFIG = {
     COMPANY_NAME: 'RevHackers',
     URLS: {
+        APP: 'https://app.revhackers.com.br',
         LANDING_PAGE: 'https://revhackers.com.br',
         MAIN_SITE: 'https://revhackers.com',
         ACADEMY: 'https://academy.revhackers.com.br/',

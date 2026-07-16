@@ -41,6 +41,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { APP_CONFIG } from "@/config/constants";
 
 interface UserProfile {
     id: string;
@@ -122,7 +123,7 @@ const AdminUsers = () => {
                 body: {
                     email: inviteData.email,
                     role: inviteData.role,
-                    redirectTo: `${window.location.origin}/reset-password`
+                    redirectTo: `${APP_CONFIG.URLS.APP}/reset-password`
                 }
             });
 

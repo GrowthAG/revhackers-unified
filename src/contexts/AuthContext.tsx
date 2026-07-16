@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
+import { APP_CONFIG } from '@/config/constants';
 
 interface AuthContextType {
     session: Session | null;
@@ -202,8 +203,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const resetPassword = async (email: string) => {
         try {
-            // Usar o origin atual em vez de localhost fixo
-            const redirectUrl = window.location.origin + '/reset-password';
+            const appOrigin = APP_CONFIG.URLS.APP || window.location.origin;
+            const redirectUrl = `${appOrigin}/reset-password`;
 
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl,

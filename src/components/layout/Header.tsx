@@ -131,9 +131,9 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
               : "bg-[#0a0a0a] border-transparent py-6"
         )}
       >
-        <div className="container-custom flex justify-between items-center relative">
+        <div className="container-custom flex justify-between items-center relative gap-4">
           {/* Left: Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center z-10 flex-shrink-0">
             <Link to="/" onClick={scrollToTop} className="block group">
               <img
                 src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
@@ -144,7 +144,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           </div>
 
           {/* Center: Navigation */}
-          <nav className="hidden md:flex items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <nav className="hidden lg:flex items-center justify-center flex-1">
             <div className={`flex items-center rounded-none px-2 py-1 backdrop-blur-md ${navBg}`}>
               <div className="flex items-center space-x-1">
                 <NavLink to="/">Home</NavLink>
@@ -200,7 +200,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           </nav>
 
           {/* Right: Subtle CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center justify-end gap-4 z-10 flex-shrink-0">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none ${textColor}`}>
@@ -261,7 +261,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
           <button
             onClick={toggleMenu}
-            className={`md:hidden p-2 transition-colors ml-auto ${isLightMode ? "text-black hover:text-revgreen" : "text-white hover:text-revgreen"}`}
+            className={`lg:hidden p-2 transition-colors ml-auto z-10 ${isLightMode ? "text-black hover:text-revgreen" : "text-white hover:text-revgreen"}`}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -270,7 +270,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
         {/* Mobile menu */}
         {
           isMenuOpen && (
-            <div className="md:hidden bg-black border-t border-white/10 absolute top-full left-0 w-full h-screen animate-fade-in z-50 p-6 overflow-y-auto pb-20">
+            <div className="lg:hidden bg-black border-t border-white/10 absolute top-full left-0 w-full h-screen animate-fade-in z-50 p-6 overflow-y-auto pb-20">
               <div className="flex flex-col space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-white/10">
                   <Link to="/" onClick={scrollToTop} className="block">
