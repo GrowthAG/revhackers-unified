@@ -500,6 +500,97 @@
     },
     {
       "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/08-edge-functions-mapping.md",
+      "count": 1,
+      "line": 108,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/09-migration-backlog.md",
+      "count": 1,
+      "line": 176,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "/auth/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "/realtime/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "/rest/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "/storage/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 118,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 25,
+      "symbol": "/auth/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 25,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 25,
+      "symbol": "/realtime/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 25,
+      "symbol": "/rest/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 25,
+      "symbol": "/storage/v1"
+    },
+    {
+      "category": "endpoint",
       "path": "docs/archive/claude-session/SECURITY_FIXES.md",
       "count": 1,
       "line": 32,
@@ -728,6 +819,27 @@
       "count": 1,
       "line": 37,
       "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/00-current-state.md",
+      "count": 1,
+      "line": 128,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/08-edge-functions-mapping.md",
+      "count": 1,
+      "line": 107,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 125,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
@@ -4382,6 +4494,34 @@
       "count": 1,
       "line": 194,
       "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/00-current-state.md",
+      "count": 1,
+      "line": 42,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/00-current-state.md",
+      "count": 1,
+      "line": 42,
+      "symbol": "rpc"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/10-supabase-decommission-checklist.md",
+      "count": 1,
+      "line": 35,
+      "symbol": "storage"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/11-first-developer-task.md",
+      "count": 1,
+      "line": 24,
+      "symbol": "storage"
     },
     {
       "category": "operation",
@@ -9532,18 +9672,18 @@
   "totals": {
     "config-section": 30,
     "deployable-function": 39,
-    "endpoint": 23,
-    "environment-name": 317,
+    "endpoint": 36,
+    "environment-name": 320,
     "function-without-config-section": 10,
     "import-or-wrapper": 233,
-    "operation": 619,
+    "operation": 623,
     "orphan-config-section": 1,
     "related-migration": 106,
     "related-prerender": 1,
     "related-script": 14,
     "related-workflow": 1,
-    "entries": 1361,
-    "trackedFiles": 1100,
+    "entries": 1381,
+    "trackedFiles": 1113,
     "deployableFunctions": 39,
     "configFunctionSections": 30
   }
