@@ -20,6 +20,11 @@ Auditoria local e planejamento concluídos sobre a base `5acc0ede44fd29f1806a9f0
 5. [04-migration-runbook.md](./04-migration-runbook.md) — descoberta, POC, staging, rehearsals, cutover, reconciliação e rollback.
 6. [05-security-cost-observability.md](./05-security-cost-observability.md) — threat model, secrets, IAM, logs, recovery, custos e budget controls.
 7. [06-approved-direction.md](./06-approved-direction.md) — decisão final de migrar integralmente para Google Cloud e critérios para extinguir o Supabase.
+8. [07-gcp-project-topology.md](./07-gcp-project-topology.md) — separação `dev`/`staging`/`prod`, IAM, rede, CI/CD, budgets e DNS.
+9. [08-edge-functions-mapping.md](./08-edge-functions-mapping.md) — destino proposto e gates individuais para as 39 Edge Functions.
+10. [09-migration-backlog.md](./09-migration-backlog.md) — backlog ordenado em 13 épicos, com dependências, evidências e checkpoints humanos.
+11. [10-supabase-decommission-checklist.md](./10-supabase-decommission-checklist.md) — critérios objetivos de zero runtime, retenção e exclusão final.
+12. [11-first-developer-task.md](./11-first-developer-task.md) — primeira tarefa local segura para automatizar o inventário de dependências Supabase.
 
 ## Fatos principais verificados
 
