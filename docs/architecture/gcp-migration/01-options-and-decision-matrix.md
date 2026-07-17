@@ -63,9 +63,9 @@ Escala: 1 é mais favorável/baixo; 5 é menos favorável/alto. Em “segurança
 
 Uma soma ponderada não é apresentada porque os pesos não foram aprovados e várias entradas dependem de evidência ausente. Transformar números provisórios em falsa precisão prejudicaria a decisão.
 
-## Recomendação provisória
+## Decisão posterior à auditoria
 
-**Recomendação provisória, não aprovada:** adotar A como postura imediata de preservação e B como direção de descoberta/modernização. Primeiro, estabilizar o inventário e fechar riscos críticos no Supabase sem removê-lo. Depois, provar uma API server-side com dados sintéticos em um domínio de baixo risco, definir o modelo de tenant e migrar contratos do frontend por fatias. Avaliar C somente após métricas, testes de isolamento, custo, recovery e pelo menos um rehearsal em staging.
+Giulliano aprovou C como destino final: Google Cloud substituirá integralmente o Supabase. B foi aprovada como estratégia de entrega: migração incremental por API e por domínio, com coexistência temporária. A permanece somente como medida transitória para manter o sistema atual seguro enquanto seus substitutos são construídos.
 
 **Não recomendado:** big-bang; conexão do navegador ao Cloud SQL; cópia de produção antes de aprovação; desligamento de Supabase antes de reconciliação e rollback comprovados; reescrita simultânea de Auth, banco, Storage, funções e frontend.
 
@@ -83,6 +83,6 @@ Uma soma ponderada não é apresentada porque os pesos não foram aprovados e v�
 8. Auth precisa migrar, ou pode permanecer Supabase durante a primeira etapa?
 9. Qual frontend/hosting futuro é desejado, se houver mudança?
 
-## Gate de decisão
+## Gate de execução
 
-Uma direção só deve deixar de ser provisória após Giulliano aprovar por escrito: opção, objetivos, escopo, orçamento, região, separação de ambientes, identidade, modelo de tenant, RTO/RPO, critérios de sucesso e limites de rollback. Essa aprovação não autoriza por si só provisionamento ou acesso a produção; cada ação desse tipo requer checkpoint específico.
+O destino final deixou de ser provisório. A execução ainda depende de Giulliano aprovar por escrito: escopo da fase, orçamento, região, separação de ambientes, identidade, modelo de tenant, RTO/RPO, critérios de sucesso e limites de rollback. A decisão de migrar não autoriza por si só provisionamento ou acesso a produção; cada ação desse tipo requer checkpoint específico.

@@ -241,7 +241,7 @@ Sequência conceitual, somente após aprovações:
 
 Dual-write torna rollback bidirecional e perigoso. Se usado, exige ledger de operações, idempotency key, ordem, replay e ferramenta de reconciliação provados antes.
 
-Supabase só pode ser desativado após período de estabilização aprovado, backup restaurável, reconciliação final e decisão humana separada. Deleção nunca faz parte do cutover inicial.
+O destino final aprovado exige desativar o Supabase. Essa desativação só pode ocorrer após período de estabilização aprovado, backup restaurável, reconciliação final e decisão humana separada. Deleção nunca faz parte do cutover inicial e exige autorização própria após retenção e auditoria.
 
 ## Registro de evidência
 

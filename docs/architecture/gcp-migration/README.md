@@ -19,6 +19,7 @@ Auditoria local e planejamento concluídos sobre a base `5acc0ede44fd29f1806a9f0
 4. [03-auth-and-tenant-isolation.md](./03-auth-and-tenant-isolation.md) — Auth/RLS atuais, substituição segura e testes negativos.
 5. [04-migration-runbook.md](./04-migration-runbook.md) — descoberta, POC, staging, rehearsals, cutover, reconciliação e rollback.
 6. [05-security-cost-observability.md](./05-security-cost-observability.md) — threat model, secrets, IAM, logs, recovery, custos e budget controls.
+7. [06-approved-direction.md](./06-approved-direction.md) — decisão final de migrar integralmente para Google Cloud e critérios para extinguir o Supabase.
 
 ## Fatos principais verificados
 
@@ -36,7 +37,12 @@ Auditoria local e planejamento concluídos sobre a base `5acc0ede44fd29f1806a9f0
 
 ### Aprovadas
 
-Nenhuma decisão de arquitetura ou migração foi aprovada nesta auditoria.
+- Google Cloud é o destino final da infraestrutura do RevHackers.
+- O Supabase será completamente removido do runtime após cutover e estabilização.
+- A execução será incremental, com coexistência somente durante a migração.
+- O navegador nunca acessará Cloud SQL diretamente.
+
+Serviços específicos, região, sizing, orçamento e calendário ainda dependem de decisão e checkpoint próprios.
 
 ### Regras já impostas pelo perfil
 
@@ -46,9 +52,9 @@ Nenhuma decisão de arquitetura ou migração foi aprovada nesta auditoria.
 - fatos operacionais não são inventados;
 - produção, billing, infra, secrets, deploy, DNS e ações irreversíveis dependem de Giulliano.
 
-## Recomendação provisória
+## Estratégia aprovada
 
-Manter e endurecer Supabase no curto prazo; em paralelo, avaliar migração incremental por uma API server-side usando dados sintéticos e um domínio de baixo risco. A API pode primeiro encapsular Supabase, reduzindo o acoplamento do frontend. Cloud SQL e substitutos de Auth/Storage/Realtime somente entram após métricas, modelo de tenant, testes, custo, restore e rehearsals.
+Migrar integralmente para Google Cloud por etapas. No curto prazo, o Supabase permanece operacional apenas como origem e fallback temporário. Uma API server-side deve reduzir o acoplamento do frontend e permitir substituir cada domínio com dados sintéticos, staging, reconciliação e rollback. Cloud SQL e substitutos de Auth, Storage e Realtime entram somente após métricas, modelo de tenant, testes, custo, restore e rehearsals.
 
 Big-bang e acesso direto do browser ao banco estão fora da recomendação.
 
@@ -65,7 +71,7 @@ Big-bang e acesso direto do browser ao banco estão fora da recomendação.
 
 ## Perguntas abertas bloqueantes
 
-- Qual problema de negócio, prazo e critério de sucesso justificam a migração?
+- Qual prazo e critério de sucesso serão usados para a migração já aprovada?
 - Qual é a unidade canônica de tenant e a matriz de papéis?
 - Qual o schema/configuração efetivos por ambiente?
 - Quais volume, tamanho, crescimento, tráfego, conexões, latência e custos reais?
@@ -77,4 +83,4 @@ Big-bang e acesso direto do browser ao banco estão fora da recomendação.
 
 ## Próximo checkpoint
 
-Parar após esta documentação. Antes de qualquer especificação ao Developer, Giulliano deve revisar e aprovar a direção. Aprovação arquitetural futura não substitui os checkpoints separados para recursos pagos, produção, secrets, deploy, DNS ou cutover.
+A direção foi aprovada. O próximo gate é definir o modelo de tenant, a topologia GCP, o domínio piloto e a especificação local da primeira etapa. Isso não substitui os checkpoints separados para recursos pagos, produção, secrets, deploy, DNS, cutover ou decommission.

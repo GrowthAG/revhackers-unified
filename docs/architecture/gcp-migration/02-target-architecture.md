@@ -2,7 +2,7 @@
 
 ## Status
 
-Este documento descreve uma arquitetura de referência para avaliar a opção incremental. **Não é uma decisão de implantação.** Cloud Run, Cloud SQL, Identity Platform/Firebase Auth, Cloud Storage, região, tier e alta disponibilidade continuam em aberto.
+Google Cloud foi aprovado como destino final e o Supabase será removido do runtime após a migração. Este documento descreve a arquitetura de referência incremental para chegar a esse estado. Serviços específicos, região, tier, alta disponibilidade e implantação real continuam sujeitos a decisão e checkpoint.
 
 ## Princípios obrigatórios
 
