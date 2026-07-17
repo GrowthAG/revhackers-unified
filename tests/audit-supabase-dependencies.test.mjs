@@ -1,9 +1,11 @@
+// @vitest-environment node
+
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import test from 'node:test';
+import { test } from 'vitest';
 import { scanRepository, serialize } from '../scripts/audit-supabase-dependencies.mjs';
 
 const scanner = resolve('scripts/audit-supabase-dependencies.mjs');

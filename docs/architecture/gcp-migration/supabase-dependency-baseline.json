@@ -864,6 +864,34 @@
     },
     {
       "category": "environment-name",
+      "path": "scripts/build-offline.mjs",
+      "count": 1,
+      "line": 69,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/build-offline.mjs",
+      "count": 1,
+      "line": 69,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/build-offline.mjs",
+      "count": 1,
+      "line": 154,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/build-offline.mjs",
+      "count": 1,
+      "line": 155,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
       "path": "scripts/check_sarah.ts",
       "count": 1,
       "line": 4,
@@ -1062,14 +1090,14 @@
       "category": "environment-name",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 141,
+      "line": 194,
       "symbol": "VITE_SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 142,
+      "line": 195,
       "symbol": "VITE_SUPABASE_ANON_KEY"
     },
     {
@@ -2966,7 +2994,7 @@
       "category": "import-or-wrapper",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 149,
+      "line": 202,
       "symbol": "createClient"
     },
     {
@@ -4716,21 +4744,21 @@
       "category": "operation",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 154,
+      "line": 207,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 162,
+      "line": 215,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "scripts/prerender.js",
       "count": 1,
-      "line": 170,
+      "line": 223,
       "symbol": "from"
     },
     {
@@ -9565,6 +9593,13 @@
     },
     {
       "category": "related-script",
+      "path": "scripts/build-offline.mjs",
+      "count": 1,
+      "line": 0,
+      "symbol": "script"
+    },
+    {
+      "category": "related-script",
       "path": "scripts/check_sarah.ts",
       "count": 1,
       "line": 0,
@@ -9673,17 +9708,17 @@
     "config-section": 30,
     "deployable-function": 39,
     "endpoint": 36,
-    "environment-name": 320,
+    "environment-name": 324,
     "function-without-config-section": 10,
     "import-or-wrapper": 233,
     "operation": 623,
     "orphan-config-section": 1,
     "related-migration": 106,
     "related-prerender": 1,
-    "related-script": 14,
+    "related-script": 15,
     "related-workflow": 1,
-    "entries": 1381,
-    "trackedFiles": 1113,
+    "entries": 1386,
+    "trackedFiles": 1115,
     "deployableFunctions": 39,
     "configFunctionSections": 30
   }

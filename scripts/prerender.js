@@ -21,12 +21,60 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+function parseArguments(argv) {
+  const options = {
+    offline: false,
+    distDir: null,
+    browserExecutable: null,
+    browserProfile: null,
+  };
+
+  for (let index = 0; index < argv.length; index++) {
+    const argument = argv[index];
+
+    if (argument === '--offline') {
+      options.offline = true;
+      continue;
+    }
+
+    const valueOptions = {
+      '--dist-dir': 'distDir',
+      '--browser-executable': 'browserExecutable',
+      '--browser-profile': 'browserProfile',
+    };
+    const optionName = valueOptions[argument];
+    if (!optionName || !argv[index + 1]) {
+      throw new Error(`Unknown or incomplete argument: ${argument}`);
+    }
+
+    options[optionName] = argv[++index];
+  }
+
+  if (options.offline && (!options.distDir || !options.browserExecutable || !options.browserProfile)) {
+    throw new Error('Offline prerender requires --dist-dir, --browser-executable and --browser-profile.');
+  }
+  if (!options.offline && (options.distDir || options.browserExecutable || options.browserProfile)) {
+    throw new Error('Offline-only arguments require the explicit --offline flag.');
+  }
+
+  return options;
+}
+
+const options = parseArguments(process.argv.slice(2));
+const OFFLINE_MODE = options.offline;
+
+// Offline validation must not load local credentials. The Vite half of the
+// build uses a temporary empty envDir and explicit loopback placeholders.
+if (!OFFLINE_MODE) {
+  dotenv.config();
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DIST_DIR = path.resolve(__dirname, '../dist');
+const DIST_DIR = options.distDir
+  ? path.resolve(options.distDir)
+  : path.resolve(__dirname, '../dist');
 const PORT = 4173;
 
 // Base Routes to prerender (Static)
@@ -138,6 +186,11 @@ function generateSitemap(routes) {
 }
 
 async function fetchDynamicRoutes() {
+  if (OFFLINE_MODE) {
+    console.log('🔒 Offline mode: dynamic Supabase routes are disabled.');
+    return [];
+  }
+
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
   
@@ -182,76 +235,132 @@ async function fetchDynamicRoutes() {
 }
 
 async function prerender() {
-  console.log('🔍 Starting dynamic route fetching...\n');
-  const dynamicRoutes = await fetchDynamicRoutes();
-  const allRoutes = [...STATIC_ROUTES, ...dynamicRoutes];
-  
-  console.log(`\n🗺️ Total routes to prerender: ${allRoutes.length}`);
-
-  // Start server
-  const server = createServer();
-  await new Promise(resolve => server.listen(PORT, resolve));
-  console.log(`\n📡 Server running on http://localhost:${PORT}\n`);
-
-  // Launch browser
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
-
+  let server;
+  let browser;
   let successCount = 0;
   let failCount = 0;
+  let blockedExternalRequestCount = 0;
 
-  for (const route of allRoutes) {
-    try {
-      const page = await browser.newPage();
-      
-      // Navigate and wait for network idle
-      await page.goto(`http://localhost:${PORT}${route}`, {
-        waitUntil: 'networkidle0',
-        timeout: 35000,
-      });
+  try {
+    console.log('🔍 Starting dynamic route fetching...\n');
+    const dynamicRoutes = await fetchDynamicRoutes();
+    const allRoutes = [...STATIC_ROUTES, ...dynamicRoutes];
 
-      // Wait a bit more for React to render
-      await page.waitForSelector('#root', { timeout: 10000 }).catch(() => {});
-      await new Promise(r => setTimeout(r, 2000));
+    console.log(`\n🗺️ Total routes to prerender: ${allRoutes.length}`);
 
-      // Get rendered HTML
-      const html = await page.content();
-      
-      // Determine output path
-      const outputDir = path.join(DIST_DIR, route === '/' ? '' : route);
-      const outputFile = route === '/' 
-        ? path.join(DIST_DIR, 'index.html')
-        : path.join(outputDir, 'index.html');
-
-      // Create directory if needed
-      if (route !== '/') {
-        fs.mkdirSync(outputDir, { recursive: true });
+    server = createServer();
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      if (OFFLINE_MODE) {
+        server.listen(PORT, '127.0.0.1', resolve);
+      } else {
+        server.listen(PORT, resolve);
       }
+    });
+    console.log(`\n📡 Server running on http://localhost:${PORT}\n`);
 
-      // Write HTML
-      fs.writeFileSync(outputFile, html);
-      successCount++;
-      console.log(`✅ ${route} → ${path.relative(DIST_DIR, outputFile)}`);
+    browser = await puppeteer.launch({
+      headless: 'new',
+      ...(OFFLINE_MODE
+        ? {
+            executablePath: options.browserExecutable,
+            userDataDir: options.browserProfile,
+          }
+        : {}),
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
-      await page.close();
-    } catch (err) {
-      failCount++;
-      console.log(`❌ Failed: ${route} → ${err.message}`);
+    for (const route of allRoutes) {
+      let page;
+
+      try {
+        page = await browser.newPage();
+
+        if (OFFLINE_MODE) {
+          await page.setRequestInterception(true);
+          page.on('request', request => {
+            let isLocalRequest = false;
+
+            try {
+              const requestUrl = new URL(request.url());
+              isLocalRequest =
+                requestUrl.protocol === 'data:' ||
+                requestUrl.protocol === 'blob:' ||
+                (
+                  ['localhost', '127.0.0.1', '[::1]'].includes(requestUrl.hostname) &&
+                  requestUrl.port === String(PORT)
+                );
+            } catch {
+              isLocalRequest = false;
+            }
+
+            if (isLocalRequest) {
+              void request.continue();
+            } else {
+              blockedExternalRequestCount++;
+              void request.abort('blockedbyclient');
+            }
+          });
+        }
+
+        await page.goto(`http://localhost:${PORT}${route}`, {
+          waitUntil: 'networkidle0',
+          timeout: 35000,
+        });
+
+        await page.waitForSelector('#root', { timeout: 10000 }).catch(() => {});
+        await new Promise(r => setTimeout(r, 2000));
+
+        const html = await page.content();
+        const outputDir = path.join(DIST_DIR, route === '/' ? '' : route);
+        const outputFile = route === '/'
+          ? path.join(DIST_DIR, 'index.html')
+          : path.join(outputDir, 'index.html');
+
+        if (route !== '/') {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        fs.writeFileSync(outputFile, html);
+        successCount++;
+        console.log(`✅ ${route} → ${path.relative(DIST_DIR, outputFile)}`);
+      } catch (err) {
+        failCount++;
+        console.log(`❌ Failed: ${route} → ${err.message}`);
+      } finally {
+        if (page) {
+          await page.close().catch(error => {
+            console.error(`⚠️ Failed to close page for ${route}: ${error.message}`);
+          });
+        }
+      }
+    }
+
+    console.log('\n📝 Generating unified Sitemap...');
+    generateSitemap(allRoutes);
+
+    console.log(`\n📊 Prerender complete: ${successCount} success, ${failCount} failed`);
+    if (OFFLINE_MODE) {
+      console.log(`🔒 Offline mode blocked ${blockedExternalRequestCount} external browser requests before network access.`);
+    }
+    console.log(`📁 Output: ${DIST_DIR}`);
+
+    if (failCount > 0) {
+      throw new Error(`Prerender failed for ${failCount} route(s).`);
+    }
+  } finally {
+    if (browser) {
+      await browser.close().catch(error => {
+        console.error(`⚠️ Failed to close browser: ${error.message}`);
+      });
+    }
+    if (server?.listening) {
+      await new Promise(resolve => server.close(resolve));
+    }
+    if (OFFLINE_MODE && options.browserProfile) {
+      fs.rmSync(options.browserProfile, { recursive: true, force: true });
     }
   }
-
-  // Cleanup
-  await browser.close();
-  server.close();
-
-  // Generate sitemap
-  console.log('\n📝 Generating unified Sitemap...');
-  generateSitemap(allRoutes);
-
-  console.log(`\n📊 Prerender complete: ${successCount} success, ${failCount} failed`);
-  console.log(`📁 Output: ${DIST_DIR}`);
 }
 
 prerender().catch(err => {
