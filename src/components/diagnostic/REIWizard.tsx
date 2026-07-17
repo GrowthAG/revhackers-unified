@@ -137,7 +137,7 @@ const REIWizard = ({ onComplete }: REIWizardProps) => {
                     <div className="text-center mb-8">
                         <div className="w-20 h-20 bg-white flex items-center justify-center mx-auto mb-6 border-2 border-zinc-200 shadow-sm">
                             <img
-                                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/68eec7ea4ae0e04e5deea3de.jpeg"
+                                src="/favicon.ico"
                                 alt="RevHackers"
                                 className="w-12 h-12 object-contain"
                             />

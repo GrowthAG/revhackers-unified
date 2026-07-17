@@ -23,9 +23,9 @@ const Footer = () => {
           <div className="lg:col-span-4 space-y-10">
             <Link to={APP_ROUTES.PUBLIC.HOME} className="inline-block group focus:outline-none">
               <img
-                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                src="/brand/revhackers-wordmark-white.png"
                 alt="RevHackers Logo"
-                className="w-auto h-12 transition-all duration-300 group-hover:opacity-90"
+                className="w-48 md:w-56 max-w-full h-auto transition-all duration-300 group-hover:opacity-90"
               />
             </Link>
 

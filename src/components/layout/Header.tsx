@@ -136,15 +136,15 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           <div className="flex items-center z-10 flex-shrink-0">
             <Link to="/" onClick={scrollToTop} className="block group">
               <img
-                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                src="/brand/revhackers-wordmark-white.png"
                 alt="RevHackers Logo"
-                className={`w-auto h-14 transition-all duration-300 group-hover:opacity-90 ${logoClass}`}
+                className={`w-44 sm:w-48 lg:w-52 max-w-full h-auto transition-all duration-300 group-hover:opacity-90 ${logoClass}`}
               />
             </Link>
           </div>
 
           {/* Center: Navigation */}
-          <nav className="hidden lg:flex items-center justify-center flex-1">
+          <nav className="hidden xl:flex items-center justify-center flex-1">
             <div className={`flex items-center rounded-none px-2 py-1 backdrop-blur-md ${navBg}`}>
               <div className="flex items-center space-x-1">
                 <NavLink to="/">Home</NavLink>
@@ -200,7 +200,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
           </nav>
 
           {/* Right: Subtle CTA */}
-          <div className="hidden lg:flex items-center justify-end gap-4 z-10 flex-shrink-0">
+          <div className="hidden xl:flex items-center justify-end gap-4 z-10 flex-shrink-0">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className={`flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none ${textColor}`}>
@@ -261,7 +261,7 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
 
           <button
             onClick={toggleMenu}
-            className={`lg:hidden p-2 transition-colors ml-auto z-10 ${isLightMode ? "text-black hover:text-revgreen" : "text-white hover:text-revgreen"}`}
+            className={`xl:hidden p-2 transition-colors ml-auto z-10 ${isLightMode ? "text-black hover:text-revgreen" : "text-white hover:text-revgreen"}`}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -270,14 +270,14 @@ const Header = ({ variant = 'default' }: HeaderProps) => {
         {/* Mobile menu */}
         {
           isMenuOpen && (
-            <div className="lg:hidden bg-black border-t border-white/10 absolute top-full left-0 w-full h-screen animate-fade-in z-50 p-6 overflow-y-auto pb-20">
+            <div className="xl:hidden bg-black border-t border-white/10 absolute top-full left-0 w-full h-screen animate-fade-in z-50 p-6 overflow-y-auto pb-20">
               <div className="flex flex-col space-y-6">
                 <div className="flex items-center justify-between pb-4 border-b border-white/10">
                   <Link to="/" onClick={scrollToTop} className="block">
                     <img
-                      src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                      src="/brand/revhackers-wordmark-white.png"
                       alt="RevHackers Logo"
-                      className="h-14 w-auto"
+                      className="w-40 max-w-full h-auto"
                     />
                   </Link>
                 </div>

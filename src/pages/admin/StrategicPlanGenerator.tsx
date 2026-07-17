@@ -263,7 +263,7 @@ export default function StrategicPlanGenerator() {
                     company_name: project.client_name || 'N/A',
                     contact_name: project.client_name || 'N/A',
                     email: project.client_email || 'N/A',
-                    logo_url: '/revhackers-logo.png'
+                    logo_url: null
                 };
             }
 

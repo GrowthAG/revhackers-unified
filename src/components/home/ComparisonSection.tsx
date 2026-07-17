@@ -102,9 +102,9 @@ const ComparisonSection = () => {
             {/* RevHackers header — highlighted */}
             <div className="col-span-1 bg-zinc-900 px-6 py-5 text-center rounded-t-sm flex flex-col items-center justify-center">
               <img 
-                src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" 
+                src="/brand/revhackers-wordmark-white.png"
                 alt="RevHackers" 
-                className="h-7 w-auto mx-auto mb-3 opacity-100 invert" 
+                className="w-28 md:w-36 max-w-full h-auto mx-auto mb-3 opacity-100"
               />
               <span className="text-revgreen/60 text-[10px] font-mono tracking-widest uppercase">Consultoria RevOps</span>
             </div>

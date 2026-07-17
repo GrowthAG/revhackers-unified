@@ -11,7 +11,8 @@ Voce e um auditor tecnico senior. Sua missao e analisar a aplicacao RevHackers G
 ## Contexto do Projeto
 
 - **Stack:** React 18 + Vite + TypeScript, Supabase (DB + Edge Functions + Auth), Tailwind CSS, shadcn/ui
-- **Infra:** Supabase Edge Functions (Deno runtime), deploy via FTP na Hostinger (SPA estatico)
+- **Infra atual:** Supabase Edge Functions em migração planejada para GCP; o
+  deploy Hostinger/FTP está retirado e não deve ser executado
 - **Branch:** `develop` (PR target: `main`)
 
 ### Integracoes Externas Ativas (12 servicos)

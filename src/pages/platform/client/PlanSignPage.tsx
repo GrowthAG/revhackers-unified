@@ -121,9 +121,9 @@ export default function PlanSignPage() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <img
-                        src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                        src="/brand/revhackers-wordmark-white.png"
                         alt="RevHackers"
-                        className="h-6 w-auto mx-auto mb-6"
+                        className="w-40 max-w-full h-auto mx-auto mb-6 brightness-0"
                     />
                     {company && (
                         <p className="text-xxs text-zinc-400 uppercase tracking-[0.2em] font-bold">

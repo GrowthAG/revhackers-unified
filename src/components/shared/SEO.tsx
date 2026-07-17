@@ -48,9 +48,9 @@ const SEO = ({
         "url": "https://revhackers.com.br",
         "logo": {
             "@type": "ImageObject",
-            "url": "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg",
-            "width": 512,
-            "height": 512
+            "url": "https://revhackers.com.br/brand/revhackers-mark.png",
+            "width": 256,
+            "height": 256
         },
         "image": "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg",
         "description": "A primeira consultoria de Revenue Operations do Brasil. Integramos IA, CRM e automações para escalar operações B2B em São Paulo e todo o país.",
@@ -160,7 +160,9 @@ const SEO = ({
             "name": "RevHackers",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/67f7fc91b95d208445a1317a.jpeg"
+                "url": "https://revhackers.com.br/brand/revhackers-mark.png",
+                "width": 256,
+                "height": 256
             }
         },
         "description": description,

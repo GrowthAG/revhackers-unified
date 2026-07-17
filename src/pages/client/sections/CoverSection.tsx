@@ -39,9 +39,9 @@ export default function CoverSection({ plan, client }: CoverSectionProps) {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <img
-                        src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                        src="/brand/revhackers-wordmark-white.png"
                         alt="RevHackers"
-                        className="h-8 md:h-10 w-auto brightness-0 invert opacity-80"
+                        className="w-32 md:w-40 max-w-full h-auto brightness-0 invert opacity-80"
                     />
                     <span className="text-xs text-zinc-500 uppercase tracking-[0.25em] font-medium">
                         {fullTitle}

@@ -1,13 +1,4 @@
-#!/bin/bash
-source .env
+#!/bin/sh
 
-export FTP="ftp://$FTP_HOST"
-export AUTH="$FTP_USER:$FTP_PASSWORD"
-export LOCAL="$(pwd)/dist"
-
-echo "🚀 Iniciando deploy de $(find "$LOCAL" -type f | wc -l) arquivos..."
-
-chmod +x upload_worker.sh
-find "$LOCAL" -type f | xargs -P 8 -I{} ./upload_worker.sh "{}"
-
-echo "✅ Deploy concluído!"
+printf '%s\n' '{"ok":false,"code":"LEGACY_FTP_DEPLOY_DISABLED","entrypoint":"deploy.sh","reason":"GCP_MIGRATION_IN_PROGRESS"}' >&2
+exit 1

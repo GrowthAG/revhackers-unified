@@ -58,9 +58,9 @@ const BookingPageTemplate = ({
                             <>
                                 <div className="flex justify-center mb-6">
                                     <img
-                                        src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                                        src="/brand/revhackers-wordmark-white.png"
                                         alt="RevHackers"
-                                        className="h-10 md:h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                                        className="w-48 md:w-56 max-w-full h-auto brightness-0 opacity-90 hover:opacity-100 transition-opacity"
                                     />
                                 </div>
                                 <h1 className="text-xl md:text-2xl font-medium text-zinc-900 mb-3 tracking-tighter text-balance uppercase leading-tight">

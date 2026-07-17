@@ -26,7 +26,11 @@ export default function SectionHeader({
             <h2 className={`text-3xl md:text-[2.75rem] font-black tracking-tight leading-[1.05] ${light ? 'text-white' : 'text-zinc-900'}`}>
                 {titleLine1}
                 {isRevHackersLogo ? (
-                    <img src="https://assets.cdn.filesafe.space/oFTw9DcsKRUj6xCiq4mb/media/67f6fe8fd496febea9a9ad8e.png" alt="RevHackers" className="h-[60px] md:h-[72px] lg:h-[80px] shrink-0 object-contain inline-block ml-3" />
+                    <img
+                        src="/brand/revhackers-wordmark-white.png"
+                        alt="RevHackers"
+                        className={`w-40 md:w-52 lg:w-60 max-w-full h-auto shrink-0 object-contain inline-block ml-3 ${light ? '' : 'brightness-0'}`}
+                    />
                 ) : (
                     titleLine2 && <span className={light ? 'text-zinc-500' : 'text-zinc-300'}> {titleLine2}</span>
                 )}

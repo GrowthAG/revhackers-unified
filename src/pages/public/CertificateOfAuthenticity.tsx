@@ -96,7 +96,7 @@ export default function CertificateOfAuthenticity() {
                             <p className="text-sm text-zinc-500 font-medium tracking-widest uppercase mt-1">Escudo Jurídico Automático</p>
                         </div>
                         <div className="mt-6 md:mt-0 text-left md:text-right">
-                            <img src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png" alt="RevHackers Logo" className="h-4 object-contain opacity-50 mb-2 md:ml-auto" />
+                            <img src="/brand/revhackers-wordmark-white.png" alt="RevHackers Logo" className="w-32 max-w-full h-auto object-contain brightness-0 opacity-50 mb-2 md:ml-auto" />
                             <p className="text-xxs text-zinc-400 font-mono">Validador Oficial</p>
                         </div>
                     </div>

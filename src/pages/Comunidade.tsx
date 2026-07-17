@@ -79,7 +79,7 @@ const Comunidade = () => {
               {/* Left Column: Logo */}
               <div className="bg-black p-12 border border-zinc-800 flex items-center justify-center">
                 <img
-                  src="https://storage.googleapis.com/msgsndr/oFTw9DcsKRUj6xCiq4mb/media/6808e4eea2927569eb667113.png"
+                  src="/brand/revhackers-wordmark-white.png"
                   alt="RevHackers"
                   className="w-64 md:w-80 h-auto opacity-80"
                 />

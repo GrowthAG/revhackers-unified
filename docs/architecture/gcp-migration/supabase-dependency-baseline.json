@@ -740,14 +740,14 @@
       "category": "environment-name",
       "path": ".github/workflows/deploy.yml",
       "count": 2,
-      "line": 28,
+      "line": 29,
       "symbol": "VITE_SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": ".github/workflows/deploy.yml",
       "count": 2,
-      "line": 29,
+      "line": 30,
       "symbol": "VITE_SUPABASE_ANON_KEY"
     },
     {
@@ -4492,14 +4492,14 @@
       "category": "operation",
       "path": ".agent/workflows/full-audit-prompt.md",
       "count": 1,
-      "line": 42,
+      "line": 43,
       "symbol": "functions.invoke"
     },
     {
       "category": "operation",
       "path": ".agent/workflows/full-audit-prompt.md",
       "count": 1,
-      "line": 187,
+      "line": 188,
       "symbol": "functions.invoke"
     },
     {
@@ -9705,6 +9705,13 @@
     },
     {
       "category": "related-script",
+      "path": "scripts/validate-deploy-artifact.mjs",
+      "count": 1,
+      "line": 0,
+      "symbol": "script"
+    },
+    {
+      "category": "related-script",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
       "line": 0,
@@ -9729,10 +9736,10 @@
     "orphan-config-section": 1,
     "related-migration": 106,
     "related-prerender": 1,
-    "related-script": 15,
+    "related-script": 16,
     "related-workflow": 1,
-    "entries": 1388,
-    "trackedFiles": 1118,
+    "entries": 1389,
+    "trackedFiles": 1123,
     "deployableFunctions": 39,
     "configFunctionSections": 30
   }

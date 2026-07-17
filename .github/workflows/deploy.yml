@@ -1,13 +1,14 @@
-name: Deploy to Hostinger FTP
+name: Validate production artifact
 
 on:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: production-artifact-validation
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build-and-validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,15 +30,13 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm run build
 
-      - name: Deploy to Hostinger FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Validate deploy artifact
+        run: node scripts/validate-deploy-artifact.mjs ./dist
+
+      - name: Preserve validated artifact
+        uses: actions/upload-artifact@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./public_html/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+          name: revhackers-validated-dist
+          path: ./dist/
+          if-no-files-found: error
+          retention-days: 7
