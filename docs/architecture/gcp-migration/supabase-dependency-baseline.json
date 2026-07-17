@@ -864,6 +864,20 @@
     },
     {
       "category": "environment-name",
+      "path": "docs/departments/security/00-findings.md",
+      "count": 1,
+      "line": 27,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/departments/security/00-findings.md",
+      "count": 1,
+      "line": 63,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
       "path": "scripts/build-offline.mjs",
       "count": 1,
       "line": 69,
@@ -9708,7 +9722,7 @@
     "config-section": 30,
     "deployable-function": 39,
     "endpoint": 36,
-    "environment-name": 324,
+    "environment-name": 326,
     "function-without-config-section": 10,
     "import-or-wrapper": 233,
     "operation": 623,
@@ -9717,8 +9731,8 @@
     "related-prerender": 1,
     "related-script": 15,
     "related-workflow": 1,
-    "entries": 1386,
-    "trackedFiles": 1115,
+    "entries": 1388,
+    "trackedFiles": 1118,
     "deployableFunctions": 39,
     "configFunctionSections": 30
   }
