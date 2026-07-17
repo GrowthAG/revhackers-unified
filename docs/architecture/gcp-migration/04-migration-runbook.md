@@ -217,6 +217,8 @@ Sequência conceitual, somente após aprovações:
 7. expandir gradualmente ou abortar;
 8. manter Supabase preservado e acessível ao rollback.
 
+O roteamento de escrita precisa ser uma máquina de estados por domínio/tenant, registrada em ledger e protegida por epoch/fencing token. O lado não autoritativo deve rejeitar novas escritas. Feature flag sem fencing não é controle suficiente para canário ou rollback.
+
 ## Rollback
 
 ### Condições de acionamento
@@ -234,9 +236,10 @@ Sequência conceitual, somente após aprovações:
 
 - parar expansão e novas escritas no alvo;
 - preservar evidência e watermark;
-- reverter feature flag/roteamento ao Supabase;
-- aplicar de volta somente mudanças reconciliadas, por processo aprovado;
-- verificar integridade e reabrir escrita antiga;
+- bloquear o writer alvo pelo novo epoch/fencing token;
+- reconciliar e aplicar o delta reverso por processo aprovado;
+- verificar a integridade reconciliada;
+- somente então reabrir a escrita Supabase com epoch autoritativo novo;
 - comunicar e abrir incidente/postmortem.
 
 Dual-write torna rollback bidirecional e perigoso. Se usado, exige ledger de operações, idempotency key, ordem, replay e ferramenta de reconciliação provados antes.

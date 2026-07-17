@@ -28,12 +28,15 @@ O auditor deve percorrer apenas arquivos versionados e produzir um JSON ordenado
 7. migrations, scripts, workflows e prerender que dependam de Supabase;
 8. totais por categoria e lista de arquivos, sempre com caminhos relativos.
 
+O JSON, stdout e stderr são **metadata-only**: categoria, caminho relativo, contagem, número de linha e nomes/símbolos pertencentes a uma allowlist explícita. É proibido incluir trecho-fonte, valor encontrado, URL literal, payload, texto adjacente ou conteúdo integral de qualquer linha.
+
 O baseline deve refletir exatamente o commit-base auditado e permitir comparação explícita em mudanças posteriores. Reduções são esperadas durante a migração, mas qualquer alteração no baseline precisa de revisão intencional.
 
 ## Regras de segurança
 
 - Não ler `.env`, keychain, Secret Manager, configuração remota ou conteúdo ignorado pelo Git.
 - Não imprimir tokens, URLs com credenciais, payloads, PII ou valores de variáveis.
+- Não copiar snippets das migrations ou do código para JSON, stdout, stderr, snapshots ou mensagens de erro.
 - Não acessar Supabase, Google Cloud, GitHub, Hostinger ou qualquer rede.
 - Não instalar pacote nem alterar lockfile.
 - Não modificar código da aplicação, migrations ou configuração de deploy.
@@ -44,6 +47,7 @@ O baseline deve refletir exatamente o commit-base auditado e permitir comparaç�
 - O teste usa fixtures temporárias e cobre presença, ausência, duplicata e ordenação determinística.
 - A execução no repositório identifica exatamente 39 diretórios implantáveis e a seção órfã `autentique-webhook` na base atual.
 - O relatório não contém padrões de segredo nem valores oriundos de `.env`.
+- Uma fixture com segredo-sentinela prova que o valor não aparece no JSON, stdout ou stderr, inclusive quando a auditoria falha.
 - Duas execuções consecutivas produzem bytes idênticos.
 - O teste falha de forma legível quando o baseline muda sem atualização revisada.
 - `npm test` e o comando de auditoria terminam com sucesso, sem rede.
@@ -53,6 +57,6 @@ O baseline deve refletir exatamente o commit-base auditado e permitir comparaç�
 
 O handoff deve incluir commit-base, comando executado, hash do relatório, totais por categoria, resultado dos testes, diff dos arquivos autorizados e riscos residuais. Exit code isolado não é evidência suficiente.
 
-## Bloqueio atual para execução pelo agente
+## Perfil obrigatório para execução pelo agente
 
-Antes do handoff, o controle técnico de ferramentas do Developer precisa ser verificado. O perfil textual contém os guardrails, mas a sessão de fallback Codex não demonstrou enforcement confiável da allowlist do CAO. Até isso ser corrigido ou o provedor Claude Code estar novamente disponível, esta especificação fica pronta, porém não deve ser despachada automaticamente.
+Usar somente `revhackers_developer_restricted`, com `allowedTools` explícito `fs_*`. No provedor Claude Code isso libera apenas leitura/listagem/edição de arquivos e bloqueia shell, rede, subagentes e MCP; o agente não executa testes, Git ou comandos. O agente principal/revisor executa auditoria, testes, inspeção de diff e commit depois do handoff. Fallback Codex continua proibido porque o CAO aplica nele apenas contenção por prompt.

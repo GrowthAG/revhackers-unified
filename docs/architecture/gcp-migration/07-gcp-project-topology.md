@@ -35,7 +35,7 @@ Não é proposto um quarto projeto compartilhado nesta fase. Se artifact registr
 | Workloads | Service accounts de dev | Service accounts de staging | Service accounts de prod | Nenhuma service account reutilizada entre projetos |
 | Terceiros | Mock/sandbox | Sandbox | Credenciais/endpoints reais aprovados | Chaves, webhooks e OAuth redirects separados |
 | Logs e auditoria | Retenção não produtiva aprovada | Evidência de rehearsal | Retenção de produção aprovada | Sem sink amplo cross-project por padrão |
-| Entrega | Iteração controlada | Promoção por digest | Aprovação explícita | Produção nunca recebe artefato reconstruído de fonte diferente do promovido |
+| Entrega | Iteração controlada | Artefato rastreável | Aprovação explícita | Backend promove o mesmo digest; frontend usa runtime config ou builds por ambiente rastreados ao mesmo commit/provenance |
 | Faturamento | Budget próprio | Budget próprio | Budget próprio | Alertas não são hard cap; nenhuma automação destrutiva em produção |
 
 ## IAM e identidade administrativa
@@ -111,14 +111,15 @@ Browser ─X─> Cloud SQL
 O repositório usa hoje GitHub Actions para CI/deploy e FTP para entrega estática. O mecanismo futuro ainda não foi aprovado. A topologia suporta GitHub Actions com Workload Identity Federation ou Cloud Build, desde que os controles abaixo sejam preservados.
 
 1. Pull request executa typecheck, testes, build e scanners sem credencial de produção.
-2. Um único build gera artifact imutável, SBOM/provenance e digest; staging e produção recebem promoção desse digest.
+2. Backend e workers geram artifact imutável, SBOM/provenance e digest; staging e produção recebem promoção do mesmo digest. Para o frontend Vite/prerender, escolher antes entre configuração externa em runtime ou builds separados por ambiente, sempre rastreados ao mesmo commit, inputs publicados, SBOM/provenance e digest próprios.
 3. Identidade de CI por ambiente restringe repositório, branch/tag e workflow; PR de fork não recebe credencial de deploy.
 4. Dev pode ter deploy automático dentro de guardrails aprovados.
 5. Staging exige gate de testes, schema compatibility, restore e aprovação definida.
-6. Produção exige checkpoint humano, artifact já observado em staging, mudança registrada, rollback e separação entre quem escreve e quem aprova quando a equipe permitir.
+6. Produção exige checkpoint humano, artifact candidato observado em staging — ou frontend equivalente do mesmo commit e inputs controlados —, mudança registrada, rollback e separação entre quem escreve e quem aprova quando a equipe permitir.
 7. Migrations são etapa explícita, forward-compatible e separada do start da aplicação. O runtime não recebe papel de migration.
 8. Secrets são referenciados no destino, nunca copiados para output do pipeline.
 9. Build/prerender usa fonte de conteúdo própria do ambiente; não pode consultar produção por variável herdada.
+10. A estratégia de IaC precisa definir ferramenta, bootstrap, state remoto, locking, import, drift detection, proteção contra destruição e procedimento break-glass antes do primeiro apply.
 
 Branch, tag e environment protections reais precisam ser inventariados. `develop` e `main` não são assumidos automaticamente como dev/staging/prod.
 
@@ -156,7 +157,7 @@ Budget alerta; não bloqueia consumo. Hard caps podem causar indisponibilidade e
 - Matriz IAM revisada por pessoa diferente do autor; nenhum grant cross-environment implícito.
 - Emissores, audiences, service accounts, secrets, bancos e buckets separados por ambiente.
 - Diagrama de rede e egress allowlist revisados; browser sem caminho ao banco.
-- Pipeline promove digest imutável e prova que produção não é reconstruída.
+- Pipeline promove o mesmo digest de backend/worker; para frontend, prova runtime config imutável ou equivalência rastreável de commit, inputs e provenance entre builds por ambiente.
 - Token de dev falha em staging/prod; workload de dev falha ao acessar recursos dos demais projetos.
 - Budgets, quotas, owners, logs, alertas, backup e restore definidos antes de tráfego pago.
 - DNS/certificados/callbacks têm plano de mudança e rollback aprovado.

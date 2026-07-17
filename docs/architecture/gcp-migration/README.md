@@ -88,4 +88,4 @@ Big-bang e acesso direto do browser ao banco estão fora da recomendação.
 
 ## Próximo checkpoint
 
-A direção foi aprovada. O próximo gate é definir o modelo de tenant, a topologia GCP, o domínio piloto e a especificação local da primeira etapa. Isso não substitui os checkpoints separados para recursos pagos, produção, secrets, deploy, DNS, cutover ou decommission.
+A direção, a topologia lógica e a primeira tarefa local estão documentadas. O próximo gate é executar a auditoria metadata-only com o perfil Developer restrito, revisar independentemente o diff e então decidir o primeiro domínio piloto. Modelo de tenant, provedor de identidade, região, serviços, IaC, sizing e orçamento continuam pendentes. Isso não substitui os checkpoints separados para recursos pagos, produção, secrets, deploy, DNS, cutover ou decommission.

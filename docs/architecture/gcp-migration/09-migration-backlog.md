@@ -14,17 +14,14 @@ Uma tarefa não termina por exit code ou resumo. Sua evidência deve registrar v
 
 ```text
 E0 Governança e evidência
- ├──> E1 Tenant/Auth/contratos
- ├──> E2 Topologia/IAM/rede/custo
- └──> E3 Schema, dados e compatibilidade
+ ├──> E1 Tenant/Auth/contratos ─┐
+ ├──> E2 Topologia/IAM/rede ────┼──> E5 Staging + piloto
+ └──> E3 Schema/dados ──────────┤
+                                │
+E1 + partes locais de E3 ──> E4 Fundação local da API ─┘
           |
           v
-E4 Fundação local da API e assíncrono
-          |
-          v
-E5 Staging + piloto da onda 1
-          |
-          +--> E6 Banco/API/RPC/triggers
+E5 ───────+--> E6 Banco/API/RPC/triggers
           +--> E7 Storage/Realtime
           +--> E8 Functions ondas 2–4
           +--> E9 Identidade e onda 5
@@ -39,7 +36,7 @@ E11 Cutover incremental e estabilização
 E12 Decommission Supabase
 ```
 
-E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary, staging e observabilidade existirem. Autoridade de escrita continua única por domínio; não se cria dual-write sem ledger e reconciliação previamente aprovados.
+E1, E2 e E3 podem avançar em paralelo conforme suas dependências específicas; E4 é local e não espera provisioning cloud. E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary, staging e observabilidade existirem. Autoridade de escrita continua única por domínio; não se cria dual-write sem ledger, fencing e reconciliação previamente aprovados.
 
 ## E0 — governança, baseline e decisões bloqueantes
 
@@ -53,6 +50,7 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | E0-T4 | Aprovar RTO/RPO, disponibilidade, retenção, LGPD/residência e classes de PII | E0-T2 | Registro jurídico/negócio/técnico e riscos aceitos |
 | E0-T5 | Medir custo e uso atuais de Supabase/Hostinger/terceiros por ambiente | Aprovação para sistemas medidos | Relatório de fonte, período e método; sem exposição de credenciais |
 | E0-T6 | Inventariar schema/Auth/Storage/Realtime/functions/cron efetivos e reconciliar com Git | Aprovação para leitura dos ambientes | Snapshot não secreto, drift explicado, 39 funções reconciliadas |
+| E0-T7 | Tratar a credencial bearer literal histórica como possível incidente | E0-T2; autorização do owner para ação externa | Classificação, owner/provedor, secret scan preventivo e pedido separado de rotação/revogação; valor nunca reproduzido e histórico não reescrito automaticamente |
 
 **Gate E0:** modelo de evidência, owners e entradas para arquitetura aprovados. Sem E0, project tier, região, cronograma e custo permanecem indeterminados.
 
@@ -66,9 +64,10 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | E1-T2 | Aprovar matriz de papéis, ações e escopo global/tenant | E1-T1 | Tabela endpoint/recurso/ação/papel revisada por negócio e segurança |
 | E1-T3 | Escolher provedor de identidade e estratégia de migração/convivência | E0-T4, E1-T1 | ADR cobre senha, OTP, recovery, convite, disable, sessão e rollback |
 | E1-T4 | Definir token verification por ambiente e mapping `issuer + subject` | E1-T3 | Casos token expirado, audiência/issuer errado, revoke e key rotation |
-| E1-T5 | Especificar contexto transacional/RLS ou queries tenant-scoped no PostgreSQL | E1-T1, E1-T2 | Prova local mostra ausência de vazamento no pool e papel sem `BYPASSRLS` |
+| E1-T5 | Especificar contexto transacional/RLS ou queries tenant-scoped no PostgreSQL | E1-T1, E1-T2 | Prova local mostra ausência de vazamento no pool, papel sem `BYPASSRLS` e invariantes relacionais por tenant, preferencialmente FKs compostas com `tenant_id` |
 | E1-T6 | Catalogar contratos HTTP/eventos e links públicos/capabilities | E0-T6, E1-T2 | OpenAPI/AsyncAPI ou formato equivalente; erros e versionamento definidos |
 | E1-T7 | Automatizar matriz negativa e privilege escalation de `03` | E1-T4–T6 | Testes com dois tenants, papéis e workloads; zero efeito cross-tenant |
+| E1-T8 | Aprovar ADR de custódia OAuth para Google e GHL | E1-T1–T4, E2-T7 | `state` de uso único ligado a usuário/tenant/ambiente, PKCE quando suportado, redirects allowlisted, tokens fora de resposta/log, criptografia/rotação/revogação e refresh concorrente controlado |
 
 **Gate E1:** nenhuma API, job, migration ou fila pode ser promovida sem tenant/policy e teste negativo correspondente.
 
@@ -82,9 +81,11 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | E2-T2 | Selecionar região com residência, latência, serviço, HA e custo medidos | E0-T4, E0-T5 | Matriz com medições e decisão humana |
 | E2-T3 | Desenhar IAM humano/workload e break-glass por projeto | E1-T2, E2-T1 | Policy diff revisado por outra pessoa; nenhum wildcard cross-environment |
 | E2-T4 | Desenhar VPC, ingresso, conexão privada ao banco, egress e WAF/rate limit | E2-T2, threat model | Diagrama e testes de negação; browser sem rota ao banco |
-| E2-T5 | Definir pipeline, artifact promotion, provenance, branch/environment protections e migration role | Inventário do GitHub, E2-T3 | Mesmo digest observado em staging e candidato a prod; segredo não aparece em output |
+| E2-T5 | Definir pipeline, artifact promotion, runtime config do frontend, provenance, branch/environment protections e migration role | Inventário do GitHub, E2-T3 | Backend promove o mesmo digest; frontend prova runtime config externo ou builds por ambiente no mesmo commit/inputs; segredo não aparece em output |
 | E2-T6 | Definir budgets, quotas, labels, alert routing e política de não produção | E0-T5, E2-T1 | Valores e destinatários aprovados; alerta não tratado como hard cap |
 | E2-T7 | Inventariar DNS/certificados/CSP/CORS/OAuth redirects/webhooks e planejar rollback | E0-T6 | Matriz hostname → owner → TTL → consumidor, sem mudança real |
+| E2-T8 | Escolher e desenhar IaC, state, locking, bootstrap, import e drift detection | E2-T1–T4 | ADR e plano de recuperação/proteção contra destruição; nenhuma execução ou state real criado |
+| E2-T9 | Transformar guardrails em políticas verificáveis | E2-T3–T4, E2-T8 | Testes/policy-as-code bloqueiam chaves de service account, IAM público não aprovado, IP público de banco e buckets sem acesso uniforme |
 
 **Checkpoint humano E2:** antes de qualquer criação paga, pedido escrito com ação, projeto, custo/impacto, IAM, rollback e validação.
 
@@ -98,7 +99,7 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | E3-T2 | Classificar 22 funções tipadas, RPCs chamadas, 16 triggers detectados e `SECURITY DEFINER` | E3-T1, E1-T2 | Decisão portar para SQL/API/job/retirar, com testes de comportamento |
 | E3-T3 | Substituir semanticamente `auth.uid()`/`auth.role()` e revisar grants/default privileges | E1-T5, E3-T2 | Testes diretos por papel; nenhum `PUBLIC EXECUTE` ou bypass não aprovado |
 | E3-T4 | Validar extensões `vector`, `moddatetime`, `pgcrypto`, `pg_cron`, `pg_net` | E3-T1 | Compatibilidade e substituto documentados; cron/net não copiados cegamente |
-| E3-T5 | Definir snapshot, watermark, delta/CDC e autoridade de escrita por domínio | E0-T3, E3-T1 | Diagrama de estados, idempotência, freeze/abort e rollback |
+| E3-T5 | Definir snapshot, watermark, delta/CDC e autoridade de escrita por domínio | E0-T3, E3-T1 | Máquina de estados por domínio/tenant, epoch/fencing token, ledger de roteamento, rejeição no writer não autoritativo, idempotência, delta reverso, freeze/abort e rollback |
 | E3-T6 | Construir reconciliação de counts/checksums/sequences/FKs e resultados funcionais | E3-T1 | Fixtures sintéticas detectam perda, duplicata, timezone/JSON/decimal divergente |
 | E3-T7 | Definir backups/PITR/restore e executar prova local/staging quando autorizado | E0-T4, E2, staging | Restore inspecionado, tempo registrado e RTO/RPO comparados |
 
@@ -155,7 +156,7 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 |---|---|---|---|
 | E7-T1 | Inventariar buckets efetivos, objetos, bytes, ACL/policies, MIME e URLs persistidas | E0-T6 | Inclui bucket `lovable-uploads` citado no frontend ou explica ausência |
 | E7-T2 | Classificar objetos públicos/privados e definir key tenant-scoped/signed URLs | E1-T1, E7-T1 | Testes anônimo, cross-tenant, overwrite, MIME, tamanho e expiração |
-| E7-T3 | Ensaiar cópia incremental e remapeamento de URL em staging | E3-T5–T6, E7-T2 | Count, bytes, checksum, metadata e referências reconciliadas |
+| E7-T3 | Ensaiar cópia incremental e remapeamento de URL em staging | E3-T5–T6, E7-T2 | Count, bytes, checksum canônico do conteúdo, metadata e referências reconciliadas; não confiar apenas em ETag/MD5 específico do provedor |
 | E7-T4 | Classificar seis fluxos Realtime em polling, SSE/WebSocket ou evento interno | E1-T6, E0-T6 | Latência/requisito de negócio medidos; subscription autorizada |
 | E7-T5 | Implementar e testar substitutos por fluxo | E4, E7-T4 | Cross-tenant subscription falha; reconnect/ordering/lag observados |
 | E7-T6 | Remover URLs/clientes Storage e canais Realtime Supabase ativos | E7-T3, E7-T5 | Código, rede e configuração em zero no ambiente promovido |
@@ -185,8 +186,8 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | E9-T1 | Ensaiar mapping de usuário/membership e colisões sem presumir portabilidade de senha | E1-T3, E3-T6, staging | Counts por estado, amostra determinística e zero colisão inexplicada |
 | E9-T2 | Provar login, refresh, OTP, recovery, convite, disable, logout e sessão antiga | E9-T1 | Matriz positiva/negativa e rollback do emissor |
 | E9-T3 | Reimplementar `invite-member` e `delete-user` com auditoria/compensação | E9-T2 | Elevação, self-delete, cross-tenant e partial failure testados |
-| E9-T4 | Reimplementar `infinitepay-create-link` derivando valor/NSU/redirect server-side | E6 domínio propostas, sandbox | Caller não altera valor/owner; checkout de sandbox reconciliado |
-| E9-T5 | Reimplementar webhook InfinitePay com ledger e efeitos assíncronos | E4-T2, E9-T4 | Replay/duplicata/reorder; efeito financeiro exatamente uma vez no domínio |
+| E9-T4 | Reimplementar `infinitepay-create-link` derivando valor/NSU/redirect server-side | E6 domínio propostas, sandbox | Caller não altera valor, moeda, merchant, owner ou redirect; checkout de sandbox reconciliado |
+| E9-T5 | Reimplementar webhook InfinitePay com ledger e efeitos assíncronos | E4-T2, E9-T4 | Assinatura oficial sobre raw body, consulta server-side ao provedor, conferência merchant/order/valor/moeda e gravação atômica de evento único + estado financeiro + outbox; replay/duplicata/reorder testados |
 | E9-T6 | Rehearsal de cutover Auth e pagamentos separado do banco | E9-T1–T5 | Zero divergência inexplicada, rollback e aceite de negócio/segurança |
 
 ## E10 — rehearsals integrados e prontidão de produção
@@ -205,9 +206,9 @@ E6–E9 podem avançar em paralelo somente depois de contratos, tenant boundary,
 | ID | Tarefa | Dependências | Evidência e gate |
 |---|---|---|---|
 | E11-T1 | Solicitar aprovações separadas de produção, export, secrets, deploy e DNS | E10 | Cada pedido contém alvo, impacto/custo, rollback e validação |
-| E11-T2 | Promover por domínio: leitura canário, escrita canário, expansão | Aprovações E11-T1 | Feature flag, métricas, audit e reconciliação a cada passo |
+| E11-T2 | Promover por domínio: leitura canário, escrita canário, expansão | Aprovações E11-T1 | Máquina de estados e fencing ativos, feature flag, métricas, audit e reconciliação a cada passo; writer não autoritativo rejeita escrita |
 | E11-T3 | Aplicar delta final por domínio com autoridade única | E11-T2 | Watermark, checksum e nenhuma escrita perdida |
-| E11-T4 | Manter Supabase como rollback read-only/operacional durante janela aprovada | E11-T3 | Saúde do rollback e acesso restrito monitorados |
+| E11-T4 | Manter Supabase como rollback read-only/operacional durante janela aprovada | E11-T3 | Saúde e acesso restrito monitorados; reabertura de escrita exige fencing, delta reverso reconciliado e ação de rollback aprovada |
 | E11-T5 | Observar período de estabilização aprovado | E11-T3 | Zero tráfego Supabase, SLO e custo dentro de limites aprovados |
 
 Uma falha de isolamento, Auth, pagamento, reconciliação, restore ou audit aciona abort; não vira risco residual por conveniência.
