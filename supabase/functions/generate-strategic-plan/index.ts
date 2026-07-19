@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 // @ts-ignore - Supabase Deno environment
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { logAiUsage } from "../_shared/ai-usage-log.ts"
 
 async function withAutoRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 2000): Promise<T> {
   for (let i = 0; i <= retries; i++) {
@@ -781,6 +782,7 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
 
     // --- PRIMARY: Claude Opus 4.7 (Extended Thinking) ---
     if (ANTHROPIC_API_KEY) {
+      const claudeStart = Date.now();
       try {
         console.log('[generate-strategic-plan] PRIMARY: Calling Claude Opus 4.7 with Extended Thinking...');
         const anthropicResponse = await withAutoRetry(() => fetch('https://api.anthropic.com/v1/messages', {
@@ -812,20 +814,58 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
             content = textBlocks.map((b: any) => b.text).join('');
             providerUsed = 'claude-opus-4-7';
             console.log(`[generate-strategic-plan] Claude Opus 4.7 responded successfully. Output length: ${content?.length || 0}`);
+            await logAiUsage(supabaseAdmin, {
+              edgeFunction: 'generate-strategic-plan',
+              provider: 'anthropic',
+              model: 'claude-opus-4-7',
+              success: true,
+              inputTokens: anthropicData.usage?.input_tokens,
+              outputTokens: anthropicData.usage?.output_tokens,
+              latencyMs: Date.now() - claudeStart,
+              metadata: { projectId, jobId },
+            });
           } else {
             console.warn('[generate-strategic-plan] Claude Opus 4.7 returned no text blocks. Falling back to OpenAI.');
+            await logAiUsage(supabaseAdmin, {
+              edgeFunction: 'generate-strategic-plan',
+              provider: 'anthropic',
+              model: 'claude-opus-4-7',
+              success: false,
+              errorMessage: 'No text blocks in response',
+              latencyMs: Date.now() - claudeStart,
+              metadata: { projectId, jobId },
+            });
           }
         } else {
           const errText = await anthropicResponse.text();
           console.warn(`[generate-strategic-plan] Claude Opus 4.7 failed (${anthropicResponse.status}): ${errText.substring(0, 300)}. Falling back to OpenAI.`);
+          await logAiUsage(supabaseAdmin, {
+            edgeFunction: 'generate-strategic-plan',
+            provider: 'anthropic',
+            model: 'claude-opus-4-7',
+            success: false,
+            errorMessage: `HTTP ${anthropicResponse.status}: ${errText.substring(0, 300)}`,
+            latencyMs: Date.now() - claudeStart,
+            metadata: { projectId, jobId },
+          });
         }
       } catch (claudeError: any) {
         console.warn(`[generate-strategic-plan] Claude Opus 4.7 exception: ${claudeError.message}. Falling back to OpenAI.`);
+        await logAiUsage(supabaseAdmin, {
+          edgeFunction: 'generate-strategic-plan',
+          provider: 'anthropic',
+          model: 'claude-opus-4-7',
+          success: false,
+          errorMessage: claudeError.message,
+          latencyMs: Date.now() - claudeStart,
+          metadata: { projectId, jobId },
+        });
       }
     }
 
     // --- FALLBACK: OpenAI GPT-5.4 ---
     if (!content && OPENAI_API_KEY) {
+      const openaiStart = Date.now();
       console.log('[generate-strategic-plan] FALLBACK: Calling OpenAI GPT-5.4...');
       const response = await withAutoRetry(() => fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -847,6 +887,15 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       if (!response.ok) {
         const err = await response.text();
         console.error('[generate-strategic-plan] OpenAI API Error:', err);
+        await logAiUsage(supabaseAdmin, {
+          edgeFunction: 'generate-strategic-plan',
+          provider: 'openai',
+          model: 'gpt-5.4',
+          success: false,
+          errorMessage: `HTTP ${response.status}: ${err.substring(0, 300)}`,
+          latencyMs: Date.now() - openaiStart,
+          metadata: { projectId, jobId },
+        });
         throw new Error(`Both AI providers failed. OpenAI: ${response.status}`);
       }
 
@@ -854,6 +903,16 @@ CRITICAL_RULE_TRADE_NAME: SE O \`tradeName\` FOI FORNECIDO (${tradeName}), VOCÊ
       content = data.choices?.[0]?.message?.content;
       providerUsed = 'gpt-5.4';
       console.log(`[generate-strategic-plan] OpenAI GPT-5.4 responded successfully.`);
+      await logAiUsage(supabaseAdmin, {
+        edgeFunction: 'generate-strategic-plan',
+        provider: 'openai',
+        model: 'gpt-5.4',
+        success: true,
+        inputTokens: data.usage?.prompt_tokens,
+        outputTokens: data.usage?.completion_tokens,
+        latencyMs: Date.now() - openaiStart,
+        metadata: { projectId, jobId },
+      });
     }
 
     if (!content) {

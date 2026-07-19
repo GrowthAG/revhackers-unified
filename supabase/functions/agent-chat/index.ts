@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { logAiUsage } from "../_shared/ai-usage-log.ts"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -129,7 +130,7 @@ const PROVIDERS: Record<string, (msgs: any[], sys: string, mdl: string) => Promi
                 }
                 throw new Error(data.error?.message || "OpenAI API Error");
             }
-            return { content: data.choices[0].message.content, model: targetModel };
+            return { content: data.choices[0].message.content, model: targetModel, usage: data.usage };
         };
 
         return await callOpenAI(mdl);
@@ -169,6 +170,7 @@ serve(async (req) => {
 
         // RAW MODE: Direct OpenAI call without RAG/Guardrails
         if (raw_mode) {
+            const rawModeStart = Date.now();
             console.log(`[RAW MODE] Entering raw mode for model: ${model}`);
             const apiKey = Deno.env.get('OPENAI_API_KEY');
             if (!apiKey) throw new Error('OpenAI API Key missing');
@@ -208,7 +210,29 @@ serve(async (req) => {
                 });
                 data = await res.json();
             }
-            if (!res.ok) throw new Error(`OpenAI Error: ${data.error?.message}`);
+            if (!res.ok) {
+                await logAiUsage(supabaseAdmin, {
+                    edgeFunction: 'agent-chat',
+                    provider: 'openai',
+                    model: targetModel,
+                    success: false,
+                    errorMessage: data.error?.message,
+                    latencyMs: Date.now() - rawModeStart,
+                    metadata: { raw_mode: true },
+                });
+                throw new Error(`OpenAI Error: ${data.error?.message}`);
+            }
+
+            await logAiUsage(supabaseAdmin, {
+                edgeFunction: 'agent-chat',
+                provider: 'openai',
+                model: targetModel,
+                success: true,
+                inputTokens: data.usage?.prompt_tokens,
+                outputTokens: data.usage?.completion_tokens,
+                latencyMs: Date.now() - rawModeStart,
+                metadata: { raw_mode: true },
+            });
 
             return new Response(JSON.stringify({
                 success: true,
@@ -393,11 +417,37 @@ Use isso com moderação (1 a 3 vezes por texto longo).
 
         console.log(`[EXECUTION] Calling ${provider} handler for ${targetModelId}`);
         const sysPrompt = buildSystemPrompt(targetModelId, identityKey) + ragContext;
-        const result = await handler(cleanMessages, sysPrompt, targetModelId);
+        const chatCallStart = Date.now();
+        let result: any;
+        try {
+            result = await handler(cleanMessages, sysPrompt, targetModelId);
+        } catch (providerError: any) {
+            await logAiUsage(supabaseAdmin, {
+                edgeFunction: 'agent-chat',
+                provider,
+                model: targetModelId,
+                success: false,
+                errorMessage: providerError.message,
+                latencyMs: Date.now() - chatCallStart,
+                metadata: { agentId, raw_mode: false },
+            });
+            throw providerError;
+        }
 
         // Standardize result structure
         const finalContent = typeof result === 'string' ? result : result.content;
         const finalModel = typeof result === 'string' ? targetModelId : result.model;
+
+        await logAiUsage(supabaseAdmin, {
+            edgeFunction: 'agent-chat',
+            provider,
+            model: finalModel,
+            success: true,
+            inputTokens: result?.usage?.prompt_tokens,
+            outputTokens: result?.usage?.completion_tokens,
+            latencyMs: Date.now() - chatCallStart,
+            metadata: { agentId, raw_mode: false },
+        });
 
         return new Response(JSON.stringify({
             success: true,
