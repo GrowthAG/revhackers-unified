@@ -17,12 +17,12 @@ export default function PublicDiagnosticResult() {
             if (!id) return;
 
             try {
-                // Try new architecture first: diagnosticos table
-                const { data: diagData, error: diagError } = await supabase
-                    .from('diagnosticos')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+                // Try new architecture first: diagnosticos table, via RPC
+                // (P0-03: sem SELECT direto anonimo na tabela, ver
+                // 20260717000000_secure_diagnosticos_public_access.sql)
+                const { data: diagRows, error: diagError } = await supabase
+                    .rpc('get_diagnostico_public_result', { p_id: id });
+                const diagData = Array.isArray(diagRows) ? diagRows[0] : diagRows;
 
                 if (!diagError && diagData) {
                     const respostas = (diagData as any).respostas || {};

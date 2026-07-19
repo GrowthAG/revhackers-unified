@@ -37,17 +37,23 @@ export default function SuccessPlanPresentation() {
             if (!token) { setLoading(false); return; }
 
             try {
-                const { data, error } = await supabase
-                    .from('strategic_plans')
-                    .select('*, rei_projects(client_name, client_company, client_site, type)')
-                    .eq('access_token', token)
-                    .eq('plan_type', 'success_plan')
+                // RPC publica escopada por token - RLS anonima fechada, ver
+                // 20260718000002_secure_strategic_plans_proposals.sql
+                const { data, error } = await (supabase as any)
+                    .rpc('get_public_strategic_plan', { p_token: token, p_plan_type: 'success_plan' })
                     .single();
 
                 if (error || !data) {
                     console.error('[SuccessPlan] Erro ao carregar:', error);
                     setLoading(false);
                     return;
+                }
+
+                if (data.rei_project_id) {
+                    const { data: reiProject } = await (supabase as any)
+                        .rpc('get_public_rei_project_summary', { p_id: data.rei_project_id })
+                        .maybeSingle();
+                    if (reiProject) (data as any).rei_projects = reiProject;
                 }
 
                 setPlan(data);

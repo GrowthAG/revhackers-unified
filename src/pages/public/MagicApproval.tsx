@@ -25,14 +25,20 @@ export default function MagicApproval() {
   const loadLink = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Magic Link
-      const { data: linkData, error: linkError } = await supabase
-        .from('orqflow_magic_links')
-        .select('*')
-        .eq('token', token)
-        .single();
+      // Fetch Magic Link + Task numa unica RPC que compara o token exato
+      // dentro do banco (P0-02: sem SELECT direto anonimo nas tabelas, ver
+      // 20260717000001_secure_magic_links_public_access.sql)
+      const { data: rows, error: rpcError } = await supabase
+        .rpc('get_magic_link_task', { p_token: token });
+      const row: any = Array.isArray(rows) ? rows[0] : rows;
 
-      if (linkError || !linkData) throw new Error('Link Mágico inválido ou expirado.');
+      if (rpcError || !row) throw new Error('Link Mágico inválido ou expirado.');
+
+      const linkData = {
+        id: row.link_id,
+        status: row.link_status,
+        expires_at: row.link_expires_at,
+      };
 
       // Verificar TTL: link expirado nao pode ser usado
       if (linkData.expires_at && new Date(linkData.expires_at) < new Date()) {
@@ -41,14 +47,12 @@ export default function MagicApproval() {
 
       setMagicLink(linkData);
 
-      // 2. Fetch Task Associated with Link (Public via RLS)
-      const { data: taskData, error: taskError } = await supabase
-        .from('orqflow_tasks')
-        .select('*')
-        .eq('id', linkData.task_id)
-        .single();
-        
-      if (taskError || !taskData) throw new Error('A tarefa referente a este link não existe mais.');
+      const taskData = {
+        id: row.task_id,
+        title: row.task_title,
+        content: row.task_content,
+        created_at: row.task_created_at,
+      };
       setTask(taskData);
 
       // Render JSONB to HTML
@@ -83,26 +87,23 @@ export default function MagicApproval() {
         return;
       }
 
-      // 1. Atualizar magic link com audit trail
-      const { error: linkError } = await supabase
-        .from('orqflow_magic_links')
-        .update({
-          status,
-          approved_at: new Date().toISOString(),
-          approver_user_agent: navigator.userAgent.substring(0, 255),
-        } as any)
-        .eq('token', token)
-        .eq('status', 'pending'); // Clausula de idempotencia no DB
+      // Atualizar magic link via RPC (P0-02: sem UPDATE direto anonimo, ver
+      // 20260717000001_secure_magic_links_public_access.sql). A RPC compara
+      // o token exato, valida status='pending' e expiracao numa unica
+      // instrucao atomica; o trigger orqflow_magic_link_trigger (ja
+      // SECURITY DEFINER) sincroniza o status da task automaticamente.
+      const { data: rows, error: resolveError } = await supabase.rpc('resolve_magic_link', {
+        p_token: token,
+        p_status: status,
+        p_user_agent: navigator.userAgent.substring(0, 255),
+      });
 
-      if (linkError) throw linkError;
+      if (resolveError) throw resolveError;
 
-      // 2. Sincronizar status da task com a decisao
-      if (task?.id) {
-        const newTaskStatus = status === 'approved' ? 'done' : 'review';
-        await supabase
-          .from('orqflow_tasks')
-          .update({ status: newTaskStatus })
-          .eq('id', task.id);
+      const resolved = Array.isArray(rows) ? rows[0] : rows;
+      if (!resolved) {
+        toast.error('Esta avaliacao ja foi registrada anteriormente ou o link expirou.');
+        return;
       }
 
       setMagicLink({ ...magicLink, status });

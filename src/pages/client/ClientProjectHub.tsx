@@ -127,11 +127,8 @@ const ClientProjectHub = () => {
                 if (localNps === 'true') {
                     setNpsUnlocked(true);
                 } else {
-                    const { data: npsData } = await (supabase.from('rei_responses') as any)
-                        .select('id')
-                        .eq('project_id', id)
-                        .eq('diagnostic_type', 'onboarding_nps')
-                        .maybeSingle();
+                    const { data: npsData } = await (supabase as any)
+                        .rpc('has_public_nps_response', { p_project_id: id });
 
                     if (npsData) {
                         setNpsUnlocked(true);
@@ -140,44 +137,27 @@ const ClientProjectHub = () => {
                 }
 
                 // 3. Fetch Official Handover Documentation
-                const { data: libData } = await (supabase as any).from('knowledge_libraries')
-                    .select('id')
-                    .eq('project_id', id)
-                    .maybeSingle();
-                
-                if (libData) {
-                    const { data: docs } = await (supabase as any).from('agent_documents')
-                        .select('id, filename, metadata, created_at')
-                        .eq('library_id', libData.id)
-                        .order('created_at', { ascending: false });
-                    
-                    if (docs) {
-                        const publicDocs = docs.filter(d => 
-                            (d.metadata as any)?.visibility === 'shared' || 
-                            (d.metadata as any)?.visibility === 'final'
-                        );
-                        setClientDocs(publicDocs);
-                    }
+                const { data: libId } = await (supabase as any)
+                    .rpc('get_public_knowledge_library_id', { p_project_id: id });
+
+                if (libId) {
+                    const { data: docs } = await (supabase as any)
+                        .rpc('get_public_shared_documents', { p_library_id: libId });
+
+                    if (docs) setClientDocs(docs);
                 }
 
                 // 4. Fetch Live Orqflow Secure Data (The Heartbeat)
-                // Usando tabelas reais (views não exposínadas no schema público)
-                const { data: sprintsData } = await supabase
-                    .from('orqflow_sprints')
-                    .select('id, name, status, start_date, end_date')
-                    .eq('project_id', id)
-                    .order('start_date', { ascending: true });
-                
+                // RPCs publicas escopadas por project_id (as tabelas nao tem
+                // policy anonima - ver 20260718000000_secure_hub_public_access.sql)
+                const { data: sprintsData } = await (supabase as any)
+                    .rpc('get_public_project_sprints', { p_project_id: id });
+
                 if (sprintsData) setLiveSprints(sprintsData);
 
-                const { data: tasksData } = await supabase
-                    .from('orqflow_tasks')
-                    .select('id, title, status, sprint_id, due_date, priority, position_order')
-                    .eq('project_id', id)
-                    .neq('status', 'cancelled')
-                    .order('position_order', { ascending: true, nullsFirst: false })
-                    .order('due_date', { ascending: true, nullsFirst: false });
-                
+                const { data: tasksData } = await (supabase as any)
+                    .rpc('get_public_project_tasks', { p_project_id: id });
+
                 if (tasksData) setLiveTasks(tasksData);
 
             } catch (error) {

@@ -3809,6 +3809,28 @@ export type Database = {
         Returns: string
       }
       get_active_organization: { Args: never; Returns: string }
+      get_diagnostico_public_result: {
+        Args: { p_id: string }
+        Returns: {
+          created_at: string | null
+          id: string
+          respostas: Json
+          score: number | null
+          tipo: string
+        }[]
+      }
+      get_magic_link_task: {
+        Args: { p_token: string }
+        Returns: {
+          link_expires_at: string | null
+          link_id: string
+          link_status: string
+          task_content: Json
+          task_created_at: string | null
+          task_id: string
+          task_title: string
+        }[]
+      }
       get_my_organizations: { Args: never; Returns: string[] }
       get_proposal_by_slug: { Args: { slug_input: string }; Returns: Json }
       get_user_org_ids: { Args: never; Returns: string[] }
@@ -3834,11 +3856,27 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: undefined
       }
+      resolve_magic_link: {
+        Args: { p_status: string; p_token: string; p_user_agent?: string }
+        Returns: {
+          link_id: string
+          link_status: string
+        }[]
+      }
       schedule_organization_deletion: {
         Args: { p_org_id: string; p_reason?: string }
         Returns: string
       }
       set_active_organization: { Args: { org_id: string }; Returns: undefined }
+      submit_diagnostico: {
+        Args: {
+          p_email: string
+          p_respostas: Json
+          p_score: number
+          p_tipo: string
+        }
+        Returns: string
+      }
       suspend_organization: { Args: { p_org_id: string }; Returns: undefined }
       update_rei_status: { Args: never; Returns: undefined }
       user_has_permission: {

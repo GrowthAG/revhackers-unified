@@ -25,12 +25,13 @@ export default function PlanSignPage() {
     async function loadPlanMeta() {
         if (!token) { setLoading(false); return; }
         try {
-            const { data, error: err } = await supabase
-                .from('strategic_plans')
-                .select('*, rei_projects(id)')
-                .eq('access_token', token)
+            // RPC publica escopada por token - RLS anonima fechada, ver
+            // 20260718000002_secure_strategic_plans_proposals.sql
+            const { data, error: err } = await (supabase as any)
+                .rpc('get_public_strategic_plan', { p_token: token })
                 .single();
             if (err) throw err;
+            if (data?.rei_project_id) (data as any).rei_projects = { id: data.rei_project_id };
             setPlan(data);
             if (data.status === 'approved') setDone(true);
             if (data.client_id) {

@@ -242,7 +242,11 @@ export default function StrategicPlanPresentation() {
     async function loadPlan() {
         if (!token) { setLoading(false); return; }
         try {
-            const { data, error } = await supabase.from('strategic_plans').select('*, rei_projects(type, project_duration)').eq('access_token', token).single();
+            // RPCs publicas escopadas por token/nome - RLS anonima fechada,
+            // ver 20260718000002_secure_strategic_plans_proposals.sql
+            const { data, error } = await (supabase as any)
+                .rpc('get_public_strategic_plan', { p_token: token })
+                .single();
             if (error) throw error;
             setPlan(data);
             if (data.client_id) {
@@ -253,9 +257,10 @@ export default function StrategicPlanPresentation() {
             // Try to find if there is a Deal Room proposal for this client
             const clientName = (data as any)?.client_company || (data as any)?.client_name;
             if (clientName) {
-                const { data: propData } = await (supabase as any).from('proposals').select('slug').eq('client_name', clientName).order('created_at', { ascending: false }).limit(1).maybeSingle();
-                if (propData?.slug) {
-                    setDealSlug(propData.slug);
+                const { data: dealSlugData } = await (supabase as any)
+                    .rpc('get_proposal_slug_by_client', { p_client_name: clientName });
+                if (dealSlugData) {
+                    setDealSlug(dealSlugData);
                 }
             }
         } catch (err) { console.error('Erro ao carregar plano:', err); }

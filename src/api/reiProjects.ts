@@ -216,14 +216,9 @@ export const getReiProjectById = async (id: string): Promise<ReiProject | null> 
  * Evita vazamento de dados sensíveis (Margins, Notes, etc)
  */
 export const getPublicReiProjectById = async (id: string): Promise<Partial<ReiProject> | null> => {
-    const { data, error } = await supabase
-        .from('rei_projects')
-        .select(`
-            id, client_name, client_email, client_company, status, scheduling_completed, analyst_email, next_rei_date, created_at, type,
-            clients ( trade_name )
-        `)
-        .eq('id', id)
-        .single();
+    const { data, error } = await (supabase as any)
+        .rpc('get_public_rei_project_summary', { p_id: id })
+        .maybeSingle();
 
     if (error) {
         console.error('Error fetching public REI project:', error);
@@ -231,9 +226,7 @@ export const getPublicReiProjectById = async (id: string): Promise<Partial<ReiPr
     }
 
     if (data) {
-        const tradeName = (data.clients as any)?.trade_name;
-        delete (data as any).clients;
-        return { ...data, trade_name: tradeName } as Partial<ReiProject>;
+        return { ...data } as Partial<ReiProject>;
     }
 
     return null;

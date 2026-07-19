@@ -49,29 +49,24 @@ export const submitPublicDiagnostic = async (
     };
     const officialProjectType = diagToProjectMap[diagnosticType] || 'consulting';
 
-    // 1. Criar registro em `diagnosticos` (entidade correta para assessments)
-    const { data: diagData, error: diagError } = await supabase
-        .from('diagnosticos')
-        .insert({
-            email: lead.email || 'sem-email@lead.local',
-            tipo: diagnosticType,
-            score,
-            respostas: {
-                ...fullResponses,
-                lead_name: lead.name,
-                lead_company: lead.company,
-                maturity_level: maturity.title || maturity.level,
-            },
-        })
-        .select('id')
-        .single();
+    // 1. Criar registro em `diagnosticos` via RPC (P0-03: sem INSERT/SELECT
+    // direto anonimo na tabela, ver 20260717000000_secure_diagnosticos_public_access.sql)
+    const { data: diagnosticoId, error: diagError } = await supabase.rpc('submit_diagnostico', {
+        p_email: lead.email || 'sem-email@lead.local',
+        p_tipo: diagnosticType,
+        p_score: score,
+        p_respostas: {
+            ...fullResponses,
+            lead_name: lead.name,
+            lead_company: lead.company,
+            maturity_level: maturity.title || maturity.level,
+        },
+    });
 
     if (diagError) {
         console.error('[publicDiagnostic] Erro ao criar diagnostico:', diagError);
         throw diagError;
     }
-
-    const diagnosticoId = (diagData as any).id;
 
     // 2. Criar opportunity vinculada (pipeline pre-venda)
     const DIAG_TYPE_TO_SOURCE: Record<string, string> = {

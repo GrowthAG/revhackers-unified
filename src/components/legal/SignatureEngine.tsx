@@ -68,18 +68,19 @@ export const SignatureEngine: React.FC<SignatureEngineProps> = ({
       const stringToHash = `${documentContentToHash}|${timestamp}|${email}`;
       const documentHash = await generateHash(stringToHash);
 
-      // 2. Persist to Legal Vault (document_signatures) - using defaults for unused fields
-      const { error } = await supabase.from('document_signatures').insert({
-        project_id: projectId,
-        reference_type: referenceType,
-        reference_id: referenceId,
-        signer_name: name,
-        signer_cpf_cnpj: '000.000.000-00', // Default placeholder passed to DB
-        signer_email: email,
-        signer_role: 'Contratante', // Default placeholder
-        signer_ip: ipAddress,
-        user_agent: navigator.userAgent,
-        document_hash: documentHash
+      // 2. Persist to Legal Vault (document_signatures) via RPC - RLS
+      // anonima fechada, ver 20260718000001_secure_additional_public_findings.sql
+      const { error } = await (supabase as any).rpc('submit_document_signature', {
+        p_project_id: projectId,
+        p_reference_type: referenceType,
+        p_reference_id: referenceId,
+        p_signer_name: name,
+        p_signer_cpf_cnpj: '000.000.000-00', // Default placeholder passed to DB
+        p_signer_email: email,
+        p_signer_role: 'Contratante', // Default placeholder
+        p_signer_ip: ipAddress,
+        p_user_agent: navigator.userAgent,
+        p_document_hash: documentHash
       });
 
       if (error) throw error;

@@ -178,28 +178,26 @@ export async function linkDiagnosticToPipeline(params: {
   const { projectId, diagnosticType, score, leadName, leadEmail, leadCompany } = params;
   const leadSource = DIAG_TYPE_TO_SOURCE[diagnosticType] || 'diagnostico_growth';
 
-  // 1. Insert into diagnosticos table to get a diagnostico_id for FK
-  const { data: diagRecord, error: diagErr } = await supabase
-    .from('diagnosticos')
-    .insert({
-      email: leadEmail || 'sem-email@lead.local',
+  // 1. Insert into diagnosticos table (via RPC) to get a diagnostico_id for FK
+  // P0-03: sem INSERT/SELECT direto anonimo na tabela, ver
+  // 20260717000000_secure_diagnosticos_public_access.sql
+  const { data: diagnosticoRpcId, error: diagErr } = await supabase.rpc('submit_diagnostico', {
+    p_email: leadEmail || 'sem-email@lead.local',
+    p_tipo: diagnosticType,
+    p_score: score,
+    p_respostas: {
+      nome: leadName,
+      empresa: leadCompany,
       tipo: diagnosticType,
-      score,
-      respostas: {
-        nome: leadName,
-        empresa: leadCompany,
-        tipo: diagnosticType,
-        rei_project_id: projectId,
-      },
-    })
-    .select('id')
-    .single();
+      rei_project_id: projectId,
+    },
+  });
 
   if (diagErr) {
     console.error('[PipelineService] Failed to insert diagnosticos record:', diagErr.message);
   }
 
-  const diagnosticoId = diagRecord?.id || null;
+  const diagnosticoId = diagnosticoRpcId || null;
 
   // 2. Create opportunity in the opportunities table (new architecture)
   const { data: oppData, error: oppErr } = await supabase

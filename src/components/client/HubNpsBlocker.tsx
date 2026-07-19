@@ -32,21 +32,13 @@ export const HubNpsBlocker: React.FC<HubNpsBlockerProps> = ({ projectId, clientN
         try {
             setIsSubmitting(true);
 
-            // Save to rei_responses as public feedback
-            const { error } = await supabase.from('rei_responses').insert({
-                project_id: projectId,
-                context: 'public',
-                diagnostic_type: 'onboarding_nps',
-                responses: {
-                    nps_score: score,
-                    nps_comment: comment,
-                    submitted_at: new Date().toISOString()
-                },
-                total_score: score,
-                maturity_level: 'Feedback',
-                maturity_percentage: score * 10,
-                source: 'diagnostic'
-            } as any);
+            // Save to rei_responses as public feedback (RPC - RLS anonima
+            // fechada, ver 20260718000000_secure_hub_public_access.sql)
+            const { error } = await (supabase as any).rpc('submit_hub_nps', {
+                p_project_id: projectId,
+                p_score: score,
+                p_comment: comment || null,
+            });
 
             if (error) {
                 console.error('Error saving NPS:', error);

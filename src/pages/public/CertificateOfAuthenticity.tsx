@@ -20,10 +20,8 @@ export default function CertificateOfAuthenticity() {
     useEffect(() => {
         const fetchSignature = async () => {
             try {
-                const { data, error } = await supabase
-                    .from('document_signatures')
-                    .select('*, rei_projects(trade_name, company_name)')
-                    .eq('document_hash', hash)
+                const { data, error } = await (supabase as any)
+                    .rpc('get_signature_certificate', { p_hash: hash })
                     .single();
 
                 if (error) throw error;
