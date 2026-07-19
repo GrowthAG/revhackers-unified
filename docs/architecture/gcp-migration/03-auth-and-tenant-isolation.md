@@ -151,3 +151,44 @@ Cada teste deve validar resposta, ausência de efeito no banco, ausência de vaz
 - Evidência de que contexto não vaza em connection pooling.
 
 Até esses gates, a substituição de Auth/RLS não deve ser autorizada.
+
+## Achado verificado em 2026-07-18: clientes não têm login, acessam por link-capacidade
+
+Durante a auditoria de segurança do mesmo dia (ver checkpoints de
+`docs/PLANO-MESTRE.md` e as migrations `20260718000000`-`20260718000002`),
+inspecionei o código de toda superfície client-facing existente:
+`ClientProjectHub.tsx` (`/hub/:id`), `StrategicPlanPresentation.tsx`
+(`/plan/:token`), `SuccessPlanPresentation.tsx`, `PlanSignPage.tsx`,
+`PublicDealRoom.tsx` (`/p/:slug`), `CertificateOfAuthenticity.tsx`.
+
+**Fato verificado, não inferido:** nenhuma dessas páginas exige login.
+Nenhuma usa `auth.uid()`/sessão Supabase Auth do lado do cliente final.
+Todas resolvem acesso comparando um valor opaco da URL (`access_token`,
+`slug`, `document_hash`, ou o próprio `id` do registro) contra uma coluna
+no banco. Não existe hoje nenhum fluxo de "cliente cria conta e loga" no
+código - `ProtectedRoute`/`profiles`/`auth.users` autenticam só equipe
+RevHackers (`super_admin`, `admin`, `user`, `analyst`).
+
+Isso muda a resposta de várias "Perguntas abertas" já registradas acima -
+não são mais perguntas em aberto sobre o modelo alvo, são fatos sobre o
+modelo atual que o modelo alvo precisa decidir se preserva ou substitui.
+
+## Proposta de resposta às perguntas abertas (aguardando aprovação de Giulliano)
+
+Marcado explicitamente como PROPOSTA - nada disto está decidido, é uma
+sugestão fundamentada nos fatos verificados acima para acelerar a decisão.
+
+| Pergunta em aberto | Proposta | Por quê |
+|---|---|---|
+| `organization`, `client_account`, `client` ou `rei_project` é o tenant? | **`clients.id`** | `client_id` já é FK presente em `rei_projects`, `document_signatures`, `knowledge_libraries`, `rei_materials` (confirmado hoje via schema live). `rei_projects` é granular demais pra ser o tenant (um cliente pode ter mais de um projeto/rodada REI ao longo do tempo) - é recurso do tenant, não o tenant. |
+| Usuário pode pertencer a vários tenants, com papéis diferentes? | **Não se aplica no modelo atual** - clientes não são "usuários" com conta, são portadores de link. Se/quando isso mudar (cliente ganhar login de verdade), reabrir esta pergunta. | Fato verificado acima. |
+| `super_admin`/`admin` é global ou por tenant? | **Global** - são papéis da equipe RevHackers (`profiles.role`), não dos clientes. Um único `admin` RevHackers já opera múltiplos tenants (clientes) legitimamente hoje. | Nenhuma tabela ou policy encontrada hoje trata admin como escopado por cliente. |
+| Cliente lê só seu projeto, todos os projetos da conta, ou a organização inteira? | **Só o projeto referenciado pelo link que ele recebeu** (comportamento atual, preservado pelas RPCs criadas hoje - todas escopadas por `project_id`/token específico, nunca listam "todos os projetos do cliente X"). | É o que o produto já faz e o que os 6 achados de segurança de hoje corrigiram para continuar fazendo, só que sem vazamento. |
+| Quais páginas públicas por slug/token continuam anônimas? | **Todas as 6 já listadas no topo desta seção** - `/hub/:id`, `/plan/:token`, `/plan/:token/sign`, `/p/:slug`, certificado por hash. Isso é decisão de produto já tomada implicitamente (a feature existe e roda), só nunca foi documentada formalmente aqui. | Mesma fonte. |
+
+**O que isso NÃO resolve** (ainda é decisão real, sem atalho): se o modelo
+alvo no GCP deve **manter** capacidade-por-link para clientes (mais simples,
+replica o que já existe) ou **migrar clientes para login de verdade**
+(mais seguro contra vazamento/reencaminhamento de link, mais trabalho de
+produto e UX). Isso é E1-T3 (provedor de identidade), depende desta
+decisão de E1-T1 primeiro.
