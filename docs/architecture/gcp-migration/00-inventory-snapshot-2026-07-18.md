@@ -57,10 +57,33 @@ Bucket público no Supabase Storage significa que qualquer um com a URL do
 objeto lê o arquivo sem nenhum RLS/token - bypass total, não é o mesmo
 mecanismo das tabelas corrigidas nesta sessão. Já era o achado P1
 "buckets públicos" registrado em `docs/departments/security/01-backlog.md`;
-esta é a primeira vez que os nomes reais foram confirmados. **Não
-corrigido nesta sessão** - reconfigurar storage é mudança de escopo maior
-(precisa decidir signed URLs vs. bucket privado por tabela consumidora,
-sem quebrar os fluxos que hoje esperam URL pública direta).
+esta é a primeira vez que os nomes reais foram confirmados.
+
+**Atualização 2026-07-19 - achado mais grave da sessão inteira, corrigido:**
+`storage.objects` tinha uma policy chamada `"Permitir Tudo"` (SELECT/
+INSERT/UPDATE/DELETE, role `public`, **sem nenhum filtro de `bucket_id`**)
+- CRUD anônimo completo em todos os arquivos de todos os buckets do
+projeto, independente de qual bucket, inclusive os que "pareciam"
+protegidos por RLS própria (como `task-attachments`). Mais 3 conjuntos de
+policies redundantes davam o mesmo acesso anônimo total especificamente
+para `rei-materials`, `meet_videos` e `revhackers-uploads` (esta última
+com nome `"Anon_Temp_..."`, indicando que era pra ser temporária).
+
+Corrigido via `20260719000000_secure_storage_objects.sql`: removidas
+todas as policies abertas, recriadas com escopo (leitura pública só onde
+é intencional - `blog-covers`, portfolio/blog público - resto
+`authenticated`-only). `task-attachments` também virou bucket privado
+(`public: false`) - zero uso no frontend (grep confirmado), seguro sem
+nenhuma mudança de código.
+
+**Ainda pendente, não resolvido nesta correção:** `meet_videos`,
+`rei-materials` e `revhackers-uploads` continuam com o bucket marcado
+`public: true` - a RLS agora está correta, mas o flag do bucket ainda
+permite leitura via `/object/public/...` sem checar RLS nenhuma. Virar
+esses 3 buckets privados exige trocar `getPublicUrl()` por
+`createSignedUrl()` em `src/utils/uploadImageToSupabase.ts` e
+`uploadFileToSupabase.ts`, e verificar cada tela que exibe essas URLs -
+trabalho maior, não decidido/feito sozinho.
 
 ## Edge Functions
 
