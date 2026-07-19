@@ -54,6 +54,25 @@ E1, E2 e E3 podem avançar em paralelo conforme suas dependências específicas;
 
 **Gate E0:** modelo de evidência, owners e entradas para arquitetura aprovados. Sem E0, project tier, região, cronograma e custo permanecem indeterminados.
 
+### Decisões registradas
+
+- **E0-T2 (2026-07-18) — RESOLVIDO.** Giulliano (CEO) é owner técnico, de
+  segurança, negócio, dados, identidade, integrações, custo e incidente,
+  até que ele nomeie alguém para uma função específica. Não é uma matriz
+  RACI formal com múltiplas pessoas — é o estado real da empresa hoje
+  (uma pessoa), registrado explicitamente em vez de assumido. E0-T7 e
+  E2-T1 (que dependiam de E0-T2 só para ter *alguma* autoridade nomeada)
+  já podem citar essa decisão como a autoridade resolvida; a ação externa
+  em si (rotação de credencial, criação de projeto GCP) continua exigindo
+  aprovação pontual e explícita a cada pedido, como já era o caso.
+- **E0-T3 — parcialmente resolvido.** Critério de prazo declarado por
+  Giulliano: "o quanto antes" — sem data fixa, prioridade é velocidade
+  segura, não uma janela de calendário específica. Isso não substitui uma
+  decisão de critério de sucesso/janela de estabilização/abort (esses
+  seguem pendentes), mas remove o bloqueio de "preciso de uma data exata
+  antes de começar a desenhar arquitetura".
+- **E0-T4, E0-T5, E0-T6** — continuam pendentes, sem decisão registrada.
+
 ## E1 — tenant, autorização, identidade e contratos
 
 **Objetivo:** definir a fronteira de segurança que substituirá `auth.uid()`, `auth.role()`, RLS e service role.
