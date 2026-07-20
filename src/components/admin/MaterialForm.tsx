@@ -222,7 +222,7 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
                         <div className="space-y-2">
                             <Label className="text-sm font-bold text-zinc-700">🔗 Link do Material (URL)</Label>
                             <div className="flex gap-2">
-                                <Input {...register('material_url', { required: true })} placeholder="https://clickup.com/... ou URL do arquivo" className="bg-white font-mono text-xs flex-1" />
+                                <Input {...register('material_url', { required: true })} placeholder="URL do arquivo ou material" className="bg-white font-mono text-xs flex-1" />
                                 <div className="relative">
                                     <Input 
                                         type="file" 
@@ -266,4 +266,3 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
 };
 
 export default MaterialForm;
-

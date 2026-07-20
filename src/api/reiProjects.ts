@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { createDocumentFromREI } from "./knowledge";
-import { getTemplateForREI } from "./taskTemplates";
 
 export interface FocalPoint {
     name: string;
@@ -99,7 +98,8 @@ export const createReiProject = async (project: ReiProjectInsert): Promise<Creat
 
     if (data && data.id && !isLead) {
         try {
-            const template = getTemplateForREI(data.type || '', (data as any).project_duration || '');
+            // Tarefas serao gerenciadas pelo gestor operacional proprio futuro.
+            const template: any[] = [];
             if (template.length > 0) {
                 const tasksToInsert = template.map(t => ({
                     ...t,
@@ -521,4 +521,3 @@ export const saveReiDiagnostic = async (
         throw error;
     }
 };
-

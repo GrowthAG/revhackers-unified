@@ -51,18 +51,6 @@ verify_jwt = true
 enabled = true
 verify_jwt = true
 
-# ── Payments ─────────────────────────────────────────────────────────────────
-[functions.infinitepay-create-link]
-enabled = true
-verify_jwt = true
-import_map = "./functions/infinitepay-create-link/deno.json"
-entrypoint = "./functions/infinitepay-create-link/index.ts"
-
-[functions.infinitepay-webhook]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/infinitepay-webhook/index.ts"
-
 # ── Webhooks Externos (JWT desligado intencionalmente) ───────────────────────
 [functions.ghl-webhook-handoff]
 enabled = true
@@ -73,30 +61,6 @@ entrypoint = "./functions/ghl-webhook-handoff/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/autentique-webhook/index.ts"
-
-# ── ClickUp Orchestration ───────────────────────────────────────────────────
-[functions.clickup-notetaker-sync]
-enabled = true
-verify_jwt = true
-entrypoint = "./functions/clickup-notetaker-sync/index.ts"
-
-[functions.clickup-orchestrator]
-enabled = true
-verify_jwt = true
-import_map = "./functions/clickup-orchestrator/deno.json"
-entrypoint = "./functions/clickup-orchestrator/index.ts"
-
-[functions.clickup-sprint-orchestrator]
-enabled = true
-verify_jwt = true
-import_map = "./functions/clickup-sprint-orchestrator/deno.json"
-entrypoint = "./functions/clickup-sprint-orchestrator/index.ts"
-
-[functions.clickup-provision]
-enabled = true
-verify_jwt = true
-import_map = "./functions/clickup-provision/deno.json"
-entrypoint = "./functions/clickup-provision/index.ts"
 
 # ── User Management (Destrutivo — JWT obrigatório) ───────────────────────────
 [functions.delete-user]

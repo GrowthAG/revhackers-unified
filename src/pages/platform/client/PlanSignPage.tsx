@@ -63,33 +63,6 @@ export default function PlanSignPage() {
                 },
             } as any).eq('id', plan.id);
 
-            // Dispara provisionamento do ClickUp em background (fire-and-forget intencional).
-            // A UX do cliente nao espera — o admin acompanha o progresso no Hub via
-            // clickup_integrations.sprints_status (Supabase Realtime).
-            const projectId = plan.rei_projects?.id;
-            if (projectId) {
-                supabase.functions
-                    .invoke('clickup-provision', {
-                        body: {
-                            project_id: projectId,
-                            triggered_by: 'plan_approval',
-                        },
-                    })
-                    .catch((err: unknown) => {
-                        console.error('[PlanSignPage] clickup-provision falhou:', err);
-                    });
-                
-                // Módulo 2: Dual Link Strategy - Hook de Aprovação
-                // Dispara o update da Task Zero no ClickUp com o link do Portal do Cliente
-                supabase.functions
-                    .invoke('clickup-update-docs-link', {
-                        body: { planId: plan.id }
-                    })
-                    .catch((err: unknown) => {
-                        console.error('[PlanSignPage] clickup-update-docs-link falhou:', err);
-                    });
-            }
-
             setSignerName(signerData.name);
             setDone(true);
         } catch (err) {

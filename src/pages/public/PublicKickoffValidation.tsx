@@ -170,32 +170,10 @@ const PublicKickoffValidation: React.FC = () => {
                         referenceId="kickoff_validation"
                         documentContentToHash={documentContentToHash}
                         onSuccess={async () => {
-                            try {
-                                console.log('[Kickoff] Acionando Orquestrador ClickUp...');
-                                const { error: clickupError } = await supabase.functions.invoke('clickup-orchestrator', {
-                                    body: { project_id: project.id }
-                                });
-                                if (clickupError) {
-                                    console.error('[Kickoff] ClickUp Orchestrator retornou erro:', clickupError);
-                                    toast({
-                                        title: 'Assinatura registrada com sucesso',
-                                        description: 'A configuração automática do workspace encontrou um problema. Nossa equipe foi notificada e resolverá em breve.',
-                                        variant: 'destructive',
-                                    });
-                                } else {
-                                    toast({
-                                        title: 'Kick-off validado!',
-                                        description: 'Workspace do projeto configurado com sucesso. Próximos passos em até 24h.',
-                                    });
-                                }
-                            } catch (error) {
-                                console.error('[Kickoff] Falha crítica no ClickUp Orchestrator:', error);
-                                toast({
-                                    title: 'Assinatura registrada',
-                                    description: 'Ocorreu um erro na automação do workspace. Nossa equipe já foi alertada.',
-                                    variant: 'destructive',
-                                });
-                            }
+                            toast({
+                                title: 'Kick-off validado!',
+                                description: 'Assinatura registrada. A equipe RevHackers entrará em contato com os próximos passos.',
+                            });
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
                         checkboxText="Declaro ter participado da Reunião de Kick-off, lido os termos acima, confirmando a ciência de todas as limitações e dando o de acordo definitivo para o início das operações de implantação do projeto."

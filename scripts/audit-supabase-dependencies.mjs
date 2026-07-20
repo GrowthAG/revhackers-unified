@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process';
-import { lstatSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,7 +40,7 @@ export function scanRepository(root = process.cwd()) {
   for (const path of files) {
     if (AUDIT_ARTIFACTS.has(path)) continue;
     const full = resolve(root, path);
-    if ((relative(root, full).startsWith(`..${sep}`)) || !lstatSync(full).isFile()) continue;
+    if ((relative(root, full).startsWith(`..${sep}`)) || !existsSync(full) || !lstatSync(full).isFile()) continue;
     const dirMatch = path.match(/^supabase\/functions\/([^/]+)\//);
     if (dirMatch && dirMatch[1] !== '_shared') functionDirs.add(dirMatch[1]);
     if (!TEXT_EXTENSIONS.test(path)) continue;

@@ -7,7 +7,7 @@ interface ProjectOsContainerProps {
 
 export const ProjectOsContainer: React.FC<ProjectOsContainerProps> = ({ projectId }) => {
   // O Código de micro-tasks ("Frankenstein") foi deletado.
-  // Aqui receberemos futuramente Webhooks do ClickUp com os Milestones!
+  // Aqui receberemos futuramente eventos do gestor operacional próprio.
 
   return (
     <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white overflow-hidden p-8">
@@ -52,7 +52,7 @@ export const ProjectOsContainer: React.FC<ProjectOsContainerProps> = ({ projectI
           </div>
         </div>
 
-        {/* Placeholder para a barra de progresso lida do ClickUp no futuro */}
+        {/* Placeholder para a barra de progresso do gestor operacional futuro */}
         <div className="mt-8 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-4">
              <h3 className="font-semibold">Progresso da Arquitetura Principal</h3>

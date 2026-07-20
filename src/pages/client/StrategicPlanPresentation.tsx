@@ -509,22 +509,6 @@ export default function StrategicPlanPresentation() {
                                 setShowSign(false);
                                 setShowApproved(true);
 
-                                // Dispara criação de sprints no ClickUp com feedback.
-                                // Pre-requisito: workspace_status='ready' (folder criado após assinatura do kickoff).
-                                const projectIdForClickup = plan.rei_projects?.id || plan.project_id;
-                                if (projectIdForClickup) {
-                                    try {
-                                        const { error: sprintError } = await supabase.functions
-                                            .invoke('clickup-sprint-orchestrator', {
-                                                body: { project_id: projectIdForClickup, triggered_by: 'plan_approval' },
-                                            });
-                                        if (sprintError) {
-                                            console.error('[clickup-sprint] erro no disparo:', sprintError);
-                                        }
-                                    } catch (err) {
-                                        console.error('[clickup-sprint] falha crítica no disparo:', err);
-                                    }
-                                }
                             }}
                         />
                         <button onClick={() => setShowSign(false)} className="w-full mt-4 py-3 text-zinc-400 text-xs font-semibold hover:text-white transition-colors">Encerrar Criptografia e Voltar</button>

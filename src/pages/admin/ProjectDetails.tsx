@@ -86,7 +86,6 @@ import { SalesRoomTab } from '@/components/project-os/views/SalesRoomTab';
 import { MeetingVaultTab } from '@/components/project-os/views/MeetingVaultTab';
 import { KickoffSignaturePanel } from '@/components/rei/KickoffSignaturePanel';
 import { SuccessPlanTab } from '@/components/admin/SuccessPlanTab';
-import { ClickUpStatusWidget } from '@/components/admin/ClickUpStatusWidget';
 import { ClientAccountPanel } from '@/components/admin/ClientAccountPanel';
 import { ClientAccessModal } from '@/components/project-os/layout/ClientAccessModal';
 import { ProjectHeaderActions } from '@/components/project-os/layout/ProjectHeaderActions';
@@ -524,9 +523,6 @@ const ProjectDetails = () => {
                                     </NavLink>
                                 ))}
                             </div>
-
-                            {/* ClickUp - status de provisionamento em tempo real */}
-                            <ClickUpStatusWidget projectId={project.id} />
 
                             {/* Conta unificada RevHackers + Funnels (client_accounts) */}
                             <ClientAccountPanel

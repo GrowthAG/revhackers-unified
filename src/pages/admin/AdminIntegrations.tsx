@@ -2,18 +2,11 @@ import { useState, useEffect } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertCircle, Loader2, Activity, Settings2, ShieldCheck, Zap, MessageSquare, Database, Server, FolderKanban, AlertTriangle, RefreshCw } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Activity, Settings2, ShieldCheck, Zap, MessageSquare, Database, Server, AlertTriangle, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-interface ClickUpStats {
-    total: number;
-    ready: number;
-    failed: number;
-    pending: number;
-}
 
 interface OrphanedDeal {
     opportunity_id: string;
@@ -25,13 +18,11 @@ interface OrphanedDeal {
 const AdminIntegrations = () => {
     const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const [clickupStats, setClickupStats] = useState<ClickUpStats | null>(null);
     const [orphanedDeals, setOrphanedDeals] = useState<OrphanedDeal[]>([]);
     const [reconciling, setReconciling] = useState(false);
 
     useEffect(() => {
         handleAuthCallback();
-        loadClickUpStats();
         loadOrphanedDeals();
     }, []);
 
@@ -50,26 +41,6 @@ const AdminIntegrations = () => {
             toast.error("Erro: " + error.message, { id: toastId });
         } finally {
             setLoading(false);
-        }
-    };
-
-    const loadClickUpStats = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('clickup_integrations')
-                .select('workspace_status, sprints_status');
-            if (error || !data) {
-                setClickupStats(null);
-                return;
-            }
-            setClickupStats({
-                total: data.length,
-                ready: data.filter((r: any) => r.workspace_status === 'ready').length,
-                failed: data.filter((r: any) => r.workspace_status === 'failed' || r.sprints_status === 'failed').length,
-                pending: data.filter((r: any) => r.workspace_status === 'pending' || r.sprints_status === 'pending').length,
-            });
-        } catch {
-            setClickupStats(null);
         }
     };
 
@@ -98,7 +69,6 @@ const AdminIntegrations = () => {
             const converted = results?.filter((r: any) => r.action_taken?.startsWith('CONVERTED')).length || 0;
             toast.success(`${converted} deal(s) reconciliado(s) com sucesso`, { id: toastId });
             loadOrphanedDeals();
-            loadClickUpStats();
         } catch (error: any) {
             toast.error("Erro na reconciliação: " + error.message, { id: toastId });
         } finally {
@@ -106,7 +76,6 @@ const AdminIntegrations = () => {
         }
     };
 
-    const clickupHealthy = clickupStats && clickupStats.failed === 0 && clickupStats.total > 0;
     const hasOrphans = orphanedDeals.length > 0;
 
     return (
@@ -205,75 +174,6 @@ const AdminIntegrations = () => {
                                     >
                                         GERENCIAR CONTAS FUNNELS
                                     </Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ClickUp Card */}
-                        <div className="group relative bg-white border-2 border-zinc-200 transition-all duration-300 overflow-hidden flex flex-col justify-between hover:border-black">
-                            <div className="p-8 space-y-6 relative z-10">
-                                <div className="flex justify-between items-start">
-                                    <div className="p-4 bg-zinc-50 border-2 border-zinc-100 group-hover:scale-110 transition-transform duration-300">
-                                        <FolderKanban className="text-zinc-900" size={24} />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {clickupStats && (
-                                            <>
-                                                {clickupStats.failed > 0 && (
-                                                    <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 px-2 py-0.5 font-black text-[0.6rem] tracking-widest uppercase rounded-none">
-                                                        {clickupStats.failed} FALHA{clickupStats.failed > 1 ? 'S' : ''}
-                                                    </Badge>
-                                                )}
-                                            </>
-                                        )}
-                                        <Badge variant="outline" className="bg-zinc-100 text-zinc-600 border-none px-3 py-1 font-black text-[0.65rem] tracking-widest uppercase rounded-none">
-                                            ORQUESTRAÇÃO
-                                        </Badge>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-black text-zinc-900">ClickUp Orchestration</h3>
-                                    <p className="text-sm font-medium text-zinc-500 leading-relaxed">
-                                        Motor de provisionamento automático. Cria workspaces, sprints e tarefas no ClickUp a partir da assinatura do kickoff e aprovação do plano estratégico.
-                                    </p>
-                                </div>
-
-                                {/* ClickUp Stats Grid */}
-                                {clickupStats && clickupStats.total > 0 ? (
-                                    <div className="grid grid-cols-3 gap-3 pt-2">
-                                        <div className="bg-zinc-50 border border-zinc-100 p-3 text-center">
-                                            <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Workspaces</p>
-                                            <p className="text-lg font-black text-zinc-900">{clickupStats.ready}</p>
-                                        </div>
-                                        <div className="bg-zinc-50 border border-zinc-100 p-3 text-center">
-                                            <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Pendentes</p>
-                                            <p className="text-lg font-black text-zinc-500">{clickupStats.pending}</p>
-                                        </div>
-                                        <div className={cn(
-                                            "border p-3 text-center",
-                                            clickupStats.failed > 0 ? "bg-red-50 border-red-200" : "bg-zinc-50 border-zinc-100"
-                                        )}>
-                                            <p className="text-2xs font-black uppercase tracking-widest text-zinc-400">Falhas</p>
-                                            <p className={cn("text-lg font-black", clickupStats.failed > 0 ? "text-red-600" : "text-zinc-300")}>
-                                                {clickupStats.failed}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="bg-zinc-50 border border-zinc-100 p-4 text-center">
-                                        <p className="text-xs font-bold text-zinc-400">Nenhum workspace provisionado ainda</p>
-                                    </div>
-                                )}
-
-                                <div className="flex items-center gap-2 pt-2">
-                                    <div className={cn(
-                                        "h-2 w-2 rounded-none",
-                                        clickupHealthy ? "bg-[#00CC6A]" : clickupStats?.failed ? "bg-red-500" : "bg-zinc-300"
-                                    )} />
-                                    <span className="text-2xs font-black uppercase tracking-widest text-zinc-400">
-                                        {clickupHealthy ? 'Operacional' : clickupStats?.failed ? 'Falhas Detectadas' : clickupStats ? 'Aguardando' : 'Verificando...'}
-                                    </span>
                                 </div>
                             </div>
                         </div>

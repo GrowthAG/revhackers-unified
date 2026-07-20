@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Cpu, ExternalLink, Copy, CheckCircle2 } from 'lucide-react';
 import HealthScoreCard from './HealthScoreCard';
@@ -15,17 +14,15 @@ interface SuccessPlanTabProps {
 
 export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
     const [plan, setPlan] = useState<any>(null);
-    const [project, setProject] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [clickupDocId, setClickupDocId] = useState('');
     const { toast } = useToast();
 
     const loadPlan = async () => {
         setLoading(true);
         try {
-            const [planRes, projectRes] = await Promise.all([
+            const [planRes] = await Promise.all([
                 supabase
                     .from('strategic_plans')
                     .select('*')
@@ -34,19 +31,10 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                     .order('created_at', { ascending: false })
                     .limit(1)
                     .maybeSingle(),
-                supabase
-                    .from('rei_projects')
-                    .select('clickup_doc_id')
-                    .eq('id', projectId)
-                    .single()
             ]);
 
             if (planRes.error) console.error('[SuccessPlanTab] Error:', planRes.error);
             setPlan(planRes.data);
-            
-            if (projectRes.data?.clickup_doc_id) {
-                setClickupDocId(projectRes.data.clickup_doc_id);
-            }
         } catch (err) {
             console.error('[SuccessPlanTab] Error:', err);
         } finally {
@@ -61,18 +49,8 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
     const handleGenerate = async () => {
         setGenerating(true);
         try {
-            // Extrai o ID caso o usuário tenha colado o link inteiro (ex: https://app.clickup.com/9017035197/v/dc/8cqa2dx-1077/...)
-            let parsedDocId = clickupDocId.trim();
-            if (parsedDocId.includes('clickup.com')) {
-                const match = parsedDocId.match(/(\w+-\d+)/);
-                if (match) parsedDocId = match[1];
-            }
-
             const { error } = await supabase.functions.invoke('generate-success-plan', {
-                body: { 
-                    project_id: projectId,
-                    clickup_doc_id: parsedDocId || undefined
-                },
+                body: { project_id: projectId },
             });
 
             if (error) {
@@ -123,21 +101,6 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                     O Success Plan e criado automaticamente quando uma oportunidade e convertida em projeto.
                     Voce pode gerar um manualmente agora.
                 </p>
-                <div className="max-w-sm mx-auto mb-6">
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-widest mb-2 text-left">
-                        Link ou ID da Transcrição do ClickUp (Opcional)
-                    </label>
-                    <Input
-                        value={clickupDocId}
-                        onChange={(e) => setClickupDocId(e.target.value)}
-                        placeholder="Ex: 8cqa2dx-1077 ou link do doc..."
-                        className="text-xs placeholder:text-zinc-400 bg-white"
-                        disabled={generating}
-                    />
-                    <p className="text-[10px] text-zinc-500 text-left mt-1.5">
-                        O conteúdo deste Doc será enviado para a AI gerar um plano hiper-personalizado.
-                    </p>
-                </div>
                 <Button
                     onClick={handleGenerate}
                     disabled={generating}
@@ -221,21 +184,6 @@ export function SuccessPlanTab({ projectId }: SuccessPlanTabProps) {
                     <p className="text-xs text-zinc-500 mb-6">
                         O success plan foi criado mas os criterios de sucesso ainda nao foram gerados pela AI.
                     </p>
-                    <div className="mb-6">
-                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-widest mb-2 text-left">
-                            Link ou ID da Transcrição do ClickUp (Opcional)
-                        </label>
-                        <Input
-                            value={clickupDocId}
-                            onChange={(e) => setClickupDocId(e.target.value)}
-                            placeholder="Ex: 8cqa2dx-1077 ou link do doc..."
-                            className="text-xs placeholder:text-zinc-400 bg-white w-full"
-                            disabled={generating}
-                        />
-                        <p className="text-[10px] text-zinc-500 text-left mt-1.5">
-                            Use a transcrição do kickoff para um plano mais preciso.
-                        </p>
-                    </div>
                     <Button
                         onClick={handleGenerate}
                         disabled={generating}

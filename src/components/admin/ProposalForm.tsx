@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert, CreditCard, ListTree, CheckCircle2, AlertCircle, Code, ChevronDown, Presentation } from 'lucide-react';
+import { Loader2, Wand2, ArrowLeft, RefreshCw, Save, ExternalLink, Upload, FileText, Video, X, ShieldAlert, ListTree, CheckCircle2, AlertCircle, Code, ChevronDown, Presentation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 import { useAI } from '@/context/AIContext';
@@ -580,52 +580,6 @@ FORMATO JSON OBRIGATÓRIO (RETORNE APENAS O ARRAY):
             toast({ title: 'Erro ao buscar gravacoes', description: e.message || 'Verifique a tabela meeting_recordings.', variant: 'destructive' });
         } finally {
             setLoadingHistory(false);
-        }
-    };
-
-    const [isGeneratingIP, setIsGeneratingIP] = useState(false);
-
-    const handleGenerateInfinitePay = async () => {
-        if (!initialData?.id) {
-            toast({ title: 'Aviso', description: 'Salve a proposta pela primeira vez antes de gerar o link financeiro.', variant: 'destructive' });
-            return;
-        }
-        
-        const setupFee = getValues('setup_fee');
-        const invTotal = getValues('investment_total');
-        const chargeAmount = Number(setupFee) > 0 ? Number(setupFee) : Number(invTotal);
-        
-        if (!chargeAmount || chargeAmount <= 0) {
-            toast({ title: 'Valores Inválidos', description: 'Defina o Valor do Setup ou Investimento Total primeiro e salve.', variant: 'destructive' });
-            return;
-        }
-
-        setIsGeneratingIP(true);
-        try {
-            const amountInCents = Math.round(chargeAmount * 100);
-            const slug = getValues('slug');
-            
-            const { data, error } = await supabase.functions.invoke('infinitepay-create-link', {
-                body: {
-                    order_nsu: initialData.id,
-                    redirect_url: `${window.location.origin}/p/${slug}?payment=success`,
-                    amount: amountInCents
-                }
-            });
-            
-            if (error) throw error;
-            
-            if (data?.url) {
-                setValue('payment_link', data.url);
-                toast({ title: 'Link Gerado!', description: 'O link da InfinitePay foi criado. Salve a proposta para guardar permanentemente.' });
-            } else {
-                throw new Error("Resposta inválida do Gateway InfinitePay.");
-            }
-        } catch(e: any) {
-            console.error(e);
-            toast({ title: 'Erro ao Gerar Fatura', description: e.message, variant: 'destructive' });
-        } finally {
-            setIsGeneratingIP(false);
         }
     };
 
@@ -1429,20 +1383,14 @@ Modelo de JSON Exato a ser retornado:
                             </div>
                         </div>
 
-                        {/* INFINITEPAY LINK AUTOMÁTICO */}
+                        {/* Cobrança será definida em fluxo próprio futuro. */}
                         <div className="pt-8 border-t border-zinc-100/50">
-                            <h3 className="text-xxs font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">Motor de Faturamento (InfinitePay)</h3>
+                            <h3 className="text-xxs font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2">Cobrança</h3>
                             <div className="p-6 bg-zinc-50 border border-zinc-100 flex flex-col items-center justify-center text-center">
-                                <div className="w-10 h-10 bg-white border border-zinc-200 shadow-sm flex items-center justify-center mb-3">
-                                    <CreditCard className="w-5 h-5 text-[#00CC6A]" />
-                                </div>
-                                <h4 className="text-sm font-bold text-zinc-900 mb-1">Faturamento 100% Automatizado</h4>
+                                <h4 className="text-sm font-bold text-zinc-900 mb-1">Fluxo de cobrança pendente</h4>
                                 <p className="text-xs text-zinc-500 max-w-lg mb-4">
-                                    Após a assinatura (aceite) do lead na Live Proposal, nossa API do InfinitePay gerará a cobrança automaticamente (Cartão ou Pix) baseada nos valores de Setup que você informou acima e conectará no ambiente deal room.
+                                    A integração de pagamento foi removida. O novo fluxo de cobrança será definido separadamente antes de ser reativado.
                                 </p>
-                                <div className="bg-zinc-100 border border-zinc-200 px-4 py-2 text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center">
-                                    Link de Pagamento Automático Ativo
-                                </div>
                             </div>
                         </div>
                     </div >
