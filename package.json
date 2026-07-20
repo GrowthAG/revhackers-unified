@@ -73,7 +73,7 @@
     "framer-motion": "^12.23.26",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.2.4",
-    "jspdf": "^3.0.4",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.462.0",
     "markmap-lib": "^0.18.12",
     "markmap-view": "^0.18.12",
