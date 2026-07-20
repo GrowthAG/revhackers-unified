@@ -703,6 +703,251 @@
     },
     {
       "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 2,
+      "line": 28,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 30,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 30,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 182,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 182,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 2,
+      "line": 22,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 24,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 24,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 80,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 80,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-provision.raw-api-response.json",
+      "count": 2,
+      "line": 1,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-provision.raw-api-response.json",
+      "count": 1,
+      "line": 1,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-provision.raw-api-response.json",
+      "count": 3,
+      "line": 1,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 2,
+      "line": 24,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 26,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 26,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 84,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 84,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 2,
+      "line": 28,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 30,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 30,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 115,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 115,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 11,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 12,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 20,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 21,
+      "symbol": "SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 14,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 14,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 23,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 24,
+      "symbol": "SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 92,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 93,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 22,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 23,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
       "path": "docs/architecture/gcp-migration/00-current-state.md",
       "count": 1,
       "line": 128,
@@ -2488,6 +2733,146 @@
     },
     {
       "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 22,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 182,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 14,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 80,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-provision.raw-api-response.json",
+      "count": 1,
+      "line": 1,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 17,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 84,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 24,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 115,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 2,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 17,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 2,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 19,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 3,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 14,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 6,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 22,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 91,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 2,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 21,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
       "path": "docs/archive/claude-session/SECURITY_FIXES.md",
       "count": 1,
       "line": 184,
@@ -4031,6 +4416,433 @@
       "path": ".kiro/START_HERE.md",
       "count": 1,
       "line": 194,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 190,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 198,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 272,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 298,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 331,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
+      "count": 1,
+      "line": 339,
+      "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 95,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 112,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 125,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 134,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 183,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 204,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 225,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-orchestrator.index.ts",
+      "count": 1,
+      "line": 239,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-provision.raw-api-response.json",
+      "count": 11,
+      "line": 1,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 99,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 112,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 132,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 150,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 172,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 312,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 329,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 357,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sprint-orchestrator.index.ts",
+      "count": 1,
+      "line": 368,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 56,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 126,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 132,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 186,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 216,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 271,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 285,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 316,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 333,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-sync.index.ts",
+      "count": 1,
+      "line": 344,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 29,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 37,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-update-docs-link.index.ts",
+      "count": 1,
+      "line": 93,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 97,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 98,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 138,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 150,
+      "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-sync.index.ts",
+      "count": 1,
+      "line": 164,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 50,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 59,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 63,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 72,
+      "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/fathom-webhook.index.ts",
+      "count": 1,
+      "line": 77,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-checkout.index.ts",
+      "count": 1,
+      "line": 95,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 29,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 45,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 55,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 64,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 73,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 87,
+      "symbol": "rpc"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 97,
+      "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 117,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 128,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 134,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 139,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 162,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/infinitepay-webhook.index.ts",
+      "count": 1,
+      "line": 185,
       "symbol": "from"
     },
     {
@@ -8770,17 +9582,17 @@
     "config-section": 24,
     "deployable-function": 31,
     "endpoint": 33,
-    "environment-name": 284,
+    "environment-name": 326,
     "function-without-config-section": 8,
-    "import-or-wrapper": 217,
-    "operation": 551,
+    "import-or-wrapper": 237,
+    "operation": 622,
     "orphan-config-section": 1,
     "related-migration": 114,
     "related-prerender": 1,
     "related-script": 15,
     "related-workflow": 1,
-    "entries": 1252,
-    "trackedFiles": 1135,
+    "entries": 1368,
+    "trackedFiles": 1129,
     "deployableFunctions": 31,
     "configFunctionSections": 24
   }
