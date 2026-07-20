@@ -45,7 +45,7 @@ O baseline deve refletir exatamente o commit-base auditado e permitir comparaç�
 ## Critérios de aceitação
 
 - O teste usa fixtures temporárias e cobre presença, ausência, duplicata e ordenação determinística.
-- A execução no repositório identifica exatamente 39 diretórios implantáveis e a seção órfã `autentique-webhook` na base atual.
+- A execução no repositório identifica exatamente 39 diretórios implantáveis versionados e a seção órfã `autentique-webhook` na base atual.
 - O relatório não contém padrões de segredo nem valores oriundos de `.env`.
 - Uma fixture com segredo-sentinela prova que o valor não aparece no JSON, stdout ou stderr, inclusive quando a auditoria falha.
 - Duas execuções consecutivas produzem bytes idênticos.

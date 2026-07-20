@@ -91,39 +91,29 @@ trabalho maior, não decidido/feito sozinho.
 Supabase não exige JWT antes de invocar - a função precisa fazer sua
 própria verificação, se houver):
 
-`generate-strategic-plan`, `generate-success-plan`, `infinitepay-webhook`,
-`infinitepay-checkout`, `infinitepay-create-link`, `ghl-webhook-handoff`,
-`fathom-webhook`, `clickup-orchestrator`, `clickup-sprint-orchestrator`,
+`generate-strategic-plan`, `generate-success-plan`, `ghl-webhook-handoff`,
+`clickup-orchestrator`, `clickup-sprint-orchestrator`,
 `clickup-provision`, `clickup-notetaker-sync`.
 
-Das 11: `infinitepay-webhook`, `ghl-webhook-handoff` e `fathom-webhook`
-são webhooks de provedor externo (esperado não ter JWT de usuário, mas
-deveriam validar assinatura do provedor - não auditado aqui se validam de
-fato). `generate-strategic-plan` já é conhecido (roteador Claude/GPT,
+Das 9: `ghl-webhook-handoff` é webhook de provedor externo (esperado não ter
+JWT de usuário, mas deveria validar assinatura do provedor - não auditado aqui
+se valida de fato). `generate-strategic-plan` já é conhecido (roteador Claude/GPT,
 Frente 2 do plano). As 3 `clickup-*` sem JWT não foram investigadas se
 têm validação de webhook secret equivalente.
 
 **Atualização (mesma sessão): 3 dos 11 auditadas.**
 
-- `infinitepay-webhook`: valida `x-webhook-secret` contra `WEBHOOK_SECRET_KEY`,
-  falha fechado se o secret não estiver configurado. OK, mas é comparação
-  de secret compartilhado (`!==` simples, não constant-time), não a
-  assinatura HMAC oficial do provedor sobre o raw body - gap já registrado
-  como E9-T5 no backlog de migração.
+- `infinitepay-webhook`: integração removida do código ativo e do plano de
+  migração; qualquer endpoint/configuração remanescente no ambiente remoto deve
+  ser reconciliado e desativado antes do decommission.
 - `ghl-webhook-handoff`: mesmo padrão de `infinitepay-webhook`, também
   falha fechado corretamente.
-- `fathom-webhook`: **achado real, corrigido nesta sessão.** A função só
-  existia em produção, nunca foi commitada (drift confirmado - zero
-  arquivo em todo o repositório). Pior: a checagem de assinatura só
-  rodava `if (webhookSecret)` - se a env var `FATHOM_WEBHOOK_SECRET`
-  nunca tivesse sido configurada (ou fosse removida), o endpoint aceitava
-  qualquer POST como evento real do Fathom, inserindo linhas falsas em
-  `meeting_recordings` e criando tarefas reais em `orqflow_tasks` com
-  dado controlado pelo chamador. Trazido para
-  `supabase/functions/fathom-webhook/index.ts` e corrigido para falhar
-  fechado (rejeita se o secret não estiver configurado, em vez de pular a
-  checagem). **Não implantado** - fix local, pronto para deploy quando
-  aprovado.
+- `fathom-webhook`: **integração descontinuada.** Foi observada no ambiente
+  remoto, mas não permanece no código ativo e não será portada para o Google
+  Cloud. Antes do decommission do Supabase, o endpoint remoto deve ser
+  confirmado como sem tráfego e desativado/removido em operação autorizada.
+  A coluna histórica `fathom_meeting_id` permanece apenas para preservar
+  registros antigos até a limpeza de dados ser aprovada.
 
 **Ainda não investigado:** as 3 functions `clickup-orchestrator`,
 `clickup-sprint-orchestrator`, `clickup-provision` sem `verify_jwt` e

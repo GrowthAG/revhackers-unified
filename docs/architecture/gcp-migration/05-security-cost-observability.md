@@ -17,7 +17,7 @@
 | Webhooks | falsificação, replay, duplicação | dois endpoints sem JWT validam segredo; ClickUp implementa HMAC | assinatura/segredo, timestamp/replay window, idempotência, limite de payload e audit |
 | Storage | objeto privado público, overwrite/path traversal, malware | buckets misturam políticas públicas e autenticadas | privado por padrão, signed URL curta, prefixo tenant, checksum/MIME/tamanho, scanning conforme risco |
 | Jobs/filas | replay, poison message, ação no tenant errado | funções encadeadas e cron existem | identity de workload, tenant obrigatório, idempotência, retry limitado e dead-letter |
-| Terceiros | exfiltração, custo, rate limit, supply-chain | IA, Google, ClickUp, GHL e InfinitePay no código | allowlist, data minimization, timeout, egress control, budgets e contratos/sandbox |
+| Terceiros | exfiltração, custo, rate limit, supply-chain | IA, Google, ClickUp e GHL no código ativo | allowlist, data minimization, timeout, egress control, budgets e contratos/sandbox |
 | Logs/auditoria | segredo/PII em log ou ausência de prova | webhook registra payload; triggers de audit foram removidos | redaction, schemas de log, retenção, acesso mínimo e audit trail independente |
 | Pipeline/deploy | ambiente errado, artifact tampering, deploy não aprovado | build consulta Supabase; deploy roda em `develop` e `main` | environments protegidos, provenance, approvals, vars por ambiente, artifact promotion |
 

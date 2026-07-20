@@ -86,7 +86,7 @@ O pacote final deve identificar:
 
 ### 6. Realtime
 
-- [ ] **Seis fluxos classificados:** tarefas Orqflow, hub messages, generation jobs, avatar/profile, kickoff e ClickUp têm substituto ou retirada aprovada.
+- [ ] **Cinco fluxos classificados:** tarefas Orqflow, hub messages, generation jobs, avatar/profile e kickoff têm substituto ou retirada aprovada; ClickUp foi retirado.
 - [ ] **Channels zero:** nenhum código ativo cria channel/subscription Supabase e nenhum browser mantém websocket ao Realtime.
 - [ ] **Publicação zero:** tabelas/publicações Supabase Realtime não são necessárias a caller ativo.
 - [ ] **Isolamento testado:** subscriber do tenant A não recebe evento B; reconnect, ordering, lag e revoke foram testados no alvo.
@@ -112,11 +112,11 @@ O pacote final deve identificar:
 
 ### 9. Edge Functions
 
-- [ ] **39/39 decididas:** cada função de [08-edge-functions-mapping.md](./08-edge-functions-mapping.md) está migrada ou formalmente retirada por falta de caller/requisito.
-- [ ] **Callers zero:** frontend, scripts, migrations, cron, webhooks e outras funções não chamam o endpoint Supabase de nenhuma das 39.
+- [ ] **31/31 decididas:** cada função de [08-edge-functions-mapping.md](./08-edge-functions-mapping.md) está migrada ou formalmente retirada por falta de caller/requisito.
+- [ ] **Callers zero:** frontend, scripts, migrations, cron, webhooks e outras funções não chamam o endpoint Supabase de nenhuma das 31.
 - [ ] **Config drift resolvido:** as dez funções sem seção e a seção órfã `autentique-webhook` foram reconciliadas com o estado efetivo.
 - [ ] **Encadeamentos zero:** não existem `functions.invoke`, `/functions/v1` nem chamada à função ausente `fill-rei-from-transcript` em runtime.
-- [ ] **Webhooks transferidos:** ClickUp, GHL e InfinitePay reconhecem apenas endpoints alvo testados; retries em endpoints antigos estão encerrados.
+- [ ] **Webhooks transferidos/desativados:** GHL reconhece apenas endpoints alvo testados; ClickUp e InfinitePay estão removidos e qualquer retry antigo está encerrado.
 - [ ] **OAuth callbacks transferidos:** Google/GHL redirect URIs apontam ao alvo; nenhum token é devolvido ao navegador ou log.
 - [ ] **Observação zero:** invocations/logs das Edge Functions Supabase são zero na janela aprovada, incluindo falhas 4xx/5xx.
 
@@ -134,7 +134,7 @@ O pacote final deve identificar:
 
 - [ ] **DNS zero:** nenhum registro ativo necessário ao produto aponta a hostname Supabase; zonas e aliases foram revisados no provedor autoritativo.
 - [ ] **Código/config zero:** URLs hard-coded, project refs e callbacks Supabase foram removidos do runtime, inclusive fallback de `google-meetings`.
-- [ ] **OAuth/webhooks zero:** consoles Google/GHL/ClickUp/InfinitePay e outros terceiros não mantêm callback/webhook Supabase ativo.
+- [ ] **OAuth/webhooks zero:** consoles Google/GHL e outros terceiros não mantêm callback/webhook Supabase ativo; ClickUp e InfinitePay não mantêm endpoints ativos.
 - [ ] **CSP/CORS zero:** allowlists não autorizam endpoints/origins Supabase por legado.
 - [ ] **URLs públicas migradas:** links em e-mails, templates, páginas indexadas, QR codes, materiais e dados persistidos foram substituídos ou redirecionados conforme plano.
 - [ ] **TTL e rollback observados:** mudança DNS/callback cumpriu TTL/janela e foi validada de fora da rede; alteração real teve aprovação específica.

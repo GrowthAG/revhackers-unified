@@ -41,8 +41,8 @@ Contagens de SQL abaixo são ocorrências no histórico de migrações, não uma
 - O navegador cria `@supabase/supabase-js` com URL e chave publicável recebidas por variáveis `VITE_*`, persiste a sessão em `localStorage`, renova tokens e detecta sessão na URL.
 - Uma busca lexical encontrou 104 arquivos em `src` que importam ou referenciam o cliente Supabase, 344 ocorrências de `.from(`, oito de `.rpc(`, 41 invocações de Edge Functions, sete referências a Storage e seis canais Realtime. São ocorrências, não rotas únicas nem cobertura de execução.
 - Chamadas RPC encontradas no cliente incluem conversão de oportunidade, geração de plano, consulta de proposta por slug, busca vetorial de conhecimento, reconciliação e atualização de estado REI.
-- Os canais Realtime observados acompanham tarefas Orqflow, mensagens do hub, jobs de geração, avatar/perfil, kickoff e integração ClickUp.
-- O frontend acessa dezenas de tabelas diretamente via PostgREST. Entre as mais recorrentes estão `rei_projects`, `strategic_plans`, `opportunities`, `proposals`, `profiles`, `agent_documents`, `materials`, `cases`, `clients`, `clickup_integrations` e `clickup_orchestrator_runs`.
+- Os canais Realtime observados acompanham tarefas Orqflow, mensagens do hub, jobs de geração, avatar/perfil e kickoff.
+- O frontend acessa dezenas de tabelas diretamente via PostgREST. Entre as mais recorrentes estão `rei_projects`, `strategic_plans`, `opportunities`, `proposals`, `profiles`, `agent_documents`, `materials`, `cases` e `clients`; tabelas ClickUp ficam apenas como histórico.
 
 **Inferência**
 
@@ -111,23 +111,23 @@ Contagens de SQL abaixo são ocorrências no histórico de migrações, não uma
 
 **Fatos verificados**
 
-- Existem 40 diretórios em `supabase/functions`: 39 funções implantáveis e `_shared`.
+- Existem 32 diretórios ativos em `supabase/functions`: 31 funções implantáveis e `_shared`. Funções legadas observadas remotamente são reconciliadas separadamente.
 - Inventário completo por domínio:
 
 | Domínio | Funções versionadas |
 |---|---|
 | IA, análise e conteúdo | `agent-chat`, `agent-documents`, `analyze-diagnostic`, `analyze-meeting-transcript`, `analyze-site`, `auto-enrich-project`, `crux-benchmark`, `enrich-strategic-data`, `fetch-cnpj`, `generate-image`, `generate-playbook`, `generate-project-tasks`, `generate-strategic-plan`, `generate-success-plan`, `inspect-website`, `market-intelligence`, `process-meeting-audio`, `research-intelligence`, `scrape-profile`, `transcribe-meeting`, `trigger-post-rei-enrichment` |
-| ClickUp | `clickup-notetaker-sync`, `clickup-orchestrator`, `clickup-provision`, `clickup-sprint-orchestrator`, `clickup-sync`, `clickup-update-docs-link` |
+| ClickUp | Removido do código ativo; tabelas/histórico preservados |
 | GoHighLevel | `ghl-create-location`, `ghl-deploy-strategy`, `ghl-inspect`, `ghl-oauth-callback`, `ghl-oauth-refresh`, `ghl-outbound-relay`, `ghl-webhook-handoff` |
 | Reuniões Google | `google-meetings` |
-| Pagamentos | `infinitepay-create-link`, `infinitepay-webhook` |
+| Pagamentos | Removido do código ativo; novo fluxo ainda não definido |
 | Administração de usuários | `delete-user`, `invite-member` |
 
 - `supabase/config.toml` tem 30 seções: 27 com `verify_jwt=true` e três com `false`. Uma seção sem JWT aponta para uma função cujo diretório não existe. Dez diretórios implantáveis não têm seção explícita, logo sua configuração efetiva de deploy não está versionada de forma inequívoca.
 - Os dois webhooks existentes explicitamente sem JWT validam segredo próprio em código. `clickup-sync`, sem seção explícita, implementa HMAC e contém uma exceção de desenvolvimento controlada por variável.
 - Muitas funções criam cliente com `SUPABASE_SERVICE_ROLE_KEY`. Parte valida usuário via `getUser`; seis funções usam o helper compartilhado de autenticação, e cinco delas exigem papel administrativo em pelo menos uma operação.
 - Existem encadeamentos entre funções, inclusive uma referência a `fill-rei-from-transcript`, cujo diretório não existe no inventário.
-- Integrações detectadas incluem OpenAI, Anthropic, Google APIs/OAuth/PageSpeed, ClickUp, GoHighLevel e InfinitePay.
+- Integrações detectadas incluem OpenAI, Anthropic, Google APIs/OAuth/PageSpeed e GoHighLevel. InfinitePay e ClickUp foram removidos do código ativo.
 
 **Inferências**
 
@@ -140,7 +140,7 @@ Contagens de SQL abaixo são ocorrências no histórico de migrações, não uma
 
 - Uma migração histórica contém um bearer token literal. O valor não é reproduzido nesta documentação.
 - Código de webhook registra payload recebido, o que pode levar dados pessoais ou financeiros aos logs.
-- Variáveis versionadas por nome abrangem chaves de IA, OAuth Google, ClickUp, GoHighLevel, webhooks, Supabase e credenciais FTP. Os valores não foram lidos.
+- Variáveis versionadas por nome abrangem chaves de IA, OAuth Google, GoHighLevel, webhooks, Supabase e credenciais FTP. Os valores não foram lidos.
 - Arquivos `.env` e `*.pem` estão ignorados pelo Git.
 
 **Inferências**

@@ -21,7 +21,7 @@ Este é um plano de fases e gates. Não contém comandos de execução e não au
 - Obter, com autorização, inventário de schema efetivo por ambiente: tabelas, colunas, constraints, indexes, sequences, views, functions, triggers, policies, grants, owners, extensions, cron e publicação Realtime.
 - Inventariar configurações de Auth, templates, providers, redirects, hooks, usuários e relações de perfil sem exportar valores nesta fase.
 - Inventariar buckets, políticas, objetos, metadata, URLs persistidas e acessos públicos.
-- Mapear 39 Edge Functions, seus callers, auth, service role, terceiros, timeout, retry, idempotência e volume.
+- Mapear 31 Edge Functions versionadas, seus callers, auth, service role, terceiros, timeout, retry, idempotência e volume.
 - Medir banco, conexões, consultas, IOPS, tráfego, Realtime, Storage e custos.
 - Resolver drift entre migrações e tipos gerados.
 - Aprovar modelo de tenant, papéis, opção arquitetural, RTO/RPO, região e orçamento.

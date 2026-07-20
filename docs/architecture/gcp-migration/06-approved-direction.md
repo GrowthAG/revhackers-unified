@@ -26,7 +26,7 @@ A coexistência é uma ferramenta de migração, não a arquitetura permanente.
 |---|---|---|
 | Supabase Postgres/PostgREST | Cloud SQL PostgreSQL acessado por API server-side | serviço candidato; desenho detalhado pendente |
 | Supabase Auth | Identity Platform/Firebase Auth ou OIDC aprovado | decisão de produto e plano de migração pendentes |
-| Edge Functions | Cloud Run Services e Cloud Run Jobs | classificação das 39 funções pendente |
+| Edge Functions | Cloud Run Services e Cloud Run Jobs | classificação das 31 funções versionadas pendente |
 | Supabase Storage | Cloud Storage | inventário e remapeamento de URLs pendentes |
 | Supabase Realtime | SSE/WebSocket por backend e Pub/Sub quando aplicável | classificação dos seis fluxos pendente |
 | RPCs e triggers | API, jobs e funções PostgreSQL revisadas | inventário comportamental pendente |
@@ -61,7 +61,7 @@ O Supabase somente poderá ser desativado quando todos os critérios abaixo tive
 - provedor de identidade e método de migração dos usuários;
 - formato da API e estratégia de contratos;
 - domínio piloto;
-- ordem de migração das 39 funções;
+- ordem de migração das 31 funções versionadas;
 - retenção e prazo de decommission.
 
 ## Guardrail

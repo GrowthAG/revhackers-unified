@@ -49,7 +49,7 @@ E1, E2 e E3 podem avançar em paralelo conforme suas dependências específicas;
 | E0-T3 | Definir critérios de sucesso, prazo desejado, janela, estabilização e abort | E0-T2 | Decisão assinada; números não inferidos do repositório |
 | E0-T4 | Aprovar RTO/RPO, disponibilidade, retenção, LGPD/residência e classes de PII | E0-T2 | Registro jurídico/negócio/técnico e riscos aceitos |
 | E0-T5 | Medir custo e uso atuais de Supabase/Hostinger/terceiros por ambiente | Aprovação para sistemas medidos | Relatório de fonte, período e método; sem exposição de credenciais |
-| E0-T6 | Inventariar schema/Auth/Storage/Realtime/functions/cron efetivos e reconciliar com Git | Aprovação para leitura dos ambientes | Snapshot não secreto, drift explicado, 39 funções reconciliadas |
+| E0-T6 | Inventariar schema/Auth/Storage/Realtime/functions/cron efetivos e reconciliar com Git | Aprovação para leitura dos ambientes | Snapshot não secreto, drift explicado, 31 funções versionadas ativas e 47 funções observadas no ambiente remoto reconciliadas, incluindo legadas |
 | E0-T7 | Tratar a credencial bearer literal histórica como possível incidente | E0-T2; autorização do owner para ação externa | Classificação, owner/provedor, secret scan preventivo e pedido separado de rotação/revogação; valor nunca reproduzido e histórico não reescrito automaticamente |
 
 **Gate E0:** modelo de evidência, owners e entradas para arquitetura aprovados. Sem E0, project tier, região, cronograma e custo permanecem indeterminados.
@@ -186,10 +186,10 @@ E1, E2 e E3 podem avançar em paralelo conforme suas dependências específicas;
 
 | ID | Tarefa | Dependências | Evidência e gate |
 |---|---|---|---|
-| E8-T1 | Confirmar callers, deploy/auth efetivos, volume/duração e owner das 39 funções | E0-T6 | Matriz reconciliada; função sem uso recebe decisão de retirada |
+| E8-T1 | Confirmar callers, deploy/auth efetivos, volume/duração e owner das 31 funções versionadas | E0-T6 | Matriz reconciliada; função sem uso recebe decisão de retirada |
 | E8-T2 | Migrar onda 2 (IA/conteúdo) por função | E4–E6 | Quota/custo, job ledger, tenant e paridade por função |
 | E8-T3 | Migrar ingress/worker de reuniões e proteger áudio/transcrição | E7 Storage, E4-T2 | Upload, PII, retry, ownership e lifecycle de objeto testados |
-| E8-T4 | Migrar ClickUp e schedules | E4-T2, E5, sandbox | Assinatura, idempotência, rate limit, dead-letter e reconciliação |
+| E8-T4 | Definir gestor operacional próprio e schedules internos | E4-T2, E5, sandbox | Modelo de tarefas, ownership, idempotência, auditoria e reconciliação |
 | E8-T5 | Separar `google-meetings` em OAuth/list/sync/jobs | E1-T3, E2-T7, E7 | Refresh token nunca é exibido; `state`, sharing e callback testados |
 | E8-T6 | Migrar GHL/OAuth/webhooks/relay | E4-T2, E8-T4, sandbox | Tokens protegidos, compensação, replay e loop prevention |
 | E8-T7 | Eliminar chamadas internas `/functions/v1`, `functions.invoke` e referência ausente `fill-rei-from-transcript` | E8-T2–T6 | Grafo novo usa IAM/contratos; scan e traces sem endpoint Supabase |
@@ -205,8 +205,6 @@ E1, E2 e E3 podem avançar em paralelo conforme suas dependências específicas;
 | E9-T1 | Ensaiar mapping de usuário/membership e colisões sem presumir portabilidade de senha | E1-T3, E3-T6, staging | Counts por estado, amostra determinística e zero colisão inexplicada |
 | E9-T2 | Provar login, refresh, OTP, recovery, convite, disable, logout e sessão antiga | E9-T1 | Matriz positiva/negativa e rollback do emissor |
 | E9-T3 | Reimplementar `invite-member` e `delete-user` com auditoria/compensação | E9-T2 | Elevação, self-delete, cross-tenant e partial failure testados |
-| E9-T4 | Reimplementar `infinitepay-create-link` derivando valor/NSU/redirect server-side | E6 domínio propostas, sandbox | Caller não altera valor, moeda, merchant, owner ou redirect; checkout de sandbox reconciliado |
-| E9-T5 | Reimplementar webhook InfinitePay com ledger e efeitos assíncronos | E4-T2, E9-T4 | Assinatura oficial sobre raw body, consulta server-side ao provedor, conferência merchant/order/valor/moeda e gravação atômica de evento único + estado financeiro + outbox; replay/duplicata/reorder testados |
 | E9-T6 | Rehearsal de cutover Auth e pagamentos separado do banco | E9-T1–T5 | Zero divergência inexplicada, rollback e aceite de negócio/segurança |
 
 ## E10 — rehearsals integrados e prontidão de produção

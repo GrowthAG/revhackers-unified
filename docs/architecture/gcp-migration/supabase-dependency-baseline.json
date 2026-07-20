@@ -83,132 +83,90 @@
       "path": "supabase/config.toml",
       "count": 1,
       "line": 55,
-      "symbol": "infinitepay-create-link"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 61,
-      "symbol": "infinitepay-webhook"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 67,
       "symbol": "ghl-webhook-handoff"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 72,
+      "line": 60,
       "symbol": "autentique-webhook"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 78,
-      "symbol": "clickup-notetaker-sync"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 83,
-      "symbol": "clickup-orchestrator"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 89,
-      "symbol": "clickup-sprint-orchestrator"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 95,
-      "symbol": "clickup-provision"
-    },
-    {
-      "category": "config-section",
-      "path": "supabase/config.toml",
-      "count": 1,
-      "line": 102,
+      "line": 66,
       "symbol": "delete-user"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 106,
+      "line": 70,
       "symbol": "invite-member"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 111,
+      "line": 75,
       "symbol": "inspect-website"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 115,
+      "line": 79,
       "symbol": "scrape-profile"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 119,
+      "line": 83,
       "symbol": "analyze-site"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 123,
+      "line": 87,
       "symbol": "fetch-cnpj"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 128,
+      "line": 92,
       "symbol": "ghl-create-location"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 132,
+      "line": 96,
       "symbol": "ghl-oauth-callback"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 136,
+      "line": 100,
       "symbol": "ghl-oauth-refresh"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 140,
+      "line": 104,
       "symbol": "ghl-outbound-relay"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 144,
+      "line": 108,
       "symbol": "ghl-deploy-strategy"
     },
     {
@@ -252,48 +210,6 @@
       "count": 1,
       "line": 0,
       "symbol": "auto-enrich-project"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-notetaker-sync",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-notetaker-sync"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-orchestrator",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-orchestrator"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-provision",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-provision"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-sprint-orchestrator",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-sprint-orchestrator"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-sync",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-sync"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/clickup-update-docs-link",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-update-docs-link"
     },
     {
       "category": "deployable-function",
@@ -416,20 +332,6 @@
     },
     {
       "category": "deployable-function",
-      "path": "supabase/functions/infinitepay-create-link",
-      "count": 1,
-      "line": 0,
-      "symbol": "infinitepay-create-link"
-    },
-    {
-      "category": "deployable-function",
-      "path": "supabase/functions/infinitepay-webhook",
-      "count": 1,
-      "line": 0,
-      "symbol": "infinitepay-webhook"
-    },
-    {
-      "category": "deployable-function",
       "path": "supabase/functions/inspect-website",
       "count": 1,
       "line": 0,
@@ -502,14 +404,14 @@
       "category": "endpoint",
       "path": "docs/architecture/gcp-migration/08-edge-functions-mapping.md",
       "count": 1,
-      "line": 108,
+      "line": 100,
       "symbol": "/functions/v1"
     },
     {
       "category": "endpoint",
       "path": "docs/architecture/gcp-migration/09-migration-backlog.md",
       "count": 1,
-      "line": 176,
+      "line": 195,
       "symbol": "/functions/v1"
     },
     {
@@ -605,20 +507,6 @@
     },
     {
       "category": "endpoint",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 24,
-      "symbol": "/functions/v1"
-    },
-    {
-      "category": "endpoint",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 93,
-      "symbol": "/functions/v1"
-    },
-    {
-      "category": "endpoint",
       "path": "supabase/functions/generate-project-tasks/index.ts",
       "count": 1,
       "line": 158,
@@ -678,13 +566,6 @@
       "path": "supabase/functions/google-meetings/index.ts",
       "count": 1,
       "line": 60,
-      "symbol": "/functions/v1"
-    },
-    {
-      "category": "endpoint",
-      "path": "supabase/functions/infinitepay-create-link/index.ts",
-      "count": 1,
-      "line": 19,
       "symbol": "/functions/v1"
     },
     {
@@ -831,7 +712,7 @@
       "category": "environment-name",
       "path": "docs/architecture/gcp-migration/08-edge-functions-mapping.md",
       "count": 1,
-      "line": 107,
+      "line": 99,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
@@ -1127,41 +1008,6 @@
       "count": 1,
       "line": 4,
       "symbol": "VITE_SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 24,
-      "symbol": "SUPABASE_FUNCTION_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 91,
-      "symbol": "SUPABASE_FUNCTION_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 98,
-      "symbol": "SUPABASE_FUNCTION_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 104,
-      "symbol": "SUPABASE_FUNCTION_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 118,
-      "symbol": "SUPABASE_FUNCTION_URL"
     },
     {
       "category": "environment-name",
@@ -1470,195 +1316,6 @@
       "count": 1,
       "line": 146,
       "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 2,
-      "line": 28,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 30,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 30,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 182,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 182,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 2,
-      "line": 22,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 24,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 24,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 80,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 80,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 2,
-      "line": 31,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 33,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 33,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 126,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 126,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 2,
-      "line": 24,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 26,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 26,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 92,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 92,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 2,
-      "line": 28,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 30,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 30,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 115,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 115,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 11,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 12,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
@@ -2376,41 +2033,6 @@
     },
     {
       "category": "environment-name",
-      "path": "supabase/functions/infinitepay-create-link/index.ts",
-      "count": 1,
-      "line": 19,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 41,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 42,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 62,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 63,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
       "path": "supabase/functions/invite-member/index.ts",
       "count": 2,
       "line": 9,
@@ -2793,20 +2415,6 @@
       "count": 1,
       "line": 0,
       "symbol": "analyze-meeting-transcript"
-    },
-    {
-      "category": "function-without-config-section",
-      "path": "supabase/functions/clickup-sync",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-sync"
-    },
-    {
-      "category": "function-without-config-section",
-      "path": "supabase/functions/clickup-update-docs-link",
-      "count": 1,
-      "line": 0,
-      "symbol": "clickup-update-docs-link"
     },
     {
       "category": "function-without-config-section",
@@ -3296,13 +2904,6 @@
       "path": "src/components/admin/CaseForm.tsx",
       "count": 1,
       "line": 14,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "src/components/admin/ClickUpStatusWidget.tsx",
-      "count": 1,
-      "line": 2,
       "symbol": "supabase-import"
     },
     {
@@ -4042,90 +3643,6 @@
     },
     {
       "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 22,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 182,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 14,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 80,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 22,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 126,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 17,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 92,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 24,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 115,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 2,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 17,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
       "path": "supabase/functions/crux-benchmark/index.ts",
       "count": 1,
       "line": 3,
@@ -4346,27 +3863,6 @@
       "path": "supabase/functions/google-meetings/index.ts",
       "count": 1,
       "line": 12,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 2,
-      "symbol": "supabase-import"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 40,
-      "symbol": "createClient"
-    },
-    {
-      "category": "import-or-wrapper",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 61,
       "symbol": "createClient"
     },
     {
@@ -4606,6 +4102,34 @@
       "count": 1,
       "line": 367,
       "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/PLANO-MESTRE.md",
+      "count": 1,
+      "line": 191,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/PLANO-MESTRE.md",
+      "count": 1,
+      "line": 192,
+      "symbol": "rpc"
+    },
+    {
+      "category": "operation",
+      "path": "docs/PLANO-MESTRE.md",
+      "count": 1,
+      "line": 195,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "docs/PLANO-MESTRE.md",
+      "count": 1,
+      "line": 196,
+      "symbol": "rpc"
     },
     {
       "category": "operation",
@@ -5381,7 +4905,7 @@
       "category": "operation",
       "path": "src/api/reiProjects.ts",
       "count": 1,
-      "line": 84,
+      "line": 83,
       "symbol": "from"
     },
     {
@@ -5687,27 +5211,6 @@
     },
     {
       "category": "operation",
-      "path": "src/components/admin/ClickUpStatusWidget.tsx",
-      "count": 1,
-      "line": 34,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/components/admin/ClickUpStatusWidget.tsx",
-      "count": 1,
-      "line": 47,
-      "symbol": "channel"
-    },
-    {
-      "category": "operation",
-      "path": "src/components/admin/ClickUpStatusWidget.tsx",
-      "count": 1,
-      "line": 66,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
       "path": "src/components/admin/MaterialForm.tsx",
       "count": 1,
       "line": 122,
@@ -5731,14 +5234,7 @@
       "category": "operation",
       "path": "src/components/admin/MeetingIntelligenceTimeline.tsx",
       "count": 1,
-      "line": 598,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "src/components/admin/MeetingIntelligenceTimeline.tsx",
-      "count": 1,
-      "line": 631,
+      "line": 592,
       "symbol": "from"
     },
     {
@@ -5906,35 +5402,21 @@
       "category": "operation",
       "path": "src/components/admin/ProposalForm.tsx",
       "count": 1,
-      "line": 608,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "src/components/admin/ProposalForm.tsx",
-      "count": 1,
-      "line": 808,
+      "line": 762,
       "symbol": "functions.invoke"
     },
     {
       "category": "operation",
       "path": "src/components/admin/SuccessPlanTab.tsx",
       "count": 1,
-      "line": 30,
+      "line": 27,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "src/components/admin/SuccessPlanTab.tsx",
       "count": 1,
-      "line": 38,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/components/admin/SuccessPlanTab.tsx",
-      "count": 1,
-      "line": 71,
+      "line": 52,
       "symbol": "functions.invoke"
     },
     {
@@ -6466,21 +5948,14 @@
       "category": "operation",
       "path": "src/pages/admin/AdminIntegrations.tsx",
       "count": 1,
-      "line": 59,
+      "line": 50,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "src/pages/admin/AdminIntegrations.tsx",
       "count": 1,
-      "line": 79,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/admin/AdminIntegrations.tsx",
-      "count": 1,
-      "line": 95,
+      "line": 66,
       "symbol": "rpc"
     },
     {
@@ -6767,7 +6242,7 @@
       "category": "operation",
       "path": "src/pages/admin/ProjectDetails.tsx",
       "count": 1,
-      "line": 224,
+      "line": 223,
       "symbol": "from"
     },
     {
@@ -7264,71 +6739,29 @@
       "category": "operation",
       "path": "src/pages/public/PublicDealRoom.tsx",
       "count": 1,
-      "line": 154,
+      "line": 142,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "src/pages/public/PublicDealRoom.tsx",
+      "count": 1,
+      "line": 152,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "src/pages/public/PublicDealRoom.tsx",
+      "count": 1,
+      "line": 184,
       "symbol": "rpc"
     },
     {
       "category": "operation",
       "path": "src/pages/public/PublicDealRoom.tsx",
       "count": 1,
-      "line": 178,
+      "line": 333,
       "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 188,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 214,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 227,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 260,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 272,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 291,
-      "symbol": "rpc"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicDealRoom.tsx",
-      "count": 1,
-      "line": 440,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "src/pages/public/PublicKickoffValidation.tsx",
-      "count": 1,
-      "line": 175,
-      "symbol": "functions.invoke"
     },
     {
       "category": "operation",
@@ -7675,6 +7108,13 @@
     },
     {
       "category": "operation",
+      "path": "supabase/functions/_shared/ai-usage-log.ts",
+      "count": 1,
+      "line": 46,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
       "path": "supabase/functions/_shared/require-role.ts",
       "count": 1,
       "line": 81,
@@ -7850,335 +7290,6 @@
     },
     {
       "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 190,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 198,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 272,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 298,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 331,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-notetaker-sync/index.ts",
-      "count": 1,
-      "line": 339,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 95,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 112,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 125,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 134,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 183,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 204,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 225,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-orchestrator/index.ts",
-      "count": 1,
-      "line": 239,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 141,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 154,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 188,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 208,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 226,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 260,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 349,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 389,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 408,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 511,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-provision/index.ts",
-      "count": 1,
-      "line": 522,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 107,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 120,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 140,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 158,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 180,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 320,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 337,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 365,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sprint-orchestrator/index.ts",
-      "count": 1,
-      "line": 376,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 56,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 126,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 132,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 186,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 216,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 271,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 285,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 316,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 333,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-sync/index.ts",
-      "count": 1,
-      "line": 344,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 29,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 37,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/clickup-update-docs-link/index.ts",
-      "count": 1,
-      "line": 93,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
       "path": "supabase/functions/delete-user/index.ts",
       "count": 1,
       "line": 46,
@@ -8265,56 +7376,42 @@
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 150,
+      "line": 151,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 157,
+      "line": 162,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 171,
+      "line": 175,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 184,
+      "line": 182,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 191,
+      "line": 207,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-success-plan/index.ts",
       "count": 1,
-      "line": 217,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/generate-success-plan/index.ts",
-      "count": 1,
-      "line": 247,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/generate-success-plan/index.ts",
-      "count": 1,
-      "line": 493,
+      "line": 453,
       "symbol": "from"
     },
     {
@@ -8518,104 +7615,6 @@
       "path": "supabase/functions/google-meetings/index.ts",
       "count": 1,
       "line": 45,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 46,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 70,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 88,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 99,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 108,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 118,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 133,
-      "symbol": "rpc"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 143,
-      "symbol": "functions.invoke"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 163,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 175,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 182,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 188,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 211,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/infinitepay-webhook/index.ts",
-      "count": 1,
-      "line": 235,
       "symbol": "from"
     },
     {
@@ -9592,6 +8591,62 @@
       "symbol": "migration"
     },
     {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260717000000_secure_diagnosticos_public_access.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260717000001_secure_magic_links_public_access.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260717000002_create_ai_usage_log.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260718000000_secure_hub_public_access.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260718000001_secure_additional_public_findings.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260718000002_secure_strategic_plans_proposals.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260718000003_secure_client_meetings_reis.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260719000000_secure_storage_objects.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
       "category": "related-prerender",
       "path": "scripts/prerender.js",
       "count": 1,
@@ -9670,13 +8725,6 @@
     },
     {
       "category": "related-script",
-      "path": "scripts/register-clickup-webhook.js",
-      "count": 1,
-      "line": 0,
-      "symbol": "script"
-    },
-    {
-      "category": "related-script",
       "path": "scripts/seed_dashboard_v2.js",
       "count": 1,
       "line": 0,
@@ -9719,21 +8767,21 @@
     }
   ],
   "totals": {
-    "config-section": 30,
-    "deployable-function": 39,
-    "endpoint": 36,
-    "environment-name": 326,
-    "function-without-config-section": 10,
-    "import-or-wrapper": 233,
-    "operation": 622,
+    "config-section": 24,
+    "deployable-function": 31,
+    "endpoint": 33,
+    "environment-name": 284,
+    "function-without-config-section": 8,
+    "import-or-wrapper": 217,
+    "operation": 551,
     "orphan-config-section": 1,
-    "related-migration": 106,
+    "related-migration": 114,
     "related-prerender": 1,
-    "related-script": 16,
+    "related-script": 15,
     "related-workflow": 1,
-    "entries": 1388,
-    "trackedFiles": 1123,
-    "deployableFunctions": 39,
-    "configFunctionSections": 30
+    "entries": 1252,
+    "trackedFiles": 1135,
+    "deployableFunctions": 31,
+    "configFunctionSections": 24
   }
 }
