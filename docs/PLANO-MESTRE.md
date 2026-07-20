@@ -1,4 +1,4 @@
-# Plano mestre — GrowthHub / RevHackers
+# Plano mestre — RevHackers + benchmark GrowthHub
 
 Documento vivo de consolidação. Não duplica o conteúdo dos documentos detalhados,
 referencia-os. Atualizar o status aqui sempre que uma frente avançar.
@@ -24,8 +24,8 @@ de substituto testado, incremental, navegador nunca acessa Cloud SQL direto.
 
 | Épico | Objetivo | Status |
 |---|---|---|
-| E0 | Governança, baseline, decisões bloqueantes | **Em andamento.** E0-T1 (congelar baseline) feito no commit `5acc0ed`, reconciliado até `ecb281f`. Script de auditoria metadata-only (E0-T1/E0-T6 parcial) feito, testado, rodou limpo hoje. E0-T2 (RACI/owners), E0-T3 (prazo/critério de sucesso), E0-T4 (RTO/RPO/LGPD), E0-T5 (custo real) e E0-T6 (inventário do ambiente remoto) **pendentes — bloqueados em você**. E0-T7 (credencial JWT literal no histórico) virou achado P0 da Segurança, ver Frente 3. |
-| E1 | Tenant, autorização, identidade, contratos | Pendente. Depende de E0-T4/E0-T6. |
+| E0 | Governança, baseline, decisões bloqueantes | **Em andamento.** E0-T1, E0-T2 e o inventário técnico de E0-T6 estão documentados; E0-T3 está parcialmente definido como “o quanto antes”. Permanecem pendentes E0-T4 (RTO/RPO/LGPD), E0-T5 (custo real), a reconciliação formal do drift de migrations e E0-T7 (rotação da credencial histórica). |
+| E1 | Tenant, autorização, identidade, contratos | **Em desenho.** O inventário e a proposta de tenant estão documentados; faltam aprovação do modelo `clients.id`, decisão login-vs-link para clientes e matriz de papéis. |
 | E2 | Topologia, IAM, rede, CI/CD, DNS, custo | Pendente. Depende de E0-T2. |
 | E3 | Schema/dados | Pendente. |
 | E4 | Fundação local da API | Pendente, mas não espera provisioning cloud — pode começar em paralelo com E1/E3. |
@@ -36,12 +36,13 @@ de substituto testado, incremental, navegador nunca acessa Cloud SQL direto.
 ### Trabalho recente fora do backlog formal (achado hoje)
 
 - Deploy antigo via FTP/Hostinger **desativado explicitamente** (`.agent/workflows/deploy_hostinger.md` virou bloqueio documentado) e substituído por gate local (`scripts/validate-deploy-artifact.mjs` + testes) em preparação para o pipeline GCP.
-- 12 commits em `main` ainda não têm `git push` para `origin`.
+- 17 commits em `main` ainda não têm `git push` para `origin`; o push não dispara deploy automático, mas deve ocorrer depois da revisão de segredos e do CI.
 
 ### Próxima ação real (não bloqueada em você)
 
-Nenhuma — o próximo passo do README (executar auditoria, revisar diff, decidir domínio piloto)
-já foi cumprido na parte técnica. O que falta agora é você decidir:
+Preparar a fundação local da migração (E4): contratos de tenant, identidade e autorização
+com dados sintéticos, sem provisionar GCP e sem alterar o runtime Supabase. O push para
+`origin/main` fica como etapa de sincronização após a revisão de segredos.
 
 1. Owner técnico/segurança/negócio/dados (E0-T2).
 2. Prazo e critério de sucesso (E0-T3).
@@ -81,7 +82,7 @@ usado na tarefa. Isso ainda não existe como sistema — existe só um fallback 
 | R3 | Extrair um client único `supabase/functions/_shared/ai-router.ts`: recebe `{ task_type, quality_requirement }`, decide provider/modelo com base em orçamento restante (de R2) e custo por 1k tokens, não em ordem fixa de fallback | R1, R2 |
 | R4 | Migrar `generate-strategic-plan` e `agent-chat` para consumir o client único, removendo a lógica duplicada e o hardcode de provider único | R3 |
 | R5 | Definir política explícita de degradação: quando o orçamento de um provider acabar, o sistema troca de modelo automaticamente ou pausa a feature e avisa? Isso é decisão sua, não técnica | R2 |
-| R6 | Dashboard/alerta simples de consumo por provider (pode reaproveitar `v_clickup_provisioning_status` como padrão de view + widget admin) | R1 |
+| R6 | Dashboard/alerta simples de consumo por provider (usar uma view própria do GrowthHub; não depender de `v_clickup_provisioning_status`) | R1 |
 
 ### Quem é dono disso no organograma já existente
 
@@ -391,7 +392,7 @@ leitura pós-aplicação em cada uma:**
 | 3 | `20260717000001_secure_magic_links_public_access.sql` | `orqflow_magic_links`, `orqflow_tasks` | P0-02, com a 4ª policy encontrada só na inspeção ao vivo |
 | 4 | `20260718000000_secure_hub_public_access.sql` | `rei_projects`, `rei_responses`, `knowledge_libraries`, `orqflow_sprints`/`tasks` | **O mais grave**: SELECT/INSERT/UPDATE anônimo irrestrito na tabela central de projeto de cliente |
 | 5 | `20260718000001_secure_additional_public_findings.sql` | `project_sprints`/`project_tasks` (legado morto), `rei_materials` (página órfã), `cases` (DELETE solto), `organizations` (MRR exposto), `document_signatures` (assinatura forjável) | 5 achados adicionais |
-| 6 | `20260718000002_secure_strategic_plans_proposals.sql` | `strategic_plans`, `proposals` | A frente de maior superfície (~20 arquivos, webhook InfinitePay) |
+| 6 | `20260718000002_secure_strategic_plans_proposals.sql` | `strategic_plans`, `proposals` | A frente de maior superfície (~20 arquivos; o fluxo de pagamento foi posteriormente removido) |
 | 7 | `20260718000003_secure_client_meetings_reis.sql` | `client_meetings`, `reis` | Notas de reunião e gravação de vídeo expostas |
 
 **Erro real corrigido durante a aplicação:** a migration 4 originalmente
@@ -447,3 +448,80 @@ prazo (E0-T3), RTO/RPO/LGPD (E0-T4), modelo de tenant e decisão
 login-vs-link para clientes (E1-T1/T3), limite de gasto por provider de IA
 (R5), rotação da credencial do P0-01. Nenhuma delas tem mais bloqueio
 técnico esperando - são decisões de negócio puras.
+
+## Checkpoint — 2026-07-20: desativação de 11 edge functions órfãs (ClickUp/InfinitePay/Fathom)
+
+Sessão nova. Uma sessão anterior (Claude/Codex) já tinha removido do código
+local (53 arquivos, ainda não commitados nesta sessão, working tree
+preservado por instrução explícita de Giulliano) todo caller de ClickUp,
+InfinitePay e Fathom, e documentou a decisão em
+`docs/architecture/gcp-migration/13-integration-inventory.md`. Essa remoção
+era só local — auditoria confirmou (`list_edge_functions`) que as 11
+functions correspondentes continuavam `ACTIVE` em produção, sem nenhum
+caller, incluindo `infinitepay-webhook` e `infinitepay-create-link` com
+`verify_jwt: false` (endpoints públicos de pagamento).
+
+**Verificação antes de agir (somente leitura):**
+- `grep` em `src/`/`supabase/functions/`: zero referência ativa a
+  clickup/infinitepay/fathom fora de `types.ts` (schema gerado) e 2 URLs de
+  conteúdo estático do ClickUp Docs (não é chamada de API).
+- `get_logs(edge-function)`: zero invocações de qualquer edge function nas
+  últimas 24h.
+- `cron.job`: vazio.
+- `clickup_config.webhook_secret` existe (configurado em 2026-04-15) — pode
+  haver um webhook ainda registrado do lado do ClickUp apontando para
+  `clickup-sync`; não verificável sem acesso ao painel deles. Registrado
+  como risco residual, sem impacto de execução após a desativação.
+
+**Ação:** para cada uma das 11 functions, código-fonte original foi salvo em
+`docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/`
+(um `.ts` por function + manifesto com a tabela de risco por function), e a
+function foi redeployada com um stub que responde `410 Gone` a qualquer
+requisição, preservando o `verify_jwt` original de cada uma. Nenhuma
+migration, tabela, coluna ou dado histórico foi tocado. Testado ao vivo via
+`curl` após o deploy: `infinitepay-webhook`, `fathom-webhook` e
+`clickup-orchestrator` confirmados retornando `410`.
+
+**Functions desativadas:** `infinitepay-webhook`, `infinitepay-create-link`,
+`infinitepay-checkout`, `fathom-webhook`, `fathom-sync`,
+`clickup-orchestrator`, `clickup-sprint-orchestrator`, `clickup-provision`,
+`clickup-sync`, `clickup-update-docs-link`, `clickup-notetaker-sync`.
+
+**Reversível:** redeploy do arquivo original salvo no backup, via
+`deploy_edge_function`, a qualquer momento.
+
+**Não feito nesta ação (fora do escopo, por instrução explícita):** `git
+push`, deploy/migration no GCP, qualquer alteração destrutiva em dados ou
+migrations do Supabase.
+
+## Checkpoint — 2026-07-20: due diligence The Growth Hub, primeira observação real
+
+Mesma sessão, depois da desativação de functions órfãs. Escrito
+`docs/product/m-and-a-due-diligence.md` cobrindo as 12 seções pedidas.
+Antes de qualquer commit, rodei varredura de segredos em
+`_disabled-functions-backup-2026-07-20/` (grep por padrões de JWT/API
+key/token/senha em todos os arquivos + verificação nominal de cada env var
+sensível referenciada no código) — **limpo, nenhum segredo literal
+versionado**, todas as referências são via `Deno.env.get(...)`.
+
+Giulliano confirmou a distinção de escopo: `GrowthAG/revhackers-growth-hub`
+é repositório interno RevHackers, **fora do escopo da diligência**; o alvo
+real é `thegrowthhub.com.br`. Com autorização explícita, acessei a
+interface pública e o dashboard autenticado (sessão já logada como
+"Giulliano Alves", não criada nem contornada por mim) e documentei achados
+reais: estrutura de navegação do produto, catálogo de 35 frameworks
+estratégicos nomeados por pilar (Inteligência Estratégica, Concepção de
+Valor, MVP e Validação Ágil, Escalabilidade), e uma tela de exemplo
+("Industry Insights") gerada para um perfil de empresa terceiro ("Funnels")
+já carregado na conta. Não interagi com nenhum botão de ação/geração
+(havia uma geração de IA ativa em andamento na conta durante o acesso) e
+não abri "SquadMatch"/"ExecutionLoop" nem inspecionei rede/backend —
+permanece lacuna documentada para uma segunda rodada.
+
+Achado que muda o enquadramento da diligência: a conta autenticada já
+pertence a Giulliano/RevHackers — ou seja, já existe alguma relação de uso
+prévia com o The Growth Hub, não é acesso concedido especificamente para
+esta diligência. Isso ficou registrado como pergunta prioritária (seção 10,
+item 18) porque muda quem está diligenciando quem.
+
+**Não feito:** `git push`, deploy GCP, qualquer alteração remota adicional.
