@@ -1,14 +1,16 @@
 # Inventário GCP — estado observado em 2026-07-20
 
-Consulta somente leitura realizada com `giulliano@usefunnels.io` após renovação da autenticação.
-Nenhum projeto, API, recurso, billing ou IAM foi criado ou alterado nesta rodada.
+Consulta iniciada em modo somente leitura com `giulliano@usefunnels.io` após renovação da
+autenticação. Em seguida, com autorização para iniciar a fundação reversível, foram
+habilitadas apenas as APIs de Cloud Run, Artifact Registry, Secret Manager e Cloud Build.
+Nenhum recurso de runtime, dado, secret, DNS ou IAM foi criado ou alterado.
 
 ## Projetos encontrados
 
 | Projeto | Identificação observada | Recursos observados | Decisão |
 |---|---|---|---|
 | `juriai-app` | JuriAI | Cloud Run, Cloud SQL `juriai-db`, buckets de staging | Não reutilizar; produto separado |
-| `revhackers-staging` | RevHackers Staging | Projeto recém-criado; billing vinculado; nenhum runtime provisionado | Primeiro ambiente dedicado |
+| `revhackers-staging` | RevHackers Staging | Billing vinculado; APIs fundacionais habilitadas; nenhum runtime provisionado | Primeiro ambiente dedicado |
 | `revhackers-workspace-admin` | Administração Google Workspace | APIs administrativas, Storage/BigQuery; Cloud Run não habilitado | Não é runtime RevHackers |
 | `winged-verbena-497317-u0` | Funnels AI Lab | APIs de IA, Sheets, Drive e observabilidade | Não reutilizar sem decisão explícita |
 | `effective-hawk-69nlt` | Sem nome visível | Nenhuma finalidade confirmada | Não usar |
@@ -21,21 +23,21 @@ Nenhum projeto, API, recurso, billing ou IAM foi criado ou alterado nesta rodada
 No início da consulta não havia projeto dedicado. Durante esta rodada, foi criado
 `revhackers-staging` na organização `usefunnels.io` e vinculado à conta de billing
 `billingAccounts/016669-43980-E06832`, já usada pelo Funnels AI Lab. O projeto está
-ativo, mas ainda não possui Cloud Run, Cloud SQL, buckets, secrets ou deploys.
+ativo e possui as APIs fundacionais habilitadas, mas ainda não possui Cloud Run, Cloud SQL,
+buckets, secrets ou deploys.
 
 Ainda não existe `revhackers-prod`.
 
-A consulta de billing não pôde ser concluída porque a Cloud Billing API está desabilitada
-e habilitá-la seria uma alteração remota não autorizada. Nenhuma API foi habilitada para
-resolver essa limitação.
+A consulta de billing não pôde ser concluída pelo CLI nesta sessão; o vínculo já está
+registrado no checkpoint anterior. A Cloud Billing API não foi habilitada adicionalmente.
 
 ## Próximo gate humano
 
 Antes de criar qualquer recurso, Giulliano precisa aprovar:
 
-1. criação ou escolha do projeto GCP dedicado da RevHackers;
-2. conta de billing autorizada;
-3. separação `staging`/`prod`;
+1. confirmar `revhackers-staging` como alvo autorizado;
+2. definir e criar `revhackers-prod` separadamente;
+3. separar `staging`/`prod`;
 4. região principal;
 5. orçamento mensal e alertas;
 6. IAM inicial e responsáveis por aprovação.
