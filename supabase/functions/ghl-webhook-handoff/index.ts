@@ -37,6 +37,10 @@ serve(async (req: Request) => {
     // @ts-ignore
     const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
+    // S-08: e-mail canônico do analista padrão. Usar sempre .com.br.
+    // Para multi-tenant real, ler de organizations.default_analyst_email.
+    const DEFAULT_ANALYST_EMAIL = Deno.env.get('DEFAULT_ANALYST_EMAIL') || 'giulliano@revhackers.com.br'
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
         auth: { autoRefreshToken: false, persistSession: false }
     })
@@ -260,7 +264,7 @@ serve(async (req: Request) => {
                     source: 'ghl',
                     pipeline_stage: 'lead_qualified',
                     lead_source: 'ghl_calendar',
-                    analyst_email: 'giulliano@revhackers.com.br',
+                    analyst_email: DEFAULT_ANALYST_EMAIL,
                     organization_id: organizationId,
                     mrr: mrr,
                     tcv: tcv,
@@ -341,7 +345,7 @@ serve(async (req: Request) => {
                         source: 'ghl',
                         pipeline_stage: 'won',
                         lead_source: 'ghl_calendar',
-                        analyst_email: 'giulliano@revhackers.com.br',
+                        analyst_email: DEFAULT_ANALYST_EMAIL,
                         organization_id: organizationId,
                         mrr: mrr,
                         tcv: tcv,
@@ -358,7 +362,7 @@ serve(async (req: Request) => {
                     // Converter atomicamente em projeto (v2: idempotente + sprints)
                     const { data: convResult, error: rpcErr } = await supabase.rpc('convert_opportunity_to_project_v2', {
                         p_opportunity_id: newOpp.id,
-                        p_analyst_email: 'giulliano@revhackers.com',
+                        p_analyst_email: DEFAULT_ANALYST_EMAIL,
                         p_idempotency_key: idempotencyKey,
                         p_mrr: mrr,
                         p_tcv: tcv,
@@ -461,7 +465,7 @@ serve(async (req: Request) => {
             try {
                 const { data: result, error: rpcError } = await supabase.rpc('convert_opportunity_to_project_v2', {
                     p_opportunity_id: opp.id,
-                    p_analyst_email: 'giulliano@revhackers.com',
+                    p_analyst_email: DEFAULT_ANALYST_EMAIL,
                     p_idempotency_key: idempotencyKey,
                     p_mrr: mrr,
                     p_tcv: tcv,

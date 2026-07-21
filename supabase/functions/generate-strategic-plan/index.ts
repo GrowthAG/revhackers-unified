@@ -47,6 +47,35 @@ serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // ── AUTH PRIMEIRO: rejeita antes de parsear o body (S-05) ──────────────────
+  // Validar o JWT antes de req.json() impede DoS via payloads gigantes
+  // enviados por não-autenticados (planos estratégicos podem ter MBs de contexto).
+  // @ts-ignore
+  const SUPABASE_URL_EARLY = Deno.env.get('SUPABASE_URL') ?? '';
+  // @ts-ignore
+  const SUPABASE_SERVICE_KEY_EARLY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+  const authHeaderEarly = req.headers.get('Authorization');
+  if (!authHeaderEarly?.startsWith('Bearer ')) {
+    return new Response(JSON.stringify({ error: 'Acesso Negado: Authorization header ausente.' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (SUPABASE_URL_EARLY && SUPABASE_SERVICE_KEY_EARLY) {
+    const supabaseEarly = createClient(SUPABASE_URL_EARLY, SUPABASE_SERVICE_KEY_EARLY);
+    const tokenEarly = authHeaderEarly.replace('Bearer ', '').trim();
+    const { data: { user: userEarly }, error: authEarlyErr } = await supabaseEarly.auth.getUser(tokenEarly);
+    if (authEarlyErr || !userEarly) {
+      return new Response(JSON.stringify({ error: 'Acesso Negado: Token inválido ou expirado.' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+  // ── FIM AUTH ANTECIPADO ────────────────────────────────────────────────────
+
   let jobId: string | undefined;
 
   try {
@@ -71,10 +100,8 @@ serve(async (req: Request) => {
       throw new Error('API keys are not configured on the server. At least one AI provider (OpenAI or Anthropic) is required.');
     }
 
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-        throw new Error("Acesso Negado: Cabeçalho de autorização (JWT) ausente.");
-    }
+    // authHeader já validado acima; reutiliza para getUser final (com supabaseAdmin completo)
+    const authHeader = authHeaderEarly;
 
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
     const token = authHeader.replace('Bearer ', '').trim();
@@ -82,6 +109,24 @@ serve(async (req: Request) => {
 
     if (authError || !user) {
         throw new Error("Acesso Negado: Token inválido ou expirado. " + (authError?.message || ''));
+    }
+
+    // S-07: Rate-limit por usuário — impede chamadas ilimitadas à API de IA
+    // Limite configurado em ai_rate_limit_config: padrão 5 chamadas/hora por usuário.
+    const { data: rateLimitOk, error: rlErr } = await supabaseAdmin.rpc(
+      'check_and_increment_ai_rate_limit',
+      { p_user_id: user.id, p_edge_function: 'generate-strategic-plan' }
+    );
+    if (rlErr) {
+      console.warn('[generate-strategic-plan] Rate limit check error (não bloqueante):', rlErr.message);
+    } else if (rateLimitOk === false) {
+      return new Response(JSON.stringify({
+        error: 'Limite de geração atingido. Máximo de 5 planos por hora por usuário. Tente novamente em breve.',
+        code: 'RATE_LIMIT_EXCEEDED',
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '3600' },
+      });
     }
 
     console.log('[generate-strategic-plan] Initiating generation for segment:', segment);
