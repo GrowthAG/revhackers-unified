@@ -1,12 +1,5 @@
 project_id = "eqspbruarsdybpfeijnf"
 
-# P-02: import_map global pina @supabase/supabase-js e outras dependencias
-# em versoes fixas, evitando inconsistencias entre Edge Functions.
-# Ver: supabase/functions/import_map.json
-[functions]
-import_map = "./functions/import_map.json"
-
-
 # ==============================================================================
 # EDGE FUNCTIONS — Configuração Explícita de Produção
 # ==============================================================================

@@ -344,8 +344,8 @@ CREATE POLICY "client_meetings_scoped_select"
 ON public.client_meetings FOR SELECT
 TO authenticated
 USING (
-    -- Analista responsável pela reunião vê seus registros
-    analyst_email = auth.email()
+    -- Organizador da reunião vê seus registros (coluna real: organizer_email)
+    organizer_email = auth.email()
     OR
     -- Admins e super_admins têm visão completa
     EXISTS (

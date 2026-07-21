@@ -195,7 +195,7 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.convert_opportunity_to_project_v2(UUID, TEXT, TEXT, NUMERIC, NUMERIC, INT) TO service_role;
 
-COMMENT ON FUNCTION public.convert_opportunity_to_project_v2 IS
+COMMENT ON FUNCTION public.convert_opportunity_to_project_v2(UUID, TEXT, TEXT, NUMERIC, NUMERIC, INT) IS
     'A-01: idempotency_key agora TEXT (nao UUID) para aceitar hashes SHA-256 hex sem restricao de formato UUID.';
 
 
