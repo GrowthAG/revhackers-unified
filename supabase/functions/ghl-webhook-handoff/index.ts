@@ -64,6 +64,26 @@ serve(async (req: Request) => {
         })
     }
 
+    // S-09: Proteção básica contra replay attack via janela de tempo.
+    // GHL não envia assinatura HMAC; o melhor disponível é o header de timestamp.
+    // Rejeita webhooks com mais de 5 minutos de atraso para limitar o impacto
+    // de um replay de payload interceptado. Aceita ausência de header para não
+    // quebrar integrações antigas — mas loga o aviso.
+    const tsHeader = req.headers.get('x-ghl-timestamp') || req.headers.get('x-timestamp') || ''
+    if (tsHeader) {
+        const tsMs = Number(tsHeader) * (tsHeader.length <= 10 ? 1000 : 1) // suporta seconds e ms
+        const ageSeconds = (Date.now() - tsMs) / 1000
+        if (ageSeconds > 300) { // 5 minutos
+            console.error(`[ghl-handoff] Rejected: webhook timestamp expired (age=${Math.round(ageSeconds)}s)`)
+            return new Response(JSON.stringify({ error: 'Webhook timestamp expired' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+    } else {
+        console.warn('[ghl-handoff] x-ghl-timestamp header ausente — sem proteção de replay para este evento')
+    }
+
     try {
         const payload = await req.json()
 
