@@ -86,7 +86,16 @@ export interface ApiServer {
   shutdown(): Promise<void>;
 }
 
-export function createApiServer(config: ApiConfig, logger: StructuredLogger = consoleLogger): ApiServer {
+export interface ApiServerDependencies {
+  readiness?: () => Promise<{ ready: boolean; reason?: string }>;
+  close?: () => Promise<void>;
+}
+
+export function createApiServer(
+  config: ApiConfig,
+  logger: StructuredLogger = consoleLogger,
+  dependencies: ApiServerDependencies = {},
+): ApiServer {
   let ready = true;
   let shuttingDown = false;
 
@@ -96,10 +105,10 @@ export function createApiServer(config: ApiConfig, logger: StructuredLogger = co
     version: config.version,
     allowedOrigins: config.allowedOrigins,
     logger,
-    readiness: async () => ({
-      ready: ready && !shuttingDown,
-      ...(!ready || shuttingDown ? { reason: 'shutting_down' } : {}),
-    }),
+    readiness: async () => {
+      if (!ready || shuttingDown) return { ready: false, reason: 'shutting_down' };
+      return dependencies.readiness ? dependencies.readiness() : { ready: true };
+    },
   });
 
   const server = createServer(async (req, res) => {
@@ -131,6 +140,7 @@ export function createApiServer(config: ApiConfig, logger: StructuredLogger = co
       });
       server.closeIdleConnections?.();
     });
+    await dependencies.close?.();
   }
 
   return { server, shutdown };

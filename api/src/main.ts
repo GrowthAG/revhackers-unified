@@ -1,9 +1,22 @@
 import { loadConfig } from './config';
+import { loadDatabaseConfig } from './db/config';
+import { checkPostgresReady, createPostgresResources } from './db/postgres';
 import { createApiServer } from './server';
 
 async function main(): Promise<void> {
   const config = loadConfig();
-  const api = createApiServer(config);
+  const databaseConfig = loadDatabaseConfig();
+  const postgres = await createPostgresResources(databaseConfig);
+  const api = createApiServer(config, undefined, {
+    readiness: async () => {
+      try {
+        return { ready: await checkPostgresReady(postgres.pool) };
+      } catch {
+        return { ready: false, reason: 'postgres_unavailable' };
+      }
+    },
+    close: () => postgres.close(),
+  });
 
   api.server.listen(config.port, '0.0.0.0', () => {
     console.log(JSON.stringify({
