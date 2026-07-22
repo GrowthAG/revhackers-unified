@@ -1,94 +1,232 @@
-# Plano de hoje — colocar o RevHackers no ar (2026-07-22)
+# Plano executivo — RevHackers 100% Google Cloud
 
-> Objetivo do dia: publicar o que já está construído, com segurança, no caminho
-> mais rápido — sem esperar a migração GCP (que é semanas e está bloqueada em
-> decisões). Estratégia: **Supabase continua sendo o backend; publicamos o
-> frontend num host estático e aplicamos as migrations/functions pendentes.**
+**Data:** 2026-07-22
+**Objetivo final, sem alternativa:** remover o Supabase do runtime e colocar o
+RevHackers integralmente no Google Cloud, com segurança, paridade funcional,
+UX/UI validada, rollback e observabilidade.
 
----
-
-## 1. Mapa da realidade (verificado no código, não em memória)
-
-### ✅ Feito e validado localmente
-- **GrowthMap** completo: 15 frameworks, edge function, tabela, rota `/growthmap/:projectId`, REI ligado (dados reais alimentam a geração). tsc limpo, 41/41 testes.
-- **Segurança P0-02 / P0-03** implementadas e **aplicadas em produção** (checkpoint 2026-07-18).
-- **Deep-review** (2 batches): S-04..S-11, A-01/A-02, M-01/M-02, P-01/P-02 corrigidos e commitados.
-- **Frente 2 IA:** R1 (log de uso) + R2 (orçamento por provider) prontos.
-- **Build de produção OK:** `vite build` passa, artefato valida (456 arquivos, hash conferido), varredura de segredos limpa nos 10 commits.
-
-### ⚠️ Feito no código, MAS não está em produção
-- Migrations `20260722000000_growthmap_results` e `20260722000001_ai_budget_config` — **não aplicadas** (sem elas, GrowthMap quebra ao salvar).
-- Edge function `generate-growthmap` — **não deployada**.
-- **10 commits locais** não enviados (`git push` pendente).
-- Migrations de segurança `20260721000000/1/2` — **confirmar** se já foram aplicadas (commit "apply migrations to production" sugere que sim, mas precisa verificação remota).
-
-### ❌ Dito que faríamos e ainda NÃO fizemos
-- **Migração GCP (Frente 1):** E0–E12 quase toda pendente. **Decisão consciente:** não é o caminho pra "no ar hoje". Fica como trilha longa.
-- **Frente 2 IA:** R3 (roteador por custo), R4 (migrar callers), R6 (dashboard) pendentes. R5 (política de degradação) bloqueada em você.
-- **Segurança P1/P2:** P1-01 (isolamento por tenant), P1-02..P1-06, P2-01..P2-04 — pendentes.
-- **P0-01:** rotacionar credencial JWT/bearer no histórico do git — **bloqueada em você** (ação externa).
-- **Deploy pipeline:** o antigo (Hostinger/FTP) foi desligado; **não há host de publicação ativo hoje** → precisa decidir.
+> Correção de direção: a versão anterior deste documento sugeria publicar o
+> frontend em Vercel e manter Supabase como solução. Isso contradizia o objetivo
+> aprovado. Vercel/Hostinger não são destino. O Supabase só permanece como
+> runtime temporário durante a migração incremental e será desligado depois dos
+> gates de paridade, reconciliação e rollback.
 
 ---
 
-## 2. Estratégia (prazo + usabilidade + UX/UI)
+## 1. Estado real hoje
 
-**Princípio:** entregar valor visível hoje, sem retrabalho. Não abrir a frente GCP.
+### GCP já existente
 
-1. **Host estático rápido para o frontend.** Recomendação: **Vercel** — `@vercel/analytics` já está instalado, deploy em minutos, preview por PR, HTTPS/CDN automáticos, rollback trivial. Alternativas: Cloudflare Pages / Netlify. (Hostinger atual é FTP manual e foi desligado — não recomendo voltar.)
-2. **Backend fica no Supabase** (já em produção). Só aplicamos as migrations/functions que faltam.
-3. **UX/UI:** o polish do dia foca na feature nova e client-facing — **GrowthMap** (estados de loading/erro/vazio, responsividade mobile, consistência com o design system) — mais um smoke-test das rotas críticas (home, login, hub do cliente, plano estratégico).
+- Projeto `revhackers-staging` na organização `usefunnels.io`, billing vinculado.
+- Região de trabalho atual: `southamerica-east1`.
+- APIs habilitadas: Cloud Run, Artifact Registry, Secret Manager e Cloud Build.
+- Artifact Registry `revhackers-staging` criado.
+- Cloud Run privado `revhackers-staging-smoke` validou a fundação sintética.
+- Não há dado real, secret, Cloud SQL, bucket da aplicação ou DNS no projeto.
+- Não existe `revhackers-prod`.
+
+### Aplicação atual
+
+- Frontend React/Vite fala diretamente com Supabase: aproximadamente 344
+  chamadas `.from`, além de RPC, Storage, Realtime e Edge Functions.
+- 61+ tabelas, 32 Edge Functions versionadas, 7 buckets e 6 usos Realtime.
+- Enquanto o browser falar direto com Supabase, Cloud SQL não pode substituí-lo.
+- O deploy Hostinger/FTP foi desativado. O workflow atual só valida artefato.
+
+### Migração: feito x faltando
+
+**Feito:** inventário, arquitetura alvo, projeto staging, smoke Cloud Run,
+segurança P0-02/P0-03, baseline Supabase, remoção ClickUp/InfinitePay/Fathom,
+GrowthMap, R1/R2 de IA.
+
+**Iniciado hoje (E4/Fase C):** núcleo de API provider-agnostic com contratos
+TypeScript/OpenAPI, identidade abstrata, autorização tenant-scoped, links de
+capacidade, correlation id, redação, idempotência e matriz cross-tenant.
+
+**Falta:** API HTTP real, adapter inicial Supabase, Cloud SQL staging, migração
+de schema/dados, Identity Platform, GCS, substituição das chamadas do frontend,
+port das Edge Functions, Realtime/jobs, projeto prod, frontend hosting GCP,
+DNS/cutover e decommission Supabase.
 
 ---
 
-## 3. Prioridades
+## 2. Arquitetura final (100% GCP)
 
-| Nível | Item | Por quê |
+```text
+Browser React/Vite
+       |
+       | HTTPS + token (sem acesso a banco)
+       v
+Frontend hosting GCP + borda/CDN
+       |
+       v
+Cloud Run API
+  - Auth/Identity Platform
+  - tenant + RBAC + capability links
+  - idempotência + auditoria + rate limit
+       |
+       +--> Cloud SQL PostgreSQL
+       +--> Cloud Storage (URLs assinadas)
+       +--> Cloud Tasks / Pub/Sub / Scheduler
+       +--> Secret Manager
+       +--> Cloud Logging / Monitoring / Trace
+```
+
+O primeiro estágio da API pode usar Supabase por trás como adapter. Isso não é
+voltar atrás: é a etapa strangler que retira o Supabase do navegador e cria o
+contrato que depois troca para Cloud SQL sem mudar a UI.
+
+---
+
+## 3. Ordem mais eficaz até produção
+
+### Fase 0 — Higiene e fonte única (P0)
+
+1. Rotacionar credenciais históricas P0-01 (ação humana externa).
+2. Push dos commits locais após scan de segredos e CI verde.
+3. Confirmar migrations/edge functions aplicadas no runtime atual para ter uma
+   baseline estável durante a migração.
+
+### Fase 1 — Fundação da API Cloud Run (E4) — **EM EXECUÇÃO**
+
+1. Contratos TypeScript/OpenAPI.
+2. Verifier de identidade provider-agnostic.
+3. Motor de autorização com tenant, membership e capability links.
+4. Matriz negativa com dois tenants e papéis owner/admin/operator/client-link.
+5. Idempotência, correlation id, erros e redação.
+6. Runtime HTTP, health/readiness, logging e container Cloud Run.
+7. Adapter inicial que usa Supabase somente server-side.
+
+**Gate:** strict TypeScript, testes cross-tenant, nenhum segredo, container local.
+
+### Fase 2 — Piloto GrowthMap na API
+
+GrowthMap é o melhor piloto porque já tem um `src/api/growthmap.ts` com adapter
+substituível e domínio pequeno/controlado.
+
+1. Portar `load/save` para endpoints da nova API.
+2. Cloud Run API usa Supabase como backend temporário.
+3. Frontend alterna Supabase/API por feature flag de ambiente.
+4. Shadow read + reconciliação; escrita autoritativa em um lado só.
+5. Portar geração de IA depois de load/save estabilizados.
+6. Rollback: flag volta ao adapter Supabase.
+
+**Gate:** zero vazamento cross-tenant, resposta equivalente, erro/latência
+medidos, rollback exercitado.
+
+### Fase 3 — Cloud SQL staging
+
+1. Medir tamanho, extensões, conexões, IOPS e queries reais do Supabase.
+2. Escolher tier/HA/backup a partir dos dados — sem inventar sizing.
+3. Criar Cloud SQL PostgreSQL em staging com IAM/rede/papéis mínimos.
+4. Aplicar schema reconciliado e fixtures 100% sintéticas.
+5. Validar extensões, constraints, índices, RLS/contexto transacional e pool.
+6. GrowthMap passa do adapter Supabase para Cloud SQL sem alterar frontend.
+
+### Fase 4 — Migração por ondas
+
+1. **Onda A:** GrowthMap + conteúdo de baixo risco.
+2. **Onda B:** REI/projetos/planos/propostas.
+3. **Onda C:** arquivos → Cloud Storage + URLs assinadas.
+4. **Onda D:** Edge Functions → Cloud Run/Tasks/PubSub/Scheduler.
+5. **Onda E:** Realtime → polling/SSE/WebSocket conforme necessidade real.
+6. **Onda F:** Auth Supabase → Identity Platform e mapeamento issuer+subject.
+
+Cada domínio passa por contrato → API/Supabase → API/Cloud SQL → reconciliação
+→ corte de leitura → corte de escrita → soak → remoção do caller Supabase.
+
+### Fase 5 — Frontend, UX/UI e funcionalidade
+
+UX/UI não fica para o fim absoluto: é validada por onda, mas o polish global
+só ocorre com backend estável.
+
+- Loading/skeleton, vazio, erro/retry e offline.
+- Responsividade desktop/tablet/mobile.
+- Acessibilidade: foco, teclado, contraste, labels e feedback de ação.
+- Consistência com design system.
+- Performance: code splitting, chunks críticos, imagens, Core Web Vitals.
+- Rotas críticas E2E: login/equipe, hub cliente, REI, plano, GrowthMap,
+  aprovação/assinatura e upload.
+
+### Fase 6 — Produção GCP e cutover
+
+1. Criar `revhackers-prod` separado de staging.
+2. Infra como código, IAM mínimo, secrets, orçamento/alertas e observabilidade.
+3. Cloud SQL prod + backups/PITR e restore testado.
+4. Cloud Run prod + frontend hosting GCP + domínio/certificado.
+5. Carga inicial + CDC/dual-run conforme prova técnica disponível.
+6. Rehearsal completo, janela de corte e critérios de abort.
+7. Canary → produção → reconciliação → soak.
+8. Desligar escrita Supabase, depois leitura, depois Auth/Storage/Functions.
+9. Revogar secrets, remover runtime e registrar decommission.
+
+---
+
+## 4. Prioridade real
+
+| Prioridade | Trabalho | Motivo |
 |---|---|---|
-| **P0 (trava o "no ar")** | Aplicar migrations pendentes + deploy `generate-growthmap` | Sem isso a feature nova quebra em prod |
-| **P0** | Escolher host + publicar frontend | Sem isso nada novo fica visível |
-| **P0** | `git push` (após scan de segredos — já limpo) | Sincroniza prod com as correções de segurança |
-| **P0 (risco, bloqueado em você)** | P0-01 rotacionar credencial exposta no git | Segurança real; só você executa |
-| **P1 (pós-no-ar)** | Polish UX/UI do GrowthMap + smoke tests | Qualidade percebida |
-| **P2 (trilha)** | R3/R4/R6 (IA), P1-01 tenant isolation, GCP | Importante, não urgente hoje |
+| P0 | API foundation + primeiro piloto | Remove acesso direto do browser e destrava Cloud SQL |
+| P0 humano | Rotação P0-01 + aprovação tenant/login + RTO/RPO | Segurança e arquitetura de produção |
+| P1 | Cloud SQL staging + migração de GrowthMap | Primeiro domínio realmente fora do Supabase |
+| P1 | REI/projetos/planos | Núcleo do produto |
+| P1 | Storage/Auth/Functions | Necessários para Supabase sair do runtime |
+| P2 | Polish visual global | Depois da estabilidade; por onda, UX crítica é P1 |
+| P2 | Roteador de IA R3-R6 | Útil, não bloqueia migração de infraestrutura |
+| P3 | M&A / expansão de frameworks | Fora do caminho crítico do cutover |
 
 ---
 
-## 4. Execução por etapas (hoje)
+## 5. Plano de HOJE (executável)
 
-### ETAPA 0 — Fechar o código (EU, sem autorização) ✅ FEITO
-- [x] Varredura de segredos nos 10 commits — limpa
-- [x] `vite build` — OK
-- [x] `validate-deploy-artifact` — OK (456 arquivos)
-- [x] tsc + 41 testes — verdes
+### Etapa A — corrigir direção e iniciar E4 ✅
 
-### ETAPA 1 — Suas decisões (VOCÊ, ~5 min)
-- [ ] **Host:** Vercel? (recomendado) ou outro?
-- [ ] Autoriza **`git push`** dos 10 commits?
-- [ ] Como aplicamos migrations em prod: **você roda** (`supabase db push`) ou **me dá acesso** ao Supabase?
-- [ ] P0-01: quando rotaciona a credencial? (pode ser depois, mas não esquecer)
+- [x] Remover Vercel/Hostinger como estratégia final.
+- [x] Contratos de erro, tenant, resource, identity e audit.
+- [x] Verifier provider-agnostic + verifier sintético.
+- [x] Autorização server-side tenant-scoped + capability links.
+- [x] Idempotência, correlation id e redaction.
+- [x] 27 testes novos (68/68 total), incluindo cross-tenant e token de outro ambiente.
+- [x] TypeScript strict separado para API.
+- [x] Contrato OpenAPI inicial.
+- [x] Gate de API/testes no CI.
 
-### ETAPA 2 — Backend em produção (precisa acesso Supabase)
-- [ ] Aplicar `20260722000000_growthmap_results.sql`
-- [ ] Aplicar `20260722000001_ai_budget_config.sql`
-- [ ] Confirmar `20260721000000/1/2` aplicadas
-- [ ] Deploy edge function `generate-growthmap`
-- [ ] Smoke test: gerar 1 framework num projeto real
+### Etapa B — concluir serviço HTTP local
 
-### ETAPA 3 — Frontend no ar
-- [ ] `git push` (dispara CI: lint/typecheck/build/validate)
-- [ ] Conectar repo ao host escolhido + configurar env `VITE_*`
-- [ ] Publicar + smoke test das rotas críticas
+- [ ] Escolher runtime HTTP mínimo e criar servidor sem acoplamento de domínio.
+- [ ] Implementar `/healthz` e `/readyz` conforme OpenAPI.
+- [ ] Middleware: request context, auth, autz, erro e logs.
+- [ ] Dockerfile multi-stage non-root para Cloud Run.
+- [ ] Testes HTTP e shutdown gracioso.
 
-### ETAPA 4 — Polish UX/UI (o "final")
-- [ ] GrowthMap: loading/skeleton, empty state, erro com retry, responsividade mobile
-- [ ] Consistência visual com o design system existente
-- [ ] Revisão de acessibilidade básica (contraste, foco, labels)
+### Etapa C — piloto GrowthMap
+
+- [ ] Contratos `/v1/growthmaps/{projectId}` GET/PUT.
+- [ ] Repository interface + adapter Supabase server-side.
+- [ ] Testes com dois tenants e repository fake.
+- [ ] Adapter GCP no frontend protegido por feature flag.
+- [ ] Deploy no `revhackers-staging` somente depois do gate local.
+
+### Etapa D — gate humano do dia
+
+- [ ] Giulliano confirma `clients.id` como tenant canônico (ou alternativa).
+- [ ] Giulliano decide: cliente mantém link-capability inicialmente ou migra já para login.
+- [ ] Giulliano confirma região `southamerica-east1` e orçamento de staging.
+- [ ] Autoriza push e deploy do primeiro serviço real após revisão.
 
 ---
 
-## 5. O que NÃO entra hoje (para não travar o prazo)
-- Migração GCP (trilha de semanas)
-- R3/R4/R5/R6 do roteador de IA
-- P1-01 isolamento por tenant (grande, precisa decidir unidade de tenant)
-- M&A due diligence (precisa de dados seus)
+## 6. Definição de “projeto no ar”
+
+Não significa apenas página carregando. Significa:
+
+- frontend hospedado no ecossistema GCP;
+- API Cloud Run é a única porta para dados privados;
+- Cloud SQL é autoridade do banco;
+- Identity Platform/OIDC resolve usuários;
+- GCS guarda arquivos privados;
+- jobs/functions/realtime já não dependem do Supabase;
+- testes funcionais, cross-tenant, restore e rollback passam;
+- UX/UI crítica validada em desktop/mobile;
+- DNS/certificado/monitoramento/alertas ativos;
+- Supabase sem leitura, escrita, Auth, Storage ou Functions no runtime.
