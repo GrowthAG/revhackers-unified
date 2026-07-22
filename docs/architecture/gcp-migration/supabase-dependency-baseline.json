@@ -9739,6 +9739,13 @@
       "symbol": "migration"
     },
     {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260722000001_create_ai_budget_config.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
       "category": "related-prerender",
       "path": "scripts/prerender.js",
       "count": 1,
@@ -9867,12 +9874,12 @@
     "import-or-wrapper": 242,
     "operation": 629,
     "orphan-config-section": 1,
-    "related-migration": 118,
+    "related-migration": 119,
     "related-prerender": 1,
     "related-script": 15,
     "related-workflow": 1,
-    "entries": 1408,
-    "trackedFiles": 1145,
+    "entries": 1409,
+    "trackedFiles": 1146,
     "deployableFunctions": 32,
     "configFunctionSections": 25
   }
