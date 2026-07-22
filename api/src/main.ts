@@ -5,6 +5,7 @@ import { checkPostgresReady, createPostgresResources } from './db/postgres';
 import { PostgresGrowthMapRepository } from './domains/growthmap/postgres-repository';
 import { GrowthMapService } from './domains/growthmap/service';
 import { createGrowthMapRoutes } from './http/growthmap-routes';
+import { createIdentityRoutes } from './http/identity-routes';
 import { GoogleIdentityTokenVerifier } from './identity/google-identity-verifier';
 import { PostgresIdentityRepository } from './identity/postgres-identity-repository';
 import { createApiServer } from './server';
@@ -15,12 +16,17 @@ async function main(): Promise<void> {
   const postgres = await createPostgresResources(databaseConfig);
   const googleProjectId = process.env.GOOGLE_CLOUD_PROJECT?.trim();
   if (!googleProjectId) throw new Error('GOOGLE_CLOUD_PROJECT is required.');
-  const route = createGrowthMapRoutes({
-    verifier: new GoogleIdentityTokenVerifier({ projectId: googleProjectId }),
-    identities: new PostgresIdentityRepository(postgres.pool),
+  const verifier = new GoogleIdentityTokenVerifier({ projectId: googleProjectId });
+  const identities = new PostgresIdentityRepository(postgres.pool);
+  const identityRoutes = createIdentityRoutes({ verifier, identities });
+  const growthMapRoutes = createGrowthMapRoutes({
+    verifier,
+    identities,
     service: new GrowthMapService(new PostgresGrowthMapRepository(postgres.pool)),
     idempotency: new PostgresIdempotencyStore(postgres.pool),
   });
+  const route = async (request: Request, requestId: string) =>
+    (await identityRoutes(request)) ?? growthMapRoutes(request, requestId);
   const api = createApiServer(config, undefined, {
     route,
     readiness: async () => {

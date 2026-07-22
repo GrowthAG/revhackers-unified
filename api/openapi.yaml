@@ -48,6 +48,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /v1/me:
+    get:
+      operationId: getCurrentUser
+      summary: Retorna identidade, papel e memberships da autoridade interna
+      security:
+        - userBearer: []
+      responses:
+        '200':
+          description: Usuário interno ativo
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [id, globalRole, status, memberships]
+                properties:
+                  id: { type: string, format: uuid }
+                  globalRole: { type: [string, 'null'], enum: [super_admin, admin, user, null] }
+                  status: { type: string, const: active }
+                  memberships:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required: [tenantId, role, status]
+                      properties:
+                        tenantId: { type: string, format: uuid }
+                        role: { type: string, enum: [owner, admin, operator, client-link] }
+                        status: { type: string, enum: [active, suspended] }
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /v1/growthmaps/{projectId}:
     parameters:
       - name: projectId
