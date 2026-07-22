@@ -106,7 +106,7 @@ export function createApp(deps: AppDependencies): (request: Request) => Promise<
           status: 204,
           headers: responseHeaders(context.requestId, cors),
         });
-      } else if (url.pathname === '/healthz') {
+      } else if (url.pathname === '/' || url.pathname === '/healthz') {
         if (request.method !== 'GET') {
           response = json(405, ApiError.validation('Método não permitido.').toBody(context.requestId), context.requestId, {
             ...cors,

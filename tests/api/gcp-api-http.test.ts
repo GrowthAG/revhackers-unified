@@ -22,6 +22,13 @@ const appBase = {
 };
 
 describe('E4 HTTP — health, readiness e erros', () => {
+  test('raiz identifica o serviço sem expor dados', async () => {
+    const app = createApp(appBase);
+    const response = await app(new Request('https://api.test/'));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ status: 'ok', service: 'revhackers-api' });
+  });
+
   test('healthz responde contrato OpenAPI, request id e headers de segurança', async () => {
     const { logger, info } = captureLogger();
     const app = createApp({ ...appBase, logger });
