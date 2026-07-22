@@ -22,8 +22,10 @@ export function createIdentityRoutes(deps: IdentityRouteDependencies) {
     }
 
     const token = await deps.verifier.verify(bearer(request));
-    const user = await deps.identities.findUser(token);
-    if (!user || user.status !== 'active') throw ApiError.forbidden();
+    // findOrCreateUser: registra o usuario no primeiro login Google valido.
+    // Nao cria tenant nem membership — isso requer acao do admin.
+    const user = await deps.identities.findOrCreateUser(token);
+    if (user.status !== 'active') throw ApiError.forbidden();
 
     return new Response(JSON.stringify({
       id: user.id,

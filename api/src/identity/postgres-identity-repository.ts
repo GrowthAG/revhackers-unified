@@ -14,6 +14,7 @@ interface UserRow extends QueryResultRow {
 
 export interface IdentityRepository {
   findUser(token: Pick<VerifiedToken, 'issuer' | 'subject'>): Promise<InternalUser | null>;
+  findOrCreateUser(token: Pick<VerifiedToken, 'issuer' | 'subject'>): Promise<InternalUser>;
   resolveProjectTenant(user: InternalUser, projectId: string): Promise<TenantId | null>;
 }
 
@@ -40,6 +41,35 @@ export class PostgresIdentityRepository implements IdentityRepository {
         : [],
     );
     return { id: first.id, globalRole: first.global_role, status: first.status, memberships };
+  }
+
+  /**
+   * Garante que o usuario existe no banco. Se nao existir, cria com role=null e
+   * status=active. Nunca cria tenant nem membership — isso e feito fora daqui.
+   * Seguro porque o token ja foi verificado pelo Firebase antes desta chamada.
+   */
+  async findOrCreateUser(token: Pick<VerifiedToken, 'issuer' | 'subject'>): Promise<InternalUser> {
+    const existing = await this.findUser(token);
+    if (existing) return existing;
+
+    // Upsert atomico: cria internal_user + user_identity em uma transacao sem tenant
+    const result = await this.pool.query<{ id: string; global_role: GlobalRole | null; status: 'active' | 'disabled' }>(`
+      WITH new_user AS (
+        INSERT INTO app.internal_users (status)
+        VALUES ('active')
+        RETURNING id, global_role, status
+      ),
+      new_identity AS (
+        INSERT INTO app.user_identities (issuer, subject, user_id)
+        SELECT $1, $2, id FROM new_user
+        RETURNING user_id
+      )
+      SELECT id, global_role, status FROM new_user
+    `, [token.issuer, token.subject]);
+
+    const row = result.rows[0];
+    if (!row) throw new Error('findOrCreateUser: insert returned no row.');
+    return { id: row.id, globalRole: row.global_role, status: row.status, memberships: [] };
   }
 
   async resolveProjectTenant(user: InternalUser, projectId: string): Promise<TenantId | null> {
