@@ -32,7 +32,7 @@ paths:
   /readyz:
     get:
       operationId: readiness
-      summary: Readiness do serviço (implementação futura verifica dependências essenciais)
+      summary: Readiness do serviço (verifica dependências essenciais)
       security: []
       responses:
         '200':
@@ -48,7 +48,105 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /v1/growthmaps/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+    get:
+      operationId: getGrowthMap
+      summary: Carrega o GrowthMap de um projeto no tenant autorizado
+      security:
+        - userBearer: []
+      responses:
+        '200':
+          description: GrowthMap existente ou null quando ainda não gerado
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/GrowthMap'
+                  - type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: saveGrowthMap
+      summary: Cria ou atualiza o GrowthMap no tenant autorizado
+      security:
+        - userBearer: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveGrowthMap'
+      responses:
+        '200':
+          description: GrowthMap persistido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowthMap'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
 components:
+  responses:
+    ValidationError:
+      description: Payload inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Unauthenticated:
+      description: Token ausente, inválido ou expirado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Forbidden:
+      description: Caller autenticado sem autorização no tenant/recurso
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: Recurso inexistente ou não visível ao tenant (anti-IDOR)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Conflict:
+      description: Conflito de estado ou idempotência
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
   securitySchemes:
     userBearer:
       type: http
@@ -156,6 +254,71 @@ components:
           $ref: '#/components/schemas/ResourceType'
         id:
           type: string
+
+    GrowthMap:
+      type: object
+      additionalProperties: false
+      required: [projectId, companyName, companyDescription, reiScore, growthmapScore, reiConnectionsCount, frameworks, generatedAt, updatedAt, createdAt]
+      properties:
+        projectId:
+          type: string
+        companyName:
+          type: string
+        companyDescription:
+          type: string
+        reiScore:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 100
+        growthmapScore:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 100
+        reiConnectionsCount:
+          type: integer
+          minimum: 0
+        frameworks:
+          type: object
+          additionalProperties: true
+        generatedAt:
+          type: [string, 'null']
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    SaveGrowthMap:
+      type: object
+      additionalProperties: false
+      required: [companyName, frameworks]
+      properties:
+        companyName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        companyDescription:
+          type: string
+          maxLength: 5000
+        reiScore:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 100
+        growthmapScore:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 100
+        reiConnectionsCount:
+          type: integer
+          minimum: 0
+        frameworks:
+          type: object
+          additionalProperties: true
+        generatedAt:
+          type: [string, 'null']
+          format: date-time
 
     AuditEvent:
       type: object
