@@ -30,5 +30,8 @@ jobs:
       - name: Unit and migration foundation tests
         run: npm test
 
-      - name: Build
+      - name: Build GCP API artifact
+        run: npm run build:api
+
+      - name: Build frontend
         run: npm run build

@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+dist
+api/dist
+coverage
+*.log
+.env
+.env.*
+!.env.example
+supabase/.temp
+backups
+reports
+experiments

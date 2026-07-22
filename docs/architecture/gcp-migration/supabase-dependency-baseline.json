@@ -4637,6 +4637,13 @@
     },
     {
       "category": "operation",
+      "path": "api/src/server.ts",
+      "count": 1,
+      "line": 20,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
       "path": "docs/architecture/gcp-migration/_disabled-functions-backup-2026-07-20/clickup-notetaker-sync.index.ts",
       "count": 1,
       "line": 190,
@@ -9886,14 +9893,14 @@
     "environment-name": 348,
     "function-without-config-section": 8,
     "import-or-wrapper": 242,
-    "operation": 631,
+    "operation": 632,
     "orphan-config-section": 1,
     "related-migration": 119,
     "related-prerender": 1,
     "related-script": 15,
     "related-workflow": 1,
-    "entries": 1411,
-    "trackedFiles": 1162,
+    "entries": 1412,
+    "trackedFiles": 1171,
     "deployableFunctions": 32,
     "configFunctionSections": 25
   }

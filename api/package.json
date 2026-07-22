@@ -1,0 +1,7 @@
+{
+  "name": "@revhackers/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Cloud Run API for the Supabase to Google Cloud migration"
+}
