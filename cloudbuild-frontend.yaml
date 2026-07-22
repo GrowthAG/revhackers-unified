@@ -1,0 +1,32 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: build-frontend
+    args:
+      - build
+      - --file=Dockerfile.frontend
+      - --tag=${_IMAGE}
+      - --build-arg=VITE_SUPABASE_URL=${_VITE_SUPABASE_URL}
+      - --build-arg=VITE_SUPABASE_ANON_KEY=${_VITE_SUPABASE_ANON_KEY}
+      - --build-arg=VITE_GOOGLE_AUTH_ENABLED=true
+      - --build-arg=VITE_GCP_API_URL=${_VITE_GCP_API_URL}
+      - --build-arg=VITE_FIREBASE_API_KEY=${_VITE_FIREBASE_API_KEY}
+      - --build-arg=VITE_FIREBASE_AUTH_DOMAIN=${_VITE_FIREBASE_AUTH_DOMAIN}
+      - --build-arg=VITE_FIREBASE_PROJECT_ID=${_VITE_FIREBASE_PROJECT_ID}
+      - --build-arg=VITE_GROWTHMAP_GCP_ENABLED=true
+      - .
+
+images:
+  - ${_IMAGE}
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+substitutions:
+  _IMAGE: southamerica-east1-docker.pkg.dev/revhackers-staging/revhackers-staging/revhackers-frontend:latest
+  _VITE_GCP_API_URL: https://revhackers-api-staging-3na73syj5a-rj.a.run.app
+  _VITE_SUPABASE_URL: SUBSTITUA
+  _VITE_SUPABASE_ANON_KEY: SUBSTITUA
+  _VITE_FIREBASE_API_KEY: SUBSTITUA
+  _VITE_FIREBASE_AUTH_DOMAIN: revhackers-staging.firebaseapp.com
+  _VITE_FIREBASE_PROJECT_ID: revhackers-staging

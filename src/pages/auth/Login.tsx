@@ -4,7 +4,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
-import PageLayout from '@/components/layout/PageLayout';
+
+// Subdominios que sao exclusivos do painel admin - sempre mostram Google login
+const APP_SUBDOMAINS = ['app', 'admin'];
+const isAppSubdomain = APP_SUBDOMAINS.includes(window.location.hostname.split('.')[0]);
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,6 +17,8 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const { signInWithPassword, signInWithGoogle, isGoogleAuthEnabled, user, userRole, isProfileLoading, isRecoveringPassword } = useAuth();
+    // No subdominio app. sempre exibe Google login (independente da flag de env)
+    const showGoogleLogin = isGoogleAuthEnabled || isAppSubdomain;
     const navigate = useNavigate();
 
     // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
@@ -56,9 +61,8 @@ const Login = () => {
     };
 
     return (
-        <PageLayout>
-            <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white pt-32">
-                <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-700">
+        <div className="min-h-screen bg-white flex items-center justify-center p-4">
+            <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-700">
 
                     {/* Header Section */}
                     <div className="flex flex-col items-center mb-10">
@@ -72,12 +76,12 @@ const Login = () => {
 
                     {/* Conteúdo de Login */}
                     <div className="bg-white p-2">
-                        {isGoogleAuthEnabled && error && (
+                        {showGoogleLogin && error && (
                             <div className="text-black text-2xs font-light uppercase tracking-[0.2em] text-center mb-6 border border-black p-3">
                                 {error}
                             </div>
                         )}
-                        {isGoogleAuthEnabled && (
+                        {showGoogleLogin && (
                             <Button
                                 type="button"
                                 onClick={handleGoogleLogin}
@@ -87,7 +91,7 @@ const Login = () => {
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Entrar com Google'}
                             </Button>
                         )}
-                        <form onSubmit={handleSubmit} className={isGoogleAuthEnabled ? 'hidden' : 'space-y-6'}>
+                        <form onSubmit={handleSubmit} className={showGoogleLogin ? 'hidden' : 'space-y-6'}>
                             {error && (
                                 <div className="text-black text-2xs font-light uppercase tracking-[0.3em] text-center mb-10 border border-black p-2">
                                     {error}
@@ -158,7 +162,6 @@ const Login = () => {
                     </div>
                 </div>
             </div>
-        </PageLayout>
     );
 };
 
