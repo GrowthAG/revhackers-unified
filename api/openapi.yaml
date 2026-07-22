@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: RevHackers API
+  version: 0.1.0
+  summary: Contrato da API server-side para migração Supabase → Google Cloud
+  description: |
+    Fundação E4/Fase C. O navegador acessará somente esta API autenticada;
+    nunca Cloud SQL diretamente. Autenticação identifica o caller e a API
+    resolve membership, tenant, papel e ownership em fonte server-side.
+    Este contrato é provider-agnostic: Supabase Auth pode ser o emissor inicial
+    e Identity Platform/OIDC pode substituí-lo depois sem alterar autorização.
+
+    Status: contratos fundacionais + health endpoints. Rotas de domínio entram
+    incrementalmente, uma por vez, mantendo Supabase como backend até paridade.
+servers:
+  - url: /
+    description: Mesmo host do serviço Cloud Run do ambiente
+
+paths:
+  /healthz:
+    get:
+      operationId: health
+      summary: Liveness do processo (não verifica dependências)
+      security: []
+      responses:
+        '200':
+          description: Processo vivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /readyz:
+    get:
+      operationId: readiness
+      summary: Readiness do serviço (implementação futura verifica dependências essenciais)
+      security: []
+      responses:
+        '200':
+          description: Serviço pronto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Serviço ainda não pronto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  securitySchemes:
+    userBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Access token validado por assinatura/JWKS, issuer, audience, exp e nbf.
+        Claims de papel/tenant não são autoridade final; membership é resolvida
+        server-side.
+    linkCapability:
+      type: apiKey
+      in: header
+      name: X-Link-Capability
+      description: |
+        Token opaco de escopo mínimo, com hash armazenado, expiração e
+        revogação. Apenas para rotas públicas explicitamente documentadas.
+
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status, service, version]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        service:
+          type: string
+          const: revhackers-api
+        version:
+          type: string
+
+    ErrorCode:
+      type: string
+      enum: [unauthenticated, forbidden, not_found, validation, conflict, rate_limited, internal]
+
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              $ref: '#/components/schemas/ErrorCode'
+            message:
+              type: string
+            request_id:
+              type: string
+              description: Correlation id seguro para suporte; nunca contém PII.
+
+    Action:
+      type: string
+      enum: [read, create, update, delete, approve, administer]
+
+    GlobalRole:
+      type: string
+      enum: [super_admin, admin, user]
+      description: Papel global da equipe RevHackers, vindo de fonte interna.
+
+    TenantRole:
+      type: string
+      enum: [owner, admin, operator, client-link]
+      description: Papel dentro de um tenant específico.
+
+    Tenant:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: string
+          description: |
+            Unidade canônica proposta: clients.id. O contrato usa TenantId
+            opaco; a unidade pode mudar sem alterar o motor de isolamento.
+
+    Membership:
+      type: object
+      additionalProperties: false
+      required: [user_id, tenant_id, role, status]
+      properties:
+        user_id:
+          type: string
+        tenant_id:
+          type: string
+        role:
+          $ref: '#/components/schemas/TenantRole'
+        status:
+          type: string
+          enum: [active, suspended]
+
+    ResourceType:
+      type: string
+      enum: [rei_project, strategic_plan, proposal, client_meeting, growthmap, material, audit_log]
+
+    ResourceRef:
+      type: object
+      additionalProperties: false
+      required: [type, id]
+      properties:
+        type:
+          $ref: '#/components/schemas/ResourceType'
+        id:
+          type: string
+
+    AuditEvent:
+      type: object
+      additionalProperties: false
+      required: [request_id, occurred_at, action, resource, principal_kind, outcome, reason]
+      properties:
+        request_id:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+        action:
+          $ref: '#/components/schemas/Action'
+        resource:
+          $ref: '#/components/schemas/ResourceRef'
+        tenant_hash:
+          type: [string, 'null']
+          description: Hash de tenant para correlação sem expor o id.
+        principal_kind:
+          type: string
+          enum: [user, link, none]
+        principal_id:
+          type: [string, 'null']
+        outcome:
+          type: string
+          enum: [allowed, denied]
+        reason:
+          type: string

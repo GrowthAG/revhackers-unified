@@ -8,7 +8,7 @@ on:
 
 jobs:
   quality:
-    name: Lint + Typecheck + Build
+    name: Typecheck + Tests + Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +21,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: TypeScript check
+      - name: Frontend TypeScript check
         run: npx tsc --noEmit
+
+      - name: GCP API strict TypeScript check
+        run: npm run typecheck:api
+
+      - name: Unit and migration foundation tests
+        run: npm test
 
       - name: Build
         run: npm run build

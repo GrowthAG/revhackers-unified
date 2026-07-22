@@ -7,6 +7,8 @@
     "audit:supabase": "node scripts/audit-supabase-dependencies.mjs --check docs/architecture/gcp-migration/supabase-dependency-baseline.json",
     "audit:supabase:update": "node scripts/audit-supabase-dependencies.mjs --output docs/architecture/gcp-migration/supabase-dependency-baseline.json",
     "test:audit-supabase": "vitest run tests/audit-supabase-dependencies.test.mjs",
+    "test:api": "vitest run tests/api/**/*.test.ts",
+    "typecheck:api": "tsc -p api/tsconfig.json",
     "dev": "vite",
     "build": "vite build && node ./scripts/prerender.js",
     "build:offline": "node ./scripts/build-offline.mjs",
