@@ -73,14 +73,13 @@ Se Cloud SQL for escolhido:
 - Constraints, chaves estrangeiras, unicidade, índices, triggers e RPCs portados somente após inventário de comportamento.
 - `SECURITY DEFINER` evitado; quando indispensável, owner dedicado, `search_path` fixo, argumentos validados, `EXECUTE` explicitamente concedido e negado ao público por padrão.
 
-### Identidade
+### Identidade — decisão final aprovada
 
-Duas rotas são compatíveis com a fase incremental:
+O Supabase Auth será removido integralmente. O destino é **Google Identity Platform / Firebase Authentication**, com **Sign in with Google** para as áreas autenticadas. A API Cloud Run valida tokens emitidos pelo ambiente Google e mapeia `issuer + subject` para um usuário interno; papel, tenant e autorização continuam sendo resolvidos server-side e nunca são confiados apenas a claims do cliente.
 
-1. manter Supabase Auth e fazer a API validar tokens Supabase;
-2. migrar depois para Identity Platform/Firebase Auth ou outro OIDC aprovado.
+Durante a transição, tokens Supabase podem ser aceitos somente pelo tempo necessário para mapear usuários e evitar interrupção, com issuer/audience separados e prazo de remoção explícito. Isso não é arquitetura final nem permanência: terminado o cutover de identidade, o verifier Supabase, chaves, redirects e sessões correspondentes serão removidos.
 
-A API deve isolar o provedor por uma camada de verificação e mapear `issuer + subject` para um usuário interno. Assim, mudança de emissor não altera o modelo de autorização. Migração de senha, OTP, convites, recovery, templates, redirects e sessões exige projeto próprio e não deve ser misturada ao cutover do banco.
+A migração inclui inventário e substituição dos fluxos atuais de senha, OTP/magic link, convites, recuperação, atualização de senha, templates, redirects e sessões. Contas existentes devem ser reconciliadas por identificador confiável antes do corte; nenhum usuário é duplicado ou ganha papel por email/claim não validado. Links públicos de capacidade (hub, plano, assinatura e certificado) são um mecanismo separado de login e permanecem sujeitos à decisão de produto e aos controles de escopo, expiração e revogação.
 
 ### Storage
 
@@ -159,5 +158,5 @@ Essa sequência reduz acoplamento sem declarar a infraestrutura final antes da e
 - Quais seis fluxos Realtime exigem baixa latência?
 - Quais Edge Functions excedem limites de request e precisam de jobs?
 - Quais extensões PostgreSQL são obrigatórias e suportadas no serviço escolhido?
-- O Auth permanece Supabase durante o primeiro cutover?
-- Qual frontend hosting e borda serão mantidos?
+- Qual é a estratégia de transição e reconciliação das contas existentes para Identity Platform sem duplicação ou elevação de papel?
+- Qual frontend hosting e borda 100% GCP serão adotados?

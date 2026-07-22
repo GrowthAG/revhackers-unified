@@ -72,9 +72,30 @@ Cloud Run API
        +--> Cloud Logging / Monitoring / Trace
 ```
 
-O primeiro estágio da API pode usar Supabase por trás como adapter. Isso não é
-voltar atrás: é a etapa strangler que retira o Supabase do navegador e cria o
-contrato que depois troca para Cloud SQL sem mudar a UI.
+A migração de API e a migração de dados acontecem **em paralelo**. O Supabase é
+somente origem temporária para extração, comparação e rollback; não é backend
+final da nova API. O primeiro domínio aprovado deve operar diretamente em Cloud
+SQL staging depois da carga e reconciliação.
+
+### Substituição integral do Supabase
+
+| Supabase atual | Destino Google Cloud |
+|---|---|
+| PostgreSQL / PostgREST | Cloud SQL PostgreSQL + API Cloud Run |
+| Supabase Auth | Identity Platform / Firebase Authentication + Sign in with Google |
+| Edge Functions | Cloud Run e, conforme semântica, Cloud Run functions |
+| Storage | Cloud Storage com URLs assinadas e objetos privados por padrão |
+| Realtime | SSE/WebSocket por Cloud Run ou polling; Pub/Sub somente interno |
+| Cron | Cloud Scheduler |
+| Filas/retries | Cloud Tasks e Pub/Sub |
+| RPCs e triggers privilegiados | API/Cloud Run + SQL seguro/Cloud Tasks conforme operação |
+| Secrets | Secret Manager + workload identity |
+| Logs/telemetria | Cloud Logging, Monitoring, Trace e auditoria separada |
+| Hosting frontend legado | Hosting 100% GCP a definir no gate de borda |
+
+O cutover só termina quando não houver leitura, escrita, autenticação, arquivo,
+function ou evento Realtime dependente do Supabase. Depois disso, chaves,
+projetos e recursos Supabase são revogados/descontinuados.
 
 ---
 
@@ -105,11 +126,12 @@ GrowthMap é o melhor piloto porque já tem um `src/api/growthmap.ts` com adapte
 substituível e domínio pequeno/controlado.
 
 1. Portar `load/save` para endpoints da nova API.
-2. Cloud Run API usa Supabase como backend temporário.
-3. Frontend alterna Supabase/API por feature flag de ambiente.
-4. Shadow read + reconciliação; escrita autoritativa em um lado só.
-5. Portar geração de IA depois de load/save estabilizados.
-6. Rollback: flag volta ao adapter Supabase.
+2. Criar o schema GrowthMap no Cloud SQL staging e carregar fixture sintética.
+3. Cloud Run API usa Cloud SQL como backend do piloto.
+4. Supabase é consultado somente em shadow read/reconciliação durante a transição.
+5. Frontend alterna Supabase/API por feature flag de ambiente.
+6. Portar geração de IA depois de load/save estabilizados.
+7. Rollback temporário: flag volta ao adapter anterior até o gate de corte.
 
 **Gate:** zero vazamento cross-tenant, resposta equivalente, erro/latência
 medidos, rollback exercitado.

@@ -21,9 +21,15 @@
 
 **Inferência:** o sistema tem autorização por papel e alguns controles por usuário/recurso, mas o repositório não prova isolamento end-to-end entre tenants. “Usuário autenticado” não equivale a “usuário autorizado para este tenant”.
 
-## Modelo alvo a decidir
+## Decisão de provedor de identidade — aprovada em 2026-07-22
 
-Antes de implementar, Giulliano precisa aprovar a unidade canônica de tenant e as relações. Um modelo candidato, ainda não decidido, é:
+O runtime final não usará Supabase Auth. As áreas autenticadas migrarão para **Google Identity Platform / Firebase Authentication com Sign in with Google**. O mapeamento interno permanece `issuer + subject -> user`, e papel/membership/tenant são resolvidos server-side. Claims Google não concedem papel administrativo por si só.
+
+A coexistência com Supabase Auth é permitida apenas numa janela de transição controlada para reconciliar contas e sessões. O gate de decommission exige zero token, sessão, redirect, template, convite, recuperação ou usuário dependente do Supabase Auth. Links públicos de capacidade são independentes do login Google e ainda precisam de decisão explícita por fluxo (manter link anônimo ou exigir identidade Google).
+
+## Modelo de tenant a decidir
+
+Antes de implementar persistência definitiva, Giulliano precisa aprovar a unidade canônica de tenant e as relações. Um modelo candidato, ainda não decidido, é:
 
 ```text
 identity (issuer, subject)
