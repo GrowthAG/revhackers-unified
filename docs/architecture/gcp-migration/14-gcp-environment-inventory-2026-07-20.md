@@ -31,17 +31,16 @@ Cloud SQL, buckets ou serviço real da aplicação.
 
 Ainda não existe `revhackers-prod`.
 
-A consulta de billing não pôde ser concluída pelo CLI nesta sessão; o vínculo já está
-registrado no checkpoint anterior. A Cloud Billing API não foi habilitada adicionalmente.
+Atualização de 2026-07-22: após reautenticação, o billing foi confirmado pelo CLI como ativo em `billingAccounts/016669-43980E-F06832`. O `billing/quota_project` local, que apontava incorretamente para `juriai-app`, foi corrigido para `revhackers-staging`. Foram habilitadas no staging as APIs Cloud Billing (`cloudbilling.googleapis.com`), Cloud SQL Admin (`sqladmin.googleapis.com`) e Identity Toolkit (`identitytoolkit.googleapis.com`). Habilitar as APIs não criou instância nem cobrança de runtime. O custo/sizing proposto para a primeira instância está em `15-cloud-sql-staging-sizing-2026-07-22.md`.
 
 ## Próximo gate humano
 
-Antes de criar qualquer recurso, Giulliano precisa aprovar:
+Antes de criar recurso faturável, Giulliano precisa aprovar:
 
-1. confirmar a região e orçamento de staging;
-2. definir e criar `revhackers-prod` separadamente;
-3. aprovar o primeiro serviço real a portar;
-4. definir secrets, IAM de workload e rollback antes do deploy real.
+1. o gate de custo do Cloud SQL staging (estimativa oficial em `15-cloud-sql-staging-sizing-2026-07-22.md`);
+2. definir e criar `revhackers-prod` separadamente somente depois do piloto;
+3. o primeiro serviço real já está definido: API GrowthMap;
+4. IAM de workload, backup/restore e rollback descritos no gate de sizing.
 
 Até o próximo gate, não devem ser criados Cloud SQL, buckets, secrets, DNS ou deploys de
 produção. O serviço smoke permanece isolado e reversível.
