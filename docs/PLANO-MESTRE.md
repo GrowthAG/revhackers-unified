@@ -585,3 +585,27 @@ R3 (`_shared/ai-router.ts`): roteador único que escolhe provider/modelo por
 orçamento restante (lê `ai_budget_config`) em vez de fallback fixo. Depende
 de R2 (feito) — mas a política de degradação (R5) precisa da sua decisão pra
 o roteador saber o que fazer quando o teto acabar (trocar modelo vs pausar).
+
+## Checkpoint — 2026-07-22 (manhã): REI ligado no GrowthMap
+
+Retomada da manhã. Resolvido o achado "GrowthMap com REI inerte" do
+checkpoint da madrugada — **não precisou de decisão de negócio**, os dados
+já existiam no código (`rei_responses.responses`, API `getLatestReiResponse`,
+`rei_projects` para nome da empresa).
+
+**Commit `ccd00bb`:** `GrowthMap.tsx` agora carrega, no mount por `projectId`,
+o projeto + a resposta REI mais recente + o growthmap salvo (em paralelo), e
+passa as `responses` reais na geração de cada framework (antes: `{}` fixo).
+Isso liga o painel "Diagnóstico Cruzado" (REI × GrowthMap) e as conexões/ações
+por framework, que estavam sempre vazias. Nome/descrição da empresa vêm de
+`client_company`/`trade_name`/`client_name`; `maturity_percentage` vira o
+`rei_score`. Validado: tsc limpo, 41/41 testes, 0 erros de lint.
+
+**Status do GrowthMap agora:** funcionalmente completo no código local. Falta
+só o ambiente: aplicar a migration `20260722000000_create_growthmap_results.sql`
+(e `20260722000001_create_ai_budget_config.sql`, R2) em produção — ambas
+pendentes de autorização de Giulliano, sem acesso remoto nesta sessão.
+
+**Pendências inalteradas:** `git push` de 9 commits locais (autorização +
+revisão de segredos), R3 (roteador de IA, não-bloqueado tecnicamente mas
+espera R5), aplicar migrations em produção.
