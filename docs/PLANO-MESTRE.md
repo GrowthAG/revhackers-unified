@@ -671,3 +671,36 @@ Bloqueio para cloud real: refresh token do `gcloud` expirado. Necessário execut
 interativamente `gcloud auth login giulliano@usefunnels.io` e selecionar
 `revhackers-staging`. Só depois serão consultados billing/APIs e proposto o
 sizing/custo antes de criar Cloud SQL.
+
+## Checkpoint - 2026-07-22: imagem e API Cloud Run staging publicadas
+
+Retomada após a interrupção por limite/contexto do agente anterior. O ponto exato
+era o commit `bf7c909`, que reconciliou o lockfile depois de dois Cloud Builds
+falhos. O gate local foi repetido e aprovado antes de qualquer ação remota.
+
+- Cloud Build `db690c97-07ed-4957-a6aa-f7533960f777`: **SUCCESS**.
+- Imagem imutável publicada no Artifact Registry com digest
+  `sha256:fb7cf4d01e5bdc19ffe5f9161bed2cd2caf36adccd91ce25ab929e76f0ed17ae`.
+- Serviço privado `revhackers-api-staging` criado no Cloud Run.
+- Revisão `revhackers-api-staging-00001-2cq`: **Ready**, 100% do tráfego.
+- Runtime usa a service account dedicada `revhackers-api-staging`, Cloud SQL IAM,
+  sem senha/chave JSON, 512 MiB, escala 0-2 e concorrência 20.
+- O serviço não foi tornado público. A organização bloqueou corretamente a
+  tentativa temporária de binding `allUsers` por domain restriction.
+
+### Gate de invocação pendente
+
+O container inicia e registra `server_started`, mas a invocação privada pela URL
+`run.app` retorna 404 na borda Google e não produz log HTTP da aplicação. O proxy
+do `gcloud` reproduz o mesmo comportamento para a API, enquanto o serviço smoke
+responde 200. Portanto o problema está no gate IAM/ingress da API, não no handler
+Node nem no Cloud SQL. A política privada foi preservada; nenhuma abertura pública
+foi mantida apenas para facilitar o teste.
+
+### Próximo passo sem atalho inseguro
+
+As rotas GrowthMap não podem aceitar tenant de header/body. Antes de ligá-las ao
+runtime é necessário criar no Cloud SQL o registry de identidade e autorização:
+`identity(issuer, subject) -> internal_user -> membership(tenant, role, status)` e
+a resolução server-side de `project_id -> tenant_id`. Depois disso o verifier
+Google, o service e o repository já existentes podem ser compostos no handler.
