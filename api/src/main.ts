@@ -1,13 +1,28 @@
 import { loadConfig } from './config';
+import { PostgresIdempotencyStore } from './context/postgres-idempotency-store';
 import { loadDatabaseConfig } from './db/config';
 import { checkPostgresReady, createPostgresResources } from './db/postgres';
+import { PostgresGrowthMapRepository } from './domains/growthmap/postgres-repository';
+import { GrowthMapService } from './domains/growthmap/service';
+import { createGrowthMapRoutes } from './http/growthmap-routes';
+import { GoogleIdentityTokenVerifier } from './identity/google-identity-verifier';
+import { PostgresIdentityRepository } from './identity/postgres-identity-repository';
 import { createApiServer } from './server';
 
 async function main(): Promise<void> {
   const config = loadConfig();
   const databaseConfig = loadDatabaseConfig();
   const postgres = await createPostgresResources(databaseConfig);
+  const googleProjectId = process.env.GOOGLE_CLOUD_PROJECT?.trim();
+  if (!googleProjectId) throw new Error('GOOGLE_CLOUD_PROJECT is required.');
+  const route = createGrowthMapRoutes({
+    verifier: new GoogleIdentityTokenVerifier({ projectId: googleProjectId }),
+    identities: new PostgresIdentityRepository(postgres.pool),
+    service: new GrowthMapService(new PostgresGrowthMapRepository(postgres.pool)),
+    idempotency: new PostgresIdempotencyStore(postgres.pool),
+  });
   const api = createApiServer(config, undefined, {
+    route,
     readiness: async () => {
       try {
         return { ready: await checkPostgresReady(postgres.pool) };

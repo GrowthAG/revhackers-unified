@@ -24,6 +24,8 @@ export interface AppDependencies {
   readiness?: () => Promise<ReadinessResult>;
   logger?: StructuredLogger;
   nowMs?: () => number;
+  /** Rotas de domínio. Retorna null quando o path não pertence ao router. */
+  route?: (request: Request, requestId: string) => Promise<Response | null>;
 }
 
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
@@ -137,7 +139,16 @@ export function createApp(deps: AppDependencies): (request: Request) => Promise<
           }
         }
       } else {
-        response = json(404, ApiError.notFound().toBody(context.requestId), context.requestId, cors);
+        const routed = deps.route ? await deps.route(request, context.requestId) : null;
+        if (routed) {
+          const headers = new Headers(routed.headers);
+          responseHeaders(context.requestId, cors).forEach((value, key) => {
+            if (!headers.has(key)) headers.set(key, value);
+          });
+          response = new Response(routed.body, { status: routed.status, headers });
+        } else {
+          response = json(404, ApiError.notFound().toBody(context.requestId), context.requestId, cors);
+        }
       }
     } catch (error) {
       const apiError = toApiError(error);

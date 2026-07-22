@@ -88,6 +88,7 @@ export interface ApiServer {
 
 export interface ApiServerDependencies {
   readiness?: () => Promise<{ ready: boolean; reason?: string }>;
+  route?: (request: Request, requestId: string) => Promise<Response | null>;
   close?: () => Promise<void>;
 }
 
@@ -109,6 +110,7 @@ export function createApiServer(
       if (!ready || shuttingDown) return { ready: false, reason: 'shutting_down' };
       return dependencies.readiness ? dependencies.readiness() : { ready: true };
     },
+    ...(dependencies.route ? { route: dependencies.route } : {}),
   });
 
   const server = createServer(async (req, res) => {
