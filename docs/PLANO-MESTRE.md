@@ -609,3 +609,40 @@ pendentes de autorização de Giulliano, sem acesso remoto nesta sessão.
 **Pendências inalteradas:** `git push` de 9 commits locais (autorização +
 revisão de segredos), R3 (roteador de IA, não-bloqueado tecnicamente mas
 espera R5), aplicar migrations em produção.
+
+## Checkpoint — 2026-07-22: migração GCP E4 implementada e GrowthMap preparado para Cloud SQL
+
+Direção formalmente corrigida e confirmada por Giulliano: a migração é
+**integral**. Database/PostgREST, Auth, Edge Functions, Storage, Realtime, cron,
+secrets, logs e hosting deixam o Supabase; identidade final é Google Identity
+Platform/Firebase Auth com Sign in with Google. Supabase é somente origem
+transitória para extração/reconciliação/rollback e será descontinuado.
+
+**E4/Fase C entregue localmente em três commits:**
+
+- `52ff241`: contratos TypeScript/OpenAPI, identidade provider-agnostic, motor
+de autorização por tenant, capability links, idempotência, correlation id,
+redaction e 27 testes negativos cross-tenant.
+- `5b222b1`: runtime HTTP real (Fetch handler + Node adapter), health/readiness,
+CORS allowlist, segurança, limite de payload, shutdown gracioso, build CommonJS,
+Dockerfile Cloud Run non-root e 13 testes HTTP. Binário compilado validado em
+porta real; Docker não existe neste Mac, então a imagem será validada no Cloud
+Build staging.
+- Piloto GrowthMap: contrato GET/PUT, domain service/repository tenant-scoped,
+schema Cloud SQL `app.growthmap_results` com `tenant_id` obrigatório, UNIQUE
+composto, constraints e FORCE RLS via contexto transacional. Testes provam que
+o mesmo `projectId` em dois tenants retorna/escreve somente o tenant resolvido.
+
+**Gate atual:** API strict/build, frontend tsc, OpenAPI válido, 88/88 testes,
+zero erros de lint novos, auditoria Supabase reconciliada e scan de segredos
+limpo.
+
+**Bloqueio externo observado:** `gcloud` está configurado com
+`giulliano@usefunnels.io`, mas o refresh token expirou e exige `gcloud auth
+login` interativo. Sem isso não foi possível consultar nem criar Cloud SQL. Não
+houve criação de recurso/custo nesta sessão.
+
+**Próximo passo técnico:** adapter PostgreSQL com transação e `SET LOCAL
+app.tenant_id`, rotas HTTP GrowthMap e verifier Google. Em paralelo, após o
+login, validar projeto/billing/APIs e provisionar Cloud SQL staging sob gate de
+custo/região/IAM.

@@ -224,13 +224,17 @@ só ocorre com backend estável.
 - [x] Build CommonJS executável e smoke local (`healthz` + SIGTERM) aprovado.
 - [ ] Build do container — Docker indisponível neste Mac; validar no Cloud Build staging.
 
-### Etapa C — piloto GrowthMap
+### Etapa C — piloto GrowthMap — em execução
 
-- [ ] Contratos `/v1/growthmaps/{projectId}` GET/PUT.
-- [ ] Repository interface + adapter Supabase server-side.
-- [ ] Testes com dois tenants e repository fake.
+- [x] Contratos `/v1/growthmaps/{projectId}` GET/PUT no OpenAPI.
+- [x] Domain service tenant-scoped + repository interface sem dependência de banco.
+- [x] Schema alvo `app.growthmap_results` para Cloud SQL (tenant obrigatório + FORCE RLS).
+- [x] Testes com dois tenants e repository fake (mesmo projectId, zero cruzamento).
+- [ ] Adapter PostgreSQL/Cloud SQL com transação + `SET LOCAL app.tenant_id`.
+- [ ] Rotas HTTP com identidade Google e idempotência persistente.
 - [ ] Adapter GCP no frontend protegido por feature flag.
-- [ ] Deploy no `revhackers-staging` somente depois do gate local.
+- [ ] Criar/validar Cloud SQL no `revhackers-staging` após reautenticar `gcloud`.
+- [ ] Deploy no `revhackers-staging` depois do gate local e do container no Cloud Build.
 
 ### Etapa D — gate humano do dia
 
