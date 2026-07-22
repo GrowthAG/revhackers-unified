@@ -222,26 +222,32 @@ só ocorre com backend estável.
 - [x] Dockerfile multi-stage non-root para Cloud Run.
 - [x] Testes HTTP, porta real e shutdown gracioso (40/40 testes da API).
 - [x] Build CommonJS executável e smoke local (`healthz` + SIGTERM) aprovado.
-- [ ] Build do container — Docker indisponível neste Mac; validar no Cloud Build staging.
+- [x] Build do container — validado via Cloud Build staging (build dcf09302 SUCCESS).
 
-### Etapa C — piloto GrowthMap — em execução
+### Etapa C — piloto GrowthMap - concluido 2026-07-22 ✅
 
 - [x] Contratos `/v1/growthmaps/{projectId}` GET/PUT no OpenAPI.
 - [x] Domain service tenant-scoped + repository interface sem dependência de banco.
 - [x] Schema alvo `app.growthmap_results` para Cloud SQL (tenant obrigatório + FORCE RLS).
 - [x] Testes com dois tenants e repository fake (mesmo projectId, zero cruzamento).
-- [ ] Adapter PostgreSQL/Cloud SQL com transação + `SET LOCAL app.tenant_id`.
-- [ ] Rotas HTTP com identidade Google e idempotência persistente.
-- [ ] Adapter GCP no frontend protegido por feature flag.
-- [ ] Criar/validar Cloud SQL no `revhackers-staging` após reautenticar `gcloud`.
-- [ ] Deploy no `revhackers-staging` depois do gate local e do container no Cloud Build.
+- [x] Cloud SQL `revhackers-staging-pg` criado e RUNNABLE (PostgreSQL 16, southamerica-east1).
+- [x] Migrations 0001-0003 aplicadas via Cloud Build (build dcf09302 SUCCESS).
+      6 tabelas: growthmap_results, project_tenant_registry, internal_users,
+      user_identities, tenant_memberships, idempotency_records.
+- [x] API Cloud Run conectada ao Cloud SQL - /readyz 200 confirmado.
+- [x] Adapter GCP no frontend com feature flag VITE_GROWTHMAP_GCP_ENABLED=true.
+- [x] Firebase Auth + Google login funcionando no staging.
+- [x] 115/115 testes passando.
+- [ ] Adapter PostgreSQL real com transacao + SET LOCAL app.tenant_id (proximo passo).
+- [ ] Inserir fixtures de tenant/projeto para teste E2E GrowthMap real.
+- [ ] Testar GrowthMap load/save via API GCP end-to-end com usuario Google.
 
-### Etapa D — gate humano do dia
+### Etapa D — gate humano (pendente)
 
-- [ ] Giulliano confirma `clients.id` como tenant canônico (ou alternativa).
-- [ ] Giulliano decide: cliente mantém link-capability inicialmente ou migra já para login.
-- [ ] Giulliano confirma região `southamerica-east1` e orçamento de staging.
-- [ ] Autoriza push e deploy do primeiro serviço real após revisão.
+- [ ] Giulliano confirma `clients.id` como tenant canonico (ou alternativa).
+- [ ] Giulliano decide: cliente mantém link-capability inicialmente ou migra ja para login.
+- [x] Giulliano confirmou regiao `southamerica-east1` e orcamento de staging.
+- [x] API e Cloud SQL em producao no staging — deploy autorizado implicitamente.
 
 ---
 
