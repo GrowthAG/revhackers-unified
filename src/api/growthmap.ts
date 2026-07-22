@@ -17,6 +17,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { growthMapGcpDataAdapter } from '@/api/adapters/growthmap-gcp';
 import type {
   GrowthMapState,
   FrameworkResult,
@@ -137,10 +138,13 @@ const supabaseAdapter: GrowthMapAdapter = {
   },
 };
 
-// ─── TODO (GCP migration): swap adapter here
-// import { gcpAdapter } from './adapters/growthmap-gcp';
-// const activeAdapter: GrowthMapAdapter = gcpAdapter;
-const activeAdapter: GrowthMapAdapter = supabaseAdapter;
+// Migração incremental do piloto: load/save podem operar 100% no GCP em staging,
+// enquanto a geração de IA permanece na Edge Function até ser portada ao Cloud Run.
+// A flag nasce desligada; produção atual não muda sem configuração explícita.
+const useGcpDataPlane = import.meta.env.VITE_GROWTHMAP_GCP_ENABLED === 'true';
+const activeAdapter: GrowthMapAdapter = useGcpDataPlane
+  ? { generate: supabaseAdapter.generate, load: growthMapGcpDataAdapter.load, save: growthMapGcpDataAdapter.save }
+  : supabaseAdapter;
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 

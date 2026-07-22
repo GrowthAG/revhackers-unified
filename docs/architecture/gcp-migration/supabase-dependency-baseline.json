@@ -5500,21 +5500,21 @@
       "category": "operation",
       "path": "src/api/growthmap.ts",
       "count": 1,
-      "line": 77,
+      "line": 78,
       "symbol": "functions.invoke"
     },
     {
       "category": "operation",
       "path": "src/api/growthmap.ts",
       "count": 1,
-      "line": 100,
+      "line": 101,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "src/api/growthmap.ts",
       "count": 1,
-      "line": 121,
+      "line": 122,
       "symbol": "from"
     },
     {
@@ -9900,7 +9900,7 @@
     "related-script": 15,
     "related-workflow": 1,
     "entries": 1412,
-    "trackedFiles": 1194,
+    "trackedFiles": 1197,
     "deployableFunctions": 32,
     "configFunctionSections": 25
   }
