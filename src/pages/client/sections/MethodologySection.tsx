@@ -171,7 +171,7 @@ export default function MethodologySection({ plan }: { plan: any }) {
         site:         devSteps,
     };
     
-    let baseSteps = stepsMap[projectType] || defaultSteps;
+    const baseSteps = stepsMap[projectType] || defaultSteps;
 
     // Reescrever as taglines de tempo para refletir a duração dinâmica
     const displaySteps = baseSteps.map((step, index) => {

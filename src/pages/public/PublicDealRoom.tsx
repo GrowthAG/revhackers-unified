@@ -229,14 +229,14 @@ export default function PublicDealRoom() {
         script.onerror = () => {
             console.warn('[DealRoom] Widget externo nao carregou. A pagina continua funcional.');
             if (document.body.contains(script)) {
-                try { document.body.removeChild(script); } catch (_) { }
+                try { document.body.removeChild(script); } catch { /* noop */ }
             }
         };
 
         document.body.appendChild(script);
         return () => {
             if (document.body.contains(script)) {
-                try { document.body.removeChild(script); } catch (_) { }
+                try { document.body.removeChild(script); } catch { /* noop */ }
             }
         };
     }, []);

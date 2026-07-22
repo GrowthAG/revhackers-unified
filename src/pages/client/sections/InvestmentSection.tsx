@@ -113,14 +113,17 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
     const projectType = plan?.rei_projects?.type || plan?.project_type || '';
     const serviceConfig = getServiceConfig(projectType);
 
-    const budgetData = plan.budget_data || {};
-    const segment = plan.diagnostic_data?.context_mirror?.segmento || plan.diagnostic_data?.context_mirror?.segment || plan.premises_data?.segmento || plan.premises_data?.segment || '';
-    const config = getSegmentConfig(segment);
-
-    // ── Service-based investment view (CRM / Founder / Dev) ─────────────────
     if (serviceConfig) {
-        const totalMin = serviceConfig.items.reduce((s, i) => s + i.range[0], 0);
-        const totalMax = serviceConfig.items.reduce((s, i) => s + i.range[1], 0);
+        return <ServiceInvestmentView serviceConfig={serviceConfig} />;
+    }
+    return <BudgetInvestmentView plan={plan} onBudgetChange={onBudgetChange} />;
+}
+
+function ServiceInvestmentView({ serviceConfig }: { serviceConfig: any }) {
+    // ── Service-based investment view (CRM / Founder / Dev) ─────────────────
+    {
+        const totalMin = serviceConfig.items.reduce((s: number, i: any) => s + i.range[0], 0);
+        const totalMax = serviceConfig.items.reduce((s: number, i: any) => s + i.range[1], 0);
         return (
             <div className="flex flex-col h-full bg-white overflow-y-auto w-full">
                 <div className="flex-none p-6 md:p-10 lg:p-12 pb-0">
@@ -202,6 +205,12 @@ export default function InvestmentSection({ plan, onBudgetChange }: { plan: any;
             </div>
         );
     }
+}
+
+function BudgetInvestmentView({ plan, onBudgetChange }: { plan: any; onBudgetChange?: (data: any) => void }) {
+    const budgetData = plan.budget_data || {};
+    const segment = plan.diagnostic_data?.context_mirror?.segmento || plan.diagnostic_data?.context_mirror?.segment || plan.premises_data?.segmento || plan.premises_data?.segment || '';
+    const config = getSegmentConfig(segment);
 
     const [values, setValues] = useState<Record<string, number>>({
         google_ads: budgetData.google_ads || 0,

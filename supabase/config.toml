@@ -17,6 +17,10 @@ verify_jwt = true
 enabled = true
 verify_jwt = true
 
+[functions.generate-growthmap]
+enabled = true
+verify_jwt = true
+
 [functions.generate-success-plan]
 enabled = true
 verify_jwt = true

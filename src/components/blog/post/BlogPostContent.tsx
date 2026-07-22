@@ -66,7 +66,7 @@ const BlogPostContent = ({ content, category, authorName, authorRole, authorAvat
       if (parsed.v2_template === true) {
         dynamicV2Config = parsed;
       }
-    } catch (e) { }
+    } catch { /* conteudo nao e JSON v2, segue como markdown */ }
   }
 
   // Lazy-loaded article components - each loaded only when its slug matches

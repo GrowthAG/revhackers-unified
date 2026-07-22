@@ -14,32 +14,6 @@ import { uploadImageToSupabase } from "@/utils/uploadImageToSupabase";
 
 const ProfileSettings = () => {
     const { user, signOut } = useAuth();
-    // ...
-
-    // NOVO: Alerta visual para usuário de teste
-    if (user?.id === 'dev-bypass-user') {
-        return (
-            <AdminLayout>
-                <AdminPageLayout title="Meu Perfil" description="Acesso Restrito">
-                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-800 p-8 text-center space-y-4">
-                        <h2 className="text-xl font-bold">⚠️ MODO DE DESENVOLVIMENTO (DEV BYPASS)</h2>
-                        <p>Você está usando um usuário simulado que NÃO tem permissão de escrita no banco de dados.</p>
-                        <p className="font-bold">Para salvar fotos ou dados, você precisa fazer login com uma conta real.</p>
-                        <Button
-                            onClick={() => {
-                                localStorage.clear();
-                                window.location.reload();
-                            }}
-                            variant="destructive"
-                            className="mt-4 rounded-none font-black tracking-widest text-xs uppercase"
-                        >
-                            SAIR E FAZER LOGIN REAL
-                        </Button>
-                    </div>
-                </AdminPageLayout>
-            </AdminLayout>
-        );
-    }
     const navigate = useNavigate();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
@@ -93,6 +67,31 @@ const ProfileSettings = () => {
 
         fetchProfile();
     }, [user]);
+
+    // Alerta visual para usuário de teste (dev bypass) — renderizado após todos os hooks
+    if (user?.id === 'dev-bypass-user') {
+        return (
+            <AdminLayout>
+                <AdminPageLayout title="Meu Perfil" description="Acesso Restrito">
+                    <div className="bg-zinc-50 border border-zinc-200 text-zinc-800 p-8 text-center space-y-4">
+                        <h2 className="text-xl font-bold">⚠️ MODO DE DESENVOLVIMENTO (DEV BYPASS)</h2>
+                        <p>Você está usando um usuário simulado que NÃO tem permissão de escrita no banco de dados.</p>
+                        <p className="font-bold">Para salvar fotos ou dados, você precisa fazer login com uma conta real.</p>
+                        <Button
+                            onClick={() => {
+                                localStorage.clear();
+                                window.location.reload();
+                            }}
+                            variant="destructive"
+                            className="mt-4 rounded-none font-black tracking-widest text-xs uppercase"
+                        >
+                            SAIR E FAZER LOGIN REAL
+                        </Button>
+                    </div>
+                </AdminPageLayout>
+            </AdminLayout>
+        );
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

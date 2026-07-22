@@ -43,7 +43,7 @@ const MaterialForm = ({ initialData, isEditing = false }: MaterialFormProps) => 
         try {
             const saved = localStorage.getItem(draftKey);
             if (saved) return JSON.parse(saved);
-        } catch (e) {}
+        } catch { /* draft invalido, ignora */ }
         return null;
     };
 

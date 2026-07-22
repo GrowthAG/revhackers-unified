@@ -336,7 +336,7 @@ const SiteScore = () => {
     // Unified score calculation with robust fallback
     const getFinalScore = () => {
         // baseScore is from manual questions (max 100)
-        let baseScore = score;
+        const baseScore = score;
 
         // If we have PSI score, we could blend it, but for now we prioritize PSI if it exists and is > 0
         const psiScore = psiResults?.mobile?.vitals?.score || 0;

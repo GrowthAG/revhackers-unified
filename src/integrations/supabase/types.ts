@@ -884,6 +884,7 @@ export type Database = {
           client_email: string
           client_name: string | null
           consulting_end_date: string | null
+          consulting_mrr: number | null
           consulting_start_date: string | null
           consulting_status: string | null
           consulting_value: number | null
@@ -896,6 +897,7 @@ export type Database = {
           revhackers_contact_id: string | null
           revhackers_opportunity_id: string | null
           software_activation_date: string | null
+          software_mrr: number | null
           software_renewal_date: string | null
           software_status: string | null
           software_value: number | null
@@ -906,6 +908,7 @@ export type Database = {
           client_email: string
           client_name?: string | null
           consulting_end_date?: string | null
+          consulting_mrr?: number | null
           consulting_start_date?: string | null
           consulting_status?: string | null
           consulting_value?: number | null
@@ -920,6 +923,7 @@ export type Database = {
           software_activation_date?: string | null
           software_renewal_date?: string | null
           software_status?: string | null
+          software_mrr?: number | null
           software_value?: number | null
           updated_at?: string | null
         }
@@ -928,6 +932,7 @@ export type Database = {
           client_email?: string
           client_name?: string | null
           consulting_end_date?: string | null
+          consulting_mrr?: number | null
           consulting_start_date?: string | null
           consulting_status?: string | null
           consulting_value?: number | null
@@ -940,6 +945,7 @@ export type Database = {
           revhackers_contact_id?: string | null
           revhackers_opportunity_id?: string | null
           software_activation_date?: string | null
+          software_mrr?: number | null
           software_renewal_date?: string | null
           software_status?: string | null
           software_value?: number | null
@@ -3782,6 +3788,14 @@ export type Database = {
       convert_opportunity_to_project: {
         Args: { p_analyst_email?: string; p_opportunity_id: string }
         Returns: string
+      }
+      convert_opportunity_to_project_v2: {
+        Args: {
+          p_analyst_email?: string
+          p_idempotency_key?: string
+          p_opportunity_id: string
+        }
+        Returns: Json
       }
       convert_opportunity_to_project_v3: {
         Args: {
