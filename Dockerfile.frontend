@@ -1,5 +1,10 @@
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
+
+# Dependencias nativas para node-gyp (canvas)
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+    python3 make g++ libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copia dependencias
 COPY package*.json ./
