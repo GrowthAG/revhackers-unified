@@ -213,13 +213,16 @@ só ocorre com backend estável.
 - [x] Contrato OpenAPI inicial.
 - [x] Gate de API/testes no CI.
 
-### Etapa B — concluir serviço HTTP local
+### Etapa B — concluir serviço HTTP local ✅
 
-- [ ] Escolher runtime HTTP mínimo e criar servidor sem acoplamento de domínio.
-- [ ] Implementar `/healthz` e `/readyz` conforme OpenAPI.
-- [ ] Middleware: request context, auth, autz, erro e logs.
-- [ ] Dockerfile multi-stage non-root para Cloud Run.
-- [ ] Testes HTTP e shutdown gracioso.
+- [x] Runtime HTTP Node sem dependência externa e handler Fetch API portátil.
+- [x] `/healthz` e `/readyz` conforme OpenAPI.
+- [x] Request context, erros padronizados, CORS allowlist e logs redigidos.
+- [x] Limite de payload, headers de segurança e correlation id.
+- [x] Dockerfile multi-stage non-root para Cloud Run.
+- [x] Testes HTTP, porta real e shutdown gracioso (40/40 testes da API).
+- [x] Build CommonJS executável e smoke local (`healthz` + SIGTERM) aprovado.
+- [ ] Build do container — Docker indisponível neste Mac; validar no Cloud Build staging.
 
 ### Etapa C — piloto GrowthMap
 
