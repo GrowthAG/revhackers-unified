@@ -27,146 +27,153 @@
       "path": "supabase/config.toml",
       "count": 1,
       "line": 20,
+      "symbol": "generate-growthmap"
+    },
+    {
+      "category": "config-section",
+      "path": "supabase/config.toml",
+      "count": 1,
+      "line": 24,
       "symbol": "generate-success-plan"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 25,
+      "line": 29,
       "symbol": "generate-playbook"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 29,
+      "line": 33,
       "symbol": "analyze-diagnostic"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 33,
+      "line": 37,
       "symbol": "enrich-strategic-data"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 37,
+      "line": 41,
       "symbol": "research-intelligence"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 41,
+      "line": 45,
       "symbol": "market-intelligence"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 46,
+      "line": 50,
       "symbol": "agent-chat"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 50,
+      "line": 54,
       "symbol": "agent-documents"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 55,
+      "line": 59,
       "symbol": "ghl-webhook-handoff"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 60,
+      "line": 64,
       "symbol": "autentique-webhook"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 66,
+      "line": 70,
       "symbol": "delete-user"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 70,
+      "line": 74,
       "symbol": "invite-member"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 75,
+      "line": 79,
       "symbol": "inspect-website"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 79,
+      "line": 83,
       "symbol": "scrape-profile"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 83,
+      "line": 87,
       "symbol": "analyze-site"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 87,
+      "line": 91,
       "symbol": "fetch-cnpj"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 92,
+      "line": 96,
       "symbol": "ghl-create-location"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 96,
+      "line": 100,
       "symbol": "ghl-oauth-callback"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 100,
+      "line": 104,
       "symbol": "ghl-oauth-refresh"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 104,
+      "line": 108,
       "symbol": "ghl-outbound-relay"
     },
     {
       "category": "config-section",
       "path": "supabase/config.toml",
       "count": 1,
-      "line": 108,
+      "line": 112,
       "symbol": "ghl-deploy-strategy"
     },
     {
@@ -238,6 +245,13 @@
       "count": 1,
       "line": 0,
       "symbol": "fetch-cnpj"
+    },
+    {
+      "category": "deployable-function",
+      "path": "supabase/functions/generate-growthmap",
+      "count": 1,
+      "line": 0,
+      "symbol": "generate-growthmap"
     },
     {
       "category": "deployable-function",
@@ -544,21 +558,21 @@
       "category": "endpoint",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 125,
+      "line": 170,
       "symbol": "/rest/v1"
     },
     {
       "category": "endpoint",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 209,
+      "line": 254,
       "symbol": "/rest/v1"
     },
     {
       "category": "endpoint",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 246,
+      "line": 291,
       "symbol": "/rest/v1"
     },
     {
@@ -615,6 +629,13 @@
       "path": "supabase/migrations/20260403000001_rate_limit_cooldown.sql",
       "count": 1,
       "line": 71,
+      "symbol": "/functions/v1"
+    },
+    {
+      "category": "endpoint",
+      "path": "supabase/migrations/20260721000000_security_fixes_batch.sql",
+      "count": 1,
+      "line": 308,
       "symbol": "/functions/v1"
     },
     {
@@ -1340,30 +1361,100 @@
     },
     {
       "category": "environment-name",
-      "path": "scripts/verify_fix_node.ts",
+      "path": "scripts/update_tikpag.ts",
+      "count": 1,
+      "line": 3,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/update_tikpag.ts",
       "count": 1,
       "line": 4,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/update_tikpag.ts",
+      "count": 1,
+      "line": 7,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/update_tikpag.ts",
+      "count": 1,
+      "line": 7,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 3,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
-      "line": 5,
+      "line": 3,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 4,
       "symbol": "SUPABASE_KEY"
     },
     {
       "category": "environment-name",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
-      "line": 7,
+      "line": 4,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 6,
       "symbol": "SUPABASE_KEY"
     },
     {
       "category": "environment-name",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
+      "line": 6,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
       "line": 7,
+      "symbol": "VITE_SUPABASE_ANON_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 7,
+      "symbol": "VITE_SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 10,
+      "symbol": "SUPABASE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "scripts/verify_fix_node.ts",
+      "count": 1,
+      "line": 10,
       "symbol": "SUPABASE_URL"
     },
     {
@@ -1683,6 +1774,27 @@
     },
     {
       "category": "environment-name",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 2,
+      "line": 310,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 1,
+      "line": 312,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 1,
+      "line": 313,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
       "path": "supabase/functions/generate-playbook/index.ts",
       "count": 2,
       "line": 30,
@@ -1852,142 +1964,135 @@
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 2,
+      "count": 1,
+      "line": 54,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 54,
+      "symbol": "SUPABASE_URL_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 56,
+      "symbol": "SUPABASE_SERVICE_KEY_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 56,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
       "line": 66,
+      "symbol": "SUPABASE_SERVICE_KEY_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 66,
+      "symbol": "SUPABASE_URL_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 67,
+      "symbol": "SUPABASE_SERVICE_KEY_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 67,
+      "symbol": "SUPABASE_URL_EARLY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 2,
+      "line": 95,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 68,
+      "line": 97,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 68,
+      "line": 97,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 70,
+      "line": 99,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 70,
+      "line": 99,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 79,
+      "line": 106,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 79,
+      "line": 106,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 125,
+      "line": 170,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 128,
+      "line": 173,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 129,
+      "line": 174,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 2,
-      "line": 203,
+      "line": 248,
       "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 205,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 205,
-      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 207,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 207,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 209,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 212,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 213,
-      "symbol": "SUPABASE_SERVICE_KEY"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 246,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 1,
-      "line": 249,
-      "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
@@ -1999,85 +2104,148 @@
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 250,
+      "symbol": "SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 252,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 252,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 254,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 257,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 258,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 291,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 294,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 295,
+      "symbol": "SUPABASE_SERVICE_KEY"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 2,
-      "line": 1009,
+      "line": 1054,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 2,
-      "line": 1010,
+      "line": 1055,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1011,
+      "line": 1056,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1011,
+      "line": 1056,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1012,
+      "line": 1057,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1012,
-      "symbol": "SUPABASE_URL"
-    },
-    {
-      "category": "environment-name",
-      "path": "supabase/functions/generate-strategic-plan/index.ts",
-      "count": 2,
-      "line": 1033,
+      "line": 1057,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 2,
-      "line": 1034,
+      "line": 1078,
+      "symbol": "SUPABASE_URL"
+    },
+    {
+      "category": "environment-name",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 2,
+      "line": 1079,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1035,
+      "line": 1080,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1035,
+      "line": 1080,
       "symbol": "SUPABASE_URL"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1036,
+      "line": 1081,
       "symbol": "SUPABASE_SERVICE_ROLE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1036,
+      "line": 1081,
       "symbol": "SUPABASE_URL"
     },
     {
@@ -2252,14 +2420,14 @@
       "category": "environment-name",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 40,
+      "line": 44,
       "symbol": "SUPABASE_SERVICE_KEY"
     },
     {
       "category": "environment-name",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 40,
+      "line": 44,
       "symbol": "SUPABASE_URL"
     },
     {
@@ -3050,28 +3218,28 @@
       "category": "import-or-wrapper",
       "path": "scripts/update_tikpag.ts",
       "count": 1,
-      "line": 2,
+      "line": 1,
       "symbol": "supabase-import"
     },
     {
       "category": "import-or-wrapper",
       "path": "scripts/update_tikpag.ts",
       "count": 1,
-      "line": 7,
+      "line": 10,
       "symbol": "createClient"
     },
     {
       "category": "import-or-wrapper",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
-      "line": 2,
+      "line": 1,
       "symbol": "supabase-import"
     },
     {
       "category": "import-or-wrapper",
       "path": "scripts/verify_fix_node.ts",
       "count": 1,
-      "line": 7,
+      "line": 10,
       "symbol": "createClient"
     },
     {
@@ -3128,6 +3296,20 @@
       "path": "src/api/founderAnalysis.ts",
       "count": 1,
       "line": 1,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "src/api/growthmap.ts",
+      "count": 1,
+      "line": 11,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "src/api/growthmap.ts",
+      "count": 1,
+      "line": 19,
       "symbol": "supabase-import"
     },
     {
@@ -4077,6 +4259,20 @@
     },
     {
       "category": "import-or-wrapper",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 1,
+      "line": 4,
+      "symbol": "supabase-import"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 1,
+      "line": 313,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
       "path": "supabase/functions/generate-playbook/index.ts",
       "count": 1,
       "line": 2,
@@ -4114,21 +4310,28 @@
       "category": "import-or-wrapper",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 79,
+      "line": 67,
       "symbol": "createClient"
     },
     {
       "category": "import-or-wrapper",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1012,
+      "line": 106,
       "symbol": "createClient"
     },
     {
       "category": "import-or-wrapper",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1036,
+      "line": 1057,
+      "symbol": "createClient"
+    },
+    {
+      "category": "import-or-wrapper",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 1081,
       "symbol": "createClient"
     },
     {
@@ -4233,7 +4436,7 @@
       "category": "import-or-wrapper",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 40,
+      "line": 44,
       "symbol": "createClient"
     },
     {
@@ -5171,7 +5374,7 @@
       "category": "operation",
       "path": "scripts/update_tikpag.ts",
       "count": 1,
-      "line": 13,
+      "line": 16,
       "symbol": "from"
     },
     {
@@ -5271,6 +5474,27 @@
       "count": 1,
       "line": 30,
       "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "src/api/growthmap.ts",
+      "count": 1,
+      "line": 77,
+      "symbol": "functions.invoke"
+    },
+    {
+      "category": "operation",
+      "path": "src/api/growthmap.ts",
+      "count": 1,
+      "line": 100,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "src/api/growthmap.ts",
+      "count": 1,
+      "line": 121,
+      "symbol": "from"
     },
     {
       "category": "operation",
@@ -7040,14 +7264,14 @@
       "category": "operation",
       "path": "src/pages/admin/ProfileSettings.tsx",
       "count": 1,
-      "line": 66,
+      "line": 40,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "src/pages/admin/ProfileSettings.tsx",
       "count": 1,
-      "line": 150,
+      "line": 149,
       "symbol": "from"
     },
     {
@@ -8116,6 +8340,13 @@
     },
     {
       "category": "operation",
+      "path": "supabase/functions/generate-growthmap/index.ts",
+      "count": 1,
+      "line": 314,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
       "path": "supabase/functions/generate-playbook/index.ts",
       "count": 1,
       "line": 57,
@@ -8153,14 +8384,21 @@
       "category": "operation",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1014,
+      "line": 116,
+      "symbol": "rpc"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/functions/generate-strategic-plan/index.ts",
+      "count": 1,
+      "line": 1059,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/generate-strategic-plan/index.ts",
       "count": 1,
-      "line": 1038,
+      "line": 1083,
       "symbol": "from"
     },
     {
@@ -8314,13 +8552,6 @@
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 184,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
-      "count": 1,
       "line": 208,
       "symbol": "from"
     },
@@ -8328,42 +8559,42 @@
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 234,
+      "line": 232,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 254,
+      "line": 258,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 287,
+      "line": 278,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 301,
+      "line": 311,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
+      "count": 1,
+      "line": 325,
       "symbol": "functions.invoke"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 323,
-      "symbol": "from"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
-      "count": 1,
-      "line": 335,
+      "line": 347,
       "symbol": "from"
     },
     {
@@ -8371,55 +8602,62 @@
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
       "line": 359,
-      "symbol": "rpc"
-    },
-    {
-      "category": "operation",
-      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
-      "count": 1,
-      "line": 384,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 409,
+      "line": 383,
+      "symbol": "rpc"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
+      "count": 1,
+      "line": 408,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/functions/ghl-webhook-handoff/index.ts",
+      "count": 1,
+      "line": 433,
       "symbol": "functions.invoke"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 435,
+      "line": 459,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 446,
+      "line": 470,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 462,
+      "line": 486,
       "symbol": "rpc"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 484,
+      "line": 508,
       "symbol": "from"
     },
     {
       "category": "operation",
       "path": "supabase/functions/ghl-webhook-handoff/index.ts",
       "count": 1,
-      "line": 509,
+      "line": 533,
       "symbol": "functions.invoke"
     },
     {
@@ -8652,6 +8890,27 @@
       "count": 1,
       "line": 246,
       "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/migrations/20260721000000_security_fixes_batch.sql",
+      "count": 1,
+      "line": 10,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/migrations/20260721000002_private_storage_buckets.sql",
+      "count": 1,
+      "line": 9,
+      "symbol": "from"
+    },
+    {
+      "category": "operation",
+      "path": "supabase/migrations/20260721000002_private_storage_buckets.sql",
+      "count": 1,
+      "line": 9,
+      "symbol": "storage"
     },
     {
       "category": "orphan-config-section",
@@ -9459,6 +9718,34 @@
       "symbol": "migration"
     },
     {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260721000000_security_fixes_batch.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260721000001_security_fixes_batch2.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260721000002_private_storage_buckets.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
+      "category": "related-migration",
+      "path": "supabase/migrations/20260722000000_create_growthmap_results.sql",
+      "count": 1,
+      "line": 0,
+      "symbol": "migration"
+    },
+    {
       "category": "related-prerender",
       "path": "scripts/prerender.js",
       "count": 1,
@@ -9579,21 +9866,21 @@
     }
   ],
   "totals": {
-    "config-section": 24,
-    "deployable-function": 31,
-    "endpoint": 33,
-    "environment-name": 326,
+    "config-section": 25,
+    "deployable-function": 32,
+    "endpoint": 34,
+    "environment-name": 348,
     "function-without-config-section": 8,
-    "import-or-wrapper": 237,
-    "operation": 622,
+    "import-or-wrapper": 242,
+    "operation": 630,
     "orphan-config-section": 1,
-    "related-migration": 114,
+    "related-migration": 118,
     "related-prerender": 1,
     "related-script": 15,
     "related-workflow": 1,
-    "entries": 1368,
-    "trackedFiles": 1129,
-    "deployableFunctions": 31,
-    "configFunctionSections": 24
+    "entries": 1409,
+    "trackedFiles": 1145,
+    "deployableFunctions": 32,
+    "configFunctionSections": 25
   }
 }

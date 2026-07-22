@@ -102,8 +102,8 @@ test('baseline drift fails with metadata-only output, including failure with sec
   assert.equal(`${result.stdout}${result.stderr}`.includes(sentinel), false);
 });
 
-test('current baseline has 31 functions and autentique-webhook orphan', () => {
+test('current baseline has 32 functions and autentique-webhook orphan', () => {
   const report = scanRepository(resolve('.'));
-  assert.equal(report.totals.deployableFunctions, 31);
+  assert.equal(report.totals.deployableFunctions, 32);
   assert.equal(report.entries.some((entry) => entry.category === 'orphan-config-section' && entry.symbol === 'autentique-webhook'), true);
 });
