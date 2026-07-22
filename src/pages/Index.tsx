@@ -1,4 +1,5 @@
-
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import HeroSection from '@/components/home/HeroSection';
 import PartnersSection from '@/components/home/PartnersSection';
@@ -10,7 +11,19 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import SEO from '@/components/shared/SEO';
 
+// Subdominios exclusivos do painel admin - nunca exibem a landing page
+const APP_SUBDOMAINS = ['app', 'admin'];
+
 const Index = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const subdomain = window.location.hostname.split('.')[0];
+    if (APP_SUBDOMAINS.includes(subdomain)) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <PageLayout>
       <SEO
