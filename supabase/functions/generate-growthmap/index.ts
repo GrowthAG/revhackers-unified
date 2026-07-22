@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 // @ts-ignore
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { logAiUsage } from "../_shared/ai-usage-log.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -142,9 +143,9 @@ function computeREIConnections(framework_id: string, rei: any) {
     if (pain) connections.push({ label: 'Maior dor do cliente', value: pain, insight: 'Eixo central do posicionamento GTM', type: 'critical' });
     const canais = get('canais', 'revops_canais', 'canais_aquisicao');
     if (canais) connections.push({ label: 'Canais atuais', value: canais, insight: 'Ponto de partida para o plano de aquisição GTM', type: 'ok' });
-  } else if (framework_id === 'vpc' || framework_id === 'empathy_map') {
+  } else if (framework_id === 'vpc' || framework_id === 'empathy_map' || framework_id === 'usp') {
     const pain = get('revops_maior_dor', 'maiorDor', 'main_challenge');
-    if (pain) connections.push({ label: 'Maior dor relatada', value: pain, insight: 'Pain principal para VPC e Mapa de Empatia', type: 'critical' });
+    if (pain) connections.push({ label: 'Maior dor relatada', value: pain, insight: 'Pain principal para VPC, Mapa de Empatia e USP', type: 'critical' });
     const seg = get('segmento', 'revops_segmento', 'sector');
     if (seg) connections.push({ label: 'Segmento do ICP', value: seg, insight: 'Define o perfil de cliente para o canvas', type: 'ok' });
   }
@@ -235,9 +236,18 @@ serve(async (req: Request) => {
     const clientContext = buildContext(rei_responses, company_name, company_description, segment, competitors);
     const userPrompt = `${clientContext}\n\nGere a análise ${framework_id.toUpperCase().replace(/_/g, ' ')} para esta empresa. Responda SOMENTE com JSON válido, sem markdown, sem explicações.`;
 
+    // ── Supabase admin client (para logging de uso de IA) ─────────────────────
+    // @ts-ignore
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
+    // @ts-ignore
+    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
+    const AI_MODEL = 'claude-3-5-sonnet-20241022';
+
     // ── Anthropic call ────────────────────────────────────────────────────────
     // @ts-ignore
     const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY') ?? '';
+    const t0 = Date.now();
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -246,7 +256,7 @@ serve(async (req: Request) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: AI_MODEL,
         max_tokens: 4000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
@@ -256,12 +266,22 @@ serve(async (req: Request) => {
     if (!aiRes.ok) {
       const err = await aiRes.text();
       console.error('[GrowthMap] Anthropic error:', err);
+      await logAiUsage(supabaseAdmin, {
+        edgeFunction: 'generate-growthmap',
+        provider: 'anthropic',
+        model: AI_MODEL,
+        success: false,
+        errorMessage: `HTTP ${aiRes.status}: ${err.slice(0, 300)}`,
+        latencyMs: Date.now() - t0,
+        metadata: { framework_id, project_id: project_id ?? null },
+      });
       return new Response(JSON.stringify({ error: 'Erro na geração de IA. Tente novamente.' }), {
         status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
     const aiData = await aiRes.json();
+    const aiLatencyMs = Date.now() - t0;
     const rawText: string = aiData.content?.[0]?.text ?? '{}';
 
     // ── Parse JSON safely ──────────────────────────────────────────────────────
@@ -304,22 +324,17 @@ serve(async (req: Request) => {
       );
     }
 
-    // ── Log usage (best-effort) ────────────────────────────────────────────────
-    try {
-      // @ts-ignore
-      const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
-      // @ts-ignore
-      const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-      const sb = createClient(SUPABASE_URL, SERVICE_KEY);
-      await sb.from('ai_usage_log').insert({
-        function_name: 'generate-growthmap',
-        model: 'claude-3-5-sonnet-20241022',
-        input_tokens: aiData.usage?.input_tokens ?? 0,
-        output_tokens: aiData.usage?.output_tokens ?? 0,
-        project_id: project_id ?? null,
-        metadata: { framework_id },
-      }).throwOnError();
-    } catch (_) { /* non-blocking */ }
+    // ── Log usage (best-effort, schema canônico R1) ────────────────────────────
+    await logAiUsage(supabaseAdmin, {
+      edgeFunction: 'generate-growthmap',
+      provider: 'anthropic',
+      model: AI_MODEL,
+      success: true,
+      inputTokens: aiData.usage?.input_tokens ?? null,
+      outputTokens: aiData.usage?.output_tokens ?? null,
+      latencyMs: aiLatencyMs,
+      metadata: { framework_id, project_id: project_id ?? null },
+    });
 
     return new Response(JSON.stringify({
       framework_id,
