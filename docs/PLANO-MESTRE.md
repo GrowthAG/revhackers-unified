@@ -646,3 +646,28 @@ houve criação de recurso/custo nesta sessão.
 app.tenant_id`, rotas HTTP GrowthMap e verifier Google. Em paralelo, após o
 login, validar projeto/billing/APIs e provisionar Cloud SQL staging sob gate de
 custo/região/IAM.
+
+## Checkpoint — 2026-07-22: Cloud SQL IAM + Google Identity prontos localmente
+
+Continuação da Etapa C. Implementado o caminho de runtime definitivo sem senha
+estática e sem dependência de Supabase:
+
+- pool PostgreSQL via Cloud SQL Connector oficial com IAM DB Authentication;
+- connection string direta proibida fora de dev/test;
+- transação tenant-scoped com `set_config('app.tenant_id', $1, true)`
+  parametrizado, COMMIT/ROLLBACK e release garantido;
+- adapter PostgreSQL GrowthMap consultando sempre `(tenant_id, project_id)`;
+- schema piloto inclui registry projeto/tenant, FK composta e FORCE RLS;
+- verifier Google Identity Platform por JOSE/JWKS oficial, somente RS256,
+  issuer/audience do projeto, exp/nbf e limite de tamanho;
+- Firebase Admin foi testado e removido antes de commit por trazer dependências
+  desnecessárias e 6 vulnerabilidades moderadas transitivas; `jose` deixou o
+  `npm audit --omit=dev` da API em zero vulnerabilidades.
+
+Gate: strict/build/frontend tsc, 102/102 testes, 0 erros lint, scan de segredos
+limpo e auditoria reconciliada.
+
+Bloqueio para cloud real: refresh token do `gcloud` expirado. Necessário executar
+interativamente `gcloud auth login giulliano@usefunnels.io` e selecionar
+`revhackers-staging`. Só depois serão consultados billing/APIs e proposto o
+sizing/custo antes de criar Cloud SQL.
