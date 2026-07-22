@@ -6718,7 +6718,7 @@
       "category": "operation",
       "path": "src/contexts/AuthContext.tsx",
       "count": 1,
-      "line": 45,
+      "line": 65,
       "symbol": "from"
     },
     {

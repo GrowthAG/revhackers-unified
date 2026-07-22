@@ -28,9 +28,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    if (userRole === 'user') {
-        // Apenas roles admin/super_admin acessam /admin.
-        // Qualquer 'user' sem role elevado vai para o Hub do cliente.
+    if (userRole !== 'admin' && userRole !== 'super_admin') {
+        // Papel ausente, user comum ou conta Google ainda não provisionada nunca
+        // atravessa a rota protegida. A autoridade vem de /v1/me, não de claims.
         return <Navigate to="/login" replace />;
     }
 

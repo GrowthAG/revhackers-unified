@@ -13,7 +13,7 @@ const Login = () => {
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
 
-    const { signInWithPassword, user, userRole, isProfileLoading, isRecoveringPassword } = useAuth();
+    const { signInWithPassword, signInWithGoogle, isGoogleAuthEnabled, user, userRole, isProfileLoading, isRecoveringPassword } = useAuth();
     const navigate = useNavigate();
 
     // Redirecionar se já estiver logado (exceto se estiver em fluxo de recuperação)
@@ -45,6 +45,16 @@ const Login = () => {
         }
     };
 
+    const handleGoogleLogin = async () => {
+        setError(null);
+        setLoading(true);
+        const result = await signInWithGoogle();
+        if (result.error) {
+            setError(result.error.message || 'Não foi possível entrar com Google.');
+            setLoading(false);
+        }
+    };
+
     return (
         <PageLayout>
             <div className="w-full h-full min-h-[70vh] flex items-center justify-center p-4 bg-white pt-32">
@@ -62,7 +72,22 @@ const Login = () => {
 
                     {/* Conteúdo de Login */}
                     <div className="bg-white p-2">
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        {isGoogleAuthEnabled && error && (
+                            <div className="text-black text-2xs font-light uppercase tracking-[0.2em] text-center mb-6 border border-black p-3">
+                                {error}
+                            </div>
+                        )}
+                        {isGoogleAuthEnabled && (
+                            <Button
+                                type="button"
+                                onClick={handleGoogleLogin}
+                                className="w-full bg-black text-white hover:bg-revgreen hover:text-black h-12 font-black text-xs tracking-[0.2em] uppercase rounded-sm border-none transition-all mb-6"
+                                disabled={loading}
+                            >
+                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Entrar com Google'}
+                            </Button>
+                        )}
+                        <form onSubmit={handleSubmit} className={isGoogleAuthEnabled ? 'hidden' : 'space-y-6'}>
                             {error && (
                                 <div className="text-black text-2xs font-light uppercase tracking-[0.3em] text-center mb-10 border border-black p-2">
                                     {error}

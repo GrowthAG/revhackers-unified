@@ -1,5 +1,13 @@
 import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  getAuth,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  type Auth,
+  type User,
+} from 'firebase/auth';
 
 function required(name: string, value: string | undefined): string {
   if (!value?.trim()) throw new Error(`${name} não configurada.`);
@@ -23,4 +31,18 @@ export async function requireGoogleIdToken(): Promise<string> {
   const user = getFirebaseAuth().currentUser;
   if (!user) throw new Error('Sessão Google ausente. Faça login novamente.');
   return user.getIdToken();
+}
+
+export async function signInWithGooglePopup(): Promise<User> {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  return (await signInWithPopup(getFirebaseAuth(), provider)).user;
+}
+
+export function observeGoogleAuth(callback: (user: User | null) => void): () => void {
+  return onAuthStateChanged(getFirebaseAuth(), callback);
+}
+
+export async function signOutGoogle(): Promise<void> {
+  await signOut(getFirebaseAuth());
 }

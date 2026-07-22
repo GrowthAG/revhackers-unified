@@ -4,6 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { APP_CONFIG } from '@/config/constants';
+import {
+    observeGoogleAuth,
+    signInWithGooglePopup,
+    signOutGoogle,
+} from '@/integrations/firebase/client';
 
 interface AuthContextType {
     session: Session | null;
@@ -16,6 +21,8 @@ interface AuthContextType {
     setIsRecoveringPassword: (value: boolean) => void; // NOVO: Para resetar após sucesso
     signIn: (email: string) => Promise<void>; // OTP (Existing)
     signInWithPassword: (email: string, password: string) => Promise<{ error: any }>;
+    signInWithGoogle: () => Promise<{ error: any }>;
+    isGoogleAuthEnabled: boolean;
     signUp: (email: string, password: string) => Promise<{ error: any }>;
     resetPassword: (email: string) => Promise<{ error: any }>;
     updatePassword: (password: string) => Promise<{ error: any }>;
@@ -38,6 +45,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     const { toast } = useToast();
     const navigate = useNavigate();
+    const isGoogleAuthEnabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === 'true';
+
+    const fetchGoogleAuthority = async (idToken: string) => {
+        const apiUrl = import.meta.env.VITE_GCP_API_URL?.replace(/\/$/, '');
+        if (!apiUrl) throw new Error('VITE_GCP_API_URL não configurada.');
+        const response = await fetch(`${apiUrl}/v1/me`, {
+            headers: { authorization: `Bearer ${idToken}` },
+        });
+        if (!response.ok) throw new Error(response.status === 403
+            ? 'Conta Google ainda não provisionada no RevHackers.'
+            : `Falha ao carregar autorização (${response.status}).`);
+        return response.json();
+    };
 
     const fetchUserRole = async (userId: string, silent = false) => {
         try {
@@ -83,6 +103,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             window.location.hash.includes('access_token=') ||
             window.location.pathname === '/reset-password') {
             setIsRecoveringPassword(true);
+        }
+
+        if (isGoogleAuthEnabled) {
+            let mounted = true;
+            const unsubscribe = observeGoogleAuth(async (googleUser) => {
+                if (!mounted) return;
+                if (!googleUser) {
+                    setSession(null);
+                    setUser(null);
+                    setUserProfile(null);
+                    setUserRole(null);
+                    setIsProfileLoading(false);
+                    setIsLoading(false);
+                    return;
+                }
+
+                setIsProfileLoading(true);
+                setUser({
+                    id: googleUser.uid,
+                    email: googleUser.email ?? undefined,
+                    user_metadata: { full_name: googleUser.displayName, avatar_url: googleUser.photoURL },
+                } as unknown as User);
+                try {
+                    const authority = await fetchGoogleAuthority(await googleUser.getIdToken());
+                    if (!mounted) return;
+                    setUserProfile(authority);
+                    setUserRole(authority.globalRole);
+                } catch (error) {
+                    console.error('[Google Auth] Falha de provisionamento:', error);
+                    setUserProfile(null);
+                    setUserRole(null);
+                } finally {
+                    if (mounted) {
+                        setIsProfileLoading(false);
+                        setIsLoading(false);
+                    }
+                }
+            });
+            return () => {
+                mounted = false;
+                unsubscribe();
+            };
         }
 
         // ── Single source of truth: onAuthStateChange ────────────────────────
@@ -194,6 +256,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const signInWithGoogle = async () => {
+        try {
+            const googleUser = await signInWithGooglePopup();
+            await fetchGoogleAuthority(await googleUser.getIdToken());
+            return { error: null };
+        } catch (error: any) {
+            console.error('[Google Auth] Login falhou:', error.message);
+            return { error };
+        }
+    };
+
     const signUp = async (_email: string, _password: string) => {
         // BLOQUEADO: Cadastro público desabilitado.
         // Toda criação de conta é feita exclusivamente via convite administrativo (invite-member).
@@ -251,11 +324,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUserProfile(null);
             setUserRole(null);
 
-            // Fazer logout no Supabase
-            const { error } = await supabase.auth.signOut();
-
-            if (error) {
-                console.error('Erro ao fazer logout:', error);
+            if (isGoogleAuthEnabled) {
+                await signOutGoogle();
+            } else {
+                const { error } = await supabase.auth.signOut();
+                if (error) console.error('Erro ao fazer logout:', error);
             }
 
             // Limpar localStorage (tokens antigos)
@@ -297,6 +370,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setIsRecoveringPassword,
             signIn,
             signInWithPassword,
+            signInWithGoogle,
+            isGoogleAuthEnabled,
             signUp,
             resetPassword,
             updatePassword,
