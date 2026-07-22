@@ -734,3 +734,25 @@ Cloud Run + Google Identity Platform + usuário/membership internos + Cloud SQL 
 + FORCE RLS + idempotência persistente funcionam ponta a ponta. O próximo passo é
 configurar o provedor Google OAuth real e trocar o adapter GrowthMap do frontend
 por feature flag no staging.
+
+## Checkpoint - 2026-07-22: Google OAuth habilitado no Identity Platform staging
+
+Com autorização de Giulliano, a configuração foi criada diretamente no GCP:
+
+- OAuth consent brand interno: `RevHackers Staging`;
+- support email corporativo configurado;
+- OAuth Client Web criado no projeto, sem valor versionado;
+- `google.com` criado e habilitado em
+  `projects/254666331430/defaultSupportedIdpConfigs/google.com`;
+- client ID e secret transferidos diretamente da resposta administrativa para o
+  Identity Platform; arquivos temporários foram apagados;
+- nenhum secret foi exibido na conversa, gravado no repositório ou colocado em
+  variável frontend;
+- teste negativo com token do Google Cloud SDK foi corretamente rejeitado por
+  audience diferente, provando que o projeto não aceita ID tokens de clients não
+  autorizados.
+
+O consentimento é interno à organização no staging. O próximo teste positivo deve
+ser feito pelo Firebase Auth client com o OAuth Client RevHackers, não com o token
+do `gcloud`. Depois do primeiro login, o subject Google deve ser provisionado na
+fonte interna antes de receber membership/role; email/claim não concede acesso.
