@@ -12,7 +12,11 @@
     "noUnusedParameters": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "pg": ["./node_modules/@types/pg/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts", "../tests/api/**/*.test.ts"]
 }
