@@ -1,0 +1,56 @@
+steps:
+  # Step 1: Aplica migrations via psql + senha do Secret Manager
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: apply-migrations
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        echo "==> Instalando postgresql-client..."
+        apt-get update -qq && apt-get install -y postgresql-client curl 2>/dev/null
+
+        echo "==> Baixando cloud-sql-proxy..."
+        curl -fsSL \
+          https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.14.1/cloud-sql-proxy.linux.amd64 \
+          -o /usr/local/bin/cloud-sql-proxy
+        chmod +x /usr/local/bin/cloud-sql-proxy
+
+        echo "==> Iniciando proxy (workload identity do Cloud Build)..."
+        /usr/local/bin/cloud-sql-proxy \
+          revhackers-staging:southamerica-east1:revhackers-staging-pg \
+          --port=5432 \
+          --auto-iam-authn \
+          >/tmp/proxy.log 2>&1 &
+
+        sleep 8
+        echo "Proxy log:" && cat /tmp/proxy.log || true
+
+        echo "==> Buscando senha do Secret Manager..."
+        PG_PASS=$(gcloud secrets versions access latest \
+          --secret=cloudsql-postgres-password \
+          --project=revhackers-staging)
+
+        echo "==> Testando conexão..."
+        PGPASSWORD="$${PG_PASS}" psql \
+          "host=127.0.0.1 port=5432 dbname=revhackers sslmode=disable user=postgres" \
+          -c "SELECT current_user, version();"
+
+        echo "==> Aplicando migrations..."
+        for f in /workspace/api/db/migrations/*.sql; do
+          echo "--- $$f ---"
+          PGPASSWORD="$${PG_PASS}" psql \
+            "host=127.0.0.1 port=5432 dbname=revhackers sslmode=disable user=postgres" \
+            -f "$$f" 2>&1 || echo "WARN: possível duplicate (ignorado)"
+        done
+
+        echo "==> Tabelas no banco:"
+        PGPASSWORD="$${PG_PASS}" psql \
+          "host=127.0.0.1 port=5432 dbname=revhackers sslmode=disable user=postgres" \
+          -c "SELECT schemaname||'.'||tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog','information_schema','pg_toast') ORDER BY 1;"
+
+        echo "==> Migrations concluidas com sucesso."
+
+options:
+  logging: CLOUD_LOGGING_ONLY
