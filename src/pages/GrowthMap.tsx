@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Play, X, Loader2, RefreshCw } from 'lucide-react';
 import FrameworkCard from '@/components/growthmap/FrameworkCard';
@@ -10,6 +10,8 @@ import {
   buildInitialState,
   FRAMEWORK_CATALOG,
 } from '@/api/growthmap';
+import { getLatestReiResponse } from '@/api/reiResponses';
+import { getReiProjectById } from '@/api/reiProjects';
 import type { FrameworkResult, GrowthMapState } from '@/types/growthmap';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -255,16 +257,41 @@ export default function GrowthMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  // Respostas reais do REI do projeto — alimentam a geração dos frameworks e o
+  // painel "Diagnóstico Cruzado" (REI × GrowthMap). Ref para evitar closure
+  // stale em handleGenerate sem inchar as deps do callback.
+  const reiResponsesRef = useRef<Record<string, unknown>>({});
 
-  // ── Load existing data ──────────────────────────────────────────────────────
+  // ── Load existing data (projeto + REI + growthmap em paralelo) ──────────────
   useEffect(() => {
     async function load() {
       if (!projectId) { setLoaded(true); return; }
-      const data = await getGrowthMap(projectId);
+
+      const [project, latestRei, data] = await Promise.all([
+        getReiProjectById(projectId).catch(() => null),
+        getLatestReiResponse(projectId).catch(() => null),
+        getGrowthMap(projectId),
+      ]);
+
+      const companyName =
+        project?.client_company || project?.trade_name || project?.client_name || 'Empresa';
+      const companyDescription = project?.client_site || '';
+      const reiResponses = (latestRei?.responses as Record<string, unknown> | null) ?? {};
+      reiResponsesRef.current = reiResponses;
+      const reiScore = latestRei?.maturity_percentage ?? undefined;
+
       if (data) {
-        setGState(data);
+        setGState({
+          ...data,
+          company_name: data.company_name || companyName,
+          company_description: data.company_description || companyDescription,
+          rei_score: reiScore ?? data.rei_score,
+        });
       } else {
-        setGState(buildInitialState(projectId, 'Empresa', ''));
+        setGState({
+          ...buildInitialState(projectId, companyName, companyDescription),
+          rei_score: reiScore,
+        });
       }
       setLoaded(true);
     }
@@ -282,7 +309,7 @@ export default function GrowthMap() {
       const result = await generateFramework({
         project_id: gState.project_id,
         framework_id: id,
-        rei_responses: {},
+        rei_responses: reiResponsesRef.current,
         company_name: gState.company_name,
         company_description: gState.company_description,
       });
