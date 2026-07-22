@@ -704,3 +704,33 @@ runtime é necessário criar no Cloud SQL o registry de identidade e autorizaç�
 `identity(issuer, subject) -> internal_user -> membership(tenant, role, status)` e
 a resolução server-side de `project_id -> tenant_id`. Depois disso o verifier
 Google, o service e o repository já existentes podem ser compostos no handler.
+
+## Checkpoint - 2026-07-22: primeiro fluxo 100% GCP aprovado em staging
+
+O piloto GrowthMap completou o primeiro fluxo real sem Supabase:
+
+- Identity Platform inicializado no `revhackers-staging`;
+- identidade sintética emitida por custom token assinado via IAM Credentials,
+  sem chave privada/JSON;
+- `issuer + subject` resolvidos para usuário interno e membership no Cloud SQL;
+- tenant do projeto resolvido server-side, sem header/body controlado pelo browser;
+- `GET /v1/growthmaps/{projectId}` retornou `null` antes da primeira gravação;
+- `PUT` persistiu fixture 100% sintética no Cloud SQL com FORCE RLS;
+- repetição da mesma `Idempotency-Key` devolveu replay da resposta persistida;
+- imagem `sha256:056c991ca299da183436c15bc86cd1706b8f75a13defe8aa80bcc20a2ebc7fdc`;
+- revisão `revhackers-api-staging-00004-549`, Ready, 100% do tráfego staging.
+
+### Diagnóstico de borda
+
+O caminho `/healthz` é interceptado pela borda Google neste ambiente e retorna
+404 antes do container. A raiz `/` foi adicionada como identificação saudável e
+`/readyz` valida o PostgreSQL; ambos respondem 200. A comparação controlada com
+hello-world, duas service accounts, duas URLs, IPv4/IPv6 e serviço descartável
+isolou o comportamento ao path. Serviços e tags diagnósticos foram removidos.
+
+### Gate alcançado
+
+Cloud Run + Google Identity Platform + usuário/membership internos + Cloud SQL IAM
++ FORCE RLS + idempotência persistente funcionam ponta a ponta. O próximo passo é
+configurar o provedor Google OAuth real e trocar o adapter GrowthMap do frontend
+por feature flag no staging.
