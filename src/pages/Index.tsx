@@ -11,15 +11,16 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 import ContactFormSection from '@/components/home/ContactFormSection';
 import SEO from '@/components/shared/SEO';
 
-// Subdominios exclusivos do painel admin - nunca exibem a landing page
-const APP_SUBDOMAINS = ['app', 'admin'];
+// Unico hostname que exibe a landing page institucional.
+// QUALQUER outro hostname (app., admin., Cloud Run, localhost) vai para /login.
+const LANDING_HOSTS = ['revhackers.com.br', 'revhackers.com', 'www.revhackers.com.br', 'www.revhackers.com'];
 
 const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const subdomain = window.location.hostname.split('.')[0];
-    if (APP_SUBDOMAINS.includes(subdomain)) {
+    const host = window.location.hostname;
+    if (!LANDING_HOSTS.includes(host)) {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
