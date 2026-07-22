@@ -525,3 +525,63 @@ esta diligência. Isso ficou registrado como pergunta prioritária (seção 10,
 item 18) porque muda quem está diligenciando quem.
 
 **Não feito:** `git push`, deploy GCP, qualquer alteração remota adicional.
+
+## Checkpoint — 2026-07-22 (madrugada): retomada, fix do GrowthMap e R2
+
+Sessão autônoma noturna (Giulliano dormindo, autorizou trabalho seguro sem
+push/produção). Ponto de partida: 4 commits locais não enviados, working
+tree limpo, módulo GrowthMap recém-commitado (`2589611`).
+
+**1. Regressão corrigida (`655bf8b`)** — o commit do GrowthMap adicionou a
+edge function `generate-growthmap` mas não atualizou o baseline da auditoria
+nem o teste `test:audit-supabase`, que fixava 31 deployable functions. `npm
+test` estava vermelho. Regenerado o baseline (32 functions) e ajustada a
+asserção do teste.
+
+**2. Bug real no logging de IA do GrowthMap (`3bb6872`)** — a
+`generate-growthmap` gravava em `ai_usage_log` com schema errado:
+`function_name` em vez de `edge_function`, `project_id` (coluna inexistente),
+e sem `provider`/`success` (ambos NOT NULL). **Toda gravação de log falhava
+silenciosamente** (insert em try/catch non-blocking) — as gerações do
+GrowthMap ficavam fora da instrumentação R1. Corrigido para usar o helper
+canônico `logAiUsage` (`_shared/ai-usage-log.ts`), igual a
+`generate-strategic-plan`/`agent-chat`, registrando sucesso (tokens +
+latência) e também falha no caminho de erro da Anthropic. Alinhado também
+`computeREIConnections` do servidor para incluir `usp` (o preview do client
+já incluía).
+
+**3. R2 implementado (`0e79c38`)** — tabela `ai_budget_config` (migration
+`20260722000001`), próximo item não-bloqueado da Frente 2. Orçamento mensal
+por provider, `monthly_limit_usd` nasce NULL (sem teto — nenhum valor
+inventado; limite real é decisão R5). RLS igual à `ai_usage_log`. Seed
+idempotente de anthropic+openai. **Não aplicada em produção.**
+
+**Validação de tudo:** `npx tsc --noEmit` limpo, 41/41 testes, auditoria
+Supabase 6/6, 0 erros de lint (697 warnings pré-existentes, não tocados).
+
+### Achados que precisam de decisão sua (não resolvi de propósito)
+
+- **GrowthMap com REI inerte (produto):** `src/pages/GrowthMap.tsx`
+  (`handleGenerate`) passa `rei_responses: {}` fixo. Todo o diferencial
+  "REI × GrowthMap" (calibrar frameworks com dados reais do cliente) está
+  desligado — os cards sempre geram sem contexto do REI e o painel
+  "Diagnóstico Cruzado" fica vazio. Carregar os dados reais depende de saber
+  a fonte/schema do REI do projeto; é decisão de produto, não adivinhei.
+- **Tabela `growthmap_results` provavelmente NÃO existe em produção:** a
+  migration `20260722000000` veio depois do commit "apply migrations to
+  production" (`cad400f`). Sem ela, `/growthmap/:projectId` quebra ao salvar.
+  Aplicar em produção precisa da sua autorização (não tenho acesso ao
+  Supabase remoto nesta sessão).
+- **7 commits locais aguardando `git push`** (2 batches de segurança, fix de
+  migrations, GrowthMap, e os 3 desta madrugada). Push segue pendente de
+  autorização + revisão de segredos, como nas sessões anteriores.
+- **R5 (política de degradação de IA) e limites de gasto por provider**
+  continuam só sua — a `ai_budget_config` já existe pra receber os números
+  quando você decidir.
+
+### Próximo item não-bloqueado (se autorizar continuar)
+
+R3 (`_shared/ai-router.ts`): roteador único que escolhe provider/modelo por
+orçamento restante (lê `ai_budget_config`) em vez de fallback fixo. Depende
+de R2 (feito) — mas a política de degradação (R5) precisa da sua decisão pra
+o roteador saber o que fazer quando o teto acabar (trocar modelo vs pausar).
