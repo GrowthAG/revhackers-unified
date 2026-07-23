@@ -15,8 +15,3 @@ options:
 
 substitutions:
   _IMAGE: southamerica-east1-docker.pkg.dev/revhackers-staging/revhackers-staging/revhackers-frontend:latest
-  # ARGs de VITE nao sao necessarios - o dist e pre-compilado localmente
-  # e enviado junto com o contexto de build
-  _VITE_SUPABASE_URL: placeholder
-  _VITE_SUPABASE_ANON_KEY: placeholder
-  _VITE_FIREBASE_API_KEY: placeholder
