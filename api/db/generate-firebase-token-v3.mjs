@@ -8,6 +8,7 @@ const UID = process.argv[2] ?? 'synthetic-growthmap-e2e';
 const PROJECT_ID = 'revhackers-staging';
 const SA = `firebase-adminsdk-fbsvc@${PROJECT_ID}.iam.gserviceaccount.com`;
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
+const API_URL = process.env.GCP_API_URL ?? 'https://revhackers-api-staging-254666331430.southamerica-east1.run.app';
 
 if (!FIREBASE_API_KEY) { console.error('Falta FIREBASE_API_KEY'); process.exit(1); }
 
@@ -81,11 +82,11 @@ async function main() {
   console.log(`Expira em: ${expiresIn}s`);
   console.log(`\n=== COMANDOS DE TESTE ===`);
   console.log(`\n# 1. /v1/me`);
-  console.log(`curl -s -H "Authorization: Bearer ${idToken}" https://revhackers-api-staging-3na73syj5a-rj.a.run.app/v1/me | python3 -m json.tool`);
+  console.log(`curl -s -H "Authorization: Bearer ${idToken}" ${API_URL}/v1/me | python3 -m json.tool`);
   console.log(`\n# 2. GET growthmap`);
-  console.log(`curl -s -H "Authorization: Bearer ${idToken}" "https://revhackers-api-staging-3na73syj5a-rj.a.run.app/v1/growthmaps/00000000-0000-0000-0000-000000000100" | python3 -m json.tool`);
+  console.log(`curl -s -H "Authorization: Bearer ${idToken}" "${API_URL}/v1/growthmaps/00000000-0000-0000-0000-000000000100" | python3 -m json.tool`);
   console.log(`\n# 3. PUT growthmap`);
-  console.log(`curl -s -X PUT -H "Authorization: Bearer ${idToken}" -H "Content-Type: application/json" -H "Idempotency-Key: test-$(date +%s)" -d '{"companyName":"Acme","companyDescription":"Test","reiScore":7.5,"growthmapScore":6.0,"reiConnectionsCount":3,"frameworks":{"test":{"id":"test","name":"Test"}},"generatedAt":"2026-07-22T18:00:00Z"}' "https://revhackers-api-staging-3na73syj5a-rj.a.run.app/v1/growthmaps/00000000-0000-0000-0000-000000000100" | python3 -m json.tool`);
+  console.log(`curl -s -X PUT -H "Authorization: Bearer ${idToken}" -H "Content-Type: application/json" -H "Idempotency-Key: test-$(date +%s)" -d '{"companyName":"Acme","companyDescription":"Test","reiScore":7.5,"growthmapScore":6.0,"reiConnectionsCount":3,"frameworks":{"test":{"id":"test","name":"Test"}},"generatedAt":"2026-07-22T18:00:00Z"}' "${API_URL}/v1/growthmaps/00000000-0000-0000-0000-000000000100" | python3 -m json.tool`);
 }
 
 main().catch(e => { console.error(e.message); process.exit(1); });
